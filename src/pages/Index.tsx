@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning } from "lucide-react";
+import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Banknote } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Index = () => {
@@ -16,6 +16,12 @@ const Index = () => {
       title: "Beregningsverktøy",
       description: "Interaktive verktøy for rømning, røyk og brannlast",
       href: "/verktoy",
+    },
+    {
+      icon: Banknote,
+      title: "Priskalkulator",
+      description: "Beregn pris for branntekniske oppdrag",
+      href: "/priskalkulator",
     },
     {
       icon: ClipboardCheck,
