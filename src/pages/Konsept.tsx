@@ -173,7 +173,12 @@ const Konsept = () => {
       setConceptName(data.name);
       setSelectedProjectId(data.project_id);
       if (data.content && typeof data.content === 'object') {
-        setFormData({ ...formData, ...(data.content as typeof formData) });
+        const loadedContent = data.content as typeof formData;
+        // Konverter gammel streng-format til ny array-format for grunnlagsdokumenter
+        if (loadedContent.grunnlagsdokumenter && !Array.isArray(loadedContent.grunnlagsdokumenter)) {
+          loadedContent.grunnlagsdokumenter = [];
+        }
+        setFormData({ ...formData, ...loadedContent });
       }
       setGeneratedConcept("loaded");
     }
