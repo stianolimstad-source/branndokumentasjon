@@ -175,8 +175,15 @@ const Konsept = () => {
       if (data.content && typeof data.content === 'object') {
         const loadedContent = data.content as typeof formData;
         // Konverter gammel streng-format til ny array-format for grunnlagsdokumenter
-        if (loadedContent.grunnlagsdokumenter && !Array.isArray(loadedContent.grunnlagsdokumenter)) {
-          loadedContent.grunnlagsdokumenter = [];
+        const legacyDocs = (loadedContent as any).grunnlagsdokumenter;
+        if (!Array.isArray(legacyDocs)) {
+          loadedContent.grunnlagsdokumenter = typeof legacyDocs === "string" && legacyDocs.trim()
+            ? legacyDocs
+                .split(/\r?\n/)
+                .map((l: string) => l.trim())
+                .filter(Boolean)
+                .map((navn: string) => ({ navn, dato: "" }))
+            : [];
         }
         setFormData({ ...formData, ...loadedContent });
       }
@@ -1074,13 +1081,13 @@ const Konsept = () => {
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.2 Grunnlagsdokumenter</Label>
                       <div className="space-y-2">
-                        {formData.grunnlagsdokumenter.map((doc, index) => (
+                        {(Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : []).map((doc, index) => (
                           <div key={index} className="grid grid-cols-[1fr_auto_auto] gap-2 items-center">
                             <Input 
                               placeholder="Dokumentnavn"
                               value={doc.navn}
                               onChange={(e) => {
-                                const updated = [...formData.grunnlagsdokumenter];
+                                const updated = [...(Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : [])];
                                 updated[index] = {...updated[index], navn: e.target.value};
                                 setFormData({...formData, grunnlagsdokumenter: updated});
                               }}
@@ -1090,7 +1097,7 @@ const Konsept = () => {
                               className="w-36"
                               value={doc.dato}
                               onChange={(e) => {
-                                const updated = [...formData.grunnlagsdokumenter];
+                                const updated = [...(Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : [])];
                                 updated[index] = {...updated[index], dato: e.target.value};
                                 setFormData({...formData, grunnlagsdokumenter: updated});
                               }}
@@ -1100,7 +1107,7 @@ const Konsept = () => {
                               variant="ghost"
                               size="icon"
                               onClick={() => {
-                                const updated = formData.grunnlagsdokumenter.filter((_, i) => i !== index);
+                                const updated = (Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : []).filter((_, i) => i !== index);
                                 setFormData({...formData, grunnlagsdokumenter: updated});
                               }}
                             >
@@ -1115,7 +1122,7 @@ const Konsept = () => {
                           onClick={() => {
                             setFormData({
                               ...formData, 
-                              grunnlagsdokumenter: [...formData.grunnlagsdokumenter, {navn: "", dato: ""}]
+                              grunnlagsdokumenter: [...(Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : []), {navn: "", dato: ""}]
                             });
                           }}
                         >
