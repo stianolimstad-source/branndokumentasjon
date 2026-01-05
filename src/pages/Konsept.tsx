@@ -45,93 +45,167 @@ const Konsept = () => {
 
   const renderPreview = () => {
     return (
-      <div className="bg-white text-black p-8 rounded-lg shadow-inner font-serif" style={{ minHeight: '600px' }}>
-        <h1 className="text-2xl font-bold text-center mb-8 border-b-2 border-gray-300 pb-4">
+      <div className="bg-white text-black p-8 rounded-lg shadow-inner font-serif text-sm" style={{ minHeight: '600px' }}>
+        <h1 className="text-xl font-bold text-center mb-6 pb-4">
           BRANNKONSEPT
         </h1>
         
+        {/* Innholdsfortegnelse */}
         <section className="mb-6">
-          <h2 className="text-lg font-bold mb-3 text-gray-800">1. PROSJEKTINFORMASJON</h2>
-          <div className="space-y-1 ml-4">
-            <p><span className="font-semibold">Bygningstype:</span> {formData.bygningstype || "Ikke angitt"}</p>
-            <p><span className="font-semibold">Risikoklasse:</span> {formData.risikoklasse || "Ikke angitt"}</p>
-            <p><span className="font-semibold">Brannklasse:</span> {formData.brannklasse || "Ikke angitt"}</p>
-            <p><span className="font-semibold">Etasjer:</span> {formData.etasjer || "Ikke angitt"}</p>
-            <p><span className="font-semibold">Bruttoareal:</span> {formData.areal || "Ikke angitt"} m²</p>
+          <h2 className="font-bold mb-3">Innholdsfortegnelse</h2>
+          <div className="space-y-1 text-xs">
+            <p><span className="font-bold">1.</span> Innledning</p>
+            <p className="ml-4">1.1 Informasjon om tiltaket</p>
+            <p className="ml-4">1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)</p>
+            <p className="ml-4">1.3 Avgrensning av tiltak</p>
+            <p className="ml-4">1.4 Gjeldende regelverk</p>
+            <p><span className="font-bold">2.</span> Grunnlag og forutsetninger for brannteknisk prosjektering</p>
+            <p className="ml-4">2.1 Grunnlagsdokumenter</p>
+            <p className="ml-4">2.2 Beskrivelse av bygning og branntekniske forutsetninger</p>
+            <p className="ml-4">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</p>
+            <p><span className="font-bold">3.</span> Beskrivelse av branntekniske ytelseskrav</p>
+            <p className="ml-4">3.1 § 11-4 Bæreevne og stabilitet</p>
+            <p className="ml-4">3.2 § 11-5 Sikkerhet ved eksplosjon</p>
+            <p className="ml-4">3.3 § 11-6 Tiltak mot brannspredning mellom byggverk</p>
+            <p className="ml-4">3.4 § 11-7 Brannseksjoner</p>
+            <p className="ml-4">3.5 § 11-8 Brannceller</p>
+            <p className="ml-4">3.6 § 11-9 Materialer og produkters egenskaper ved brann</p>
+            <p className="ml-4">3.7 § 11-10 Tekniske installasjoner</p>
+            <p className="ml-4">3.8 § 11-11 Generelle krav om rømning og redning</p>
+            <p className="ml-4">3.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider</p>
+            <p className="ml-4">3.10 § 11-13 Utgang fra branncelle</p>
+            <p className="ml-4">3.11 § 11-14 Rømningsvei</p>
+            <p className="ml-4">3.12 § 11-16 Tilrettelegging for manuell slokking</p>
+            <p className="ml-4">3.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap</p>
+            <p><span className="font-bold">4.</span> Utførelses- og driftsfasen</p>
+            <p className="ml-4">4.1 Utførelsesfasen</p>
+            <p className="ml-4">4.2 Driftsfasen</p>
+            <p><span className="font-bold">5.</span> Revisjonshistorikk</p>
+            <p><span className="font-bold">6.</span> Litteraturhenvisninger</p>
           </div>
         </section>
 
+        <hr className="my-6 border-gray-300" />
+
+        {/* 1. Innledning */}
         <section className="mb-6">
-          <h2 className="text-lg font-bold mb-3 text-gray-800">2. BRANNSTRATEGI</h2>
-          <p className="ml-4 mb-4 text-sm leading-relaxed">
-            Dette brannkonseptet er utarbeidet i henhold til TEK17 og relevante standarder. 
-            Bygningen skal sikres mot brann gjennom en kombinasjon av forebyggende, konstruktive og tekniske tiltak.
-          </p>
-
-          <h3 className="text-base font-semibold mb-2 ml-2 text-gray-700">2.1 Bærende konstruksjoner</h3>
-          <div className="ml-4 mb-4">
-            <p><span className="font-semibold">Bæresystem:</span> {formData.baeresystem || "Ikke angitt"}</p>
-            <p className="text-sm mt-1 leading-relaxed">
-              Bærende konstruksjoner skal utformes i henhold til brannklasse {formData.brannklasse || "[angis]"} og 
-              ha tilstrekkelig brannmotstand for å sikre stabilitet under brann.
-            </p>
+          <h2 className="font-bold mb-3">1. Innledning</h2>
+          
+          <h3 className="font-semibold mb-2">1.1 Informasjon om tiltaket</h3>
+          <div className="ml-4 mb-3 space-y-1">
+            <p><span className="font-semibold">Bygningstype:</span> {formData.bygningstype || "[Angis]"}</p>
+            <p><span className="font-semibold">Bruttoareal:</span> {formData.areal || "[Angis]"} m²</p>
+            <p><span className="font-semibold">Antall etasjer:</span> {formData.etasjer || "[Angis]"}</p>
           </div>
 
-          <h3 className="text-base font-semibold mb-2 ml-2 text-gray-700">2.2 Brannseksjonering</h3>
-          <div className="ml-4 mb-4">
-            <p><span className="font-semibold">Seksjoneringsløsning:</span> {formData.seksjonering || "Ikke angitt"}</p>
-            <p className="text-sm mt-1 leading-relaxed">
-              Bygningen skal deles inn i brannceller med tilstrekkelig brannmotstand for å hindre brannspredning. 
-              Brannskiller skal ha minimum REI-ytelse i henhold til byggets risikoklasse.
-            </p>
-          </div>
+          <h3 className="font-semibold mb-2">1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)</h3>
+          <p className="ml-4 mb-3">[Ansvarsrett og tiltaksklasse angis her]</p>
 
-          <h3 className="text-base font-semibold mb-2 ml-2 text-gray-700">2.3 Rømning</h3>
-          <div className="ml-4 mb-4">
-            <p><span className="font-semibold">Rømningsløsning:</span> {formData.roemning || "Ikke angitt"}</p>
-            <p className="text-sm mt-1 leading-relaxed">
-              Rømningsveier skal være oversiktlige, lett tilgjengelige og tilstrekkelig dimensjonert. 
-              Det skal være minst to uavhengige rømningsveier fra alle oppholdsrom.
-            </p>
-          </div>
+          <h3 className="font-semibold mb-2">1.3 Avgrensning av tiltak</h3>
+          <p className="ml-4 mb-3">[Avgrensning beskrives]</p>
 
-          <h3 className="text-base font-semibold mb-2 ml-2 text-gray-700">2.4 Tekniske installasjoner</h3>
-          <div className="ml-4 mb-4">
-            <p><span className="font-semibold">Installasjoner:</span> {formData.installasjoner || "Ikke angitt"}</p>
-            <p className="text-sm mt-1 leading-relaxed">
-              Tekniske brannsikringstiltak dimensjoneres i henhold til byggets risikoklasse og bruk.
-            </p>
-          </div>
-
-          {formData.fravik && (
-            <>
-              <h3 className="text-base font-semibold mb-2 ml-2 text-gray-700">2.5 Fravik og kompenserende tiltak</h3>
-              <p className="ml-4 mb-4 text-sm leading-relaxed">{formData.fravik}</p>
-            </>
-          )}
-        </section>
-
-        <section className="mb-6">
-          <h2 className="text-lg font-bold mb-3 text-gray-800">3. REGELVERK OG REFERANSER</h2>
-          <ul className="ml-4 text-sm space-y-1 list-disc list-inside">
+          <h3 className="font-semibold mb-2">1.4 Gjeldende regelverk</h3>
+          <ul className="ml-4 mb-3 list-disc list-inside">
             <li>TEK17 - Forskrift om tekniske krav til byggverk</li>
-            <li>VTEK - Veiledning til teknisk forskrift</li>
-            <li>NS 3901 - Risikobasert dimensjonering av brannsikkerhet i byggverk</li>
-            <li>NS-EN 1991-1-2 - Eurocode 1: Laster på konstruksjoner - Del 1-2: Allmenne laster - Brannpåvirkning</li>
+            <li>VTEK17 - Veiledning til teknisk forskrift</li>
           </ul>
         </section>
 
+        {/* 2. Grunnlag og forutsetninger */}
         <section className="mb-6">
-          <h2 className="text-lg font-bold mb-3 text-gray-800">4. KONKLUSJON</h2>
-          <p className="ml-4 text-sm leading-relaxed">
-            Ved å følge anbefalingene og tiltakene beskrevet i dette brannkonseptet, vil bygningen ha 
-            et tilfredsstillende sikkerhetsnivå mot brann i samsvar med gjeldende regelverk.
-          </p>
+          <h2 className="font-bold mb-3">2. Grunnlag og forutsetninger for brannteknisk prosjektering</h2>
+          
+          <h3 className="font-semibold mb-2">2.1 Grunnlagsdokumenter</h3>
+          <p className="ml-4 mb-3">[Liste over tegninger og dokumenter]</p>
+
+          <h3 className="font-semibold mb-2">2.2 Beskrivelse av bygning og branntekniske forutsetninger</h3>
+          <div className="ml-4 mb-3 space-y-1">
+            <p><span className="font-semibold">Risikoklasse:</span> {formData.risikoklasse || "[Angis]"}</p>
+            <p><span className="font-semibold">Brannklasse:</span> {formData.brannklasse || "[Angis]"}</p>
+            <p><span className="font-semibold">Bæresystem:</span> {formData.baeresystem || "[Angis]"}</p>
+          </div>
+
+          <h3 className="font-semibold mb-2">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</h3>
+          <p className="ml-4 mb-3">[Eventuelle tilleggskrav beskrives]</p>
         </section>
 
-        <div className="border-t border-gray-300 pt-4 mt-8 text-center">
-          <p className="text-xs italic text-gray-500">Generert av BrannRådgiver Pro</p>
-        </div>
+        {/* 3. Branntekniske ytelseskrav */}
+        <section className="mb-6">
+          <h2 className="font-bold mb-3">3. Beskrivelse av branntekniske ytelseskrav</h2>
+          
+          <h3 className="font-semibold mb-2">3.1 § 11-4 Bæreevne og stabilitet</h3>
+          <p className="ml-4 mb-3">Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse {formData.brannklasse || "[angis]"}.</p>
+
+          <h3 className="font-semibold mb-2">3.2 § 11-5 Sikkerhet ved eksplosjon</h3>
+          <p className="ml-4 mb-3">[Vurdering av eksplosjonsfare]</p>
+
+          <h3 className="font-semibold mb-2">3.3 § 11-6 Tiltak mot brannspredning mellom byggverk</h3>
+          <p className="ml-4 mb-3">[Avstandskrav og tiltak beskrives]</p>
+
+          <h3 className="font-semibold mb-2">3.4 § 11-7 Brannseksjoner</h3>
+          <p className="ml-4 mb-3">{formData.seksjonering || "[Seksjonering beskrives]"}</p>
+
+          <h3 className="font-semibold mb-2">3.5 § 11-8 Brannceller</h3>
+          <p className="ml-4 mb-3">[Branncelleinndeling beskrives]</p>
+
+          <h3 className="font-semibold mb-2">3.6 § 11-9 Materialer og produkters egenskaper ved brann</h3>
+          <p className="ml-4 mb-3">[Krav til materialer beskrives]</p>
+
+          <h3 className="font-semibold mb-2">3.7 § 11-10 Tekniske installasjoner</h3>
+          <p className="ml-4 mb-3">{formData.installasjoner || "[Installasjoner beskrives]"}</p>
+
+          <h3 className="font-semibold mb-2">3.8 § 11-11 Generelle krav om rømning og redning</h3>
+          <p className="ml-4 mb-3">{formData.roemning || "[Rømningsforhold beskrives]"}</p>
+
+          <h3 className="font-semibold mb-2">3.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider</h3>
+          <p className="ml-4 mb-3">[Tiltak beskrives]</p>
+
+          <h3 className="font-semibold mb-2">3.10 § 11-13 Utgang fra branncelle</h3>
+          <p className="ml-4 mb-3">[Utganger beskrives]</p>
+
+          <h3 className="font-semibold mb-2">3.11 § 11-14 Rømningsvei</h3>
+          <p className="ml-4 mb-3">[Rømningsveier beskrives]</p>
+
+          <h3 className="font-semibold mb-2">3.12 § 11-16 Tilrettelegging for manuell slokking</h3>
+          <p className="ml-4 mb-3">[Slokkeutstyr beskrives]</p>
+
+          <h3 className="font-semibold mb-2">3.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap</h3>
+          <p className="ml-4 mb-3">[Tilrettelegging beskrives]</p>
+        </section>
+
+        {/* 4. Utførelses- og driftsfasen */}
+        <section className="mb-6">
+          <h2 className="font-bold mb-3">4. Utførelses- og driftsfasen</h2>
+          
+          <h3 className="font-semibold mb-2">4.1 Utførelsesfasen</h3>
+          <p className="ml-4 mb-3">[Krav til utførelse beskrives]</p>
+
+          <h3 className="font-semibold mb-2">4.2 Driftsfasen</h3>
+          <p className="ml-4 mb-3">[Krav til drift og vedlikehold beskrives]</p>
+        </section>
+
+        {/* 5. Revisjonshistorikk */}
+        <section className="mb-6">
+          <h2 className="font-bold mb-3">5. Revisjonshistorikk</h2>
+          <p className="ml-4">[Revisjonslogg]</p>
+        </section>
+
+        {/* 6. Litteraturhenvisninger */}
+        <section className="mb-6">
+          <h2 className="font-bold mb-3">6. Litteraturhenvisninger</h2>
+          <ul className="ml-4 list-disc list-inside">
+            <li>TEK17 - Forskrift om tekniske krav til byggverk</li>
+            <li>VTEK17 - Veiledning til teknisk forskrift</li>
+            <li>NS 3901 - Krav til risikovurdering av brann i byggverk</li>
+          </ul>
+        </section>
+
+        {formData.fravik && (
+          <section className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
+            <h2 className="font-bold mb-3">Fravik og kompenserende tiltak</h2>
+            <p className="ml-4">{formData.fravik}</p>
+          </section>
+        )}
       </div>
     );
   };
@@ -148,141 +222,258 @@ const Konsept = () => {
               alignment: AlignmentType.CENTER,
               spacing: { after: 400 },
             }),
+            
+            // 1. Innledning
             new Paragraph({
-              children: [
-                new TextRun({ text: "1. PROSJEKTINFORMASJON", bold: true, size: 28 }),
-              ],
+              children: [new TextRun({ text: "1. Innledning", bold: true, size: 28 })],
               spacing: { before: 400, after: 200 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "1.1 Informasjon om tiltaket", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
             }),
             new Paragraph({
               children: [
                 new TextRun({ text: "Bygningstype: ", bold: true }),
-                new TextRun({ text: formData.bygningstype || "Ikke angitt" }),
+                new TextRun({ text: formData.bygningstype || "[Angis]" }),
               ],
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "Risikoklasse: ", bold: true }),
-                new TextRun({ text: formData.risikoklasse || "Ikke angitt" }),
-              ],
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "Brannklasse: ", bold: true }),
-                new TextRun({ text: formData.brannklasse || "Ikke angitt" }),
-              ],
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "Etasjer: ", bold: true }),
-                new TextRun({ text: formData.etasjer || "Ikke angitt" }),
-              ],
-              spacing: { after: 100 },
+              spacing: { after: 50 },
             }),
             new Paragraph({
               children: [
                 new TextRun({ text: "Bruttoareal: ", bold: true }),
-                new TextRun({ text: `${formData.areal || "Ikke angitt"} m²` }),
+                new TextRun({ text: `${formData.areal || "[Angis]"} m²` }),
               ],
-              spacing: { after: 200 },
+              spacing: { after: 50 },
             }),
             new Paragraph({
               children: [
-                new TextRun({ text: "2. BRANNSTRATEGI", bold: true, size: 28 }),
+                new TextRun({ text: "Antall etasjer: ", bold: true }),
+                new TextRun({ text: formData.etasjer || "[Angis]" }),
               ],
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: "[Ansvarsrett og tiltaksklasse angis her]",
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "1.3 Avgrensning av tiltak", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: "[Avgrensning beskrives]",
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "1.4 Gjeldende regelverk", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: "• TEK17 - Forskrift om tekniske krav til byggverk",
+              spacing: { after: 50 },
+            }),
+            new Paragraph({
+              text: "• VTEK17 - Veiledning til teknisk forskrift",
+              spacing: { after: 100 },
+            }),
+
+            // 2. Grunnlag og forutsetninger
+            new Paragraph({
+              children: [new TextRun({ text: "2. Grunnlag og forutsetninger for brannteknisk prosjektering", bold: true, size: 28 })],
               spacing: { before: 400, after: 200 },
             }),
             new Paragraph({
-              text: "Dette brannkonseptet er utarbeidet i henhold til TEK17 og relevante standarder. Bygningen skal sikres mot brann gjennom en kombinasjon av forebyggende, konstruktive og tekniske tiltak.",
-              spacing: { after: 200 },
+              children: [new TextRun({ text: "2.1 Grunnlagsdokumenter", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: "[Liste over tegninger og dokumenter]",
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "2.2 Beskrivelse av bygning og branntekniske forutsetninger", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
             }),
             new Paragraph({
               children: [
-                new TextRun({ text: "2.1 Bærende konstruksjoner", bold: true, size: 24 }),
+                new TextRun({ text: "Risikoklasse: ", bold: true }),
+                new TextRun({ text: formData.risikoklasse || "[Angis]" }),
               ],
-              spacing: { before: 200, after: 100 },
+              spacing: { after: 50 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Brannklasse: ", bold: true }),
+                new TextRun({ text: formData.brannklasse || "[Angis]" }),
+              ],
+              spacing: { after: 50 },
             }),
             new Paragraph({
               children: [
                 new TextRun({ text: "Bæresystem: ", bold: true }),
-                new TextRun({ text: formData.baeresystem || "Ikke angitt" }),
+                new TextRun({ text: formData.baeresystem || "[Angis]" }),
               ],
               spacing: { after: 100 },
             }),
             new Paragraph({
-              text: `Bærende konstruksjoner skal utformes i henhold til brannklasse ${formData.brannklasse || "[angis]"} og ha tilstrekkelig brannmotstand for å sikre stabilitet under brann.`,
-              spacing: { after: 200 },
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "2.2 Brannseksjonering", bold: true, size: 24 }),
-              ],
+              children: [new TextRun({ text: "2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker", bold: true, size: 24 })],
               spacing: { before: 200, after: 100 },
             }),
             new Paragraph({
-              children: [
-                new TextRun({ text: "Seksjoneringsløsning: ", bold: true }),
-                new TextRun({ text: formData.seksjonering || "Ikke angitt" }),
-              ],
+              text: "[Eventuelle tilleggskrav beskrives]",
               spacing: { after: 100 },
             }),
+
+            // 3. Branntekniske ytelseskrav
             new Paragraph({
-              text: "Bygningen skal deles inn i brannceller med tilstrekkelig brannmotstand for å hindre brannspredning. Brannskiller skal ha minimum REI-ytelse i henhold til byggets risikoklasse.",
-              spacing: { after: 200 },
+              children: [new TextRun({ text: "3. Beskrivelse av branntekniske ytelseskrav", bold: true, size: 28 })],
+              spacing: { before: 400, after: 200 },
             }),
             new Paragraph({
-              children: [
-                new TextRun({ text: "2.3 Rømning", bold: true, size: 24 }),
-              ],
+              children: [new TextRun({ text: "3.1 § 11-4 Bæreevne og stabilitet", bold: true, size: 24 })],
               spacing: { before: 200, after: 100 },
             }),
             new Paragraph({
-              children: [
-                new TextRun({ text: "Rømningsløsning: ", bold: true }),
-                new TextRun({ text: formData.roemning || "Ikke angitt" }),
-              ],
+              text: `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`,
               spacing: { after: 100 },
             }),
             new Paragraph({
-              text: "Rømningsveier skal være oversiktlige, lett tilgjengelige og tilstrekkelig dimensjonert. Det skal være minst to uavhengige rømningsveier fra alle oppholdsrom.",
-              spacing: { after: 200 },
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "2.4 Tekniske installasjoner", bold: true, size: 24 }),
-              ],
+              children: [new TextRun({ text: "3.2 § 11-5 Sikkerhet ved eksplosjon", bold: true, size: 24 })],
               spacing: { before: 200, after: 100 },
             }),
             new Paragraph({
-              children: [
-                new TextRun({ text: "Installasjoner: ", bold: true }),
-                new TextRun({ text: formData.installasjoner || "Ikke angitt" }),
-              ],
+              text: "[Vurdering av eksplosjonsfare]",
               spacing: { after: 100 },
             }),
             new Paragraph({
-              text: "Tekniske brannsikringstiltak dimensjoneres i henhold til byggets risikoklasse og bruk.",
-              spacing: { after: 200 },
+              children: [new TextRun({ text: "3.3 § 11-6 Tiltak mot brannspredning mellom byggverk", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
             }),
-            ...(formData.fravik ? [
-              new Paragraph({
-                children: [
-                  new TextRun({ text: "2.5 Fravik og kompenserende tiltak", bold: true, size: 24 }),
-                ],
-                spacing: { before: 200, after: 100 },
-              }),
-              new Paragraph({
-                text: formData.fravik,
-                spacing: { after: 200 },
-              }),
-            ] : []),
             new Paragraph({
-              children: [
-                new TextRun({ text: "3. REGELVERK OG REFERANSER", bold: true, size: 28 }),
-              ],
+              text: "[Avstandskrav og tiltak beskrives]",
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "3.4 § 11-7 Brannseksjoner", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: formData.seksjonering || "[Seksjonering beskrives]",
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "3.5 § 11-8 Brannceller", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: "[Branncelleinndeling beskrives]",
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "3.6 § 11-9 Materialer og produkters egenskaper ved brann", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: "[Krav til materialer beskrives]",
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "3.7 § 11-10 Tekniske installasjoner", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: formData.installasjoner || "[Installasjoner beskrives]",
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "3.8 § 11-11 Generelle krav om rømning og redning", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: formData.roemning || "[Rømningsforhold beskrives]",
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "3.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: "[Tiltak beskrives]",
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "3.10 § 11-13 Utgang fra branncelle", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: "[Utganger beskrives]",
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "3.11 § 11-14 Rømningsvei", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: "[Rømningsveier beskrives]",
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "3.12 § 11-16 Tilrettelegging for manuell slokking", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: "[Slokkeutstyr beskrives]",
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "3.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: "[Tilrettelegging beskrives]",
+              spacing: { after: 100 },
+            }),
+
+            // 4. Utførelses- og driftsfasen
+            new Paragraph({
+              children: [new TextRun({ text: "4. Utførelses- og driftsfasen", bold: true, size: 28 })],
+              spacing: { before: 400, after: 200 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "4.1 Utførelsesfasen", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: "[Krav til utførelse beskrives]",
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "4.2 Driftsfasen", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: "[Krav til drift og vedlikehold beskrives]",
+              spacing: { after: 100 },
+            }),
+
+            // 5. Revisjonshistorikk
+            new Paragraph({
+              children: [new TextRun({ text: "5. Revisjonshistorikk", bold: true, size: 28 })],
+              spacing: { before: 400, after: 200 },
+            }),
+            new Paragraph({
+              text: "[Revisjonslogg]",
+              spacing: { after: 100 },
+            }),
+
+            // 6. Litteraturhenvisninger
+            new Paragraph({
+              children: [new TextRun({ text: "6. Litteraturhenvisninger", bold: true, size: 28 })],
               spacing: { before: 400, after: 200 },
             }),
             new Paragraph({
@@ -290,37 +481,25 @@ const Konsept = () => {
               spacing: { after: 50 },
             }),
             new Paragraph({
-              text: "• VTEK - Veiledning til teknisk forskrift",
+              text: "• VTEK17 - Veiledning til teknisk forskrift",
               spacing: { after: 50 },
             }),
             new Paragraph({
-              text: "• NS 3901 - Risikobasert dimensjonering av brannsikkerhet i byggverk",
-              spacing: { after: 50 },
+              text: "• NS 3901 - Krav til risikovurdering av brann i byggverk",
+              spacing: { after: 100 },
             }),
-            new Paragraph({
-              text: "• NS-EN 1991-1-2 - Eurocode 1: Laster på konstruksjoner - Del 1-2: Allmenne laster - Brannpåvirkning",
-              spacing: { after: 200 },
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "4. KONKLUSJON", bold: true, size: 28 }),
-              ],
-              spacing: { before: 400, after: 200 },
-            }),
-            new Paragraph({
-              text: "Ved å følge anbefalingene og tiltakene beskrevet i dette brannkonseptet, vil bygningen ha et tilfredsstillende sikkerhetsnivå mot brann i samsvar med gjeldende regelverk.",
-              spacing: { after: 400 },
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "Generert av BrannRådgiver Pro", italics: true, size: 20 }),
-              ],
-              alignment: AlignmentType.CENTER,
-              border: {
-                top: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
-              },
-              spacing: { before: 200 },
-            }),
+
+            // Fravik (if any)
+            ...(formData.fravik ? [
+              new Paragraph({
+                children: [new TextRun({ text: "Fravik og kompenserende tiltak", bold: true, size: 28 })],
+                spacing: { before: 400, after: 200 },
+              }),
+              new Paragraph({
+                text: formData.fravik,
+                spacing: { after: 200 },
+              }),
+            ] : []),
           ],
         },
       ],
