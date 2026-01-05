@@ -5,9 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Flame, ArrowLeft, FileDown } from "lucide-react";
+import { Flame, ArrowLeft, FileDown, Download } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, BorderStyle } from "docx";
+import { saveAs } from "file-saver";
 
 const Konsept = () => {
   const { toast } = useToast();
@@ -93,6 +95,205 @@ Ved å følge anbefalingene og tiltakene beskrevet i dette brannkonseptet, vil b
 ---
 *Generert av BrannRådgiver Pro*
 `;
+  };
+
+  const exportToWord = async () => {
+    const doc = new Document({
+      sections: [
+        {
+          properties: {},
+          children: [
+            new Paragraph({
+              text: "BRANNKONSEPT",
+              heading: HeadingLevel.TITLE,
+              alignment: AlignmentType.CENTER,
+              spacing: { after: 400 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "1. PROSJEKTINFORMASJON", bold: true, size: 28 }),
+              ],
+              spacing: { before: 400, after: 200 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Bygningstype: ", bold: true }),
+                new TextRun({ text: formData.bygningstype || "Ikke angitt" }),
+              ],
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Risikoklasse: ", bold: true }),
+                new TextRun({ text: formData.risikoklasse || "Ikke angitt" }),
+              ],
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Brannklasse: ", bold: true }),
+                new TextRun({ text: formData.brannklasse || "Ikke angitt" }),
+              ],
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Etasjer: ", bold: true }),
+                new TextRun({ text: formData.etasjer || "Ikke angitt" }),
+              ],
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Bruttoareal: ", bold: true }),
+                new TextRun({ text: `${formData.areal || "Ikke angitt"} m²` }),
+              ],
+              spacing: { after: 200 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "2. BRANNSTRATEGI", bold: true, size: 28 }),
+              ],
+              spacing: { before: 400, after: 200 },
+            }),
+            new Paragraph({
+              text: "Dette brannkonseptet er utarbeidet i henhold til TEK17 og relevante standarder. Bygningen skal sikres mot brann gjennom en kombinasjon av forebyggende, konstruktive og tekniske tiltak.",
+              spacing: { after: 200 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "2.1 Bærende konstruksjoner", bold: true, size: 24 }),
+              ],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Bæresystem: ", bold: true }),
+                new TextRun({ text: formData.baeresystem || "Ikke angitt" }),
+              ],
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              text: `Bærende konstruksjoner skal utformes i henhold til brannklasse ${formData.brannklasse || "[angis]"} og ha tilstrekkelig brannmotstand for å sikre stabilitet under brann.`,
+              spacing: { after: 200 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "2.2 Brannseksjonering", bold: true, size: 24 }),
+              ],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Seksjoneringsløsning: ", bold: true }),
+                new TextRun({ text: formData.seksjonering || "Ikke angitt" }),
+              ],
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              text: "Bygningen skal deles inn i brannceller med tilstrekkelig brannmotstand for å hindre brannspredning. Brannskiller skal ha minimum REI-ytelse i henhold til byggets risikoklasse.",
+              spacing: { after: 200 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "2.3 Rømning", bold: true, size: 24 }),
+              ],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Rømningsløsning: ", bold: true }),
+                new TextRun({ text: formData.roemning || "Ikke angitt" }),
+              ],
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              text: "Rømningsveier skal være oversiktlige, lett tilgjengelige og tilstrekkelig dimensjonert. Det skal være minst to uavhengige rømningsveier fra alle oppholdsrom.",
+              spacing: { after: 200 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "2.4 Tekniske installasjoner", bold: true, size: 24 }),
+              ],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Installasjoner: ", bold: true }),
+                new TextRun({ text: formData.installasjoner || "Ikke angitt" }),
+              ],
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              text: "Tekniske brannsikringstiltak dimensjoneres i henhold til byggets risikoklasse og bruk.",
+              spacing: { after: 200 },
+            }),
+            ...(formData.fravik ? [
+              new Paragraph({
+                children: [
+                  new TextRun({ text: "2.5 Fravik og kompenserende tiltak", bold: true, size: 24 }),
+                ],
+                spacing: { before: 200, after: 100 },
+              }),
+              new Paragraph({
+                text: formData.fravik,
+                spacing: { after: 200 },
+              }),
+            ] : []),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "3. REGELVERK OG REFERANSER", bold: true, size: 28 }),
+              ],
+              spacing: { before: 400, after: 200 },
+            }),
+            new Paragraph({
+              text: "• TEK17 - Forskrift om tekniske krav til byggverk",
+              spacing: { after: 50 },
+            }),
+            new Paragraph({
+              text: "• VTEK - Veiledning til teknisk forskrift",
+              spacing: { after: 50 },
+            }),
+            new Paragraph({
+              text: "• NS 3901 - Risikobasert dimensjonering av brannsikkerhet i byggverk",
+              spacing: { after: 50 },
+            }),
+            new Paragraph({
+              text: "• NS-EN 1991-1-2 - Eurocode 1: Laster på konstruksjoner - Del 1-2: Allmenne laster - Brannpåvirkning",
+              spacing: { after: 200 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "4. KONKLUSJON", bold: true, size: 28 }),
+              ],
+              spacing: { before: 400, after: 200 },
+            }),
+            new Paragraph({
+              text: "Ved å følge anbefalingene og tiltakene beskrevet i dette brannkonseptet, vil bygningen ha et tilfredsstillende sikkerhetsnivå mot brann i samsvar med gjeldende regelverk.",
+              spacing: { after: 400 },
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "Generert av BrannRådgiver Pro", italics: true, size: 20 }),
+              ],
+              alignment: AlignmentType.CENTER,
+              border: {
+                top: { style: BorderStyle.SINGLE, size: 1, color: "CCCCCC" },
+              },
+              spacing: { before: 200 },
+            }),
+          ],
+        },
+      ],
+    });
+
+    const blob = await Packer.toBlob(doc);
+    saveAs(blob, "brannkonsept.docx");
+    
+    toast({
+      title: "Dokument lastet ned",
+      description: "Brannkonseptet er eksportert som Word-fil",
+    });
   };
 
   return (
@@ -268,9 +469,9 @@ Ved å følge anbefalingene og tiltakene beskrevet i dette brannkonseptet, vil b
                     </CardDescription>
                   </div>
                   {generatedConcept && (
-                    <Button variant="outline" size="sm">
-                      <FileDown className="h-4 w-4 mr-2" />
-                      Eksporter
+                    <Button variant="outline" size="sm" onClick={exportToWord}>
+                      <Download className="h-4 w-4 mr-2" />
+                      Last ned Word
                     </Button>
                   )}
                 </div>
