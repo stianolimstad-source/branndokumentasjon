@@ -861,38 +861,7 @@ const Konsept = () => {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">1.2 Bygningsinformasjon</Label>
-                      <Select 
-                        value={formData.bygningstype}
-                        onValueChange={(value) => setFormData({...formData, bygningstype: value})}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Velg bygningstype" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Boligbygg">Boligbygg</SelectItem>
-                          <SelectItem value="Kontorbygg">Kontorbygg</SelectItem>
-                          <SelectItem value="Skole/barnehage">Skole/barnehage</SelectItem>
-                          <SelectItem value="Industribygg">Industribygg</SelectItem>
-                          <SelectItem value="Lagerbygg">Lagerbygg</SelectItem>
-                          <SelectItem value="Handelsbygg">Handelsbygg</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <div className="grid grid-cols-2 gap-2">
-                        <Input 
-                          placeholder="Bruttoareal (m²)"
-                          value={formData.areal}
-                          onChange={(e) => setFormData({...formData, areal: e.target.value})}
-                        />
-                        <Input 
-                          placeholder="Antall etasjer"
-                          value={formData.etasjer}
-                          onChange={(e) => setFormData({...formData, etasjer: e.target.value})}
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">1.3 Ansvarsoppgave (SAK 10)</Label>
+                      <Label className="text-xs text-muted-foreground">1.2 Ansvarsoppgave (SAK 10)</Label>
                       <div className="grid grid-cols-2 gap-2">
                         <Input 
                           placeholder="Tiltakshaver"
@@ -939,7 +908,7 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">1.4 Avgrensning av tiltak</Label>
+                      <Label className="text-xs text-muted-foreground">1.3 Avgrensning av tiltak</Label>
                       <Textarea 
                         placeholder="Beskriv avgrensning av tiltaket"
                         value={formData.avgrensning}
@@ -954,14 +923,45 @@ const Konsept = () => {
                   <AccordionTrigger className="text-base font-semibold">2. Grunnlag og forutsetninger</AccordionTrigger>
                   <AccordionContent className="space-y-4 pt-2">
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">2.1 Grunnlagsdokumenter</Label>
+                      <Label className="text-xs text-muted-foreground">2.1 Bygningsinformasjon</Label>
+                      <Select 
+                        value={formData.bygningstype}
+                        onValueChange={(value) => setFormData({...formData, bygningstype: value})}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Velg bygningstype" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Boligbygg">Boligbygg</SelectItem>
+                          <SelectItem value="Kontorbygg">Kontorbygg</SelectItem>
+                          <SelectItem value="Skole/barnehage">Skole/barnehage</SelectItem>
+                          <SelectItem value="Industribygg">Industribygg</SelectItem>
+                          <SelectItem value="Lagerbygg">Lagerbygg</SelectItem>
+                          <SelectItem value="Handelsbygg">Handelsbygg</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input 
+                          placeholder="Bruttoareal (m²)"
+                          value={formData.areal}
+                          onChange={(e) => setFormData({...formData, areal: e.target.value})}
+                        />
+                        <Input 
+                          placeholder="Antall etasjer"
+                          value={formData.etasjer}
+                          onChange={(e) => setFormData({...formData, etasjer: e.target.value})}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs text-muted-foreground">2.2 Grunnlagsdokumenter</Label>
                       <Textarea 
                         placeholder="Liste over tegninger og dokumenter"
                         onChange={(e) => setFormData({...formData, grunnlagsdokumenter: e.target.value})}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">2.2 Branntekniske forutsetninger</Label>
+                      <Label className="text-xs text-muted-foreground">2.3 Branntekniske forutsetninger</Label>
                       <div className="grid grid-cols-2 gap-2">
                         <Select onValueChange={(value) => setFormData({...formData, risikoklasse: value})}>
                           <SelectTrigger>
@@ -993,7 +993,7 @@ const Konsept = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">2.3 Tilleggskrav</Label>
+                      <Label className="text-xs text-muted-foreground">2.4 Tilleggskrav</Label>
                       <Textarea 
                         placeholder="Eventuelle tilleggskrav fra tiltakshaver, myndigheter eller bruker"
                         onChange={(e) => setFormData({...formData, tilleggskrav: e.target.value})}
