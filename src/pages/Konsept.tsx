@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Flame, ArrowLeft, FileDown, Download, Save, LogIn } from "lucide-react";
+import { Flame, ArrowLeft, FileDown, Download, Save, LogIn, X, Plus } from "lucide-react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from "docx";
@@ -116,7 +116,7 @@ const Konsept = () => {
     tiltaksklasse: "",
     avgrensning: "",
     // 2. Grunnlag og forutsetninger
-    grunnlagsdokumenter: "",
+    grunnlagsdokumenter: [] as Array<{navn: string, dato: string}>,
     risikoklasse: "",
     brannklasse: "",
     baeresystem: "",
@@ -1068,10 +1068,55 @@ const Konsept = () => {
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.2 Grunnlagsdokumenter</Label>
-                      <Textarea 
-                        placeholder="Liste over tegninger og dokumenter"
-                        onChange={(e) => setFormData({...formData, grunnlagsdokumenter: e.target.value})}
-                      />
+                      <div className="space-y-2">
+                        {formData.grunnlagsdokumenter.map((doc, index) => (
+                          <div key={index} className="grid grid-cols-[1fr_auto_auto] gap-2 items-center">
+                            <Input 
+                              placeholder="Dokumentnavn"
+                              value={doc.navn}
+                              onChange={(e) => {
+                                const updated = [...formData.grunnlagsdokumenter];
+                                updated[index] = {...updated[index], navn: e.target.value};
+                                setFormData({...formData, grunnlagsdokumenter: updated});
+                              }}
+                            />
+                            <Input 
+                              type="date"
+                              className="w-36"
+                              value={doc.dato}
+                              onChange={(e) => {
+                                const updated = [...formData.grunnlagsdokumenter];
+                                updated[index] = {...updated[index], dato: e.target.value};
+                                setFormData({...formData, grunnlagsdokumenter: updated});
+                              }}
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                const updated = formData.grunnlagsdokumenter.filter((_, i) => i !== index);
+                                setFormData({...formData, grunnlagsdokumenter: updated});
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setFormData({
+                              ...formData, 
+                              grunnlagsdokumenter: [...formData.grunnlagsdokumenter, {navn: "", dato: ""}]
+                            });
+                          }}
+                        >
+                          <Plus className="h-4 w-4 mr-1" /> Legg til dokument
+                        </Button>
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.3 Branntekniske forutsetninger</Label>
