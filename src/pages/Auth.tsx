@@ -12,6 +12,7 @@ import { Loader2 } from 'lucide-react';
 const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { user, signIn, signUp } = useAuth();
@@ -89,6 +90,15 @@ const Auth = () => {
       toast({
         title: 'Ugyldig passord',
         description: 'Passordet må være minst 6 tegn.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast({
+        title: 'Passordene stemmer ikke',
+        description: 'Vennligst sjekk at begge passordene er like.',
         variant: 'destructive',
       });
       return;
@@ -200,6 +210,17 @@ const Auth = () => {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="register-confirm-password">Bekreft passord</Label>
+                  <Input
+                    id="register-confirm-password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                   />
                 </div>
