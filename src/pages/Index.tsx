@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Banknote } from "lucide-react";
+import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Banknote, LogIn, LogOut, User } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
+  const { user, loading, signOut } = useAuth();
+
   const features = [
     {
       icon: FileText,
@@ -54,6 +57,26 @@ const Index = () => {
                 <Flame className="h-6 w-6 text-primary-foreground" />
               </div>
               <h1 className="text-xl font-bold">BrannRådgiver Pro</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              {loading ? null : user ? (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-muted-foreground hidden sm:inline">
+                    {user.email}
+                  </span>
+                  <Button variant="outline" size="sm" onClick={signOut}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logg ut
+                  </Button>
+                </div>
+              ) : (
+                <Link to="/auth">
+                  <Button size="sm">
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Logg inn
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>
