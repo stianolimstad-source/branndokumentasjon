@@ -915,9 +915,7 @@ const Konsept = () => {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="Nei">Nei</SelectItem>
-                          <SelectItem value="Ja - kategori a">Ja - kategori a</SelectItem>
-                          <SelectItem value="Ja - kategori b">Ja - kategori b</SelectItem>
-                          <SelectItem value="Ja - kategori c">Ja - kategori c</SelectItem>
+                          <SelectItem value="Ja">Ja</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
