@@ -9,6 +9,7 @@ import Konsept from "./pages/Konsept";
 import Verktoy from "./pages/Verktoy";
 import Priskalkulator from "./pages/Priskalkulator";
 import Auth from "./pages/Auth";
+import MineProsjekter from "./pages/MineProsjekter";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/verktoy" element={<Verktoy />} />
             <Route path="/priskalkulator" element={<Priskalkulator />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/mine-prosjekter" element={<MineProsjekter />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

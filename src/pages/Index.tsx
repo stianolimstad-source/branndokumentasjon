@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Banknote, LogIn, LogOut, User } from "lucide-react";
+import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Banknote, LogIn, LogOut, FolderOpen } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -61,6 +61,12 @@ const Index = () => {
             <div className="flex items-center gap-2">
               {loading ? null : user ? (
                 <div className="flex items-center gap-3">
+                  <Link to="/mine-prosjekter">
+                    <Button variant="outline" size="sm">
+                      <FolderOpen className="h-4 w-4 mr-2" />
+                      Mine prosjekter
+                    </Button>
+                  </Link>
                   <span className="text-sm text-muted-foreground hidden sm:inline">
                     {user.email}
                   </span>
