@@ -871,120 +871,157 @@ const Konsept = () => {
                   <AccordionContent className="space-y-4 pt-2">
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">1.1 Informasjon om tiltaket</Label>
-                      <Input 
-                        placeholder="Oppdragsgiver"
-                        value={formData.oppdragsgiver}
-                        onChange={(e) => setFormData({...formData, oppdragsgiver: e.target.value})}
-                      />
-                      <Input 
-                        placeholder="Prosjektnavn"
-                        value={formData.prosjektnavn}
-                        onChange={(e) => setFormData({...formData, prosjektnavn: e.target.value})}
-                      />
-                      <Input 
-                        placeholder="Adresse"
-                        value={formData.adresse}
-                        onChange={(e) => setFormData({...formData, adresse: e.target.value})}
-                      />
-                      <div className="grid grid-cols-2 gap-2">
-                        <Input 
-                          placeholder="Gnr/Bnr"
-                          value={formData.gnrBnr}
-                          onChange={(e) => setFormData({...formData, gnrBnr: e.target.value})}
-                        />
-                        <Input 
-                          placeholder="Kommune"
-                          value={formData.kommune}
-                          onChange={(e) => setFormData({...formData, kommune: e.target.value})}
-                        />
+                      <div className="space-y-3">
+                        <div>
+                          <Label className="text-xs font-medium mb-1 block">Oppdragsgiver</Label>
+                          <Input 
+                            value={formData.oppdragsgiver}
+                            onChange={(e) => setFormData({...formData, oppdragsgiver: e.target.value})}
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs font-medium mb-1 block">Prosjektnavn</Label>
+                          <Input 
+                            value={formData.prosjektnavn}
+                            onChange={(e) => setFormData({...formData, prosjektnavn: e.target.value})}
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs font-medium mb-1 block">Adresse</Label>
+                          <Input 
+                            value={formData.adresse}
+                            onChange={(e) => setFormData({...formData, adresse: e.target.value})}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Gnr/Bnr</Label>
+                            <Input 
+                              value={formData.gnrBnr}
+                              onChange={(e) => setFormData({...formData, gnrBnr: e.target.value})}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Kommune</Label>
+                            <Input 
+                              value={formData.kommune}
+                              onChange={(e) => setFormData({...formData, kommune: e.target.value})}
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <Label className="text-xs font-medium mb-1 block">Type tiltak</Label>
+                          <Select 
+                            value={formData.tiltakstype}
+                            onValueChange={(value) => setFormData({...formData, tiltakstype: value})}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Velg" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Nybygg">Nybygg</SelectItem>
+                              <SelectItem value="Bruksendring">Bruksendring</SelectItem>
+                              <SelectItem value="Endring i eksisterende tiltak">Endring i eksisterende tiltak</SelectItem>
+                              <SelectItem value="Tilbygg">Tilbygg</SelectItem>
+                              <SelectItem value="Rehabilitering">Rehabilitering</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label className="text-xs font-medium mb-1 block">Beskrivelse av tiltaket</Label>
+                          <Textarea 
+                            value={formData.tiltaksbeskrivelse}
+                            onChange={(e) => setFormData({...formData, tiltaksbeskrivelse: e.target.value})}
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs font-medium mb-1 block">Særskilt brannobjekt?</Label>
+                          <Select 
+                            value={formData.saerskiltBrannobjekt}
+                            onValueChange={(value) => setFormData({...formData, saerskiltBrannobjekt: value})}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Velg" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Nei">Nei</SelectItem>
+                              <SelectItem value="Ja">Ja</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
-                      <Select 
-                        value={formData.tiltakstype}
-                        onValueChange={(value) => setFormData({...formData, tiltakstype: value})}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Type tiltak" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Nybygg">Nybygg</SelectItem>
-                          <SelectItem value="Bruksendring">Bruksendring</SelectItem>
-                          <SelectItem value="Endring i eksisterende tiltak">Endring i eksisterende tiltak</SelectItem>
-                          <SelectItem value="Tilbygg">Tilbygg</SelectItem>
-                          <SelectItem value="Rehabilitering">Rehabilitering</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Textarea 
-                        placeholder="Beskrivelse av tiltaket"
-                        value={formData.tiltaksbeskrivelse}
-                        onChange={(e) => setFormData({...formData, tiltaksbeskrivelse: e.target.value})}
-                      />
-                      <Select 
-                        value={formData.saerskiltBrannobjekt}
-                        onValueChange={(value) => setFormData({...formData, saerskiltBrannobjekt: value})}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Særskilt brannobjekt?" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Nei">Nei</SelectItem>
-                          <SelectItem value="Ja">Ja</SelectItem>
-                        </SelectContent>
-                      </Select>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">1.2 Ansvarsoppgave (SAK 10)</Label>
-                      <div className="grid grid-cols-2 gap-2">
-                        <Input 
-                          placeholder="Tiltakshaver"
-                          value={formData.tiltakshaver}
-                          onChange={(e) => setFormData({...formData, tiltakshaver: e.target.value})}
-                        />
-                        <Input 
-                          placeholder="Ansvarlig søker (SØK)"
-                          value={formData.ansvarligSoker}
-                          onChange={(e) => setFormData({...formData, ansvarligSoker: e.target.value})}
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <Input 
-                          placeholder="Kunde"
-                          value={formData.kunde}
-                          onChange={(e) => setFormData({...formData, kunde: e.target.value})}
-                        />
-                        <Input 
-                          placeholder="Brannteknisk prosjekterende (PRO RIBR)"
-                          value={formData.proRibr}
-                          onChange={(e) => setFormData({...formData, proRibr: e.target.value})}
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <Input 
-                          placeholder="Kontrollerende (KPR RiBr)"
-                          value={formData.kprRibr}
-                          onChange={(e) => setFormData({...formData, kprRibr: e.target.value})}
-                        />
-                        <Select 
-                          value={formData.tiltaksklasse}
-                          onValueChange={(value) => setFormData({...formData, tiltaksklasse: value})}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Tiltaksklasse" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Tiltaksklasse 1">Tiltaksklasse 1</SelectItem>
-                            <SelectItem value="Tiltaksklasse 2">Tiltaksklasse 2</SelectItem>
-                            <SelectItem value="Tiltaksklasse 3">Tiltaksklasse 3</SelectItem>
-                          </SelectContent>
-                        </Select>
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Tiltakshaver</Label>
+                            <Input 
+                              value={formData.tiltakshaver}
+                              onChange={(e) => setFormData({...formData, tiltakshaver: e.target.value})}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Ansvarlig søker (SØK)</Label>
+                            <Input 
+                              value={formData.ansvarligSoker}
+                              onChange={(e) => setFormData({...formData, ansvarligSoker: e.target.value})}
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Kunde</Label>
+                            <Input 
+                              value={formData.kunde}
+                              onChange={(e) => setFormData({...formData, kunde: e.target.value})}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Brannteknisk prosjekterende (PRO RIBR)</Label>
+                            <Input 
+                              value={formData.proRibr}
+                              onChange={(e) => setFormData({...formData, proRibr: e.target.value})}
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Kontrollerende (KPR RiBr)</Label>
+                            <Input 
+                              value={formData.kprRibr}
+                              onChange={(e) => setFormData({...formData, kprRibr: e.target.value})}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Tiltaksklasse</Label>
+                            <Select 
+                              value={formData.tiltaksklasse}
+                              onValueChange={(value) => setFormData({...formData, tiltaksklasse: value})}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Velg tiltaksklasse" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Tiltaksklasse 1">Tiltaksklasse 1</SelectItem>
+                                <SelectItem value="Tiltaksklasse 2">Tiltaksklasse 2</SelectItem>
+                                <SelectItem value="Tiltaksklasse 3">Tiltaksklasse 3</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">1.3 Avgrensning av tiltak</Label>
-                      <Textarea 
-                        placeholder="Beskriv avgrensning av tiltaket"
-                        value={formData.avgrensning}
-                        onChange={(e) => setFormData({...formData, avgrensning: e.target.value})}
-                      />
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Beskriv avgrensning av tiltaket</Label>
+                        <Textarea 
+                          value={formData.avgrensning}
+                          onChange={(e) => setFormData({...formData, avgrensning: e.target.value})}
+                        />
+                      </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
@@ -995,87 +1032,96 @@ const Konsept = () => {
                   <AccordionContent className="space-y-4 pt-2">
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.1 Bygningsinformasjon</Label>
-                      <Select 
-                        value={formData.bygningstype}
-                        onValueChange={(value) => {
-                          const risikoklasse = bygningsTypeRisikoklasseMap[value] || "";
-                          setFormData({...formData, bygningstype: value, risikoklasse: risikoklasse});
-                        }}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Velg bygningstype" />
-                        </SelectTrigger>
-                        <SelectContent className="max-h-[300px]">
-                          {/* Risikoklasse 1 */}
-                          <SelectItem value="Arbeidsbrakke">Arbeidsbrakke</SelectItem>
-                          <SelectItem value="Båtnaust">Båtnaust</SelectItem>
-                          <SelectItem value="Carport">Carport</SelectItem>
-                          <SelectItem value="Flyhangar">Flyhangar</SelectItem>
-                          <SelectItem value="Fryselager">Fryselager</SelectItem>
-                          <SelectItem value="Garasje og parkeringshus med én etasje">Garasje og parkeringshus med én etasje</SelectItem>
-                          <SelectItem value="Sagbruk">Sagbruk</SelectItem>
-                          <SelectItem value="Skur">Skur</SelectItem>
-                          <SelectItem value="Trelastopplag">Trelastopplag</SelectItem>
-                          {/* Risikoklasse 2 */}
-                          <SelectItem value="Brannstasjon uten døgnbemanning">Brannstasjon uten døgnbemanning</SelectItem>
-                          <SelectItem value="Driftsbygning med husdyrrom">Driftsbygning med husdyrrom</SelectItem>
-                          <SelectItem value="Industri">Industri</SelectItem>
-                          <SelectItem value="Kantine beregnet for egne ansatte til og med 150 personer">Kantine beregnet for egne ansatte til og med 150 personer</SelectItem>
-                          <SelectItem value="Kjemisk fabrikk og kjemikalielager">Kjemisk fabrikk og kjemikalielager</SelectItem>
-                          <SelectItem value="Kontor">Kontor</SelectItem>
-                          <SelectItem value="Laboratorium">Laboratorium</SelectItem>
-                          <SelectItem value="Lager">Lager</SelectItem>
-                          <SelectItem value="Parkeringshus og garasje med to eller flere etasjer eller plan">Parkeringshus og garasje med to eller flere etasjer</SelectItem>
-                          <SelectItem value="Parkeringskjeller og garasje under terreng">Parkeringskjeller og garasje under terreng</SelectItem>
-                          <SelectItem value="Sprengstoffindustri">Sprengstoffindustri</SelectItem>
-                          <SelectItem value="Trafo eller fordelingsstasjon">Trafo eller fordelingsstasjon</SelectItem>
-                          {/* Risikoklasse 3 */}
-                          <SelectItem value="Barnehage">Barnehage</SelectItem>
-                          <SelectItem value="Skole">Skole</SelectItem>
-                          {/* Risikoklasse 4 */}
-                          <SelectItem value="Barnehjem">Barnehjem</SelectItem>
-                          <SelectItem value="Bolig">Bolig</SelectItem>
-                          <SelectItem value="Boligbrakke">Boligbrakke</SelectItem>
-                          <SelectItem value="Brannstasjon med døgnbemanning">Brannstasjon med døgnbemanning</SelectItem>
-                          <SelectItem value="Fritidsbolig, inkl. selvbetjente hytter, campinghytter og campingenheter">Fritidsbolig, inkl. hytter og campingenheter</SelectItem>
-                          <SelectItem value="Internat">Internat</SelectItem>
-                          <SelectItem value="Studentbolig">Studentbolig</SelectItem>
-                          {/* Risikoklasse 5 */}
-                          <SelectItem value="Forsamlingslokale">Forsamlingslokale</SelectItem>
-                          <SelectItem value="Idrettshall">Idrettshall</SelectItem>
-                          <SelectItem value="Kantine beregnet for utleie eller for mer enn 150 personer">Kantine for utleie/mer enn 150 personer</SelectItem>
-                          <SelectItem value="Kinolokale">Kinolokale</SelectItem>
-                          <SelectItem value="Kirke">Kirke</SelectItem>
-                          <SelectItem value="Kongressenter">Kongressenter</SelectItem>
-                          <SelectItem value="Messelokale">Messelokale</SelectItem>
-                          <SelectItem value="Museum">Museum</SelectItem>
-                          <SelectItem value="Salgslokale">Salgslokale</SelectItem>
-                          <SelectItem value="Teaterlokale">Teaterlokale</SelectItem>
-                          <SelectItem value="Trafikkterminaler">Trafikkterminaler</SelectItem>
-                          <SelectItem value="Tribuneanlegg for mer enn 150 personer">Tribuneanlegg for mer enn 150 personer</SelectItem>
-                          {/* Risikoklasse 6 */}
-                          <SelectItem value="Arrestlokaler og fengsel">Arrestlokaler og fengsel</SelectItem>
-                          <SelectItem value="Asylmottak og transittmottak">Asylmottak og transittmottak</SelectItem>
-                          <SelectItem value="Bolig beregnet for personer med behov for heldøgns pleie og omsorg">Bolig for heldøgns pleie og omsorg</SelectItem>
-                          <SelectItem value="Bolig spesielt tilrettelagt og beregnet for personer med funksjonsnedsettelse, inkl. alders- og seniorboliger">Bolig for funksjonsnedsettelse/seniorboliger</SelectItem>
-                          <SelectItem value="Forlegning og leirskole">Forlegning og leirskole</SelectItem>
-                          <SelectItem value="Overnattingssted og hotell">Overnattingssted og hotell</SelectItem>
-                          <SelectItem value="Pleieinstitusjon">Pleieinstitusjon</SelectItem>
-                          <SelectItem value="Sykehus og sykehjem">Sykehus og sykehjem</SelectItem>
-                          <SelectItem value="Turisthytte og vandrerhjem">Turisthytte og vandrerhjem</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <div className="grid grid-cols-2 gap-2">
-                        <Input 
-                          placeholder="Bruttoareal (m²)"
-                          value={formData.areal}
-                          onChange={(e) => setFormData({...formData, areal: e.target.value})}
-                        />
-                        <Input 
-                          placeholder="Antall etasjer"
-                          value={formData.etasjer}
-                          onChange={(e) => setFormData({...formData, etasjer: e.target.value})}
-                        />
+                      <div className="space-y-3">
+                        <div>
+                          <Label className="text-xs font-medium mb-1 block">Bygningstype</Label>
+                          <Select 
+                            value={formData.bygningstype}
+                            onValueChange={(value) => {
+                              const risikoklasse = bygningsTypeRisikoklasseMap[value] || "";
+                              setFormData({...formData, bygningstype: value, risikoklasse: risikoklasse});
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Velg bygningstype" />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-[300px]">
+                              {/* Risikoklasse 1 */}
+                              <SelectItem value="Arbeidsbrakke">Arbeidsbrakke</SelectItem>
+                              <SelectItem value="Båtnaust">Båtnaust</SelectItem>
+                              <SelectItem value="Carport">Carport</SelectItem>
+                              <SelectItem value="Flyhangar">Flyhangar</SelectItem>
+                              <SelectItem value="Fryselager">Fryselager</SelectItem>
+                              <SelectItem value="Garasje og parkeringshus med én etasje">Garasje og parkeringshus med én etasje</SelectItem>
+                              <SelectItem value="Sagbruk">Sagbruk</SelectItem>
+                              <SelectItem value="Skur">Skur</SelectItem>
+                              <SelectItem value="Trelastopplag">Trelastopplag</SelectItem>
+                              {/* Risikoklasse 2 */}
+                              <SelectItem value="Brannstasjon uten døgnbemanning">Brannstasjon uten døgnbemanning</SelectItem>
+                              <SelectItem value="Driftsbygning med husdyrrom">Driftsbygning med husdyrrom</SelectItem>
+                              <SelectItem value="Industri">Industri</SelectItem>
+                              <SelectItem value="Kantine beregnet for egne ansatte til og med 150 personer">Kantine beregnet for egne ansatte til og med 150 personer</SelectItem>
+                              <SelectItem value="Kjemisk fabrikk og kjemikalielager">Kjemisk fabrikk og kjemikalielager</SelectItem>
+                              <SelectItem value="Kontor">Kontor</SelectItem>
+                              <SelectItem value="Laboratorium">Laboratorium</SelectItem>
+                              <SelectItem value="Lager">Lager</SelectItem>
+                              <SelectItem value="Parkeringshus og garasje med to eller flere etasjer eller plan">Parkeringshus og garasje med to eller flere etasjer</SelectItem>
+                              <SelectItem value="Parkeringskjeller og garasje under terreng">Parkeringskjeller og garasje under terreng</SelectItem>
+                              <SelectItem value="Sprengstoffindustri">Sprengstoffindustri</SelectItem>
+                              <SelectItem value="Trafo eller fordelingsstasjon">Trafo eller fordelingsstasjon</SelectItem>
+                              {/* Risikoklasse 3 */}
+                              <SelectItem value="Barnehage">Barnehage</SelectItem>
+                              <SelectItem value="Skole">Skole</SelectItem>
+                              {/* Risikoklasse 4 */}
+                              <SelectItem value="Barnehjem">Barnehjem</SelectItem>
+                              <SelectItem value="Bolig">Bolig</SelectItem>
+                              <SelectItem value="Boligbrakke">Boligbrakke</SelectItem>
+                              <SelectItem value="Brannstasjon med døgnbemanning">Brannstasjon med døgnbemanning</SelectItem>
+                              <SelectItem value="Fritidsbolig, inkl. selvbetjente hytter, campinghytter og campingenheter">Fritidsbolig, inkl. hytter og campingenheter</SelectItem>
+                              <SelectItem value="Internat">Internat</SelectItem>
+                              <SelectItem value="Studentbolig">Studentbolig</SelectItem>
+                              {/* Risikoklasse 5 */}
+                              <SelectItem value="Forsamlingslokale">Forsamlingslokale</SelectItem>
+                              <SelectItem value="Idrettshall">Idrettshall</SelectItem>
+                              <SelectItem value="Kantine beregnet for utleie eller for mer enn 150 personer">Kantine for utleie/mer enn 150 personer</SelectItem>
+                              <SelectItem value="Kinolokale">Kinolokale</SelectItem>
+                              <SelectItem value="Kirke">Kirke</SelectItem>
+                              <SelectItem value="Kongressenter">Kongressenter</SelectItem>
+                              <SelectItem value="Messelokale">Messelokale</SelectItem>
+                              <SelectItem value="Museum">Museum</SelectItem>
+                              <SelectItem value="Salgslokale">Salgslokale</SelectItem>
+                              <SelectItem value="Teaterlokale">Teaterlokale</SelectItem>
+                              <SelectItem value="Trafikkterminaler">Trafikkterminaler</SelectItem>
+                              <SelectItem value="Tribuneanlegg for mer enn 150 personer">Tribuneanlegg for mer enn 150 personer</SelectItem>
+                              {/* Risikoklasse 6 */}
+                              <SelectItem value="Arrestlokaler og fengsel">Arrestlokaler og fengsel</SelectItem>
+                              <SelectItem value="Asylmottak og transittmottak">Asylmottak og transittmottak</SelectItem>
+                              <SelectItem value="Bolig beregnet for personer med behov for heldøgns pleie og omsorg">Bolig for heldøgns pleie og omsorg</SelectItem>
+                              <SelectItem value="Bolig spesielt tilrettelagt og beregnet for personer med funksjonsnedsettelse, inkl. alders- og seniorboliger">Bolig for funksjonsnedsettelse/seniorboliger</SelectItem>
+                              <SelectItem value="Forlegning og leirskole">Forlegning og leirskole</SelectItem>
+                              <SelectItem value="Overnattingssted og hotell">Overnattingssted og hotell</SelectItem>
+                              <SelectItem value="Pleieinstitusjon">Pleieinstitusjon</SelectItem>
+                              <SelectItem value="Sykehus og sykehjem">Sykehus og sykehjem</SelectItem>
+                              <SelectItem value="Turisthytte og vandrerhjem">Turisthytte og vandrerhjem</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Bruttoareal (m²)</Label>
+                            <Input 
+                              value={formData.areal}
+                              onChange={(e) => setFormData({...formData, areal: e.target.value})}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Antall etasjer</Label>
+                            <Input 
+                              value={formData.etasjer}
+                              onChange={(e) => setFormData({...formData, etasjer: e.target.value})}
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -1132,41 +1178,51 @@ const Konsept = () => {
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.3 Branntekniske forutsetninger</Label>
-                      <div className="grid grid-cols-2 gap-2">
-                        <Select 
-                          value={formData.risikoklasse}
-                          onValueChange={(value) => setFormData({...formData, risikoklasse: value})}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Risikoklasse" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="RK1">RK 1</SelectItem>
-                            <SelectItem value="RK2">RK 2</SelectItem>
-                            <SelectItem value="RK3">RK 3</SelectItem>
-                            <SelectItem value="RK4">RK 4</SelectItem>
-                            <SelectItem value="RK5">RK 5</SelectItem>
-                            <SelectItem value="RK6">RK 6</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Select onValueChange={(value) => setFormData({...formData, brannklasse: value})}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Brannklasse" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="BKL1">BKL 1</SelectItem>
-                            <SelectItem value="BKL2">BKL 2</SelectItem>
-                            <SelectItem value="BKL3">BKL 3</SelectItem>
-                          </SelectContent>
-                        </Select>
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Risikoklasse</Label>
+                            <Select 
+                              value={formData.risikoklasse}
+                              onValueChange={(value) => setFormData({...formData, risikoklasse: value})}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Velg" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="RK1">RK 1</SelectItem>
+                                <SelectItem value="RK2">RK 2</SelectItem>
+                                <SelectItem value="RK3">RK 3</SelectItem>
+                                <SelectItem value="RK4">RK 4</SelectItem>
+                                <SelectItem value="RK5">RK 5</SelectItem>
+                                <SelectItem value="RK6">RK 6</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Brannklasse</Label>
+                            <Select onValueChange={(value) => setFormData({...formData, brannklasse: value})}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Velg" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="BKL1">BKL 1</SelectItem>
+                                <SelectItem value="BKL2">BKL 2</SelectItem>
+                                <SelectItem value="BKL3">BKL 3</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.4 Tilleggskrav</Label>
-                      <Textarea 
-                        placeholder="Eventuelle tilleggskrav fra tiltakshaver, myndigheter eller bruker"
-                        onChange={(e) => setFormData({...formData, tilleggskrav: e.target.value})}
-                      />
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Eventuelle tilleggskrav fra tiltakshaver, myndigheter eller bruker</Label>
+                        <Textarea 
+                          onChange={(e) => setFormData({...formData, tilleggskrav: e.target.value})}
+                        />
+                      </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
@@ -1177,94 +1233,120 @@ const Konsept = () => {
                   <AccordionContent className="space-y-4 pt-2">
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.1 § 11-4 Bæreevne og stabilitet</Label>
-                      <Textarea 
-                        placeholder="Krav til bærende konstruksjoner"
-                        onChange={(e) => setFormData({...formData, baereevne: e.target.value})}
-                      />
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Krav til bærende konstruksjoner</Label>
+                        <Textarea 
+                          onChange={(e) => setFormData({...formData, baereevne: e.target.value})}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.2 § 11-5 Sikkerhet ved eksplosjon</Label>
-                      <Textarea 
-                        placeholder="Vurdering av eksplosjonsfare"
-                        onChange={(e) => setFormData({...formData, eksplosjon: e.target.value})}
-                      />
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Vurdering av eksplosjonsfare</Label>
+                        <Textarea 
+                          onChange={(e) => setFormData({...formData, eksplosjon: e.target.value})}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.3 § 11-6 Tiltak mot brannspredning</Label>
-                      <Textarea 
-                        placeholder="Avstandskrav og tiltak"
-                        onChange={(e) => setFormData({...formData, brannspredning: e.target.value})}
-                      />
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Avstandskrav og tiltak</Label>
+                        <Textarea 
+                          onChange={(e) => setFormData({...formData, brannspredning: e.target.value})}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.4 § 11-7 Brannseksjoner</Label>
-                      <Textarea 
-                        placeholder="Seksjonering beskrives"
-                        onChange={(e) => setFormData({...formData, brannseksjoner: e.target.value})}
-                      />
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Seksjonering beskrives</Label>
+                        <Textarea 
+                          onChange={(e) => setFormData({...formData, brannseksjoner: e.target.value})}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.5 § 11-8 Brannceller</Label>
-                      <Textarea 
-                        placeholder="Branncelleinndeling"
-                        onChange={(e) => setFormData({...formData, brannceller: e.target.value})}
-                      />
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Branncelleinndeling</Label>
+                        <Textarea 
+                          onChange={(e) => setFormData({...formData, brannceller: e.target.value})}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.6 § 11-9 Materialer ved brann</Label>
-                      <Textarea 
-                        placeholder="Krav til materialer"
-                        onChange={(e) => setFormData({...formData, materialer: e.target.value})}
-                      />
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Krav til materialer</Label>
+                        <Textarea 
+                          onChange={(e) => setFormData({...formData, materialer: e.target.value})}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.7 § 11-10 Tekniske installasjoner</Label>
-                      <Textarea 
-                        placeholder="Sprinkler, brannalarm, ventilasjon osv."
-                        onChange={(e) => setFormData({...formData, installasjoner: e.target.value})}
-                      />
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Sprinkler, brannalarm, ventilasjon osv.</Label>
+                        <Textarea 
+                          onChange={(e) => setFormData({...formData, installasjoner: e.target.value})}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.8 § 11-11 Rømning og redning</Label>
-                      <Textarea 
-                        placeholder="Generelle krav om rømning"
-                        onChange={(e) => setFormData({...formData, romningSikkerhet: e.target.value})}
-                      />
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Generelle krav om rømning</Label>
+                        <Textarea 
+                          onChange={(e) => setFormData({...formData, romningSikkerhet: e.target.value})}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.9 § 11-12 Rømnings- og redningstider</Label>
-                      <Textarea 
-                        placeholder="Tiltak for å påvirke tider"
-                        onChange={(e) => setFormData({...formData, romningTiltak: e.target.value})}
-                      />
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Tiltak for å påvirke tider</Label>
+                        <Textarea 
+                          onChange={(e) => setFormData({...formData, romningTiltak: e.target.value})}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.10 § 11-13 Utgang fra branncelle</Label>
-                      <Textarea 
-                        placeholder="Utganger beskrives"
-                        onChange={(e) => setFormData({...formData, utgangBranncelle: e.target.value})}
-                      />
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Utganger beskrives</Label>
+                        <Textarea 
+                          onChange={(e) => setFormData({...formData, utgangBranncelle: e.target.value})}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.11 § 11-14 Rømningsvei</Label>
-                      <Textarea 
-                        placeholder="Rømningsveier beskrives"
-                        onChange={(e) => setFormData({...formData, romningsvei: e.target.value})}
-                      />
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Rømningsveier beskrives</Label>
+                        <Textarea 
+                          onChange={(e) => setFormData({...formData, romningsvei: e.target.value})}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.12 § 11-16 Manuell slokking</Label>
-                      <Textarea 
-                        placeholder="Slokkeutstyr beskrives"
-                        onChange={(e) => setFormData({...formData, manuellSlokking: e.target.value})}
-                      />
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Slokkeutstyr beskrives</Label>
+                        <Textarea 
+                          onChange={(e) => setFormData({...formData, manuellSlokking: e.target.value})}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.13 § 11-17 Redningsmannskap</Label>
-                      <Textarea 
-                        placeholder="Tilrettelegging for rednings- og slokkemannskap"
-                        onChange={(e) => setFormData({...formData, redningsmannskap: e.target.value})}
-                      />
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Tilrettelegging for rednings- og slokkemannskap</Label>
+                        <Textarea 
+                          onChange={(e) => setFormData({...formData, redningsmannskap: e.target.value})}
+                        />
+                      </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
@@ -1275,17 +1357,21 @@ const Konsept = () => {
                   <AccordionContent className="space-y-4 pt-2">
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">4.1 Utførelsesfasen</Label>
-                      <Textarea 
-                        placeholder="Krav til utførelse"
-                        onChange={(e) => setFormData({...formData, utfoerelse: e.target.value})}
-                      />
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Krav til utførelse</Label>
+                        <Textarea 
+                          onChange={(e) => setFormData({...formData, utfoerelse: e.target.value})}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">4.2 Driftsfasen</Label>
-                      <Textarea 
-                        placeholder="Krav til drift og vedlikehold"
-                        onChange={(e) => setFormData({...formData, drift: e.target.value})}
-                      />
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Krav til drift og vedlikehold</Label>
+                        <Textarea 
+                          onChange={(e) => setFormData({...formData, drift: e.target.value})}
+                        />
+                      </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
@@ -1294,10 +1380,12 @@ const Konsept = () => {
                 <AccordionItem value="kap5">
                   <AccordionTrigger className="text-base font-semibold">5. Revisjonshistorikk</AccordionTrigger>
                   <AccordionContent className="space-y-4 pt-2">
-                    <Textarea 
-                      placeholder="Revisjonslogg"
-                      onChange={(e) => setFormData({...formData, revisjon: e.target.value})}
-                    />
+                    <div>
+                      <Label className="text-xs font-medium mb-1 block">Revisjonslogg</Label>
+                      <Textarea 
+                        onChange={(e) => setFormData({...formData, revisjon: e.target.value})}
+                      />
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
 
@@ -1305,11 +1393,13 @@ const Konsept = () => {
                 <AccordionItem value="kap6">
                   <AccordionTrigger className="text-base font-semibold">6. Litteraturhenvisninger</AccordionTrigger>
                   <AccordionContent className="space-y-4 pt-2">
-                    <Textarea 
-                      placeholder="TEK17, VTEK17, NS 3901 osv."
-                      defaultValue="TEK17 - Forskrift om tekniske krav til byggverk&#10;VTEK17 - Veiledning til teknisk forskrift&#10;NS 3901 - Krav til risikovurdering av brann i byggverk"
-                      onChange={(e) => setFormData({...formData, litteratur: e.target.value})}
-                    />
+                    <div>
+                      <Label className="text-xs font-medium mb-1 block">TEK17, VTEK17, NS 3901 osv.</Label>
+                      <Textarea 
+                        defaultValue="TEK17 - Forskrift om tekniske krav til byggverk&#10;VTEK17 - Veiledning til teknisk forskrift&#10;NS 3901 - Krav til risikovurdering av brann i byggverk"
+                        onChange={(e) => setFormData({...formData, litteratur: e.target.value})}
+                      />
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
 
@@ -1317,10 +1407,12 @@ const Konsept = () => {
                 <AccordionItem value="fravik">
                   <AccordionTrigger className="text-base font-semibold">Fravik og kompenserende tiltak</AccordionTrigger>
                   <AccordionContent className="space-y-4 pt-2">
-                    <Textarea 
-                      placeholder="Beskriv eventuelle fravik og kompenserende tiltak (valgfritt)"
-                      onChange={(e) => setFormData({...formData, fravik: e.target.value})}
-                    />
+                    <div>
+                      <Label className="text-xs font-medium mb-1 block">Beskriv eventuelle fravik og kompenserende tiltak (valgfritt)</Label>
+                      <Textarea 
+                        onChange={(e) => setFormData({...formData, fravik: e.target.value})}
+                      />
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
