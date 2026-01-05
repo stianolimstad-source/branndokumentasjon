@@ -61,7 +61,7 @@ const Index = () => {
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16">
-        <div className="max-w-3xl mx-auto text-center space-y-6">
+        <div className="max-w-3xl mx-auto text-center space-y-4">
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
             Profesjonell brannteknisk rådgivning
           </h2>
@@ -69,14 +69,6 @@ const Index = () => {
             Komplett verktøykasse for konsepter, vurderinger og beregninger. 
             Spar tid og forbedre kvaliteten på dine leveranser.
           </p>
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Button size="lg" asChild>
-              <Link to="/konsept">Kom i gang</Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link to="/verktoy">Se verktøy</Link>
-            </Button>
-          </div>
         </div>
       </section>
 
@@ -98,6 +90,48 @@ const Index = () => {
               </CardHeader>
             </Card>
           ))}
+        </div>
+      </section>
+
+      {/* News Section Placeholder */}
+      <section className="container mx-auto px-4 py-12">
+        <div className="max-w-6xl mx-auto">
+          <h3 className="text-2xl font-bold mb-6">Nyheter og oppdateringer</h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <Card className="shadow-soft">
+              <CardHeader>
+                <CardDescription>Kommer snart</CardDescription>
+                <CardTitle className="text-lg">Branntekniske nyheter</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Her vil du finne siste nytt om regelverk, produkter og bransjeoppdateringer.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="shadow-soft">
+              <CardHeader>
+                <CardDescription>Kommer snart</CardDescription>
+                <CardTitle className="text-lg">Produktinformasjon</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Oversikt over godkjente produkter og løsninger for brannsikkerhet.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="shadow-soft">
+              <CardHeader>
+                <CardDescription>Kommer snart</CardDescription>
+                <CardTitle className="text-lg">Regelverksendringer</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Oppdateringer om TEK, VTEK og andre relevante forskrifter.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </section>
 
