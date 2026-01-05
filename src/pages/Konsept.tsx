@@ -35,6 +35,14 @@ const Konsept = () => {
 
   const [formData, setFormData] = useState({
     // 1. Innledning
+    oppdragsgiver: "",
+    prosjektnavn: "",
+    adresse: "",
+    gnrBnr: "",
+    kommune: "",
+    tiltakstype: "",
+    tiltaksbeskrivelse: "",
+    saerskiltBrannobjekt: "",
     bygningstype: "",
     areal: "",
     etasjer: "",
@@ -784,7 +792,74 @@ const Konsept = () => {
                   <AccordionContent className="space-y-4 pt-2">
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">1.1 Informasjon om tiltaket</Label>
-                      <Select onValueChange={(value) => setFormData({...formData, bygningstype: value})}>
+                      <Input 
+                        placeholder="Oppdragsgiver"
+                        value={formData.oppdragsgiver}
+                        onChange={(e) => setFormData({...formData, oppdragsgiver: e.target.value})}
+                      />
+                      <Input 
+                        placeholder="Prosjektnavn"
+                        value={formData.prosjektnavn}
+                        onChange={(e) => setFormData({...formData, prosjektnavn: e.target.value})}
+                      />
+                      <Input 
+                        placeholder="Adresse"
+                        value={formData.adresse}
+                        onChange={(e) => setFormData({...formData, adresse: e.target.value})}
+                      />
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input 
+                          placeholder="Gnr/Bnr"
+                          value={formData.gnrBnr}
+                          onChange={(e) => setFormData({...formData, gnrBnr: e.target.value})}
+                        />
+                        <Input 
+                          placeholder="Kommune"
+                          value={formData.kommune}
+                          onChange={(e) => setFormData({...formData, kommune: e.target.value})}
+                        />
+                      </div>
+                      <Select 
+                        value={formData.tiltakstype}
+                        onValueChange={(value) => setFormData({...formData, tiltakstype: value})}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Type tiltak" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Nybygg">Nybygg</SelectItem>
+                          <SelectItem value="Bruksendring">Bruksendring</SelectItem>
+                          <SelectItem value="Endring i eksisterende tiltak">Endring i eksisterende tiltak</SelectItem>
+                          <SelectItem value="Tilbygg">Tilbygg</SelectItem>
+                          <SelectItem value="Rehabilitering">Rehabilitering</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Textarea 
+                        placeholder="Beskrivelse av tiltaket"
+                        value={formData.tiltaksbeskrivelse}
+                        onChange={(e) => setFormData({...formData, tiltaksbeskrivelse: e.target.value})}
+                      />
+                      <Select 
+                        value={formData.saerskiltBrannobjekt}
+                        onValueChange={(value) => setFormData({...formData, saerskiltBrannobjekt: value})}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Særskilt brannobjekt?" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Nei">Nei</SelectItem>
+                          <SelectItem value="Ja - kategori a">Ja - kategori a</SelectItem>
+                          <SelectItem value="Ja - kategori b">Ja - kategori b</SelectItem>
+                          <SelectItem value="Ja - kategori c">Ja - kategori c</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs text-muted-foreground">1.2 Bygningsinformasjon</Label>
+                      <Select 
+                        value={formData.bygningstype}
+                        onValueChange={(value) => setFormData({...formData, bygningstype: value})}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Velg bygningstype" />
                         </SelectTrigger>
@@ -800,25 +875,29 @@ const Konsept = () => {
                       <div className="grid grid-cols-2 gap-2">
                         <Input 
                           placeholder="Bruttoareal (m²)"
+                          value={formData.areal}
                           onChange={(e) => setFormData({...formData, areal: e.target.value})}
                         />
                         <Input 
                           placeholder="Antall etasjer"
+                          value={formData.etasjer}
                           onChange={(e) => setFormData({...formData, etasjer: e.target.value})}
                         />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">1.2 Ansvarsoppgave (SAK 10)</Label>
+                      <Label className="text-xs text-muted-foreground">1.3 Ansvarsoppgave (SAK 10)</Label>
                       <Textarea 
                         placeholder="Ansvarsrett og tiltaksklasse"
+                        value={formData.ansvarsrett}
                         onChange={(e) => setFormData({...formData, ansvarsrett: e.target.value})}
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">1.3 Avgrensning av tiltak</Label>
+                      <Label className="text-xs text-muted-foreground">1.4 Avgrensning av tiltak</Label>
                       <Textarea 
                         placeholder="Beskriv avgrensning av tiltaket"
+                        value={formData.avgrensning}
                         onChange={(e) => setFormData({...formData, avgrensning: e.target.value})}
                       />
                     </div>
