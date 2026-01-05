@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,16 +6,32 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Flame, ArrowLeft, FileDown, Download } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Flame, ArrowLeft, FileDown, Download, Save, LogIn } from "lucide-react";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from "docx";
 import { saveAs } from "file-saver";
+import { ProjectSelector } from "@/components/ProjectSelector";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const Konsept = () => {
   const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [generatedConcept, setGeneratedConcept] = useState<string | null>(null);
+  
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
+    searchParams.get('project')
+  );
+  const [conceptId, setConceptId] = useState<string | null>(
+    searchParams.get('concept')
+  );
+  const [conceptName, setConceptName] = useState("");
 
   const [formData, setFormData] = useState({
     // 1. Innledning
@@ -54,6 +70,126 @@ const Konsept = () => {
     // Fravik
     fravik: "",
   });
+
+  // Load existing concept if conceptId is provided
+  useEffect(() => {
+    if (conceptId && user) {
+      loadConcept(conceptId);
+    }
+  }, [conceptId, user]);
+
+  const loadConcept = async (id: string) => {
+    const { data, error } = await supabase
+      .from('fire_concepts')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error) {
+      toast({
+        title: "Feil",
+        description: "Kunne ikke laste brannkonsept",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (data) {
+      setConceptName(data.name);
+      setSelectedProjectId(data.project_id);
+      if (data.content && typeof data.content === 'object') {
+        setFormData({ ...formData, ...(data.content as typeof formData) });
+      }
+      setGeneratedConcept("loaded");
+    }
+  };
+
+  const handleSave = async () => {
+    if (!user) {
+      toast({
+        title: "Ikke innlogget",
+        description: "Du må logge inn for å lagre brannkonsepter",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!selectedProjectId) {
+      toast({
+        title: "Velg prosjekt",
+        description: "Du må velge et prosjekt å lagre under",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!conceptName.trim()) {
+      toast({
+        title: "Mangler navn",
+        description: "Vennligst skriv inn et navn for brannkonseptet",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSaving(true);
+
+    if (conceptId) {
+      // Update existing concept
+      const { error } = await supabase
+        .from('fire_concepts')
+        .update({
+          name: conceptName,
+          content: formData,
+          status: generatedConcept ? 'draft' : 'draft',
+        })
+        .eq('id', conceptId);
+
+      if (error) {
+        toast({
+          title: "Feil",
+          description: "Kunne ikke oppdatere brannkonseptet",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Lagret",
+          description: "Brannkonseptet er oppdatert",
+        });
+      }
+    } else {
+      // Create new concept
+      const { data, error } = await supabase
+        .from('fire_concepts')
+        .insert({
+          project_id: selectedProjectId,
+          user_id: user.id,
+          name: conceptName,
+          content: formData,
+          status: 'draft',
+        })
+        .select()
+        .single();
+
+      if (error) {
+        toast({
+          title: "Feil",
+          description: "Kunne ikke lagre brannkonseptet",
+          variant: "destructive",
+        });
+      } else if (data) {
+        setConceptId(data.id);
+        toast({
+          title: "Lagret",
+          description: "Brannkonseptet er lagret",
+        });
+        // Update URL with concept id
+        navigate(`/konsept?project=${selectedProjectId}&concept=${data.id}`, { replace: true });
+      }
+    }
+
+    setIsSaving(false);
+  };
 
   const handleGenerate = () => {
     setIsGenerating(true);
@@ -540,39 +676,107 @@ const Konsept = () => {
     });
   };
 
+  // Show login prompt if not authenticated
+  if (!authLoading && !user) {
+    return (
+      <div className="min-h-screen bg-gradient-subtle">
+        <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Tilbake
+                </Link>
+              </Button>
+              <div className="flex items-center gap-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
+                  <Flame className="h-6 w-6 text-primary-foreground" />
+                </div>
+                <h1 className="text-xl font-bold">Generer Brannkonsept</h1>
+              </div>
+            </div>
+          </div>
+        </header>
+        <div className="container mx-auto px-4 py-16">
+          <Card className="max-w-md mx-auto shadow-medium">
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <LogIn className="h-12 w-12 text-muted-foreground mb-4" />
+              <CardTitle className="text-xl mb-2">Logg inn for å fortsette</CardTitle>
+              <CardDescription className="text-center mb-6">
+                Du må være innlogget for å opprette og lagre brannkonsepter.
+              </CardDescription>
+              <Link to="/auth">
+                <Button>
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Logg inn
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
       {/* Header */}
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Tilbake
-              </Link>
-            </Button>
-            <div className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
-                <Flame className="h-6 w-6 text-primary-foreground" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Tilbake
+                </Link>
+              </Button>
+              <div className="flex items-center gap-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
+                  <Flame className="h-6 w-6 text-primary-foreground" />
+                </div>
+                <h1 className="text-xl font-bold">Generer Brannkonsept</h1>
               </div>
-              <h1 className="text-xl font-bold">Generer Brannkonsept</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              {selectedProjectId && conceptName && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleSave}
+                  disabled={isSaving}
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {isSaving ? "Lagrer..." : "Lagre"}
+                </Button>
+              )}
             </div>
           </div>
         </div>
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
-          {/* Input Form */}
-          <Card className="shadow-medium">
-            <CardHeader>
-              <CardTitle>Prosjektinformasjon</CardTitle>
-              <CardDescription>
-                Fyll inn nødvendig informasjon for å generere brannkonseptet
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Project Selector */}
+          <ProjectSelector
+            selectedProjectId={selectedProjectId}
+            onProjectSelect={setSelectedProjectId}
+            onConceptNameChange={setConceptName}
+            conceptName={conceptName}
+          />
+
+          {selectedProjectId && conceptName && (
+            <div className="grid lg:grid-cols-2 gap-8">
+              {/* Input Form */}
+              <Card className="shadow-medium">
+                <CardHeader>
+                  <CardTitle>Prosjektinformasjon</CardTitle>
+                  <CardDescription>
+                    Fyll inn nødvendig informasjon for å generere brannkonseptet
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
               <Accordion type="multiple" defaultValue={["kap1"]} className="w-full">
                 {/* Kapittel 1: Innledning */}
                 <AccordionItem value="kap1">
@@ -870,6 +1074,8 @@ const Konsept = () => {
               </CardContent>
             </Card>
           </div>
+        </div>
+          )}
         </div>
       </div>
     </div>
