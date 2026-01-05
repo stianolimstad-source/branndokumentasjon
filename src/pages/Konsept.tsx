@@ -1032,14 +1032,26 @@ const Konsept = () => {
                 </AccordionItem>
               </Accordion>
 
-              <Button 
-                className="w-full mt-6" 
-                size="lg"
-                onClick={handleGenerate}
-                disabled={isGenerating}
-              >
-                {isGenerating ? "Genererer..." : "Generer brannkonsept"}
-              </Button>
+              <div className="flex gap-2 mt-6">
+                <Button 
+                  className="flex-1" 
+                  size="lg"
+                  variant="outline"
+                  onClick={handleSave}
+                  disabled={isSaving}
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {isSaving ? "Lagrer..." : "Lagre endringer"}
+                </Button>
+                <Button 
+                  className="flex-1" 
+                  size="lg"
+                  onClick={handleGenerate}
+                  disabled={isGenerating}
+                >
+                  {isGenerating ? "Genererer..." : "Generer brannkonsept"}
+                </Button>
+              </div>
             </CardContent>
           </Card>
 
