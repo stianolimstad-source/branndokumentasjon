@@ -15,6 +15,67 @@ import { ProjectSelector } from "@/components/ProjectSelector";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
+// Mapping av bygningstype til risikoklasse basert på TEK17
+const bygningsTypeRisikoklasseMap: Record<string, string> = {
+  // Risikoklasse 1
+  "Arbeidsbrakke": "RK1",
+  "Båtnaust": "RK1",
+  "Carport": "RK1",
+  "Flyhangar": "RK1",
+  "Fryselager": "RK1",
+  "Garasje og parkeringshus med én etasje": "RK1",
+  "Sagbruk": "RK1",
+  "Skur": "RK1",
+  "Trelastopplag": "RK1",
+  // Risikoklasse 2
+  "Brannstasjon uten døgnbemanning": "RK2",
+  "Driftsbygning med husdyrrom": "RK2",
+  "Industri": "RK2",
+  "Kantine beregnet for egne ansatte til og med 150 personer": "RK2",
+  "Kjemisk fabrikk og kjemikalielager": "RK2",
+  "Kontor": "RK2",
+  "Laboratorium": "RK2",
+  "Lager": "RK2",
+  "Parkeringshus og garasje med to eller flere etasjer eller plan": "RK2",
+  "Parkeringskjeller og garasje under terreng": "RK2",
+  "Sprengstoffindustri": "RK2",
+  "Trafo eller fordelingsstasjon": "RK2",
+  // Risikoklasse 3
+  "Barnehage": "RK3",
+  "Skole": "RK3",
+  // Risikoklasse 4
+  "Barnehjem": "RK4",
+  "Bolig": "RK4",
+  "Boligbrakke": "RK4",
+  "Brannstasjon med døgnbemanning": "RK4",
+  "Fritidsbolig, inkl. selvbetjente hytter, campinghytter og campingenheter": "RK4",
+  "Internat": "RK4",
+  "Studentbolig": "RK4",
+  // Risikoklasse 5
+  "Forsamlingslokale": "RK5",
+  "Idrettshall": "RK5",
+  "Kantine beregnet for utleie eller for mer enn 150 personer": "RK5",
+  "Kinolokale": "RK5",
+  "Kirke": "RK5",
+  "Kongressenter": "RK5",
+  "Messelokale": "RK5",
+  "Museum": "RK5",
+  "Salgslokale": "RK5",
+  "Teaterlokale": "RK5",
+  "Trafikkterminaler": "RK5",
+  "Tribuneanlegg for mer enn 150 personer": "RK5",
+  // Risikoklasse 6
+  "Arrestlokaler og fengsel": "RK6",
+  "Asylmottak og transittmottak": "RK6",
+  "Bolig beregnet for personer med behov for heldøgns pleie og omsorg": "RK6",
+  "Bolig spesielt tilrettelagt og beregnet for personer med funksjonsnedsettelse, inkl. alders- og seniorboliger": "RK6",
+  "Forlegning og leirskole": "RK6",
+  "Overnattingssted og hotell": "RK6",
+  "Pleieinstitusjon": "RK6",
+  "Sykehus og sykehjem": "RK6",
+  "Turisthytte og vandrerhjem": "RK6",
+};
+
 const Konsept = () => {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
@@ -926,18 +987,72 @@ const Konsept = () => {
                       <Label className="text-xs text-muted-foreground">2.1 Bygningsinformasjon</Label>
                       <Select 
                         value={formData.bygningstype}
-                        onValueChange={(value) => setFormData({...formData, bygningstype: value})}
+                        onValueChange={(value) => {
+                          const risikoklasse = bygningsTypeRisikoklasseMap[value] || "";
+                          setFormData({...formData, bygningstype: value, risikoklasse: risikoklasse});
+                        }}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Velg bygningstype" />
                         </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Boligbygg">Boligbygg</SelectItem>
-                          <SelectItem value="Kontorbygg">Kontorbygg</SelectItem>
-                          <SelectItem value="Skole/barnehage">Skole/barnehage</SelectItem>
-                          <SelectItem value="Industribygg">Industribygg</SelectItem>
-                          <SelectItem value="Lagerbygg">Lagerbygg</SelectItem>
-                          <SelectItem value="Handelsbygg">Handelsbygg</SelectItem>
+                        <SelectContent className="max-h-[300px]">
+                          {/* Risikoklasse 1 */}
+                          <SelectItem value="Arbeidsbrakke">Arbeidsbrakke</SelectItem>
+                          <SelectItem value="Båtnaust">Båtnaust</SelectItem>
+                          <SelectItem value="Carport">Carport</SelectItem>
+                          <SelectItem value="Flyhangar">Flyhangar</SelectItem>
+                          <SelectItem value="Fryselager">Fryselager</SelectItem>
+                          <SelectItem value="Garasje og parkeringshus med én etasje">Garasje og parkeringshus med én etasje</SelectItem>
+                          <SelectItem value="Sagbruk">Sagbruk</SelectItem>
+                          <SelectItem value="Skur">Skur</SelectItem>
+                          <SelectItem value="Trelastopplag">Trelastopplag</SelectItem>
+                          {/* Risikoklasse 2 */}
+                          <SelectItem value="Brannstasjon uten døgnbemanning">Brannstasjon uten døgnbemanning</SelectItem>
+                          <SelectItem value="Driftsbygning med husdyrrom">Driftsbygning med husdyrrom</SelectItem>
+                          <SelectItem value="Industri">Industri</SelectItem>
+                          <SelectItem value="Kantine beregnet for egne ansatte til og med 150 personer">Kantine beregnet for egne ansatte til og med 150 personer</SelectItem>
+                          <SelectItem value="Kjemisk fabrikk og kjemikalielager">Kjemisk fabrikk og kjemikalielager</SelectItem>
+                          <SelectItem value="Kontor">Kontor</SelectItem>
+                          <SelectItem value="Laboratorium">Laboratorium</SelectItem>
+                          <SelectItem value="Lager">Lager</SelectItem>
+                          <SelectItem value="Parkeringshus og garasje med to eller flere etasjer eller plan">Parkeringshus og garasje med to eller flere etasjer</SelectItem>
+                          <SelectItem value="Parkeringskjeller og garasje under terreng">Parkeringskjeller og garasje under terreng</SelectItem>
+                          <SelectItem value="Sprengstoffindustri">Sprengstoffindustri</SelectItem>
+                          <SelectItem value="Trafo eller fordelingsstasjon">Trafo eller fordelingsstasjon</SelectItem>
+                          {/* Risikoklasse 3 */}
+                          <SelectItem value="Barnehage">Barnehage</SelectItem>
+                          <SelectItem value="Skole">Skole</SelectItem>
+                          {/* Risikoklasse 4 */}
+                          <SelectItem value="Barnehjem">Barnehjem</SelectItem>
+                          <SelectItem value="Bolig">Bolig</SelectItem>
+                          <SelectItem value="Boligbrakke">Boligbrakke</SelectItem>
+                          <SelectItem value="Brannstasjon med døgnbemanning">Brannstasjon med døgnbemanning</SelectItem>
+                          <SelectItem value="Fritidsbolig, inkl. selvbetjente hytter, campinghytter og campingenheter">Fritidsbolig, inkl. hytter og campingenheter</SelectItem>
+                          <SelectItem value="Internat">Internat</SelectItem>
+                          <SelectItem value="Studentbolig">Studentbolig</SelectItem>
+                          {/* Risikoklasse 5 */}
+                          <SelectItem value="Forsamlingslokale">Forsamlingslokale</SelectItem>
+                          <SelectItem value="Idrettshall">Idrettshall</SelectItem>
+                          <SelectItem value="Kantine beregnet for utleie eller for mer enn 150 personer">Kantine for utleie/mer enn 150 personer</SelectItem>
+                          <SelectItem value="Kinolokale">Kinolokale</SelectItem>
+                          <SelectItem value="Kirke">Kirke</SelectItem>
+                          <SelectItem value="Kongressenter">Kongressenter</SelectItem>
+                          <SelectItem value="Messelokale">Messelokale</SelectItem>
+                          <SelectItem value="Museum">Museum</SelectItem>
+                          <SelectItem value="Salgslokale">Salgslokale</SelectItem>
+                          <SelectItem value="Teaterlokale">Teaterlokale</SelectItem>
+                          <SelectItem value="Trafikkterminaler">Trafikkterminaler</SelectItem>
+                          <SelectItem value="Tribuneanlegg for mer enn 150 personer">Tribuneanlegg for mer enn 150 personer</SelectItem>
+                          {/* Risikoklasse 6 */}
+                          <SelectItem value="Arrestlokaler og fengsel">Arrestlokaler og fengsel</SelectItem>
+                          <SelectItem value="Asylmottak og transittmottak">Asylmottak og transittmottak</SelectItem>
+                          <SelectItem value="Bolig beregnet for personer med behov for heldøgns pleie og omsorg">Bolig for heldøgns pleie og omsorg</SelectItem>
+                          <SelectItem value="Bolig spesielt tilrettelagt og beregnet for personer med funksjonsnedsettelse, inkl. alders- og seniorboliger">Bolig for funksjonsnedsettelse/seniorboliger</SelectItem>
+                          <SelectItem value="Forlegning og leirskole">Forlegning og leirskole</SelectItem>
+                          <SelectItem value="Overnattingssted og hotell">Overnattingssted og hotell</SelectItem>
+                          <SelectItem value="Pleieinstitusjon">Pleieinstitusjon</SelectItem>
+                          <SelectItem value="Sykehus og sykehjem">Sykehus og sykehjem</SelectItem>
+                          <SelectItem value="Turisthytte og vandrerhjem">Turisthytte og vandrerhjem</SelectItem>
                         </SelectContent>
                       </Select>
                       <div className="grid grid-cols-2 gap-2">
@@ -963,7 +1078,10 @@ const Konsept = () => {
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.3 Branntekniske forutsetninger</Label>
                       <div className="grid grid-cols-2 gap-2">
-                        <Select onValueChange={(value) => setFormData({...formData, risikoklasse: value})}>
+                        <Select 
+                          value={formData.risikoklasse}
+                          onValueChange={(value) => setFormData({...formData, risikoklasse: value})}
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Risikoklasse" />
                           </SelectTrigger>
