@@ -46,7 +46,13 @@ const Konsept = () => {
     bygningstype: "",
     areal: "",
     etasjer: "",
-    ansvarsrett: "",
+    // SAK10 felter
+    tiltakshaver: "",
+    ansvarligSoker: "",
+    kunde: "",
+    proRibr: "",
+    kprRibr: "",
+    tiltaksklasse: "",
     avgrensning: "",
     // 2. Grunnlag og forutsetninger
     grunnlagsdokumenter: "",
@@ -887,11 +893,50 @@ const Konsept = () => {
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">1.3 Ansvarsoppgave (SAK 10)</Label>
-                      <Textarea 
-                        placeholder="Ansvarsrett og tiltaksklasse"
-                        value={formData.ansvarsrett}
-                        onChange={(e) => setFormData({...formData, ansvarsrett: e.target.value})}
-                      />
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input 
+                          placeholder="Tiltakshaver"
+                          value={formData.tiltakshaver}
+                          onChange={(e) => setFormData({...formData, tiltakshaver: e.target.value})}
+                        />
+                        <Input 
+                          placeholder="Ansvarlig søker (SØK)"
+                          value={formData.ansvarligSoker}
+                          onChange={(e) => setFormData({...formData, ansvarligSoker: e.target.value})}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input 
+                          placeholder="Kunde"
+                          value={formData.kunde}
+                          onChange={(e) => setFormData({...formData, kunde: e.target.value})}
+                        />
+                        <Input 
+                          placeholder="Brannteknisk prosjekterende (PRO RIBR)"
+                          value={formData.proRibr}
+                          onChange={(e) => setFormData({...formData, proRibr: e.target.value})}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input 
+                          placeholder="Kontrollerende (KPR RiBr)"
+                          value={formData.kprRibr}
+                          onChange={(e) => setFormData({...formData, kprRibr: e.target.value})}
+                        />
+                        <Select 
+                          value={formData.tiltaksklasse}
+                          onValueChange={(value) => setFormData({...formData, tiltaksklasse: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Tiltaksklasse" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Tiltaksklasse 1">Tiltaksklasse 1</SelectItem>
+                            <SelectItem value="Tiltaksklasse 2">Tiltaksklasse 2</SelectItem>
+                            <SelectItem value="Tiltaksklasse 3">Tiltaksklasse 3</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">1.4 Avgrensning av tiltak</Label>
