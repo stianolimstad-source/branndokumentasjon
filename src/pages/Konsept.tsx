@@ -1160,10 +1160,6 @@ const Konsept = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      <Input 
-                        placeholder="Bæresystem (f.eks. limtre, stål, betong)"
-                        onChange={(e) => setFormData({...formData, baeresystem: e.target.value})}
-                      />
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.4 Tilleggskrav</Label>
