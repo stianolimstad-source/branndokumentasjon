@@ -34,67 +34,106 @@ const Konsept = () => {
     
     // Simulate generation
     setTimeout(() => {
-      const concept = generateConceptText(formData);
-      setGeneratedConcept(concept);
+      setGeneratedConcept("generated");
       setIsGenerating(false);
       toast({
         title: "Brannkonsept generert",
         description: "Dokumentet er klart for eksport",
       });
-    }, 2000);
+    }, 1500);
   };
 
-  const generateConceptText = (data: typeof formData) => {
-    return `# BRANNKONSEPT
+  const renderPreview = () => {
+    return (
+      <div className="bg-white text-black p-8 rounded-lg shadow-inner font-serif" style={{ minHeight: '600px' }}>
+        <h1 className="text-2xl font-bold text-center mb-8 border-b-2 border-gray-300 pb-4">
+          BRANNKONSEPT
+        </h1>
+        
+        <section className="mb-6">
+          <h2 className="text-lg font-bold mb-3 text-gray-800">1. PROSJEKTINFORMASJON</h2>
+          <div className="space-y-1 ml-4">
+            <p><span className="font-semibold">Bygningstype:</span> {formData.bygningstype || "Ikke angitt"}</p>
+            <p><span className="font-semibold">Risikoklasse:</span> {formData.risikoklasse || "Ikke angitt"}</p>
+            <p><span className="font-semibold">Brannklasse:</span> {formData.brannklasse || "Ikke angitt"}</p>
+            <p><span className="font-semibold">Etasjer:</span> {formData.etasjer || "Ikke angitt"}</p>
+            <p><span className="font-semibold">Bruttoareal:</span> {formData.areal || "Ikke angitt"} m²</p>
+          </div>
+        </section>
 
-## 1. PROSJEKTINFORMASJON
+        <section className="mb-6">
+          <h2 className="text-lg font-bold mb-3 text-gray-800">2. BRANNSTRATEGI</h2>
+          <p className="ml-4 mb-4 text-sm leading-relaxed">
+            Dette brannkonseptet er utarbeidet i henhold til TEK17 og relevante standarder. 
+            Bygningen skal sikres mot brann gjennom en kombinasjon av forebyggende, konstruktive og tekniske tiltak.
+          </p>
 
-**Bygningstype:** ${data.bygningstype || "Ikke angitt"}
-**Risikoklasse:** ${data.risikoklasse || "Ikke angitt"}
-**Brannklasse:** ${data.brannklasse || "Ikke angitt"}
-**Etasjer:** ${data.etasjer || "Ikke angitt"}
-**Bruttoareal:** ${data.areal || "Ikke angitt"} m²
+          <h3 className="text-base font-semibold mb-2 ml-2 text-gray-700">2.1 Bærende konstruksjoner</h3>
+          <div className="ml-4 mb-4">
+            <p><span className="font-semibold">Bæresystem:</span> {formData.baeresystem || "Ikke angitt"}</p>
+            <p className="text-sm mt-1 leading-relaxed">
+              Bærende konstruksjoner skal utformes i henhold til brannklasse {formData.brannklasse || "[angis]"} og 
+              ha tilstrekkelig brannmotstand for å sikre stabilitet under brann.
+            </p>
+          </div>
 
-## 2. BRANNSTRATEGI
+          <h3 className="text-base font-semibold mb-2 ml-2 text-gray-700">2.2 Brannseksjonering</h3>
+          <div className="ml-4 mb-4">
+            <p><span className="font-semibold">Seksjoneringsløsning:</span> {formData.seksjonering || "Ikke angitt"}</p>
+            <p className="text-sm mt-1 leading-relaxed">
+              Bygningen skal deles inn i brannceller med tilstrekkelig brannmotstand for å hindre brannspredning. 
+              Brannskiller skal ha minimum REI-ytelse i henhold til byggets risikoklasse.
+            </p>
+          </div>
 
-Dette brannkonseptet er utarbeidet i henhold til TEK17 og relevante standarder. Bygningen skal sikres mot brann gjennom en kombinasjon av forebyggende, konstruktive og tekniske tiltak.
+          <h3 className="text-base font-semibold mb-2 ml-2 text-gray-700">2.3 Rømning</h3>
+          <div className="ml-4 mb-4">
+            <p><span className="font-semibold">Rømningsløsning:</span> {formData.roemning || "Ikke angitt"}</p>
+            <p className="text-sm mt-1 leading-relaxed">
+              Rømningsveier skal være oversiktlige, lett tilgjengelige og tilstrekkelig dimensjonert. 
+              Det skal være minst to uavhengige rømningsveier fra alle oppholdsrom.
+            </p>
+          </div>
 
-### 2.1 Bærende konstruksjoner
-**Bæresystem:** ${data.baeresystem || "Ikke angitt"}
+          <h3 className="text-base font-semibold mb-2 ml-2 text-gray-700">2.4 Tekniske installasjoner</h3>
+          <div className="ml-4 mb-4">
+            <p><span className="font-semibold">Installasjoner:</span> {formData.installasjoner || "Ikke angitt"}</p>
+            <p className="text-sm mt-1 leading-relaxed">
+              Tekniske brannsikringstiltak dimensjoneres i henhold til byggets risikoklasse og bruk.
+            </p>
+          </div>
 
-Bærende konstruksjoner skal utformes i henhold til brannklasse ${data.brannklasse || "[angis]"} og ha tilstrekkelig brannmotstand for å sikre stabilitet under brann.
+          {formData.fravik && (
+            <>
+              <h3 className="text-base font-semibold mb-2 ml-2 text-gray-700">2.5 Fravik og kompenserende tiltak</h3>
+              <p className="ml-4 mb-4 text-sm leading-relaxed">{formData.fravik}</p>
+            </>
+          )}
+        </section>
 
-### 2.2 Brannseksjonering
-**Seksjoneringsløsning:** ${data.seksjonering || "Ikke angitt"}
+        <section className="mb-6">
+          <h2 className="text-lg font-bold mb-3 text-gray-800">3. REGELVERK OG REFERANSER</h2>
+          <ul className="ml-4 text-sm space-y-1 list-disc list-inside">
+            <li>TEK17 - Forskrift om tekniske krav til byggverk</li>
+            <li>VTEK - Veiledning til teknisk forskrift</li>
+            <li>NS 3901 - Risikobasert dimensjonering av brannsikkerhet i byggverk</li>
+            <li>NS-EN 1991-1-2 - Eurocode 1: Laster på konstruksjoner - Del 1-2: Allmenne laster - Brannpåvirkning</li>
+          </ul>
+        </section>
 
-Bygningen skal deles inn i brannceller med tilstrekkelig brannmotstand for å hindre brannspredning. Brannskiller skal ha minimum REI-ytelse i henhold til byggets risikoklasse.
+        <section className="mb-6">
+          <h2 className="text-lg font-bold mb-3 text-gray-800">4. KONKLUSJON</h2>
+          <p className="ml-4 text-sm leading-relaxed">
+            Ved å følge anbefalingene og tiltakene beskrevet i dette brannkonseptet, vil bygningen ha 
+            et tilfredsstillende sikkerhetsnivå mot brann i samsvar med gjeldende regelverk.
+          </p>
+        </section>
 
-### 2.3 Rømning
-**Rømningsløsning:** ${data.roemning || "Ikke angitt"}
-
-Rømningsveier skal være oversiktlige, lett tilgjengelige og tilstrekkelig dimensjonert. Det skal være minst to uavhengige rømningsveier fra alle oppholdsrom.
-
-### 2.4 Tekniske installasjoner
-**Installasjoner:** ${data.installasjoner || "Ikke angitt"}
-
-Tekniske brannsikringstiltak dimensjoneres i henhold til byggets risikoklasse og bruk.
-
-${data.fravik ? `### 2.5 Fravik og kompenserende tiltak\n\n${data.fravik}` : ""}
-
-## 3. REGELVERK OG REFERANSER
-
-- TEK17 - Forskrift om tekniske krav til byggverk
-- VTEK - Veiledning til teknisk forskrift
-- NS 3901 - Risikobasert dimensjonering av brannsikkerhet i byggverk
-- NS-EN 1991-1-2 - Eurocode 1: Laster på konstruksjoner - Del 1-2: Allmenne laster - Brannpåvirkning
-
-## 4. KONKLUSJON
-
-Ved å følge anbefalingene og tiltakene beskrevet i dette brannkonseptet, vil bygningen ha et tilfredsstillende sikkerhetsnivå mot brann i samsvar med gjeldende regelverk.
-
----
-*Generert av BrannRådgiver Pro*
-`;
+        <div className="border-t border-gray-300 pt-4 mt-8 text-center">
+          <p className="text-xs italic text-gray-500">Generert av BrannRådgiver Pro</p>
+        </div>
+      </div>
+    );
   };
 
   const exportToWord = async () => {
@@ -478,11 +517,7 @@ Ved å følge anbefalingene og tiltakene beskrevet i dette brannkonseptet, vil b
               </CardHeader>
               <CardContent>
                 {generatedConcept ? (
-                  <div className="prose prose-sm max-w-none">
-                    <pre className="whitespace-pre-wrap text-sm bg-muted p-4 rounded-lg">
-                      {generatedConcept}
-                    </pre>
-                  </div>
+                  renderPreview()
                 ) : (
                   <div className="text-center py-12 text-muted-foreground">
                     <FileDown className="h-12 w-12 mx-auto mb-4 opacity-20" />
