@@ -198,6 +198,7 @@ const Konsept = () => {
     tilleggskrav: "",
     // 3. Branntekniske ytelseskrav
     baereevne: "",
+    baereevneKommentar: "",
     eksplosjon: "",
     brannspredning: "",
     brannseksjoner: "",
@@ -512,7 +513,16 @@ const Konsept = () => {
             <tbody>
               <tr>
                 <td className="border border-gray-400 p-2 font-semibold align-top">3.1 § 11-4 Bæreevne og stabilitet</td>
-                <td className="border border-gray-400 p-2">{formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`}</td>
+                <td className="border border-gray-400 p-2 whitespace-pre-line">
+                  {formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`}
+                  {formData.baereevneKommentar && (
+                    <>
+                      <br /><br />
+                      <span className="font-semibold">Kommentar:</span><br />
+                      {formData.baereevneKommentar}
+                    </>
+                  )}
+                </td>
               </tr>
               <tr>
                 <td className="border border-gray-400 p-2 font-semibold align-top">3.2 § 11-5 Sikkerhet ved eksplosjon</td>
@@ -799,7 +809,10 @@ const Konsept = () => {
                 new TableRow({
                   children: [
                     createTableCell("3.1 § 11-4 Bæreevne og stabilitet", true, 30),
-                    createTableCell(formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`),
+                    createTableCell(
+                      (formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`) +
+                      (formData.baereevneKommentar ? `\n\nKommentar:\n${formData.baereevneKommentar}` : "")
+                    ),
                   ],
                 }),
                 new TableRow({
@@ -1441,14 +1454,41 @@ const Konsept = () => {
                 <AccordionItem value="kap3">
                   <AccordionTrigger className="text-base font-semibold">3. Branntekniske ytelseskrav</AccordionTrigger>
                   <AccordionContent className="space-y-4 pt-2">
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <Label className="text-xs text-muted-foreground">3.1 § 11-4 Bæreevne og stabilitet</Label>
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Krav til bærende konstruksjoner</Label>
+                        <Label className="text-xs font-medium mb-1 block">Krav til bærende konstruksjoner (automatisk basert på brannklasse)</Label>
                         <Textarea 
                           value={formData.baereevne}
-                          onChange={(e) => setFormData({...formData, baereevne: e.target.value})}
+                          readOnly
+                          className="min-h-[140px] bg-muted/50 cursor-default"
                         />
+                      </div>
+                      <div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const commentSection = document.getElementById('baereevne-kommentar');
+                            if (commentSection) {
+                              commentSection.classList.toggle('hidden');
+                            }
+                          }}
+                        >
+                          + Kommentar
+                        </Button>
+                        <div id="baereevne-kommentar" className={formData.baereevneKommentar ? "" : "hidden"}>
+                          <div className="mt-2">
+                            <Label className="text-xs font-medium mb-1 block">Kommentar / tilleggsbeskrivelse</Label>
+                            <Textarea 
+                              value={formData.baereevneKommentar}
+                              onChange={(e) => setFormData({...formData, baereevneKommentar: e.target.value})}
+                              placeholder="Legg til kommentar eller beskrivelse av løsninger som trenger forklaring..."
+                              className="min-h-[100px]"
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-2">
