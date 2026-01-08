@@ -77,12 +77,24 @@ const bygningsTypeRisikoklasseMap: Record<string, string> = {
 };
 
 // Funksjon for å beregne brannklasse basert på risikoklasse og antall etasjer
-const getBrannklasse = (risikoklasse: string, etasjer: string): string => {
+// Inkluderer unntak for risikoklasse 4 som kan plasseres i brannklasse 1
+const getBrannklasse = (risikoklasse: string, etasjer: string): { brannklasse: string; brannklasseUnntak: string | null } => {
   const rk = parseInt(risikoklasse.replace(/\D/g, ''), 10);
   const floors = parseInt(etasjer, 10);
   
   if (isNaN(rk) || isNaN(floors) || rk < 1 || rk > 6 || floors < 1) {
-    return "";
+    return { brannklasse: "", brannklasseUnntak: null };
+  }
+
+  // Sjekk unntak for risikoklasse 4: 
+  // "Byggverk i risikoklasse 4 med inntil 4 etasjer kan plasseres i brannklasse 1 
+  // dersom hver boenhet har utgang direkte til terreng eller til utvendig trapp 
+  // som er beskyttet mot brannsmitte fra bygningen"
+  if (rk === 4 && floors <= 4) {
+    return { 
+      brannklasse: "BKL1", 
+      brannklasseUnntak: "Byggverk i risikoklasse 4 med inntil 4 etasjer kan plasseres i brannklasse 1 dersom hver boenhet har utgang direkte til terreng eller til utvendig trapp som er beskyttet mot brannsmitte fra bygningen (jf. VTEK § 11-3, preakseptert ytelse nr. 5)."
+    };
   }
 
   // Tabell fra TEK17 § 11-3
@@ -106,7 +118,7 @@ const getBrannklasse = (risikoklasse: string, etasjer: string): string => {
     etasjeKey = "5+";
   }
 
-  return brannklasseTabell[rk]?.[etasjeKey] || "";
+  return { brannklasse: brannklasseTabell[rk]?.[etasjeKey] || "", brannklasseUnntak: null };
 };
 
 // Funksjon for å finne hvilke unntak som gjelder automatisk
@@ -259,6 +271,7 @@ const Konsept = () => {
     risikoklasse: "",
     brannklasse: "",
     brannklasseBegrunnelse: "", // Begrunnelse hvis manuelt overstyrt
+    brannklasseUnntak: "", // Automatisk unntak-tekst for brannklasse
     baeresystem: "",
     tilleggskrav: "",
     // 3. Branntekniske ytelseskrav
@@ -296,13 +309,14 @@ const Konsept = () => {
   }, [conceptId, user]);
 
   // Automatisk beregning av brannklasse basert på risikoklasse og etasjer
-  const beregnetBrannklasse = getBrannklasse(formData.risikoklasse, formData.etasjer);
+  const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer);
   
   useEffect(() => {
-    if (beregnetBrannklasse) {
+    if (beregnetBrannklasseResult.brannklasse) {
       setFormData(prev => ({ 
         ...prev, 
-        brannklasse: beregnetBrannklasse,
+        brannklasse: beregnetBrannklasseResult.brannklasse,
+        brannklasseUnntak: beregnetBrannklasseResult.brannklasseUnntak || "",
         brannklasseBegrunnelse: "" // Nullstill begrunnelse når automatisk beregnet
       }));
     }
@@ -320,7 +334,7 @@ const Konsept = () => {
     }
   }, [formData.brannklasse, formData.risikoklasse, formData.etasjer]);
   
-  const erBrannklasseOverstyrt = beregnetBrannklasse && formData.brannklasse !== beregnetBrannklasse;
+  const erBrannklasseOverstyrt = beregnetBrannklasseResult.brannklasse && formData.brannklasse !== beregnetBrannklasseResult.brannklasse;
 
   const loadConcept = async (id: string) => {
     const { data, error } = await supabase
@@ -556,7 +570,12 @@ const Konsept = () => {
               </tr>
               <tr>
                 <td className="border border-gray-400 p-2 font-semibold">Brannklasse</td>
-                <td className="border border-gray-400 p-2">{formData.brannklasse || "[Angis]"}</td>
+                <td className="border border-gray-400 p-2">
+                  {formData.brannklasse || "[Angis]"}
+                  {formData.brannklasseUnntak && (
+                    <span className="block text-blue-600 text-xs mt-1 italic">{formData.brannklasseUnntak}</span>
+                  )}
+                </td>
               </tr>
               <tr>
                 <td className="border border-gray-400 p-2 font-semibold">Bæresystem</td>
@@ -852,7 +871,10 @@ const Konsept = () => {
                 new TableRow({
                   children: [
                     createTableCell("Brannklasse", true, 33),
-                    createTableCell(formData.brannklasse || "[Angis]"),
+                    createTableCell(
+                      (formData.brannklasse || "[Angis]") +
+                      (formData.brannklasseUnntak ? `\n\n${formData.brannklasseUnntak}` : "")
+                    ),
                   ],
                 }),
                 new TableRow({
@@ -1488,8 +1510,8 @@ const Konsept = () => {
                           <div>
                             <Label className="text-xs font-medium mb-1 block">
                               Brannklasse
-                              {beregnetBrannklasse && (
-                                <span className="text-muted-foreground ml-2">(Automatisk: {beregnetBrannklasse})</span>
+                              {beregnetBrannklasseResult.brannklasse && (
+                                <span className="text-muted-foreground ml-2">(Automatisk: {beregnetBrannklasseResult.brannklasse})</span>
                               )}
                             </Label>
                             <Select 
@@ -1506,10 +1528,18 @@ const Konsept = () => {
                               </SelectContent>
                             </Select>
                           </div>
+                          {formData.brannklasseUnntak && (
+                            <div className="col-span-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                              <Label className="text-xs font-medium mb-1 block text-blue-700">
+                                Unntak fra VTEK § 11-3
+                              </Label>
+                              <p className="text-xs text-blue-600">{formData.brannklasseUnntak}</p>
+                            </div>
+                          )}
                           {erBrannklasseOverstyrt && (
                             <div className="col-span-2">
                               <Label className="text-xs font-medium mb-1 block text-amber-600">
-                                Begrunnelse for avvik fra automatisk brannklasse ({beregnetBrannklasse})
+                                Begrunnelse for avvik fra automatisk brannklasse ({beregnetBrannklasseResult.brannklasse})
                               </Label>
                               <Textarea 
                                 value={formData.brannklasseBegrunnelse}
@@ -1548,36 +1578,19 @@ const Konsept = () => {
                           className="min-h-[140px] bg-muted/50 cursor-default"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <Label className="text-xs font-medium mb-1 block">Preaksepterte ytelser / unntak</Label>
-                        <div className="space-y-2 text-sm border rounded-md p-3 bg-muted/30">
-                          {[
-                            { id: "unntak1", text: "Brannmotstand til bærende bygningsdeler i byggverk må være i samsvar med tabell 1 med unntak som angitt i nr. 2 til 7." },
-                            { id: "unntak2", text: "Branncellebegrensende konstruksjoner må understøttes av bærende konstruksjoner med tilsvarende eller høyere brannmotstand." },
-                            { id: "unntak3", text: "Byggverk i én etasje i risikoklasse 2, 3, og 5 kan ha hoved- og sekundærbæresystem med brannmotstand R 15." },
-                            { id: "unntak4", text: "Byggverk i brannklasse 1 og risikoklasse 4 kan ha hoved- og sekundærbæresystem med brannmotstand R 15." },
-                            { id: "unntak5", text: "Byggverk i én etasje i risikoklasse 2 kan oppføres uten spesifisert brannmotstand når bærekonstruksjonen tilfredsstiller klasse A2-s1,d0 [ubrennbart materiale]." },
-                            { id: "unntak6", text: "I byggverk uten loft eller med loft som bare kan benyttes som lager, kan takkonstruksjon oppføres uten spesifisert brannmotstand, forutsatt at denne ikke har avgjørende betydning for byggverkets stabilitet i rømningsfasen, og ett av følgende kriterier er tilstede: a) Takkonstruksjon er skilt fra underliggende plan med branncellebegrensende bygningsdel dimensjonert for tosidig brannpåkjenning. b) Byggverket er i brannklasse 1 og alle materialer i takkonstruksjonen, inklusiv isolasjon, tilfredsstiller klasse A2-s1,d0 [ubrennbart materiale]. c) Byggverket er i brannklasse 1 og takkonstruksjon er beskyttet nedenfra med kledning K₂10 B-s1,d0 [K1]. Byggverk i risikoklasse 4 kan ha kledning K₂10 D-s2,d0 [K2]. Isolasjonen må tilfredsstille klasse A2-s1,d0 [ubrennbart materiale]." },
-                            { id: "unntak7", text: "Under forutsetning av at nødvendig tid til rømning og sikkerhet for slokkemannskaper er ivaretatt, kan parkeringshus med mer enn 1/3 av veggflatene åpne, oppføres med brannmotstand R 15 A2-s1,d0 [ubrennbart materiale]. Åpningene må være fordelt og de enkelte plan ha slik form at en oppnår god gjennomlufting. Byggverket må ikke være høyere enn at slokkemannskapene kan komme lett til med sine høyderedskaper." },
-                          ].map((unntak) => (
-                            <label key={unntak.id} className="flex items-start gap-2 cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={formData.baereevneUnntak.includes(unntak.id)}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setFormData({...formData, baereevneUnntak: [...formData.baereevneUnntak, unntak.id]});
-                                  } else {
-                                    setFormData({...formData, baereevneUnntak: formData.baereevneUnntak.filter(u => u !== unntak.id)});
-                                  }
-                                }}
-                                className="mt-1 shrink-0"
-                              />
-                              <span className="text-xs">{unntak.text}</span>
-                            </label>
-                          ))}
+                      {formData.baereevneUnntak.length > 0 && (
+                        <div className="space-y-2">
+                          <Label className="text-xs font-medium mb-1 block text-blue-700">Automatisk anvendte unntak (jf. VTEK § 11-4)</Label>
+                          <div className="space-y-2 text-sm border border-blue-200 rounded-md p-3 bg-blue-50">
+                            {formData.baereevneUnntak.map((unntakId) => (
+                              <div key={unntakId} className="flex items-start gap-2">
+                                <span className="text-blue-600 mt-0.5">✓</span>
+                                <span className="text-xs text-blue-700">{baereevneUnntakTekster[unntakId]}</span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
+                      )}
                       <div>
                         <Button
                           type="button"
