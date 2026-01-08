@@ -881,7 +881,8 @@ const Konsept = () => {
                     createTableCell("Brannklasse", true, 33),
                     createTableCell(
                       (formData.brannklasse || "[Angis]") +
-                      (formData.brannklasseUnntak ? `\n\n${formData.brannklasseUnntak}` : "")
+                      // Ikke inkluder unntak for RK5 (forsamlingslokale/salgslokale) i dokumentet
+                      (formData.brannklasseUnntak && !formData.brannklasseUnntak.includes("preakseptert ytelse nr. 4") ? `\n\n${formData.brannklasseUnntak}` : "")
                     ),
                   ],
                 }),
