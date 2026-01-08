@@ -77,7 +77,7 @@ const bygningsTypeRisikoklasseMap: Record<string, string> = {
 };
 
 // Funksjon for å beregne brannklasse basert på risikoklasse og antall etasjer
-// Inkluderer unntak for risikoklasse 4 som kan plasseres i brannklasse 1 hvis alle boenheter har terreng-tilgang
+// Inkluderer preaksepterte ytelser/unntak fra VTEK § 11-3
 const getBrannklasse = (risikoklasse: string, etasjer: string, harTerrengTilgang: string): { brannklasse: string; brannklasseUnntak: string | null } => {
   const rk = parseInt(risikoklasse.replace(/\D/g, ''), 10);
   const floors = parseInt(etasjer, 10);
@@ -86,19 +86,25 @@ const getBrannklasse = (risikoklasse: string, etasjer: string, harTerrengTilgang
     return { brannklasse: "", brannklasseUnntak: null };
   }
 
-  // Sjekk unntak for risikoklasse 4: 
-  // "Byggverk i risikoklasse 4 med inntil 4 etasjer kan plasseres i brannklasse 1 
-  // dersom hver boenhet har utgang direkte til terreng eller til utvendig trapp 
-  // som er beskyttet mot brannsmitte fra bygningen"
-  // Unntaket gjelder KUN hvis bruker har bekreftet at alle boenheter har terreng-tilgang
-  if (rk === 4 && floors <= 4 && harTerrengTilgang === "ja") {
+  // Preakseptert ytelse nr. 3: Boligbygning i risikoklasse 4 med tre etasjer, 
+  // kan oppføres i brannklasse 1 når hver boenhet har utgang direkte til terreng,
+  // uten å måtte rømme via trapp eller trapperom til terreng.
+  if (rk === 4 && floors === 3 && harTerrengTilgang === "ja") {
     return { 
       brannklasse: "BKL1", 
-      brannklasseUnntak: "Byggverk i risikoklasse 4 med inntil 4 etasjer kan plasseres i brannklasse 1 dersom hver boenhet har utgang direkte til terreng eller til utvendig trapp som er beskyttet mot brannsmitte fra bygningen (jf. VTEK § 11-3, preakseptert ytelse nr. 5)."
+      brannklasseUnntak: "Boligbygning i risikoklasse 4 med tre etasjer, kan oppføres i brannklasse 1 når hver boenhet har utgang direkte til terreng, uten å måtte rømme via trapp eller trapperom til terreng (jf. VTEK § 11-3, preakseptert ytelse nr. 3)."
     };
   }
 
-  // Tabell fra TEK17 § 11-3
+  // Preakseptert ytelse nr. 7: Boligbygning i risikoklasse 6 i to etasjer kan oppføres i brannklasse 1.
+  if (rk === 6 && floors === 2) {
+    return { 
+      brannklasse: "BKL1", 
+      brannklasseUnntak: "Boligbygning i risikoklasse 6 i to etasjer kan oppføres i brannklasse 1 (jf. VTEK § 11-3, preakseptert ytelse nr. 7)."
+    };
+  }
+
+  // Hovedtabell fra TEK17 § 11-3 Tabell 1: Brannklasse (BKL) for byggverk
   const brannklasseTabell: Record<number, Record<string, string>> = {
     1: { "1": "-", "2": "BKL1", "3-4": "BKL2", "5+": "BKL2" },
     2: { "1": "BKL1", "2": "BKL1", "3-4": "BKL2", "5+": "BKL3" },
@@ -1530,14 +1536,14 @@ const Konsept = () => {
                               </SelectContent>
                             </Select>
                           </div>
-                          {/* Vis spørsmål om terreng-tilgang for RK4 med ≤4 etasjer */}
-                          {formData.risikoklasse === "RK4" && parseInt(formData.etasjer, 10) <= 4 && parseInt(formData.etasjer, 10) >= 1 && (
+                          {/* Vis spørsmål om terreng-tilgang for RK4 med nøyaktig 3 etasjer */}
+                          {formData.risikoklasse === "RK4" && parseInt(formData.etasjer, 10) === 3 && (
                             <div className="col-span-2 p-3 bg-amber-50 border border-amber-200 rounded-md">
                               <Label className="text-xs font-medium mb-2 block text-amber-700">
-                                Har alle boenheter utgang direkte til terreng eller til utvendig trapp beskyttet mot brannsmitte?
+                                Har alle boenheter utgang direkte til terreng, uten å måtte rømme via trapp eller trapperom?
                               </Label>
                               <p className="text-xs text-amber-600 mb-2">
-                                Dette er nødvendig for å kunne benytte unntak for plassering i brannklasse 1 (jf. VTEK § 11-3, preakseptert ytelse nr. 5).
+                                Dette er nødvendig for å kunne benytte unntak for plassering i brannklasse 1 (jf. VTEK § 11-3, preakseptert ytelse nr. 3).
                               </p>
                               <Select 
                                 value={formData.harTerrengTilgang}
@@ -1547,8 +1553,8 @@ const Konsept = () => {
                                   <SelectValue placeholder="Velg svar" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="ja">Ja - alle boenheter har terreng-tilgang</SelectItem>
-                                  <SelectItem value="nei">Nei - ikke alle boenheter har terreng-tilgang</SelectItem>
+                                  <SelectItem value="ja">Ja - alle boenheter har direkte terreng-tilgang</SelectItem>
+                                  <SelectItem value="nei">Nei - ikke alle boenheter har direkte terreng-tilgang</SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>
