@@ -152,6 +152,7 @@ const Konsept = () => {
     grunnlagsdokumenter: [] as Array<{navn: string, dato: string}>,
     risikoklasse: "",
     brannklasse: "",
+    brannklasseBegrunnelse: "", // Begrunnelse hvis manuelt overstyrt
     baeresystem: "",
     tilleggskrav: "",
     // 3. Branntekniske ytelseskrav
@@ -187,12 +188,19 @@ const Konsept = () => {
   }, [conceptId, user]);
 
   // Automatisk beregning av brannklasse basert på risikoklasse og etasjer
+  const beregnetBrannklasse = getBrannklasse(formData.risikoklasse, formData.etasjer);
+  
   useEffect(() => {
-    const beregnetBrannklasse = getBrannklasse(formData.risikoklasse, formData.etasjer);
     if (beregnetBrannklasse) {
-      setFormData(prev => ({ ...prev, brannklasse: beregnetBrannklasse }));
+      setFormData(prev => ({ 
+        ...prev, 
+        brannklasse: beregnetBrannklasse,
+        brannklasseBegrunnelse: "" // Nullstill begrunnelse når automatisk beregnet
+      }));
     }
   }, [formData.risikoklasse, formData.etasjer]);
+  
+  const erBrannklasseOverstyrt = beregnetBrannklasse && formData.brannklasse !== beregnetBrannklasse;
 
   const loadConcept = async (id: string) => {
     const { data, error } = await supabase
@@ -1332,18 +1340,40 @@ const Konsept = () => {
                             </Select>
                           </div>
                           <div>
-                            <Label className="text-xs font-medium mb-1 block">Brannklasse</Label>
-                            <Select onValueChange={(value) => setFormData({...formData, brannklasse: value})}>
+                            <Label className="text-xs font-medium mb-1 block">
+                              Brannklasse
+                              {beregnetBrannklasse && (
+                                <span className="text-muted-foreground ml-2">(Automatisk: {beregnetBrannklasse})</span>
+                              )}
+                            </Label>
+                            <Select 
+                              value={formData.brannklasse} 
+                              onValueChange={(value) => setFormData({...formData, brannklasse: value})}
+                            >
                               <SelectTrigger>
                                 <SelectValue placeholder="Velg" />
                               </SelectTrigger>
                               <SelectContent>
+                                <SelectItem value="-">- (Ikke krav)</SelectItem>
                                 <SelectItem value="BKL1">BKL 1</SelectItem>
                                 <SelectItem value="BKL2">BKL 2</SelectItem>
                                 <SelectItem value="BKL3">BKL 3</SelectItem>
                               </SelectContent>
                             </Select>
                           </div>
+                          {erBrannklasseOverstyrt && (
+                            <div className="col-span-2">
+                              <Label className="text-xs font-medium mb-1 block text-amber-600">
+                                Begrunnelse for avvik fra automatisk brannklasse ({beregnetBrannklasse})
+                              </Label>
+                              <Textarea 
+                                value={formData.brannklasseBegrunnelse}
+                                onChange={(e) => setFormData({...formData, brannklasseBegrunnelse: e.target.value})}
+                                placeholder="Forklar hvorfor brannklassen avviker fra tabellverdien (f.eks. preaksepterte ytelser punkt 3-7)"
+                                className="border-amber-300"
+                              />
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
