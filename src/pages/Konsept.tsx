@@ -193,25 +193,26 @@ const getBaereevneTekst = (brannklasse: string, risikoklasse: string, etasjer: s
 
   let k = { ...krav[bkl as 1 | 2 | 3] };
   
+  // Unntak 5: Byggverk i én etasje i risikoklasse 2 kan oppføres uten spesifisert brannmotstand (med A2-s1,d0)
+  // Dette er det sterkeste unntaket og har prioritet over unntak 3
+  if (floors === 1 && rk === 2) {
+    k.hovedsystem = "Uten spesifisert brannmotstand* (A2-s1,d0 krav)";
+    k.sekundaer = "Uten spesifisert brannmotstand* (A2-s1,d0 krav)";
+    anvendteUnntak.push("unntak5");
+  }
   // Unntak 3: Byggverk i én etasje i risikoklasse 2, 3, og 5 kan ha R 15
-  if (floors === 1 && [2, 3, 5].includes(rk)) {
-    k.hovedsystem = "R 15 (jf. unntak 3)";
-    k.sekundaer = "R 15 (jf. unntak 3)";
+  // For RK2 gjelder unntak 5 i stedet (sterkere), så dette gjelder kun RK3 og RK5
+  else if (floors === 1 && [3, 5].includes(rk)) {
+    k.hovedsystem = "R 15";
+    k.sekundaer = "R 15";
     anvendteUnntak.push("unntak3");
   }
   
   // Unntak 4: Byggverk i brannklasse 1 og risikoklasse 4 kan ha R 15
   if (bkl === 1 && rk === 4) {
-    k.hovedsystem = "R 15 (jf. unntak 4)";
-    k.sekundaer = "R 15 (jf. unntak 4)";
+    k.hovedsystem = "R 15";
+    k.sekundaer = "R 15";
     anvendteUnntak.push("unntak4");
-  }
-  
-  // Unntak 5: Byggverk i én etasje i risikoklasse 2 kan oppføres uten spesifisert brannmotstand (med A2-s1,d0)
-  if (floors === 1 && rk === 2) {
-    k.hovedsystem = "Uten spesifisert brannmotstand* (jf. unntak 5)";
-    k.sekundaer = "Uten spesifisert brannmotstand* (jf. unntak 5)";
-    anvendteUnntak.push("unntak5");
   }
 
   const tekst = `Bærende hovedsystem: ${k.hovedsystem}
