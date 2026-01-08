@@ -1354,7 +1354,6 @@ const Konsept = () => {
                                 <SelectValue placeholder="Velg" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="-">- (Ikke krav)</SelectItem>
                                 <SelectItem value="BKL1">BKL 1</SelectItem>
                                 <SelectItem value="BKL2">BKL 2</SelectItem>
                                 <SelectItem value="BKL3">BKL 3</SelectItem>
