@@ -78,9 +78,10 @@ const bygningsTypeRisikoklasseMap: Record<string, string> = {
 
 // Funksjon for å beregne brannklasse basert på risikoklasse og antall etasjer
 // Inkluderer preaksepterte ytelser/unntak fra VTEK § 11-3
-const getBrannklasse = (risikoklasse: string, etasjer: string, harTerrengTilgang: string): { brannklasse: string; brannklasseUnntak: string | null } => {
+const getBrannklasse = (risikoklasse: string, etasjer: string, harTerrengTilgang: string, areal: string): { brannklasse: string; brannklasseUnntak: string | null } => {
   const rk = parseInt(risikoklasse.replace(/\D/g, ''), 10);
   const floors = parseInt(etasjer, 10);
+  const arealNum = parseFloat(areal) || 0;
   
   if (isNaN(rk) || isNaN(floors) || rk < 1 || rk > 6 || floors < 1) {
     return { brannklasse: "", brannklasseUnntak: null };
@@ -93,6 +94,15 @@ const getBrannklasse = (risikoklasse: string, etasjer: string, harTerrengTilgang
     return { 
       brannklasse: "BKL1", 
       brannklasseUnntak: "Boligbygning i risikoklasse 4 med tre etasjer, kan oppføres i brannklasse 1 når hver boenhet har utgang direkte til terreng, uten å måtte rømme via trapp eller trapperom til terreng (jf. VTEK § 11-3, preakseptert ytelse nr. 3)."
+    };
+  }
+
+  // Preakseptert ytelse nr. 4: Forsamlingslokale og salgslokale i risikoklasse 5 
+  // med bruksareal under 800 m² i maksimalt 2 etasjer kan oppføres i brannklasse 1.
+  if (rk === 5 && floors <= 2 && arealNum > 0 && arealNum < 800) {
+    return { 
+      brannklasse: "BKL1", 
+      brannklasseUnntak: "Forsamlingslokale og salgslokale i risikoklasse 5 med bruksareal under 800 m² i maksimalt 2 etasjer kan oppføres i brannklasse 1 (jf. VTEK § 11-3, preakseptert ytelse nr. 4)."
     };
   }
 
@@ -316,8 +326,8 @@ const Konsept = () => {
     }
   }, [conceptId, user]);
 
-  // Automatisk beregning av brannklasse basert på risikoklasse, etasjer og terreng-tilgang
-  const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang);
+  // Automatisk beregning av brannklasse basert på risikoklasse, etasjer, terreng-tilgang og areal
+  const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal);
   
   useEffect(() => {
     if (beregnetBrannklasseResult.brannklasse) {
@@ -328,7 +338,7 @@ const Konsept = () => {
         brannklasseBegrunnelse: "" // Nullstill begrunnelse når automatisk beregnet
       }));
     }
-  }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang]);
+  }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal]);
 
   // Automatisk generering av bæreevne tekst basert på brannklasse, risikoklasse og etasjer
   useEffect(() => {
