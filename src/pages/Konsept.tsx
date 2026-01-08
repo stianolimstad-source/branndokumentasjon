@@ -189,7 +189,7 @@ const Konsept = () => {
   // Automatisk beregning av brannklasse basert på risikoklasse og etasjer
   useEffect(() => {
     const beregnetBrannklasse = getBrannklasse(formData.risikoklasse, formData.etasjer);
-    if (beregnetBrannklasse && beregnetBrannklasse !== formData.brannklasse) {
+    if (beregnetBrannklasse) {
       setFormData(prev => ({ ...prev, brannklasse: beregnetBrannklasse }));
     }
   }, [formData.risikoklasse, formData.etasjer]);
