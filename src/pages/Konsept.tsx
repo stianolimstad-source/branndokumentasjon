@@ -99,7 +99,8 @@ const getBrannklasse = (risikoklasse: string, etasjer: string, harTerrengTilgang
 
   // Preakseptert ytelse nr. 4: Forsamlingslokale og salgslokale i risikoklasse 5 
   // med bruksareal under 800 m² i maksimalt 2 etasjer kan oppføres i brannklasse 1.
-  if (rk === 5 && floors <= 2 && arealNum > 0 && arealNum < 800) {
+  // Unntaket vises kun ved 2 etasjer, da 1 etasje uansett gir BKL1.
+  if (rk === 5 && floors === 2 && arealNum > 0 && arealNum < 800) {
     return { 
       brannklasse: "BKL1", 
       brannklasseUnntak: "Forsamlingslokale og salgslokale i risikoklasse 5 med bruksareal under 800 m² i maksimalt 2 etasjer kan oppføres i brannklasse 1 (jf. VTEK § 11-3, preakseptert ytelse nr. 4)."
