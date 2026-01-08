@@ -77,8 +77,8 @@ const bygningsTypeRisikoklasseMap: Record<string, string> = {
 };
 
 // Funksjon for å beregne brannklasse basert på risikoklasse og antall etasjer
-// Inkluderer unntak for risikoklasse 4 som kan plasseres i brannklasse 1
-const getBrannklasse = (risikoklasse: string, etasjer: string): { brannklasse: string; brannklasseUnntak: string | null } => {
+// Inkluderer unntak for risikoklasse 4 som kan plasseres i brannklasse 1 hvis alle boenheter har terreng-tilgang
+const getBrannklasse = (risikoklasse: string, etasjer: string, harTerrengTilgang: string): { brannklasse: string; brannklasseUnntak: string | null } => {
   const rk = parseInt(risikoklasse.replace(/\D/g, ''), 10);
   const floors = parseInt(etasjer, 10);
   
@@ -90,7 +90,8 @@ const getBrannklasse = (risikoklasse: string, etasjer: string): { brannklasse: s
   // "Byggverk i risikoklasse 4 med inntil 4 etasjer kan plasseres i brannklasse 1 
   // dersom hver boenhet har utgang direkte til terreng eller til utvendig trapp 
   // som er beskyttet mot brannsmitte fra bygningen"
-  if (rk === 4 && floors <= 4) {
+  // Unntaket gjelder KUN hvis bruker har bekreftet at alle boenheter har terreng-tilgang
+  if (rk === 4 && floors <= 4 && harTerrengTilgang === "ja") {
     return { 
       brannklasse: "BKL1", 
       brannklasseUnntak: "Byggverk i risikoklasse 4 med inntil 4 etasjer kan plasseres i brannklasse 1 dersom hver boenhet har utgang direkte til terreng eller til utvendig trapp som er beskyttet mot brannsmitte fra bygningen (jf. VTEK § 11-3, preakseptert ytelse nr. 5)."
@@ -272,6 +273,7 @@ const Konsept = () => {
     brannklasse: "",
     brannklasseBegrunnelse: "", // Begrunnelse hvis manuelt overstyrt
     brannklasseUnntak: "", // Automatisk unntak-tekst for brannklasse
+    harTerrengTilgang: "", // "ja" eller "nei" - for unntak RK4
     baeresystem: "",
     tilleggskrav: "",
     // 3. Branntekniske ytelseskrav
@@ -308,8 +310,8 @@ const Konsept = () => {
     }
   }, [conceptId, user]);
 
-  // Automatisk beregning av brannklasse basert på risikoklasse og etasjer
-  const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer);
+  // Automatisk beregning av brannklasse basert på risikoklasse, etasjer og terreng-tilgang
+  const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang);
   
   useEffect(() => {
     if (beregnetBrannklasseResult.brannklasse) {
@@ -320,7 +322,7 @@ const Konsept = () => {
         brannklasseBegrunnelse: "" // Nullstill begrunnelse når automatisk beregnet
       }));
     }
-  }, [formData.risikoklasse, formData.etasjer]);
+  }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang]);
 
   // Automatisk generering av bæreevne tekst basert på brannklasse, risikoklasse og etasjer
   useEffect(() => {
@@ -1528,6 +1530,29 @@ const Konsept = () => {
                               </SelectContent>
                             </Select>
                           </div>
+                          {/* Vis spørsmål om terreng-tilgang for RK4 med ≤4 etasjer */}
+                          {formData.risikoklasse === "RK4" && parseInt(formData.etasjer, 10) <= 4 && parseInt(formData.etasjer, 10) >= 1 && (
+                            <div className="col-span-2 p-3 bg-amber-50 border border-amber-200 rounded-md">
+                              <Label className="text-xs font-medium mb-2 block text-amber-700">
+                                Har alle boenheter utgang direkte til terreng eller til utvendig trapp beskyttet mot brannsmitte?
+                              </Label>
+                              <p className="text-xs text-amber-600 mb-2">
+                                Dette er nødvendig for å kunne benytte unntak for plassering i brannklasse 1 (jf. VTEK § 11-3, preakseptert ytelse nr. 5).
+                              </p>
+                              <Select 
+                                value={formData.harTerrengTilgang}
+                                onValueChange={(value) => setFormData({...formData, harTerrengTilgang: value})}
+                              >
+                                <SelectTrigger className="bg-white">
+                                  <SelectValue placeholder="Velg svar" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="ja">Ja - alle boenheter har terreng-tilgang</SelectItem>
+                                  <SelectItem value="nei">Nei - ikke alle boenheter har terreng-tilgang</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
                           {formData.brannklasseUnntak && (
                             <div className="col-span-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
                               <Label className="text-xs font-medium mb-1 block text-blue-700">
