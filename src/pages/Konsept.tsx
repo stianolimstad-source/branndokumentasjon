@@ -109,6 +109,47 @@ const getBrannklasse = (risikoklasse: string, etasjer: string): string => {
   return brannklasseTabell[rk]?.[etasjeKey] || "";
 };
 
+// Funksjon for å generere bæreevne og stabilitet tekst basert på brannklasse
+const getBaereevneTekst = (brannklasse: string): string => {
+  const bkl = parseInt(brannklasse.replace(/\D/g, ''), 10);
+  
+  if (isNaN(bkl) || bkl < 1 || bkl > 3) {
+    return "";
+  }
+
+  const krav: Record<number, { hovedsystem: string; sekundaer: string; trappeloep: string; kjeller: string; utvendig: string }> = {
+    1: {
+      hovedsystem: "R 30 [B 30]",
+      sekundaer: "R 30 [B 30]",
+      trappeloep: "-",
+      kjeller: "R 60 A2-s1,d0 [A 60]",
+      utvendig: "-"
+    },
+    2: {
+      hovedsystem: "R 60 [B 60]",
+      sekundaer: "R 60 [B 60]",
+      trappeloep: "R 30 [B 30]",
+      kjeller: "R 90 A2-s1,d0 [A 90]",
+      utvendig: "R 30 [B 30] eller A2-s1,d0 [ubrennbart]"
+    },
+    3: {
+      hovedsystem: "R 90 A2-s1,d0 [A 90]",
+      sekundaer: "R 60 A2-s1,d0 [A 60]",
+      trappeloep: "R 30 A2-s1,d0 [A 30]",
+      kjeller: "R 120 A2-s1,d0 [A 120]",
+      utvendig: "A2-s1,d0 [ubrennbart]"
+    }
+  };
+
+  const k = krav[bkl];
+  
+  return `Bærende hovedsystem: ${k.hovedsystem}
+Sekundære, bærende bygningsdeler, etasjeskillere og takkonstruksjoner som ikke er del av hovedbæresystem eller stabiliserende: ${k.sekundaer}
+Trappeløp: ${k.trappeloep}
+Bærende bygningsdeler under øverste kjeller: ${k.kjeller}
+Utvendig trappeløp, beskyttet mot flammepåvirkning og strålevarme: ${k.utvendig}`;
+};
+
 const Konsept = () => {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
@@ -199,6 +240,14 @@ const Konsept = () => {
       }));
     }
   }, [formData.risikoklasse, formData.etasjer]);
+
+  // Automatisk generering av bæreevne tekst basert på brannklasse
+  useEffect(() => {
+    const baereevneTekst = getBaereevneTekst(formData.brannklasse);
+    if (baereevneTekst) {
+      setFormData(prev => ({ ...prev, baereevne: baereevneTekst }));
+    }
+  }, [formData.brannklasse]);
   
   const erBrannklasseOverstyrt = beregnetBrannklasse && formData.brannklasse !== beregnetBrannklasse;
 
