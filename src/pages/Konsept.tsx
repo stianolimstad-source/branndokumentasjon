@@ -76,6 +76,39 @@ const bygningsTypeRisikoklasseMap: Record<string, string> = {
   "Turisthytte og vandrerhjem": "RK6",
 };
 
+// Funksjon for å beregne brannklasse basert på risikoklasse og antall etasjer
+const getBrannklasse = (risikoklasse: string, etasjer: string): string => {
+  const rk = parseInt(risikoklasse.replace(/\D/g, ''), 10);
+  const floors = parseInt(etasjer, 10);
+  
+  if (isNaN(rk) || isNaN(floors) || rk < 1 || rk > 6 || floors < 1) {
+    return "";
+  }
+
+  // Tabell fra TEK17 § 11-3
+  const brannklasseTabell: Record<number, Record<string, string>> = {
+    1: { "1": "-", "2": "BKL1", "3-4": "BKL2", "5+": "BKL2" },
+    2: { "1": "BKL1", "2": "BKL1", "3-4": "BKL2", "5+": "BKL3" },
+    3: { "1": "BKL1", "2": "BKL1", "3-4": "BKL2", "5+": "BKL3" },
+    4: { "1": "BKL1", "2": "BKL1", "3-4": "BKL2", "5+": "BKL3" },
+    5: { "1": "BKL1", "2": "BKL2", "3-4": "BKL3", "5+": "BKL3" },
+    6: { "1": "BKL1", "2": "BKL2", "3-4": "BKL2", "5+": "BKL3" },
+  };
+
+  let etasjeKey: string;
+  if (floors === 1) {
+    etasjeKey = "1";
+  } else if (floors === 2) {
+    etasjeKey = "2";
+  } else if (floors >= 3 && floors <= 4) {
+    etasjeKey = "3-4";
+  } else {
+    etasjeKey = "5+";
+  }
+
+  return brannklasseTabell[rk]?.[etasjeKey] || "";
+};
+
 const Konsept = () => {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
@@ -152,6 +185,14 @@ const Konsept = () => {
       loadConcept(conceptId);
     }
   }, [conceptId, user]);
+
+  // Automatisk beregning av brannklasse basert på risikoklasse og etasjer
+  useEffect(() => {
+    const beregnetBrannklasse = getBrannklasse(formData.risikoklasse, formData.etasjer);
+    if (beregnetBrannklasse && beregnetBrannklasse !== formData.brannklasse) {
+      setFormData(prev => ({ ...prev, brannklasse: beregnetBrannklasse }));
+    }
+  }, [formData.risikoklasse, formData.etasjer]);
 
   const loadConcept = async (id: string) => {
     const { data, error } = await supabase
