@@ -382,44 +382,68 @@ const Konsept = () => {
         <section className="mb-6">
           <h2 className="font-bold mb-3">3. Beskrivelse av branntekniske ytelseskrav</h2>
           
-          <h3 className="font-semibold mb-2">3.1 § 11-4 Bæreevne og stabilitet</h3>
-          <p className="ml-4 mb-3">Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse {formData.brannklasse || "[angis]"}.</p>
-
-          <h3 className="font-semibold mb-2">3.2 § 11-5 Sikkerhet ved eksplosjon</h3>
-          <p className="ml-4 mb-3">[Vurdering av eksplosjonsfare]</p>
-
-          <h3 className="font-semibold mb-2">3.3 § 11-6 Tiltak mot brannspredning mellom byggverk</h3>
-          <p className="ml-4 mb-3">[Avstandskrav og tiltak beskrives]</p>
-
-          <h3 className="font-semibold mb-2">3.4 § 11-7 Brannseksjoner</h3>
-          <p className="ml-4 mb-3">{formData.brannseksjoner || "[Seksjonering beskrives]"}</p>
-
-          <h3 className="font-semibold mb-2">3.5 § 11-8 Brannceller</h3>
-          <p className="ml-4 mb-3">[Branncelleinndeling beskrives]</p>
-
-          <h3 className="font-semibold mb-2">3.6 § 11-9 Materialer og produkters egenskaper ved brann</h3>
-          <p className="ml-4 mb-3">[Krav til materialer beskrives]</p>
-
-          <h3 className="font-semibold mb-2">3.7 § 11-10 Tekniske installasjoner</h3>
-          <p className="ml-4 mb-3">{formData.installasjoner || "[Installasjoner beskrives]"}</p>
-
-          <h3 className="font-semibold mb-2">3.8 § 11-11 Generelle krav om rømning og redning</h3>
-          <p className="ml-4 mb-3">{formData.romningSikkerhet || "[Rømningsforhold beskrives]"}</p>
-
-          <h3 className="font-semibold mb-2">3.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider</h3>
-          <p className="ml-4 mb-3">[Tiltak beskrives]</p>
-
-          <h3 className="font-semibold mb-2">3.10 § 11-13 Utgang fra branncelle</h3>
-          <p className="ml-4 mb-3">[Utganger beskrives]</p>
-
-          <h3 className="font-semibold mb-2">3.11 § 11-14 Rømningsvei</h3>
-          <p className="ml-4 mb-3">[Rømningsveier beskrives]</p>
-
-          <h3 className="font-semibold mb-2">3.12 § 11-16 Tilrettelegging for manuell slokking</h3>
-          <p className="ml-4 mb-3">[Slokkeutstyr beskrives]</p>
-
-          <h3 className="font-semibold mb-2">3.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap</h3>
-          <p className="ml-4 mb-3">[Tilrettelegging beskrives]</p>
+          <table className="w-full border-collapse border border-gray-400 text-xs">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-400 p-2 text-left w-1/4">Paragraf</th>
+                <th className="border border-gray-400 p-2 text-left">Beskrivelse</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold align-top">3.1 § 11-4 Bæreevne og stabilitet</td>
+                <td className="border border-gray-400 p-2">{formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold align-top">3.2 § 11-5 Sikkerhet ved eksplosjon</td>
+                <td className="border border-gray-400 p-2">{formData.eksplosjon || "[Vurdering av eksplosjonsfare]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold align-top">3.3 § 11-6 Tiltak mot brannspredning mellom byggverk</td>
+                <td className="border border-gray-400 p-2">{formData.brannspredning || "[Avstandskrav og tiltak beskrives]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold align-top">3.4 § 11-7 Brannseksjoner</td>
+                <td className="border border-gray-400 p-2">{formData.brannseksjoner || "[Seksjonering beskrives]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold align-top">3.5 § 11-8 Brannceller</td>
+                <td className="border border-gray-400 p-2">{formData.brannceller || "[Branncelleinndeling beskrives]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold align-top">3.6 § 11-9 Materialer og produkters egenskaper ved brann</td>
+                <td className="border border-gray-400 p-2">{formData.materialer || "[Krav til materialer beskrives]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold align-top">3.7 § 11-10 Tekniske installasjoner</td>
+                <td className="border border-gray-400 p-2">{formData.installasjoner || "[Installasjoner beskrives]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold align-top">3.8 § 11-11 Generelle krav om rømning og redning</td>
+                <td className="border border-gray-400 p-2">{formData.romningSikkerhet || "[Rømningsforhold beskrives]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold align-top">3.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider</td>
+                <td className="border border-gray-400 p-2">{formData.romningTiltak || "[Tiltak beskrives]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold align-top">3.10 § 11-13 Utgang fra branncelle</td>
+                <td className="border border-gray-400 p-2">{formData.utgangBranncelle || "[Utganger beskrives]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold align-top">3.11 § 11-14 Rømningsvei</td>
+                <td className="border border-gray-400 p-2">{formData.romningsvei || "[Rømningsveier beskrives]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold align-top">3.12 § 11-16 Tilrettelegging for manuell slokking</td>
+                <td className="border border-gray-400 p-2">{formData.manuellSlokking || "[Slokkeutstyr beskrives]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold align-top">3.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap</td>
+                <td className="border border-gray-400 p-2">{formData.redningsmannskap || "[Tilrettelegging beskrives]"}</td>
+              </tr>
+            </tbody>
+          </table>
         </section>
 
         {/* 4. Utførelses- og driftsfasen */}
