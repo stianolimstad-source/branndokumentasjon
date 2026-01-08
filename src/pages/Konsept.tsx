@@ -1446,6 +1446,7 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Krav til bærende konstruksjoner</Label>
                         <Textarea 
+                          value={formData.baereevne}
                           onChange={(e) => setFormData({...formData, baereevne: e.target.value})}
                         />
                       </div>
@@ -1455,6 +1456,7 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Vurdering av eksplosjonsfare</Label>
                         <Textarea 
+                          value={formData.eksplosjon}
                           onChange={(e) => setFormData({...formData, eksplosjon: e.target.value})}
                         />
                       </div>
@@ -1464,6 +1466,7 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Avstandskrav og tiltak</Label>
                         <Textarea 
+                          value={formData.brannspredning}
                           onChange={(e) => setFormData({...formData, brannspredning: e.target.value})}
                         />
                       </div>
@@ -1473,6 +1476,7 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Seksjonering beskrives</Label>
                         <Textarea 
+                          value={formData.brannseksjoner}
                           onChange={(e) => setFormData({...formData, brannseksjoner: e.target.value})}
                         />
                       </div>
@@ -1482,6 +1486,7 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Branncelleinndeling</Label>
                         <Textarea 
+                          value={formData.brannceller}
                           onChange={(e) => setFormData({...formData, brannceller: e.target.value})}
                         />
                       </div>
@@ -1491,6 +1496,7 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Krav til materialer</Label>
                         <Textarea 
+                          value={formData.materialer}
                           onChange={(e) => setFormData({...formData, materialer: e.target.value})}
                         />
                       </div>
@@ -1500,6 +1506,7 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Sprinkler, brannalarm, ventilasjon osv.</Label>
                         <Textarea 
+                          value={formData.installasjoner}
                           onChange={(e) => setFormData({...formData, installasjoner: e.target.value})}
                         />
                       </div>
@@ -1509,6 +1516,7 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Generelle krav om rømning</Label>
                         <Textarea 
+                          value={formData.romningSikkerhet}
                           onChange={(e) => setFormData({...formData, romningSikkerhet: e.target.value})}
                         />
                       </div>
@@ -1518,6 +1526,7 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Tiltak for å påvirke tider</Label>
                         <Textarea 
+                          value={formData.romningTiltak}
                           onChange={(e) => setFormData({...formData, romningTiltak: e.target.value})}
                         />
                       </div>
@@ -1527,6 +1536,7 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Utganger beskrives</Label>
                         <Textarea 
+                          value={formData.utgangBranncelle}
                           onChange={(e) => setFormData({...formData, utgangBranncelle: e.target.value})}
                         />
                       </div>
@@ -1536,6 +1546,7 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Rømningsveier beskrives</Label>
                         <Textarea 
+                          value={formData.romningsvei}
                           onChange={(e) => setFormData({...formData, romningsvei: e.target.value})}
                         />
                       </div>
@@ -1545,6 +1556,7 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Slokkeutstyr beskrives</Label>
                         <Textarea 
+                          value={formData.manuellSlokking}
                           onChange={(e) => setFormData({...formData, manuellSlokking: e.target.value})}
                         />
                       </div>
@@ -1554,6 +1566,7 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Tilrettelegging for rednings- og slokkemannskap</Label>
                         <Textarea 
+                          value={formData.redningsmannskap}
                           onChange={(e) => setFormData({...formData, redningsmannskap: e.target.value})}
                         />
                       </div>
@@ -1570,6 +1583,7 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Krav til utførelse</Label>
                         <Textarea 
+                          value={formData.utfoerelse}
                           onChange={(e) => setFormData({...formData, utfoerelse: e.target.value})}
                         />
                       </div>
@@ -1579,6 +1593,7 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Krav til drift og vedlikehold</Label>
                         <Textarea 
+                          value={formData.drift}
                           onChange={(e) => setFormData({...formData, drift: e.target.value})}
                         />
                       </div>
@@ -1593,6 +1608,7 @@ const Konsept = () => {
                     <div>
                       <Label className="text-xs font-medium mb-1 block">Revisjonslogg</Label>
                       <Textarea 
+                        value={formData.revisjon}
                         onChange={(e) => setFormData({...formData, revisjon: e.target.value})}
                       />
                     </div>
@@ -1606,7 +1622,7 @@ const Konsept = () => {
                     <div>
                       <Label className="text-xs font-medium mb-1 block">TEK17, VTEK17, NS 3901 osv.</Label>
                       <Textarea 
-                        defaultValue="TEK17 - Forskrift om tekniske krav til byggverk&#10;VTEK17 - Veiledning til teknisk forskrift&#10;NS 3901 - Krav til risikovurdering av brann i byggverk"
+                        value={formData.litteratur || "TEK17 - Forskrift om tekniske krav til byggverk\nVTEK17 - Veiledning til teknisk forskrift\nNS 3901 - Krav til risikovurdering av brann i byggverk"}
                         onChange={(e) => setFormData({...formData, litteratur: e.target.value})}
                       />
                     </div>
@@ -1620,6 +1636,7 @@ const Konsept = () => {
                     <div>
                       <Label className="text-xs font-medium mb-1 block">Beskriv eventuelle fravik og kompenserende tiltak (valgfritt)</Label>
                       <Textarea 
+                        value={formData.fravik}
                         onChange={(e) => setFormData({...formData, fravik: e.target.value})}
                       />
                     </div>
