@@ -612,20 +612,9 @@ const Konsept = () => {
                 <td className="border border-gray-400 p-2 font-semibold align-top">3.1 § 11-4 Bæreevne og stabilitet</td>
                 <td className="border border-gray-400 p-2 whitespace-pre-line">
                   {formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`}
-                  {formData.baereevneUnntak && formData.baereevneUnntak.length > 0 && (
-                    <>
-                      <br /><br />
-                      <span className="font-semibold">Preaksepterte ytelser / unntak:</span><br />
-                      <ul className="list-disc ml-4 mt-1">
-                        {formData.baereevneUnntak.map((unntakId, idx) => (
-                          <li key={idx}>{baereevneUnntakTekster[unntakId]}</li>
-                        ))}
-                      </ul>
-                    </>
-                  )}
                   {formData.baereevneKommentar && (
                     <>
-                      <br />
+                      <br /><br />
                       <span className="font-semibold">Kommentar:</span><br />
                       {formData.baereevneKommentar}
                     </>
@@ -922,9 +911,6 @@ const Konsept = () => {
                     createTableCell("3.1 § 11-4 Bæreevne og stabilitet", true, 30),
                     createTableCell(
                       (formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`) +
-                      (formData.baereevneUnntak && formData.baereevneUnntak.length > 0 
-                        ? `\n\nPreaksepterte ytelser / unntak:\n${formData.baereevneUnntak.map((id, idx) => `${idx + 1}. ${baereevneUnntakTekster[id]}`).join('\n')}`
-                        : "") +
                       (formData.baereevneKommentar ? `\n\nKommentar:\n${formData.baereevneKommentar}` : "")
                     ),
                   ],
