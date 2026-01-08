@@ -9,7 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Flame, ArrowLeft, FileDown, Download, Save, LogIn, X, Plus } from "lucide-react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } from "docx";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle } from "docx";
 import { saveAs } from "file-saver";
 import { ProjectSelector } from "@/components/ProjectSelector";
 import { useAuth } from "@/hooks/useAuth";
@@ -547,6 +547,25 @@ const Konsept = () => {
   };
 
   const exportToWord = async () => {
+    const tableBorders = {
+      top: { style: BorderStyle.SINGLE, size: 1, color: "666666" },
+      bottom: { style: BorderStyle.SINGLE, size: 1, color: "666666" },
+      left: { style: BorderStyle.SINGLE, size: 1, color: "666666" },
+      right: { style: BorderStyle.SINGLE, size: 1, color: "666666" },
+    };
+
+    const createTableCell = (text: string, bold: boolean = false, width?: number) => {
+      return new TableCell({
+        borders: tableBorders,
+        width: width ? { size: width, type: WidthType.PERCENTAGE } : undefined,
+        children: [
+          new Paragraph({
+            children: [new TextRun({ text, bold, size: 20 })],
+          }),
+        ],
+      });
+    };
+
     const doc = new Document({
       sections: [
         {
@@ -568,26 +587,29 @@ const Konsept = () => {
               children: [new TextRun({ text: "1.1 Informasjon om tiltaket", bold: true, size: 24 })],
               spacing: { before: 200, after: 100 },
             }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "Bygningstype: ", bold: true }),
-                new TextRun({ text: formData.bygningstype || "[Angis]" }),
+            // Tabell 1.1
+            new Table({
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              rows: [
+                new TableRow({
+                  children: [
+                    createTableCell("Bygningstype", true, 33),
+                    createTableCell(formData.bygningstype || "[Angis]"),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    createTableCell("Bruttoareal", true, 33),
+                    createTableCell(`${formData.areal || "[Angis]"} m²`),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    createTableCell("Antall etasjer", true, 33),
+                    createTableCell(formData.etasjer || "[Angis]"),
+                  ],
+                }),
               ],
-              spacing: { after: 50 },
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "Bruttoareal: ", bold: true }),
-                new TextRun({ text: `${formData.areal || "[Angis]"} m²` }),
-              ],
-              spacing: { after: 50 },
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "Antall etasjer: ", bold: true }),
-                new TextRun({ text: formData.etasjer || "[Angis]" }),
-              ],
-              spacing: { after: 100 },
             }),
             new Paragraph({
               children: [new TextRun({ text: "1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)", bold: true, size: 24 })],
@@ -635,26 +657,29 @@ const Konsept = () => {
               children: [new TextRun({ text: "2.2 Beskrivelse av bygning og branntekniske forutsetninger", bold: true, size: 24 })],
               spacing: { before: 200, after: 100 },
             }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "Risikoklasse: ", bold: true }),
-                new TextRun({ text: formData.risikoklasse || "[Angis]" }),
+            // Tabell 2.2
+            new Table({
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              rows: [
+                new TableRow({
+                  children: [
+                    createTableCell("Risikoklasse", true, 33),
+                    createTableCell(formData.risikoklasse || "[Angis]"),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    createTableCell("Brannklasse", true, 33),
+                    createTableCell(formData.brannklasse || "[Angis]"),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    createTableCell("Bæresystem", true, 33),
+                    createTableCell(formData.baeresystem || "[Angis]"),
+                  ],
+                }),
               ],
-              spacing: { after: 50 },
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "Brannklasse: ", bold: true }),
-                new TextRun({ text: formData.brannklasse || "[Angis]" }),
-              ],
-              spacing: { after: 50 },
-            }),
-            new Paragraph({
-              children: [
-                new TextRun({ text: "Bæresystem: ", bold: true }),
-                new TextRun({ text: formData.baeresystem || "[Angis]" }),
-              ],
-              spacing: { after: 100 },
             }),
             new Paragraph({
               children: [new TextRun({ text: "2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker", bold: true, size: 24 })],
@@ -670,109 +695,95 @@ const Konsept = () => {
               children: [new TextRun({ text: "3. Beskrivelse av branntekniske ytelseskrav", bold: true, size: 28 })],
               spacing: { before: 400, after: 200 },
             }),
-            new Paragraph({
-              children: [new TextRun({ text: "3.1 § 11-4 Bæreevne og stabilitet", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              text: `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`,
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: "3.2 § 11-5 Sikkerhet ved eksplosjon", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              text: "[Vurdering av eksplosjonsfare]",
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: "3.3 § 11-6 Tiltak mot brannspredning mellom byggverk", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              text: "[Avstandskrav og tiltak beskrives]",
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: "3.4 § 11-7 Brannseksjoner", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              text: formData.brannseksjoner || "[Seksjonering beskrives]",
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: "3.5 § 11-8 Brannceller", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              text: "[Branncelleinndeling beskrives]",
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: "3.6 § 11-9 Materialer og produkters egenskaper ved brann", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              text: "[Krav til materialer beskrives]",
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: "3.7 § 11-10 Tekniske installasjoner", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              text: formData.installasjoner || "[Installasjoner beskrives]",
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: "3.8 § 11-11 Generelle krav om rømning og redning", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              text: formData.romningSikkerhet || "[Rømningsforhold beskrives]",
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: "3.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              text: "[Tiltak beskrives]",
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: "3.10 § 11-13 Utgang fra branncelle", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              text: "[Utganger beskrives]",
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: "3.11 § 11-14 Rømningsvei", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              text: "[Rømningsveier beskrives]",
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: "3.12 § 11-16 Tilrettelegging for manuell slokking", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              text: "[Slokkeutstyr beskrives]",
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: "3.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              text: "[Tilrettelegging beskrives]",
-              spacing: { after: 100 },
+            // Tabell 3
+            new Table({
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              rows: [
+                new TableRow({
+                  children: [
+                    createTableCell("Paragraf", true, 30),
+                    createTableCell("Beskrivelse", true),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    createTableCell("3.1 § 11-4 Bæreevne og stabilitet", true, 30),
+                    createTableCell(formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    createTableCell("3.2 § 11-5 Sikkerhet ved eksplosjon", true, 30),
+                    createTableCell(formData.eksplosjon || "[Vurdering av eksplosjonsfare]"),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    createTableCell("3.3 § 11-6 Tiltak mot brannspredning mellom byggverk", true, 30),
+                    createTableCell(formData.brannspredning || "[Avstandskrav og tiltak beskrives]"),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    createTableCell("3.4 § 11-7 Brannseksjoner", true, 30),
+                    createTableCell(formData.brannseksjoner || "[Seksjonering beskrives]"),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    createTableCell("3.5 § 11-8 Brannceller", true, 30),
+                    createTableCell(formData.brannceller || "[Branncelleinndeling beskrives]"),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    createTableCell("3.6 § 11-9 Materialer og produkters egenskaper ved brann", true, 30),
+                    createTableCell(formData.materialer || "[Krav til materialer beskrives]"),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    createTableCell("3.7 § 11-10 Tekniske installasjoner", true, 30),
+                    createTableCell(formData.installasjoner || "[Installasjoner beskrives]"),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    createTableCell("3.8 § 11-11 Generelle krav om rømning og redning", true, 30),
+                    createTableCell(formData.romningSikkerhet || "[Rømningsforhold beskrives]"),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    createTableCell("3.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider", true, 30),
+                    createTableCell(formData.romningTiltak || "[Tiltak beskrives]"),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    createTableCell("3.10 § 11-13 Utgang fra branncelle", true, 30),
+                    createTableCell(formData.utgangBranncelle || "[Utganger beskrives]"),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    createTableCell("3.11 § 11-14 Rømningsvei", true, 30),
+                    createTableCell(formData.romningsvei || "[Rømningsveier beskrives]"),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    createTableCell("3.12 § 11-16 Tilrettelegging for manuell slokking", true, 30),
+                    createTableCell(formData.manuellSlokking || "[Slokkeutstyr beskrives]"),
+                  ],
+                }),
+                new TableRow({
+                  children: [
+                    createTableCell("3.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap", true, 30),
+                    createTableCell(formData.redningsmannskap || "[Tilrettelegging beskrives]"),
+                  ],
+                }),
+              ],
             }),
 
             // 4. Utførelses- og driftsfasen
@@ -785,7 +796,7 @@ const Konsept = () => {
               spacing: { before: 200, after: 100 },
             }),
             new Paragraph({
-              text: "[Krav til utførelse beskrives]",
+              text: formData.utfoerelse || "[Krav til utførelse beskrives]",
               spacing: { after: 100 },
             }),
             new Paragraph({
@@ -793,7 +804,7 @@ const Konsept = () => {
               spacing: { before: 200, after: 100 },
             }),
             new Paragraph({
-              text: "[Krav til drift og vedlikehold beskrives]",
+              text: formData.drift || "[Krav til drift og vedlikehold beskrives]",
               spacing: { after: 100 },
             }),
 
@@ -803,7 +814,7 @@ const Konsept = () => {
               spacing: { before: 400, after: 200 },
             }),
             new Paragraph({
-              text: "[Revisjonslogg]",
+              text: formData.revisjon || "[Revisjonslogg]",
               spacing: { after: 100 },
             }),
 
