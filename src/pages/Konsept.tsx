@@ -341,11 +341,22 @@ const Konsept = () => {
           <h2 className="font-bold mb-3">1. Innledning</h2>
           
           <h3 className="font-semibold mb-2">1.1 Informasjon om tiltaket</h3>
-          <div className="ml-4 mb-3 space-y-1">
-            <p><span className="font-semibold">Bygningstype:</span> {formData.bygningstype || "[Angis]"}</p>
-            <p><span className="font-semibold">Bruttoareal:</span> {formData.areal || "[Angis]"} m²</p>
-            <p><span className="font-semibold">Antall etasjer:</span> {formData.etasjer || "[Angis]"}</p>
-          </div>
+          <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+            <tbody>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold w-1/3">Bygningstype</td>
+                <td className="border border-gray-400 p-2">{formData.bygningstype || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Bruttoareal</td>
+                <td className="border border-gray-400 p-2">{formData.areal || "[Angis]"} m²</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Antall etasjer</td>
+                <td className="border border-gray-400 p-2">{formData.etasjer || "[Angis]"}</td>
+              </tr>
+            </tbody>
+          </table>
 
           <h3 className="font-semibold mb-2">1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)</h3>
           <p className="ml-4 mb-3">[Ansvarsrett og tiltaksklasse angis her]</p>
@@ -368,11 +379,22 @@ const Konsept = () => {
           <p className="ml-4 mb-3">[Liste over tegninger og dokumenter]</p>
 
           <h3 className="font-semibold mb-2">2.2 Beskrivelse av bygning og branntekniske forutsetninger</h3>
-          <div className="ml-4 mb-3 space-y-1">
-            <p><span className="font-semibold">Risikoklasse:</span> {formData.risikoklasse || "[Angis]"}</p>
-            <p><span className="font-semibold">Brannklasse:</span> {formData.brannklasse || "[Angis]"}</p>
-            <p><span className="font-semibold">Bæresystem:</span> {formData.baeresystem || "[Angis]"}</p>
-          </div>
+          <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+            <tbody>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold w-1/3">Risikoklasse</td>
+                <td className="border border-gray-400 p-2">{formData.risikoklasse || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Brannklasse</td>
+                <td className="border border-gray-400 p-2">{formData.brannklasse || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Bæresystem</td>
+                <td className="border border-gray-400 p-2">{formData.baeresystem || "[Angis]"}</td>
+              </tr>
+            </tbody>
+          </table>
 
           <h3 className="font-semibold mb-2">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</h3>
           <p className="ml-4 mb-3">[Eventuelle tilleggskrav beskrives]</p>
