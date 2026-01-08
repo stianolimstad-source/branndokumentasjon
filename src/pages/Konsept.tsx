@@ -150,6 +150,17 @@ Bærende bygningsdeler under øverste kjeller: ${k.kjeller}
 Utvendig trappeløp, beskyttet mot flammepåvirkning og strålevarme: ${k.utvendig}`;
 };
 
+// Unntak-tekster for visning i preview/eksport
+const baereevneUnntakTekster: Record<string, string> = {
+  unntak1: "Brannmotstand til bærende bygningsdeler i byggverk må være i samsvar med tabell 1 med unntak som angitt i nr. 2 til 7.",
+  unntak2: "Branncellebegrensende konstruksjoner må understøttes av bærende konstruksjoner med tilsvarende eller høyere brannmotstand.",
+  unntak3: "Byggverk i én etasje i risikoklasse 2, 3, og 5 kan ha hoved- og sekundærbæresystem med brannmotstand R 15.",
+  unntak4: "Byggverk i brannklasse 1 og risikoklasse 4 kan ha hoved- og sekundærbæresystem med brannmotstand R 15.",
+  unntak5: "Byggverk i én etasje i risikoklasse 2 kan oppføres uten spesifisert brannmotstand når bærekonstruksjonen tilfredsstiller klasse A2-s1,d0 [ubrennbart materiale].",
+  unntak6: "I byggverk uten loft eller med loft som bare kan benyttes som lager, kan takkonstruksjon oppføres uten spesifisert brannmotstand, forutsatt at denne ikke har avgjørende betydning for byggverkets stabilitet i rømningsfasen.",
+  unntak7: "Under forutsetning av at nødvendig tid til rømning og sikkerhet for slokkemannskaper er ivaretatt, kan parkeringshus med mer enn 1/3 av veggflatene åpne, oppføres med brannmotstand R 15 A2-s1,d0 [ubrennbart materiale].",
+};
+
 const Konsept = () => {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
@@ -198,6 +209,7 @@ const Konsept = () => {
     tilleggskrav: "",
     // 3. Branntekniske ytelseskrav
     baereevne: "",
+    baereevneUnntak: [] as string[],
     baereevneKommentar: "",
     eksplosjon: "",
     brannspredning: "",
@@ -515,9 +527,20 @@ const Konsept = () => {
                 <td className="border border-gray-400 p-2 font-semibold align-top">3.1 § 11-4 Bæreevne og stabilitet</td>
                 <td className="border border-gray-400 p-2 whitespace-pre-line">
                   {formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`}
-                  {formData.baereevneKommentar && (
+                  {formData.baereevneUnntak && formData.baereevneUnntak.length > 0 && (
                     <>
                       <br /><br />
+                      <span className="font-semibold">Preaksepterte ytelser / unntak:</span><br />
+                      <ul className="list-disc ml-4 mt-1">
+                        {formData.baereevneUnntak.map((unntakId, idx) => (
+                          <li key={idx}>{baereevneUnntakTekster[unntakId]}</li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+                  {formData.baereevneKommentar && (
+                    <>
+                      <br />
                       <span className="font-semibold">Kommentar:</span><br />
                       {formData.baereevneKommentar}
                     </>
@@ -811,6 +834,9 @@ const Konsept = () => {
                     createTableCell("3.1 § 11-4 Bæreevne og stabilitet", true, 30),
                     createTableCell(
                       (formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`) +
+                      (formData.baereevneUnntak && formData.baereevneUnntak.length > 0 
+                        ? `\n\nPreaksepterte ytelser / unntak:\n${formData.baereevneUnntak.map((id, idx) => `${idx + 1}. ${baereevneUnntakTekster[id]}`).join('\n')}`
+                        : "") +
                       (formData.baereevneKommentar ? `\n\nKommentar:\n${formData.baereevneKommentar}` : "")
                     ),
                   ],
@@ -1463,6 +1489,36 @@ const Konsept = () => {
                           readOnly
                           className="min-h-[140px] bg-muted/50 cursor-default"
                         />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-xs font-medium mb-1 block">Preaksepterte ytelser / unntak</Label>
+                        <div className="space-y-2 text-sm border rounded-md p-3 bg-muted/30">
+                          {[
+                            { id: "unntak1", text: "Brannmotstand til bærende bygningsdeler i byggverk må være i samsvar med tabell 1 med unntak som angitt i nr. 2 til 7." },
+                            { id: "unntak2", text: "Branncellebegrensende konstruksjoner må understøttes av bærende konstruksjoner med tilsvarende eller høyere brannmotstand." },
+                            { id: "unntak3", text: "Byggverk i én etasje i risikoklasse 2, 3, og 5 kan ha hoved- og sekundærbæresystem med brannmotstand R 15." },
+                            { id: "unntak4", text: "Byggverk i brannklasse 1 og risikoklasse 4 kan ha hoved- og sekundærbæresystem med brannmotstand R 15." },
+                            { id: "unntak5", text: "Byggverk i én etasje i risikoklasse 2 kan oppføres uten spesifisert brannmotstand når bærekonstruksjonen tilfredsstiller klasse A2-s1,d0 [ubrennbart materiale]." },
+                            { id: "unntak6", text: "I byggverk uten loft eller med loft som bare kan benyttes som lager, kan takkonstruksjon oppføres uten spesifisert brannmotstand, forutsatt at denne ikke har avgjørende betydning for byggverkets stabilitet i rømningsfasen, og ett av følgende kriterier er tilstede: a) Takkonstruksjon er skilt fra underliggende plan med branncellebegrensende bygningsdel dimensjonert for tosidig brannpåkjenning. b) Byggverket er i brannklasse 1 og alle materialer i takkonstruksjonen, inklusiv isolasjon, tilfredsstiller klasse A2-s1,d0 [ubrennbart materiale]. c) Byggverket er i brannklasse 1 og takkonstruksjon er beskyttet nedenfra med kledning K₂10 B-s1,d0 [K1]. Byggverk i risikoklasse 4 kan ha kledning K₂10 D-s2,d0 [K2]. Isolasjonen må tilfredsstille klasse A2-s1,d0 [ubrennbart materiale]." },
+                            { id: "unntak7", text: "Under forutsetning av at nødvendig tid til rømning og sikkerhet for slokkemannskaper er ivaretatt, kan parkeringshus med mer enn 1/3 av veggflatene åpne, oppføres med brannmotstand R 15 A2-s1,d0 [ubrennbart materiale]. Åpningene må være fordelt og de enkelte plan ha slik form at en oppnår god gjennomlufting. Byggverket må ikke være høyere enn at slokkemannskapene kan komme lett til med sine høyderedskaper." },
+                          ].map((unntak) => (
+                            <label key={unntak.id} className="flex items-start gap-2 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={formData.baereevneUnntak.includes(unntak.id)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setFormData({...formData, baereevneUnntak: [...formData.baereevneUnntak, unntak.id]});
+                                  } else {
+                                    setFormData({...formData, baereevneUnntak: formData.baereevneUnntak.filter(u => u !== unntak.id)});
+                                  }
+                                }}
+                                className="mt-1 shrink-0"
+                              />
+                              <span className="text-xs">{unntak.text}</span>
+                            </label>
+                          ))}
+                        </div>
                       </div>
                       <div>
                         <Button
