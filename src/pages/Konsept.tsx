@@ -109,15 +109,46 @@ const getBrannklasse = (risikoklasse: string, etasjer: string): string => {
   return brannklasseTabell[rk]?.[etasjeKey] || "";
 };
 
-// Funksjon for å generere bæreevne og stabilitet tekst basert på brannklasse
-const getBaereevneTekst = (brannklasse: string): string => {
+// Funksjon for å finne hvilke unntak som gjelder automatisk
+const getRelevantUnntak = (risikoklasse: string, brannklasse: string, etasjer: string): string[] => {
+  const rk = parseInt(risikoklasse.replace(/\D/g, ''), 10);
   const bkl = parseInt(brannklasse.replace(/\D/g, ''), 10);
+  const floors = parseInt(etasjer, 10);
+  
+  const relevant: string[] = [];
+  
+  // Unntak 3: Byggverk i én etasje i risikoklasse 2, 3, og 5 kan ha R 15
+  if (floors === 1 && [2, 3, 5].includes(rk)) {
+    relevant.push("unntak3");
+  }
+  
+  // Unntak 4: Byggverk i brannklasse 1 og risikoklasse 4 kan ha R 15
+  if (bkl === 1 && rk === 4) {
+    relevant.push("unntak4");
+  }
+  
+  // Unntak 5: Byggverk i én etasje i risikoklasse 2 kan oppføres uten spesifisert brannmotstand
+  if (floors === 1 && rk === 2) {
+    relevant.push("unntak5");
+  }
+  
+  return relevant;
+};
+
+// Funksjon for å generere bæreevne og stabilitet tekst basert på brannklasse, med unntak
+const getBaereevneTekst = (brannklasse: string, risikoklasse: string, etasjer: string): { tekst: string; anvendteUnntak: string[] } => {
+  const bkl = parseInt(brannklasse.replace(/\D/g, ''), 10);
+  const rk = parseInt(risikoklasse.replace(/\D/g, ''), 10);
+  const floors = parseInt(etasjer, 10);
   
   if (isNaN(bkl) || bkl < 1 || bkl > 3) {
-    return "";
+    return { tekst: "", anvendteUnntak: [] };
   }
 
-  const krav: Record<number, { hovedsystem: string; sekundaer: string; trappeloep: string; kjeller: string; utvendig: string }> = {
+  const anvendteUnntak: string[] = [];
+  
+  // Standard krav
+  let krav = {
     1: {
       hovedsystem: "R 30 [B 30]",
       sekundaer: "R 30 [B 30]",
@@ -141,13 +172,36 @@ const getBaereevneTekst = (brannklasse: string): string => {
     }
   };
 
-  const k = krav[bkl];
+  let k = { ...krav[bkl as 1 | 2 | 3] };
   
-  return `Bærende hovedsystem: ${k.hovedsystem}
+  // Unntak 3: Byggverk i én etasje i risikoklasse 2, 3, og 5 kan ha R 15
+  if (floors === 1 && [2, 3, 5].includes(rk)) {
+    k.hovedsystem = "R 15 (jf. unntak 3)";
+    k.sekundaer = "R 15 (jf. unntak 3)";
+    anvendteUnntak.push("unntak3");
+  }
+  
+  // Unntak 4: Byggverk i brannklasse 1 og risikoklasse 4 kan ha R 15
+  if (bkl === 1 && rk === 4) {
+    k.hovedsystem = "R 15 (jf. unntak 4)";
+    k.sekundaer = "R 15 (jf. unntak 4)";
+    anvendteUnntak.push("unntak4");
+  }
+  
+  // Unntak 5: Byggverk i én etasje i risikoklasse 2 kan oppføres uten spesifisert brannmotstand (med A2-s1,d0)
+  if (floors === 1 && rk === 2) {
+    k.hovedsystem = "Uten spesifisert brannmotstand* (jf. unntak 5)";
+    k.sekundaer = "Uten spesifisert brannmotstand* (jf. unntak 5)";
+    anvendteUnntak.push("unntak5");
+  }
+
+  const tekst = `Bærende hovedsystem: ${k.hovedsystem}
 Sekundære, bærende bygningsdeler, etasjeskillere og takkonstruksjoner som ikke er del av hovedbæresystem eller stabiliserende: ${k.sekundaer}
 Trappeløp: ${k.trappeloep}
 Bærende bygningsdeler under øverste kjeller: ${k.kjeller}
 Utvendig trappeløp, beskyttet mot flammepåvirkning og strålevarme: ${k.utvendig}`;
+  
+  return { tekst, anvendteUnntak };
 };
 
 // Unntak-tekster for visning i preview/eksport
@@ -254,13 +308,17 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.etasjer]);
 
-  // Automatisk generering av bæreevne tekst basert på brannklasse
+  // Automatisk generering av bæreevne tekst basert på brannklasse, risikoklasse og etasjer
   useEffect(() => {
-    const baereevneTekst = getBaereevneTekst(formData.brannklasse);
-    if (baereevneTekst) {
-      setFormData(prev => ({ ...prev, baereevne: baereevneTekst }));
+    const result = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer);
+    if (result.tekst) {
+      setFormData(prev => ({ 
+        ...prev, 
+        baereevne: result.tekst,
+        baereevneUnntak: result.anvendteUnntak
+      }));
     }
-  }, [formData.brannklasse]);
+  }, [formData.brannklasse, formData.risikoklasse, formData.etasjer]);
   
   const erBrannklasseOverstyrt = beregnetBrannklasse && formData.brannklasse !== beregnetBrannklasse;
 
