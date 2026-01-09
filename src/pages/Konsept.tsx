@@ -297,6 +297,7 @@ const Konsept = () => {
     baereevne: "",
     baereevneUnntak: [] as string[],
     baereevneKommentar: "",
+    eksplosjonRelevant: "", // "relevant" eller "ikke_relevant"
     eksplosjon: "",
     brannspredning: "",
     brannseksjoner: "",
@@ -634,7 +635,30 @@ const Konsept = () => {
               </tr>
               <tr>
                 <td className="border border-gray-400 p-2 font-semibold align-top">3.2 § 11-5 Sikkerhet ved eksplosjon</td>
-                <td className="border border-gray-400 p-2">{formData.eksplosjon || "[Vurdering av eksplosjonsfare]"}</td>
+                <td className="border border-gray-400 p-2">
+                  {formData.eksplosjonRelevant === "ikke_relevant" ? (
+                    "RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket."
+                  ) : formData.eksplosjonRelevant === "relevant" ? (
+                    <div className="space-y-2">
+                      <p className="font-semibold">Preaksepterte ytelser (jf. VTEK § 11-5):</p>
+                      <ol className="list-decimal list-inside space-y-1">
+                        <li>Rom hvor det kan forekomme fare for eksplosjon, må utgjøre en egen branncelle.</li>
+                        <li>Rom hvor det kan forekomme fare for eksplosjon, må ha minst én trykkavlastningsflate for å sikre mot skader på personer og byggverket forøvrig.</li>
+                        <li>Avlastet trykk må ledes bort i sikker retning.</li>
+                        <li>Trykkavlastningsflater må ikke plasseres i takflater og lignende med mindre det dokumenteres at snølast ikke er til hinder for avlastningsflatens funksjon.</li>
+                        <li>Bærende og branncellebegrensende bygningsdeler må om nødvendig forsterkes for å opprettholde rømningsveiers funksjon og forhindre spredning av brann til andre brannceller.</li>
+                      </ol>
+                      {formData.eksplosjon && (
+                        <>
+                          <p className="font-semibold mt-2">Beskrivelse:</p>
+                          <p>{formData.eksplosjon}</p>
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    "[Vurdering av eksplosjonsfare]"
+                  )}
+                </td>
               </tr>
               <tr>
                 <td className="border border-gray-400 p-2 font-semibold align-top">3.3 § 11-6 Tiltak mot brannspredning mellom byggverk</td>
@@ -930,7 +954,14 @@ const Konsept = () => {
                 new TableRow({
                   children: [
                     createTableCell("3.2 § 11-5 Sikkerhet ved eksplosjon", true, 30),
-                    createTableCell(formData.eksplosjon || "[Vurdering av eksplosjonsfare]"),
+                    createTableCell(
+                      formData.eksplosjonRelevant === "ikke_relevant"
+                        ? "RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket."
+                        : formData.eksplosjonRelevant === "relevant"
+                        ? "Preaksepterte ytelser (jf. VTEK § 11-5):\n\n1. Rom hvor det kan forekomme fare for eksplosjon, må utgjøre en egen branncelle.\n2. Rom hvor det kan forekomme fare for eksplosjon, må ha minst én trykkavlastningsflate for å sikre mot skader på personer og byggverket forøvrig.\n3. Avlastet trykk må ledes bort i sikker retning.\n4. Trykkavlastningsflater må ikke plasseres i takflater og lignende med mindre det dokumenteres at snølast ikke er til hinder for avlastningsflatens funksjon.\n5. Bærende og branncellebegrensende bygningsdeler må om nødvendig forsterkes for å opprettholde rømningsveiers funksjon og forhindre spredning av brann til andre brannceller." +
+                          (formData.eksplosjon ? `\n\nBeskrivelse:\n${formData.eksplosjon}` : "")
+                        : "[Vurdering av eksplosjonsfare]"
+                    ),
                   ],
                 }),
                 new TableRow({
@@ -1647,15 +1678,52 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <Label className="text-xs text-muted-foreground">3.2 § 11-5 Sikkerhet ved eksplosjon</Label>
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Vurdering av eksplosjonsfare</Label>
-                        <Textarea 
-                          value={formData.eksplosjon}
-                          onChange={(e) => setFormData({...formData, eksplosjon: e.target.value})}
-                        />
+                        <Label className="text-xs font-medium mb-1 block">Er eksplosjonsfare relevant for dette tiltaket?</Label>
+                        <Select 
+                          value={formData.eksplosjonRelevant}
+                          onValueChange={(value) => setFormData({...formData, eksplosjonRelevant: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Velg" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ikke_relevant">Ikke relevant</SelectItem>
+                            <SelectItem value="relevant">Relevant</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
+                      {formData.eksplosjonRelevant === "ikke_relevant" && (
+                        <div className="p-3 bg-muted/50 border rounded-md">
+                          <p className="text-sm text-muted-foreground">
+                            RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket.
+                          </p>
+                        </div>
+                      )}
+                      {formData.eksplosjonRelevant === "relevant" && (
+                        <div className="space-y-3">
+                          <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                            <Label className="text-xs font-medium mb-2 block text-blue-700">Preaksepterte ytelser (jf. VTEK § 11-5)</Label>
+                            <ol className="text-xs text-blue-700 space-y-2 list-decimal list-inside">
+                              <li>Rom hvor det kan forekomme fare for eksplosjon, må utgjøre en egen branncelle.</li>
+                              <li>Rom hvor det kan forekomme fare for eksplosjon, må ha minst én trykkavlastningsflate for å sikre mot skader på personer og byggverket forøvrig.</li>
+                              <li>Avlastet trykk må ledes bort i sikker retning.</li>
+                              <li>Trykkavlastningsflater må ikke plasseres i takflater og lignende med mindre det dokumenteres at snølast ikke er til hinder for avlastningsflatens funksjon.</li>
+                              <li>Bærende og branncellebegrensende bygningsdeler må om nødvendig forsterkes for å opprettholde rømningsveiers funksjon og forhindre spredning av brann til andre brannceller.</li>
+                            </ol>
+                          </div>
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Beskrivelse av tiltak</Label>
+                            <Textarea 
+                              value={formData.eksplosjon}
+                              onChange={(e) => setFormData({...formData, eksplosjon: e.target.value})}
+                              placeholder="Beskriv hvordan de preaksepterte ytelsene er ivaretatt..."
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.3 § 11-6 Tiltak mot brannspredning</Label>
