@@ -1696,9 +1696,19 @@ const Konsept = () => {
                         </Select>
                       </div>
                       {formData.eksplosjonRelevant === "ikke_relevant" && (
-                        <div className="p-3 bg-muted/50 border rounded-md">
+                        <div className="p-3 bg-muted/50 border rounded-md space-y-2">
                           <p className="text-sm text-muted-foreground">
                             RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket.
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Krav til sikkerhet ved eksplosjon er også gitt i andre regelverk som for eksempel{' '}
+                            <a href="https://lovdata.no/dokument/SF/forskrift/2009-06-08-602" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline">
+                              forskrift om håndtering av farlig stoff
+                            </a>{' '}
+                            og{' '}
+                            <a href="https://lovdata.no/dokument/SF/forskrift/2005-12-20-1626" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline">
+                              forskrift om elektriske forsyningsanlegg
+                            </a>.
                           </p>
                         </div>
                       )}
