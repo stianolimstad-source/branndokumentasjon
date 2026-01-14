@@ -682,7 +682,46 @@ const Konsept = () => {
               <tr>
                 <td className="border border-gray-400 p-2 font-semibold align-top">3.1 § 11-4 Bæreevne og stabilitet</td>
                 <td className="border border-gray-400 p-2 whitespace-pre-line">
-                  {formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`}
+                  {formData.harFlereRisikoklasser && formData.bygningsdeler.length > 0 ? (
+                    <>
+                      <p className="mb-2">Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann. Krav til brannmotstand for bærende konstruksjoner varierer mellom bygningsdelene:</p>
+                      <table className="w-full border-collapse border border-gray-300 text-xs mt-2">
+                        <thead>
+                          <tr className="bg-gray-50">
+                            <th className="border border-gray-300 p-1 text-left">Bygningsdel</th>
+                            <th className="border border-gray-300 p-1 text-left">Brannklasse</th>
+                            <th className="border border-gray-300 p-1 text-left">Krav til bæreevne</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {formData.bygningsdeler.map((del, index) => {
+                            const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+                            const brannmotstand = delBrannklasse === "BKL1" ? "R 30 / R 60" : 
+                                                  delBrannklasse === "BKL2" ? "R 60 / R 90" : 
+                                                  delBrannklasse === "BKL3" ? "R 90 / R 120" : 
+                                                  delBrannklasse === "BKL4" ? "R 120 / R 180" : "-";
+                            return (
+                              <tr key={del.id || index}>
+                                <td className="border border-gray-300 p-1">{del.navn || `Del ${index + 1}`}</td>
+                                <td className="border border-gray-300 p-1">{delBrannklasse || "-"}</td>
+                                <td className="border border-gray-300 p-1">{brannmotstand}</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                      <p className="mt-2 text-xs italic">Høyeste brannklasse ({(() => {
+                        const brannklasser = formData.bygningsdeler.map(d => d.brannklasse || getBrannklasse(d.risikoklasse, d.etasjer, d.harTerrengTilgang, d.areal).brannklasse);
+                        const sortertBrannklasser = brannklasser.sort((a, b) => {
+                          const orden = ["BKL4", "BKL3", "BKL2", "BKL1"];
+                          return orden.indexOf(a) - orden.indexOf(b);
+                        });
+                        return sortertBrannklasser[0] || "-";
+                      })()}) er dimensjonerende for felles bærende konstruksjoner.</p>
+                    </>
+                  ) : (
+                    formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`
+                  )}
                   {formData.baereevneKommentar && (
                     <>
                       <br /><br />
@@ -1051,8 +1090,27 @@ const Konsept = () => {
                   children: [
                     createTableCell("3.1 § 11-4 Bæreevne og stabilitet", true, 30),
                     createTableCell(
-                      (formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`) +
-                      (formData.baereevneKommentar ? `\n\nKommentar:\n${formData.baereevneKommentar}` : "")
+                      formData.harFlereRisikoklasser && formData.bygningsdeler.length > 0
+                        ? "Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann. Krav til brannmotstand for bærende konstruksjoner varierer mellom bygningsdelene:\n\n" +
+                          formData.bygningsdeler.map((del, index) => {
+                            const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+                            const brannmotstand = delBrannklasse === "BKL1" ? "R 30 / R 60" : 
+                                                  delBrannklasse === "BKL2" ? "R 60 / R 90" : 
+                                                  delBrannklasse === "BKL3" ? "R 90 / R 120" : 
+                                                  delBrannklasse === "BKL4" ? "R 120 / R 180" : "-";
+                            return `• ${del.navn || `Del ${index + 1}`} (${delBrannklasse}): ${brannmotstand}`;
+                          }).join("\n") +
+                          "\n\nHøyeste brannklasse (" + (() => {
+                            const brannklasser = formData.bygningsdeler.map(d => d.brannklasse || getBrannklasse(d.risikoklasse, d.etasjer, d.harTerrengTilgang, d.areal).brannklasse);
+                            const sortertBrannklasser = brannklasser.sort((a, b) => {
+                              const orden = ["BKL4", "BKL3", "BKL2", "BKL1"];
+                              return orden.indexOf(a) - orden.indexOf(b);
+                            });
+                            return sortertBrannklasser[0] || "-";
+                          })() + ") er dimensjonerende for felles bærende konstruksjoner." +
+                          (formData.baereevneKommentar ? `\n\nKommentar:\n${formData.baereevneKommentar}` : "")
+                        : (formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`) +
+                          (formData.baereevneKommentar ? `\n\nKommentar:\n${formData.baereevneKommentar}` : "")
                     ),
                   ],
                 }),
