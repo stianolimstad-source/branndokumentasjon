@@ -680,80 +680,69 @@ const Konsept = () => {
             </thead>
             <tbody>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.1 § 11-4 Bæreevne og stabilitet</td>
-                <td className="border border-gray-400 p-2 whitespace-pre-line">
-                  {formData.harFlereRisikoklasser && formData.bygningsdeler.length > 0 ? (
-                    <>
-                      <p className="mb-3">Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann. Krav til brannmotstand varierer mellom bygningsdelene:</p>
-                      
-                      {/* Tabell med krav per bygningsdel */}
-                      <table className="w-full border-collapse text-sm">
-                        <thead>
-                          <tr className="bg-blue-600 text-white">
-                            <th className="border border-blue-700 p-2 text-left font-semibold" colSpan={6}>
-                              Preaksepterte ytelser per bygningsdel (jf. VTEK § 11-4)
-                            </th>
-                          </tr>
-                          <tr className="bg-gray-100">
-                            <th className="border border-gray-300 p-2 text-left">Bygningsdel</th>
-                            <th className="border border-gray-300 p-2 text-center">Brannklasse</th>
-                            <th className="border border-gray-300 p-2 text-center">Hovedbæresystem</th>
-                            <th className="border border-gray-300 p-2 text-center">Sekundære bærende</th>
-                            <th className="border border-gray-300 p-2 text-center">Trappeløp</th>
-                            <th className="border border-gray-300 p-2 text-center">Under kjeller</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {formData.bygningsdeler.map((del, index) => {
-                            const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
-                            const bklNum = delBrannklasse?.replace("BKL", "") || "1";
-                            
-                            const krav = {
-                              "1": { hovedsystem: "R 30 [B 30]", sekundaer: "R 30 [B 30]", trappeløp: "-", kjeller: "R 60 A2-s1,d0 [A 60]" },
-                              "2": { hovedsystem: "R 60 [B 60]", sekundaer: "R 60 [B 60]", trappeløp: "R 30 [B 30]", kjeller: "R 90 A2-s1,d0 [A 90]" },
-                              "3": { hovedsystem: "R 90 A2-s1,d0 [A 90]", sekundaer: "R 60 A2-s1,d0 [A 60]", trappeløp: "R 30 A2-s1,d0 [A 30]", kjeller: "R 120 A2-s1,d0 [A 120]" },
-                              "4": { hovedsystem: "R 120 A2-s1,d0 [A 120]", sekundaer: "R 90 A2-s1,d0 [A 90]", trappeløp: "R 60 A2-s1,d0 [A 60]", kjeller: "R 120 A2-s1,d0 [A 120]" },
-                            };
-                            
-                            const delKrav = krav[bklNum] || krav["1"];
-                            
-                            return (
-                              <tr key={del.id || index}>
-                                <td className="border border-gray-300 p-2 font-medium">{del.navn || `Del ${index + 1}`}</td>
-                                <td className="border border-gray-300 p-2 text-center font-semibold">{delBrannklasse || "-"}</td>
-                                <td className="border border-gray-300 p-2 text-center">{delKrav.hovedsystem}</td>
-                                <td className="border border-gray-300 p-2 text-center">{delKrav.sekundaer}</td>
-                                <td className="border border-gray-300 p-2 text-center">{delKrav.trappeløp}</td>
-                                <td className="border border-gray-300 p-2 text-center">{delKrav.kjeller}</td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-
-                      <p className="text-sm italic mt-3">
-                        Høyeste brannklasse i tiltaket er {(() => {
-                          const brannklasser = formData.bygningsdeler.map(d => d.brannklasse || getBrannklasse(d.risikoklasse, d.etasjer, d.harTerrengTilgang, d.areal).brannklasse);
-                          const sortertBrannklasser = brannklasser.sort((a, b) => {
-                            const orden = ["BKL4", "BKL3", "BKL2", "BKL1"];
-                            return orden.indexOf(a) - orden.indexOf(b);
-                          });
-                          return sortertBrannklasser[0] || "-";
-                        })()}. Krav fra høyeste brannklasse er dimensjonerende for felles bærende konstruksjoner som betjener flere bygningsdeler.
-                      </p>
-                    </>
-                  ) : (
-                    formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`
-                  )}
+                <td className="border border-gray-400 p-2 font-semibold align-top" colSpan={2}>
+                  <div className="font-semibold mb-2">3.1 § 11-4 Bæreevne og stabilitet</div>
+                  <p className="font-normal mb-2">Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann.</p>
                   {formData.baereevneKommentar && (
-                    <>
-                      <br /><br />
-                      <span className="font-semibold">Kommentar:</span><br />
-                      {formData.baereevneKommentar}
-                    </>
+                    <p className="font-normal text-sm italic">Kommentar: {formData.baereevneKommentar}</p>
                   )}
                 </td>
               </tr>
+              {formData.harFlereRisikoklasser && formData.bygningsdeler.length > 0 && (
+                <>
+                  <tr className="bg-blue-600 text-white">
+                    <th className="border border-blue-700 p-2 text-left font-semibold" colSpan={2}>
+                      Preaksepterte ytelser per bygningsdel (jf. VTEK § 11-4)
+                    </th>
+                  </tr>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-300 p-2 text-left">Bygningsdel / Brannklasse</th>
+                    <th className="border border-gray-300 p-2 text-left">Krav til bærende konstruksjoner</th>
+                  </tr>
+                  {formData.bygningsdeler.map((del, index) => {
+                    const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+                    const bklNum = delBrannklasse?.replace("BKL", "") || "1";
+                    
+                    const krav: Record<string, { hovedsystem: string; sekundaer: string; trappeløp: string; kjeller: string }> = {
+                      "1": { hovedsystem: "R 30 [B 30]", sekundaer: "R 30 [B 30]", trappeløp: "-", kjeller: "R 60 A2-s1,d0 [A 60]" },
+                      "2": { hovedsystem: "R 60 [B 60]", sekundaer: "R 60 [B 60]", trappeløp: "R 30 [B 30]", kjeller: "R 90 A2-s1,d0 [A 90]" },
+                      "3": { hovedsystem: "R 90 A2-s1,d0 [A 90]", sekundaer: "R 60 A2-s1,d0 [A 60]", trappeløp: "R 30 A2-s1,d0 [A 30]", kjeller: "R 120 A2-s1,d0 [A 120]" },
+                      "4": { hovedsystem: "R 120 A2-s1,d0 [A 120]", sekundaer: "R 90 A2-s1,d0 [A 90]", trappeløp: "R 60 A2-s1,d0 [A 60]", kjeller: "R 120 A2-s1,d0 [A 120]" },
+                    };
+                    
+                    const delKrav = krav[bklNum] || krav["1"];
+                    
+                    return (
+                      <tr key={del.id || index}>
+                        <td className="border border-gray-300 p-2 font-medium">
+                          {del.navn || `Del ${index + 1}`}<br/>
+                          <span className="text-xs text-gray-600">({delBrannklasse || "-"})</span>
+                        </td>
+                        <td className="border border-gray-300 p-2 text-sm">
+                          <div className="grid grid-cols-2 gap-1">
+                            <div><strong>Hovedbæresystem:</strong> {delKrav.hovedsystem}</div>
+                            <div><strong>Sekundære bærende:</strong> {delKrav.sekundaer}</div>
+                            <div><strong>Trappeløp:</strong> {delKrav.trappeløp}</div>
+                            <div><strong>Under kjeller:</strong> {delKrav.kjeller}</div>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  <tr>
+                    <td className="border border-gray-300 p-2 italic text-sm" colSpan={2}>
+                      Høyeste brannklasse i tiltaket er {(() => {
+                        const brannklasser = formData.bygningsdeler.map(d => d.brannklasse || getBrannklasse(d.risikoklasse, d.etasjer, d.harTerrengTilgang, d.areal).brannklasse);
+                        const sortertBrannklasser = brannklasser.sort((a, b) => {
+                          const orden = ["BKL4", "BKL3", "BKL2", "BKL1"];
+                          return orden.indexOf(a) - orden.indexOf(b);
+                        });
+                        return sortertBrannklasser[0] || "-";
+                      })()}. Krav fra høyeste brannklasse er dimensjonerende for felles bærende konstruksjoner som betjener flere bygningsdeler.
+                    </td>
+                  </tr>
+                </>
+              )}
               <tr>
                 <td className="border border-gray-400 p-2 font-semibold align-top">3.2 § 11-5 Sikkerhet ved eksplosjon</td>
                 <td className="border border-gray-400 p-2">
