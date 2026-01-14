@@ -1861,9 +1861,13 @@ const Konsept = () => {
                                       />
                                     </div>
                                     <div>
-                                      <Label className="text-xs font-medium mb-1 block">Antall etasjer</Label>
+                                      <Label className="text-xs font-medium mb-1 block">
+                                        Antall etasjer
+                                        <span className="text-muted-foreground font-normal ml-1">(totalt for bygget)</span>
+                                      </Label>
                                       <Input 
                                         value={del.etasjer}
+                                        placeholder="Oppgi totalt antall etasjer for hele bygget"
                                         onChange={(e) => {
                                           const updated = [...formData.bygningsdeler];
                                           updated[index] = {...updated[index], etasjer: e.target.value};
