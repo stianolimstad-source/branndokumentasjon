@@ -263,6 +263,19 @@ const Konsept = () => {
   );
   const [conceptName, setConceptName] = useState("");
 
+  // Type for bygningsdeler med egen risikoklasse
+  type Bygningsdel = {
+    id: string;
+    navn: string;
+    bygningstype: string;
+    risikoklasse: string;
+    brannklasse: string;
+    brannklasseUnntak: string;
+    harTerrengTilgang: string;
+    areal: string;
+    etasjer: string;
+  };
+
   const [formData, setFormData] = useState({
     // 1. Innledning
     oppdragsgiver: "",
@@ -286,6 +299,8 @@ const Konsept = () => {
     avgrensning: "",
     // 2. Grunnlag og forutsetninger
     grunnlagsdokumenter: [] as Array<{navn: string, dato: string}>,
+    harFlereRisikoklasser: false, // Nytt felt for å aktivere flere risikoklasser
+    bygningsdeler: [] as Bygningsdel[], // Array med bygningsdeler med egne risikoklasser
     risikoklasse: "",
     brannklasse: "",
     brannklasseBegrunnelse: "", // Begrunnelse hvis manuelt overstyrt
@@ -582,27 +597,70 @@ const Konsept = () => {
           <p className="ml-4 mb-3">[Liste over tegninger og dokumenter]</p>
 
           <h3 className="font-semibold mb-2">2.2 Beskrivelse av bygning og branntekniske forutsetninger</h3>
-          <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
-            <tbody>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold w-1/3">Risikoklasse</td>
-                <td className="border border-gray-400 p-2">{formData.risikoklasse || "[Angis]"}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold">Brannklasse</td>
-                <td className="border border-gray-400 p-2">
-                  {formData.brannklasse || "[Angis]"}
-                  {formData.brannklasseUnntak && (
-                    <span className="block text-blue-600 text-xs mt-1 italic">{formData.brannklasseUnntak}</span>
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold">Bæresystem</td>
-                <td className="border border-gray-400 p-2">{formData.baeresystem || "[Angis]"}</td>
-              </tr>
-            </tbody>
-          </table>
+          {formData.harFlereRisikoklasser && formData.bygningsdeler.length > 0 ? (
+            /* Visning for flere risikoklasser */
+            <>
+              <p className="ml-4 mb-2 text-xs italic">Bygget inneholder flere bygningsdeler med ulike risikoklasser:</p>
+              <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-400 p-2 text-left">Bygningsdel</th>
+                    <th className="border border-gray-400 p-2 text-left">Bygningstype</th>
+                    <th className="border border-gray-400 p-2 text-left">Areal</th>
+                    <th className="border border-gray-400 p-2 text-left">Etasjer</th>
+                    <th className="border border-gray-400 p-2 text-left">Risikoklasse</th>
+                    <th className="border border-gray-400 p-2 text-left">Brannklasse</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {formData.bygningsdeler.map((del, index) => {
+                    const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+                    return (
+                      <tr key={del.id || index}>
+                        <td className="border border-gray-400 p-2">{del.navn || `Del ${index + 1}`}</td>
+                        <td className="border border-gray-400 p-2">{del.bygningstype || "-"}</td>
+                        <td className="border border-gray-400 p-2">{del.areal ? `${del.areal} m²` : "-"}</td>
+                        <td className="border border-gray-400 p-2">{del.etasjer || "-"}</td>
+                        <td className="border border-gray-400 p-2">{del.risikoklasse || "-"}</td>
+                        <td className="border border-gray-400 p-2">{delBrannklasse || "-"}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+                <tbody>
+                  <tr>
+                    <td className="border border-gray-400 p-2 font-semibold w-1/3">Bæresystem</td>
+                    <td className="border border-gray-400 p-2">{formData.baeresystem || "[Angis]"}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </>
+          ) : (
+            /* Standard visning - én risikoklasse */
+            <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+              <tbody>
+                <tr>
+                  <td className="border border-gray-400 p-2 font-semibold w-1/3">Risikoklasse</td>
+                  <td className="border border-gray-400 p-2">{formData.risikoklasse || "[Angis]"}</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 font-semibold">Brannklasse</td>
+                  <td className="border border-gray-400 p-2">
+                    {formData.brannklasse || "[Angis]"}
+                    {formData.brannklasseUnntak && (
+                      <span className="block text-blue-600 text-xs mt-1 italic">{formData.brannklasseUnntak}</span>
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 font-semibold">Bæresystem</td>
+                  <td className="border border-gray-400 p-2">{formData.baeresystem || "[Angis]"}</td>
+                </tr>
+              </tbody>
+            </table>
+          )}
 
           <h3 className="font-semibold mb-2">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</h3>
           <p className="ml-4 mb-3">[Eventuelle tilleggskrav beskrives]</p>
@@ -890,34 +948,80 @@ const Konsept = () => {
               children: [new TextRun({ text: "2.2 Beskrivelse av bygning og branntekniske forutsetninger", bold: true, size: 24 })],
               spacing: { before: 200, after: 100 },
             }),
-            // Tabell 2.2
-            new Table({
-              width: { size: 100, type: WidthType.PERCENTAGE },
-              rows: [
-                new TableRow({
-                  children: [
-                    createTableCell("Risikoklasse", true, 33),
-                    createTableCell(formData.risikoklasse || "[Angis]"),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    createTableCell("Brannklasse", true, 33),
-                    createTableCell(
-                      (formData.brannklasse || "[Angis]") +
-                      // Ikke inkluder unntak for RK5 (forsamlingslokale/salgslokale) i dokumentet
-                      (formData.brannklasseUnntak && !formData.brannklasseUnntak.includes("preakseptert ytelse nr. 4") ? `\n\n${formData.brannklasseUnntak}` : "")
-                    ),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    createTableCell("Bæresystem", true, 33),
-                    createTableCell(formData.baeresystem || "[Angis]"),
-                  ],
-                }),
-              ],
-            }),
+            // Tabell 2.2 - Håndter flere risikoklasser
+            ...(formData.harFlereRisikoklasser && formData.bygningsdeler.length > 0 ? [
+              new Paragraph({
+                children: [new TextRun({ text: "Bygget inneholder flere bygningsdeler med ulike risikoklasser:", italics: true })],
+                spacing: { after: 100 },
+              }),
+              new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
+                  new TableRow({
+                    children: [
+                      createTableCell("Bygningsdel", true, 20),
+                      createTableCell("Bygningstype", true, 25),
+                      createTableCell("Areal", true, 12),
+                      createTableCell("Etasjer", true, 10),
+                      createTableCell("Risikoklasse", true, 15),
+                      createTableCell("Brannklasse", true, 18),
+                    ],
+                  }),
+                  ...formData.bygningsdeler.map((del, index) => {
+                    const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+                    return new TableRow({
+                      children: [
+                        createTableCell(del.navn || `Del ${index + 1}`, false, 20),
+                        createTableCell(del.bygningstype || "-", false, 25),
+                        createTableCell(del.areal ? `${del.areal} m²` : "-", false, 12),
+                        createTableCell(del.etasjer || "-", false, 10),
+                        createTableCell(del.risikoklasse || "-", false, 15),
+                        createTableCell(delBrannklasse || "-", false, 18),
+                      ],
+                    });
+                  }),
+                ],
+              }),
+              new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
+                  new TableRow({
+                    children: [
+                      createTableCell("Bæresystem", true, 33),
+                      createTableCell(formData.baeresystem || "[Angis]"),
+                    ],
+                  }),
+                ],
+              }),
+            ] : [
+              new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
+                  new TableRow({
+                    children: [
+                      createTableCell("Risikoklasse", true, 33),
+                      createTableCell(formData.risikoklasse || "[Angis]"),
+                    ],
+                  }),
+                  new TableRow({
+                    children: [
+                      createTableCell("Brannklasse", true, 33),
+                      createTableCell(
+                        (formData.brannklasse || "[Angis]") +
+                        // Ikke inkluder unntak for RK5 (forsamlingslokale/salgslokale) i dokumentet
+                        (formData.brannklasseUnntak && !formData.brannklasseUnntak.includes("preakseptert ytelse nr. 4") ? `\n\n${formData.brannklasseUnntak}` : "")
+                      ),
+                    ],
+                  }),
+                  new TableRow({
+                    children: [
+                      createTableCell("Bæresystem", true, 33),
+                      createTableCell(formData.baeresystem || "[Angis]"),
+                    ],
+                  }),
+                ],
+              }),
+            ]),
             new Paragraph({
               children: [new TextRun({ text: "2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker", bold: true, size: 24 })],
               spacing: { before: 200, after: 100 },
@@ -1524,92 +1628,388 @@ const Konsept = () => {
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.3 Branntekniske forutsetninger</Label>
                       <div className="space-y-3">
-                        <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <Label className="text-xs font-medium mb-1 block">Risikoklasse</Label>
-                            <Select 
-                              value={formData.risikoklasse}
-                              onValueChange={(value) => setFormData({...formData, risikoklasse: value})}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Velg" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="RK1">RK 1</SelectItem>
-                                <SelectItem value="RK2">RK 2</SelectItem>
-                                <SelectItem value="RK3">RK 3</SelectItem>
-                                <SelectItem value="RK4">RK 4</SelectItem>
-                                <SelectItem value="RK5">RK 5</SelectItem>
-                                <SelectItem value="RK6">RK 6</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div>
-                            <Label className="text-xs font-medium mb-1 block">
-                              Brannklasse
-                              {beregnetBrannklasseResult.brannklasse && (
-                                <span className="text-muted-foreground ml-2">(Automatisk: {beregnetBrannklasseResult.brannklasse})</span>
-                              )}
-                            </Label>
-                            <Select 
-                              value={formData.brannklasse} 
-                              onValueChange={(value) => setFormData({...formData, brannklasse: value})}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Velg" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="BKL1">BKL 1</SelectItem>
-                                <SelectItem value="BKL2">BKL 2</SelectItem>
-                                <SelectItem value="BKL3">BKL 3</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          {/* Vis spørsmål om terreng-tilgang for RK4 med nøyaktig 3 etasjer */}
-                          {formData.risikoklasse === "RK4" && parseInt(formData.etasjer, 10) === 3 && (
-                            <div className="col-span-2 p-3 bg-amber-50 border border-amber-200 rounded-md">
-                              <Label className="text-xs font-medium mb-2 block text-amber-700">
-                                Har alle boenheter utgang direkte til terreng, uten å måtte rømme via trapp eller trapperom?
-                              </Label>
-                              <p className="text-xs text-amber-600 mb-2">
-                                Dette er nødvendig for å kunne benytte unntak for plassering i brannklasse 1 (jf. VTEK § 11-3, preakseptert ytelse nr. 3).
-                              </p>
+                        {/* Toggle for flere risikoklasser */}
+                        <div className="flex items-center gap-2 p-3 bg-muted/30 border rounded-md">
+                          <input
+                            type="checkbox"
+                            id="harFlereRisikoklasser"
+                            checked={formData.harFlereRisikoklasser}
+                            onChange={(e) => setFormData({...formData, harFlereRisikoklasser: e.target.checked})}
+                            className="h-4 w-4"
+                          />
+                          <Label htmlFor="harFlereRisikoklasser" className="text-sm cursor-pointer">
+                            Tiltaket/bygget har flere risikoklasser eller brannklasser
+                          </Label>
+                        </div>
+
+                        {!formData.harFlereRisikoklasser ? (
+                          /* Enkel visning - én risikoklasse */
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <Label className="text-xs font-medium mb-1 block">Risikoklasse</Label>
                               <Select 
-                                value={formData.harTerrengTilgang}
-                                onValueChange={(value) => setFormData({...formData, harTerrengTilgang: value})}
+                                value={formData.risikoklasse}
+                                onValueChange={(value) => setFormData({...formData, risikoklasse: value})}
                               >
-                                <SelectTrigger className="bg-white">
-                                  <SelectValue placeholder="Velg svar" />
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Velg" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="ja">Ja - alle boenheter har direkte terreng-tilgang</SelectItem>
-                                  <SelectItem value="nei">Nei - ikke alle boenheter har direkte terreng-tilgang</SelectItem>
+                                  <SelectItem value="RK1">RK 1</SelectItem>
+                                  <SelectItem value="RK2">RK 2</SelectItem>
+                                  <SelectItem value="RK3">RK 3</SelectItem>
+                                  <SelectItem value="RK4">RK 4</SelectItem>
+                                  <SelectItem value="RK5">RK 5</SelectItem>
+                                  <SelectItem value="RK6">RK 6</SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>
-                          )}
-                          {formData.brannklasseUnntak && (
-                            <div className="col-span-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                              <Label className="text-xs font-medium mb-1 block text-blue-700">
-                                Unntak fra VTEK § 11-3
+                            <div>
+                              <Label className="text-xs font-medium mb-1 block">
+                                Brannklasse
+                                {beregnetBrannklasseResult.brannklasse && (
+                                  <span className="text-muted-foreground ml-2">(Automatisk: {beregnetBrannklasseResult.brannklasse})</span>
+                                )}
                               </Label>
-                              <p className="text-xs text-blue-600">{formData.brannklasseUnntak}</p>
+                              <Select 
+                                value={formData.brannklasse} 
+                                onValueChange={(value) => setFormData({...formData, brannklasse: value})}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Velg" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="BKL1">BKL 1</SelectItem>
+                                  <SelectItem value="BKL2">BKL 2</SelectItem>
+                                  <SelectItem value="BKL3">BKL 3</SelectItem>
+                                </SelectContent>
+                              </Select>
                             </div>
-                          )}
-                          {erBrannklasseOverstyrt && (
-                            <div className="col-span-2">
-                              <Label className="text-xs font-medium mb-1 block text-amber-600">
-                                Begrunnelse for avvik fra automatisk brannklasse ({beregnetBrannklasseResult.brannklasse})
-                              </Label>
-                              <Textarea 
-                                value={formData.brannklasseBegrunnelse}
-                                onChange={(e) => setFormData({...formData, brannklasseBegrunnelse: e.target.value})}
-                                placeholder="Forklar hvorfor brannklassen avviker fra tabellverdien (f.eks. preaksepterte ytelser punkt 3-7)"
-                                className="border-amber-300"
-                              />
+                            {/* Vis spørsmål om terreng-tilgang for RK4 med nøyaktig 3 etasjer */}
+                            {formData.risikoklasse === "RK4" && parseInt(formData.etasjer, 10) === 3 && (
+                              <div className="col-span-2 p-3 bg-amber-50 border border-amber-200 rounded-md">
+                                <Label className="text-xs font-medium mb-2 block text-amber-700">
+                                  Har alle boenheter utgang direkte til terreng, uten å måtte rømme via trapp eller trapperom?
+                                </Label>
+                                <p className="text-xs text-amber-600 mb-2">
+                                  Dette er nødvendig for å kunne benytte unntak for plassering i brannklasse 1 (jf. VTEK § 11-3, preakseptert ytelse nr. 3).
+                                </p>
+                                <Select 
+                                  value={formData.harTerrengTilgang}
+                                  onValueChange={(value) => setFormData({...formData, harTerrengTilgang: value})}
+                                >
+                                  <SelectTrigger className="bg-white">
+                                    <SelectValue placeholder="Velg svar" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="ja">Ja - alle boenheter har direkte terreng-tilgang</SelectItem>
+                                    <SelectItem value="nei">Nei - ikke alle boenheter har direkte terreng-tilgang</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            )}
+                            {formData.brannklasseUnntak && (
+                              <div className="col-span-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                                <Label className="text-xs font-medium mb-1 block text-blue-700">
+                                  Unntak fra VTEK § 11-3
+                                </Label>
+                                <p className="text-xs text-blue-600">{formData.brannklasseUnntak}</p>
+                              </div>
+                            )}
+                            {erBrannklasseOverstyrt && (
+                              <div className="col-span-2">
+                                <Label className="text-xs font-medium mb-1 block text-amber-600">
+                                  Begrunnelse for avvik fra automatisk brannklasse ({beregnetBrannklasseResult.brannklasse})
+                                </Label>
+                                <Textarea 
+                                  value={formData.brannklasseBegrunnelse}
+                                  onChange={(e) => setFormData({...formData, brannklasseBegrunnelse: e.target.value})}
+                                  placeholder="Forklar hvorfor brannklassen avviker fra tabellverdien (f.eks. preaksepterte ytelser punkt 3-7)"
+                                  className="border-amber-300"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          /* Avansert visning - flere risikoklasser */
+                          <div className="space-y-4">
+                            <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                              <p className="text-xs text-blue-700">
+                                Legg til de ulike delene av bygget med hver sin risikoklasse. Eksempel: Et bygg kan ha butikk (RK5) i 1. etasje og boliger (RK4) over.
+                              </p>
                             </div>
-                          )}
-                        </div>
+                            
+                            {/* Liste over bygningsdeler */}
+                            {formData.bygningsdeler.map((del, index) => {
+                              const delBrannklasseResult = getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal);
+                              return (
+                                <div key={del.id} className="p-4 border rounded-lg bg-background space-y-3">
+                                  <div className="flex items-center justify-between">
+                                    <Label className="text-sm font-semibold">Bygningsdel {index + 1}</Label>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => {
+                                        const updated = formData.bygningsdeler.filter((_, i) => i !== index);
+                                        setFormData({...formData, bygningsdeler: updated});
+                                      }}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                  
+                                  <div>
+                                    <Label className="text-xs font-medium mb-1 block">Navn på bygningsdel</Label>
+                                    <Input
+                                      placeholder="F.eks. Butikklokale, Boligdel, Parkeringskjeller..."
+                                      value={del.navn}
+                                      onChange={(e) => {
+                                        const updated = [...formData.bygningsdeler];
+                                        updated[index] = {...updated[index], navn: e.target.value};
+                                        setFormData({...formData, bygningsdeler: updated});
+                                      }}
+                                    />
+                                  </div>
+
+                                  <div>
+                                    <Label className="text-xs font-medium mb-1 block">Bygningstype</Label>
+                                    <Select 
+                                      value={del.bygningstype}
+                                      onValueChange={(value) => {
+                                        const risikoklasse = bygningsTypeRisikoklasseMap[value] || "";
+                                        const updated = [...formData.bygningsdeler];
+                                        updated[index] = {...updated[index], bygningstype: value, risikoklasse: risikoklasse};
+                                        setFormData({...formData, bygningsdeler: updated});
+                                      }}
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Velg bygningstype" />
+                                      </SelectTrigger>
+                                      <SelectContent className="max-h-[300px]">
+                                        {/* Risikoklasse 1 */}
+                                        <SelectItem value="Arbeidsbrakke">Arbeidsbrakke</SelectItem>
+                                        <SelectItem value="Båtnaust">Båtnaust</SelectItem>
+                                        <SelectItem value="Carport">Carport</SelectItem>
+                                        <SelectItem value="Flyhangar">Flyhangar</SelectItem>
+                                        <SelectItem value="Fryselager">Fryselager</SelectItem>
+                                        <SelectItem value="Garasje og parkeringshus med én etasje">Garasje og parkeringshus med én etasje</SelectItem>
+                                        <SelectItem value="Sagbruk">Sagbruk</SelectItem>
+                                        <SelectItem value="Skur">Skur</SelectItem>
+                                        <SelectItem value="Trelastopplag">Trelastopplag</SelectItem>
+                                        {/* Risikoklasse 2 */}
+                                        <SelectItem value="Brannstasjon uten døgnbemanning">Brannstasjon uten døgnbemanning</SelectItem>
+                                        <SelectItem value="Driftsbygning med husdyrrom">Driftsbygning med husdyrrom</SelectItem>
+                                        <SelectItem value="Industri">Industri</SelectItem>
+                                        <SelectItem value="Kantine beregnet for egne ansatte til og med 150 personer">Kantine beregnet for egne ansatte til og med 150 personer</SelectItem>
+                                        <SelectItem value="Kjemisk fabrikk og kjemikalielager">Kjemisk fabrikk og kjemikalielager</SelectItem>
+                                        <SelectItem value="Kontor">Kontor</SelectItem>
+                                        <SelectItem value="Laboratorium">Laboratorium</SelectItem>
+                                        <SelectItem value="Lager">Lager</SelectItem>
+                                        <SelectItem value="Parkeringshus og garasje med to eller flere etasjer eller plan">Parkeringshus og garasje med to eller flere etasjer</SelectItem>
+                                        <SelectItem value="Parkeringskjeller og garasje under terreng">Parkeringskjeller og garasje under terreng</SelectItem>
+                                        <SelectItem value="Sprengstoffindustri">Sprengstoffindustri</SelectItem>
+                                        <SelectItem value="Trafo eller fordelingsstasjon">Trafo eller fordelingsstasjon</SelectItem>
+                                        {/* Risikoklasse 3 */}
+                                        <SelectItem value="Barnehage">Barnehage</SelectItem>
+                                        <SelectItem value="Skole">Skole</SelectItem>
+                                        {/* Risikoklasse 4 */}
+                                        <SelectItem value="Barnehjem">Barnehjem</SelectItem>
+                                        <SelectItem value="Bolig">Bolig</SelectItem>
+                                        <SelectItem value="Boligbrakke">Boligbrakke</SelectItem>
+                                        <SelectItem value="Brannstasjon med døgnbemanning">Brannstasjon med døgnbemanning</SelectItem>
+                                        <SelectItem value="Fritidsbolig, inkl. selvbetjente hytter, campinghytter og campingenheter">Fritidsbolig, inkl. hytter og campingenheter</SelectItem>
+                                        <SelectItem value="Internat">Internat</SelectItem>
+                                        <SelectItem value="Studentbolig">Studentbolig</SelectItem>
+                                        {/* Risikoklasse 5 */}
+                                        <SelectItem value="Forsamlingslokale">Forsamlingslokale</SelectItem>
+                                        <SelectItem value="Idrettshall">Idrettshall</SelectItem>
+                                        <SelectItem value="Kantine beregnet for utleie eller for mer enn 150 personer">Kantine for utleie/mer enn 150 personer</SelectItem>
+                                        <SelectItem value="Kinolokale">Kinolokale</SelectItem>
+                                        <SelectItem value="Kirke">Kirke</SelectItem>
+                                        <SelectItem value="Kongressenter">Kongressenter</SelectItem>
+                                        <SelectItem value="Messelokale">Messelokale</SelectItem>
+                                        <SelectItem value="Museum">Museum</SelectItem>
+                                        <SelectItem value="Salgslokale">Salgslokale</SelectItem>
+                                        <SelectItem value="Teaterlokale">Teaterlokale</SelectItem>
+                                        <SelectItem value="Trafikkterminaler">Trafikkterminaler</SelectItem>
+                                        <SelectItem value="Tribuneanlegg for mer enn 150 personer">Tribuneanlegg for mer enn 150 personer</SelectItem>
+                                        {/* Risikoklasse 6 */}
+                                        <SelectItem value="Arrestlokaler og fengsel">Arrestlokaler og fengsel</SelectItem>
+                                        <SelectItem value="Asylmottak og transittmottak">Asylmottak og transittmottak</SelectItem>
+                                        <SelectItem value="Bolig beregnet for personer med behov for heldøgns pleie og omsorg">Bolig for heldøgns pleie og omsorg</SelectItem>
+                                        <SelectItem value="Bolig spesielt tilrettelagt og beregnet for personer med funksjonsnedsettelse, inkl. alders- og seniorboliger">Bolig for funksjonsnedsettelse/seniorboliger</SelectItem>
+                                        <SelectItem value="Forlegning og leirskole">Forlegning og leirskole</SelectItem>
+                                        <SelectItem value="Overnattingssted og hotell">Overnattingssted og hotell</SelectItem>
+                                        <SelectItem value="Pleieinstitusjon">Pleieinstitusjon</SelectItem>
+                                        <SelectItem value="Sykehus og sykehjem">Sykehus og sykehjem</SelectItem>
+                                        <SelectItem value="Turisthytte og vandrerhjem">Turisthytte og vandrerhjem</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <div>
+                                      <Label className="text-xs font-medium mb-1 block">Areal (m²)</Label>
+                                      <Input 
+                                        value={del.areal}
+                                        onChange={(e) => {
+                                          const updated = [...formData.bygningsdeler];
+                                          updated[index] = {...updated[index], areal: e.target.value};
+                                          setFormData({...formData, bygningsdeler: updated});
+                                        }}
+                                      />
+                                    </div>
+                                    <div>
+                                      <Label className="text-xs font-medium mb-1 block">Antall etasjer</Label>
+                                      <Input 
+                                        value={del.etasjer}
+                                        onChange={(e) => {
+                                          const updated = [...formData.bygningsdeler];
+                                          updated[index] = {...updated[index], etasjer: e.target.value};
+                                          setFormData({...formData, bygningsdeler: updated});
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <div>
+                                      <Label className="text-xs font-medium mb-1 block">Risikoklasse</Label>
+                                      <Select 
+                                        value={del.risikoklasse}
+                                        onValueChange={(value) => {
+                                          const updated = [...formData.bygningsdeler];
+                                          updated[index] = {...updated[index], risikoklasse: value};
+                                          setFormData({...formData, bygningsdeler: updated});
+                                        }}
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Velg" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="RK1">RK 1</SelectItem>
+                                          <SelectItem value="RK2">RK 2</SelectItem>
+                                          <SelectItem value="RK3">RK 3</SelectItem>
+                                          <SelectItem value="RK4">RK 4</SelectItem>
+                                          <SelectItem value="RK5">RK 5</SelectItem>
+                                          <SelectItem value="RK6">RK 6</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    <div>
+                                      <Label className="text-xs font-medium mb-1 block">
+                                        Brannklasse
+                                        {delBrannklasseResult.brannklasse && (
+                                          <span className="text-muted-foreground ml-1 text-xs">(Auto: {delBrannklasseResult.brannklasse})</span>
+                                        )}
+                                      </Label>
+                                      <Select 
+                                        value={del.brannklasse || delBrannklasseResult.brannklasse}
+                                        onValueChange={(value) => {
+                                          const updated = [...formData.bygningsdeler];
+                                          updated[index] = {...updated[index], brannklasse: value};
+                                          setFormData({...formData, bygningsdeler: updated});
+                                        }}
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Velg" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="BKL1">BKL 1</SelectItem>
+                                          <SelectItem value="BKL2">BKL 2</SelectItem>
+                                          <SelectItem value="BKL3">BKL 3</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  </div>
+
+                                  {/* Vis spørsmål om terreng-tilgang for RK4 med nøyaktig 3 etasjer */}
+                                  {del.risikoklasse === "RK4" && parseInt(del.etasjer, 10) === 3 && (
+                                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-md">
+                                      <Label className="text-xs font-medium mb-2 block text-amber-700">
+                                        Har alle boenheter utgang direkte til terreng?
+                                      </Label>
+                                      <Select 
+                                        value={del.harTerrengTilgang}
+                                        onValueChange={(value) => {
+                                          const updated = [...formData.bygningsdeler];
+                                          updated[index] = {...updated[index], harTerrengTilgang: value};
+                                          setFormData({...formData, bygningsdeler: updated});
+                                        }}
+                                      >
+                                        <SelectTrigger className="bg-white">
+                                          <SelectValue placeholder="Velg svar" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          <SelectItem value="ja">Ja - direkte terreng-tilgang</SelectItem>
+                                          <SelectItem value="nei">Nei</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                  )}
+
+                                  {delBrannklasseResult.brannklasseUnntak && (
+                                    <div className="p-2 bg-blue-50 border border-blue-200 rounded-md">
+                                      <p className="text-xs text-blue-600">{delBrannklasseResult.brannklasseUnntak}</p>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                            
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                const newDel = {
+                                  id: crypto.randomUUID(),
+                                  navn: "",
+                                  bygningstype: "",
+                                  risikoklasse: "",
+                                  brannklasse: "",
+                                  brannklasseUnntak: "",
+                                  harTerrengTilgang: "",
+                                  areal: "",
+                                  etasjer: formData.etasjer || "", // Arv antall etasjer fra hovedskjema
+                                };
+                                setFormData({
+                                  ...formData,
+                                  bygningsdeler: [...formData.bygningsdeler, newDel]
+                                });
+                              }}
+                            >
+                              <Plus className="h-4 w-4 mr-1" /> Legg til bygningsdel
+                            </Button>
+
+                            {/* Oppsummering av høyeste brannklasse */}
+                            {formData.bygningsdeler.length > 0 && (
+                              <div className="p-3 bg-green-50 border border-green-200 rounded-md">
+                                <Label className="text-xs font-medium mb-1 block text-green-700">
+                                  Oppsummering
+                                </Label>
+                                <p className="text-xs text-green-700">
+                                  {(() => {
+                                    const risikoklasser = formData.bygningsdeler.map(d => d.risikoklasse).filter(Boolean);
+                                    const brannklasser = formData.bygningsdeler.map(d => {
+                                      const result = getBrannklasse(d.risikoklasse, d.etasjer, d.harTerrengTilgang, d.areal);
+                                      return d.brannklasse || result.brannklasse;
+                                    }).filter(Boolean);
+                                    
+                                    const hoyesteBrannklasse = brannklasser.reduce((max, bkl) => {
+                                      const num = parseInt(bkl.replace(/\D/g, ''), 10);
+                                      const maxNum = parseInt(max.replace(/\D/g, ''), 10) || 0;
+                                      return num > maxNum ? bkl : max;
+                                    }, "BKL1");
+
+                                    return `Risikoklasser: ${[...new Set(risikoklasser)].join(", ") || "Ikke angitt"} | Høyeste brannklasse: ${hoyesteBrannklasse}`;
+                                  })()}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                     <div className="space-y-2">
