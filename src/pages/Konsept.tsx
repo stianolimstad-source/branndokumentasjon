@@ -723,9 +723,9 @@ const Konsept = () => {
               {/* VTEK § 11-4 krav som egne rader */}
               {formData.harFlereRisikoklasser && formData.bygningsdeler.length > 0 && (
                 <>
-                  <tr className="bg-gray-50">
-                    <td className="border border-gray-400 p-2 pl-6 align-top" colSpan={2}>
-                      <span className="font-semibold">Preaksepterte ytelser for bærende konstruksjoner (jf. VTEK § 11-4):</span>
+                  <tr className="bg-blue-600">
+                    <td className="border border-blue-700 p-2 align-top" colSpan={2}>
+                      <span className="font-semibold text-white">§11-4 Bæreevne og stabilitet</span>
                     </td>
                   </tr>
                   <tr>
@@ -1143,8 +1143,15 @@ const Konsept = () => {
                 ...(formData.harFlereRisikoklasser && formData.bygningsdeler.length > 0 ? [
                   new TableRow({
                     children: [
-                      createTableCell("Preaksepterte ytelser (VTEK § 11-4)", true, 30),
-                      createTableCell(""),
+                      new TableCell({
+                        children: [new Paragraph({ children: [new TextRun({ text: "§11-4 Bæreevne og stabilitet", bold: true, color: "FFFFFF" })] })],
+                        width: { size: 30, type: WidthType.PERCENTAGE },
+                        shading: { fill: "2563EB" },
+                      }),
+                      new TableCell({
+                        children: [new Paragraph({ text: "" })],
+                        shading: { fill: "2563EB" },
+                      }),
                     ],
                   }),
                   new TableRow({
