@@ -686,7 +686,7 @@ const Konsept = () => {
                     <>
                       <p className="mb-2">Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann. Krav til brannmotstand varierer mellom bygningsdelene:</p>
                       
-                      <ul className="text-sm mb-2 ml-4 list-disc">
+                      <ul className="text-sm mb-3 ml-4 list-disc">
                         {formData.bygningsdeler.map((del, index) => {
                           const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
                           return (
@@ -697,7 +697,7 @@ const Konsept = () => {
                         })}
                       </ul>
 
-                      <p className="text-sm italic">
+                      <p className="text-sm italic mb-3">
                         Høyeste brannklasse i tiltaket er {(() => {
                           const brannklasser = formData.bygningsdeler.map(d => d.brannklasse || getBrannklasse(d.risikoklasse, d.etasjer, d.harTerrengTilgang, d.areal).brannklasse);
                           const sortertBrannklasser = brannklasser.sort((a, b) => {
@@ -707,6 +707,43 @@ const Konsept = () => {
                           return sortertBrannklasser[0] || "-";
                         })()}. Krav fra høyeste brannklasse er dimensjonerende for felles bærende konstruksjoner som betjener flere bygningsdeler.
                       </p>
+
+                      {/* VTEK-tabell integrert i cellen */}
+                      <table className="w-full border-collapse text-sm mt-2">
+                        <thead>
+                          <tr className="bg-blue-600 text-white">
+                            <th className="border border-blue-700 p-2 text-left font-semibold" colSpan={2}>
+                              Preaksepterte ytelser (jf. VTEK § 11-4)
+                            </th>
+                          </tr>
+                          <tr className="bg-gray-100">
+                            <th className="border border-gray-300 p-2 text-left">Bygningsdel</th>
+                            <th className="border border-gray-300 p-2 text-left">Krav etter brannklasse</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td className="border border-gray-300 p-2">Bærende hovedsystem</td>
+                            <td className="border border-gray-300 p-2">BKL 1: R 30 [B 30] | BKL 2: R 60 [B 60] | BKL 3: R 90 A2-s1,d0 [A 90]</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-300 p-2">Sekundære bærende bygningsdeler, etasjeskillere og takkonstruksjoner</td>
+                            <td className="border border-gray-300 p-2">BKL 1: R 30 [B 30] | BKL 2: R 60 [B 60] | BKL 3: R 60 A2-s1,d0 [A 60]</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-300 p-2">Trappeløp</td>
+                            <td className="border border-gray-300 p-2">BKL 1: - | BKL 2: R 30 [B 30] | BKL 3: R 30 A2-s1,d0 [A 30]</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-300 p-2">Bærende bygningsdeler under øverste kjeller</td>
+                            <td className="border border-gray-300 p-2">BKL 1: R 60 A2-s1,d0 [A 60] | BKL 2: R 90 A2-s1,d0 [A 90] | BKL 3: R 120 A2-s1,d0 [A 120]</td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-300 p-2">Utvendig trappeløp (beskyttet mot flammepåvirkning)</td>
+                            <td className="border border-gray-300 p-2">BKL 1: - | BKL 2: R 30 [B 30] eller A2-s1,d0 | BKL 3: A2-s1,d0 [ubrennbart]</td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </>
                   ) : (
                     formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`
@@ -720,46 +757,6 @@ const Konsept = () => {
                   )}
                 </td>
               </tr>
-              {/* VTEK § 11-4 krav som egne rader */}
-              {formData.harFlereRisikoklasser && formData.bygningsdeler.length > 0 && (
-                <>
-                  <tr className="bg-blue-600">
-                    <td className="border border-blue-700 p-2 align-top" colSpan={2}>
-                      <span className="font-semibold text-white">§11-4 Bæreevne og stabilitet</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-400 p-2 pl-6 align-top">Bærende hovedsystem</td>
-                    <td className="border border-gray-400 p-2">
-                      BKL 1: R 30 [B 30] | BKL 2: R 60 [B 60] | BKL 3: R 90 A2-s1,d0 [A 90]
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-400 p-2 pl-6 align-top">Sekundære bærende bygningsdeler, etasjeskillere og takkonstruksjoner</td>
-                    <td className="border border-gray-400 p-2">
-                      BKL 1: R 30 [B 30] | BKL 2: R 60 [B 60] | BKL 3: R 60 A2-s1,d0 [A 60]
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-400 p-2 pl-6 align-top">Trappeløp</td>
-                    <td className="border border-gray-400 p-2">
-                      BKL 1: - | BKL 2: R 30 [B 30] | BKL 3: R 30 A2-s1,d0 [A 30]
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-400 p-2 pl-6 align-top">Bærende bygningsdeler under øverste kjeller</td>
-                    <td className="border border-gray-400 p-2">
-                      BKL 1: R 60 A2-s1,d0 [A 60] | BKL 2: R 90 A2-s1,d0 [A 90] | BKL 3: R 120 A2-s1,d0 [A 120]
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-400 p-2 pl-6 align-top">Utvendig trappeløp (beskyttet mot flammepåvirkning)</td>
-                    <td className="border border-gray-400 p-2">
-                      BKL 1: - | BKL 2: R 30 [B 30] eller A2-s1,d0 | BKL 3: A2-s1,d0 [ubrennbart]
-                    </td>
-                  </tr>
-                </>
-              )}
               <tr>
                 <td className="border border-gray-400 p-2 font-semibold align-top">3.2 § 11-5 Sikkerhet ved eksplosjon</td>
                 <td className="border border-gray-400 p-2">
@@ -1132,59 +1129,24 @@ const Konsept = () => {
                               return orden.indexOf(a) - orden.indexOf(b);
                             });
                             return sortertBrannklasser[0] || "-";
-                          })() + ". Krav fra høyeste brannklasse er dimensjonerende for felles bærende konstruksjoner som betjener flere bygningsdeler." +
+                          })() + ". Krav fra høyeste brannklasse er dimensjonerende for felles bærende konstruksjoner som betjener flere bygningsdeler.\n\n" +
+                          "PREAKSEPTERTE YTELSER (jf. VTEK § 11-4):\n\n" +
+                          "Bærende hovedsystem:\n" +
+                          "BKL 1: R 30 [B 30] | BKL 2: R 60 [B 60] | BKL 3: R 90 A2-s1,d0 [A 90]\n\n" +
+                          "Sekundære bærende bygningsdeler, etasjeskillere og takkonstruksjoner:\n" +
+                          "BKL 1: R 30 [B 30] | BKL 2: R 60 [B 60] | BKL 3: R 60 A2-s1,d0 [A 60]\n\n" +
+                          "Trappeløp:\n" +
+                          "BKL 1: - | BKL 2: R 30 [B 30] | BKL 3: R 30 A2-s1,d0 [A 30]\n\n" +
+                          "Bærende bygningsdeler under øverste kjeller:\n" +
+                          "BKL 1: R 60 A2-s1,d0 [A 60] | BKL 2: R 90 A2-s1,d0 [A 90] | BKL 3: R 120 A2-s1,d0 [A 120]\n\n" +
+                          "Utvendig trappeløp (beskyttet mot flammepåvirkning):\n" +
+                          "BKL 1: - | BKL 2: R 30 [B 30] eller A2-s1,d0 | BKL 3: A2-s1,d0 [ubrennbart]" +
                           (formData.baereevneKommentar ? `\n\nKommentar:\n${formData.baereevneKommentar}` : "")
                         : (formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`) +
                           (formData.baereevneKommentar ? `\n\nKommentar:\n${formData.baereevneKommentar}` : "")
                     ),
                   ],
                 }),
-                // VTEK § 11-4 krav som egne rader i Word-eksporten
-                ...(formData.harFlereRisikoklasser && formData.bygningsdeler.length > 0 ? [
-                  new TableRow({
-                    children: [
-                      new TableCell({
-                        children: [new Paragraph({ children: [new TextRun({ text: "§11-4 Bæreevne og stabilitet", bold: true, color: "FFFFFF" })] })],
-                        width: { size: 30, type: WidthType.PERCENTAGE },
-                        shading: { fill: "2563EB" },
-                      }),
-                      new TableCell({
-                        children: [new Paragraph({ text: "" })],
-                        shading: { fill: "2563EB" },
-                      }),
-                    ],
-                  }),
-                  new TableRow({
-                    children: [
-                      createTableCell("  Bærende hovedsystem", false, 30),
-                      createTableCell("BKL 1: R 30 [B 30] | BKL 2: R 60 [B 60] | BKL 3: R 90 A2-s1,d0 [A 90]"),
-                    ],
-                  }),
-                  new TableRow({
-                    children: [
-                      createTableCell("  Sekundære bærende bygningsdeler", false, 30),
-                      createTableCell("BKL 1: R 30 [B 30] | BKL 2: R 60 [B 60] | BKL 3: R 60 A2-s1,d0 [A 60]"),
-                    ],
-                  }),
-                  new TableRow({
-                    children: [
-                      createTableCell("  Trappeløp", false, 30),
-                      createTableCell("BKL 1: - | BKL 2: R 30 [B 30] | BKL 3: R 30 A2-s1,d0 [A 30]"),
-                    ],
-                  }),
-                  new TableRow({
-                    children: [
-                      createTableCell("  Bærende bygningsdeler under øverste kjeller", false, 30),
-                      createTableCell("BKL 1: R 60 A2-s1,d0 [A 60] | BKL 2: R 90 A2-s1,d0 [A 90] | BKL 3: R 120 A2-s1,d0 [A 120]"),
-                    ],
-                  }),
-                  new TableRow({
-                    children: [
-                      createTableCell("  Utvendig trappeløp (beskyttet)", false, 30),
-                      createTableCell("BKL 1: - | BKL 2: R 30 [B 30] eller A2-s1,d0 | BKL 3: A2-s1,d0 [ubrennbart]"),
-                    ],
-                  }),
-                ] : []),
                 new TableRow({
                   children: [
                     createTableCell("3.2 § 11-5 Sikkerhet ved eksplosjon", true, 30),
