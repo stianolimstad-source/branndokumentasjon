@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -671,80 +671,118 @@ const Konsept = () => {
         <section className="mb-6">
           <h2 className="font-bold mb-3">3. Beskrivelse av branntekniske ytelseskrav</h2>
           
-          {formData.harFlereRisikoklasser && formData.bygningsdeler.length > 0 ? (
-            <table className="w-full border-collapse border border-gray-400 text-xs">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="border border-gray-400 p-2 text-left" style={{width: '20%'}}>Paragraf</th>
-                  <th className="border border-gray-400 p-2 text-left" style={{width: '30%'}}>Beskrivelse</th>
-                  {formData.bygningsdeler.map((del, index) => {
-                    const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
-                    return (
-                      <th key={del.id || index} className="border border-gray-400 p-2 text-center bg-blue-600 text-white">
-                        {del.navn || `Del ${index + 1}`}<br/>
-                        <span className="font-normal text-xs">({delBrannklasse})</span>
-                      </th>
-                    );
-                  })}
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="border border-gray-400 p-2 font-semibold align-top" rowSpan={5}>3.1 § 11-4 Bæreevne og stabilitet</td>
-                  <td className="border border-gray-400 p-2 align-top">Bærende hovedsystem</td>
-                  {formData.bygningsdeler.map((del, index) => {
-                    const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
-                    const bklNum = delBrannklasse?.replace("BKL", "") || "1";
-                    const krav: Record<string, string> = { "1": "R 30 [B 30]", "2": "R 60 [B 60]", "3": "R 90 A2-s1,d0 [A 90]", "4": "R 120 A2-s1,d0 [A 120]" };
-                    return <td key={del.id || index} className="border border-gray-400 p-2 text-center">{krav[bklNum] || krav["1"]}</td>;
-                  })}
-                </tr>
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Sekundære bærende bygningsdeler</td>
-                  {formData.bygningsdeler.map((del, index) => {
-                    const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
-                    const bklNum = delBrannklasse?.replace("BKL", "") || "1";
-                    const krav: Record<string, string> = { "1": "R 30 [B 30]", "2": "R 60 [B 60]", "3": "R 60 A2-s1,d0 [A 60]", "4": "R 90 A2-s1,d0 [A 90]" };
-                    return <td key={del.id || index} className="border border-gray-400 p-2 text-center">{krav[bklNum] || krav["1"]}</td>;
-                  })}
-                </tr>
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Trappeløp</td>
-                  {formData.bygningsdeler.map((del, index) => {
-                    const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
-                    const bklNum = delBrannklasse?.replace("BKL", "") || "1";
-                    const krav: Record<string, string> = { "1": "-", "2": "R 30 [B 30]", "3": "R 30 A2-s1,d0 [A 30]", "4": "R 60 A2-s1,d0 [A 60]" };
-                    return <td key={del.id || index} className="border border-gray-400 p-2 text-center">{krav[bklNum] || krav["1"]}</td>;
-                  })}
-                </tr>
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Bærende bygningsdeler under øverste kjeller</td>
-                  {formData.bygningsdeler.map((del, index) => {
-                    const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
-                    const bklNum = delBrannklasse?.replace("BKL", "") || "1";
-                    const krav: Record<string, string> = { "1": "R 60 A2-s1,d0 [A 60]", "2": "R 90 A2-s1,d0 [A 90]", "3": "R 120 A2-s1,d0 [A 120]", "4": "R 120 A2-s1,d0 [A 120]" };
-                    return <td key={del.id || index} className="border border-gray-400 p-2 text-center">{krav[bklNum] || krav["1"]}</td>;
-                  })}
-                </tr>
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Utvendig trappeløp (beskyttet)</td>
-                  {formData.bygningsdeler.map((del, index) => {
-                    const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
-                    const bklNum = delBrannklasse?.replace("BKL", "") || "1";
-                    const krav: Record<string, string> = { "1": "-", "2": "R 30 [B 30] / A2-s1,d0", "3": "A2-s1,d0", "4": "A2-s1,d0" };
-                    return <td key={del.id || index} className="border border-gray-400 p-2 text-center">{krav[bklNum] || krav["1"]}</td>;
-                  })}
-                </tr>
-                {formData.baereevneKommentar && (
-                  <tr>
-                    <td className="border border-gray-400 p-2 italic text-sm" colSpan={2 + formData.bygningsdeler.length}>
-                      Kommentar: {formData.baereevneKommentar}
+          <table className="w-full border-collapse border border-gray-400 text-xs">
+            <tbody>
+              {/* 3.1 § 11-4 Bæreevne og stabilitet - kun når flere risikoklasser */}
+              {formData.harFlereRisikoklasser && formData.bygningsdeler.length > 0 ? (
+                <>
+                  <tr className="bg-gray-200">
+                    <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
+                      3.1 &nbsp;&nbsp; §11-4 Bæreevne og stabilitet
                     </td>
                   </tr>
-                )}
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                    <th className="border border-gray-400 p-2 text-left">Løsning</th>
+                    <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2">Generelt</td>
+                    <td className="border border-gray-400 p-2">
+                      Balkonger og utkragede bygningsdeler o.l. må ha forsvarlig innfesting for å hindre nedfall som kan skade rednings- og slokkemannskapene og deres materiell under førsteinnsatsen.
+                    </td>
+                    <td className="border border-gray-400 p-2">RIB</td>
+                  </tr>
+                  {formData.bygningsdeler.map((del, index) => {
+                    const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+                    const bklNum = delBrannklasse?.replace("BKL", "") || "1";
+                    
+                    const krav: Record<string, { hovedsystem: string; sekundaer: string; etasjeskiller: string; trappeløp: string; utvendig: string; kjeller: string; tak: string }> = {
+                      "1": { hovedsystem: "R 30", sekundaer: "R 30", etasjeskiller: "R 30", trappeløp: "-", utvendig: "-", kjeller: "R 60 A2-s1,d0", tak: "R 30" },
+                      "2": { hovedsystem: "R 60", sekundaer: "R 60", etasjeskiller: "R 60", trappeløp: "R 30", utvendig: "R 30 / A2-s1,d0", kjeller: "R 90 A2-s1,d0", tak: "R 60" },
+                      "3": { hovedsystem: "R 90 A2-s1,d0", sekundaer: "R 60 A2-s1,d0", etasjeskiller: "R 60 A2-s1,d0", trappeløp: "R 30 A2-s1,d0", utvendig: "A2-s1,d0", kjeller: "R 120 A2-s1,d0", tak: "R 60 A2-s1,d0" },
+                      "4": { hovedsystem: "R 120 A2-s1,d0", sekundaer: "R 90 A2-s1,d0", etasjeskiller: "R 90 A2-s1,d0", trappeløp: "R 60 A2-s1,d0", utvendig: "A2-s1,d0", kjeller: "R 120 A2-s1,d0", tak: "R 90 A2-s1,d0" },
+                    };
+                    
+                    const delKrav = krav[bklNum] || krav["1"];
+                    const delNavn = del.navn || `Del ${index + 1}`;
+                    
+                    return (
+                      <React.Fragment key={del.id || index}>
+                        {index === 0 && (
+                          <tr className="bg-blue-50">
+                            <td className="border border-gray-400 p-2 font-semibold" colSpan={3}>
+                              Krav per bygningsdel:
+                            </td>
+                          </tr>
+                        )}
+                        <tr className="bg-blue-100">
+                          <td className="border border-gray-400 p-2 font-semibold" colSpan={3}>
+                            {delNavn} ({delBrannklasse})
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-400 p-2">Bærende hovedsystem</td>
+                          <td className="border border-gray-400 p-2 text-red-600 font-medium">{delKrav.hovedsystem}</td>
+                          <td className="border border-gray-400 p-2">RIB</td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-400 p-2">Sekundære, bærende bygningsdeler, etasjeskillere og takkonstruksjoner som ikke er del av hovedbæresystem eller stabiliserende</td>
+                          <td className="border border-gray-400 p-2 text-red-600 font-medium">{delKrav.sekundaer}</td>
+                          <td className="border border-gray-400 p-2">RIB</td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-400 p-2">Etasjeskiller</td>
+                          <td className="border border-gray-400 p-2 text-red-600 font-medium">{delKrav.etasjeskiller}</td>
+                          <td className="border border-gray-400 p-2">RIB</td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-400 p-2">Trappeløp</td>
+                          <td className="border border-gray-400 p-2 text-red-600 font-medium">{delKrav.trappeløp}</td>
+                          <td className="border border-gray-400 p-2">RIB</td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-400 p-2">Utvendig trapp</td>
+                          <td className="border border-gray-400 p-2 text-red-600 font-medium">{delKrav.utvendig}</td>
+                          <td className="border border-gray-400 p-2">RIB</td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-400 p-2">Plan under øverste kjeller</td>
+                          <td className="border border-gray-400 p-2 text-red-600 font-medium">{delKrav.kjeller}</td>
+                          <td className="border border-gray-400 p-2">RIB</td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-400 p-2">Takkonstruksjon</td>
+                          <td className="border border-gray-400 p-2 text-red-600 font-medium">{delKrav.tak}</td>
+                          <td className="border border-gray-400 p-2">RIB</td>
+                        </tr>
+                      </React.Fragment>
+                    );
+                  })}
+                  {formData.baereevneKommentar && (
+                    <tr>
+                      <td className="border border-gray-400 p-2 italic text-sm" colSpan={3}>
+                        Kommentar: {formData.baereevneKommentar}
+                      </td>
+                    </tr>
+                  )}
+                </>
+              ) : (
+                <tr>
+                  <td className="border border-gray-400 p-2 font-semibold align-top" style={{width: '25%'}}>3.1 § 11-4 Bæreevne og stabilitet</td>
+                  <td className="border border-gray-400 p-2" colSpan={2}>
+                    {formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`}
+                    {formData.baereevneKommentar && <><br/><br/><span className="italic">Kommentar: {formData.baereevneKommentar}</span></>}
+                  </td>
+                </tr>
+              )}
+              <tr className="bg-gray-200">
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
+                  3.2 &nbsp;&nbsp; §11-5 Sikkerhet ved eksplosjon
+                </td>
+              </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.2 § 11-5 Sikkerhet ved eksplosjon</td>
-                <td className="border border-gray-400 p-2" colSpan={1 + formData.bygningsdeler.length}>
+                <td className="border border-gray-400 p-2" colSpan={3}>
                   {formData.eksplosjonRelevant === "ikke_relevant" ? (
                     "RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket."
                   ) : formData.eksplosjonRelevant === "relevant" ? (
@@ -761,134 +799,74 @@ const Konsept = () => {
                   ) : "[Vurdering av eksplosjonsfare]"}
                 </td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.3 § 11-6 Brannspredning mellom byggverk</td>
-                <td className="border border-gray-400 p-2" colSpan={1 + formData.bygningsdeler.length}>{formData.brannspredning || "[Avstandskrav beskrives]"}</td>
+              <tr className="bg-gray-200">
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.3 &nbsp;&nbsp; §11-6 Brannspredning mellom byggverk</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.4 § 11-7 Brannseksjoner</td>
-                <td className="border border-gray-400 p-2" colSpan={1 + formData.bygningsdeler.length}>{formData.brannseksjoner || "[Seksjonering beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>{formData.brannspredning || "[Avstandskrav beskrives]"}</td>
+              </tr>
+              <tr className="bg-gray-200">
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.4 &nbsp;&nbsp; §11-7 Brannseksjoner</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.5 § 11-8 Brannceller</td>
-                <td className="border border-gray-400 p-2" colSpan={1 + formData.bygningsdeler.length}>{formData.brannceller || "[Branncelleinndeling beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>{formData.brannseksjoner || "[Seksjonering beskrives]"}</td>
+              </tr>
+              <tr className="bg-gray-200">
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.5 &nbsp;&nbsp; §11-8 Brannceller</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.6 § 11-9 Materialer ved brann</td>
-                <td className="border border-gray-400 p-2" colSpan={1 + formData.bygningsdeler.length}>{formData.materialer || "[Krav til materialer beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>{formData.brannceller || "[Branncelleinndeling beskrives]"}</td>
+              </tr>
+              <tr className="bg-gray-200">
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.6 &nbsp;&nbsp; §11-9 Materialer ved brann</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.7 § 11-10 Tekniske installasjoner</td>
-                <td className="border border-gray-400 p-2" colSpan={1 + formData.bygningsdeler.length}>{formData.installasjoner || "[Installasjoner beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>{formData.materialer || "[Krav til materialer beskrives]"}</td>
+              </tr>
+              <tr className="bg-gray-200">
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.7 &nbsp;&nbsp; §11-10 Tekniske installasjoner</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.8 § 11-11 Generelle krav om rømning</td>
-                <td className="border border-gray-400 p-2" colSpan={1 + formData.bygningsdeler.length}>{formData.romningSikkerhet || "[Rømningsforhold beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>{formData.installasjoner || "[Installasjoner beskrives]"}</td>
+              </tr>
+              <tr className="bg-gray-200">
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.8 &nbsp;&nbsp; §11-11 Generelle krav om rømning</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.9 § 11-12 Rømnings- og redningstider</td>
-                <td className="border border-gray-400 p-2" colSpan={1 + formData.bygningsdeler.length}>{formData.romningTiltak || "[Tiltak beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>{formData.romningSikkerhet || "[Rømningsforhold beskrives]"}</td>
+              </tr>
+              <tr className="bg-gray-200">
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.9 &nbsp;&nbsp; §11-12 Rømnings- og redningstider</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.10 § 11-13 Utgang fra branncelle</td>
-                <td className="border border-gray-400 p-2" colSpan={1 + formData.bygningsdeler.length}>{formData.utgangBranncelle || "[Utganger beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>{formData.romningTiltak || "[Tiltak beskrives]"}</td>
+              </tr>
+              <tr className="bg-gray-200">
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.10 &nbsp;&nbsp; §11-13 Utgang fra branncelle</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.11 § 11-14 Rømningsvei</td>
-                <td className="border border-gray-400 p-2" colSpan={1 + formData.bygningsdeler.length}>{formData.romningsvei || "[Rømningsveier beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>{formData.utgangBranncelle || "[Utganger beskrives]"}</td>
+              </tr>
+              <tr className="bg-gray-200">
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.11 &nbsp;&nbsp; §11-14 Rømningsvei</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.12 § 11-16 Manuell slokking</td>
-                <td className="border border-gray-400 p-2" colSpan={1 + formData.bygningsdeler.length}>{formData.manuellSlokking || "[Slokkeutstyr beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>{formData.romningsvei || "[Rømningsveier beskrives]"}</td>
+              </tr>
+              <tr className="bg-gray-200">
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.12 &nbsp;&nbsp; §11-16 Manuell slokking</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.13 § 11-17 Redningsmannskap</td>
-                <td className="border border-gray-400 p-2" colSpan={1 + formData.bygningsdeler.length}>{formData.redningsmannskap || "[Tilrettelegging beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>{formData.manuellSlokking || "[Slokkeutstyr beskrives]"}</td>
+              </tr>
+              <tr className="bg-gray-200">
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.13 &nbsp;&nbsp; §11-17 Redningsmannskap</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2" colSpan={3}>{formData.redningsmannskap || "[Tilrettelegging beskrives]"}</td>
               </tr>
             </tbody>
           </table>
-          ) : (
-          <table className="w-full border-collapse border border-gray-400 text-xs">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-400 p-2 text-left w-1/4">Paragraf</th>
-                <th className="border border-gray-400 p-2 text-left">Beskrivelse</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.1 § 11-4 Bæreevne og stabilitet</td>
-                <td className="border border-gray-400 p-2">
-                  {formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`}
-                  {formData.baereevneKommentar && <><br/><br/><span className="italic">Kommentar: {formData.baereevneKommentar}</span></>}
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.2 § 11-5 Sikkerhet ved eksplosjon</td>
-                <td className="border border-gray-400 p-2">
-                  {formData.eksplosjonRelevant === "ikke_relevant" ? (
-                    "RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket."
-                  ) : formData.eksplosjonRelevant === "relevant" ? (
-                    <div className="space-y-2">
-                      <p className="font-semibold">Preaksepterte ytelser (jf. VTEK § 11-5):</p>
-                      <ol className="list-decimal list-inside space-y-1">
-                        <li>Rom hvor det kan forekomme fare for eksplosjon, må utgjøre en egen branncelle.</li>
-                        <li>Rom hvor det kan forekomme fare for eksplosjon, må ha minst én trykkavlastningsflate.</li>
-                        <li>Avlastet trykk må ledes bort i sikker retning.</li>
-                        <li>Trykkavlastningsflater må ikke plasseres i takflater med mindre snølast ikke hindrer funksjon.</li>
-                        <li>Bærende og branncellebegrensende bygningsdeler må forsterkes ved behov.</li>
-                      </ol>
-                    </div>
-                  ) : "[Vurdering av eksplosjonsfare]"}
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.3 § 11-6 Brannspredning mellom byggverk</td>
-                <td className="border border-gray-400 p-2">{formData.brannspredning || "[Avstandskrav beskrives]"}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.4 § 11-7 Brannseksjoner</td>
-                <td className="border border-gray-400 p-2">{formData.brannseksjoner || "[Seksjonering beskrives]"}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.5 § 11-8 Brannceller</td>
-                <td className="border border-gray-400 p-2">{formData.brannceller || "[Branncelleinndeling beskrives]"}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.6 § 11-9 Materialer ved brann</td>
-                <td className="border border-gray-400 p-2">{formData.materialer || "[Krav til materialer beskrives]"}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.7 § 11-10 Tekniske installasjoner</td>
-                <td className="border border-gray-400 p-2">{formData.installasjoner || "[Installasjoner beskrives]"}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.8 § 11-11 Generelle krav om rømning</td>
-                <td className="border border-gray-400 p-2">{formData.romningSikkerhet || "[Rømningsforhold beskrives]"}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.9 § 11-12 Rømnings- og redningstider</td>
-                <td className="border border-gray-400 p-2">{formData.romningTiltak || "[Tiltak beskrives]"}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.10 § 11-13 Utgang fra branncelle</td>
-                <td className="border border-gray-400 p-2">{formData.utgangBranncelle || "[Utganger beskrives]"}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.11 § 11-14 Rømningsvei</td>
-                <td className="border border-gray-400 p-2">{formData.romningsvei || "[Rømningsveier beskrives]"}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.12 § 11-16 Manuell slokking</td>
-                <td className="border border-gray-400 p-2">{formData.manuellSlokking || "[Slokkeutstyr beskrives]"}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">3.13 § 11-17 Redningsmannskap</td>
-                <td className="border border-gray-400 p-2">{formData.redningsmannskap || "[Tilrettelegging beskrives]"}</td>
-              </tr>
-            </tbody>
-          </table>
-          )}
         </section>
 
         {/* 4. Utførelses- og driftsfasen */}
