@@ -300,6 +300,7 @@ const Konsept = () => {
     // 2. Grunnlag og forutsetninger
     grunnlagsdokumenter: [] as Array<{navn: string, dato: string}>,
     harFlereRisikoklasser: false, // Nytt felt for å aktivere flere risikoklasser
+    bekreftetUliktEtasjeantall: false, // Bekreftelse på at ulikt etasjeantall er korrekt
     bygningsdeler: [] as Bygningsdel[], // Array med bygningsdeler med egne risikoklasser
     risikoklasse: "",
     brannklasse: "",
@@ -1986,6 +1987,45 @@ const Konsept = () => {
                             >
                               <Plus className="h-4 w-4 mr-1" /> Legg til bygningsdel
                             </Button>
+
+                            {/* Varsel om ulikt etasjeantall */}
+                            {(() => {
+                              const etasjeVerdier = formData.bygningsdeler.map(d => d.etasjer).filter(Boolean);
+                              const unikeEtasjer = [...new Set(etasjeVerdier)];
+                              const harUliktEtasjeantall = unikeEtasjer.length > 1;
+                              
+                              if (harUliktEtasjeantall) {
+                                return (
+                                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-md space-y-2">
+                                    <div className="flex items-start gap-2">
+                                      <span className="text-amber-600 mt-0.5">⚠️</span>
+                                      <div>
+                                        <Label className="text-xs font-medium block text-amber-700">
+                                          Ulikt etasjeantall registrert
+                                        </Label>
+                                        <p className="text-xs text-amber-600 mt-1">
+                                          Bygningsdelene har ulikt etasjeantall ({unikeEtasjer.join(", ")} etasjer). 
+                                          Normalt skal alle deler ha samme totale etasjeantall for bygget.
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-2 ml-6">
+                                      <input
+                                        type="checkbox"
+                                        id="bekreftetUliktEtasjeantall"
+                                        checked={formData.bekreftetUliktEtasjeantall || false}
+                                        onChange={(e) => setFormData({...formData, bekreftetUliktEtasjeantall: e.target.checked})}
+                                        className="h-4 w-4"
+                                      />
+                                      <Label htmlFor="bekreftetUliktEtasjeantall" className="text-xs text-amber-700 cursor-pointer">
+                                        Jeg bekrefter at ulikt etasjeantall er korrekt for dette tiltaket
+                                      </Label>
+                                    </div>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })()}
 
                             {/* Oppsummering av høyeste brannklasse */}
                             {formData.bygningsdeler.length > 0 && (
