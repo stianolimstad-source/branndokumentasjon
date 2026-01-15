@@ -973,24 +973,54 @@ const Konsept = () => {
                   </ol>
                   
                   {formData.brannseksjonBrannenergi && formData.brannseksjonTiltak && (
-                    <div className="mt-3">
-                      <p className="font-semibold">Størrelse på brannseksjon:</p>
-                      <p className="mt-1">
-                        {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "normalt" && "Spesifikk brannenergi: Over 400 MJ/m² | Tiltak: Normalt → Største bruttoareal: 800 m² pr. etasje"}
-                        {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "brannalarm" && "Spesifikk brannenergi: Over 400 MJ/m² | Tiltak: Med brannalarmanlegg → Største bruttoareal: 1200 m² pr. etasje"}
-                        {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "sprinkler" && "Spesifikk brannenergi: Over 400 MJ/m² | Tiltak: Med sprinkleranlegg → Største bruttoareal: 5000 m² pr. etasje"}
-                        {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "roykventilasjon" && "Spesifikk brannenergi: Over 400 MJ/m² | Tiltak: Med røykventilasjon → Uegnet"}
-                        
-                        {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "normalt" && "Spesifikk brannenergi: 50-400 MJ/m² | Tiltak: Normalt → Største bruttoareal: 1200 m² pr. etasje"}
-                        {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "brannalarm" && "Spesifikk brannenergi: 50-400 MJ/m² | Tiltak: Med brannalarmanlegg → Største bruttoareal: 1800 m² pr. etasje"}
-                        {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "sprinkler" && "Spesifikk brannenergi: 50-400 MJ/m² | Tiltak: Med sprinkleranlegg → Største bruttoareal: 10 000 m² pr. etasje"}
-                        {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "roykventilasjon" && "Spesifikk brannenergi: 50-400 MJ/m² | Tiltak: Med røykventilasjon → Største bruttoareal: 4000 m² pr. etasje"}
-                        
-                        {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "normalt" && "Spesifikk brannenergi: Under 50 MJ/m² | Tiltak: Normalt → Største bruttoareal: 1800 m² pr. etasje"}
-                        {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "brannalarm" && "Spesifikk brannenergi: Under 50 MJ/m² | Tiltak: Med brannalarmanlegg → Største bruttoareal: 2700 m² pr. etasje"}
-                        {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "sprinkler" && "Spesifikk brannenergi: Under 50 MJ/m² | Tiltak: Med sprinkleranlegg → Ubegrenset"}
-                        {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "roykventilasjon" && "Spesifikk brannenergi: Under 50 MJ/m² | Tiltak: Med røykventilasjon → Største bruttoareal: 10 000 m² pr. etasje"}
-                      </p>
+                    <div className="mt-4 p-3 bg-gray-50 border rounded">
+                      <p className="font-semibold mb-2">Størrelse på brannseksjon (jf. Tabell 1):</p>
+                      <table className="w-full text-sm border-collapse">
+                        <tbody>
+                          <tr>
+                            <td className="border border-gray-300 p-2 bg-gray-100 font-medium w-1/3">Spesifikk brannenergi:</td>
+                            <td className="border border-gray-300 p-2">
+                              {formData.brannseksjonBrannenergi === "over400" && "Over 400 MJ/m²"}
+                              {formData.brannseksjonBrannenergi === "50-400" && "50–400 MJ/m²"}
+                              {formData.brannseksjonBrannenergi === "under50" && "Under 50 MJ/m²"}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-300 p-2 bg-gray-100 font-medium">Tiltak:</td>
+                            <td className="border border-gray-300 p-2">
+                              {formData.brannseksjonTiltak === "normalt" && "Normalt (ingen tiltak)"}
+                              {formData.brannseksjonTiltak === "brannalarm" && "Med brannalarmanlegg"}
+                              {formData.brannseksjonTiltak === "sprinkler" && "Med sprinkleranlegg"}
+                              {formData.brannseksjonTiltak === "roykventilasjon" && "Med røykventilasjon"}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="border border-gray-300 p-2 bg-gray-100 font-medium">Største bruttoareal:</td>
+                            <td className="border border-gray-300 p-2 font-semibold">
+                              {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "normalt" && "800 m² pr. etasje"}
+                              {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "brannalarm" && "1 200 m² pr. etasje"}
+                              {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "sprinkler" && "5 000 m² pr. etasje"}
+                              {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "roykventilasjon" && <span className="text-red-600">Uegnet</span>}
+                              
+                              {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "normalt" && "1 200 m² pr. etasje"}
+                              {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "brannalarm" && "1 800 m² pr. etasje"}
+                              {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "sprinkler" && "10 000 m² pr. etasje"}
+                              {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "roykventilasjon" && "4 000 m² pr. etasje"}
+                              
+                              {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "normalt" && "1 800 m² pr. etasje"}
+                              {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "brannalarm" && "2 700 m² pr. etasje"}
+                              {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "sprinkler" && "Ubegrenset"}
+                              {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "roykventilasjon" && "10 000 m² pr. etasje"}
+                            </td>
+                          </tr>
+                          {formData.areal && (
+                            <tr>
+                              <td className="border border-gray-300 p-2 bg-gray-100 font-medium">Prosjektert areal:</td>
+                              <td className="border border-gray-300 p-2">{formData.areal} m²</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
                     </div>
                   )}
                   
