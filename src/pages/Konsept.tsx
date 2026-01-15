@@ -921,28 +921,11 @@ const Konsept = () => {
                       {formData.spesifikkBrannenergi && (
                         <div className="mt-3">
                           <p className="font-semibold">Brannveggkrav basert på spesifikk brannenergi:</p>
-                          <table className="mt-1 border-collapse border border-gray-400 text-sm">
-                            <thead>
-                              <tr className="bg-gray-100">
-                                <th className="border border-gray-400 p-1">Spesifikk brannenergi MJ/m²</th>
-                                <th className="border border-gray-400 p-1">Brannveggens nødvendige brannmotstand</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr className={formData.spesifikkBrannenergi === "inntil400" ? "bg-yellow-100" : ""}>
-                                <td className="border border-gray-400 p-1">Inntil 400</td>
-                                <td className="border border-gray-400 p-1">REI 120-M A2-s1,d0 [A 120]</td>
-                              </tr>
-                              <tr className={formData.spesifikkBrannenergi === "400-600" ? "bg-yellow-100" : ""}>
-                                <td className="border border-gray-400 p-1">400-600</td>
-                                <td className="border border-gray-400 p-1">REI 180-M A2-s1,d0 [A 180]</td>
-                              </tr>
-                              <tr className={formData.spesifikkBrannenergi === "600-800" ? "bg-yellow-100" : ""}>
-                                <td className="border border-gray-400 p-1">600-800</td>
-                                <td className="border border-gray-400 p-1">REI 240-M A2-s1,d0 [A 240]</td>
-                              </tr>
-                            </tbody>
-                          </table>
+                          <p className="mt-1">
+                            {formData.spesifikkBrannenergi === "inntil400" && "Spesifikk brannenergi: Inntil 400 MJ/m² → Brannmotstand: REI 120-M A2-s1,d0 [A 120]"}
+                            {formData.spesifikkBrannenergi === "400-600" && "Spesifikk brannenergi: 400-600 MJ/m² → Brannmotstand: REI 180-M A2-s1,d0 [A 180]"}
+                            {formData.spesifikkBrannenergi === "600-800" && "Spesifikk brannenergi: 600-800 MJ/m² → Brannmotstand: REI 240-M A2-s1,d0 [A 240]"}
+                          </p>
                         </div>
                       )}
                     </>
