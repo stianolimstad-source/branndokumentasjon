@@ -1014,7 +1014,7 @@ const Konsept = () => {
                   <td className="border border-gray-400 p-2 align-top">RIBr</td>
                 </tr>
               )}
-              {(formData.brannseksjonTiltak === "brannalarm" || formData.brannseksjonTiltak === "sprinkler") && (
+              {formData.brannseksjonTiltak === "brannalarm" && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Brannalarmanlegg</td>
                   <td className="border border-gray-400 p-2">Prosjekteres og utføres etter NS 3960:2019. Kategori 2 med direkte varsling til nødmeldesentral.</td>
