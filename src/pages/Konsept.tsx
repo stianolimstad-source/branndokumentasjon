@@ -316,16 +316,28 @@ const Konsept = () => {
     eksplosjonRelevant: "", // "relevant" eller "ikke_relevant"
     eksplosjon: "",
     brannspredning: "",
+    brannspredningKommentar: "",
     brannseksjoner: "",
+    brannseksjonerKommentar: "",
     brannceller: "",
+    branncellerKommentar: "",
     materialer: "",
+    materialerKommentar: "",
     installasjoner: "",
+    installasjonerKommentar: "",
     romningSikkerhet: "",
+    romningSikkerhetKommentar: "",
     romningTiltak: "",
+    romningTiltakKommentar: "",
     utgangBranncelle: "",
+    utgangBranncelleKommentar: "",
     romningsvei: "",
+    romningsveiKommentar: "",
     manuellSlokking: "",
+    manuellSlokkingKommentar: "",
     redningsmannskap: "",
+    redningsmannskapKommentar: "",
+    eksplosjonKommentar: "",
     // 4. Utførelses- og driftsfasen
     utfoerelse: "",
     drift: "",
@@ -797,73 +809,107 @@ const Konsept = () => {
                       </ol>
                     </div>
                   ) : "[Vurdering av eksplosjonsfare]"}
+                  {formData.eksplosjonKommentar && <><br/><br/><span className="italic">Kommentar: {formData.eksplosjonKommentar}</span></>}
                 </td>
               </tr>
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.3 &nbsp;&nbsp; §11-6 Brannspredning mellom byggverk</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>{formData.brannspredning || "[Avstandskrav beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.brannspredning || "[Avstandskrav beskrives]"}
+                  {formData.brannspredningKommentar && <><br/><br/><span className="italic">Kommentar: {formData.brannspredningKommentar}</span></>}
+                </td>
               </tr>
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.4 &nbsp;&nbsp; §11-7 Brannseksjoner</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>{formData.brannseksjoner || "[Seksjonering beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.brannseksjoner || "[Seksjonering beskrives]"}
+                  {formData.brannseksjonerKommentar && <><br/><br/><span className="italic">Kommentar: {formData.brannseksjonerKommentar}</span></>}
+                </td>
               </tr>
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.5 &nbsp;&nbsp; §11-8 Brannceller</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>{formData.brannceller || "[Branncelleinndeling beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.brannceller || "[Branncelleinndeling beskrives]"}
+                  {formData.branncellerKommentar && <><br/><br/><span className="italic">Kommentar: {formData.branncellerKommentar}</span></>}
+                </td>
               </tr>
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.6 &nbsp;&nbsp; §11-9 Materialer ved brann</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>{formData.materialer || "[Krav til materialer beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.materialer || "[Krav til materialer beskrives]"}
+                  {formData.materialerKommentar && <><br/><br/><span className="italic">Kommentar: {formData.materialerKommentar}</span></>}
+                </td>
               </tr>
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.7 &nbsp;&nbsp; §11-10 Tekniske installasjoner</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>{formData.installasjoner || "[Installasjoner beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.installasjoner || "[Installasjoner beskrives]"}
+                  {formData.installasjonerKommentar && <><br/><br/><span className="italic">Kommentar: {formData.installasjonerKommentar}</span></>}
+                </td>
               </tr>
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.8 &nbsp;&nbsp; §11-11 Generelle krav om rømning</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>{formData.romningSikkerhet || "[Rømningsforhold beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.romningSikkerhet || "[Rømningsforhold beskrives]"}
+                  {formData.romningSikkerhetKommentar && <><br/><br/><span className="italic">Kommentar: {formData.romningSikkerhetKommentar}</span></>}
+                </td>
               </tr>
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.9 &nbsp;&nbsp; §11-12 Rømnings- og redningstider</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>{formData.romningTiltak || "[Tiltak beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.romningTiltak || "[Tiltak beskrives]"}
+                  {formData.romningTiltakKommentar && <><br/><br/><span className="italic">Kommentar: {formData.romningTiltakKommentar}</span></>}
+                </td>
               </tr>
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.10 &nbsp;&nbsp; §11-13 Utgang fra branncelle</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>{formData.utgangBranncelle || "[Utganger beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.utgangBranncelle || "[Utganger beskrives]"}
+                  {formData.utgangBranncelleKommentar && <><br/><br/><span className="italic">Kommentar: {formData.utgangBranncelleKommentar}</span></>}
+                </td>
               </tr>
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.11 &nbsp;&nbsp; §11-14 Rømningsvei</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>{formData.romningsvei || "[Rømningsveier beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.romningsvei || "[Rømningsveier beskrives]"}
+                  {formData.romningsveiKommentar && <><br/><br/><span className="italic">Kommentar: {formData.romningsveiKommentar}</span></>}
+                </td>
               </tr>
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.12 &nbsp;&nbsp; §11-16 Manuell slokking</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>{formData.manuellSlokking || "[Slokkeutstyr beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.manuellSlokking || "[Slokkeutstyr beskrives]"}
+                  {formData.manuellSlokkingKommentar && <><br/><br/><span className="italic">Kommentar: {formData.manuellSlokkingKommentar}</span></>}
+                </td>
               </tr>
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.13 &nbsp;&nbsp; §11-17 Redningsmannskap</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>{formData.redningsmannskap || "[Tilrettelegging beskrives]"}</td>
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.redningsmannskap || "[Tilrettelegging beskrives]"}
+                  {formData.redningsmannskapKommentar && <><br/><br/><span className="italic">Kommentar: {formData.redningsmannskapKommentar}</span></>}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -2311,6 +2357,14 @@ const Konsept = () => {
                           </div>
                         </div>
                       )}
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.eksplosjonKommentar}
+                          onChange={(e) => setFormData({...formData, eksplosjonKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.3 § 11-6 Tiltak mot brannspredning</Label>
@@ -2319,6 +2373,14 @@ const Konsept = () => {
                         <Textarea 
                           value={formData.brannspredning}
                           onChange={(e) => setFormData({...formData, brannspredning: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.brannspredningKommentar}
+                          onChange={(e) => setFormData({...formData, brannspredningKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
                         />
                       </div>
                     </div>
@@ -2331,6 +2393,14 @@ const Konsept = () => {
                           onChange={(e) => setFormData({...formData, brannseksjoner: e.target.value})}
                         />
                       </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.brannseksjonerKommentar}
+                          onChange={(e) => setFormData({...formData, brannseksjonerKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.5 § 11-8 Brannceller</Label>
@@ -2339,6 +2409,14 @@ const Konsept = () => {
                         <Textarea 
                           value={formData.brannceller}
                           onChange={(e) => setFormData({...formData, brannceller: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.branncellerKommentar}
+                          onChange={(e) => setFormData({...formData, branncellerKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
                         />
                       </div>
                     </div>
@@ -2351,6 +2429,14 @@ const Konsept = () => {
                           onChange={(e) => setFormData({...formData, materialer: e.target.value})}
                         />
                       </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.materialerKommentar}
+                          onChange={(e) => setFormData({...formData, materialerKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.7 § 11-10 Tekniske installasjoner</Label>
@@ -2359,6 +2445,14 @@ const Konsept = () => {
                         <Textarea 
                           value={formData.installasjoner}
                           onChange={(e) => setFormData({...formData, installasjoner: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.installasjonerKommentar}
+                          onChange={(e) => setFormData({...formData, installasjonerKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
                         />
                       </div>
                     </div>
@@ -2371,6 +2465,14 @@ const Konsept = () => {
                           onChange={(e) => setFormData({...formData, romningSikkerhet: e.target.value})}
                         />
                       </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.romningSikkerhetKommentar}
+                          onChange={(e) => setFormData({...formData, romningSikkerhetKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.9 § 11-12 Rømnings- og redningstider</Label>
@@ -2379,6 +2481,14 @@ const Konsept = () => {
                         <Textarea 
                           value={formData.romningTiltak}
                           onChange={(e) => setFormData({...formData, romningTiltak: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.romningTiltakKommentar}
+                          onChange={(e) => setFormData({...formData, romningTiltakKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
                         />
                       </div>
                     </div>
@@ -2391,6 +2501,14 @@ const Konsept = () => {
                           onChange={(e) => setFormData({...formData, utgangBranncelle: e.target.value})}
                         />
                       </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.utgangBranncelleKommentar}
+                          onChange={(e) => setFormData({...formData, utgangBranncelleKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.11 § 11-14 Rømningsvei</Label>
@@ -2399,6 +2517,14 @@ const Konsept = () => {
                         <Textarea 
                           value={formData.romningsvei}
                           onChange={(e) => setFormData({...formData, romningsvei: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.romningsveiKommentar}
+                          onChange={(e) => setFormData({...formData, romningsveiKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
                         />
                       </div>
                     </div>
@@ -2411,6 +2537,14 @@ const Konsept = () => {
                           onChange={(e) => setFormData({...formData, manuellSlokking: e.target.value})}
                         />
                       </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.manuellSlokkingKommentar}
+                          onChange={(e) => setFormData({...formData, manuellSlokkingKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.13 § 11-17 Redningsmannskap</Label>
@@ -2419,6 +2553,14 @@ const Konsept = () => {
                         <Textarea 
                           value={formData.redningsmannskap}
                           onChange={(e) => setFormData({...formData, redningsmannskap: e.target.value})}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.redningsmannskapKommentar}
+                          onChange={(e) => setFormData({...formData, redningsmannskapKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
                         />
                       </div>
                     </div>
