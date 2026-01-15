@@ -934,6 +934,12 @@ const Konsept = () => {
                     <>
                       <p className="mt-2"><strong>Krav:</strong> Branncellevegg (bygning under eller lik 9 meter)</p>
                       <p className="mt-2">For bygninger under 9 meter stilles det krav til branncellevegg i stedet for brannvegg. Se kap. 3.5 for krav til brannceller.</p>
+                      
+                      <p className="mt-3 font-semibold">Preaksepterte ytelser:</p>
+                      <ol className="list-decimal list-inside mt-1 text-sm space-y-1">
+                        <li>Avstanden mellom lave byggverk kan være mindre enn 8,0 meter når byggverkene er skilt med branncellebegrensende bygningsdel eller bygningsdeler i hvert av byggverkene som til sammen gir samme brannmotstand. Vinduer kan utføres i samsvar med § 11-8 Tabell 3.</li>
+                        <li>Byggverk i risikoklasse 1 med bruttoareal til og med 50 m² og liten eller middels brannenergi, kan plasseres nærmere byggverk i annen bruksenhet uten at det treffes særlige branntekniske tiltak. Er avstanden mindre enn 2,0 meter mellom byggverk i ulike bruksenheter, må disse være skilt med branncellebegrensende bygningsdel eller bygningsdeler i hvert av byggverkene som til sammen gir samme brannmotstand.</li>
+                      </ol>
                     </>
                   ) : null}
                   
