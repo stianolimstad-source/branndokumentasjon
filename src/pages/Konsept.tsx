@@ -310,7 +310,11 @@ const Konsept = () => {
     baeresystem: "",
     tilleggskrav: "",
     // 3. Branntekniske ytelseskrav
+    // 3.1 Bæreevne
     baereevne: "",
+    baereevneForhold: "",
+    baereevneLosning: "",
+    baereevneAnsvar: "",
     baereevneUnntak: [] as string[],
     baereevneKommentar: "",
     // 3.2 Eksplosjon
@@ -2699,92 +2703,47 @@ const Konsept = () => {
                 <AccordionItem value="kap3">
                   <AccordionTrigger className="text-base font-semibold">3. Branntekniske ytelseskrav</AccordionTrigger>
                   <AccordionContent className="space-y-4 pt-2">
-                    <div className="space-y-3">
+                    <div className="space-y-2 border-b pb-4">
                       <Label className="text-xs text-muted-foreground">3.1 § 11-4 Bæreevne og stabilitet</Label>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div>
+                          <Label className="text-xs font-medium mb-1 block">Forhold</Label>
+                          <Textarea 
+                            value={formData.baereevneForhold}
+                            onChange={(e) => setFormData({...formData, baereevneForhold: e.target.value})}
+                            placeholder="Beskriv forhold..."
+                            className="min-h-[80px]"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs font-medium mb-1 block">Løsning</Label>
+                          <Textarea 
+                            value={formData.baereevneLosning}
+                            onChange={(e) => setFormData({...formData, baereevneLosning: e.target.value})}
+                            placeholder="Beskriv løsning..."
+                            className="min-h-[80px]"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs font-medium mb-1 block">Ansvar</Label>
+                          <Input 
+                            value={formData.baereevneAnsvar}
+                            onChange={(e) => setFormData({...formData, baereevneAnsvar: e.target.value})}
+                            placeholder="F.eks. RIB"
+                          />
+                        </div>
+                      </div>
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Krav til bærende konstruksjoner (automatisk basert på brannklasse)</Label>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
                         <Textarea 
-                          value={formData.baereevne}
-                          readOnly
-                          className="min-h-[140px] bg-muted/50 cursor-default"
+                          value={formData.baereevneKommentar}
+                          onChange={(e) => setFormData({...formData, baereevneKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
                         />
                       </div>
-                      {formData.baereevneUnntak.length > 0 && (
-                        <div className="space-y-2">
-                          <Label className="text-xs font-medium mb-1 block text-blue-700">Automatisk anvendte unntak (jf. VTEK § 11-4)</Label>
-                          <div className="space-y-2 text-sm border border-blue-200 rounded-md p-3 bg-blue-50">
-                            {formData.baereevneUnntak.map((unntakId) => (
-                              <div key={unntakId} className="flex items-start gap-2">
-                                <span className="text-blue-600 mt-0.5">✓</span>
-                                <span className="text-xs text-blue-700">{baereevneUnntakTekster[unntakId]}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                      <div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            const commentSection = document.getElementById('baereevne-kommentar');
-                            if (commentSection) {
-                              commentSection.classList.toggle('hidden');
-                            }
-                          }}
-                        >
-                          + Kommentar
-                        </Button>
-                        <div id="baereevne-kommentar" className={formData.baereevneKommentar ? "" : "hidden"}>
-                          <div className="mt-2">
-                            <Label className="text-xs font-medium mb-1 block">Kommentar / tilleggsbeskrivelse</Label>
-                            <Textarea 
-                              value={formData.baereevneKommentar}
-                              onChange={(e) => setFormData({...formData, baereevneKommentar: e.target.value})}
-                              placeholder="Legg til kommentar eller beskrivelse av løsninger som trenger forklaring..."
-                              className="min-h-[100px]"
-                            />
-                          </div>
-                        </div>
-                      </div>
                     </div>
-                    <div className="space-y-3 border-b pb-4">
+                    <div className="space-y-2 border-b pb-4">
                       <Label className="text-xs text-muted-foreground">3.2 § 11-5 Sikkerhet ved eksplosjon</Label>
-                      <div>
-                        <Label className="text-xs font-medium mb-1 block">Er eksplosjonsfare relevant for dette tiltaket?</Label>
-                        <Select 
-                          value={formData.eksplosjonRelevant}
-                          onValueChange={(value) => setFormData({...formData, eksplosjonRelevant: value})}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Velg" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="ikke_relevant">Ikke relevant</SelectItem>
-                            <SelectItem value="relevant">Relevant</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      {formData.eksplosjonRelevant === "ikke_relevant" && (
-                        <div className="p-3 bg-muted/50 border rounded-md space-y-2">
-                          <p className="text-sm text-muted-foreground">
-                            RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket.
-                          </p>
-                        </div>
-                      )}
-                      {formData.eksplosjonRelevant === "relevant" && (
-                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-                          <Label className="text-xs font-medium mb-2 block text-blue-700">Preaksepterte ytelser (jf. VTEK § 11-5)</Label>
-                          <ol className="text-xs text-blue-700 space-y-2 list-decimal list-inside">
-                            <li>Rom hvor det kan forekomme fare for eksplosjon, må utgjøre en egen branncelle.</li>
-                            <li>Rom hvor det kan forekomme fare for eksplosjon, må ha minst én trykkavlastningsflate.</li>
-                            <li>Avlastet trykk må ledes bort i sikker retning.</li>
-                            <li>Trykkavlastningsflater må ikke plasseres i takflater med mindre snølast ikke hindrer funksjon.</li>
-                            <li>Bærende og branncellebegrensende bygningsdeler må forsterkes ved behov.</li>
-                          </ol>
-                        </div>
-                      )}
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div>
                           <Label className="text-xs font-medium mb-1 block">Forhold</Label>
@@ -2824,43 +2783,6 @@ const Konsept = () => {
                     </div>
                     <div className="space-y-2 border-b pb-4">
                       <Label className="text-xs text-muted-foreground">3.3 § 11-6 Tiltak mot brannspredning</Label>
-                      <div>
-                        <Label className="text-xs font-medium mb-1 block">Bygningshøyde (meter)</Label>
-                        <Input 
-                          type="number"
-                          step="0.1"
-                          value={formData.bygningshoyde}
-                          onChange={(e) => setFormData({...formData, bygningshoyde: e.target.value})}
-                          placeholder="Angi høyde i meter..."
-                        />
-                      </div>
-                      
-                      {parseFloat(formData.bygningshoyde) > 9 && (
-                        <div className="p-3 bg-orange-50 border border-orange-200 rounded-md">
-                          <p className="text-sm font-medium text-orange-800 mb-2">Bygning over 9 meter - krav til brannvegg</p>
-                          <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
-                          <Select 
-                            value={formData.spesifikkBrannenergi} 
-                            onValueChange={(value) => setFormData({...formData, spesifikkBrannenergi: value})}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Velg brannenergi..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="inntil400">Inntil 400 MJ/m² → REI 120-M A2-s1,d0</SelectItem>
-                              <SelectItem value="400-600">400-600 MJ/m² → REI 180-M A2-s1,d0</SelectItem>
-                              <SelectItem value="600-800">600-800 MJ/m² → REI 240-M A2-s1,d0</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
-                      
-                      {parseFloat(formData.bygningshoyde) > 0 && parseFloat(formData.bygningshoyde) <= 9 && (
-                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-                          <p className="text-sm font-medium text-blue-800">Bygning under eller lik 9 meter - krav til branncellevegg</p>
-                        </div>
-                      )}
-                      
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div>
                           <Label className="text-xs font-medium mb-1 block">Forhold</Label>
@@ -2900,109 +2822,6 @@ const Konsept = () => {
                     </div>
                     <div className="space-y-2 border-b pb-4">
                       <Label className="text-xs text-muted-foreground">3.4 § 11-7 Brannseksjoner</Label>
-                      
-                      {/* Automatisk beregning basert på areal fra kap 2 */}
-                      {formData.areal && formData.brannseksjonBrannenergi && (
-                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md space-y-2">
-                          <p className="text-sm font-medium text-blue-800">Automatisk vurdering basert på areal ({formData.areal} m²) og brannenergi:</p>
-                          {(() => {
-                            const arealNum = parseFloat(formData.areal) || 0;
-                            const brannenergi = formData.brannseksjonBrannenergi;
-                            
-                            const grenser = {
-                              "over400": { normalt: 800, brannalarm: 1200, sprinkler: 5000, roykventilasjon: 0 },
-                              "50-400": { normalt: 1200, brannalarm: 1800, sprinkler: 10000, roykventilasjon: 4000 },
-                              "under50": { normalt: 1800, brannalarm: 2700, sprinkler: Infinity, roykventilasjon: 10000 }
-                            };
-                            
-                            const g = grenser[brannenergi as keyof typeof grenser];
-                            if (!g) return null;
-                            
-                            const anbefalinger: string[] = [];
-                            
-                            if (arealNum <= g.normalt) {
-                              anbefalinger.push("✅ Ingen tiltak nødvendig (maks " + g.normalt + " m²)");
-                            } else if (arealNum <= g.brannalarm) {
-                              anbefalinger.push("⚠️ Brannalarmanlegg anbefales (maks " + g.brannalarm + " m²)");
-                            } else if (brannenergi !== "over400" && g.roykventilasjon > 0 && arealNum <= g.roykventilasjon) {
-                              anbefalinger.push("⚠️ Røykventilasjon eller sprinkler nødvendig");
-                            } else if (arealNum <= g.sprinkler) {
-                              anbefalinger.push("🔴 Sprinkleranlegg nødvendig (maks " + (g.sprinkler === Infinity ? "ubegrenset" : g.sprinkler + " m²") + ")");
-                            } else {
-                              anbefalinger.push("🔴 Arealet overskrider tillatte grenser - seksjonering nødvendig");
-                            }
-                            
-                            return anbefalinger.map((a, i) => <p key={i} className="text-sm text-blue-700">{a}</p>);
-                          })()}
-                        </div>
-                      )}
-                      
-                      <div>
-                        <Label className="text-xs font-medium mb-1 block">Tiltak</Label>
-                        <Select 
-                          value={formData.brannseksjonTiltak} 
-                          onValueChange={(value) => setFormData({...formData, brannseksjonTiltak: value})}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Velg tiltak..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="normalt">Normalt (ingen tiltak)</SelectItem>
-                            <SelectItem value="brannalarm">Med brannalarmanlegg</SelectItem>
-                            <SelectItem value="sprinkler">Med sprinkleranlegg</SelectItem>
-                            <SelectItem value="roykventilasjon">Med røykventilasjon</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "roykventilasjon" && (
-                        <div className="p-2 bg-red-50 border border-red-200 rounded-md">
-                          <p className="text-sm text-red-700">⚠️ Røykventilasjon er uegnet for brannenergi over 400 MJ/m²</p>
-                        </div>
-                      )}
-                      
-                      {/* Sjekk om valgt tiltak er tilstrekkelig for arealet */}
-                      {formData.areal && formData.brannseksjonBrannenergi && formData.brannseksjonTiltak && (
-                        (() => {
-                          const arealNum = parseFloat(formData.areal) || 0;
-                          const brannenergi = formData.brannseksjonBrannenergi;
-                          const tiltak = formData.brannseksjonTiltak;
-                          
-                          const grenser = {
-                            "over400": { normalt: 800, brannalarm: 1200, sprinkler: 5000, roykventilasjon: 0 },
-                            "50-400": { normalt: 1200, brannalarm: 1800, sprinkler: 10000, roykventilasjon: 4000 },
-                            "under50": { normalt: 1800, brannalarm: 2700, sprinkler: Infinity, roykventilasjon: 10000 }
-                          };
-                          
-                          const g = grenser[brannenergi as keyof typeof grenser];
-                          if (!g) return null;
-                          
-                          const maksAreal = g[tiltak as keyof typeof g];
-                          
-                          if (maksAreal === 0) {
-                            return (
-                              <div className="p-2 bg-red-50 border border-red-200 rounded-md">
-                                <p className="text-sm text-red-700">⚠️ Dette tiltaket er ikke egnet for valgt brannenergi</p>
-                              </div>
-                            );
-                          }
-                          
-                          if (arealNum > maksAreal && maksAreal !== Infinity) {
-                            return (
-                              <div className="p-2 bg-red-50 border border-red-200 rounded-md">
-                                <p className="text-sm text-red-700">⚠️ Arealet ({arealNum} m²) overskrider maksimalt tillatt ({maksAreal} m²) for valgt tiltak.</p>
-                              </div>
-                            );
-                          }
-                          
-                          return (
-                            <div className="p-2 bg-green-50 border border-green-200 rounded-md">
-                              <p className="text-sm text-green-700">✅ Valgt tiltak er tilstrekkelig for arealet ({arealNum} m² ≤ {maksAreal === Infinity ? "ubegrenset" : maksAreal + " m²"})</p>
-                            </div>
-                          );
-                        })()
-                      )}
-                      
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div>
                           <Label className="text-xs font-medium mb-1 block">Forhold</Label>
@@ -3030,14 +2849,6 @@ const Konsept = () => {
                             placeholder="F.eks. RIBr / ARK"
                           />
                         </div>
-                      </div>
-                      <div>
-                        <Label className="text-xs font-medium mb-1 block">Tilleggsbeskrivelse</Label>
-                        <Textarea 
-                          value={formData.brannseksjoner}
-                          onChange={(e) => setFormData({...formData, brannseksjoner: e.target.value})}
-                          placeholder="Eventuelle tilleggsbeskrivelser..."
-                        />
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
