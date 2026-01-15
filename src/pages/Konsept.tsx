@@ -319,6 +319,8 @@ const Konsept = () => {
     spesifikkBrannenergi: "", // For brannvegg: "inntil400", "400-600", "600-800"
     brannspredning: "",
     brannspredningKommentar: "",
+    brannseksjonBrannenergi: "", // "over400", "50-400", "under50"
+    brannseksjonTiltak: "", // "normalt", "brannalarm", "sprinkler", "roykventilasjon"
     brannseksjoner: "",
     brannseksjonerKommentar: "",
     brannceller: "",
@@ -952,8 +954,50 @@ const Konsept = () => {
               </tr>
               <tr>
                 <td className="border border-gray-400 p-2" colSpan={3}>
-                  {formData.brannseksjoner || "[Seksjonering beskrives]"}
-                  {formData.brannseksjonerKommentar && <><br/><br/><span className="italic">Kommentar: {formData.brannseksjonerKommentar}</span></>}
+                  <p className="font-semibold">Preaksepterte ytelser:</p>
+                  <ol className="list-decimal list-inside mt-1 text-sm space-y-1">
+                    <li>Byggverk må oppdeles i seksjoner minst som angitt i tabell 1 med unntak som angitt i nr. 2 til 4.</li>
+                    {formData.risikoklasse === "RK6" && (
+                      <li>Byggverk i risikoklasse 6 beregnet for sykehus, sykehjem og andre pleieinstitusjoner må deles vertikalt i minst to brannseksjoner.</li>
+                    )}
+                    {formData.risikoklasse === "RK3" && (
+                      <li>Største bruttoareal per etasje for barnehager uten seksjonering er 600 m².</li>
+                    )}
+                    <li>Byggverk som etter § 11-3 Tabell 1 ikke plasseres i brannklasse, kan oppføres uten seksjonering.</li>
+                    {(formData.brannseksjonTiltak === "brannalarm" || formData.brannseksjonTiltak === "sprinkler") && (
+                      <li>Brannalarmanlegg må prosjekteres og utføres etter NS 3960:2019. Brannalarmanlegg må være av kategori 2, jf. § 11-12 Tabell 3, som gir direkte varsling til en nødmeldesentral.</li>
+                    )}
+                    {formData.brannseksjonTiltak === "sprinkler" && (
+                      <li>Sprinkleranlegg må prosjekteres og utføres etter NS-EN 12845:2015+A1:2019. I boligbygninger, og deler av byggverk avsatt til boligformål, kan alternativt NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019 legges til grunn, men med varighet av vannforsyning minst 30 minutter for type 1- og 2-anlegg, og minst 60 minutter for type 3-anlegg.</li>
+                    )}
+                  </ol>
+                  
+                  {formData.brannseksjonBrannenergi && formData.brannseksjonTiltak && (
+                    <div className="mt-3">
+                      <p className="font-semibold">Størrelse på brannseksjon:</p>
+                      <p className="mt-1">
+                        {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "normalt" && "Spesifikk brannenergi: Over 400 MJ/m² | Tiltak: Normalt → Største bruttoareal: 800 m² pr. etasje"}
+                        {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "brannalarm" && "Spesifikk brannenergi: Over 400 MJ/m² | Tiltak: Med brannalarmanlegg → Største bruttoareal: 1200 m² pr. etasje"}
+                        {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "sprinkler" && "Spesifikk brannenergi: Over 400 MJ/m² | Tiltak: Med sprinkleranlegg → Største bruttoareal: 5000 m² pr. etasje"}
+                        {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "roykventilasjon" && "Spesifikk brannenergi: Over 400 MJ/m² | Tiltak: Med røykventilasjon → Uegnet"}
+                        
+                        {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "normalt" && "Spesifikk brannenergi: 50-400 MJ/m² | Tiltak: Normalt → Største bruttoareal: 1200 m² pr. etasje"}
+                        {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "brannalarm" && "Spesifikk brannenergi: 50-400 MJ/m² | Tiltak: Med brannalarmanlegg → Største bruttoareal: 1800 m² pr. etasje"}
+                        {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "sprinkler" && "Spesifikk brannenergi: 50-400 MJ/m² | Tiltak: Med sprinkleranlegg → Største bruttoareal: 10 000 m² pr. etasje"}
+                        {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "roykventilasjon" && "Spesifikk brannenergi: 50-400 MJ/m² | Tiltak: Med røykventilasjon → Største bruttoareal: 4000 m² pr. etasje"}
+                        
+                        {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "normalt" && "Spesifikk brannenergi: Under 50 MJ/m² | Tiltak: Normalt → Største bruttoareal: 1800 m² pr. etasje"}
+                        {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "brannalarm" && "Spesifikk brannenergi: Under 50 MJ/m² | Tiltak: Med brannalarmanlegg → Største bruttoareal: 2700 m² pr. etasje"}
+                        {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "sprinkler" && "Spesifikk brannenergi: Under 50 MJ/m² | Tiltak: Med sprinkleranlegg → Ubegrenset"}
+                        {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "roykventilasjon" && "Spesifikk brannenergi: Under 50 MJ/m² | Tiltak: Med røykventilasjon → Største bruttoareal: 10 000 m² pr. etasje"}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {formData.brannseksjoner && (
+                    <p className="mt-2">{formData.brannseksjoner}</p>
+                  )}
+                  {formData.brannseksjonerKommentar && <p className="mt-2 italic">Kommentar: {formData.brannseksjonerKommentar}</p>}
                 </td>
               </tr>
               <tr className="bg-gray-200">
@@ -2533,10 +2577,51 @@ const Konsept = () => {
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.4 § 11-7 Brannseksjoner</Label>
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Seksjonering beskrives</Label>
+                        <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
+                        <Select 
+                          value={formData.brannseksjonBrannenergi} 
+                          onValueChange={(value) => setFormData({...formData, brannseksjonBrannenergi: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Velg brannenergi..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="over400">Over 400 MJ/m²</SelectItem>
+                            <SelectItem value="50-400">50-400 MJ/m²</SelectItem>
+                            <SelectItem value="under50">Under 50 MJ/m²</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Tiltak</Label>
+                        <Select 
+                          value={formData.brannseksjonTiltak} 
+                          onValueChange={(value) => setFormData({...formData, brannseksjonTiltak: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Velg tiltak..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="normalt">Normalt (ingen tiltak)</SelectItem>
+                            <SelectItem value="brannalarm">Med brannalarmanlegg</SelectItem>
+                            <SelectItem value="sprinkler">Med sprinkleranlegg</SelectItem>
+                            <SelectItem value="roykventilasjon">Med røykventilasjon</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "roykventilasjon" && (
+                        <div className="p-2 bg-red-50 border border-red-200 rounded-md">
+                          <p className="text-sm text-red-700">⚠️ Røykventilasjon er uegnet for brannenergi over 400 MJ/m²</p>
+                        </div>
+                      )}
+                      
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Tilleggsbeskrivelse (valgfritt)</Label>
                         <Textarea 
                           value={formData.brannseksjoner}
                           onChange={(e) => setFormData({...formData, brannseksjoner: e.target.value})}
+                          placeholder="Eventuelle tilleggsbeskrivelser..."
                         />
                       </div>
                       <div>
