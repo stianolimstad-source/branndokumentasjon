@@ -906,7 +906,19 @@ const Konsept = () => {
                   {parseFloat(formData.bygningshoyde) > 9 ? (
                     <>
                       <p className="mt-2"><strong>Krav:</strong> Brannvegg (bygning over 9 meter)</p>
-                      <p className="mt-2 font-semibold">Preaksepterte ytelser for brannvegg:</p>
+                      
+                      {formData.spesifikkBrannenergi && (
+                        <div className="mt-2">
+                          <p className="font-semibold">Brannveggkrav basert på spesifikk brannenergi:</p>
+                          <p className="mt-1">
+                            {formData.spesifikkBrannenergi === "inntil400" && "Spesifikk brannenergi: Inntil 400 MJ/m² → Brannmotstand: REI 120-M A2-s1,d0 [A 120]"}
+                            {formData.spesifikkBrannenergi === "400-600" && "Spesifikk brannenergi: 400-600 MJ/m² → Brannmotstand: REI 180-M A2-s1,d0 [A 180]"}
+                            {formData.spesifikkBrannenergi === "600-800" && "Spesifikk brannenergi: 600-800 MJ/m² → Brannmotstand: REI 240-M A2-s1,d0 [A 240]"}
+                          </p>
+                        </div>
+                      )}
+                      
+                      <p className="mt-3 font-semibold">Preaksepterte ytelser for brannvegg:</p>
                       <ol className="list-decimal list-inside mt-1 text-sm space-y-1">
                         <li>Takkonstruksjonen må ikke være kontinuerlig over brannveggen på en slik måte at en kollaps på den ene siden medfører reduksjon av konstruksjonens bæreevne og brannmotstand på den andre siden.</li>
                         <li>Konstruksjoner som ligger inntil brannveggen må kunne bevege seg fritt ved temperaturendringer uten at veggens branntekniske egenskaper reduseres.</li>
@@ -917,17 +929,6 @@ const Konsept = () => {
                         <li>Brannveggen må føres minimum 0,5 meter over høyeste tilstøtende tak, med mindre taket har brannmotstand minst EI 60 A2-s1,d0 [A 60], jf. figur 3.</li>
                         <li>Brannveggen må være slik utført at den blir stående selv om byggverket på den ene eller den andre siden raser sammen, jf. figur 4. Alternativt kan det bygges to uavhengige brannvegger eller byggverkets bæresystem kan dimensjoneres for brannmotstand tilsvarende brannvegg.</li>
                       </ol>
-                      
-                      {formData.spesifikkBrannenergi && (
-                        <div className="mt-3">
-                          <p className="font-semibold">Brannveggkrav basert på spesifikk brannenergi:</p>
-                          <p className="mt-1">
-                            {formData.spesifikkBrannenergi === "inntil400" && "Spesifikk brannenergi: Inntil 400 MJ/m² → Brannmotstand: REI 120-M A2-s1,d0 [A 120]"}
-                            {formData.spesifikkBrannenergi === "400-600" && "Spesifikk brannenergi: 400-600 MJ/m² → Brannmotstand: REI 180-M A2-s1,d0 [A 180]"}
-                            {formData.spesifikkBrannenergi === "600-800" && "Spesifikk brannenergi: 600-800 MJ/m² → Brannmotstand: REI 240-M A2-s1,d0 [A 240]"}
-                          </p>
-                        </div>
-                      )}
                     </>
                   ) : parseFloat(formData.bygningshoyde) > 0 ? (
                     <>
