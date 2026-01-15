@@ -933,7 +933,7 @@ const Konsept = () => {
                   ) : parseFloat(formData.bygningshoyde) > 0 ? (
                     <>
                       <p className="mt-2"><strong>Krav:</strong> Branncellevegg (bygning under eller lik 9 meter)</p>
-                      <p className="mt-2">For bygninger under 9 meter stilles det krav til branncellevegg i stedet for brannvegg.</p>
+                      <p className="mt-2">For bygninger under 9 meter stilles det krav til branncellevegg i stedet for brannvegg. Se kap. 3.5 for krav til brannceller.</p>
                     </>
                   ) : null}
                   
