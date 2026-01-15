@@ -1921,6 +1921,22 @@ const Konsept = () => {
                             />
                           </div>
                         </div>
+                        <div>
+                          <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
+                          <Select 
+                            value={formData.brannseksjonBrannenergi} 
+                            onValueChange={(value) => setFormData({...formData, brannseksjonBrannenergi: value})}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Velg brannenergi..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="over400">Over 400 MJ/m²</SelectItem>
+                              <SelectItem value="50-400">50-400 MJ/m²</SelectItem>
+                              <SelectItem value="under50">Under 50 MJ/m²</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -2576,22 +2592,44 @@ const Konsept = () => {
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.4 § 11-7 Brannseksjoner</Label>
-                      <div>
-                        <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
-                        <Select 
-                          value={formData.brannseksjonBrannenergi} 
-                          onValueChange={(value) => setFormData({...formData, brannseksjonBrannenergi: value})}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Velg brannenergi..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="over400">Over 400 MJ/m²</SelectItem>
-                            <SelectItem value="50-400">50-400 MJ/m²</SelectItem>
-                            <SelectItem value="under50">Under 50 MJ/m²</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      
+                      {/* Automatisk beregning basert på areal fra kap 2 */}
+                      {formData.areal && formData.brannseksjonBrannenergi && (
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md space-y-2">
+                          <p className="text-sm font-medium text-blue-800">Automatisk vurdering basert på areal ({formData.areal} m²) og brannenergi:</p>
+                          {(() => {
+                            const arealNum = parseFloat(formData.areal) || 0;
+                            const brannenergi = formData.brannseksjonBrannenergi;
+                            
+                            // Finn maksimale arealer for hvert tiltak
+                            const grenser = {
+                              "over400": { normalt: 800, brannalarm: 1200, sprinkler: 5000, roykventilasjon: 0 },
+                              "50-400": { normalt: 1200, brannalarm: 1800, sprinkler: 10000, roykventilasjon: 4000 },
+                              "under50": { normalt: 1800, brannalarm: 2700, sprinkler: Infinity, roykventilasjon: 10000 }
+                            };
+                            
+                            const g = grenser[brannenergi as keyof typeof grenser];
+                            if (!g) return null;
+                            
+                            const anbefalinger: string[] = [];
+                            
+                            if (arealNum <= g.normalt) {
+                              anbefalinger.push("✅ Ingen tiltak nødvendig (maks " + g.normalt + " m²)");
+                            } else if (arealNum <= g.brannalarm) {
+                              anbefalinger.push("⚠️ Brannalarmanlegg anbefales (maks " + g.brannalarm + " m²)");
+                            } else if (brannenergi !== "over400" && g.roykventilasjon > 0 && arealNum <= g.roykventilasjon) {
+                              anbefalinger.push("⚠️ Røykventilasjon eller sprinkler nødvendig");
+                            } else if (arealNum <= g.sprinkler) {
+                              anbefalinger.push("🔴 Sprinkleranlegg nødvendig (maks " + (g.sprinkler === Infinity ? "ubegrenset" : g.sprinkler + " m²") + ")");
+                            } else {
+                              anbefalinger.push("🔴 Arealet overskrider tillatte grenser - seksjonering nødvendig");
+                            }
+                            
+                            return anbefalinger.map((a, i) => <p key={i} className="text-sm text-blue-700">{a}</p>);
+                          })()}
+                        </div>
+                      )}
+                      
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Tiltak</Label>
                         <Select 
@@ -2614,6 +2652,48 @@ const Konsept = () => {
                         <div className="p-2 bg-red-50 border border-red-200 rounded-md">
                           <p className="text-sm text-red-700">⚠️ Røykventilasjon er uegnet for brannenergi over 400 MJ/m²</p>
                         </div>
+                      )}
+                      
+                      {/* Sjekk om valgt tiltak er tilstrekkelig for arealet */}
+                      {formData.areal && formData.brannseksjonBrannenergi && formData.brannseksjonTiltak && (
+                        (() => {
+                          const arealNum = parseFloat(formData.areal) || 0;
+                          const brannenergi = formData.brannseksjonBrannenergi;
+                          const tiltak = formData.brannseksjonTiltak;
+                          
+                          const grenser = {
+                            "over400": { normalt: 800, brannalarm: 1200, sprinkler: 5000, roykventilasjon: 0 },
+                            "50-400": { normalt: 1200, brannalarm: 1800, sprinkler: 10000, roykventilasjon: 4000 },
+                            "under50": { normalt: 1800, brannalarm: 2700, sprinkler: Infinity, roykventilasjon: 10000 }
+                          };
+                          
+                          const g = grenser[brannenergi as keyof typeof grenser];
+                          if (!g) return null;
+                          
+                          const maksAreal = g[tiltak as keyof typeof g];
+                          
+                          if (maksAreal === 0) {
+                            return (
+                              <div className="p-2 bg-red-50 border border-red-200 rounded-md">
+                                <p className="text-sm text-red-700">⚠️ Dette tiltaket er ikke egnet for valgt brannenergi</p>
+                              </div>
+                            );
+                          }
+                          
+                          if (arealNum > maksAreal && maksAreal !== Infinity) {
+                            return (
+                              <div className="p-2 bg-red-50 border border-red-200 rounded-md">
+                                <p className="text-sm text-red-700">⚠️ Arealet ({arealNum} m²) overskrider maksimalt tillatt ({maksAreal} m²) for valgt tiltak. Velg et sterkere tiltak eller del inn i brannseksjoner.</p>
+                              </div>
+                            );
+                          }
+                          
+                          return (
+                            <div className="p-2 bg-green-50 border border-green-200 rounded-md">
+                              <p className="text-sm text-green-700">✅ Valgt tiltak er tilstrekkelig for arealet ({arealNum} m² ≤ {maksAreal === Infinity ? "ubegrenset" : maksAreal + " m²"})</p>
+                            </div>
+                          );
+                        })()
                       )}
                       
                       <div>
