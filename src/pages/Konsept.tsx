@@ -575,25 +575,72 @@ const Konsept = () => {
           <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
             <tbody>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold w-1/3">Bygningstype</td>
-                <td className="border border-gray-400 p-2">{formData.bygningstype || "[Angis]"}</td>
+                <td className="border border-gray-400 p-2 font-semibold w-1/3">Oppdragsgiver</td>
+                <td className="border border-gray-400 p-2">{formData.oppdragsgiver || "[Angis]"}</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold">Bruttoareal</td>
-                <td className="border border-gray-400 p-2">{formData.areal || "[Angis]"} m²</td>
+                <td className="border border-gray-400 p-2 font-semibold">Prosjektnavn</td>
+                <td className="border border-gray-400 p-2">{formData.prosjektnavn || "[Angis]"}</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold">Antall etasjer</td>
-                <td className="border border-gray-400 p-2">{formData.etasjer || "[Angis]"}</td>
+                <td className="border border-gray-400 p-2 font-semibold">Adresse</td>
+                <td className="border border-gray-400 p-2">{formData.adresse || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Gnr/Bnr</td>
+                <td className="border border-gray-400 p-2">{formData.gnrBnr || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Kommune</td>
+                <td className="border border-gray-400 p-2">{formData.kommune || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Type tiltak</td>
+                <td className="border border-gray-400 p-2">{formData.tiltakstype || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Beskrivelse av tiltaket</td>
+                <td className="border border-gray-400 p-2">{formData.tiltaksbeskrivelse || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Særskilt brannobjekt</td>
+                <td className="border border-gray-400 p-2">{formData.saerskiltBrannobjekt || "[Angis]"}</td>
               </tr>
             </tbody>
           </table>
 
           <h3 className="font-semibold mb-2">1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)</h3>
-          <p className="ml-4 mb-3">[Ansvarsrett og tiltaksklasse angis her]</p>
+          <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+            <tbody>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold w-1/3">Tiltakshaver</td>
+                <td className="border border-gray-400 p-2">{formData.tiltakshaver || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Ansvarlig søker (SØK)</td>
+                <td className="border border-gray-400 p-2">{formData.ansvarligSoker || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Kunde</td>
+                <td className="border border-gray-400 p-2">{formData.kunde || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">PRO RiBr</td>
+                <td className="border border-gray-400 p-2">{formData.proRibr || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">KPR RiBr</td>
+                <td className="border border-gray-400 p-2">{formData.kprRibr || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Tiltaksklasse</td>
+                <td className="border border-gray-400 p-2">{formData.tiltaksklasse || "[Angis]"}</td>
+              </tr>
+            </tbody>
+          </table>
 
           <h3 className="font-semibold mb-2">1.3 Avgrensning av tiltak</h3>
-          <p className="ml-4 mb-3">[Avgrensning beskrives]</p>
+          <p className="ml-4 mb-3">{formData.avgrensning || "[Avgrensning beskrives]"}</p>
 
           <h3 className="font-semibold mb-2">1.4 Gjeldende regelverk</h3>
           <ul className="ml-4 mb-3 list-disc list-inside">
@@ -607,9 +654,44 @@ const Konsept = () => {
           <h2 className="font-bold mb-3">2. Grunnlag og forutsetninger for brannteknisk prosjektering</h2>
           
           <h3 className="font-semibold mb-2">2.1 Grunnlagsdokumenter</h3>
-          <p className="ml-4 mb-3">[Liste over tegninger og dokumenter]</p>
+          {Array.isArray(formData.grunnlagsdokumenter) && formData.grunnlagsdokumenter.length > 0 ? (
+            <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-400 p-2 text-left">Dokument</th>
+                  <th className="border border-gray-400 p-2 text-left">Dato</th>
+                </tr>
+              </thead>
+              <tbody>
+                {formData.grunnlagsdokumenter.map((doc, index) => (
+                  <tr key={index}>
+                    <td className="border border-gray-400 p-2">{doc.navn || "-"}</td>
+                    <td className="border border-gray-400 p-2">{doc.dato || "-"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="ml-4 mb-3">[Liste over tegninger og dokumenter]</p>
+          )}
 
           <h3 className="font-semibold mb-2">2.2 Beskrivelse av bygning og branntekniske forutsetninger</h3>
+          <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+            <tbody>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold w-1/3">Bygningstype</td>
+                <td className="border border-gray-400 p-2">{formData.bygningstype || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Bruttoareal</td>
+                <td className="border border-gray-400 p-2">{formData.areal || "[Angis]"} m²</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Antall etasjer</td>
+                <td className="border border-gray-400 p-2">{formData.etasjer || "[Angis]"}</td>
+              </tr>
+            </tbody>
+          </table>
           {formData.harFlereRisikoklasser && formData.bygningsdeler.length > 0 ? (
             /* Visning for flere risikoklasser */
             <>
