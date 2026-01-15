@@ -936,9 +936,6 @@ const Konsept = () => {
                     </>
                   ) : null}
                   
-                  {formData.brannspredning && (
-                    <p className="mt-2"><strong>Tilleggsbeskrivelse:</strong> {formData.brannspredning}</p>
-                  )}
                   {formData.brannspredningKommentar && <p className="mt-2 italic">Kommentar: {formData.brannspredningKommentar}</p>}
                 </td>
               </tr>
@@ -2516,14 +2513,6 @@ const Konsept = () => {
                         </div>
                       )}
                       
-                      <div>
-                        <Label className="text-xs font-medium mb-1 block">Tilleggsbeskrivelse (valgfritt)</Label>
-                        <Textarea 
-                          value={formData.brannspredning}
-                          onChange={(e) => setFormData({...formData, brannspredning: e.target.value})}
-                          placeholder="Eventuelle tilleggsbeskrivelser..."
-                        />
-                      </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
                         <Textarea 
