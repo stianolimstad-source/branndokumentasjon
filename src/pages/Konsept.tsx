@@ -310,90 +310,38 @@ const Konsept = () => {
     baeresystem: "",
     tilleggskrav: "",
     // 3. Branntekniske ytelseskrav
-    // 3.1 Bæreevne
     baereevne: "",
-    baereevneForhold: "",
-    baereevneLosning: "",
-    baereevneAnsvar: "",
     baereevneUnntak: [] as string[],
     baereevneKommentar: "",
-    // 3.2 Eksplosjon
     eksplosjonRelevant: "", // "relevant" eller "ikke_relevant"
     eksplosjon: "",
-    eksplosjonForhold: "",
-    eksplosjonLosning: "",
-    eksplosjonAnsvar: "",
-    eksplosjonKommentar: "",
-    // 3.3 Brannspredning
     bygningshoyde: "", // Høyde på bygget i meter
     spesifikkBrannenergi: "", // For brannvegg: "inntil400", "400-600", "600-800"
     brannspredning: "",
-    brannspredningForhold: "",
-    brannspredningLosning: "",
-    brannspredningAnsvar: "",
     brannspredningKommentar: "",
-    // 3.4 Brannseksjoner
     brannseksjonBrannenergi: "", // "over400", "50-400", "under50"
     brannseksjonTiltak: "", // "normalt", "brannalarm", "sprinkler", "roykventilasjon"
     brannseksjoner: "",
-    brannseksjonerForhold: "",
-    brannseksjonerLosning: "",
-    brannseksjonerAnsvar: "",
     brannseksjonerKommentar: "",
-    // 3.5 Brannceller
     brannceller: "",
-    branncellerForhold: "",
-    branncellerLosning: "",
-    branncellerAnsvar: "",
     branncellerKommentar: "",
-    // 3.6 Materialer
     materialer: "",
-    materialerForhold: "",
-    materialerLosning: "",
-    materialerAnsvar: "",
     materialerKommentar: "",
-    // 3.7 Installasjoner
     installasjoner: "",
-    installasjonerForhold: "",
-    installasjonerLosning: "",
-    installasjonerAnsvar: "",
     installasjonerKommentar: "",
-    // 3.8 Rømning sikkerhet
     romningSikkerhet: "",
-    romningSikkerhetForhold: "",
-    romningSikkerhetLosning: "",
-    romningSikkerhetAnsvar: "",
     romningSikkerhetKommentar: "",
-    // 3.9 Rømning tiltak
     romningTiltak: "",
-    romningTiltakForhold: "",
-    romningTiltakLosning: "",
-    romningTiltakAnsvar: "",
     romningTiltakKommentar: "",
-    // 3.10 Utgang branncelle
     utgangBranncelle: "",
-    utgangBranncelleForhold: "",
-    utgangBranncelleLosning: "",
-    utgangBranncelleAnsvar: "",
     utgangBranncelleKommentar: "",
-    // 3.11 Rømningsvei
     romningsvei: "",
-    romningsveiForhold: "",
-    romningsveiLosning: "",
-    romningsveiAnsvar: "",
     romningsveiKommentar: "",
-    // 3.12 Manuell slokking
     manuellSlokking: "",
-    manuellSlokkingForhold: "",
-    manuellSlokkingLosning: "",
-    manuellSlokkingAnsvar: "",
     manuellSlokkingKommentar: "",
-    // 3.13 Redningsmannskap
     redningsmannskap: "",
-    redningsmannskapForhold: "",
-    redningsmannskapLosning: "",
-    redningsmannskapAnsvar: "",
     redningsmannskapKommentar: "",
+    eksplosjonKommentar: "",
     // 4. Utførelses- og driftsfasen
     utfoerelse: "",
     drift: "",
@@ -926,26 +874,16 @@ const Konsept = () => {
                   </td>
                 </tr>
               )}
-              {/* 3.2 Eksplosjon */}
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
                   3.2 &nbsp;&nbsp; §11-5 Sikkerhet ved eksplosjon
                 </td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top" style={{width: '25%'}}>Forhold</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.eksplosjonForhold || (formData.eksplosjonRelevant === "ikke_relevant" 
-                    ? "RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket." 
-                    : formData.eksplosjonRelevant === "relevant"
-                    ? "Det er identifisert fare for eksplosjon i tiltaket."
-                    : "[Vurdering av eksplosjonsfare]")}
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Løsning</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.eksplosjonLosning || (formData.eksplosjonRelevant === "relevant" ? (
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.eksplosjonRelevant === "ikke_relevant" ? (
+                    "RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket."
+                  ) : formData.eksplosjonRelevant === "relevant" ? (
                     <div className="space-y-2">
                       <p className="font-semibold">Preaksepterte ytelser (jf. VTEK § 11-5):</p>
                       <ol className="list-decimal list-inside space-y-1">
@@ -956,397 +894,193 @@ const Konsept = () => {
                         <li>Bærende og branncellebegrensende bygningsdeler må forsterkes ved behov.</li>
                       </ol>
                     </div>
-                  ) : "-")}
+                  ) : "[Vurdering av eksplosjonsfare]"}
+                  {formData.eksplosjonKommentar && <><br/><br/><span className="italic">Kommentar: {formData.eksplosjonKommentar}</span></>}
                 </td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Ansvar</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.eksplosjonAnsvar || "RIBr"}
-                </td>
-              </tr>
-              {formData.eksplosjonKommentar && (
-                <tr>
-                  <td className="border border-gray-400 p-2 italic text-sm" colSpan={3}>
-                    Kommentar: {formData.eksplosjonKommentar}
-                  </td>
-                </tr>
-              )}
-
-              {/* 3.3 Brannspredning */}
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.3 &nbsp;&nbsp; §11-6 Brannspredning mellom byggverk</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top" style={{width: '25%'}}>Forhold</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.brannspredningForhold || (
-                    <span>
-                      <strong>Bygningshøyde:</strong> {formData.bygningshoyde ? `${formData.bygningshoyde} meter` : "[Ikke angitt]"}
-                      {parseFloat(formData.bygningshoyde) > 9 && " - Krav til brannvegg"}
-                      {parseFloat(formData.bygningshoyde) > 0 && parseFloat(formData.bygningshoyde) <= 9 && " - Krav til branncellevegg"}
-                    </span>
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Løsning</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.brannspredningLosning || (
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  <p><strong>Bygningshøyde:</strong> {formData.bygningshoyde ? `${formData.bygningshoyde} meter` : "[Ikke angitt]"}</p>
+                  
+                  {parseFloat(formData.bygningshoyde) > 9 ? (
                     <>
-                      {parseFloat(formData.bygningshoyde) > 9 ? (
-                        <>
-                          <p><strong>Krav:</strong> Brannvegg (bygning over 9 meter)</p>
-                          {formData.spesifikkBrannenergi && (
-                            <p className="mt-1">
-                              {formData.spesifikkBrannenergi === "inntil400" && "Spesifikk brannenergi: Inntil 400 MJ/m² → Brannmotstand: REI 120-M A2-s1,d0 [A 120]"}
-                              {formData.spesifikkBrannenergi === "400-600" && "Spesifikk brannenergi: 400-600 MJ/m² → Brannmotstand: REI 180-M A2-s1,d0 [A 180]"}
-                              {formData.spesifikkBrannenergi === "600-800" && "Spesifikk brannenergi: 600-800 MJ/m² → Brannmotstand: REI 240-M A2-s1,d0 [A 240]"}
-                            </p>
-                          )}
-                        </>
-                      ) : parseFloat(formData.bygningshoyde) > 0 ? (
-                        <p>Branncellebegrensende konstruksjoner iht. § 11-8.</p>
-                      ) : "[Løsning beskrives]"}
+                      <p className="mt-2"><strong>Krav:</strong> Brannvegg (bygning over 9 meter)</p>
+                      
+                      {formData.spesifikkBrannenergi && (
+                        <div className="mt-2">
+                          <p className="font-semibold">Brannveggkrav basert på spesifikk brannenergi:</p>
+                          <p className="mt-1">
+                            {formData.spesifikkBrannenergi === "inntil400" && "Spesifikk brannenergi: Inntil 400 MJ/m² → Brannmotstand: REI 120-M A2-s1,d0 [A 120]"}
+                            {formData.spesifikkBrannenergi === "400-600" && "Spesifikk brannenergi: 400-600 MJ/m² → Brannmotstand: REI 180-M A2-s1,d0 [A 180]"}
+                            {formData.spesifikkBrannenergi === "600-800" && "Spesifikk brannenergi: 600-800 MJ/m² → Brannmotstand: REI 240-M A2-s1,d0 [A 240]"}
+                          </p>
+                        </div>
+                      )}
+                      
+                      <p className="mt-3 font-semibold">Preaksepterte ytelser for brannvegg:</p>
+                      <ol className="list-decimal list-inside mt-1 text-sm space-y-1">
+                        <li>Takkonstruksjonen må ikke være kontinuerlig over brannveggen på en slik måte at en kollaps på den ene siden medfører reduksjon av konstruksjonens bæreevne og brannmotstand på den andre siden.</li>
+                        <li>Konstruksjoner som ligger inntil brannveggen må kunne bevege seg fritt ved temperaturendringer uten at veggens branntekniske egenskaper reduseres.</li>
+                        <li>Brannveggens avslutning mot tak og fasade, må være utformet og utført slik at brann ikke kan spre seg fra ett byggverk til et annet i den fastsatte brannmotstandstiden. Det oppnås størst sikkerhet mot brannspredning ved å føre brannveggen over takflaten og utenfor vegglivet.</li>
+                        <li>Brannveggen må ha brannmotstand minst som angitt i tabell 1.</li>
+                        <li>Brannveggen må i sin helhet bestå av materialer som tilfredsstiller klasse A2-s1,d0 [ubrennbare] og må kunne motstå mekanisk påkjenning. Isolasjonsmateriale som ikke tilfredsstiller klasse A2-s1,d0 kan likevel benyttes når det er dokumentert ved prøving at materialet ikke blir involvert i brannen i den forutsatte brannmotstandstiden.</li>
+                        <li>Dersom mekanisk motstandsevne (M) ikke er dokumentert ved prøvning, må brannveggen utføres i tunge materialer som mur, betong eller lignende.</li>
+                        <li>Brannveggen må føres minimum 0,5 meter over høyeste tilstøtende tak, med mindre taket har brannmotstand minst EI 60 A2-s1,d0 [A 60], jf. figur 3.</li>
+                        <li>Brannveggen må være slik utført at den blir stående selv om byggverket på den ene eller den andre siden raser sammen, jf. figur 4. Alternativt kan det bygges to uavhengige brannvegger eller byggverkets bæresystem kan dimensjoneres for brannmotstand tilsvarende brannvegg.</li>
+                      </ol>
                     </>
-                  )}
+                  ) : parseFloat(formData.bygningshoyde) > 0 ? (
+                    <>
+                      <p className="mt-2"><strong>Krav:</strong> Branncellevegg (bygning under eller lik 9 meter)</p>
+                      <p className="mt-2">Avstanden mellom lave byggverk kan være mindre enn 8,0 meter når byggverkene er skilt med branncellebegrensende bygningsdel eller bygningsdeler i hvert av byggverkene som til sammen gir samme brannmotstand. Vinduer kan utføres i samsvar med § 11-8 Tabell 3. Se kap. 3.5 for krav til brannceller.</p>
+                      
+                      {formData.risikoklasse === "RK1" && (
+                        <>
+                          <p className="mt-3 font-semibold">Preakseptert ytelse for risikoklasse 1:</p>
+                          <p className="mt-1 text-sm">Byggverk i risikoklasse 1 med bruttoareal til og med 50 m² og liten eller middels brannenergi, kan plasseres nærmere byggverk i annen bruksenhet uten at det treffes særlige branntekniske tiltak. Er avstanden mindre enn 2,0 meter mellom byggverk i ulike bruksenheter, må disse være skilt med branncellebegrensende bygningsdel eller bygningsdeler i hvert av byggverkene som til sammen gir samme brannmotstand.</p>
+                        </>
+                      )}
+                    </>
+                  ) : null}
+                  
+                  {formData.brannspredningKommentar && <p className="mt-2 italic">Kommentar: {formData.brannspredningKommentar}</p>}
                 </td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Ansvar</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.brannspredningAnsvar || "RIBr / ARK"}
-                </td>
-              </tr>
-              {formData.brannspredningKommentar && (
-                <tr>
-                  <td className="border border-gray-400 p-2 italic text-sm" colSpan={3}>
-                    Kommentar: {formData.brannspredningKommentar}
-                  </td>
-                </tr>
-              )}
-
-              {/* 3.4 Brannseksjoner */}
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.4 &nbsp;&nbsp; §11-7 Brannseksjoner</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top" style={{width: '25%'}}>Forhold</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.brannseksjonerForhold || (formData.brannseksjonBrannenergi && formData.areal 
-                    ? `Areal: ${formData.areal} m², Spesifikk brannenergi: ${formData.brannseksjonBrannenergi === "over400" ? "Over 400 MJ/m²" : formData.brannseksjonBrannenergi === "50-400" ? "50-400 MJ/m²" : "Under 50 MJ/m²"}`
-                    : "[Forhold beskrives]")}
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Løsning</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.brannseksjonerLosning || (
-                    <>
-                      {formData.brannseksjonBrannenergi && formData.brannseksjonTiltak && (
-                        <p>
-                          {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "normalt" && "Største bruttoareal: 800 m² pr. etasje"}
-                          {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "brannalarm" && "Med brannalarmanlegg → Største bruttoareal: 1200 m² pr. etasje"}
-                          {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "sprinkler" && "Med sprinkleranlegg → Største bruttoareal: 5000 m² pr. etasje"}
-                          {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "normalt" && "Største bruttoareal: 1200 m² pr. etasje"}
-                          {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "brannalarm" && "Med brannalarmanlegg → Største bruttoareal: 1800 m² pr. etasje"}
-                          {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "sprinkler" && "Med sprinkleranlegg → Største bruttoareal: 10 000 m² pr. etasje"}
-                          {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "roykventilasjon" && "Med røykventilasjon → Største bruttoareal: 4000 m² pr. etasje"}
-                          {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "normalt" && "Største bruttoareal: 1800 m² pr. etasje"}
-                          {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "brannalarm" && "Med brannalarmanlegg → Største bruttoareal: 2700 m² pr. etasje"}
-                          {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "sprinkler" && "Med sprinkleranlegg → Ubegrenset"}
-                          {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "roykventilasjon" && "Med røykventilasjon → Største bruttoareal: 10 000 m² pr. etasje"}
-                        </p>
-                      )}
-                      {formData.brannseksjoner && <p className="mt-2">{formData.brannseksjoner}</p>}
-                      {!formData.brannseksjonBrannenergi && !formData.brannseksjonTiltak && !formData.brannseksjoner && "[Løsning beskrives]"}
-                    </>
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  <p className="font-semibold">Preaksepterte ytelser:</p>
+                  <ol className="list-decimal list-inside mt-1 text-sm space-y-1">
+                    <li>Byggverk må oppdeles i seksjoner minst som angitt i tabell 1 med unntak som angitt i nr. 2 til 4.</li>
+                    {formData.risikoklasse === "RK6" && (
+                      <li>Byggverk i risikoklasse 6 beregnet for sykehus, sykehjem og andre pleieinstitusjoner må deles vertikalt i minst to brannseksjoner.</li>
+                    )}
+                    {formData.risikoklasse === "RK3" && (
+                      <li>Største bruttoareal per etasje for barnehager uten seksjonering er 600 m².</li>
+                    )}
+                    <li>Byggverk som etter § 11-3 Tabell 1 ikke plasseres i brannklasse, kan oppføres uten seksjonering.</li>
+                    {(formData.brannseksjonTiltak === "brannalarm" || formData.brannseksjonTiltak === "sprinkler") && (
+                      <li>Brannalarmanlegg må prosjekteres og utføres etter NS 3960:2019. Brannalarmanlegg må være av kategori 2, jf. § 11-12 Tabell 3, som gir direkte varsling til en nødmeldesentral.</li>
+                    )}
+                    {formData.brannseksjonTiltak === "sprinkler" && (
+                      <li>Sprinkleranlegg må prosjekteres og utføres etter NS-EN 12845:2015+A1:2019. I boligbygninger, og deler av byggverk avsatt til boligformål, kan alternativt NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019 legges til grunn, men med varighet av vannforsyning minst 30 minutter for type 1- og 2-anlegg, og minst 60 minutter for type 3-anlegg.</li>
+                    )}
+                  </ol>
+                  
+                  {formData.brannseksjonBrannenergi && formData.brannseksjonTiltak && (
+                    <div className="mt-3">
+                      <p className="font-semibold">Størrelse på brannseksjon:</p>
+                      <p className="mt-1">
+                        {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "normalt" && "Spesifikk brannenergi: Over 400 MJ/m² | Tiltak: Normalt → Største bruttoareal: 800 m² pr. etasje"}
+                        {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "brannalarm" && "Spesifikk brannenergi: Over 400 MJ/m² | Tiltak: Med brannalarmanlegg → Største bruttoareal: 1200 m² pr. etasje"}
+                        {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "sprinkler" && "Spesifikk brannenergi: Over 400 MJ/m² | Tiltak: Med sprinkleranlegg → Største bruttoareal: 5000 m² pr. etasje"}
+                        {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "roykventilasjon" && "Spesifikk brannenergi: Over 400 MJ/m² | Tiltak: Med røykventilasjon → Uegnet"}
+                        
+                        {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "normalt" && "Spesifikk brannenergi: 50-400 MJ/m² | Tiltak: Normalt → Største bruttoareal: 1200 m² pr. etasje"}
+                        {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "brannalarm" && "Spesifikk brannenergi: 50-400 MJ/m² | Tiltak: Med brannalarmanlegg → Største bruttoareal: 1800 m² pr. etasje"}
+                        {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "sprinkler" && "Spesifikk brannenergi: 50-400 MJ/m² | Tiltak: Med sprinkleranlegg → Største bruttoareal: 10 000 m² pr. etasje"}
+                        {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "roykventilasjon" && "Spesifikk brannenergi: 50-400 MJ/m² | Tiltak: Med røykventilasjon → Største bruttoareal: 4000 m² pr. etasje"}
+                        
+                        {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "normalt" && "Spesifikk brannenergi: Under 50 MJ/m² | Tiltak: Normalt → Største bruttoareal: 1800 m² pr. etasje"}
+                        {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "brannalarm" && "Spesifikk brannenergi: Under 50 MJ/m² | Tiltak: Med brannalarmanlegg → Største bruttoareal: 2700 m² pr. etasje"}
+                        {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "sprinkler" && "Spesifikk brannenergi: Under 50 MJ/m² | Tiltak: Med sprinkleranlegg → Ubegrenset"}
+                        {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "roykventilasjon" && "Spesifikk brannenergi: Under 50 MJ/m² | Tiltak: Med røykventilasjon → Største bruttoareal: 10 000 m² pr. etasje"}
+                      </p>
+                    </div>
                   )}
+                  
+                  {formData.brannseksjoner && (
+                    <p className="mt-2">{formData.brannseksjoner}</p>
+                  )}
+                  {formData.brannseksjonerKommentar && <p className="mt-2 italic">Kommentar: {formData.brannseksjonerKommentar}</p>}
                 </td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Ansvar</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.brannseksjonerAnsvar || "RIBr / ARK"}
-                </td>
-              </tr>
-              {formData.brannseksjonerKommentar && (
-                <tr>
-                  <td className="border border-gray-400 p-2 italic text-sm" colSpan={3}>
-                    Kommentar: {formData.brannseksjonerKommentar}
-                  </td>
-                </tr>
-              )}
-
-              {/* 3.5 Brannceller */}
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.5 &nbsp;&nbsp; §11-8 Brannceller</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top" style={{width: '25%'}}>Forhold</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.branncellerForhold || "[Forhold beskrives]"}
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.brannceller || "[Branncelleinndeling beskrives]"}
+                  {formData.branncellerKommentar && <><br/><br/><span className="italic">Kommentar: {formData.branncellerKommentar}</span></>}
                 </td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Løsning</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.branncellerLosning || formData.brannceller || "[Løsning beskrives]"}
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Ansvar</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.branncellerAnsvar || "RIBr / ARK"}
-                </td>
-              </tr>
-              {formData.branncellerKommentar && (
-                <tr>
-                  <td className="border border-gray-400 p-2 italic text-sm" colSpan={3}>
-                    Kommentar: {formData.branncellerKommentar}
-                  </td>
-                </tr>
-              )}
-
-              {/* 3.6 Materialer */}
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.6 &nbsp;&nbsp; §11-9 Materialer ved brann</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top" style={{width: '25%'}}>Forhold</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.materialerForhold || "[Forhold beskrives]"}
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.materialer || "[Krav til materialer beskrives]"}
+                  {formData.materialerKommentar && <><br/><br/><span className="italic">Kommentar: {formData.materialerKommentar}</span></>}
                 </td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Løsning</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.materialerLosning || formData.materialer || "[Løsning beskrives]"}
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Ansvar</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.materialerAnsvar || "RIBr / ARK"}
-                </td>
-              </tr>
-              {formData.materialerKommentar && (
-                <tr>
-                  <td className="border border-gray-400 p-2 italic text-sm" colSpan={3}>
-                    Kommentar: {formData.materialerKommentar}
-                  </td>
-                </tr>
-              )}
-
-              {/* 3.7 Installasjoner */}
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.7 &nbsp;&nbsp; §11-10 Tekniske installasjoner</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top" style={{width: '25%'}}>Forhold</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.installasjonerForhold || "[Forhold beskrives]"}
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.installasjoner || "[Installasjoner beskrives]"}
+                  {formData.installasjonerKommentar && <><br/><br/><span className="italic">Kommentar: {formData.installasjonerKommentar}</span></>}
                 </td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Løsning</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.installasjonerLosning || formData.installasjoner || "[Løsning beskrives]"}
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Ansvar</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.installasjonerAnsvar || "RIE / RIV"}
-                </td>
-              </tr>
-              {formData.installasjonerKommentar && (
-                <tr>
-                  <td className="border border-gray-400 p-2 italic text-sm" colSpan={3}>
-                    Kommentar: {formData.installasjonerKommentar}
-                  </td>
-                </tr>
-              )}
-
-              {/* 3.8 Rømning */}
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.8 &nbsp;&nbsp; §11-11 Generelle krav om rømning</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top" style={{width: '25%'}}>Forhold</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.romningSikkerhetForhold || "[Forhold beskrives]"}
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.romningSikkerhet || "[Rømningsforhold beskrives]"}
+                  {formData.romningSikkerhetKommentar && <><br/><br/><span className="italic">Kommentar: {formData.romningSikkerhetKommentar}</span></>}
                 </td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Løsning</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.romningSikkerhetLosning || formData.romningSikkerhet || "[Løsning beskrives]"}
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Ansvar</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.romningSikkerhetAnsvar || "RIBr / ARK"}
-                </td>
-              </tr>
-              {formData.romningSikkerhetKommentar && (
-                <tr>
-                  <td className="border border-gray-400 p-2 italic text-sm" colSpan={3}>
-                    Kommentar: {formData.romningSikkerhetKommentar}
-                  </td>
-                </tr>
-              )}
-
-              {/* 3.9 Rømnings- og redningstider */}
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.9 &nbsp;&nbsp; §11-12 Rømnings- og redningstider</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top" style={{width: '25%'}}>Forhold</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.romningTiltakForhold || "[Forhold beskrives]"}
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.romningTiltak || "[Tiltak beskrives]"}
+                  {formData.romningTiltakKommentar && <><br/><br/><span className="italic">Kommentar: {formData.romningTiltakKommentar}</span></>}
                 </td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Løsning</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.romningTiltakLosning || formData.romningTiltak || "[Løsning beskrives]"}
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Ansvar</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.romningTiltakAnsvar || "RIBr"}
-                </td>
-              </tr>
-              {formData.romningTiltakKommentar && (
-                <tr>
-                  <td className="border border-gray-400 p-2 italic text-sm" colSpan={3}>
-                    Kommentar: {formData.romningTiltakKommentar}
-                  </td>
-                </tr>
-              )}
-
-              {/* 3.10 Utgang fra branncelle */}
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.10 &nbsp;&nbsp; §11-13 Utgang fra branncelle</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top" style={{width: '25%'}}>Forhold</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.utgangBranncelleForhold || "[Forhold beskrives]"}
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.utgangBranncelle || "[Utganger beskrives]"}
+                  {formData.utgangBranncelleKommentar && <><br/><br/><span className="italic">Kommentar: {formData.utgangBranncelleKommentar}</span></>}
                 </td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Løsning</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.utgangBranncelleLosning || formData.utgangBranncelle || "[Løsning beskrives]"}
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Ansvar</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.utgangBranncelleAnsvar || "RIBr / ARK"}
-                </td>
-              </tr>
-              {formData.utgangBranncelleKommentar && (
-                <tr>
-                  <td className="border border-gray-400 p-2 italic text-sm" colSpan={3}>
-                    Kommentar: {formData.utgangBranncelleKommentar}
-                  </td>
-                </tr>
-              )}
-
-              {/* 3.11 Rømningsvei */}
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.11 &nbsp;&nbsp; §11-14 Rømningsvei</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top" style={{width: '25%'}}>Forhold</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.romningsveiForhold || "[Forhold beskrives]"}
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.romningsvei || "[Rømningsveier beskrives]"}
+                  {formData.romningsveiKommentar && <><br/><br/><span className="italic">Kommentar: {formData.romningsveiKommentar}</span></>}
                 </td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Løsning</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.romningsveiLosning || formData.romningsvei || "[Løsning beskrives]"}
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Ansvar</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.romningsveiAnsvar || "RIBr / ARK"}
-                </td>
-              </tr>
-              {formData.romningsveiKommentar && (
-                <tr>
-                  <td className="border border-gray-400 p-2 italic text-sm" colSpan={3}>
-                    Kommentar: {formData.romningsveiKommentar}
-                  </td>
-                </tr>
-              )}
-
-              {/* 3.12 Manuell slokking */}
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.12 &nbsp;&nbsp; §11-16 Manuell slokking</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top" style={{width: '25%'}}>Forhold</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.manuellSlokkingForhold || "[Forhold beskrives]"}
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.manuellSlokking || "[Slokkeutstyr beskrives]"}
+                  {formData.manuellSlokkingKommentar && <><br/><br/><span className="italic">Kommentar: {formData.manuellSlokkingKommentar}</span></>}
                 </td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Løsning</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.manuellSlokkingLosning || formData.manuellSlokking || "[Løsning beskrives]"}
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Ansvar</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.manuellSlokkingAnsvar || "RIBr"}
-                </td>
-              </tr>
-              {formData.manuellSlokkingKommentar && (
-                <tr>
-                  <td className="border border-gray-400 p-2 italic text-sm" colSpan={3}>
-                    Kommentar: {formData.manuellSlokkingKommentar}
-                  </td>
-                </tr>
-              )}
-
-              {/* 3.13 Redningsmannskap */}
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.13 &nbsp;&nbsp; §11-17 Redningsmannskap</td>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top" style={{width: '25%'}}>Forhold</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.redningsmannskapForhold || "[Forhold beskrives]"}
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  {formData.redningsmannskap || "[Tilrettelegging beskrives]"}
+                  {formData.redningsmannskapKommentar && <><br/><br/><span className="italic">Kommentar: {formData.redningsmannskapKommentar}</span></>}
                 </td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Løsning</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.redningsmannskapLosning || formData.redningsmannskap || "[Løsning beskrives]"}
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top">Ansvar</td>
-                <td className="border border-gray-400 p-2" colSpan={2}>
-                  {formData.redningsmannskapAnsvar || "RIBr"}
-                </td>
-              </tr>
-              {formData.redningsmannskapKommentar && (
-                <tr>
-                  <td className="border border-gray-400 p-2 italic text-sm" colSpan={3}>
-                    Kommentar: {formData.redningsmannskapKommentar}
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </section>
@@ -2703,75 +2437,102 @@ const Konsept = () => {
                 <AccordionItem value="kap3">
                   <AccordionTrigger className="text-base font-semibold">3. Branntekniske ytelseskrav</AccordionTrigger>
                   <AccordionContent className="space-y-4 pt-2">
-                    <div className="space-y-2 border-b pb-4">
+                    <div className="space-y-3">
                       <Label className="text-xs text-muted-foreground">3.1 § 11-4 Bæreevne og stabilitet</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div>
-                          <Label className="text-xs font-medium mb-1 block">Forhold</Label>
-                          <Textarea 
-                            value={formData.baereevneForhold}
-                            onChange={(e) => setFormData({...formData, baereevneForhold: e.target.value})}
-                            placeholder="Beskriv forhold..."
-                            className="min-h-[80px]"
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-xs font-medium mb-1 block">Løsning</Label>
-                          <Textarea 
-                            value={formData.baereevneLosning}
-                            onChange={(e) => setFormData({...formData, baereevneLosning: e.target.value})}
-                            placeholder="Beskriv løsning..."
-                            className="min-h-[80px]"
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-xs font-medium mb-1 block">Ansvar</Label>
-                          <Input 
-                            value={formData.baereevneAnsvar}
-                            onChange={(e) => setFormData({...formData, baereevneAnsvar: e.target.value})}
-                            placeholder="F.eks. RIB"
-                          />
-                        </div>
-                      </div>
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Label className="text-xs font-medium mb-1 block">Krav til bærende konstruksjoner (automatisk basert på brannklasse)</Label>
                         <Textarea 
-                          value={formData.baereevneKommentar}
-                          onChange={(e) => setFormData({...formData, baereevneKommentar: e.target.value})}
-                          placeholder="Legg til kommentar..."
+                          value={formData.baereevne}
+                          readOnly
+                          className="min-h-[140px] bg-muted/50 cursor-default"
                         />
                       </div>
-                    </div>
-                    <div className="space-y-2 border-b pb-4">
-                      <Label className="text-xs text-muted-foreground">3.2 § 11-5 Sikkerhet ved eksplosjon</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div>
-                          <Label className="text-xs font-medium mb-1 block">Forhold</Label>
-                          <Textarea 
-                            value={formData.eksplosjonForhold}
-                            onChange={(e) => setFormData({...formData, eksplosjonForhold: e.target.value})}
-                            placeholder="Beskriv forhold..."
-                            className="min-h-[80px]"
-                          />
+                      {formData.baereevneUnntak.length > 0 && (
+                        <div className="space-y-2">
+                          <Label className="text-xs font-medium mb-1 block text-blue-700">Automatisk anvendte unntak (jf. VTEK § 11-4)</Label>
+                          <div className="space-y-2 text-sm border border-blue-200 rounded-md p-3 bg-blue-50">
+                            {formData.baereevneUnntak.map((unntakId) => (
+                              <div key={unntakId} className="flex items-start gap-2">
+                                <span className="text-blue-600 mt-0.5">✓</span>
+                                <span className="text-xs text-blue-700">{baereevneUnntakTekster[unntakId]}</span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                        <div>
-                          <Label className="text-xs font-medium mb-1 block">Løsning</Label>
-                          <Textarea 
-                            value={formData.eksplosjonLosning}
-                            onChange={(e) => setFormData({...formData, eksplosjonLosning: e.target.value})}
-                            placeholder="Beskriv løsning..."
-                            className="min-h-[80px]"
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-xs font-medium mb-1 block">Ansvar</Label>
-                          <Input 
-                            value={formData.eksplosjonAnsvar}
-                            onChange={(e) => setFormData({...formData, eksplosjonAnsvar: e.target.value})}
-                            placeholder="F.eks. RIBr"
-                          />
+                      )}
+                      <div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            const commentSection = document.getElementById('baereevne-kommentar');
+                            if (commentSection) {
+                              commentSection.classList.toggle('hidden');
+                            }
+                          }}
+                        >
+                          + Kommentar
+                        </Button>
+                        <div id="baereevne-kommentar" className={formData.baereevneKommentar ? "" : "hidden"}>
+                          <div className="mt-2">
+                            <Label className="text-xs font-medium mb-1 block">Kommentar / tilleggsbeskrivelse</Label>
+                            <Textarea 
+                              value={formData.baereevneKommentar}
+                              onChange={(e) => setFormData({...formData, baereevneKommentar: e.target.value})}
+                              placeholder="Legg til kommentar eller beskrivelse av løsninger som trenger forklaring..."
+                              className="min-h-[100px]"
+                            />
+                          </div>
                         </div>
                       </div>
+                    </div>
+                    <div className="space-y-3">
+                      <Label className="text-xs text-muted-foreground">3.2 § 11-5 Sikkerhet ved eksplosjon</Label>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Er eksplosjonsfare relevant for dette tiltaket?</Label>
+                        <Select 
+                          value={formData.eksplosjonRelevant}
+                          onValueChange={(value) => setFormData({...formData, eksplosjonRelevant: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Velg" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ikke_relevant">Ikke relevant</SelectItem>
+                            <SelectItem value="relevant">Relevant</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      {formData.eksplosjonRelevant === "ikke_relevant" && (
+                        <div className="p-3 bg-muted/50 border rounded-md space-y-2">
+                          <p className="text-sm text-muted-foreground">
+                            RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket.
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Krav til sikkerhet ved eksplosjon er også gitt i andre regelverk som for eksempel{' '}
+                            <a href="https://lovdata.no/dokument/SF/forskrift/2009-06-08-602" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline">
+                              forskrift om håndtering av farlig stoff
+                            </a>{' '}
+                            og{' '}
+                            <a href="https://lovdata.no/dokument/SF/forskrift/2005-12-20-1626" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline">
+                              forskrift om elektriske forsyningsanlegg
+                            </a>.
+                          </p>
+                        </div>
+                      )}
+                      {formData.eksplosjonRelevant === "relevant" && (
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                          <Label className="text-xs font-medium mb-2 block text-blue-700">Preaksepterte ytelser (jf. VTEK § 11-5)</Label>
+                          <ol className="text-xs text-blue-700 space-y-2 list-decimal list-inside">
+                            <li>Rom hvor det kan forekomme fare for eksplosjon, må utgjøre en egen branncelle.</li>
+                            <li>Rom hvor det kan forekomme fare for eksplosjon, må ha minst én trykkavlastningsflate for å sikre mot skader på personer og byggverket forøvrig.</li>
+                            <li>Avlastet trykk må ledes bort i sikker retning.</li>
+                            <li>Trykkavlastningsflater må ikke plasseres i takflater og lignende med mindre det dokumenteres at snølast ikke er til hinder for avlastningsflatens funksjon.</li>
+                            <li>Bærende og branncellebegrensende bygningsdeler må om nødvendig forsterkes for å opprettholde rømningsveiers funksjon og forhindre spredning av brann til andre brannceller.</li>
+                          </ol>
+                        </div>
+                      )}
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
                         <Textarea 
@@ -2781,36 +2542,45 @@ const Konsept = () => {
                         />
                       </div>
                     </div>
-                    <div className="space-y-2 border-b pb-4">
+                    <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.3 § 11-6 Tiltak mot brannspredning</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div>
-                          <Label className="text-xs font-medium mb-1 block">Forhold</Label>
-                          <Textarea 
-                            value={formData.brannspredningForhold}
-                            onChange={(e) => setFormData({...formData, brannspredningForhold: e.target.value})}
-                            placeholder="Beskriv forhold..."
-                            className="min-h-[80px]"
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-xs font-medium mb-1 block">Løsning</Label>
-                          <Textarea 
-                            value={formData.brannspredningLosning}
-                            onChange={(e) => setFormData({...formData, brannspredningLosning: e.target.value})}
-                            placeholder="Beskriv løsning..."
-                            className="min-h-[80px]"
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-xs font-medium mb-1 block">Ansvar</Label>
-                          <Input 
-                            value={formData.brannspredningAnsvar}
-                            onChange={(e) => setFormData({...formData, brannspredningAnsvar: e.target.value})}
-                            placeholder="F.eks. RIBr / ARK"
-                          />
-                        </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Bygningshøyde (meter)</Label>
+                        <Input 
+                          type="number"
+                          step="0.1"
+                          value={formData.bygningshoyde}
+                          onChange={(e) => setFormData({...formData, bygningshoyde: e.target.value})}
+                          placeholder="Angi høyde i meter..."
+                        />
                       </div>
+                      
+                      {parseFloat(formData.bygningshoyde) > 9 && (
+                        <div className="p-3 bg-orange-50 border border-orange-200 rounded-md">
+                          <p className="text-sm font-medium text-orange-800 mb-2">Bygning over 9 meter - krav til brannvegg</p>
+                          <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
+                          <Select 
+                            value={formData.spesifikkBrannenergi} 
+                            onValueChange={(value) => setFormData({...formData, spesifikkBrannenergi: value})}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Velg brannenergi..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="inntil400">Inntil 400 MJ/m² → REI 120-M A2-s1,d0</SelectItem>
+                              <SelectItem value="400-600">400-600 MJ/m² → REI 180-M A2-s1,d0</SelectItem>
+                              <SelectItem value="600-800">600-800 MJ/m² → REI 240-M A2-s1,d0</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      
+                      {parseFloat(formData.bygningshoyde) > 0 && parseFloat(formData.bygningshoyde) <= 9 && (
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                          <p className="text-sm font-medium text-blue-800">Bygning under eller lik 9 meter - krav til branncellevegg</p>
+                        </div>
+                      )}
+                      
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
                         <Textarea 
@@ -2820,35 +2590,119 @@ const Konsept = () => {
                         />
                       </div>
                     </div>
-                    <div className="space-y-2 border-b pb-4">
+                    <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.4 § 11-7 Brannseksjoner</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div>
-                          <Label className="text-xs font-medium mb-1 block">Forhold</Label>
-                          <Textarea 
-                            value={formData.brannseksjonerForhold}
-                            onChange={(e) => setFormData({...formData, brannseksjonerForhold: e.target.value})}
-                            placeholder="Beskriv forhold..."
-                            className="min-h-[80px]"
-                          />
+                      
+                      {/* Automatisk beregning basert på areal fra kap 2 */}
+                      {formData.areal && formData.brannseksjonBrannenergi && (
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md space-y-2">
+                          <p className="text-sm font-medium text-blue-800">Automatisk vurdering basert på areal ({formData.areal} m²) og brannenergi:</p>
+                          {(() => {
+                            const arealNum = parseFloat(formData.areal) || 0;
+                            const brannenergi = formData.brannseksjonBrannenergi;
+                            
+                            // Finn maksimale arealer for hvert tiltak
+                            const grenser = {
+                              "over400": { normalt: 800, brannalarm: 1200, sprinkler: 5000, roykventilasjon: 0 },
+                              "50-400": { normalt: 1200, brannalarm: 1800, sprinkler: 10000, roykventilasjon: 4000 },
+                              "under50": { normalt: 1800, brannalarm: 2700, sprinkler: Infinity, roykventilasjon: 10000 }
+                            };
+                            
+                            const g = grenser[brannenergi as keyof typeof grenser];
+                            if (!g) return null;
+                            
+                            const anbefalinger: string[] = [];
+                            
+                            if (arealNum <= g.normalt) {
+                              anbefalinger.push("✅ Ingen tiltak nødvendig (maks " + g.normalt + " m²)");
+                            } else if (arealNum <= g.brannalarm) {
+                              anbefalinger.push("⚠️ Brannalarmanlegg anbefales (maks " + g.brannalarm + " m²)");
+                            } else if (brannenergi !== "over400" && g.roykventilasjon > 0 && arealNum <= g.roykventilasjon) {
+                              anbefalinger.push("⚠️ Røykventilasjon eller sprinkler nødvendig");
+                            } else if (arealNum <= g.sprinkler) {
+                              anbefalinger.push("🔴 Sprinkleranlegg nødvendig (maks " + (g.sprinkler === Infinity ? "ubegrenset" : g.sprinkler + " m²") + ")");
+                            } else {
+                              anbefalinger.push("🔴 Arealet overskrider tillatte grenser - seksjonering nødvendig");
+                            }
+                            
+                            return anbefalinger.map((a, i) => <p key={i} className="text-sm text-blue-700">{a}</p>);
+                          })()}
                         </div>
-                        <div>
-                          <Label className="text-xs font-medium mb-1 block">Løsning</Label>
-                          <Textarea 
-                            value={formData.brannseksjonerLosning}
-                            onChange={(e) => setFormData({...formData, brannseksjonerLosning: e.target.value})}
-                            placeholder="Beskriv løsning..."
-                            className="min-h-[80px]"
-                          />
+                      )}
+                      
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Tiltak</Label>
+                        <Select 
+                          value={formData.brannseksjonTiltak} 
+                          onValueChange={(value) => setFormData({...formData, brannseksjonTiltak: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Velg tiltak..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="normalt">Normalt (ingen tiltak)</SelectItem>
+                            <SelectItem value="brannalarm">Med brannalarmanlegg</SelectItem>
+                            <SelectItem value="sprinkler">Med sprinkleranlegg</SelectItem>
+                            <SelectItem value="roykventilasjon">Med røykventilasjon</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "roykventilasjon" && (
+                        <div className="p-2 bg-red-50 border border-red-200 rounded-md">
+                          <p className="text-sm text-red-700">⚠️ Røykventilasjon er uegnet for brannenergi over 400 MJ/m²</p>
                         </div>
-                        <div>
-                          <Label className="text-xs font-medium mb-1 block">Ansvar</Label>
-                          <Input 
-                            value={formData.brannseksjonerAnsvar}
-                            onChange={(e) => setFormData({...formData, brannseksjonerAnsvar: e.target.value})}
-                            placeholder="F.eks. RIBr / ARK"
-                          />
-                        </div>
+                      )}
+                      
+                      {/* Sjekk om valgt tiltak er tilstrekkelig for arealet */}
+                      {formData.areal && formData.brannseksjonBrannenergi && formData.brannseksjonTiltak && (
+                        (() => {
+                          const arealNum = parseFloat(formData.areal) || 0;
+                          const brannenergi = formData.brannseksjonBrannenergi;
+                          const tiltak = formData.brannseksjonTiltak;
+                          
+                          const grenser = {
+                            "over400": { normalt: 800, brannalarm: 1200, sprinkler: 5000, roykventilasjon: 0 },
+                            "50-400": { normalt: 1200, brannalarm: 1800, sprinkler: 10000, roykventilasjon: 4000 },
+                            "under50": { normalt: 1800, brannalarm: 2700, sprinkler: Infinity, roykventilasjon: 10000 }
+                          };
+                          
+                          const g = grenser[brannenergi as keyof typeof grenser];
+                          if (!g) return null;
+                          
+                          const maksAreal = g[tiltak as keyof typeof g];
+                          
+                          if (maksAreal === 0) {
+                            return (
+                              <div className="p-2 bg-red-50 border border-red-200 rounded-md">
+                                <p className="text-sm text-red-700">⚠️ Dette tiltaket er ikke egnet for valgt brannenergi</p>
+                              </div>
+                            );
+                          }
+                          
+                          if (arealNum > maksAreal && maksAreal !== Infinity) {
+                            return (
+                              <div className="p-2 bg-red-50 border border-red-200 rounded-md">
+                                <p className="text-sm text-red-700">⚠️ Arealet ({arealNum} m²) overskrider maksimalt tillatt ({maksAreal} m²) for valgt tiltak. Velg et sterkere tiltak eller del inn i brannseksjoner.</p>
+                              </div>
+                            );
+                          }
+                          
+                          return (
+                            <div className="p-2 bg-green-50 border border-green-200 rounded-md">
+                              <p className="text-sm text-green-700">✅ Valgt tiltak er tilstrekkelig for arealet ({arealNum} m² ≤ {maksAreal === Infinity ? "ubegrenset" : maksAreal + " m²"})</p>
+                            </div>
+                          );
+                        })()
+                      )}
+                      
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Tilleggsbeskrivelse (valgfritt)</Label>
+                        <Textarea 
+                          value={formData.brannseksjoner}
+                          onChange={(e) => setFormData({...formData, brannseksjoner: e.target.value})}
+                          placeholder="Eventuelle tilleggsbeskrivelser..."
+                        />
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
@@ -2859,95 +2713,167 @@ const Konsept = () => {
                         />
                       </div>
                     </div>
-                    <div className="space-y-2 border-b pb-4">
+                    <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.5 § 11-8 Brannceller</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div>
-                          <Label className="text-xs font-medium mb-1 block">Forhold</Label>
-                          <Textarea value={formData.branncellerForhold} onChange={(e) => setFormData({...formData, branncellerForhold: e.target.value})} placeholder="Beskriv forhold..." className="min-h-[80px]" />
-                        </div>
-                        <div>
-                          <Label className="text-xs font-medium mb-1 block">Løsning</Label>
-                          <Textarea value={formData.branncellerLosning || formData.brannceller} onChange={(e) => setFormData({...formData, branncellerLosning: e.target.value})} placeholder="Beskriv løsning..." className="min-h-[80px]" />
-                        </div>
-                        <div>
-                          <Label className="text-xs font-medium mb-1 block">Ansvar</Label>
-                          <Input value={formData.branncellerAnsvar} onChange={(e) => setFormData({...formData, branncellerAnsvar: e.target.value})} placeholder="F.eks. RIBr / ARK" />
-                        </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Branncelleinndeling</Label>
+                        <Textarea 
+                          value={formData.brannceller}
+                          onChange={(e) => setFormData({...formData, brannceller: e.target.value})}
+                        />
                       </div>
-                      <div><Label className="text-xs font-medium mb-1 block">Kommentar</Label><Textarea value={formData.branncellerKommentar} onChange={(e) => setFormData({...formData, branncellerKommentar: e.target.value})} placeholder="Legg til kommentar..." /></div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.branncellerKommentar}
+                          onChange={(e) => setFormData({...formData, branncellerKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-2 border-b pb-4">
+                    <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.6 § 11-9 Materialer ved brann</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div><Label className="text-xs font-medium mb-1 block">Forhold</Label><Textarea value={formData.materialerForhold} onChange={(e) => setFormData({...formData, materialerForhold: e.target.value})} placeholder="Beskriv forhold..." className="min-h-[80px]" /></div>
-                        <div><Label className="text-xs font-medium mb-1 block">Løsning</Label><Textarea value={formData.materialerLosning || formData.materialer} onChange={(e) => setFormData({...formData, materialerLosning: e.target.value})} placeholder="Beskriv løsning..." className="min-h-[80px]" /></div>
-                        <div><Label className="text-xs font-medium mb-1 block">Ansvar</Label><Input value={formData.materialerAnsvar} onChange={(e) => setFormData({...formData, materialerAnsvar: e.target.value})} placeholder="F.eks. RIBr / ARK" /></div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Krav til materialer</Label>
+                        <Textarea 
+                          value={formData.materialer}
+                          onChange={(e) => setFormData({...formData, materialer: e.target.value})}
+                        />
                       </div>
-                      <div><Label className="text-xs font-medium mb-1 block">Kommentar</Label><Textarea value={formData.materialerKommentar} onChange={(e) => setFormData({...formData, materialerKommentar: e.target.value})} placeholder="Legg til kommentar..." /></div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.materialerKommentar}
+                          onChange={(e) => setFormData({...formData, materialerKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-2 border-b pb-4">
+                    <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.7 § 11-10 Tekniske installasjoner</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div><Label className="text-xs font-medium mb-1 block">Forhold</Label><Textarea value={formData.installasjonerForhold} onChange={(e) => setFormData({...formData, installasjonerForhold: e.target.value})} placeholder="Beskriv forhold..." className="min-h-[80px]" /></div>
-                        <div><Label className="text-xs font-medium mb-1 block">Løsning</Label><Textarea value={formData.installasjonerLosning || formData.installasjoner} onChange={(e) => setFormData({...formData, installasjonerLosning: e.target.value})} placeholder="Beskriv løsning..." className="min-h-[80px]" /></div>
-                        <div><Label className="text-xs font-medium mb-1 block">Ansvar</Label><Input value={formData.installasjonerAnsvar} onChange={(e) => setFormData({...formData, installasjonerAnsvar: e.target.value})} placeholder="F.eks. RIE / RIV" /></div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Sprinkler, brannalarm, ventilasjon osv.</Label>
+                        <Textarea 
+                          value={formData.installasjoner}
+                          onChange={(e) => setFormData({...formData, installasjoner: e.target.value})}
+                        />
                       </div>
-                      <div><Label className="text-xs font-medium mb-1 block">Kommentar</Label><Textarea value={formData.installasjonerKommentar} onChange={(e) => setFormData({...formData, installasjonerKommentar: e.target.value})} placeholder="Legg til kommentar..." /></div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.installasjonerKommentar}
+                          onChange={(e) => setFormData({...formData, installasjonerKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-2 border-b pb-4">
+                    <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.8 § 11-11 Rømning og redning</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div><Label className="text-xs font-medium mb-1 block">Forhold</Label><Textarea value={formData.romningSikkerhetForhold} onChange={(e) => setFormData({...formData, romningSikkerhetForhold: e.target.value})} placeholder="Beskriv forhold..." className="min-h-[80px]" /></div>
-                        <div><Label className="text-xs font-medium mb-1 block">Løsning</Label><Textarea value={formData.romningSikkerhetLosning || formData.romningSikkerhet} onChange={(e) => setFormData({...formData, romningSikkerhetLosning: e.target.value})} placeholder="Beskriv løsning..." className="min-h-[80px]" /></div>
-                        <div><Label className="text-xs font-medium mb-1 block">Ansvar</Label><Input value={formData.romningSikkerhetAnsvar} onChange={(e) => setFormData({...formData, romningSikkerhetAnsvar: e.target.value})} placeholder="F.eks. RIBr / ARK" /></div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Generelle krav om rømning</Label>
+                        <Textarea 
+                          value={formData.romningSikkerhet}
+                          onChange={(e) => setFormData({...formData, romningSikkerhet: e.target.value})}
+                        />
                       </div>
-                      <div><Label className="text-xs font-medium mb-1 block">Kommentar</Label><Textarea value={formData.romningSikkerhetKommentar} onChange={(e) => setFormData({...formData, romningSikkerhetKommentar: e.target.value})} placeholder="Legg til kommentar..." /></div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.romningSikkerhetKommentar}
+                          onChange={(e) => setFormData({...formData, romningSikkerhetKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-2 border-b pb-4">
+                    <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.9 § 11-12 Rømnings- og redningstider</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div><Label className="text-xs font-medium mb-1 block">Forhold</Label><Textarea value={formData.romningTiltakForhold} onChange={(e) => setFormData({...formData, romningTiltakForhold: e.target.value})} placeholder="Beskriv forhold..." className="min-h-[80px]" /></div>
-                        <div><Label className="text-xs font-medium mb-1 block">Løsning</Label><Textarea value={formData.romningTiltakLosning || formData.romningTiltak} onChange={(e) => setFormData({...formData, romningTiltakLosning: e.target.value})} placeholder="Beskriv løsning..." className="min-h-[80px]" /></div>
-                        <div><Label className="text-xs font-medium mb-1 block">Ansvar</Label><Input value={formData.romningTiltakAnsvar} onChange={(e) => setFormData({...formData, romningTiltakAnsvar: e.target.value})} placeholder="F.eks. RIBr" /></div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Tiltak for å påvirke tider</Label>
+                        <Textarea 
+                          value={formData.romningTiltak}
+                          onChange={(e) => setFormData({...formData, romningTiltak: e.target.value})}
+                        />
                       </div>
-                      <div><Label className="text-xs font-medium mb-1 block">Kommentar</Label><Textarea value={formData.romningTiltakKommentar} onChange={(e) => setFormData({...formData, romningTiltakKommentar: e.target.value})} placeholder="Legg til kommentar..." /></div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.romningTiltakKommentar}
+                          onChange={(e) => setFormData({...formData, romningTiltakKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-2 border-b pb-4">
+                    <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.10 § 11-13 Utgang fra branncelle</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div><Label className="text-xs font-medium mb-1 block">Forhold</Label><Textarea value={formData.utgangBranncelleForhold} onChange={(e) => setFormData({...formData, utgangBranncelleForhold: e.target.value})} placeholder="Beskriv forhold..." className="min-h-[80px]" /></div>
-                        <div><Label className="text-xs font-medium mb-1 block">Løsning</Label><Textarea value={formData.utgangBranncelleLosning || formData.utgangBranncelle} onChange={(e) => setFormData({...formData, utgangBranncelleLosning: e.target.value})} placeholder="Beskriv løsning..." className="min-h-[80px]" /></div>
-                        <div><Label className="text-xs font-medium mb-1 block">Ansvar</Label><Input value={formData.utgangBranncelleAnsvar} onChange={(e) => setFormData({...formData, utgangBranncelleAnsvar: e.target.value})} placeholder="F.eks. RIBr / ARK" /></div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Utganger beskrives</Label>
+                        <Textarea 
+                          value={formData.utgangBranncelle}
+                          onChange={(e) => setFormData({...formData, utgangBranncelle: e.target.value})}
+                        />
                       </div>
-                      <div><Label className="text-xs font-medium mb-1 block">Kommentar</Label><Textarea value={formData.utgangBranncelleKommentar} onChange={(e) => setFormData({...formData, utgangBranncelleKommentar: e.target.value})} placeholder="Legg til kommentar..." /></div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.utgangBranncelleKommentar}
+                          onChange={(e) => setFormData({...formData, utgangBranncelleKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-2 border-b pb-4">
+                    <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.11 § 11-14 Rømningsvei</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div><Label className="text-xs font-medium mb-1 block">Forhold</Label><Textarea value={formData.romningsveiForhold} onChange={(e) => setFormData({...formData, romningsveiForhold: e.target.value})} placeholder="Beskriv forhold..." className="min-h-[80px]" /></div>
-                        <div><Label className="text-xs font-medium mb-1 block">Løsning</Label><Textarea value={formData.romningsveiLosning || formData.romningsvei} onChange={(e) => setFormData({...formData, romningsveiLosning: e.target.value})} placeholder="Beskriv løsning..." className="min-h-[80px]" /></div>
-                        <div><Label className="text-xs font-medium mb-1 block">Ansvar</Label><Input value={formData.romningsveiAnsvar} onChange={(e) => setFormData({...formData, romningsveiAnsvar: e.target.value})} placeholder="F.eks. RIBr / ARK" /></div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Rømningsveier beskrives</Label>
+                        <Textarea 
+                          value={formData.romningsvei}
+                          onChange={(e) => setFormData({...formData, romningsvei: e.target.value})}
+                        />
                       </div>
-                      <div><Label className="text-xs font-medium mb-1 block">Kommentar</Label><Textarea value={formData.romningsveiKommentar} onChange={(e) => setFormData({...formData, romningsveiKommentar: e.target.value})} placeholder="Legg til kommentar..." /></div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.romningsveiKommentar}
+                          onChange={(e) => setFormData({...formData, romningsveiKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-2 border-b pb-4">
+                    <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.12 § 11-16 Manuell slokking</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div><Label className="text-xs font-medium mb-1 block">Forhold</Label><Textarea value={formData.manuellSlokkingForhold} onChange={(e) => setFormData({...formData, manuellSlokkingForhold: e.target.value})} placeholder="Beskriv forhold..." className="min-h-[80px]" /></div>
-                        <div><Label className="text-xs font-medium mb-1 block">Løsning</Label><Textarea value={formData.manuellSlokkingLosning || formData.manuellSlokking} onChange={(e) => setFormData({...formData, manuellSlokkingLosning: e.target.value})} placeholder="Beskriv løsning..." className="min-h-[80px]" /></div>
-                        <div><Label className="text-xs font-medium mb-1 block">Ansvar</Label><Input value={formData.manuellSlokkingAnsvar} onChange={(e) => setFormData({...formData, manuellSlokkingAnsvar: e.target.value})} placeholder="F.eks. RIBr" /></div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Slokkeutstyr beskrives</Label>
+                        <Textarea 
+                          value={formData.manuellSlokking}
+                          onChange={(e) => setFormData({...formData, manuellSlokking: e.target.value})}
+                        />
                       </div>
-                      <div><Label className="text-xs font-medium mb-1 block">Kommentar</Label><Textarea value={formData.manuellSlokkingKommentar} onChange={(e) => setFormData({...formData, manuellSlokkingKommentar: e.target.value})} placeholder="Legg til kommentar..." /></div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.manuellSlokkingKommentar}
+                          onChange={(e) => setFormData({...formData, manuellSlokkingKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.13 § 11-17 Redningsmannskap</Label>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div><Label className="text-xs font-medium mb-1 block">Forhold</Label><Textarea value={formData.redningsmannskapForhold} onChange={(e) => setFormData({...formData, redningsmannskapForhold: e.target.value})} placeholder="Beskriv forhold..." className="min-h-[80px]" /></div>
-                        <div><Label className="text-xs font-medium mb-1 block">Løsning</Label><Textarea value={formData.redningsmannskapLosning || formData.redningsmannskap} onChange={(e) => setFormData({...formData, redningsmannskapLosning: e.target.value})} placeholder="Beskriv løsning..." className="min-h-[80px]" /></div>
-                        <div><Label className="text-xs font-medium mb-1 block">Ansvar</Label><Input value={formData.redningsmannskapAnsvar} onChange={(e) => setFormData({...formData, redningsmannskapAnsvar: e.target.value})} placeholder="F.eks. RIBr" /></div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Tilrettelegging for rednings- og slokkemannskap</Label>
+                        <Textarea 
+                          value={formData.redningsmannskap}
+                          onChange={(e) => setFormData({...formData, redningsmannskap: e.target.value})}
+                        />
                       </div>
-                      <div><Label className="text-xs font-medium mb-1 block">Kommentar</Label><Textarea value={formData.redningsmannskapKommentar} onChange={(e) => setFormData({...formData, redningsmannskapKommentar: e.target.value})} placeholder="Legg til kommentar..." /></div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
+                        <Textarea 
+                          value={formData.redningsmannskapKommentar}
+                          onChange={(e) => setFormData({...formData, redningsmannskapKommentar: e.target.value})}
+                          placeholder="Legg til kommentar..."
+                        />
+                      </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
