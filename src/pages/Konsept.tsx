@@ -879,8 +879,14 @@ const Konsept = () => {
                   3.2 &nbsp;&nbsp; §11-5 Sikkerhet ved eksplosjon
                 </td>
               </tr>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                <th className="border border-gray-400 p-2 text-left">Løsning</th>
+                <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
+              </tr>
               <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>
+                <td className="border border-gray-400 p-2 align-top">Eksplosjonsfare</td>
+                <td className="border border-gray-400 p-2">
                   {formData.eksplosjonRelevant === "ikke_relevant" ? (
                     "RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket."
                   ) : formData.eksplosjonRelevant === "relevant" ? (
@@ -897,220 +903,385 @@ const Konsept = () => {
                   ) : "[Vurdering av eksplosjonsfare]"}
                   {formData.eksplosjonKommentar && <><br/><br/><span className="italic">Kommentar: {formData.eksplosjonKommentar}</span></>}
                 </td>
+                <td className="border border-gray-400 p-2 align-top">RIBr</td>
               </tr>
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.3 &nbsp;&nbsp; §11-6 Brannspredning mellom byggverk</td>
               </tr>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                <th className="border border-gray-400 p-2 text-left">Løsning</th>
+                <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
+              </tr>
               <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>
-                  <p><strong>Bygningshøyde:</strong> {formData.bygningshoyde ? `${formData.bygningshoyde} meter` : "[Ikke angitt]"}</p>
-                  
-                  {parseFloat(formData.bygningshoyde) > 9 ? (
-                    <>
-                      <p className="mt-2"><strong>Krav:</strong> Brannvegg (bygning over 9 meter)</p>
-                      
+                <td className="border border-gray-400 p-2 align-top">Bygningshøyde</td>
+                <td className="border border-gray-400 p-2">{formData.bygningshoyde ? `${formData.bygningshoyde} meter` : "[Ikke angitt]"}</td>
+                <td className="border border-gray-400 p-2 align-top">-</td>
+              </tr>
+              {parseFloat(formData.bygningshoyde) > 9 ? (
+                <>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Krav til brannvegg</td>
+                    <td className="border border-gray-400 p-2">
+                      Brannvegg (bygning over 9 meter)
                       {formData.spesifikkBrannenergi && (
                         <div className="mt-2">
-                          <p className="font-semibold">Brannveggkrav basert på spesifikk brannenergi:</p>
+                          <p className="font-semibold">Brannmotstand basert på spesifikk brannenergi:</p>
                           <p className="mt-1">
-                            {formData.spesifikkBrannenergi === "inntil400" && "Spesifikk brannenergi: Inntil 400 MJ/m² → Brannmotstand: REI 120-M A2-s1,d0 [A 120]"}
-                            {formData.spesifikkBrannenergi === "400-600" && "Spesifikk brannenergi: 400-600 MJ/m² → Brannmotstand: REI 180-M A2-s1,d0 [A 180]"}
-                            {formData.spesifikkBrannenergi === "600-800" && "Spesifikk brannenergi: 600-800 MJ/m² → Brannmotstand: REI 240-M A2-s1,d0 [A 240]"}
+                            {formData.spesifikkBrannenergi === "inntil400" && "Inntil 400 MJ/m² → REI 120-M A2-s1,d0 [A 120]"}
+                            {formData.spesifikkBrannenergi === "400-600" && "400-600 MJ/m² → REI 180-M A2-s1,d0 [A 180]"}
+                            {formData.spesifikkBrannenergi === "600-800" && "600-800 MJ/m² → REI 240-M A2-s1,d0 [A 240]"}
                           </p>
                         </div>
                       )}
-                      
-                      <p className="mt-3 font-semibold">Preaksepterte ytelser for brannvegg:</p>
-                      <ol className="list-decimal list-inside mt-1 text-sm space-y-1">
-                        <li>Takkonstruksjonen må ikke være kontinuerlig over brannveggen på en slik måte at en kollaps på den ene siden medfører reduksjon av konstruksjonens bæreevne og brannmotstand på den andre siden.</li>
-                        <li>Konstruksjoner som ligger inntil brannveggen må kunne bevege seg fritt ved temperaturendringer uten at veggens branntekniske egenskaper reduseres.</li>
-                        <li>Brannveggens avslutning mot tak og fasade, må være utformet og utført slik at brann ikke kan spre seg fra ett byggverk til et annet i den fastsatte brannmotstandstiden. Det oppnås størst sikkerhet mot brannspredning ved å føre brannveggen over takflaten og utenfor vegglivet.</li>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIB</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Preaksepterte ytelser</td>
+                    <td className="border border-gray-400 p-2">
+                      <ol className="list-decimal list-inside space-y-1">
+                        <li>Takkonstruksjonen må ikke være kontinuerlig over brannveggen.</li>
+                        <li>Konstruksjoner inntil brannveggen må kunne bevege seg fritt ved temperaturendringer.</li>
+                        <li>Brannveggens avslutning mot tak og fasade må hindre brannspredning.</li>
                         <li>Brannveggen må ha brannmotstand minst som angitt i tabell 1.</li>
-                        <li>Brannveggen må i sin helhet bestå av materialer som tilfredsstiller klasse A2-s1,d0 [ubrennbare] og må kunne motstå mekanisk påkjenning. Isolasjonsmateriale som ikke tilfredsstiller klasse A2-s1,d0 kan likevel benyttes når det er dokumentert ved prøving at materialet ikke blir involvert i brannen i den forutsatte brannmotstandstiden.</li>
-                        <li>Dersom mekanisk motstandsevne (M) ikke er dokumentert ved prøvning, må brannveggen utføres i tunge materialer som mur, betong eller lignende.</li>
-                        <li>Brannveggen må føres minimum 0,5 meter over høyeste tilstøtende tak, med mindre taket har brannmotstand minst EI 60 A2-s1,d0 [A 60], jf. figur 3.</li>
-                        <li>Brannveggen må være slik utført at den blir stående selv om byggverket på den ene eller den andre siden raser sammen, jf. figur 4. Alternativt kan det bygges to uavhengige brannvegger eller byggverkets bæresystem kan dimensjoneres for brannmotstand tilsvarende brannvegg.</li>
+                        <li>Brannveggen må bestå av materialer i klasse A2-s1,d0 [ubrennbare].</li>
+                        <li>Uten dokumentert mekanisk motstandsevne (M): tunge materialer som mur/betong.</li>
+                        <li>Brannveggen må føres min. 0,5 m over høyeste tilstøtende tak.</li>
+                        <li>Brannveggen må bli stående selv om byggverket på én side raser sammen.</li>
                       </ol>
-                    </>
-                  ) : parseFloat(formData.bygningshoyde) > 0 ? (
-                    <>
-                      <p className="mt-2"><strong>Krav:</strong> Branncellevegg (bygning under eller lik 9 meter)</p>
-                      <p className="mt-2">Avstanden mellom lave byggverk kan være mindre enn 8,0 meter når byggverkene er skilt med branncellebegrensende bygningsdel eller bygningsdeler i hvert av byggverkene som til sammen gir samme brannmotstand. Vinduer kan utføres i samsvar med § 11-8 Tabell 3. Se kap. 3.5 for krav til brannceller.</p>
-                      
-                      {formData.risikoklasse === "RK1" && (
-                        <>
-                          <p className="mt-3 font-semibold">Preakseptert ytelse for risikoklasse 1:</p>
-                          <p className="mt-1 text-sm">Byggverk i risikoklasse 1 med bruttoareal til og med 50 m² og liten eller middels brannenergi, kan plasseres nærmere byggverk i annen bruksenhet uten at det treffes særlige branntekniske tiltak. Er avstanden mindre enn 2,0 meter mellom byggverk i ulike bruksenheter, må disse være skilt med branncellebegrensende bygningsdel eller bygningsdeler i hvert av byggverkene som til sammen gir samme brannmotstand.</p>
-                        </>
-                      )}
-                    </>
-                  ) : null}
-                  
-                  {formData.brannspredningKommentar && <p className="mt-2 italic">Kommentar: {formData.brannspredningKommentar}</p>}
-                </td>
-              </tr>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIB</td>
+                  </tr>
+                </>
+              ) : parseFloat(formData.bygningshoyde) > 0 ? (
+                <>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Krav til skillevegg</td>
+                    <td className="border border-gray-400 p-2">
+                      Branncellevegg (bygning under eller lik 9 meter). Avstanden mellom lave byggverk kan være mindre enn 8,0 meter når byggverkene er skilt med branncellebegrensende bygningsdel.
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIB</td>
+                  </tr>
+                  {formData.risikoklasse === "RK1" && (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Unntak RK1</td>
+                      <td className="border border-gray-400 p-2">
+                        Byggverk i risikoklasse 1 med bruttoareal ≤ 50 m² og liten/middels brannenergi kan plasseres nærmere uten særlige tiltak. Ved avstand &lt; 2,0 m kreves branncellebegrensende bygningsdel.
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                    </tr>
+                  )}
+                </>
+              ) : (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Generelt</td>
+                  <td className="border border-gray-400 p-2">[Krav til brannspredning vurderes etter bygningshøyde]</td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                </tr>
+              )}
+              {formData.brannspredningKommentar && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Kommentar</td>
+                  <td className="border border-gray-400 p-2 italic">{formData.brannspredningKommentar}</td>
+                  <td className="border border-gray-400 p-2 align-top">-</td>
+                </tr>
+              )}
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.4 &nbsp;&nbsp; §11-7 Brannseksjoner</td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>
-                  <p className="font-semibold">Preaksepterte ytelser:</p>
-                  <ol className="list-decimal list-inside mt-1 text-sm space-y-1">
-                    <li>Byggverk må oppdeles i seksjoner minst som angitt i tabell 1 med unntak som angitt i nr. 2 til 4.</li>
-                    {formData.risikoklasse === "RK6" && (
-                      <li>Byggverk i risikoklasse 6 beregnet for sykehus, sykehjem og andre pleieinstitusjoner må deles vertikalt i minst to brannseksjoner.</li>
-                    )}
-                    {formData.risikoklasse === "RK3" && (
-                      <li>Største bruttoareal per etasje for barnehager uten seksjonering er 600 m².</li>
-                    )}
-                    <li>Byggverk som etter § 11-3 Tabell 1 ikke plasseres i brannklasse, kan oppføres uten seksjonering.</li>
-                    {(formData.brannseksjonTiltak === "brannalarm" || formData.brannseksjonTiltak === "sprinkler") && (
-                      <li>Brannalarmanlegg må prosjekteres og utføres etter NS 3960:2019. Brannalarmanlegg må være av kategori 2, jf. § 11-12 Tabell 3, som gir direkte varsling til en nødmeldesentral.</li>
-                    )}
-                    {formData.brannseksjonTiltak === "sprinkler" && (
-                      <li>Sprinkleranlegg må prosjekteres og utføres etter NS-EN 12845:2015+A1:2019. I boligbygninger, og deler av byggverk avsatt til boligformål, kan alternativt NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019 legges til grunn, men med varighet av vannforsyning minst 30 minutter for type 1- og 2-anlegg, og minst 60 minutter for type 3-anlegg.</li>
-                    )}
-                  </ol>
-                  
-                  {formData.brannseksjonBrannenergi && formData.brannseksjonTiltak && (
-                    <div className="mt-4 p-3 bg-gray-50 border rounded">
-                      <p className="font-semibold mb-2">Størrelse på brannseksjon (jf. Tabell 1):</p>
-                      <table className="w-full text-sm border-collapse">
-                        <tbody>
-                          <tr>
-                            <td className="border border-gray-300 p-2 bg-gray-100 font-medium w-1/3">Spesifikk brannenergi:</td>
-                            <td className="border border-gray-300 p-2">
-                              {formData.brannseksjonBrannenergi === "over400" && "Over 400 MJ/m²"}
-                              {formData.brannseksjonBrannenergi === "50-400" && "50–400 MJ/m²"}
-                              {formData.brannseksjonBrannenergi === "under50" && "Under 50 MJ/m²"}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-300 p-2 bg-gray-100 font-medium">Tiltak:</td>
-                            <td className="border border-gray-300 p-2">
-                              {formData.brannseksjonTiltak === "normalt" && "Normalt (ingen tiltak)"}
-                              {formData.brannseksjonTiltak === "brannalarm" && "Med brannalarmanlegg"}
-                              {formData.brannseksjonTiltak === "sprinkler" && "Med sprinkleranlegg"}
-                              {formData.brannseksjonTiltak === "roykventilasjon" && "Med røykventilasjon"}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-300 p-2 bg-gray-100 font-medium">Største bruttoareal:</td>
-                            <td className="border border-gray-300 p-2 font-semibold">
-                              {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "normalt" && "800 m² pr. etasje"}
-                              {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "brannalarm" && "1 200 m² pr. etasje"}
-                              {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "sprinkler" && "5 000 m² pr. etasje"}
-                              {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "roykventilasjon" && <span className="text-red-600">Uegnet</span>}
-                              
-                              {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "normalt" && "1 200 m² pr. etasje"}
-                              {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "brannalarm" && "1 800 m² pr. etasje"}
-                              {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "sprinkler" && "10 000 m² pr. etasje"}
-                              {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "roykventilasjon" && "4 000 m² pr. etasje"}
-                              
-                              {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "normalt" && "1 800 m² pr. etasje"}
-                              {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "brannalarm" && "2 700 m² pr. etasje"}
-                              {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "sprinkler" && "Ubegrenset"}
-                              {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "roykventilasjon" && "10 000 m² pr. etasje"}
-                            </td>
-                          </tr>
-                          {formData.areal && (
-                            <tr>
-                              <td className="border border-gray-300 p-2 bg-gray-100 font-medium">Prosjektert areal:</td>
-                              <td className="border border-gray-300 p-2">{formData.areal} m²</td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                  
-                  {formData.brannseksjoner && (
-                    <p className="mt-2">{formData.brannseksjoner}</p>
-                  )}
-                  {formData.brannseksjonerKommentar && <p className="mt-2 italic">Kommentar: {formData.brannseksjonerKommentar}</p>}
-                </td>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                <th className="border border-gray-400 p-2 text-left">Løsning</th>
+                <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Generelt krav</td>
+                <td className="border border-gray-400 p-2">Byggverk må oppdeles i seksjoner minst som angitt i tabell 1.</td>
+                <td className="border border-gray-400 p-2 align-top">RIBr</td>
+              </tr>
+              {formData.risikoklasse === "RK6" && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Krav RK6</td>
+                  <td className="border border-gray-400 p-2">Byggverk i risikoklasse 6 (sykehus, sykehjem, pleieinstitusjoner) må deles vertikalt i minst to brannseksjoner.</td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                </tr>
+              )}
+              {formData.risikoklasse === "RK3" && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Krav RK3</td>
+                  <td className="border border-gray-400 p-2">Største bruttoareal per etasje for barnehager uten seksjonering er 600 m².</td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                </tr>
+              )}
+              {(formData.brannseksjonTiltak === "brannalarm" || formData.brannseksjonTiltak === "sprinkler") && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Brannalarmanlegg</td>
+                  <td className="border border-gray-400 p-2">Prosjekteres og utføres etter NS 3960:2019. Kategori 2 med direkte varsling til nødmeldesentral.</td>
+                  <td className="border border-gray-400 p-2 align-top">RIE</td>
+                </tr>
+              )}
+              {formData.brannseksjonTiltak === "sprinkler" && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Sprinkleranlegg</td>
+                  <td className="border border-gray-400 p-2">Prosjekteres etter NS-EN 12845:2015+A1:2019. Bolig: NS-EN 16925:2018. Vannforsyning min. 30/60 min.</td>
+                  <td className="border border-gray-400 p-2 align-top">RIV</td>
+                </tr>
+              )}
+              {formData.brannseksjonBrannenergi && formData.brannseksjonTiltak && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Seksjonsstørrelse</td>
+                  <td className="border border-gray-400 p-2">
+                    <table className="w-full text-sm border-collapse">
+                      <tbody>
+                        <tr>
+                          <td className="border border-gray-300 p-1 bg-gray-50 font-medium w-1/3">Spesifikk brannenergi:</td>
+                          <td className="border border-gray-300 p-1">
+                            {formData.brannseksjonBrannenergi === "over400" && "Over 400 MJ/m²"}
+                            {formData.brannseksjonBrannenergi === "50-400" && "50–400 MJ/m²"}
+                            {formData.brannseksjonBrannenergi === "under50" && "Under 50 MJ/m²"}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-300 p-1 bg-gray-50 font-medium">Tiltak:</td>
+                          <td className="border border-gray-300 p-1">
+                            {formData.brannseksjonTiltak === "normalt" && "Normalt (ingen tiltak)"}
+                            {formData.brannseksjonTiltak === "brannalarm" && "Med brannalarmanlegg"}
+                            {formData.brannseksjonTiltak === "sprinkler" && "Med sprinkleranlegg"}
+                            {formData.brannseksjonTiltak === "roykventilasjon" && "Med røykventilasjon"}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-300 p-1 bg-gray-50 font-medium">Største bruttoareal:</td>
+                          <td className="border border-gray-300 p-1 font-semibold">
+                            {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "normalt" && "800 m² pr. etasje"}
+                            {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "brannalarm" && "1 200 m² pr. etasje"}
+                            {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "sprinkler" && "5 000 m² pr. etasje"}
+                            {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "roykventilasjon" && <span className="text-red-600">Uegnet</span>}
+                            {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "normalt" && "1 200 m² pr. etasje"}
+                            {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "brannalarm" && "1 800 m² pr. etasje"}
+                            {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "sprinkler" && "10 000 m² pr. etasje"}
+                            {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "roykventilasjon" && "4 000 m² pr. etasje"}
+                            {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "normalt" && "1 800 m² pr. etasje"}
+                            {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "brannalarm" && "2 700 m² pr. etasje"}
+                            {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "sprinkler" && "Ubegrenset"}
+                            {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "roykventilasjon" && "10 000 m² pr. etasje"}
+                          </td>
+                        </tr>
+                        {formData.areal && (
+                          <tr>
+                            <td className="border border-gray-300 p-1 bg-gray-50 font-medium">Prosjektert areal:</td>
+                            <td className="border border-gray-300 p-1">{formData.areal} m²</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                </tr>
+              )}
+              {formData.brannseksjoner && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
+                  <td className="border border-gray-400 p-2">{formData.brannseksjoner}</td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                </tr>
+              )}
+              {formData.brannseksjonerKommentar && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Kommentar</td>
+                  <td className="border border-gray-400 p-2 italic">{formData.brannseksjonerKommentar}</td>
+                  <td className="border border-gray-400 p-2 align-top">-</td>
+                </tr>
+              )}
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.5 &nbsp;&nbsp; §11-8 Brannceller</td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>
-                  {formData.brannceller || "[Branncelleinndeling beskrives]"}
-                  {formData.branncellerKommentar && <><br/><br/><span className="italic">Kommentar: {formData.branncellerKommentar}</span></>}
-                </td>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                <th className="border border-gray-400 p-2 text-left">Løsning</th>
+                <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Branncelleinndeling</td>
+                <td className="border border-gray-400 p-2">{formData.brannceller || "[Branncelleinndeling beskrives]"}</td>
+                <td className="border border-gray-400 p-2 align-top">RIBr</td>
+              </tr>
+              {formData.branncellerKommentar && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Kommentar</td>
+                  <td className="border border-gray-400 p-2 italic">{formData.branncellerKommentar}</td>
+                  <td className="border border-gray-400 p-2 align-top">-</td>
+                </tr>
+              )}
+
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.6 &nbsp;&nbsp; §11-9 Materialer ved brann</td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>
-                  {formData.materialer || "[Krav til materialer beskrives]"}
-                  {formData.materialerKommentar && <><br/><br/><span className="italic">Kommentar: {formData.materialerKommentar}</span></>}
-                </td>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                <th className="border border-gray-400 p-2 text-left">Løsning</th>
+                <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Materialkrav</td>
+                <td className="border border-gray-400 p-2">{formData.materialer || "[Krav til materialer beskrives]"}</td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+              {formData.materialerKommentar && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Kommentar</td>
+                  <td className="border border-gray-400 p-2 italic">{formData.materialerKommentar}</td>
+                  <td className="border border-gray-400 p-2 align-top">-</td>
+                </tr>
+              )}
+
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.7 &nbsp;&nbsp; §11-10 Tekniske installasjoner</td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>
-                  {formData.installasjoner || "[Installasjoner beskrives]"}
-                  {formData.installasjonerKommentar && <><br/><br/><span className="italic">Kommentar: {formData.installasjonerKommentar}</span></>}
-                </td>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                <th className="border border-gray-400 p-2 text-left">Løsning</th>
+                <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Tekniske installasjoner</td>
+                <td className="border border-gray-400 p-2">{formData.installasjoner || "[Installasjoner beskrives]"}</td>
+                <td className="border border-gray-400 p-2 align-top">RIV/RIE</td>
+              </tr>
+              {formData.installasjonerKommentar && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Kommentar</td>
+                  <td className="border border-gray-400 p-2 italic">{formData.installasjonerKommentar}</td>
+                  <td className="border border-gray-400 p-2 align-top">-</td>
+                </tr>
+              )}
+
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.8 &nbsp;&nbsp; §11-11 Generelle krav om rømning</td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>
-                  {formData.romningSikkerhet || "[Rømningsforhold beskrives]"}
-                  {formData.romningSikkerhetKommentar && <><br/><br/><span className="italic">Kommentar: {formData.romningSikkerhetKommentar}</span></>}
-                </td>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                <th className="border border-gray-400 p-2 text-left">Løsning</th>
+                <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Rømningsforhold</td>
+                <td className="border border-gray-400 p-2">{formData.romningSikkerhet || "[Rømningsforhold beskrives]"}</td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+              {formData.romningSikkerhetKommentar && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Kommentar</td>
+                  <td className="border border-gray-400 p-2 italic">{formData.romningSikkerhetKommentar}</td>
+                  <td className="border border-gray-400 p-2 align-top">-</td>
+                </tr>
+              )}
+
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.9 &nbsp;&nbsp; §11-12 Rømnings- og redningstider</td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>
-                  {formData.romningTiltak || "[Tiltak beskrives]"}
-                  {formData.romningTiltakKommentar && <><br/><br/><span className="italic">Kommentar: {formData.romningTiltakKommentar}</span></>}
-                </td>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                <th className="border border-gray-400 p-2 text-left">Løsning</th>
+                <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Tiltak rømning</td>
+                <td className="border border-gray-400 p-2">{formData.romningTiltak || "[Tiltak beskrives]"}</td>
+                <td className="border border-gray-400 p-2 align-top">RIBr</td>
+              </tr>
+              {formData.romningTiltakKommentar && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Kommentar</td>
+                  <td className="border border-gray-400 p-2 italic">{formData.romningTiltakKommentar}</td>
+                  <td className="border border-gray-400 p-2 align-top">-</td>
+                </tr>
+              )}
+
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.10 &nbsp;&nbsp; §11-13 Utgang fra branncelle</td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>
-                  {formData.utgangBranncelle || "[Utganger beskrives]"}
-                  {formData.utgangBranncelleKommentar && <><br/><br/><span className="italic">Kommentar: {formData.utgangBranncelleKommentar}</span></>}
-                </td>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                <th className="border border-gray-400 p-2 text-left">Løsning</th>
+                <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Utganger</td>
+                <td className="border border-gray-400 p-2">{formData.utgangBranncelle || "[Utganger beskrives]"}</td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+              {formData.utgangBranncelleKommentar && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Kommentar</td>
+                  <td className="border border-gray-400 p-2 italic">{formData.utgangBranncelleKommentar}</td>
+                  <td className="border border-gray-400 p-2 align-top">-</td>
+                </tr>
+              )}
+
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.11 &nbsp;&nbsp; §11-14 Rømningsvei</td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>
-                  {formData.romningsvei || "[Rømningsveier beskrives]"}
-                  {formData.romningsveiKommentar && <><br/><br/><span className="italic">Kommentar: {formData.romningsveiKommentar}</span></>}
-                </td>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                <th className="border border-gray-400 p-2 text-left">Løsning</th>
+                <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Rømningsveier</td>
+                <td className="border border-gray-400 p-2">{formData.romningsvei || "[Rømningsveier beskrives]"}</td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+              {formData.romningsveiKommentar && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Kommentar</td>
+                  <td className="border border-gray-400 p-2 italic">{formData.romningsveiKommentar}</td>
+                  <td className="border border-gray-400 p-2 align-top">-</td>
+                </tr>
+              )}
+
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.12 &nbsp;&nbsp; §11-16 Manuell slokking</td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>
-                  {formData.manuellSlokking || "[Slokkeutstyr beskrives]"}
-                  {formData.manuellSlokkingKommentar && <><br/><br/><span className="italic">Kommentar: {formData.manuellSlokkingKommentar}</span></>}
-                </td>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                <th className="border border-gray-400 p-2 text-left">Løsning</th>
+                <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Slokkeutstyr</td>
+                <td className="border border-gray-400 p-2">{formData.manuellSlokking || "[Slokkeutstyr beskrives]"}</td>
+                <td className="border border-gray-400 p-2 align-top">RIV</td>
+              </tr>
+              {formData.manuellSlokkingKommentar && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Kommentar</td>
+                  <td className="border border-gray-400 p-2 italic">{formData.manuellSlokkingKommentar}</td>
+                  <td className="border border-gray-400 p-2 align-top">-</td>
+                </tr>
+              )}
+
               <tr className="bg-gray-200">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.13 &nbsp;&nbsp; §11-17 Redningsmannskap</td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>
-                  {formData.redningsmannskap || "[Tilrettelegging beskrives]"}
-                  {formData.redningsmannskapKommentar && <><br/><br/><span className="italic">Kommentar: {formData.redningsmannskapKommentar}</span></>}
-                </td>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                <th className="border border-gray-400 p-2 text-left">Løsning</th>
+                <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Tilrettelegging</td>
+                <td className="border border-gray-400 p-2">{formData.redningsmannskap || "[Tilrettelegging beskrives]"}</td>
+                <td className="border border-gray-400 p-2 align-top">RIBr</td>
+              </tr>
+              {formData.redningsmannskapKommentar && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Kommentar</td>
+                  <td className="border border-gray-400 p-2 italic">{formData.redningsmannskapKommentar}</td>
+                  <td className="border border-gray-400 p-2 align-top">-</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </section>
