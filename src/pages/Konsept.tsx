@@ -315,6 +315,8 @@ const Konsept = () => {
     baereevneKommentar: "",
     eksplosjonRelevant: "", // "relevant" eller "ikke_relevant"
     eksplosjon: "",
+    bygningshoyde: "", // Høyde på bygget i meter
+    spesifikkBrannenergi: "", // For brannvegg: "inntil400", "400-600", "600-800"
     brannspredning: "",
     brannspredningKommentar: "",
     brannseksjoner: "",
@@ -899,8 +901,62 @@ const Konsept = () => {
               </tr>
               <tr>
                 <td className="border border-gray-400 p-2" colSpan={3}>
-                  {formData.brannspredning || "[Avstandskrav beskrives]"}
-                  {formData.brannspredningKommentar && <><br/><br/><span className="italic">Kommentar: {formData.brannspredningKommentar}</span></>}
+                  <p><strong>Bygningshøyde:</strong> {formData.bygningshoyde ? `${formData.bygningshoyde} meter` : "[Ikke angitt]"}</p>
+                  
+                  {parseFloat(formData.bygningshoyde) > 9 ? (
+                    <>
+                      <p className="mt-2"><strong>Krav:</strong> Brannvegg (bygning over 9 meter)</p>
+                      <p className="mt-2 font-semibold">Preaksepterte ytelser for brannvegg:</p>
+                      <ol className="list-decimal list-inside mt-1 text-sm space-y-1">
+                        <li>Takkonstruksjonen må ikke være kontinuerlig over brannveggen på en slik måte at en kollaps på den ene siden medfører reduksjon av konstruksjonens bæreevne og brannmotstand på den andre siden.</li>
+                        <li>Konstruksjoner som ligger inntil brannveggen må kunne bevege seg fritt ved temperaturendringer uten at veggens branntekniske egenskaper reduseres.</li>
+                        <li>Brannveggens avslutning mot tak og fasade, må være utformet og utført slik at brann ikke kan spre seg fra ett byggverk til et annet i den fastsatte brannmotstandstiden. Det oppnås størst sikkerhet mot brannspredning ved å føre brannveggen over takflaten og utenfor vegglivet.</li>
+                        <li>Brannveggen må ha brannmotstand minst som angitt i tabell 1.</li>
+                        <li>Brannveggen må i sin helhet bestå av materialer som tilfredsstiller klasse A2-s1,d0 [ubrennbare] og må kunne motstå mekanisk påkjenning. Isolasjonsmateriale som ikke tilfredsstiller klasse A2-s1,d0 kan likevel benyttes når det er dokumentert ved prøving at materialet ikke blir involvert i brannen i den forutsatte brannmotstandstiden.</li>
+                        <li>Dersom mekanisk motstandsevne (M) ikke er dokumentert ved prøvning, må brannveggen utføres i tunge materialer som mur, betong eller lignende.</li>
+                        <li>Brannveggen må føres minimum 0,5 meter over høyeste tilstøtende tak, med mindre taket har brannmotstand minst EI 60 A2-s1,d0 [A 60], jf. figur 3.</li>
+                        <li>Brannveggen må være slik utført at den blir stående selv om byggverket på den ene eller den andre siden raser sammen, jf. figur 4. Alternativt kan det bygges to uavhengige brannvegger eller byggverkets bæresystem kan dimensjoneres for brannmotstand tilsvarende brannvegg.</li>
+                      </ol>
+                      
+                      {formData.spesifikkBrannenergi && (
+                        <div className="mt-3">
+                          <p className="font-semibold">Brannveggkrav basert på spesifikk brannenergi:</p>
+                          <table className="mt-1 border-collapse border border-gray-400 text-sm">
+                            <thead>
+                              <tr className="bg-gray-100">
+                                <th className="border border-gray-400 p-1">Spesifikk brannenergi MJ/m²</th>
+                                <th className="border border-gray-400 p-1">Brannveggens nødvendige brannmotstand</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr className={formData.spesifikkBrannenergi === "inntil400" ? "bg-yellow-100" : ""}>
+                                <td className="border border-gray-400 p-1">Inntil 400</td>
+                                <td className="border border-gray-400 p-1">REI 120-M A2-s1,d0 [A 120]</td>
+                              </tr>
+                              <tr className={formData.spesifikkBrannenergi === "400-600" ? "bg-yellow-100" : ""}>
+                                <td className="border border-gray-400 p-1">400-600</td>
+                                <td className="border border-gray-400 p-1">REI 180-M A2-s1,d0 [A 180]</td>
+                              </tr>
+                              <tr className={formData.spesifikkBrannenergi === "600-800" ? "bg-yellow-100" : ""}>
+                                <td className="border border-gray-400 p-1">600-800</td>
+                                <td className="border border-gray-400 p-1">REI 240-M A2-s1,d0 [A 240]</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </>
+                  ) : parseFloat(formData.bygningshoyde) > 0 ? (
+                    <>
+                      <p className="mt-2"><strong>Krav:</strong> Branncellevegg (bygning under eller lik 9 meter)</p>
+                      <p className="mt-2">For bygninger under 9 meter stilles det krav til branncellevegg i stedet for brannvegg.</p>
+                    </>
+                  ) : null}
+                  
+                  {formData.brannspredning && (
+                    <p className="mt-2"><strong>Tilleggsbeskrivelse:</strong> {formData.brannspredning}</p>
+                  )}
+                  {formData.brannspredningKommentar && <p className="mt-2 italic">Kommentar: {formData.brannspredningKommentar}</p>}
                 </td>
               </tr>
               <tr className="bg-gray-200">
@@ -2441,10 +2497,48 @@ const Konsept = () => {
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.3 § 11-6 Tiltak mot brannspredning</Label>
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Avstandskrav og tiltak</Label>
+                        <Label className="text-xs font-medium mb-1 block">Bygningshøyde (meter)</Label>
+                        <Input 
+                          type="number"
+                          step="0.1"
+                          value={formData.bygningshoyde}
+                          onChange={(e) => setFormData({...formData, bygningshoyde: e.target.value})}
+                          placeholder="Angi høyde i meter..."
+                        />
+                      </div>
+                      
+                      {parseFloat(formData.bygningshoyde) > 9 && (
+                        <div className="p-3 bg-orange-50 border border-orange-200 rounded-md">
+                          <p className="text-sm font-medium text-orange-800 mb-2">Bygning over 9 meter - krav til brannvegg</p>
+                          <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
+                          <Select 
+                            value={formData.spesifikkBrannenergi} 
+                            onValueChange={(value) => setFormData({...formData, spesifikkBrannenergi: value})}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Velg brannenergi..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="inntil400">Inntil 400 MJ/m² → REI 120-M A2-s1,d0</SelectItem>
+                              <SelectItem value="400-600">400-600 MJ/m² → REI 180-M A2-s1,d0</SelectItem>
+                              <SelectItem value="600-800">600-800 MJ/m² → REI 240-M A2-s1,d0</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
+                      
+                      {parseFloat(formData.bygningshoyde) > 0 && parseFloat(formData.bygningshoyde) <= 9 && (
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                          <p className="text-sm font-medium text-blue-800">Bygning under eller lik 9 meter - krav til branncellevegg</p>
+                        </div>
+                      )}
+                      
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Tilleggsbeskrivelse (valgfritt)</Label>
                         <Textarea 
                           value={formData.brannspredning}
                           onChange={(e) => setFormData({...formData, brannspredning: e.target.value})}
+                          placeholder="Eventuelle tilleggsbeskrivelser..."
                         />
                       </div>
                       <div>
