@@ -1021,10 +1021,17 @@ const Konsept = () => {
                   <td className="border border-gray-400 p-2 align-top">RIE</td>
                 </tr>
               )}
-              {formData.brannseksjonTiltak === "sprinkler" && (
+{formData.brannseksjonTiltak === "sprinkler" && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Sprinkleranlegg</td>
                   <td className="border border-gray-400 p-2">Prosjekteres etter NS-EN 12845:2015+A1:2019. Bolig: NS-EN 16925:2018. Vannforsyning min. 30/60 min.</td>
+                  <td className="border border-gray-400 p-2 align-top">RIV</td>
+                </tr>
+              )}
+              {formData.brannseksjonTiltak === "roykventilasjon" && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Røykventilasjon</td>
+                  <td className="border border-gray-400 p-2">Prosjekteres og utføres etter NS-EN 12101-serien. Røykventilasjon skal dimensjoneres for å sikre røykfritt lag i rømningsvei.</td>
                   <td className="border border-gray-400 p-2 align-top">RIV</td>
                 </tr>
               )}
