@@ -803,11 +803,11 @@ const Konsept = () => {
               {/* 3.1 § 11-4 Bæreevne og stabilitet - kun når flere risikoklasser */}
               {formData.harFlereRisikoklasser && formData.bygningsdeler.length > 0 ? (
                 <>
-                  <tr className="bg-gray-200">
-                    <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
-                      3.1 &nbsp;&nbsp; §11-4 Bæreevne og stabilitet
-                    </td>
-                  </tr>
+              <tr className="bg-blue-100">
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
+                  3.1 &nbsp;&nbsp; §11-4 Bæreevne og stabilitet
+                </td>
+              </tr>
                   <tr className="bg-gray-100">
                     <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
                     <th className="border border-gray-400 p-2 text-left">Løsning</th>
@@ -903,7 +903,7 @@ const Konsept = () => {
                   </td>
                 </tr>
               )}
-              <tr className="bg-gray-200">
+              <tr className="bg-blue-100">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
                   3.2 &nbsp;&nbsp; §11-5 Sikkerhet ved eksplosjon
                 </td>
@@ -934,7 +934,7 @@ const Konsept = () => {
                 </td>
                 <td className="border border-gray-400 p-2 align-top">RIBr</td>
               </tr>
-              <tr className="bg-gray-200">
+              <tr className="bg-blue-100">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.3 &nbsp;&nbsp; §11-6 Brannspredning mellom byggverk</td>
               </tr>
               <tr className="bg-gray-100">
@@ -1016,7 +1016,7 @@ const Konsept = () => {
                   <td className="border border-gray-400 p-2 align-top">-</td>
                 </tr>
               )}
-              <tr className="bg-gray-200">
+              <tr className="bg-blue-100">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.4 &nbsp;&nbsp; §11-7 Brannseksjoner</td>
               </tr>
               <tr className="bg-gray-100">
@@ -1126,7 +1126,7 @@ const Konsept = () => {
                   <td className="border border-gray-400 p-2 align-top">-</td>
                 </tr>
               )}
-              <tr className="bg-gray-200">
+              <tr className="bg-blue-100">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.5 &nbsp;&nbsp; §11-8 Brannceller</td>
               </tr>
               <tr className="bg-gray-100">
@@ -1242,7 +1242,7 @@ const Konsept = () => {
                 </tr>
               )}
 
-              <tr className="bg-gray-200">
+              <tr className="bg-blue-100">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.6 &nbsp;&nbsp; §11-9 Materialer og produkters egenskaper ved brann</td>
               </tr>
               <tr className="bg-gray-100">
@@ -1361,7 +1361,7 @@ const Konsept = () => {
                 </tr>
               )}
 
-              <tr className="bg-gray-200">
+              <tr className="bg-blue-100">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.7 &nbsp;&nbsp; §11-10 Tekniske installasjoner</td>
               </tr>
               <tr className="bg-gray-100">
@@ -1382,7 +1382,7 @@ const Konsept = () => {
                 </tr>
               )}
 
-              <tr className="bg-gray-200">
+              <tr className="bg-blue-100">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.8 &nbsp;&nbsp; §11-11 Generelle krav om rømning</td>
               </tr>
               <tr className="bg-gray-100">
@@ -1403,7 +1403,7 @@ const Konsept = () => {
                 </tr>
               )}
 
-              <tr className="bg-gray-200">
+              <tr className="bg-blue-100">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.9 &nbsp;&nbsp; §11-12 Rømnings- og redningstider</td>
               </tr>
               <tr className="bg-gray-100">
@@ -1424,7 +1424,7 @@ const Konsept = () => {
                 </tr>
               )}
 
-              <tr className="bg-gray-200">
+              <tr className="bg-blue-100">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.10 &nbsp;&nbsp; §11-13 Utgang fra branncelle</td>
               </tr>
               <tr className="bg-gray-100">
@@ -1445,7 +1445,7 @@ const Konsept = () => {
                 </tr>
               )}
 
-              <tr className="bg-gray-200">
+              <tr className="bg-blue-100">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.11 &nbsp;&nbsp; §11-14 Rømningsvei</td>
               </tr>
               <tr className="bg-gray-100">
@@ -1466,7 +1466,7 @@ const Konsept = () => {
                 </tr>
               )}
 
-              <tr className="bg-gray-200">
+              <tr className="bg-blue-100">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.12 &nbsp;&nbsp; §11-16 Manuell slokking</td>
               </tr>
               <tr className="bg-gray-100">
@@ -1487,7 +1487,7 @@ const Konsept = () => {
                 </tr>
               )}
 
-              <tr className="bg-gray-200">
+              <tr className="bg-blue-100">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.13 &nbsp;&nbsp; §11-17 Redningsmannskap</td>
               </tr>
               <tr className="bg-gray-100">
