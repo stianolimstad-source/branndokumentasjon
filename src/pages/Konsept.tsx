@@ -1111,79 +1111,72 @@ const Konsept = () => {
               </tr>
               {/* Generert krav basert på brannklasse - § 11-8 Tabell 1 */}
               {formData.brannklasse && (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Brannmotstand til branncellebegrensende bygningsdeler</td>
-                  <td className="border border-gray-400 p-2">
-                    <table className="w-full text-xs border-collapse">
-                      <tbody>
-                        <tr>
-                          <td className="border border-gray-300 p-1 bg-gray-50 font-medium" style={{width: '60%'}}>Branncellebegrensende bygningsdel - generelt</td>
-                          <td className="border border-gray-300 p-1 font-semibold">
-                            {formData.brannklasse === "BKL1" && "EI 30 [B 30]"}
-                            {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
-                            {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="border border-gray-300 p-1 bg-gray-50 font-medium">Bygningsdel som omslutter trapperom, heissjakt og installasjonssjakter over flere plan</td>
-                          <td className="border border-gray-300 p-1 font-semibold">
-                            {formData.brannklasse === "BKL1" && "EI 30 [B 30]"}
-                            {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
-                            {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="border border-gray-300 p-1 bg-gray-50 font-medium">Heismaskinrom</td>
-                          <td className="border border-gray-300 p-1 font-semibold">
-                            {formData.brannklasse === "BKL1" && "EI 60 [B 60]"}
-                            {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
-                            {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="border border-gray-300 p-1 bg-gray-50 font-medium">Fyrrom for sentralvarmeanlegg eller varmluftsaggregat for fast brensel</td>
-                          <td className="border border-gray-300 p-1 font-semibold">
-                            {formData.brannklasse === "BKL1" && "EI 60 [B 60]"}
-                            {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
-                            {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="border border-gray-300 p-1 bg-gray-50 font-medium" colSpan={2}>
-                            <span className="font-semibold">Fyrrom for sentralvarmeanlegg eller varmluftsaggregat for flytende og gassformig brensel</span>
-                            <br />Avhengig av innfyrt effekt, P:
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="border border-gray-300 p-1 bg-gray-50 pl-4">P &lt; 50 kW - kun ytelse for kledning/overflate</td>
-                          <td className="border border-gray-300 p-1 font-semibold">
-                            {formData.brannklasse === "BKL1" && "K₂10 A2-s1,d0 [K1-A]"}
-                            {formData.brannklasse === "BKL2" && "K₂10 A2-s1,d0 [K1-A]"}
-                            {formData.brannklasse === "BKL3" && "K₂10 A2-s1,d0 [K1-A]"}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="border border-gray-300 p-1 bg-gray-50 pl-4">50 kW ≤ P ≤ 100 kW</td>
-                          <td className="border border-gray-300 p-1 font-semibold">
-                            {formData.brannklasse === "BKL1" && "EI 30 [B 30]"}
-                            {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
-                            {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="border border-gray-300 p-1 bg-gray-50 pl-4">P &gt; 100 kW</td>
-                          <td className="border border-gray-300 p-1 font-semibold">
-                            {formData.brannklasse === "BKL1" && "EI 60 A2-s1,d0 [A 60]"}
-                            {formData.brannklasse === "BKL2" && "EI 60 A2-s1,d0 [A 60]"}
-                            {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <p className="text-xs mt-2 text-gray-600 italic">Jf. § 11-8 Tabell 1: Brannmotstand til branncellebegrensende bygningsdeler</p>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
-                </tr>
+                <>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Branncellebegrensende bygningsdel - generelt</td>
+                    <td className="border border-gray-400 p-2 font-semibold">
+                      {formData.brannklasse === "BKL1" && "EI 30 [B 30]"}
+                      {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
+                      {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Bygningsdel som omslutter trapperom, heissjakt og installasjonssjakter over flere plan</td>
+                    <td className="border border-gray-400 p-2 font-semibold">
+                      {formData.brannklasse === "BKL1" && "EI 30 [B 30]"}
+                      {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
+                      {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Heismaskinrom</td>
+                    <td className="border border-gray-400 p-2 font-semibold">
+                      {formData.brannklasse === "BKL1" && "EI 60 [B 60]"}
+                      {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
+                      {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Fyrrom for sentralvarmeanlegg eller varmluftsaggregat for fast brensel</td>
+                    <td className="border border-gray-400 p-2 font-semibold">
+                      {formData.brannklasse === "BKL1" && "EI 60 [B 60]"}
+                      {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
+                      {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Fyrrom for flytende/gassformig brensel (P &lt; 50 kW) - kun kledning/overflate</td>
+                    <td className="border border-gray-400 p-2 font-semibold">
+                      K₂10 A2-s1,d0 [K1-A]
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Fyrrom for flytende/gassformig brensel (50 kW ≤ P ≤ 100 kW)</td>
+                    <td className="border border-gray-400 p-2 font-semibold">
+                      {formData.brannklasse === "BKL1" && "EI 30 [B 30]"}
+                      {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
+                      {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Fyrrom for flytende/gassformig brensel (P &gt; 100 kW)</td>
+                    <td className="border border-gray-400 p-2 font-semibold">
+                      EI 60 A2-s1,d0 [A 60]
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2" colSpan={3}>
+                      <p className="text-xs text-gray-600 italic">Jf. § 11-8 Tabell 1: Brannmotstand til branncellebegrensende bygningsdeler</p>
+                    </td>
+                  </tr>
+                </>
               )}
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Branncelleinndeling</td>
