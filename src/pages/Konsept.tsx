@@ -2905,14 +2905,6 @@ const Konsept = () => {
                       )}
                       
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Tilleggsbeskrivelse (valgfritt)</Label>
-                        <Textarea 
-                          value={formData.brannseksjoner}
-                          onChange={(e) => setFormData({...formData, brannseksjoner: e.target.value})}
-                          placeholder="Eventuelle tilleggsbeskrivelser..."
-                        />
-                      </div>
-                      <div>
                         <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
                         <Textarea 
                           value={formData.brannseksjonerKommentar}
