@@ -1036,56 +1036,52 @@ const Konsept = () => {
                 </tr>
               )}
               {formData.brannseksjonBrannenergi && formData.brannseksjonTiltak && (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Seksjonsstørrelse</td>
-                  <td className="border border-gray-400 p-2">
-                    <table className="w-full text-sm border-collapse">
-                      <tbody>
-                        <tr>
-                          <td className="border border-gray-300 p-1 bg-gray-50 font-medium w-1/3">Spesifikk brannenergi:</td>
-                          <td className="border border-gray-300 p-1">
-                            {formData.brannseksjonBrannenergi === "over400" && "Over 400 MJ/m²"}
-                            {formData.brannseksjonBrannenergi === "50-400" && "50–400 MJ/m²"}
-                            {formData.brannseksjonBrannenergi === "under50" && "Under 50 MJ/m²"}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="border border-gray-300 p-1 bg-gray-50 font-medium">Tiltak:</td>
-                          <td className="border border-gray-300 p-1">
-                            {formData.brannseksjonTiltak === "normalt" && "Normalt (ingen tiltak)"}
-                            {formData.brannseksjonTiltak === "brannalarm" && "Med brannalarmanlegg"}
-                            {formData.brannseksjonTiltak === "sprinkler" && "Med sprinkleranlegg"}
-                            {formData.brannseksjonTiltak === "roykventilasjon" && "Med røykventilasjon"}
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="border border-gray-300 p-1 bg-gray-50 font-medium">Største bruttoareal:</td>
-                          <td className="border border-gray-300 p-1 font-semibold">
-                            {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "normalt" && "800 m² pr. etasje"}
-                            {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "brannalarm" && "1 200 m² pr. etasje"}
-                            {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "sprinkler" && "5 000 m² pr. etasje"}
-                            {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "roykventilasjon" && <span className="text-red-600">Uegnet</span>}
-                            {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "normalt" && "1 200 m² pr. etasje"}
-                            {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "brannalarm" && "1 800 m² pr. etasje"}
-                            {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "sprinkler" && "10 000 m² pr. etasje"}
-                            {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "roykventilasjon" && "4 000 m² pr. etasje"}
-                            {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "normalt" && "1 800 m² pr. etasje"}
-                            {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "brannalarm" && "2 700 m² pr. etasje"}
-                            {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "sprinkler" && "Ubegrenset"}
-                            {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "roykventilasjon" && "10 000 m² pr. etasje"}
-                          </td>
-                        </tr>
-                        {formData.areal && (
-                          <tr>
-                            <td className="border border-gray-300 p-1 bg-gray-50 font-medium">Prosjektert areal:</td>
-                            <td className="border border-gray-300 p-1">{formData.areal} m²</td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
-                </tr>
+                <>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Spesifikk brannenergi</td>
+                    <td className="border border-gray-400 p-2 font-semibold">
+                      {formData.brannseksjonBrannenergi === "over400" && "Over 400 MJ/m²"}
+                      {formData.brannseksjonBrannenergi === "50-400" && "50–400 MJ/m²"}
+                      {formData.brannseksjonBrannenergi === "under50" && "Under 50 MJ/m²"}
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Tiltak</td>
+                    <td className="border border-gray-400 p-2 font-semibold">
+                      {formData.brannseksjonTiltak === "normalt" && "Normalt (ingen tiltak)"}
+                      {formData.brannseksjonTiltak === "brannalarm" && "Med brannalarmanlegg"}
+                      {formData.brannseksjonTiltak === "sprinkler" && "Med sprinkleranlegg"}
+                      {formData.brannseksjonTiltak === "roykventilasjon" && "Med røykventilasjon"}
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Største bruttoareal pr. etasje</td>
+                    <td className="border border-gray-400 p-2 font-semibold">
+                      {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "normalt" && "800 m²"}
+                      {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "brannalarm" && "1 200 m²"}
+                      {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "sprinkler" && "5 000 m²"}
+                      {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "roykventilasjon" && <span className="text-red-600">Uegnet</span>}
+                      {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "normalt" && "1 200 m²"}
+                      {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "brannalarm" && "1 800 m²"}
+                      {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "sprinkler" && "10 000 m²"}
+                      {formData.brannseksjonBrannenergi === "50-400" && formData.brannseksjonTiltak === "roykventilasjon" && "4 000 m²"}
+                      {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "normalt" && "1 800 m²"}
+                      {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "brannalarm" && "2 700 m²"}
+                      {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "sprinkler" && "Ubegrenset"}
+                      {formData.brannseksjonBrannenergi === "under50" && formData.brannseksjonTiltak === "roykventilasjon" && "10 000 m²"}
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                  {formData.areal && (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Prosjektert areal</td>
+                      <td className="border border-gray-400 p-2">{formData.areal} m²</td>
+                      <td className="border border-gray-400 p-2 align-top">-</td>
+                    </tr>
+                  )}
+                </>
               )}
               {formData.brannseksjoner && (
                 <tr>
