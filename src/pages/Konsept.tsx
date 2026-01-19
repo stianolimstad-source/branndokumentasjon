@@ -1243,18 +1243,116 @@ const Konsept = () => {
               )}
 
               <tr className="bg-gray-200">
-                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.6 &nbsp;&nbsp; §11-9 Materialer ved brann</td>
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.6 &nbsp;&nbsp; §11-9 Materialer og produkters egenskaper ved brann</td>
               </tr>
               <tr className="bg-gray-100">
                 <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
                 <th className="border border-gray-400 p-2 text-left">Løsning</th>
                 <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
+              
+              {/* Overflater i brannceller som ikke er rømningsvei */}
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Materialkrav</td>
-                <td className="border border-gray-400 p-2">{formData.materialer || "[Krav til materialer beskrives]"}</td>
+                <td className="border border-gray-400 p-2 align-top bg-blue-600 text-white font-semibold" colSpan={3}>Overflater i brannceller som ikke er rømningsvei</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak i branncelle inntil 200 m²</td>
+                <td className="border border-gray-400 p-2">
+                  <span className="text-red-600 font-medium">D-s2,d0 [In 2]</span>
+                </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak i branncelle over 200 m²</td>
+                <td className="border border-gray-400 p-2">
+                  <span className="text-red-600 font-medium">
+                    {formData.brannklasse === "BKL1" ? "D-s2,d0 [In 2]" : "B-s1,d0 [In 1]"}
+                  </span>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Overflater i sjakter og hulrom</td>
+                <td className="border border-gray-400 p-2">
+                  <span className="text-red-600 font-medium">
+                    {formData.brannklasse === "BKL1" ? "B-s1,d0 [In 1]" : "B-s1,d0 [In 1]"}
+                  </span>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+              
+              {/* Overflater i brannceller som er rømningsvei */}
+              <tr>
+                <td className="border border-gray-400 p-2 align-top bg-blue-600 text-white font-semibold" colSpan={3}>Overflater i brannceller som er rømningsvei</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak</td>
+                <td className="border border-gray-400 p-2">
+                  <span className="text-red-600 font-medium">B-s1,d0 [In 1]</span>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Overflater på gulv</td>
+                <td className="border border-gray-400 p-2">
+                  <span className="text-red-600 font-medium">D<sub>fl</sub>-s1 [G]</span>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+              
+              {/* Utvendige overflater */}
+              <tr>
+                <td className="border border-gray-400 p-2 align-top bg-blue-600 text-white font-semibold" colSpan={3}>Utvendige overflater</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Overflater på ytterkledning</td>
+                <td className="border border-gray-400 p-2">
+                  <span className="text-red-600 font-medium">
+                    {formData.brannklasse === "BKL1" ? "D-s3,d0 [Ut 2]" : formData.brannklasse === "BKL2" ? "B-s3,d0 [Ut 1]" : "B-s3,d0 [Ut 1]"}
+                  </span>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+              
+              {/* Kledninger */}
+              <tr>
+                <td className="border border-gray-400 p-2 align-top bg-blue-600 text-white font-semibold" colSpan={3}>Kledninger</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Kledning i branncelle inntil 200 m² som ikke er rømningsvei</td>
+                <td className="border border-gray-400 p-2">
+                  <span className="text-red-600 font-medium">K<sub>2</sub>10 D-s2,d0 [K2]</span>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Kledning i branncelle over 200 m² som ikke er rømningsvei</td>
+                <td className="border border-gray-400 p-2">
+                  <span className="text-red-600 font-medium">
+                    {formData.brannklasse === "BKL1" ? "K₂10 D-s2,d0 [K2]" : "K₂10 B-s1,d0 [K1]"}
+                  </span>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Kledning i branncelle som er rømningsvei</td>
+                <td className="border border-gray-400 p-2">
+                  <span className="text-red-600 font-medium">
+                    {formData.brannklasse === "BKL1" ? "K₂10 B-s1,d0 [K1]" : "K₂10 A2-s1,d0 [K1-A]"}
+                  </span>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Kledning i sjakter og hulrom</td>
+                <td className="border border-gray-400 p-2">
+                  <span className="text-red-600 font-medium">
+                    {formData.brannklasse === "BKL1" ? "K₂10 B-s1,d0 [K1]" : "K₂10 A2-s1,d0 [K1-A]"}
+                  </span>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+              
               {formData.materialerKommentar && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Kommentar</td>
@@ -3124,14 +3222,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">3.6 § 11-9 Materialer ved brann</Label>
-                      <div>
-                        <Label className="text-xs font-medium mb-1 block">Krav til materialer</Label>
-                        <Textarea 
-                          value={formData.materialer}
-                          onChange={(e) => setFormData({...formData, materialer: e.target.value})}
-                        />
-                      </div>
+                      <Label className="text-xs text-muted-foreground">3.6 § 11-9 Materialer og produkters egenskaper ved brann</Label>
+                      <p className="text-xs text-muted-foreground">Krav til overflater og kledninger genereres automatisk basert på brannklasse ({formData.brannklasse || "ikke angitt"}).</p>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
                         <Textarea 
