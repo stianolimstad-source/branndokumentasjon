@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -75,6 +76,30 @@ const bygningsTypeRisikoklasseMap: Record<string, string> = {
   "Sykehus og sykehjem": "RK6",
   "Turisthytte og vandrerhjem": "RK6",
 };
+
+// Branncelle-typer basert på VTEK § 11-8 preaksepterte ytelser
+const branncelleTyperListe = [
+  { id: "romningsvei", label: "a. Rømningsvei, jf. også § 11-14" },
+  { id: "trapperom", label: "b. Trapperom. Gjelder selv om trapperommet ikke er del av rømningsvei." },
+  { id: "sykerom", label: "c. Hvert enkelt sykerom i sykehus og pleieinstitusjoner." },
+  { id: "gjesterom", label: "d. Hvert enkelt gjesterom i overnattingsbygg." },
+  { id: "forsamlingslokale", label: "e. Hvert enkelt forsamlingslokale." },
+  { id: "salgslokale", label: "f. Hvert enkelt salgslokale. Når flere salgslokaler ligger med inngang fra et felles overdekket og innelukket torg, gårdsplass, korridor eller lignende, regnes de som ett salgslokale." },
+  { id: "boenhet", label: "g. Boenhet. Hybelleilighet og lignende som innehar alle nødvendige funksjoner regnes som egen boenhet." },
+  { id: "barnehage", label: "h. Barnehage som utgjør en avdeling." },
+  { id: "undervisningsrom", label: "i. Hvert enkelt undervisningsrom med tilhørende birom." },
+  { id: "kontorlandskap", label: "j. Kontorer eller kontorlandskap som utgjør en selvstendig bruksenhet." },
+  { id: "storkjokken", label: "k. Storkjøkken." },
+  { id: "garasje", label: "l. Garasje. Unntatt garasje med bruttoareal til og med 50 m² i enebolig (samme bruksenhet)." },
+  { id: "garasje_forbinder", label: "m. Rom som forbinder garasje med andre rom. Unntak gjelder for garasje med bruttoareal til og med 50 m² i enebolig (samme bruksenhet)." },
+  { id: "store_hulrom", label: "n. Store hulrom. Store hulrom må deles opp med branncellebegrensende konstruksjoner i areal på høyst 400 m². Dette gjelder for eksempel kalde, ubenyttede loftsrom og hulrom under oppforede tak og gulv. Branncelleoppdelingen må korrespondere med branncelleoppdelingen av bygget for øvrig." },
+  { id: "hulrom_himling", label: "o. Hulrom over nedforet himling i rømningsvei hvor det er kabler som utgjør en brannenergi på mer enn 50 MJ per løpemeter hulrom eller korridor." },
+  { id: "tekniske_rom", label: "p. Tekniske rom som betjener flere andre brannceller. Dette omfatter blant annet rom for ventilasjonsaggregat, avfallsrom, fyrrom for sentralvarmeanlegg og varmluftsovner fyrt med gass, flytende eller fast brensel. Unntak kan gjøres for ventilasjonsaggregat som er sikret på annen måte mot brannspredning. Sikring på annen måte kan utføres for eksempel ved at aggregatrommet er plassert over et yttertak som har brannmotstand minst som branncellebegrensende bygningsdel." },
+  { id: "tavlerom", label: "q. Tavlerom som ligger i tilknytning til rømningsvei." },
+  { id: "kulvert", label: "r. Kulvert som underjordisk transportgang, kabelkulvert og lignende." },
+  { id: "heissjakt", label: "s. Heissjakter og tekniske installasjonssjakter. Unntak gjelder for heissjakt som ligger i trapperom. Heiser uten sjakt, for eksempel panoramaheiser med frittstående heismaskin, vil være del av den branncellen heisen er montert i. Heis med kabel og maskinromløs heis inngår i samme branncelle som heisjakten. Øvrige heismaskinrom må være egne brannceller." },
+  { id: "husdyrrom", label: "t. Husdyrrom." },
+];
 
 // Funksjon for å beregne brannklasse basert på risikoklasse og antall etasjer
 // Inkluderer preaksepterte ytelser/unntak fra VTEK § 11-3
@@ -327,6 +352,8 @@ const Konsept = () => {
     branncellerKommentar: "",
     fyrromRelevant: "nei" as "ja" | "nei",
     fyrromKw: "" as "" | "fast" | "under50" | "50-100" | "over100" | "ukjent",
+    heismaskinromRelevant: "ja" as "ja" | "nei",
+    branncelleTyper: [] as string[],
     materialer: "",
     materialerKommentar: "",
     installasjoner: "",
@@ -1128,15 +1155,17 @@ const Konsept = () => {
                     </td>
                     <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
                   </tr>
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">Heismaskinrom</td>
-                    <td className="border border-gray-400 p-2 font-semibold">
-                      {formData.brannklasse === "BKL1" && "EI 60 [B 60]"}
-                      {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
-                      {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                    </td>
-                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
-                  </tr>
+                  {formData.heismaskinromRelevant === "ja" && (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Heismaskinrom</td>
+                      <td className="border border-gray-400 p-2 font-semibold">
+                        {formData.brannklasse === "BKL1" && "EI 60 [B 60]"}
+                        {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
+                        {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                    </tr>
+                  )}
                   {formData.fyrromRelevant === "ja" && (
                     <>
                       {(formData.fyrromKw === "fast" || formData.fyrromKw === "ukjent") && (
@@ -1188,11 +1217,30 @@ const Konsept = () => {
                   </tr>
                 </>
               )}
-              <tr>
-                <td className="border border-gray-400 p-2 align-top">Branncelleinndeling</td>
-                <td className="border border-gray-400 p-2">{formData.brannceller || "[Branncelleinndeling beskrives]"}</td>
-                <td className="border border-gray-400 p-2 align-top">RIBr</td>
-              </tr>
+              {/* Valgte branncelle-typer */}
+              {formData.branncelleTyper.length > 0 && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Følgende rom/lokaler skal være egne brannceller</td>
+                  <td className="border border-gray-400 p-2">
+                    <ul className="list-none space-y-1">
+                      {formData.branncelleTyper.map((typeId) => {
+                        const type = branncelleTyperListe.find(t => t.id === typeId);
+                        return type ? (
+                          <li key={typeId} className="text-sm">{type.label}</li>
+                        ) : null;
+                      })}
+                    </ul>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                </tr>
+              )}
+              {formData.brannceller && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Branncelleinndeling (tillegg)</td>
+                  <td className="border border-gray-400 p-2">{formData.brannceller}</td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                </tr>
+              )}
               {formData.branncellerKommentar && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Kommentar</td>
@@ -2994,6 +3042,50 @@ const Konsept = () => {
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.5 § 11-8 Brannceller</Label>
+                      
+                      <div>
+                        <Label className="text-xs font-medium mb-2 block">Relevante branncelle-typer (preaksepterte ytelser)</Label>
+                        <div className="max-h-64 overflow-y-auto border rounded-md p-2 space-y-2 bg-muted/30">
+                          {branncelleTyperListe.map((type) => (
+                            <div key={type.id} className="flex items-start space-x-2">
+                              <Checkbox
+                                id={`branncelle-${type.id}`}
+                                checked={formData.branncelleTyper.includes(type.id)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    setFormData({...formData, branncelleTyper: [...formData.branncelleTyper, type.id]});
+                                  } else {
+                                    setFormData({...formData, branncelleTyper: formData.branncelleTyper.filter(t => t !== type.id)});
+                                  }
+                                }}
+                              />
+                              <label 
+                                htmlFor={`branncelle-${type.id}`} 
+                                className="text-xs leading-tight cursor-pointer"
+                              >
+                                {type.label}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Heismaskinrom relevant?</Label>
+                        <Select 
+                          value={formData.heismaskinromRelevant} 
+                          onValueChange={(value: "ja" | "nei") => setFormData({...formData, heismaskinromRelevant: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Velg..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ja">Ja - heismaskinrom er relevant</SelectItem>
+                            <SelectItem value="nei">Nei - ikke relevant</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Fyrrom relevant?</Label>
                         <Select 
@@ -3030,10 +3122,11 @@ const Konsept = () => {
                         </div>
                       )}
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Branncelleinndeling</Label>
+                        <Label className="text-xs font-medium mb-1 block">Branncelleinndeling (tilleggsbeskrivelse)</Label>
                         <Textarea 
                           value={formData.brannceller}
                           onChange={(e) => setFormData({...formData, brannceller: e.target.value})}
+                          placeholder="Evt. tilleggsbeskrivelse utover valgte typer..."
                         />
                       </div>
                       <div>
