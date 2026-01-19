@@ -325,6 +325,7 @@ const Konsept = () => {
     brannseksjonerKommentar: "",
     brannceller: "",
     branncellerKommentar: "",
+    fyrromRelevant: "nei" as "ja" | "nei",
     materialer: "",
     materialerKommentar: "",
     installasjoner: "",
@@ -1135,38 +1136,42 @@ const Konsept = () => {
                     </td>
                     <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
                   </tr>
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">Fyrrom for sentralvarmeanlegg eller varmluftsaggregat for fast brensel</td>
-                    <td className="border border-gray-400 p-2 font-semibold">
-                      {formData.brannklasse === "BKL1" && "EI 60 [B 60]"}
-                      {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
-                      {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                    </td>
-                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">Fyrrom for flytende/gassformig brensel (P &lt; 50 kW) - kun kledning/overflate</td>
-                    <td className="border border-gray-400 p-2 font-semibold">
-                      K₂10 A2-s1,d0 [K1-A]
-                    </td>
-                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">Fyrrom for flytende/gassformig brensel (50 kW ≤ P ≤ 100 kW)</td>
-                    <td className="border border-gray-400 p-2 font-semibold">
-                      {formData.brannklasse === "BKL1" && "EI 30 [B 30]"}
-                      {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
-                      {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                    </td>
-                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">Fyrrom for flytende/gassformig brensel (P &gt; 100 kW)</td>
-                    <td className="border border-gray-400 p-2 font-semibold">
-                      EI 60 A2-s1,d0 [A 60]
-                    </td>
-                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
-                  </tr>
+                  {formData.fyrromRelevant === "ja" && (
+                    <>
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">Fyrrom for sentralvarmeanlegg eller varmluftsaggregat for fast brensel</td>
+                        <td className="border border-gray-400 p-2 font-semibold">
+                          {formData.brannklasse === "BKL1" && "EI 60 [B 60]"}
+                          {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
+                          {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
+                        </td>
+                        <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                      </tr>
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">Fyrrom for flytende/gassformig brensel (P &lt; 50 kW) - kun kledning/overflate</td>
+                        <td className="border border-gray-400 p-2 font-semibold">
+                          K₂10 A2-s1,d0 [K1-A]
+                        </td>
+                        <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                      </tr>
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">Fyrrom for flytende/gassformig brensel (50 kW ≤ P ≤ 100 kW)</td>
+                        <td className="border border-gray-400 p-2 font-semibold">
+                          {formData.brannklasse === "BKL1" && "EI 30 [B 30]"}
+                          {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
+                          {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
+                        </td>
+                        <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                      </tr>
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">Fyrrom for flytende/gassformig brensel (P &gt; 100 kW)</td>
+                        <td className="border border-gray-400 p-2 font-semibold">
+                          EI 60 A2-s1,d0 [A 60]
+                        </td>
+                        <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                      </tr>
+                    </>
+                  )}
                   <tr>
                     <td className="border border-gray-400 p-2" colSpan={3}>
                       <p className="text-xs text-gray-600 italic">Jf. § 11-8 Tabell 1: Brannmotstand til branncellebegrensende bygningsdeler</p>
@@ -2980,6 +2985,21 @@ const Konsept = () => {
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.5 § 11-8 Brannceller</Label>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Fyrrom relevant?</Label>
+                        <Select 
+                          value={formData.fyrromRelevant} 
+                          onValueChange={(value: "ja" | "nei") => setFormData({...formData, fyrromRelevant: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Velg..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="nei">Nei - ikke relevant</SelectItem>
+                            <SelectItem value="ja">Ja - fyrrom er relevant</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Branncelleinndeling</Label>
                         <Textarea 
