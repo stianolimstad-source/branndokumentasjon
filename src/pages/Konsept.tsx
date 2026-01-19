@@ -1252,8 +1252,8 @@ const Konsept = () => {
               </tr>
               
               {/* Overflater i brannceller som ikke er rømningsvei */}
-              <tr>
-                <td className="border border-gray-400 p-2 align-top bg-blue-600 text-white font-semibold" colSpan={3}>Overflater i brannceller som ikke er rømningsvei</td>
+              <tr className="bg-blue-100">
+                <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Overflater i brannceller som ikke er rømningsvei</td>
               </tr>
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak i branncelle inntil 200 m²</td>
@@ -1282,8 +1282,8 @@ const Konsept = () => {
               </tr>
               
               {/* Overflater i brannceller som er rømningsvei */}
-              <tr>
-                <td className="border border-gray-400 p-2 align-top bg-blue-600 text-white font-semibold" colSpan={3}>Overflater i brannceller som er rømningsvei</td>
+              <tr className="bg-blue-100">
+                <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Overflater i brannceller som er rømningsvei</td>
               </tr>
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak</td>
@@ -1301,8 +1301,8 @@ const Konsept = () => {
               </tr>
               
               {/* Utvendige overflater */}
-              <tr>
-                <td className="border border-gray-400 p-2 align-top bg-blue-600 text-white font-semibold" colSpan={3}>Utvendige overflater</td>
+              <tr className="bg-blue-100">
+                <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Utvendige overflater</td>
               </tr>
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Overflater på ytterkledning</td>
@@ -1315,8 +1315,8 @@ const Konsept = () => {
               </tr>
               
               {/* Kledninger */}
-              <tr>
-                <td className="border border-gray-400 p-2 align-top bg-blue-600 text-white font-semibold" colSpan={3}>Kledninger</td>
+              <tr className="bg-blue-100">
+                <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Kledninger</td>
               </tr>
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kledning i branncelle inntil 200 m² som ikke er rømningsvei</td>
