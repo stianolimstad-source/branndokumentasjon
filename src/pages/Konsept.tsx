@@ -1234,13 +1234,6 @@ const Konsept = () => {
                   <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
                 </tr>
               )}
-              {formData.brannceller && (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Branncelleinndeling (tillegg)</td>
-                  <td className="border border-gray-400 p-2">{formData.brannceller}</td>
-                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
-                </tr>
-              )}
               {formData.branncellerKommentar && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Kommentar</td>
@@ -1768,7 +1761,7 @@ const Konsept = () => {
                 new TableRow({
                   children: [
                     createTableCell("3.5 § 11-8 Brannceller", true, 30),
-                    createTableCell(formData.brannceller || "[Branncelleinndeling beskrives]"),
+                    createTableCell(formData.branncellerKommentar || "[Branncelleinndeling beskrives]"),
                   ],
                 }),
                 new TableRow({
@@ -3121,14 +3114,6 @@ const Konsept = () => {
                           </Select>
                         </div>
                       )}
-                      <div>
-                        <Label className="text-xs font-medium mb-1 block">Branncelleinndeling (tilleggsbeskrivelse)</Label>
-                        <Textarea 
-                          value={formData.brannceller}
-                          onChange={(e) => setFormData({...formData, brannceller: e.target.value})}
-                          placeholder="Evt. tilleggsbeskrivelse utover valgte typer..."
-                        />
-                      </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
                         <Textarea 
