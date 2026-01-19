@@ -326,6 +326,7 @@ const Konsept = () => {
     brannceller: "",
     branncellerKommentar: "",
     fyrromRelevant: "nei" as "ja" | "nei",
+    fyrromKw: "" as "" | "fast" | "under50" | "50-100" | "over100" | "ukjent",
     materialer: "",
     materialerKommentar: "",
     installasjoner: "",
@@ -1138,38 +1139,46 @@ const Konsept = () => {
                   </tr>
                   {formData.fyrromRelevant === "ja" && (
                     <>
-                      <tr>
-                        <td className="border border-gray-400 p-2 align-top">Fyrrom for sentralvarmeanlegg eller varmluftsaggregat for fast brensel</td>
-                        <td className="border border-gray-400 p-2 font-semibold">
-                          {formData.brannklasse === "BKL1" && "EI 60 [B 60]"}
-                          {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
-                          {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                        </td>
-                        <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
-                      </tr>
-                      <tr>
-                        <td className="border border-gray-400 p-2 align-top">Fyrrom for flytende/gassformig brensel (P &lt; 50 kW) - kun kledning/overflate</td>
-                        <td className="border border-gray-400 p-2 font-semibold">
-                          K₂10 A2-s1,d0 [K1-A]
-                        </td>
-                        <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
-                      </tr>
-                      <tr>
-                        <td className="border border-gray-400 p-2 align-top">Fyrrom for flytende/gassformig brensel (50 kW ≤ P ≤ 100 kW)</td>
-                        <td className="border border-gray-400 p-2 font-semibold">
-                          {formData.brannklasse === "BKL1" && "EI 30 [B 30]"}
-                          {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
-                          {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                        </td>
-                        <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
-                      </tr>
-                      <tr>
-                        <td className="border border-gray-400 p-2 align-top">Fyrrom for flytende/gassformig brensel (P &gt; 100 kW)</td>
-                        <td className="border border-gray-400 p-2 font-semibold">
-                          EI 60 A2-s1,d0 [A 60]
-                        </td>
-                        <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
-                      </tr>
+                      {(formData.fyrromKw === "fast" || formData.fyrromKw === "ukjent") && (
+                        <tr>
+                          <td className="border border-gray-400 p-2 align-top">Fyrrom for sentralvarmeanlegg eller varmluftsaggregat for fast brensel</td>
+                          <td className="border border-gray-400 p-2 font-semibold">
+                            {formData.brannklasse === "BKL1" && "EI 60 [B 60]"}
+                            {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
+                            {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
+                          </td>
+                          <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                        </tr>
+                      )}
+                      {(formData.fyrromKw === "under50" || formData.fyrromKw === "ukjent") && (
+                        <tr>
+                          <td className="border border-gray-400 p-2 align-top">Fyrrom for flytende/gassformig brensel (P &lt; 50 kW) - kun kledning/overflate</td>
+                          <td className="border border-gray-400 p-2 font-semibold">
+                            K₂10 A2-s1,d0 [K1-A]
+                          </td>
+                          <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                        </tr>
+                      )}
+                      {(formData.fyrromKw === "50-100" || formData.fyrromKw === "ukjent") && (
+                        <tr>
+                          <td className="border border-gray-400 p-2 align-top">Fyrrom for flytende/gassformig brensel (50 kW ≤ P ≤ 100 kW)</td>
+                          <td className="border border-gray-400 p-2 font-semibold">
+                            {formData.brannklasse === "BKL1" && "EI 30 [B 30]"}
+                            {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
+                            {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
+                          </td>
+                          <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                        </tr>
+                      )}
+                      {(formData.fyrromKw === "over100" || formData.fyrromKw === "ukjent") && (
+                        <tr>
+                          <td className="border border-gray-400 p-2 align-top">Fyrrom for flytende/gassformig brensel (P &gt; 100 kW)</td>
+                          <td className="border border-gray-400 p-2 font-semibold">
+                            EI 60 A2-s1,d0 [A 60]
+                          </td>
+                          <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                        </tr>
+                      )}
                     </>
                   )}
                   <tr>
@@ -2989,7 +2998,7 @@ const Konsept = () => {
                         <Label className="text-xs font-medium mb-1 block">Fyrrom relevant?</Label>
                         <Select 
                           value={formData.fyrromRelevant} 
-                          onValueChange={(value: "ja" | "nei") => setFormData({...formData, fyrromRelevant: value})}
+                          onValueChange={(value: "ja" | "nei") => setFormData({...formData, fyrromRelevant: value, fyrromKw: value === "nei" ? "" : formData.fyrromKw})}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Velg..." />
@@ -3000,6 +3009,26 @@ const Konsept = () => {
                           </SelectContent>
                         </Select>
                       </div>
+                      {formData.fyrromRelevant === "ja" && (
+                        <div>
+                          <Label className="text-xs font-medium mb-1 block">Fyrrom effekt (kW)</Label>
+                          <Select 
+                            value={formData.fyrromKw} 
+                            onValueChange={(value: "" | "fast" | "under50" | "50-100" | "over100" | "ukjent") => setFormData({...formData, fyrromKw: value})}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Velg effekt..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="fast">Fast brensel (ved, pellets, etc.)</SelectItem>
+                              <SelectItem value="under50">Flytende/gassformig brensel: P &lt; 50 kW</SelectItem>
+                              <SelectItem value="50-100">Flytende/gassformig brensel: 50-100 kW</SelectItem>
+                              <SelectItem value="over100">Flytende/gassformig brensel: P &gt; 100 kW</SelectItem>
+                              <SelectItem value="ukjent">Ukjent - vis alle krav</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Branncelleinndeling</Label>
                         <Textarea 
