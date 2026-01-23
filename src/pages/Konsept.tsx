@@ -379,6 +379,7 @@ const Konsept = () => {
     // 3.9 §11-12 Tilrettelegging for rømning og redning
     tilretteleggingLedd1a: false, // RK4 heis - automatisk brannslokkeanlegg
     tilretteleggingLedd1b: false, // RK6 - automatisk brannslokkeanlegg
+    tilretteleggingLedd1c: false, // Generelt automatisk brannslokkeanlegg (andre tilfeller)
     tilretteleggingLedd2a: false, // RK2-6 brannalarmanlegg
     tilretteleggingLedd2b: false, // Få personer røykvarslere
     tilretteleggingLedd3: false, // Ledesystem
@@ -1706,6 +1707,16 @@ const Konsept = () => {
                   <td className="border border-gray-400 p-2 align-top">Automatisk slokkeanlegg (RK6)</td>
                   <td className="border border-gray-400 p-2">
                     Byggverk i risikoklasse 6 skal ha automatisk brannslokkeanlegg.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIV</td>
+                </tr>
+              )}
+              {/* Ledd 1c - Generelt automatisk brannslokkeanlegg (valgbar) */}
+              {formData.tilretteleggingLedd1c && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Automatisk slokkeanlegg</td>
+                  <td className="border border-gray-400 p-2">
+                    Der det er krav om automatisk brannslokkeanlegg, kan det likevel benyttes andre tiltak som gir tilsvarende sikkerhet ved å hindre, begrense eller kontrollere en brann lokalt der den oppstår.
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIV</td>
                 </tr>
@@ -3838,6 +3849,17 @@ const Konsept = () => {
 
                       <div className="space-y-3">
                         <Label className="text-xs font-medium">Velg relevante krav:</Label>
+                        
+                        <div className="flex items-start space-x-2">
+                          <Checkbox 
+                            id="tilretteleggingLedd1c" 
+                            checked={formData.tilretteleggingLedd1c}
+                            onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd1c: checked as boolean})}
+                          />
+                          <Label htmlFor="tilretteleggingLedd1c" className="text-xs cursor-pointer leading-relaxed">
+                            <strong>Automatisk slokkeanlegg:</strong> Der det er krav om automatisk brannslokkeanlegg, kan det benyttes andre tiltak som gir tilsvarende sikkerhet.
+                          </Label>
+                        </div>
                         
                         <div className="flex items-start space-x-2">
                           <Checkbox 
