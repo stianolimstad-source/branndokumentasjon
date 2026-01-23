@@ -1635,7 +1635,7 @@ const Konsept = () => {
               )}
 
               <tr className="bg-blue-100">
-                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.8 &nbsp;&nbsp; §11-11 Generelle krav om rømning</td>
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.8 &nbsp;&nbsp; §11-11 Generelle krav om rømning og redning</td>
               </tr>
               <tr className="bg-gray-100">
                 <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
@@ -1643,10 +1643,27 @@ const Konsept = () => {
                 <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Rømningsforhold</td>
-                <td className="border border-gray-400 p-2">{formData.romningSikkerhet || "[Rømningsforhold beskrives]"}</td>
-                <td className="border border-gray-400 p-2 align-top">ARK</td>
+                <td className="border border-gray-400 p-2 align-top">Rømning og redning</td>
+                <td className="border border-gray-400 p-2">
+                  <p className="font-medium mb-2">Krav fra TEK17 §11-11</p>
+                  <ol className="list-decimal ml-4 space-y-3">
+                    <li><strong>(1)</strong> Byggverk skal prosjekteres og utføres for rask og sikker rømning og redning. Det skal tas hensyn til personer med funksjonsnedsettelse.</li>
+                    <li><strong>(2)</strong> Den tiden som er tilgjengelig for rømning, skal være større enn den tiden som er nødvendig for rømning fra byggverket. Det skal legges inn en tilfredsstillende sikkerhetsmargin.</li>
+                    <li><strong>(3)</strong> Brannceller skal utformes og innredes slik at varsling, rømning og redning kan skje på en rask og effektiv måte.</li>
+                    <li><strong>(4)</strong> Fluktvei fra oppholdssted til utgang fra en branncelle skal være oversiktlig og tilrettelagt for rask og effektiv rømning.</li>
+                    <li><strong>(5)</strong> I den tiden en branncelle eller rømningsvei skal benyttes til rømning av personer, skal det ikke kunne forekomme temperaturer, røykgasskonsentrasjoner eller andre forhold som hindrer rømning.</li>
+                    <li><strong>(6)</strong> Skilt, symbol og tekst som viser rømningsveier og sikkerhetsutstyr skal kunne leses og oppfattes under rømning når det er brann- eller røykutvikling.</li>
+                  </ol>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
               </tr>
+              {formData.romningSikkerhet && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Prosjektspesifikk beskrivelse</td>
+                  <td className="border border-gray-400 p-2">{formData.romningSikkerhet}</td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              )}
               {formData.romningSikkerhetKommentar && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Kommentar</td>
