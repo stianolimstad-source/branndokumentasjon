@@ -367,6 +367,8 @@ const Konsept = () => {
     ventKrav7: false, // Småhus avtrekk
     ventKrav8: false, // Småhus kanal klasse E
     ventKrav9: true, // Brannspjeld seksjoneringsvegg
+    // Rør- og kanalisolasjon
+    rorIsolasjonRelevant: true, // Hovedbryter for om rør- og kanalisolasjon er relevant
     romningSikkerhet: "",
     romningSikkerhetKommentar: "",
     romningTiltak: "",
@@ -1537,13 +1539,34 @@ const Konsept = () => {
                 </>
               )}
               
-              {formData.installasjoner && (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Øvrige installasjoner</td>
-                  <td className="border border-gray-400 p-2">{formData.installasjoner}</td>
-                  <td className="border border-gray-400 p-2 align-top">RIV/RIE</td>
-                </tr>
+              {/* C. Rør- og kanalisolasjon */}
+              {formData.rorIsolasjonRelevant && (
+                <>
+                  <tr className="bg-blue-100">
+                    <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>C. Rør- og kanalisolasjon</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Rør- og kanalisolasjon</td>
+                    <td className="border border-gray-400 p-2">
+                      <p className="font-medium mb-1">Preaksepterte ytelser</p>
+                      <ol className="list-decimal ml-4 space-y-2">
+                        <li>Dersom den samlede eksponerte overflaten av isolasjonen på rør og kanaler utgjør mer enn 20 prosent av tilgrensende vegg- eller himlingsflate, må isolasjonen tilfredsstille klasse <span className="text-red-600 font-medium">A2<sub>L</sub>-s1,d0</span> [ubrennbar eller begrenset brennbar] eller ha minst samme klasse som de tilgrensende overflatene.</li>
+                        <li>Dersom den samlede eksponerte overflaten av isolasjonen utgjør mindre enn 20 prosent av tilgrensende vegg- eller himlingsflate, gjelder følgende:
+                          <ol className="list-decimal ml-4 mt-2 space-y-1">
+                            <li>Isolasjon på rør og kanaler i rømningsveier må minst tilfredsstille klasse <span className="text-red-600 font-medium">B<sub>L</sub>-s1,d0 [PI]</span>. Unntak gjelder isolasjon på enkeltstående rør eller kanal med ytre diameter til og med 200 mm som minst må tilfredsstille klasse C<sub>L</sub>-s3,d0 [PII].</li>
+                            <li>Isolasjon på rør og kanaler som er lagt i sjakt, i hulrom og bak nedforet himling med branncellebegrensende funksjon, må minst tilfredsstille klasse <span className="text-red-600 font-medium">C<sub>L</sub>-s3,d0 [PII]</span>.</li>
+                            <li>Øvrig isolasjon på rør og kanaler i byggverk i risikoklasse 3, 5 og 6, og i byggverk i brannklasse 2 og 3 må minst tilfredsstille klasse <span className="text-red-600 font-medium">C<sub>L</sub>-s3,d0 [PII]</span>.</li>
+                            <li>Øvrig isolasjon på rør og kanaler i byggverk i risikoklasse 1, 2 og 4 i brannklasse 1 må minst tilfredsstille klasse <span className="text-red-600 font-medium">D<sub>L</sub>-s3,d0 [PIII]</span>.</li>
+                          </ol>
+                        </li>
+                      </ol>
+                      <p className="mt-3 text-sm text-gray-600 italic">Den flaten der rør eller kanal er innfestet, regnes som tilgrensede vegg- eller himlingsflate. For vertikale rør og kanaler er det veggflaten som skal legges til grunn.</p>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIV</td>
+                  </tr>
+                </>
               )}
+              
               {formData.installasjonerKommentar && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Kommentar</td>
@@ -3574,6 +3597,20 @@ const Konsept = () => {
                             </div>
                           </div>
                         )}
+                      </div>
+                      
+                      {/* Rør- og kanalisolasjon */}
+                      <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                        <div className="flex items-center gap-2">
+                          <Checkbox
+                            id="rorIsolasjonRelevant"
+                            checked={formData.rorIsolasjonRelevant}
+                            onCheckedChange={(checked) => setFormData({...formData, rorIsolasjonRelevant: !!checked})}
+                          />
+                          <label htmlFor="rorIsolasjonRelevant" className="text-xs font-medium cursor-pointer">
+                            C. Rør- og kanalisolasjon er relevant for tiltaket
+                          </label>
+                        </div>
                       </div>
                       
                       <div>
