@@ -1398,8 +1398,11 @@ const Konsept = () => {
               </tr>
               
               {/* Taktekning */}
+              <tr className="bg-blue-100">
+                <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Taktekning</td>
+              </tr>
               <tr>
-                <td className="border border-gray-400 p-2 align-top font-semibold">Taktekning</td>
+                <td className="border border-gray-400 p-2 align-top">Taktekning</td>
                 <td className="border border-gray-400 p-2">
                   <p className="mb-2">Taktekning kan bidra til brannspredning i et byggverk og mellom ulike byggverk.</p>
                   <p className="font-medium mb-1">Preaksepterte ytelser</p>
