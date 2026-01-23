@@ -1308,8 +1308,52 @@ const Konsept = () => {
                 <td className="border border-gray-400 p-2 align-top">Overflater på ytterkledning</td>
                 <td className="border border-gray-400 p-2">
                   <span className="text-red-600 font-medium">
-                    {formData.brannklasse === "BKL1" ? "D-s3,d0 [Ut 2]" : formData.brannklasse === "BKL2" ? "B-s3,d0 [Ut 1]" : "B-s3,d0 [Ut 1]"}
+                    {formData.brannklasse === "BKL1" ? "D-s3,d0 [Ut 2]" : "B-s3,d0 [Ut 1]"}
                   </span>
+                  {/* Unntak for BKL2/BKL3 med RK 1, 2 eller 4 og maks 4 etasjer */}
+                  {(formData.brannklasse === "BKL2" || formData.brannklasse === "BKL3") && (
+                    (() => {
+                      const rk = parseInt(formData.risikoklasse.replace(/\D/g, ''), 10);
+                      const floors = parseInt(formData.etasjer, 10);
+                      const harUnntak = [1, 2, 4].includes(rk) && floors <= 4;
+                      
+                      if (harUnntak) {
+                        return (
+                          <div className="mt-2 text-sm">
+                            <p className="font-medium">Unntak:</p>
+                            <p>Yttervegg i byggverk i brannklasse 2 og 3 kan ha utvendig overflate som tilfredsstiller klasse <span className="text-red-600 font-medium">D-s3,d0 [Ut 2]</span>, når byggverket er i risikoklasse 1, 2 eller 4 og har inntil fire etasjer, og det er liten fare for brannspredning til og fra nabobyggverk.</p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()
+                  )}
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+              
+              {/* Overflater i hulrom */}
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Overflater i hulrom i ytterveggkonstruksjoner</td>
+                <td className="border border-gray-400 p-2">
+                  <p>Overflater i hulrom i ytterveggkonstruksjoner betraktes på samme måte som utvendig overflate og må ha minst like gode branntekniske egenskaper.</p>
+                  {/* Unntak for BKL1 og boliger inntil 3 etasjer */}
+                  {(() => {
+                    const rk = parseInt(formData.risikoklasse.replace(/\D/g, ''), 10);
+                    const floors = parseInt(formData.etasjer, 10);
+                    const erBolig = rk === 4;
+                    const harUnntak = formData.brannklasse === "BKL1" || (erBolig && floors <= 3);
+                    
+                    if (harUnntak) {
+                      return (
+                        <div className="mt-2 text-sm">
+                          <p className="font-medium">Unntak:</p>
+                          <p>Byggverk i brannklasse 1 {erBolig && floors <= 3 && "og boliger inntil 3 etasjer"} kan ha uklassifiserte overflater i hulrom.</p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
                 </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
