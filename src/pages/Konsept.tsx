@@ -1354,18 +1354,11 @@ const Konsept = () => {
               </tr>
               
               {/* F. Taktekning */}
-              <tr className="bg-blue-100">
-                <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>F. Taktekning</td>
-              </tr>
               <tr>
-                <td className="border border-gray-400 p-2 align-top" colSpan={2}>
-                  Taktekning kan bidra til brannspredning i et byggverk og mellom ulike byggverk.
-                </td>
-                <td className="border border-gray-400 p-2 align-top">ARK</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 align-top font-medium">Preaksepterte ytelser</td>
+                <td className="border border-gray-400 p-2 align-top font-semibold">F. Taktekning</td>
                 <td className="border border-gray-400 p-2">
+                  <p className="mb-2">Taktekning kan bidra til brannspredning i et byggverk og mellom ulike byggverk.</p>
+                  <p className="font-medium mb-1">Preaksepterte ytelser</p>
                   <ol className="list-decimal list-inside space-y-1">
                     <li>Taktekning må tilfredsstille klasse <span className="text-red-600 font-medium">B<sub>ROOF</sub>(t2) [Ta]</span>.</li>
                     <li>Teglstein, betongtakstein, skifertak og metallplater kan uten ytterligere dokumentasjon antas å tilfredsstille klasse B<sub>ROOF</sub>(t2) [Ta].</li>
