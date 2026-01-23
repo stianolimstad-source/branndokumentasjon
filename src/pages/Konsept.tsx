@@ -1742,7 +1742,48 @@ const Konsept = () => {
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Brannalarmanlegg</td>
                   <td className="border border-gray-400 p-2">
-                    Byggverk beregnet for virksomhet i risikoklasse 2 til 6 skal ha brannalarmanlegg.
+                    <p className="mb-2">Byggverk beregnet for virksomhet i risikoklasse 2 til 6 skal ha brannalarmanlegg.</p>
+                    <p className="font-semibold mb-2">Preaksepterte ytelser:</p>
+                    <ol className="list-decimal ml-5 space-y-2">
+                      <li>Brannalarmanlegg må prosjekteres i samsvar med brannalarmkategorier som er angitt i tabell 3, med unntak som angitt nedenfor.</li>
+                      <li>Det kan benyttes annen detektorteknologi i driftsmiljøer hvor dette er dokumentert å være bedre egnet.</li>
+                      <li>Brannalarmanlegg må prosjekteres og utføres i samsvar med <u>NS 3960:2019</u> og <u>NS-EN 54-serien</u>.</li>
+                      <li>
+                        <p>Detektorer i leiligheter i boligbygninger må dekke områdene kjøkken, stue og sone utenfor soverom. Dessuten må følgende være oppfylt:</p>
+                        <ol className="list-decimal ml-5 mt-1 space-y-1">
+                          <li>Det må være minst én detektor per etasje.</li>
+                          <li>Akustiske alarmorganer må plasseres slik at alarmstyrken er minst 60 dB i oppholdsrom og soverom når mellomliggende dører er lukket.</li>
+                          <li>Detektorer og akustiske alarmorganer må installeres i trapperom, kjeller og loft.</li>
+                          <li>Manuell melder må installeres i trapperom ved hovedinngang.</li>
+                          <li>
+                            <p>Alarmorganer både i leiligheter og i fellesarealer må aktiveres ved:</p>
+                            <p className="ml-4">I. alarm utløst i leilighet som ikke er kvittert ut i løpet av 2 minutter</p>
+                            <p className="ml-4">II. alarm utløst i fellesarealer</p>
+                            <p className="ml-4">III. utløst slokkeanlegg</p>
+                          </li>
+                        </ol>
+                      </li>
+                      <li>For parkeringshus, garasje og parkeringskjeller gjelder kravet om brannalarmanlegg når samlet bruttoareal er større enn 1 200 m². Alternativt kan det installeres et automatisk sprinkleranlegg. Parkeringshus med mer enn 1/3 av veggflatene på hvert plan åpne mot det fri over ferdig planert terreng, og øverste parkeringsflate mindre enn 16 meter over gjennomsnittlig planert terreng, kan likevel oppføres uten brannalarmanlegg eller automatisk sprinkleranlegg når åpningene er slik plassert at det oppnås god utlufting.</li>
+                      <li>
+                        <p>I byggverk for publikum og arbeidsbygninger må akustiske alarmorganer suppleres med optiske i:</p>
+                        <ol className="list-decimal ml-5 mt-1 space-y-1">
+                          <li>de deler av byggverk som er åpent for publikum og</li>
+                          <li>fellesarealer i arbeidsbygninger</li>
+                        </ol>
+                      </li>
+                      <li>
+                        <p>I byggverk med krav om universell utforming som har mange rom med samme funksjon, må rom som er universelt utformet, jf. § 12-7 sjuende ledd, ha optiske alarmorganer i tillegg til akustiske. Unntak gjelder:</p>
+                        <ol className="list-decimal ml-5 mt-1 space-y-1">
+                          <li>I rom som i hovedsak benyttes av én person om gangen, som for eksempel kontorer, kan det benyttes mobile, optiske alarmorganer.</li>
+                          <li>I overnattingsrom kan det benyttes mobile løsninger som omfatter både vibrerende og optiske alarmorganer.</li>
+                        </ol>
+                      </li>
+                      <li>I bad og toalettrom som er universelt utformet, jf. § 12-9, må akustiske alarmorganer suppleres med optiske.</li>
+                      <li>Rømningsveier trenger ikke ha optiske alarmorganer i tillegg til akustiske.</li>
+                      <li>Branncelle over flere plan beregnet for flere enn 1 000 personer må ha talevarslingsanlegg.</li>
+                      <li>Takterrasse beregnet for personopphold må ha utstyr for varsling av brann.</li>
+                      <li>Brannalarmanlegg må ha alarmoverføring til nødmeldesentral, alarmstasjon, vaktselskap eller til sted lokalt i byggverket med personell som har ansvar for å iverksette aksjon i henhold til alarmorganisering.</li>
+                    </ol>
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIE</td>
                 </tr>
