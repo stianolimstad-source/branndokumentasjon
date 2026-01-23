@@ -3577,13 +3577,6 @@ const Konsept = () => {
                       </div>
                       
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Øvrige installasjoner (sprinkler, brannalarm osv.)</Label>
-                        <Textarea 
-                          value={formData.installasjoner}
-                          onChange={(e) => setFormData({...formData, installasjoner: e.target.value})}
-                        />
-                      </div>
-                      <div>
                         <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
                         <Textarea 
                           value={formData.installasjonerKommentar}
