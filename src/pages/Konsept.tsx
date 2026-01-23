@@ -1968,7 +1968,67 @@ const Konsept = () => {
                 new TableRow({
                   children: [
                     createTableCell("3.6 § 11-9 Materialer og produkters egenskaper ved brann", true, 30),
-                    createTableCell(formData.materialer || "[Krav til materialer beskrives]"),
+                    createTableCell(
+                      "OVERFLATER I BRANNCELLER SOM IKKE ER RØMNINGSVEI\n\n" +
+                      "• Overflater på vegger og i himling/tak i branncelle inntil 200 m²: D-s2,d0 [In 2]\n" +
+                      "• Overflater på vegger og i himling/tak i branncelle over 200 m²: " + (formData.brannklasse === "BKL1" ? "D-s2,d0 [In 2]" : "B-s1,d0 [In 1]") + "\n" +
+                      "• Overflater i sjakter og hulrom: B-s1,d0 [In 1]\n\n" +
+                      "OVERFLATER I BRANNCELLER SOM ER RØMNINGSVEI\n\n" +
+                      "• Overflater på vegger og i himling/tak: B-s1,d0 [In 1]\n" +
+                      "• Overflater på gulv: Dfl-s1 [G]\n\n" +
+                      "UTVENDIGE OVERFLATER\n\n" +
+                      "• Overflater på ytterkledning: " + (formData.brannklasse === "BKL1" ? "D-s3,d0 [Ut 2]" : "B-s3,d0 [Ut 1]") + "\n" +
+                      (() => {
+                        const rk = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
+                        const floors = parseInt(formData.etasjer || '0', 10);
+                        if ((formData.brannklasse === "BKL2" || formData.brannklasse === "BKL3") && [1, 2, 4].includes(rk) && floors <= 4) {
+                          return "  Unntak: Yttervegg i brannklasse 2 og 3 kan ha D-s3,d0 [Ut 2] når byggverket er i RK 1, 2 eller 4 med inntil 4 etasjer.\n";
+                        }
+                        return "";
+                      })() +
+                      "• Overflater i hulrom i ytterveggkonstruksjoner: Som utvendig overflate\n" +
+                      (() => {
+                        const rk = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
+                        const floors = parseInt(formData.etasjer || '0', 10);
+                        const erBolig = rk === 4;
+                        if (formData.brannklasse === "BKL1" || (erBolig && floors <= 3)) {
+                          return "  Unntak: " + (formData.brannklasse === "BKL1" ? "Byggverk i brannklasse 1" : "Boliger inntil 3 etasjer") + " kan ha uklassifiserte overflater i hulrom.\n";
+                        }
+                        return "";
+                      })() +
+                      "\nKLEDNINGER\n\n" +
+                      "• Kledning i branncelle inntil 200 m² (ikke rømningsvei): K₂10 D-s2,d0 [K2]\n" +
+                      "• Kledning i branncelle over 200 m² (ikke rømningsvei): " + (formData.brannklasse === "BKL1" ? "K₂10 D-s2,d0 [K2]" : "K₂10 B-s1,d0 [K1]") + "\n" +
+                      "• Kledning i branncelle som er rømningsvei: " + (formData.brannklasse === "BKL1" ? "K₂10 B-s1,d0 [K1]" : "K₂10 A2-s1,d0 [K1-A]") + "\n" +
+                      "• Kledning i sjakter og hulrom: " + (formData.brannklasse === "BKL1" ? "K₂10 B-s1,d0 [K1]" : "K₂10 A2-s1,d0 [K1-A]") + "\n\n" +
+                      "TAKTEKNING\n\n" +
+                      "Taktekning kan bidra til brannspredning i et byggverk og mellom ulike byggverk.\n\n" +
+                      "Preaksepterte ytelser:\n" +
+                      "1. Taktekning må tilfredsstille klasse BROOF(t2) [Ta].\n" +
+                      "2. Teglstein, betongtakstein, skifertak og metallplater kan uten ytterligere dokumentasjon antas å tilfredsstille klasse BROOF(t2) [Ta].\n" +
+                      "3. For småhus kan taktekning være uklassifisert der avstanden mellom de enkelte byggverk er minst 8 m.\n" +
+                      "4. Ett-sjikts tak av duk og folie må tilfredsstille klasse B-s3,d0 (Ut1).\n\n" +
+                      "ISOLASJON\n\n" +
+                      "Isolasjonsmaterialer kan bidra til brannspredning og røykutvikling i et byggverk.\n\n" +
+                      "Preaksepterte ytelser:\n" +
+                      "1. Isolasjon må tilfredsstille klasse A2-s1,d0 med mindre annet er angitt i nr. 2 til 9.\n" +
+                      "2. Produkter (sandwichelementer) som tilfredsstiller klasse B-s1,d0 eller Eurefic-klasse A, kan benyttes i byggverk i risikoklasse 1–4 i brannklasse 1 og i industri- og lagerbygninger i brannklasse 2. For tak gjelder nr. 6 og 7.\n" +
+                      "3. Produkter (sandwichelementer) som tilfredsstiller klasse D-s2,d0 eller Eurefic-klasse E, kan benyttes i industri- og lagerbygninger i brannklasse 1. For tak gjelder nr. 6 og 7.\n" +
+                      "4. Produkter (sandwichelementer) som ikke tilfredsstiller klasse A2-s1,d0 må være beskyttet av kledning K₂10 A2-s1,d0 [K1-A] mot rømningsveier.\n" +
+                      "5. Produkter (sandwichelementer) for små kjøle- og fryserom i risikoklasse 4 kan ha uspesifisert ytelse.\n" +
+                      "6. Brennbar isolasjon kan benyttes på oversiden av etasjeskiller mot oppforet tak eller loft som bare kan benyttes som lager, forutsatt at:\n" +
+                      "   a) etasjeskilleren mot oppforet tak eller loft er branncellebegrensende bygningsdel dimensjonert for tosidig brannpåkjenning\n" +
+                      "   b) takkonstruksjonen over etasjeskilleren ikke har avgjørende betydning for byggverkets stabilitet i rømningsfasen\n" +
+                      "7. Brennbar isolasjon kan benyttes i isolerte takflater forutsatt at:\n" +
+                      "   a) isolasjonen legges på et bærende underlag som tilfredsstiller klasse A2-s1,d0 og som har dokumentert bæreevne under brann (R-klasse i samsvar med §11-4)\n" +
+                      "   b) det bærende underlaget beskytter isolasjonen mot varmepåkjenning fra undersiden. I brannklasse 1 og 2 kan alternativt den brennbare isolasjonen beskyttes på undersiden av isolasjon av klasse A2-s1,d0 med tilstrekkelig tykkelse.\n" +
+                      "   c) den brennbare isolasjonen er beskyttet på oversiden av isolasjon med tykkelse 30 mm og som tilfredsstiller klasse A2-s1,d0. Alternativt kan den brennbare isolasjonen oppdeles i arealer på inntil 400 m².\n" +
+                      "8. Brennbar isolasjon kan benyttes som utvendig tilleggsisolering av yttervegger med unntak for i byggverk i brannklasse 3 og i byggverk i risikoklasse 6 forutsatt at:\n" +
+                      "   a) det benyttes isolasjonssystemer som er dokumentert ved prøving etter SP Fire 105 eller tilsvarende\n" +
+                      "   b) fasademateriale og isolasjon må være prøvet som en enhet. Underlaget må ha branntekniske egenskaper som minst tilsvarer det som ble benyttet ved prøving.\n" +
+                      "9. Brennbar isolasjon basert på cellulose- eller tekstilfiber og lignende kan benyttes i byggverk i brannklasse 1, og boliger inntil 3 etasjer. Isolasjonen må tilfredsstille Euroklasse E, eller være i samsvar med NT Fire 035. Isolasjonen kan være utildekket i kaldt uinnredet loft og oppforet tak.\n" +
+                      (formData.materialerKommentar ? "\n\nKommentar:\n" + formData.materialerKommentar : "")
+                    ),
                   ],
                 }),
                 new TableRow({
