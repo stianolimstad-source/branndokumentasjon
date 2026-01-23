@@ -1492,11 +1492,37 @@ const Konsept = () => {
                 <th className="border border-gray-400 p-2 text-left">Løsning</th>
                 <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 align-top">Tekniske installasjoner</td>
-                <td className="border border-gray-400 p-2">{formData.installasjoner || "[Installasjoner beskrives]"}</td>
-                <td className="border border-gray-400 p-2 align-top">RIV/RIE</td>
+              
+              {/* A. Ventilasjonsanlegg */}
+              <tr className="bg-blue-100">
+                <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>A. Ventilasjonsanlegg</td>
               </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Ventilasjonsanlegg</td>
+                <td className="border border-gray-400 p-2">
+                  <p className="font-medium mb-1">Preaksepterte ytelser</p>
+                  <ol className="list-decimal ml-4 space-y-2">
+                    <li>Ventilasjonskanal som føres gjennom en brannskillende bygningsdel, må utføres slik at bygningsdelens brannmotstand blir opprettholdt.</li>
+                    <li>Innfesting og oppheng for kanaler og ventilasjonsutstyr må utføres slik at forutsatt funksjonstid og brannmotstand blir opprettholdt.</li>
+                    <li>Avtrekk fra komfyr må føres i egen kanal på grunn av fettavsetning fra matos. Avtrekk må ha fettfilter, og avtrekkskanalene må kunne rengjøres i hele sin lengde for å redusere faren for antennelse og brann.</li>
+                    <li>Ventilasjonsanlegg må utføres i materialer som tilfredsstiller klasse <span className="text-red-600 font-medium">A2-s1,d0</span> [ubrennbare materialer]. For kanaler gjelder dette hele tverrsnittet (kanalgodset). Unntak kan gjøres for små komponenter som ikke bidrar til spredning av brann. Unntak for småhus er angitt i nr. 7 og 8. For isolasjon av kanaler vises til preaksepterte ytelser under C. Rør- og kanalisolasjon.</li>
+                    <li>Avtrekkskanaler fra storkjøkken, frityreanlegg og lignende må utføres med brannmotstand <span className="text-red-600 font-medium">EI 30 A2-s1,d0</span> helt til utblåsningsristen, eventuelt føres i egen sjakt med samme brannmotstand.</li>
+                    <li>Avtrekkskanaler fra kjøkken i boenheter må utføres med brannmotstand <span className="text-red-600 font-medium">EI 15 A2-s1,d0</span> hvis de ikke ligger i sjakt. I tilslutning mellom komfyrhette og avtrekkskanal kan det benyttes fleksible kanaler.</li>
+                    <li>Fra kjøkken i småhus må det benyttes avtrekkskanal av materiale som tilfredsstiller klasse A2-s1,d0 [ubrennbart materiale], og lignende stål eller aluminium. I tilslutningen mellom komfyrhette og avtrekkskanal kan det benyttes fleksible kanaler.</li>
+                    <li>For småhus kan det også benyttes kanal av materialer som tilfredsstiller klasse E, samt fleksibel kanal av spiralfalset aluminium.</li>
+                    <li>Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.</li>
+                  </ol>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIV</td>
+              </tr>
+              
+              {formData.installasjoner && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Øvrige installasjoner</td>
+                  <td className="border border-gray-400 p-2">{formData.installasjoner}</td>
+                  <td className="border border-gray-400 p-2 align-top">RIV/RIE</td>
+                </tr>
+              )}
               {formData.installasjonerKommentar && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Kommentar</td>
