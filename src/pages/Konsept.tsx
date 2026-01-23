@@ -3872,15 +3872,45 @@ const Konsept = () => {
                           </Label>
                         </div>
 
-                        <div className="flex items-start space-x-2">
-                          <Checkbox 
-                            id="tilretteleggingLedd2b" 
-                            checked={formData.tilretteleggingLedd2b}
-                            onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd2b: checked as boolean})}
-                          />
-                          <Label htmlFor="tilretteleggingLedd2b" className="text-xs cursor-pointer leading-relaxed">
-                            <strong>Røykvarslere:</strong> I byggverk beregnet for få personer og byggverk av mindre størrelse kan det brukes røykvarslere (seriekoblet, tilknyttet strømforsyning med batterireserve).
-                          </Label>
+                        <div className="space-y-2">
+                          <div className="flex items-start space-x-2">
+                            <Checkbox 
+                              id="tilretteleggingLedd2b" 
+                              checked={formData.tilretteleggingLedd2b}
+                              onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd2b: checked as boolean})}
+                            />
+                            <Label htmlFor="tilretteleggingLedd2b" className="text-xs cursor-pointer leading-relaxed">
+                              <strong>Røykvarslere:</strong> I byggverk beregnet for få personer og byggverk av mindre størrelse kan det brukes røykvarslere (seriekoblet, tilknyttet strømforsyning med batterireserve).
+                            </Label>
+                          </div>
+                          {formData.tilretteleggingLedd2b && (() => {
+                            const rk = formData.risikoklasse;
+                            const areal = parseFloat(formData.areal) || 0;
+                            const bygningstype = formData.bygningstype.toLowerCase();
+                            
+                            // Sjekk preaksepterte ytelser for røykvarslere
+                            const erRK2IndustriLager = rk === "RK2" && areal <= 1200 && 
+                              (bygningstype.includes("industri") || bygningstype.includes("lager"));
+                            const erRK2Kontor = rk === "RK2" && areal <= 1200 && bygningstype.includes("kontor");
+                            const erRK4Bolig = rk === "RK4" && 
+                              (bygningstype.includes("enebolig") || bygningstype.includes("rekkehus") || 
+                               bygningstype.includes("kjedehus") || bygningstype.includes("fritidsbolig") ||
+                               bygningstype.includes("bolig"));
+                            const erRK5Liten = rk === "RK5" && areal <= 600;
+                            
+                            if (erRK2IndustriLager || erRK2Kontor || erRK4Bolig || erRK5Liten) {
+                              return (
+                                <div className="ml-6 p-3 bg-green-50 border border-green-200 rounded text-xs">
+                                  <strong className="text-green-800">Minstekrav oppfylt:</strong>
+                                  <span className="text-green-700 ml-1">
+                                    Røykvarslere er preakseptert minstekrav for dette tiltaket basert på risikoklasse og areal. 
+                                    Heldekkende brannalarmanlegg kan likevel velges for økt sikkerhet.
+                                  </span>
+                                </div>
+                              );
+                            }
+                            return null;
+                          })()}
                         </div>
 
                         <div className="flex items-start space-x-2">
