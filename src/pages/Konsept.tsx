@@ -1555,8 +1555,14 @@ const Konsept = () => {
                           <ol className="list-decimal ml-4 mt-2 space-y-1">
                             <li>Isolasjon på rør og kanaler i rømningsveier må minst tilfredsstille klasse <span className="text-red-600 font-medium">B<sub>L</sub>-s1,d0 [PI]</span>. Unntak gjelder isolasjon på enkeltstående rør eller kanal med ytre diameter til og med 200 mm som minst må tilfredsstille klasse C<sub>L</sub>-s3,d0 [PII].</li>
                             <li>Isolasjon på rør og kanaler som er lagt i sjakt, i hulrom og bak nedforet himling med branncellebegrensende funksjon, må minst tilfredsstille klasse <span className="text-red-600 font-medium">C<sub>L</sub>-s3,d0 [PII]</span>.</li>
-                            <li>Øvrig isolasjon på rør og kanaler i byggverk i risikoklasse 3, 5 og 6, og i byggverk i brannklasse 2 og 3 må minst tilfredsstille klasse <span className="text-red-600 font-medium">C<sub>L</sub>-s3,d0 [PII]</span>.</li>
-                            <li>Øvrig isolasjon på rør og kanaler i byggverk i risikoklasse 1, 2 og 4 i brannklasse 1 må minst tilfredsstille klasse <span className="text-red-600 font-medium">D<sub>L</sub>-s3,d0 [PIII]</span>.</li>
+                            {/* Punkt 2.3: Gjelder RK 3, 5, 6 ELLER BKL 2, 3 */}
+                            {(["RK3", "RK5", "RK6"].includes(formData.risikoklasse) || ["BKL2", "BKL3"].includes(formData.brannklasse)) && (
+                              <li>Øvrig isolasjon på rør og kanaler i byggverk i risikoklasse 3, 5 og 6, og i byggverk i brannklasse 2 og 3 må minst tilfredsstille klasse <span className="text-red-600 font-medium">C<sub>L</sub>-s3,d0 [PII]</span>.</li>
+                            )}
+                            {/* Punkt 2.4: Gjelder RK 1, 2, 4 i BKL 1 */}
+                            {(["RK1", "RK2", "RK4"].includes(formData.risikoklasse) && formData.brannklasse === "BKL1") && (
+                              <li>Øvrig isolasjon på rør og kanaler i byggverk i risikoklasse 1, 2 og 4 i brannklasse 1 må minst tilfredsstille klasse <span className="text-red-600 font-medium">D<sub>L</sub>-s3,d0 [PIII]</span>.</li>
+                            )}
                           </ol>
                         </li>
                       </ol>
