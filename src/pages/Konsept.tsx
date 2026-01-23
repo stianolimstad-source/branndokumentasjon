@@ -3419,53 +3419,31 @@ const Konsept = () => {
                       <p className="text-xs text-muted-foreground">Krav til overflater og kledninger genereres automatisk basert på brannklasse ({formData.brannklasse || "ikke angitt"}).</p>
                       
                       {/* Isolasjon-valg */}
-                      <div className="space-y-3 p-3 bg-muted/30 rounded-md border">
+                      <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
                         <Label className="text-xs font-medium">Isolasjon</Label>
-                        <div className="flex items-center gap-3">
-                          <span className="text-xs min-w-40">Bruk av sandwichelementer:</span>
-                          <div className="flex gap-2">
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant={formData.isolasjonSandwich === "relevant" ? "default" : "outline"}
-                              onClick={() => setFormData({...formData, isolasjonSandwich: "relevant"})}
-                              className="h-7 text-xs"
-                            >
-                              Relevant
-                            </Button>
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant={formData.isolasjonSandwich === "ikke_relevant" ? "default" : "outline"}
-                              onClick={() => setFormData({...formData, isolasjonSandwich: "ikke_relevant"})}
-                              className="h-7 text-xs"
-                            >
-                              Ikke relevant
-                            </Button>
-                          </div>
+                        <div className="flex items-center gap-2">
+                          <Checkbox
+                            id="isolasjonSandwich"
+                            checked={formData.isolasjonSandwich === "relevant"}
+                            onCheckedChange={(checked) => 
+                              setFormData({...formData, isolasjonSandwich: checked ? "relevant" : "ikke_relevant"})
+                            }
+                          />
+                          <label htmlFor="isolasjonSandwich" className="text-xs cursor-pointer">
+                            Bruk av sandwichelementer
+                          </label>
                         </div>
-                        <div className="flex items-center gap-3">
-                          <span className="text-xs min-w-40">Bruk av brennbar isolasjon:</span>
-                          <div className="flex gap-2">
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant={formData.isolasjonBrennbar === "relevant" ? "default" : "outline"}
-                              onClick={() => setFormData({...formData, isolasjonBrennbar: "relevant"})}
-                              className="h-7 text-xs"
-                            >
-                              Relevant
-                            </Button>
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant={formData.isolasjonBrennbar === "ikke_relevant" ? "default" : "outline"}
-                              onClick={() => setFormData({...formData, isolasjonBrennbar: "ikke_relevant"})}
-                              className="h-7 text-xs"
-                            >
-                              Ikke relevant
-                            </Button>
-                          </div>
+                        <div className="flex items-center gap-2">
+                          <Checkbox
+                            id="isolasjonBrennbar"
+                            checked={formData.isolasjonBrennbar === "relevant"}
+                            onCheckedChange={(checked) => 
+                              setFormData({...formData, isolasjonBrennbar: checked ? "relevant" : "ikke_relevant"})
+                            }
+                          />
+                          <label htmlFor="isolasjonBrennbar" className="text-xs cursor-pointer">
+                            Bruk av brennbar isolasjon
+                          </label>
                         </div>
                       </div>
                       
