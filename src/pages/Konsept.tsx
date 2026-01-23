@@ -1707,7 +1707,7 @@ const Konsept = () => {
                         "Det er valgt automatisk brannslokkeanlegg for tiltaket. "}
                       Deler av et byggverk med og uten automatisk brannslokkeanlegg skal være ulike brannseksjoner.
                     </p>
-                    <p className="text-sm text-gray-600 mt-2">
+                    <p className="mt-2">
                       Automatiske slokkeanlegg skal prosjekteres og installeres etter følgende standarder: NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019. 
                       I byggverk med både næringsvirksomhet og boliger gjelder følgende: NS-EN 16925 kan benyttes i arealer avsatt for boligformål, og arealer avsatt for boligformål må ha hurtigutløsende (QR) sprinklere. 
                       NS-EN 12845:2015+A1:2019 kan benyttes i arealer avsatt for næring.
