@@ -376,6 +376,15 @@ const Konsept = () => {
     elektriskRelevant: true, // Hovedbryter for om elektriske installasjoner er relevant
     romningSikkerhet: "",
     romningSikkerhetKommentar: "",
+    // 3.9 §11-12 Tilrettelegging for rømning og redning
+    tilretteleggingLedd1a: false, // RK4 heis - automatisk brannslokkeanlegg
+    tilretteleggingLedd1b: false, // RK6 - automatisk brannslokkeanlegg
+    tilretteleggingLedd2a: false, // RK2-6 brannalarmanlegg
+    tilretteleggingLedd2b: false, // Få personer røykvarslere
+    tilretteleggingLedd3: false, // Ledesystem
+    tilretteleggingLedd4: false, // Evakueringsplaner
+    tilretteleggingLedd5: false, // Merking av branntekniske installasjoner
+    tilretteleggingKommentar: "",
     romningTiltak: "",
     romningTiltakKommentar: "",
     utgangBranncelle: "",
@@ -1674,22 +1683,87 @@ const Konsept = () => {
               )}
 
               <tr className="bg-blue-100">
-                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.9 &nbsp;&nbsp; §11-12 Rømnings- og redningstider</td>
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.9 &nbsp;&nbsp; §11-12 Tilrettelegging for rømning og redning</td>
               </tr>
               <tr className="bg-gray-100">
                 <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
                 <th className="border border-gray-400 p-2 text-left">Løsning</th>
                 <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 align-top">Tiltak rømning</td>
-                <td className="border border-gray-400 p-2">{formData.romningTiltak || "[Tiltak beskrives]"}</td>
-                <td className="border border-gray-400 p-2 align-top">RIBr</td>
-              </tr>
-              {formData.romningTiltakKommentar && (
+              {/* Ledd 1a - RK4 med heis */}
+              {(formData.risikoklasse === "RK4" || formData.bygningsdeler.some(b => b.risikoklasse === "RK4")) && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Automatisk slokkeanlegg (RK4 med heis)</td>
+                  <td className="border border-gray-400 p-2">
+                    Byggverk eller del av byggverk i risikoklasse 4 hvor det kreves heis, skal ha automatisk brannslokkeanlegg. Deler av et byggverk med og uten automatisk brannslokkeanlegg skal være ulike brannseksjoner.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIV</td>
+                </tr>
+              )}
+              {/* Ledd 1b - RK6 */}
+              {(formData.risikoklasse === "RK6" || formData.bygningsdeler.some(b => b.risikoklasse === "RK6")) && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Automatisk slokkeanlegg (RK6)</td>
+                  <td className="border border-gray-400 p-2">
+                    Byggverk i risikoklasse 6 skal ha automatisk brannslokkeanlegg.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIV</td>
+                </tr>
+              )}
+              {/* Ledd 2a - Brannalarmanlegg RK2-6 */}
+              {formData.tilretteleggingLedd2a && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Brannalarmanlegg</td>
+                  <td className="border border-gray-400 p-2">
+                    Byggverk beregnet for virksomhet i risikoklasse 2 til 6 skal ha brannalarmanlegg.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIE</td>
+                </tr>
+              )}
+              {/* Ledd 2b - Røykvarslere for få personer */}
+              {formData.tilretteleggingLedd2b && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Røykvarslere</td>
+                  <td className="border border-gray-400 p-2">
+                    I byggverk beregnet for få personer og byggverk av mindre størrelse kan det brukes røykvarslere dersom rømningsforholdene er særlig enkle og oversiktlige. Røykvarslere skal være tilknyttet strømforsyningen og ha batteri som reserveløsning. I branncelle med behov for flere røykvarslere skal varslerne være seriekoblet. I byggverk uten strømforsyning kan det benyttes batteridrevne røykvarslere.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIE</td>
+                </tr>
+              )}
+              {/* Ledd 3 - Ledesystem */}
+              {formData.tilretteleggingLedd3 && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Ledesystem</td>
+                  <td className="border border-gray-400 p-2">
+                    I byggverk hvor flukt- og rømningsveiene er lange og har retningsendringer eller skal benyttes av mange personer, skal flukt- og rømningsveiene ha god belysning og være merket slik at rømning kan skje på en rask og effektiv måte. Store byggverk, byggverk beregnet for et stort antall personer og byggverk beregnet for virksomhet i risikoklasse 5 og 6 skal ha ledesystem.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIE</td>
+                </tr>
+              )}
+              {/* Ledd 4 - Evakueringsplaner */}
+              {formData.tilretteleggingLedd4 && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Evakueringsplaner</td>
+                  <td className="border border-gray-400 p-2">
+                    For byggverk i risikoklasse 5 og 6, øvrige byggverk for publikum og for arbeidsbygninger, skal det foreligge evakueringsplaner før byggverket tas i bruk.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">Byggherre</td>
+                </tr>
+              )}
+              {/* Ledd 5 - Merking av installasjoner */}
+              {formData.tilretteleggingLedd5 && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Merking av branntekniske installasjoner</td>
+                  <td className="border border-gray-400 p-2">
+                    Plasseringen av branntekniske installasjoner som har betydning for rømnings- og redningsinnsatsen skal være tydelig merket, med mindre installasjonene bare er beregnet for personer i én bruksenhet og personene må forventes å være godt kjent med plasseringen.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                </tr>
+              )}
+              {formData.tilretteleggingKommentar && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Kommentar</td>
-                  <td className="border border-gray-400 p-2 italic">{formData.romningTiltakKommentar}</td>
+                  <td className="border border-gray-400 p-2 italic">{formData.tilretteleggingKommentar}</td>
                   <td className="border border-gray-400 p-2 align-top">-</td>
                 </tr>
               )}
@@ -3747,20 +3821,85 @@ const Konsept = () => {
                         />
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">3.9 § 11-12 Rømnings- og redningstider</Label>
-                      <div>
-                        <Label className="text-xs font-medium mb-1 block">Tiltak for å påvirke tider</Label>
-                        <Textarea 
-                          value={formData.romningTiltak}
-                          onChange={(e) => setFormData({...formData, romningTiltak: e.target.value})}
-                        />
+                    <div className="space-y-4">
+                      <Label className="text-xs text-muted-foreground font-semibold">3.9 § 11-12 Tilrettelegging for rømning og redning</Label>
+                      
+                      {/* Automatiske krav basert på RK */}
+                      {(formData.risikoklasse === "RK4" || formData.bygningsdeler.some(b => b.risikoklasse === "RK4")) && (
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded text-sm">
+                          <strong>Automatisk krav (RK4 med heis):</strong> Byggverk i RK4 hvor det kreves heis, skal ha automatisk brannslokkeanlegg.
+                        </div>
+                      )}
+                      {(formData.risikoklasse === "RK6" || formData.bygningsdeler.some(b => b.risikoklasse === "RK6")) && (
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded text-sm">
+                          <strong>Automatisk krav (RK6):</strong> Byggverk i RK6 skal ha automatisk brannslokkeanlegg.
+                        </div>
+                      )}
+
+                      <div className="space-y-3">
+                        <Label className="text-xs font-medium">Velg relevante krav:</Label>
+                        
+                        <div className="flex items-start space-x-2">
+                          <Checkbox 
+                            id="tilretteleggingLedd2a" 
+                            checked={formData.tilretteleggingLedd2a}
+                            onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd2a: checked as boolean})}
+                          />
+                          <Label htmlFor="tilretteleggingLedd2a" className="text-xs cursor-pointer leading-relaxed">
+                            <strong>Brannalarmanlegg:</strong> Byggverk beregnet for virksomhet i risikoklasse 2 til 6 skal ha brannalarmanlegg.
+                          </Label>
+                        </div>
+
+                        <div className="flex items-start space-x-2">
+                          <Checkbox 
+                            id="tilretteleggingLedd2b" 
+                            checked={formData.tilretteleggingLedd2b}
+                            onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd2b: checked as boolean})}
+                          />
+                          <Label htmlFor="tilretteleggingLedd2b" className="text-xs cursor-pointer leading-relaxed">
+                            <strong>Røykvarslere:</strong> I byggverk beregnet for få personer og byggverk av mindre størrelse kan det brukes røykvarslere (seriekoblet, tilknyttet strømforsyning med batterireserve).
+                          </Label>
+                        </div>
+
+                        <div className="flex items-start space-x-2">
+                          <Checkbox 
+                            id="tilretteleggingLedd3" 
+                            checked={formData.tilretteleggingLedd3}
+                            onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd3: checked as boolean})}
+                          />
+                          <Label htmlFor="tilretteleggingLedd3" className="text-xs cursor-pointer leading-relaxed">
+                            <strong>Ledesystem:</strong> Store byggverk, byggverk for mange personer og RK5/RK6 skal ha ledesystem med god belysning og merking.
+                          </Label>
+                        </div>
+
+                        <div className="flex items-start space-x-2">
+                          <Checkbox 
+                            id="tilretteleggingLedd4" 
+                            checked={formData.tilretteleggingLedd4}
+                            onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd4: checked as boolean})}
+                          />
+                          <Label htmlFor="tilretteleggingLedd4" className="text-xs cursor-pointer leading-relaxed">
+                            <strong>Evakueringsplaner:</strong> For RK5/RK6, publikumsbygg og arbeidsbygninger skal det foreligge evakueringsplaner før bruk.
+                          </Label>
+                        </div>
+
+                        <div className="flex items-start space-x-2">
+                          <Checkbox 
+                            id="tilretteleggingLedd5" 
+                            checked={formData.tilretteleggingLedd5}
+                            onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd5: checked as boolean})}
+                          />
+                          <Label htmlFor="tilretteleggingLedd5" className="text-xs cursor-pointer leading-relaxed">
+                            <strong>Merking av installasjoner:</strong> Branntekniske installasjoner som har betydning for rømning og redning skal være tydelig merket.
+                          </Label>
+                        </div>
                       </div>
+
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
                         <Textarea 
-                          value={formData.romningTiltakKommentar}
-                          onChange={(e) => setFormData({...formData, romningTiltakKommentar: e.target.value})}
+                          value={formData.tilretteleggingKommentar}
+                          onChange={(e) => setFormData({...formData, tilretteleggingKommentar: e.target.value})}
                           placeholder="Legg til kommentar..."
                         />
                       </div>
