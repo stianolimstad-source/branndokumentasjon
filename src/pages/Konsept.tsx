@@ -1714,14 +1714,14 @@ const Konsept = () => {
                         <ul className="list-disc ml-4">
                           {formData.rk6Institusjon ? (
                             <>
-                              <li><u>NS-EN 12845:2015+A1:2019</u> - Faste brannslokkesystemer - Automatiske sprinklersystemer - Dimensjonering, installering og vedlikehold</li>
-                              <li>Boligsprinkleranlegg i samsvar med <u>NS-EN 16925:2018+AC:2020</u> og <u>NS-EN 16925:2018+NA:2019</u> kan benyttes dersom dette er angitt i tabell NA.2 i standarden.</li>
+                              <li><u>NS-EN 12845:2015+A1:2019</u> - Faste brannslokkesystemer - Automatiske sprinklersystemer - Dimensjonering, installering og vedlikehold.</li>
                             </>
                           ) : (
                             <>
-                              <li><u>NS-EN 16925:2018+AC:2020</u> og <u>NS-EN 16925:2018+NA:2019</u> - Faste brannslokkesystemer - Automatiske boligsprinklersystemer - Dimensjonering, installering og vedlikehold</li>
+                              <li><u>NS-EN 16925:2018+AC:2020</u> og <u>NS-EN 16925:2018+NA:2019</u> - Faste brannslokkesystemer - Automatiske boligsprinklersystemer - Dimensjonering, installering og vedlikehold.</li>
                             </>
                           )}
+                          <li>Boligsprinkleranlegg i samsvar med <u>NS-EN 16925:2018+AC:2020</u> og <u>NS-EN 16925:2018+NA:2019</u> kan benyttes dersom dette er angitt i tabell NA.2 i standarden.</li>
                         </ul>
                         <p className="mt-2">Dersom byggverket også har virksomhet i andre risikoklasser, må deler av byggverket med og uten automatisk sprinkleranlegg være ulike brannseksjoner.</p>
                         <p className="mt-2">Dersom virksomhet i ulike risikoklasser ikke kan oppdeles i brannseksjoner, må hele byggverket ha automatisk sprinkleranlegg.</p>
