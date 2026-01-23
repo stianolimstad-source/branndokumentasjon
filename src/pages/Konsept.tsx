@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Flame, ArrowLeft, FileDown, Download, Save, LogIn, X, Plus } from "lucide-react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -2418,16 +2419,18 @@ const Konsept = () => {
           />
 
           {selectedProjectId && conceptName && (
-            <div className="grid lg:grid-cols-2 gap-8">
+            <div className="grid lg:grid-cols-2 gap-8 lg:h-[calc(100vh-280px)]">
               {/* Input Form */}
-              <Card className="shadow-medium">
-                <CardHeader>
+              <Card className="shadow-medium flex flex-col overflow-hidden">
+                <CardHeader className="flex-shrink-0">
                   <CardTitle>Prosjektinformasjon</CardTitle>
                   <CardDescription>
                     Fyll inn nødvendig informasjon for å generere brannkonseptet
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="flex-1 overflow-hidden p-0">
+                  <ScrollArea className="h-full px-6 pb-6">
+                    <div className="space-y-6">
               <Accordion type="multiple" defaultValue={["kap1"]} className="w-full">
                 {/* Kapittel 1: Innledning */}
                 <AccordionItem value="kap1">
@@ -3927,41 +3930,45 @@ const Konsept = () => {
                   {isGenerating ? "Genererer..." : "Generer brannkonsept"}
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+                    </div>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
 
-          {/* Generated Output */}
-          <div className="space-y-4">
-            <Card className="shadow-medium">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>Generert konsept</CardTitle>
-                    <CardDescription>
-                      Forhåndsvisning av brannkonseptet
-                    </CardDescription>
+              {/* Generated Output */}
+              <Card className="shadow-medium flex flex-col overflow-hidden lg:sticky lg:top-4">
+                <CardHeader className="flex-shrink-0">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Generert konsept</CardTitle>
+                      <CardDescription>
+                        Forhåndsvisning av brannkonseptet
+                      </CardDescription>
+                    </div>
+                    {generatedConcept && (
+                      <Button variant="outline" size="sm" onClick={exportToWord}>
+                        <Download className="h-4 w-4 mr-2" />
+                        Last ned Word
+                      </Button>
+                    )}
                   </div>
-                  {generatedConcept && (
-                    <Button variant="outline" size="sm" onClick={exportToWord}>
-                      <Download className="h-4 w-4 mr-2" />
-                      Last ned Word
-                    </Button>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                {generatedConcept ? (
-                  renderPreview()
-                ) : (
-                  <div className="text-center py-12 text-muted-foreground">
-                    <FileDown className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                    <p>Fyll ut skjemaet og klikk "Generer brannkonsept" for å se resultatet her</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+                </CardHeader>
+                <CardContent className="flex-1 overflow-hidden p-0">
+                  <ScrollArea className="h-full max-h-[calc(100vh-380px)]">
+                    <div className="px-6 pb-6">
+                      {generatedConcept ? (
+                        renderPreview()
+                      ) : (
+                        <div className="text-center py-12 text-muted-foreground">
+                          <FileDown className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                          <p>Fyll ut skjemaet og klikk "Generer brannkonsept" for å se resultatet her</p>
+                        </div>
+                      )}
+                    </div>
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            </div>
           )}
         </div>
       </div>
