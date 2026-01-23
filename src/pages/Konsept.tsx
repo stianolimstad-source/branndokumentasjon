@@ -3529,7 +3529,7 @@ const Konsept = () => {
                                 onCheckedChange={(checked) => setFormData({...formData, ventKrav5: !!checked})}
                               />
                               <label htmlFor="ventKrav5" className="text-xs cursor-pointer">
-                                5. Storkjøkken/frityr - EI 30 A2-s1,d0
+                                Storkjøkken/frityr - EI 30 A2-s1,d0
                               </label>
                             </div>
                             <div className="flex items-center gap-2">
@@ -3539,7 +3539,7 @@ const Konsept = () => {
                                 onCheckedChange={(checked) => setFormData({...formData, ventKrav6: !!checked})}
                               />
                               <label htmlFor="ventKrav6" className="text-xs cursor-pointer">
-                                6. Kjøkken boenheter - EI 15 A2-s1,d0
+                                Kjøkken boenheter - EI 15 A2-s1,d0
                               </label>
                             </div>
                             <div className="flex items-center gap-2">
@@ -3549,7 +3549,7 @@ const Konsept = () => {
                                 onCheckedChange={(checked) => setFormData({...formData, ventKrav7: !!checked})}
                               />
                               <label htmlFor="ventKrav7" className="text-xs cursor-pointer">
-                                7. Småhus - avtrekk stål/aluminium
+                                Småhus - avtrekk stål/aluminium
                               </label>
                             </div>
                             <div className="flex items-center gap-2">
@@ -3559,7 +3559,7 @@ const Konsept = () => {
                                 onCheckedChange={(checked) => setFormData({...formData, ventKrav8: !!checked})}
                               />
                               <label htmlFor="ventKrav8" className="text-xs cursor-pointer">
-                                8. Småhus - kanal klasse E
+                                Småhus - kanal klasse E
                               </label>
                             </div>
                             <div className="flex items-center gap-2">
@@ -3569,7 +3569,7 @@ const Konsept = () => {
                                 onCheckedChange={(checked) => setFormData({...formData, ventKrav9: !!checked})}
                               />
                               <label htmlFor="ventKrav9" className="text-xs cursor-pointer">
-                                9. Brannspjeld i seksjoneringsvegg
+                                Brannspjeld i seksjoneringsvegg
                               </label>
                             </div>
                           </div>
