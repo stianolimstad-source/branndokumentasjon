@@ -1435,52 +1435,6 @@ const Konsept = () => {
                 <td className="border border-gray-400 p-2">
                   <p className="mb-2">Isolasjonsmaterialer kan bidra til brannspredning og røykutvikling i et byggverk.</p>
                   
-                  {/* Valgknapper for relevans */}
-                  <div className="mb-4 p-3 bg-gray-50 rounded-md border space-y-3">
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium min-w-48">Bruk av sandwichelementer:</span>
-                      <div className="flex gap-2">
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant={formData.isolasjonSandwich === "relevant" ? "default" : "outline"}
-                          onClick={() => setFormData({...formData, isolasjonSandwich: "relevant"})}
-                        >
-                          Relevant
-                        </Button>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant={formData.isolasjonSandwich === "ikke_relevant" ? "default" : "outline"}
-                          onClick={() => setFormData({...formData, isolasjonSandwich: "ikke_relevant"})}
-                        >
-                          Ikke relevant
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium min-w-48">Bruk av brennbar isolasjon:</span>
-                      <div className="flex gap-2">
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant={formData.isolasjonBrennbar === "relevant" ? "default" : "outline"}
-                          onClick={() => setFormData({...formData, isolasjonBrennbar: "relevant"})}
-                        >
-                          Relevant
-                        </Button>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant={formData.isolasjonBrennbar === "ikke_relevant" ? "default" : "outline"}
-                          onClick={() => setFormData({...formData, isolasjonBrennbar: "ikke_relevant"})}
-                        >
-                          Ikke relevant
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-
                   <p className="font-medium mb-1">Preaksepterte ytelser</p>
                   <ol className="list-decimal ml-4 space-y-2">
                     <li>Isolasjon må tilfredsstille klasse <span className="text-red-600 font-medium">A2-s1,d0</span> med mindre annet er angitt i nr. 2 til 9.</li>
@@ -3463,6 +3417,58 @@ const Konsept = () => {
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.6 § 11-9 Materialer og produkters egenskaper ved brann</Label>
                       <p className="text-xs text-muted-foreground">Krav til overflater og kledninger genereres automatisk basert på brannklasse ({formData.brannklasse || "ikke angitt"}).</p>
+                      
+                      {/* Isolasjon-valg */}
+                      <div className="space-y-3 p-3 bg-muted/30 rounded-md border">
+                        <Label className="text-xs font-medium">Isolasjon</Label>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs min-w-40">Bruk av sandwichelementer:</span>
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant={formData.isolasjonSandwich === "relevant" ? "default" : "outline"}
+                              onClick={() => setFormData({...formData, isolasjonSandwich: "relevant"})}
+                              className="h-7 text-xs"
+                            >
+                              Relevant
+                            </Button>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant={formData.isolasjonSandwich === "ikke_relevant" ? "default" : "outline"}
+                              onClick={() => setFormData({...formData, isolasjonSandwich: "ikke_relevant"})}
+                              className="h-7 text-xs"
+                            >
+                              Ikke relevant
+                            </Button>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs min-w-40">Bruk av brennbar isolasjon:</span>
+                          <div className="flex gap-2">
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant={formData.isolasjonBrennbar === "relevant" ? "default" : "outline"}
+                              onClick={() => setFormData({...formData, isolasjonBrennbar: "relevant"})}
+                              className="h-7 text-xs"
+                            >
+                              Relevant
+                            </Button>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant={formData.isolasjonBrennbar === "ikke_relevant" ? "default" : "outline"}
+                              onClick={() => setFormData({...formData, isolasjonBrennbar: "ikke_relevant"})}
+                              className="h-7 text-xs"
+                            >
+                              Ikke relevant
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                      
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
                         <Textarea 
