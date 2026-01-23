@@ -369,6 +369,8 @@ const Konsept = () => {
     ventKrav9: true, // Brannspjeld seksjoneringsvegg
     // Rør- og kanalisolasjon
     rorIsolasjonRelevant: true, // Hovedbryter for om rør- og kanalisolasjon er relevant
+    // Elektriske installasjoner
+    elektriskRelevant: true, // Hovedbryter for om elektriske installasjoner er relevant
     romningSikkerhet: "",
     romningSikkerhetKommentar: "",
     romningTiltak: "",
@@ -1569,6 +1571,34 @@ const Konsept = () => {
                       <p className="mt-3 text-sm text-gray-600 italic">Den flaten der rør eller kanal er innfestet, regnes som tilgrensede vegg- eller himlingsflate. For vertikale rør og kanaler er det veggflaten som skal legges til grunn.</p>
                     </td>
                     <td className="border border-gray-400 p-2 align-top">RIV</td>
+                  </tr>
+                </>
+              )}
+              
+              {/* D. Elektriske installasjoner */}
+              {formData.elektriskRelevant && (
+                <>
+                  <tr className="bg-blue-100">
+                    <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>D. Elektriske installasjoner</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Elektriske installasjoner</td>
+                    <td className="border border-gray-400 p-2">
+                      <p className="text-sm text-gray-600 mb-3">Klasser for ulike bruksområder for kabler er angitt i NEK 400 Elektriske lavspenningsinstallasjoner. For installasjoner for elektronisk kommunikasjon gjelder NEK 702 Informasjonsteknologi – Installasjon. Denne henviser til NEK 400.</p>
+                      <p className="font-medium mb-1">Preaksepterte ytelser</p>
+                      <ol className="list-decimal ml-4 space-y-2">
+                        <li>Kabler må ikke legges over nedforet himling eller i hulrom i rømningsvei med mindre ett av følgende punkter er oppfylt:
+                          <ol className="list-decimal ml-4 mt-2 space-y-1">
+                            <li>kablene representerer liten brannenergi, det vil si mindre enn ca. <span className="text-red-600 font-medium">50 MJ/løpemeter hulrom</span></li>
+                            <li>kablene er ført i egen sjakt med sjaktvegger som har brannmotstand tilsvarende branncellebegrensende bygningsdel</li>
+                            <li>himlingen har brannmotstand tilsvarende branncellebegrensende bygningsdel</li>
+                            <li>hulrommet er sprinklet.</li>
+                          </ol>
+                        </li>
+                        <li>Kabler som utgjør liten brannenergi, det vil si mindre enn ca. <span className="text-red-600 font-medium">50 MJ/løpemeter korridor eller hulrom</span>, kan føres ubeskyttet gjennom rømningsvei. Dette er et spesifikt unntak som gjelder kabler, og kan ikke brukes som begrunnelse for andre fravik fra preaksepterte ytelser.</li>
+                      </ol>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIE</td>
                   </tr>
                 </>
               )}
@@ -3615,6 +3645,20 @@ const Konsept = () => {
                           />
                           <label htmlFor="rorIsolasjonRelevant" className="text-xs font-medium cursor-pointer">
                             C. Rør- og kanalisolasjon er relevant for tiltaket
+                          </label>
+                        </div>
+                      </div>
+                      
+                      {/* Elektriske installasjoner */}
+                      <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                        <div className="flex items-center gap-2">
+                          <Checkbox
+                            id="elektriskRelevant"
+                            checked={formData.elektriskRelevant}
+                            onCheckedChange={(checked) => setFormData({...formData, elektriskRelevant: !!checked})}
+                          />
+                          <label htmlFor="elektriskRelevant" className="text-xs font-medium cursor-pointer">
+                            D. Elektriske installasjoner er relevant for tiltaket
                           </label>
                         </div>
                       </div>
