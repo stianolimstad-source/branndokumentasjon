@@ -367,6 +367,8 @@ const Konsept = () => {
     ventKrav7: false, // Småhus avtrekk
     ventKrav8: false, // Småhus kanal klasse E
     ventKrav9: true, // Brannspjeld seksjoneringsvegg
+    // Vann- og avløpsrør
+    vannAvlopRelevant: true, // Hovedbryter for om vann- og avløpsrør er relevant
     // Rør- og kanalisolasjon
     rorIsolasjonRelevant: true, // Hovedbryter for om rør- og kanalisolasjon er relevant
     // Elektriske installasjoner
@@ -1534,6 +1536,27 @@ const Konsept = () => {
                         {formData.ventKrav9 && (
                           <li>Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.</li>
                         )}
+                      </ol>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIV</td>
+                  </tr>
+                </>
+              )}
+              
+              {/* B. Vann- og avløpsrør, rørpostanlegg, sentralstøvsugeranlegg og lignende */}
+              {formData.vannAvlopRelevant && (
+                <>
+                  <tr className="bg-blue-100">
+                    <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>B. Vann- og avløpsrør, rørpostanlegg, sentralstøvsugeranlegg og lignende</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Rørgjennomføringer</td>
+                    <td className="border border-gray-400 p-2">
+                      <p className="font-medium mb-1">Preaksepterte ytelser</p>
+                      <ol className="list-decimal ml-4 space-y-2">
+                        <li>Rørgjennomføringer i brannskillende konstruksjoner må ha dokumentert brannmotstand, med unntak som angitt i nr. 2 og 3.</li>
+                        <li>Plastrør med ytre diameter til og med 32 mm kan føres gjennom murte eller støpte konstruksjoner med brannmotstand inntil klasse <span className="text-red-600 font-medium">EI 90 A2-s1,d0 [A 90]</span> og gjennom isolerte lettvegger med brannmotstand inntil klasse <span className="text-red-600 font-medium">EI 60 A2-s1,d0 [A 60]</span> når det tettes rundt rørene med tettemasse. Tettemassen må være klassifisert for den aktuelle bruken og ha samme brannmotstand som konstruksjonen for øvrig.</li>
+                        <li>Støpejernrør med ytre diameter til og med 110 mm kan føres gjennom murte eller støpte konstruksjoner med brannmotstand inntil klasse <span className="text-red-600 font-medium">EI 60 A2-s1,d0 [A 60]</span> når det tettes rundt rørene med tettemasse, eller støpes rundt, og konstruksjonen har tykkelse minst 180 mm. Tettemassen må være klassifisert for den aktuelle bruken og ha samme brannmotstand som konstruksjonen for øvrig. Avstanden fra røret til brennbart materiale må være minst 250 mm.</li>
                       </ol>
                     </td>
                     <td className="border border-gray-400 p-2 align-top">RIV</td>
@@ -3633,6 +3656,20 @@ const Konsept = () => {
                             </div>
                           </div>
                         )}
+                      </div>
+                      
+                      {/* Vann- og avløpsrør */}
+                      <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                        <div className="flex items-center gap-2">
+                          <Checkbox
+                            id="vannAvlopRelevant"
+                            checked={formData.vannAvlopRelevant}
+                            onCheckedChange={(checked) => setFormData({...formData, vannAvlopRelevant: !!checked})}
+                          />
+                          <label htmlFor="vannAvlopRelevant" className="text-xs font-medium cursor-pointer">
+                            B. Vann- og avløpsrør, rørpostanlegg, sentralstøvsugeranlegg og lignende
+                          </label>
+                        </div>
                       </div>
                       
                       {/* Rør- og kanalisolasjon */}
