@@ -1691,42 +1691,22 @@ const Konsept = () => {
                 <th className="border border-gray-400 p-2 text-left">Løsning</th>
                 <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
-              {/* Ledd 1a - RK4 med heis */}
-              {(formData.risikoklasse === "RK4" || formData.bygningsdeler.some(b => b.risikoklasse === "RK4")) && (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Automatisk slokkeanlegg (RK4 med heis)</td>
-                  <td className="border border-gray-400 p-2">
-                    <p className="mb-2">Byggverk eller del av byggverk i risikoklasse 4 hvor det kreves heis, skal ha automatisk brannslokkeanlegg. Deler av et byggverk med og uten automatisk brannslokkeanlegg skal være ulike brannseksjoner.</p>
-                    <p className="text-sm text-gray-600 mt-2">
-                      <strong>Preaksepterte ytelser:</strong> Automatisk sprinkleranlegg i samsvar med NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019. 
-                      I byggverk med både næringsvirksomhet og boliger gjelder følgende: Arealer avsatt for boligformål må ha hurtigutløsende (QR) sprinklere, 
-                      og NS-EN 12845:2015+A1:2019 kan benyttes i arealer avsatt for næring.
-                    </p>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">RIV</td>
-                </tr>
-              )}
-              {/* Ledd 1b - RK6 */}
-              {(formData.risikoklasse === "RK6" || formData.bygningsdeler.some(b => b.risikoklasse === "RK6")) && (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Automatisk slokkeanlegg (RK6)</td>
-                  <td className="border border-gray-400 p-2">
-                    <p className="mb-2">Byggverk i risikoklasse 6 skal ha automatisk brannslokkeanlegg.</p>
-                    <p className="text-sm text-gray-600 mt-2">
-                      <strong>Preaksepterte ytelser:</strong> Automatisk sprinkleranlegg i samsvar med NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019. 
-                      I byggverk med både næringsvirksomhet og boliger gjelder følgende: Arealer avsatt for boligformål må ha hurtigutløsende (QR) sprinklere, 
-                      og NS-EN 12845:2015+A1:2019 kan benyttes i arealer avsatt for næring.
-                    </p>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">RIV</td>
-                </tr>
-              )}
-              {/* Ledd 1c - Generelt automatisk brannslokkeanlegg (valgbar) */}
-              {formData.tilretteleggingLedd1c && (
+              {/* Automatisk slokkeanlegg - én samlet rad */}
+              {(formData.tilretteleggingLedd1c || 
+                formData.risikoklasse === "RK4" || formData.bygningsdeler.some(b => b.risikoklasse === "RK4") ||
+                formData.risikoklasse === "RK6" || formData.bygningsdeler.some(b => b.risikoklasse === "RK6")) && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Automatisk slokkeanlegg</td>
                   <td className="border border-gray-400 p-2">
-                    <p className="mb-2">Der det er krav om automatisk brannslokkeanlegg, kan det likevel benyttes andre tiltak som gir tilsvarende sikkerhet ved å hindre, begrense eller kontrollere en brann lokalt der den oppstår.</p>
+                    <p className="mb-2">
+                      {(formData.risikoklasse === "RK4" || formData.bygningsdeler.some(b => b.risikoklasse === "RK4")) && 
+                        "Byggverk eller del av byggverk i risikoklasse 4 hvor det kreves heis, skal ha automatisk brannslokkeanlegg. "}
+                      {(formData.risikoklasse === "RK6" || formData.bygningsdeler.some(b => b.risikoklasse === "RK6")) && 
+                        "Byggverk i risikoklasse 6 skal ha automatisk brannslokkeanlegg. "}
+                      {formData.tilretteleggingLedd1c && !(formData.risikoklasse === "RK4" || formData.bygningsdeler.some(b => b.risikoklasse === "RK4") || formData.risikoklasse === "RK6" || formData.bygningsdeler.some(b => b.risikoklasse === "RK6")) &&
+                        "Det er valgt automatisk brannslokkeanlegg for tiltaket. "}
+                      Deler av et byggverk med og uten automatisk brannslokkeanlegg skal være ulike brannseksjoner.
+                    </p>
                     <p className="text-sm text-gray-600 mt-2">
                       <strong>Preaksepterte ytelser:</strong> Automatisk sprinkleranlegg i samsvar med NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019. 
                       I byggverk med både næringsvirksomhet og boliger gjelder følgende: Arealer avsatt for boligformål må ha hurtigutløsende (QR) sprinklere, 
