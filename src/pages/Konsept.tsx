@@ -360,11 +360,8 @@ const Konsept = () => {
     isolasjonBrennbar: "ikke_relevant" as "relevant" | "ikke_relevant",
     installasjoner: "",
     installasjonerKommentar: "",
-    // Ventilasjonsanlegg checkboxes
-    ventKrav1: true, // Kanal gjennom brannskillende bygningsdel
-    ventKrav2: true, // Innfesting og oppheng
-    ventKrav3: true, // Avtrekk fra komfyr
-    ventKrav4: true, // Materialkrav A2-s1,d0
+    // Ventilasjonsanlegg
+    ventilasjonRelevant: true, // Hovedbryter for om ventilasjon er relevant
     ventKrav5: false, // Storkjøkken EI 30
     ventKrav6: true, // Kjøkken boenheter EI 15
     ventKrav7: false, // Småhus avtrekk
@@ -1503,47 +1500,41 @@ const Konsept = () => {
                 <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
               
-              {/* A. Ventilasjonsanlegg */}
-              <tr className="bg-blue-100">
-                <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>A. Ventilasjonsanlegg</td>
-              </tr>
-              {(formData.ventKrav1 || formData.ventKrav2 || formData.ventKrav3 || formData.ventKrav4 || formData.ventKrav5 || formData.ventKrav6 || formData.ventKrav7 || formData.ventKrav8 || formData.ventKrav9) && (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Ventilasjonsanlegg</td>
-                  <td className="border border-gray-400 p-2">
-                    <p className="font-medium mb-1">Preaksepterte ytelser</p>
-                    <ol className="list-decimal ml-4 space-y-2">
-                      {formData.ventKrav1 && (
+              {/* A. Ventilasjonsanlegg - kun hvis relevant */}
+              {formData.ventilasjonRelevant && (
+                <>
+                  <tr className="bg-blue-100">
+                    <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>A. Ventilasjonsanlegg</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Ventilasjonsanlegg</td>
+                    <td className="border border-gray-400 p-2">
+                      <p className="font-medium mb-1">Preaksepterte ytelser</p>
+                      <ol className="list-decimal ml-4 space-y-2">
                         <li>Ventilasjonskanal som føres gjennom en brannskillende bygningsdel, må utføres slik at bygningsdelens brannmotstand blir opprettholdt.</li>
-                      )}
-                      {formData.ventKrav2 && (
                         <li>Innfesting og oppheng for kanaler og ventilasjonsutstyr må utføres slik at forutsatt funksjonstid og brannmotstand blir opprettholdt.</li>
-                      )}
-                      {formData.ventKrav3 && (
                         <li>Avtrekk fra komfyr må føres i egen kanal på grunn av fettavsetning fra matos. Avtrekk må ha fettfilter, og avtrekkskanalene må kunne rengjøres i hele sin lengde for å redusere faren for antennelse og brann.</li>
-                      )}
-                      {formData.ventKrav4 && (
                         <li>Ventilasjonsanlegg må utføres i materialer som tilfredsstiller klasse <span className="text-red-600 font-medium">A2-s1,d0</span> [ubrennbare materialer]. For kanaler gjelder dette hele tverrsnittet (kanalgodset). Unntak kan gjøres for små komponenter som ikke bidrar til spredning av brann. Unntak for småhus er angitt i nr. 7 og 8. For isolasjon av kanaler vises til preaksepterte ytelser under C. Rør- og kanalisolasjon.</li>
-                      )}
-                      {formData.ventKrav5 && (
-                        <li>Avtrekkskanaler fra storkjøkken, frityreanlegg og lignende må utføres med brannmotstand <span className="text-red-600 font-medium">EI 30 A2-s1,d0</span> helt til utblåsningsristen, eventuelt føres i egen sjakt med samme brannmotstand.</li>
-                      )}
-                      {formData.ventKrav6 && (
-                        <li>Avtrekkskanaler fra kjøkken i boenheter må utføres med brannmotstand <span className="text-red-600 font-medium">EI 15 A2-s1,d0</span> hvis de ikke ligger i sjakt. I tilslutning mellom komfyrhette og avtrekkskanal kan det benyttes fleksible kanaler.</li>
-                      )}
-                      {formData.ventKrav7 && (
-                        <li>Fra kjøkken i småhus må det benyttes avtrekkskanal av materiale som tilfredsstiller klasse A2-s1,d0 [ubrennbart materiale], og lignende stål eller aluminium. I tilslutningen mellom komfyrhette og avtrekkskanal kan det benyttes fleksible kanaler.</li>
-                      )}
-                      {formData.ventKrav8 && (
-                        <li>For småhus kan det også benyttes kanal av materialer som tilfredsstiller klasse E, samt fleksibel kanal av spiralfalset aluminium.</li>
-                      )}
-                      {formData.ventKrav9 && (
-                        <li>Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.</li>
-                      )}
-                    </ol>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">RIV</td>
-                </tr>
+                        {formData.ventKrav5 && (
+                          <li>Avtrekkskanaler fra storkjøkken, frityreanlegg og lignende må utføres med brannmotstand <span className="text-red-600 font-medium">EI 30 A2-s1,d0</span> helt til utblåsningsristen, eventuelt føres i egen sjakt med samme brannmotstand.</li>
+                        )}
+                        {formData.ventKrav6 && (
+                          <li>Avtrekkskanaler fra kjøkken i boenheter må utføres med brannmotstand <span className="text-red-600 font-medium">EI 15 A2-s1,d0</span> hvis de ikke ligger i sjakt. I tilslutning mellom komfyrhette og avtrekkskanal kan det benyttes fleksible kanaler.</li>
+                        )}
+                        {formData.ventKrav7 && (
+                          <li>Fra kjøkken i småhus må det benyttes avtrekkskanal av materiale som tilfredsstiller klasse A2-s1,d0 [ubrennbart materiale], og lignende stål eller aluminium. I tilslutningen mellom komfyrhette og avtrekkskanal kan det benyttes fleksible kanaler.</li>
+                        )}
+                        {formData.ventKrav8 && (
+                          <li>For småhus kan det også benyttes kanal av materialer som tilfredsstiller klasse E, samt fleksibel kanal av spiralfalset aluminium.</li>
+                        )}
+                        {formData.ventKrav9 && (
+                          <li>Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.</li>
+                        )}
+                      </ol>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIV</td>
+                  </tr>
+                </>
               )}
               
               {formData.installasjoner && (
@@ -3515,99 +3506,74 @@ const Konsept = () => {
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.7 § 11-10 Tekniske installasjoner</Label>
                       
-                      {/* Ventilasjonsanlegg checkboxes */}
+                      {/* Ventilasjonsanlegg */}
                       <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
-                        <Label className="text-xs font-medium">A. Ventilasjonsanlegg - velg relevante krav</Label>
                         <div className="flex items-center gap-2">
                           <Checkbox
-                            id="ventKrav1"
-                            checked={formData.ventKrav1}
-                            onCheckedChange={(checked) => setFormData({...formData, ventKrav1: !!checked})}
+                            id="ventilasjonRelevant"
+                            checked={formData.ventilasjonRelevant}
+                            onCheckedChange={(checked) => setFormData({...formData, ventilasjonRelevant: !!checked})}
                           />
-                          <label htmlFor="ventKrav1" className="text-xs cursor-pointer">
-                            1. Kanal gjennom brannskillende bygningsdel
+                          <label htmlFor="ventilasjonRelevant" className="text-xs font-medium cursor-pointer">
+                            A. Ventilasjonsanlegg er relevant for tiltaket
                           </label>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id="ventKrav2"
-                            checked={formData.ventKrav2}
-                            onCheckedChange={(checked) => setFormData({...formData, ventKrav2: !!checked})}
-                          />
-                          <label htmlFor="ventKrav2" className="text-xs cursor-pointer">
-                            2. Innfesting og oppheng
-                          </label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id="ventKrav3"
-                            checked={formData.ventKrav3}
-                            onCheckedChange={(checked) => setFormData({...formData, ventKrav3: !!checked})}
-                          />
-                          <label htmlFor="ventKrav3" className="text-xs cursor-pointer">
-                            3. Avtrekk fra komfyr (egen kanal, fettfilter)
-                          </label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id="ventKrav4"
-                            checked={formData.ventKrav4}
-                            onCheckedChange={(checked) => setFormData({...formData, ventKrav4: !!checked})}
-                          />
-                          <label htmlFor="ventKrav4" className="text-xs cursor-pointer">
-                            4. Materialkrav A2-s1,d0 (ubrennbart)
-                          </label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id="ventKrav5"
-                            checked={formData.ventKrav5}
-                            onCheckedChange={(checked) => setFormData({...formData, ventKrav5: !!checked})}
-                          />
-                          <label htmlFor="ventKrav5" className="text-xs cursor-pointer">
-                            5. Storkjøkken/frityr - EI 30 A2-s1,d0
-                          </label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id="ventKrav6"
-                            checked={formData.ventKrav6}
-                            onCheckedChange={(checked) => setFormData({...formData, ventKrav6: !!checked})}
-                          />
-                          <label htmlFor="ventKrav6" className="text-xs cursor-pointer">
-                            6. Kjøkken boenheter - EI 15 A2-s1,d0
-                          </label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id="ventKrav7"
-                            checked={formData.ventKrav7}
-                            onCheckedChange={(checked) => setFormData({...formData, ventKrav7: !!checked})}
-                          />
-                          <label htmlFor="ventKrav7" className="text-xs cursor-pointer">
-                            7. Småhus - avtrekk stål/aluminium
-                          </label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id="ventKrav8"
-                            checked={formData.ventKrav8}
-                            onCheckedChange={(checked) => setFormData({...formData, ventKrav8: !!checked})}
-                          />
-                          <label htmlFor="ventKrav8" className="text-xs cursor-pointer">
-                            8. Småhus - kanal klasse E
-                          </label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id="ventKrav9"
-                            checked={formData.ventKrav9}
-                            onCheckedChange={(checked) => setFormData({...formData, ventKrav9: !!checked})}
-                          />
-                          <label htmlFor="ventKrav9" className="text-xs cursor-pointer">
-                            9. Brannspjeld i seksjoneringsvegg
-                          </label>
-                        </div>
+                        
+                        {formData.ventilasjonRelevant && (
+                          <div className="ml-6 space-y-2 pt-2 border-t">
+                            <Label className="text-xs text-muted-foreground">Tilleggskrav (krav 1-4 inkluderes alltid):</Label>
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id="ventKrav5"
+                                checked={formData.ventKrav5}
+                                onCheckedChange={(checked) => setFormData({...formData, ventKrav5: !!checked})}
+                              />
+                              <label htmlFor="ventKrav5" className="text-xs cursor-pointer">
+                                5. Storkjøkken/frityr - EI 30 A2-s1,d0
+                              </label>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id="ventKrav6"
+                                checked={formData.ventKrav6}
+                                onCheckedChange={(checked) => setFormData({...formData, ventKrav6: !!checked})}
+                              />
+                              <label htmlFor="ventKrav6" className="text-xs cursor-pointer">
+                                6. Kjøkken boenheter - EI 15 A2-s1,d0
+                              </label>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id="ventKrav7"
+                                checked={formData.ventKrav7}
+                                onCheckedChange={(checked) => setFormData({...formData, ventKrav7: !!checked})}
+                              />
+                              <label htmlFor="ventKrav7" className="text-xs cursor-pointer">
+                                7. Småhus - avtrekk stål/aluminium
+                              </label>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id="ventKrav8"
+                                checked={formData.ventKrav8}
+                                onCheckedChange={(checked) => setFormData({...formData, ventKrav8: !!checked})}
+                              />
+                              <label htmlFor="ventKrav8" className="text-xs cursor-pointer">
+                                8. Småhus - kanal klasse E
+                              </label>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id="ventKrav9"
+                                checked={formData.ventKrav9}
+                                onCheckedChange={(checked) => setFormData({...formData, ventKrav9: !!checked})}
+                              />
+                              <label htmlFor="ventKrav9" className="text-xs cursor-pointer">
+                                9. Brannspjeld i seksjoneringsvegg
+                              </label>
+                            </div>
+                          </div>
+                        )}
                       </div>
                       
                       <div>
