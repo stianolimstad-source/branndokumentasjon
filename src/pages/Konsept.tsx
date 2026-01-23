@@ -1353,6 +1353,29 @@ const Konsept = () => {
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
               
+              {/* F. Taktekning */}
+              <tr className="bg-blue-100">
+                <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>F. Taktekning</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top" colSpan={2}>
+                  Taktekning kan bidra til brannspredning i et byggverk og mellom ulike byggverk.
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top font-medium">Preaksepterte ytelser</td>
+                <td className="border border-gray-400 p-2">
+                  <ol className="list-decimal list-inside space-y-1">
+                    <li>Taktekning må tilfredsstille klasse <span className="text-red-600 font-medium">B<sub>ROOF</sub>(t2) [Ta]</span>.</li>
+                    <li>Teglstein, betongtakstein, skifertak og metallplater kan uten ytterligere dokumentasjon antas å tilfredsstille klasse B<sub>ROOF</sub>(t2) [Ta].</li>
+                    <li>For småhus kan taktekning være uklassifisert der avstanden mellom de enkelte byggverk er minst 8 m.</li>
+                    <li>Ett-sjikts tak av duk og folie må tilfredsstille klasse <span className="text-red-600 font-medium">B-s3,d0 (Ut1)</span>.</li>
+                  </ol>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+
               {formData.materialerKommentar && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Kommentar</td>
