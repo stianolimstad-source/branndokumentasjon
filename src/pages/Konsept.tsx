@@ -1709,8 +1709,8 @@ const Konsept = () => {
                     </p>
                     <p className="text-sm text-gray-600 mt-2">
                       Automatiske slokkeanlegg skal prosjekteres og installeres etter følgende standarder: NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019. 
-                      I byggverk med både næringsvirksomhet og boliger gjelder følgende: Arealer avsatt for boligformål må ha hurtigutløsende (QR) sprinklere, 
-                      og NS-EN 12845:2015+A1:2019 kan benyttes i arealer avsatt for næring.
+                      I byggverk med både næringsvirksomhet og boliger gjelder følgende: NS-EN 16925 kan benyttes i arealer avsatt for boligformål, og arealer avsatt for boligformål må ha hurtigutløsende (QR) sprinklere. 
+                      NS-EN 12845:2015+A1:2019 kan benyttes i arealer avsatt for næring.
                     </p>
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIV</td>
