@@ -1353,9 +1353,9 @@ const Konsept = () => {
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
               
-              {/* F. Taktekning */}
+              {/* Taktekning */}
               <tr>
-                <td className="border border-gray-400 p-2 align-top font-semibold">F. Taktekning</td>
+                <td className="border border-gray-400 p-2 align-top font-semibold">Taktekning</td>
                 <td className="border border-gray-400 p-2">
                   <p className="mb-2">Taktekning kan bidra til brannspredning i et byggverk og mellom ulike byggverk.</p>
                   <p className="font-medium mb-1">Preaksepterte ytelser</p>
