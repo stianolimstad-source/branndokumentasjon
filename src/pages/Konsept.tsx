@@ -380,6 +380,7 @@ const Konsept = () => {
     tilretteleggingLedd1a: false, // RK4 heis - automatisk brannslokkeanlegg
     tilretteleggingLedd1b: false, // RK6 - automatisk brannslokkeanlegg
     tilretteleggingLedd1c: false, // Generelt automatisk brannslokkeanlegg (andre tilfeller)
+    rk6Institusjon: true as boolean, // true = institusjon, false = egeneide boenheter
     tilretteleggingLedd2a: false, // RK2-6 brannalarmanlegg
     tilretteleggingLedd2b: false, // Få personer røykvarslere
     tilretteleggingLedd3: false, // Ledesystem
@@ -1707,11 +1708,31 @@ const Konsept = () => {
                         "Det er valgt automatisk brannslokkeanlegg for tiltaket. "}
                       Deler av et byggverk med og uten automatisk brannslokkeanlegg skal være ulike brannseksjoner.
                     </p>
-                    <p className="mt-2">
-                      Automatiske slokkeanlegg skal prosjekteres og installeres etter følgende standarder: NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019. 
-                      I byggverk med både næringsvirksomhet og boliger gjelder følgende: NS-EN 16925 kan benyttes i arealer avsatt for boligformål, og arealer avsatt for boligformål må ha hurtigutløsende (QR) sprinklere. 
-                      NS-EN 12845:2015+A1:2019 kan benyttes i arealer avsatt for næring.
-                    </p>
+                    {(formData.risikoklasse === "RK6" || formData.bygningsdeler.some(b => b.risikoklasse === "RK6")) ? (
+                      <div className="mt-2">
+                        <p className="mb-2">Automatiske slokkeanlegg skal prosjekteres og installeres etter følgende standarder:</p>
+                        <ul className="list-disc ml-4">
+                          {formData.rk6Institusjon ? (
+                            <>
+                              <li><u>NS-EN 12845:2015+A1:2019</u> - Faste brannslokkesystemer - Automatiske sprinklersystemer - Dimensjonering, installering og vedlikehold</li>
+                              <li>Boligsprinkleranlegg i samsvar med <u>NS-EN 16925:2018+AC:2020</u> og <u>NS-EN 16925:2018+NA:2019</u> kan benyttes dersom dette er angitt i tabell NA.2 i standarden.</li>
+                            </>
+                          ) : (
+                            <>
+                              <li><u>NS-EN 16925:2018+AC:2020</u> og <u>NS-EN 16925:2018+NA:2019</u> - Faste brannslokkesystemer - Automatiske boligsprinklersystemer - Dimensjonering, installering og vedlikehold</li>
+                            </>
+                          )}
+                        </ul>
+                        <p className="mt-2">Dersom byggverket også har virksomhet i andre risikoklasser, må deler av byggverket med og uten automatisk sprinkleranlegg være ulike brannseksjoner.</p>
+                        <p className="mt-2">Dersom virksomhet i ulike risikoklasser ikke kan oppdeles i brannseksjoner, må hele byggverket ha automatisk sprinkleranlegg.</p>
+                      </div>
+                    ) : (
+                      <p className="mt-2">
+                        Automatiske slokkeanlegg skal prosjekteres og installeres etter følgende standarder: NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019. 
+                        I byggverk med både næringsvirksomhet og boliger gjelder følgende: NS-EN 16925 kan benyttes i arealer avsatt for boligformål, og arealer avsatt for boligformål må ha hurtigutløsende (QR) sprinklere. 
+                        NS-EN 12845:2015+A1:2019 kan benyttes i arealer avsatt for næring.
+                      </p>
+                    )}
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIV</td>
                 </tr>
@@ -3837,8 +3858,38 @@ const Konsept = () => {
                         </div>
                       )}
                       {(formData.risikoklasse === "RK6" || formData.bygningsdeler.some(b => b.risikoklasse === "RK6")) && (
-                        <div className="p-3 bg-blue-50 border border-blue-200 rounded text-sm">
-                          <strong>Automatisk krav (RK6):</strong> Byggverk i RK6 skal ha automatisk brannslokkeanlegg.
+                        <div className="space-y-3">
+                          <div className="p-3 bg-blue-50 border border-blue-200 rounded text-sm">
+                            <strong>Automatisk krav (RK6):</strong> Byggverk i RK6 skal ha automatisk brannslokkeanlegg.
+                          </div>
+                          <div className="p-3 bg-gray-50 border border-gray-200 rounded">
+                            <Label className="text-xs font-medium mb-2 block">Type virksomhet i RK6:</Label>
+                            <div className="flex gap-2">
+                              <Button 
+                                type="button"
+                                size="sm"
+                                variant={formData.rk6Institusjon ? "default" : "outline"}
+                                onClick={() => setFormData({...formData, rk6Institusjon: true})}
+                                className="text-xs"
+                              >
+                                Institusjon
+                              </Button>
+                              <Button 
+                                type="button"
+                                size="sm"
+                                variant={!formData.rk6Institusjon ? "default" : "outline"}
+                                onClick={() => setFormData({...formData, rk6Institusjon: false})}
+                                className="text-xs"
+                              >
+                                Egeneide boenheter
+                              </Button>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-2">
+                              {formData.rk6Institusjon 
+                                ? "NS-EN 12845 skal benyttes for institusjoner." 
+                                : "NS-EN 16925 kan benyttes for egeneide boenheter i RK6."}
+                            </p>
+                          </div>
                         </div>
                       )}
 
