@@ -408,7 +408,12 @@ const Konsept = () => {
     stortAntallFlereEtasjer: false,
     persontallAreal: "",
     persontallKategori: "",
-    kravTilDorer: false,
+    dorerTilbakerømning: false,
+    dorerNattlaser: false,
+    dorerLiteAntallPersoner: false,
+    dorerStromforsyningBKL1: false,
+    dorerStromforsyningBKL2: false,
+    dorerStromforsyningBKL3: false,
     romningsvei: "",
     romningsveiKommentar: "",
     manuellSlokking: "",
@@ -2000,31 +2005,58 @@ const Konsept = () => {
                   <td className="border border-gray-400 p-2 align-top">-</td>
                 </tr>
               )}
-              {formData.kravTilDorer && (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Dører til rømningsvei</td>
-                  <td className="border border-gray-400 p-2">
-                    <p className="mb-2 font-medium">Preaksepterte ytelser:</p>
-                    <ol className="list-decimal list-inside space-y-1 text-sm">
-                      <li>Åpningskraft for dører til rømningsvei må være maksimalt 67 Newton dersom det ikke følger andre krav av § 12–13.</li>
-                      <li>Dør til rømningsvei i byggverk i risikoklasse 1, 2, 3, 4 og 6 må ha fri bredde minimum 0,86 meter. Unntak gjelder for fritidsbolig med én boenhet.</li>
-                      <li>Dør til rømningsvei i byggverk i risikoklasse 5 må ha fri bredde minimum 1,16 meter.</li>
-                      <li>I byggverk hvor det er nødvendig med transport i seng, må dørbredden tilpasses dette.</li>
-                      <li>Samlet fri bredde på dører fra branncelle til rømningsvei bestemmes ut fra det antall personer som branncellen er beregnet for, jf. femte ledd.</li>
-                      <li>Dør til rømningsvei må ha fri høyde på minimum 2,0 meter. Unntak gjelder for fritidsbolig med én boenhet.</li>
-                      <li>Dør til rømningsvei må lett kunne åpnes slik at den er enkel å bruke for alle personer.</li>
-                      <li>Selvlukkende dør, benevnt C [S], kan settes i åpen stilling ved hjelp av elektromagnetiske holdere som utløses og lukker døren ved brannalarm. Døren må kunne åpnes igjen med dørautomatikk eller manuelt med åpningskraft i samsvar med § 12–13.</li>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Dører til rømningsvei</td>
+                <td className="border border-gray-400 p-2">
+                  <p className="mb-2 font-medium">Preaksepterte ytelser:</p>
+                  <ol className="list-decimal list-inside space-y-1 text-sm">
+                    <li>Åpningskraft for dører til rømningsvei må være maksimalt 67 Newton dersom det ikke følger andre krav av § 12–13.</li>
+                    <li>Dør til rømningsvei i byggverk i risikoklasse 1, 2, 3, 4 og 6 må ha fri bredde minimum 0,86 meter. Unntak gjelder for fritidsbolig med én boenhet.</li>
+                    <li>Dør til rømningsvei i byggverk i risikoklasse 5 må ha fri bredde minimum 1,16 meter.</li>
+                    <li>I byggverk hvor det er nødvendig med transport i seng, må dørbredden tilpasses dette.</li>
+                    <li>Samlet fri bredde på dører fra branncelle til rømningsvei bestemmes ut fra det antall personer som branncellen er beregnet for, jf. femte ledd.</li>
+                    <li>Dør til rømningsvei må ha fri høyde på minimum 2,0 meter. Unntak gjelder for fritidsbolig med én boenhet.</li>
+                    <li>Dør til rømningsvei må lett kunne åpnes slik at den er enkel å bruke for alle personer.</li>
+                    <li>Selvlukkende dør, benevnt C [S], kan settes i åpen stilling ved hjelp av elektromagnetiske holdere som utløses og lukker døren ved brannalarm. Døren må kunne åpnes igjen med dørautomatikk eller manuelt med åpningskraft i samsvar med § 12–13.</li>
+                    {formData.dorerTilbakerømning && (
                       <li>Dør til rømningsvei må ha et låsesystem som gjør det mulig å vende tilbake dersom rømningsveien skulle være blokkert, med mindre andre tiltak gir tilsvarende sikkerhet.</li>
-                      <li>Dør til rømningsvei kan være låst når byggverket har brannalarmanlegg og låsesystemet åpnes automatisk ved alarm. I tillegg må det være tydelig merket knapp for manuell åpning av døren. Det kan aksepteres inntil 10 sekunders tidsforsinkelse på den manuelle åpningsmekanismen.</li>
+                    )}
+                    <li>Dør til rømningsvei kan være låst når byggverket har brannalarmanlegg og låsesystemet åpnes automatisk ved alarm. I tillegg må det være tydelig merket knapp for manuell åpning av døren. Det kan aksepteres inntil 10 sekunders tidsforsinkelse på den manuelle åpningsmekanismen.</li>
+                    {formData.dorerNattlaser && (
                       <li>Nattlåser må utføres slik at de ikke kommer i strid med kravene til sikker rømning.</li>
+                    )}
+                    {formData.dorerLiteAntallPersoner && (
                       <li>Dør til rømningsvei fra branncelle beregnet for et lite antall personer kan slå mot rømningsretning. Med et lite antall personer menes inntil 10. Brannceller med et lite antall personer kan for eksempel være boenhet, sykerom, hotellrom, og mindre kontorlokaler og salgslokaler.</li>
-                      <li>Utadslående dør i yttervegg som er utgang eller rømningsvei, må ikke kunne blokkeres av snø eller is. Takoverbygg, snøfangere på tak og lignende vil kunne forhindre dette.</li>
-                      <li>Avbruddsfri strømforsyning må fungere i minst 30 minutter i byggverk i brannklasse 1 og i minst 60 minutter i byggverk i brannklasse 2 og 3.</li>
-                    </ol>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                </tr>
-              )}
+                    )}
+                    <li>Utadslående dør i yttervegg som er utgang eller rømningsvei, må ikke kunne blokkeres av snø eller is. Takoverbygg, snøfangere på tak og lignende vil kunne forhindre dette.</li>
+                    {(() => {
+                      // Determine fire classes from building parts or global setting
+                      const brannklasser = formData.bygningsdeler && formData.bygningsdeler.length > 0
+                        ? [...new Set(formData.bygningsdeler.map(d => d.brannklasse).filter(Boolean))]
+                        : formData.brannklasse ? [formData.brannklasse] : [];
+                      
+                      const harBKL1 = brannklasser.includes("BKL1") || formData.dorerStromforsyningBKL1;
+                      const harBKL2eller3 = brannklasser.includes("BKL2") || brannklasser.includes("BKL3") || formData.dorerStromforsyningBKL2 || formData.dorerStromforsyningBKL3;
+                      
+                      if (harBKL1 && harBKL2eller3) {
+                        return (
+                          <li>Avbruddsfri strømforsyning må fungere i minst 30 minutter i byggverk i brannklasse 1 og i minst 60 minutter i byggverk i brannklasse 2 og 3.</li>
+                        );
+                      } else if (harBKL2eller3) {
+                        return (
+                          <li>Avbruddsfri strømforsyning må fungere i minst 60 minutter i byggverk i brannklasse 2 og 3.</li>
+                        );
+                      } else if (harBKL1) {
+                        return (
+                          <li>Avbruddsfri strømforsyning må fungere i minst 30 minutter i byggverk i brannklasse 1.</li>
+                        );
+                      }
+                      return null;
+                    })()}
+                  </ol>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
 
               <tr className="bg-blue-100">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.11 &nbsp;&nbsp; §11-14 Rømningsvei</td>
@@ -4429,15 +4461,76 @@ const Konsept = () => {
                           </div>
                         </div>
                       )}
-                      <div className="flex items-center space-x-2 pt-2 border-t">
-                        <Checkbox 
-                          id="kravTilDorer"
-                          checked={formData.kravTilDorer}
-                          onCheckedChange={(checked) => setFormData({...formData, kravTilDorer: checked as boolean})}
-                        />
-                        <Label htmlFor="kravTilDorer" className="text-sm cursor-pointer font-medium">
-                          Inkluder krav til dører (preaksepterte ytelser)
-                        </Label>
+                      <div className="pt-2 border-t space-y-2">
+                        <p className="text-xs text-muted-foreground font-medium">Valgfrie dør-krav:</p>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id="dorerTilbakerømning"
+                            checked={formData.dorerTilbakerømning}
+                            onCheckedChange={(checked) => setFormData({...formData, dorerTilbakerømning: checked as boolean})}
+                          />
+                          <Label htmlFor="dorerTilbakerømning" className="text-sm cursor-pointer">
+                            Krav til tilbakerømning (låsesystem for retur)
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id="dorerNattlaser"
+                            checked={formData.dorerNattlaser}
+                            onCheckedChange={(checked) => setFormData({...formData, dorerNattlaser: checked as boolean})}
+                          />
+                          <Label htmlFor="dorerNattlaser" className="text-sm cursor-pointer">
+                            Nattlåser er relevant
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id="dorerLiteAntallPersoner"
+                            checked={formData.dorerLiteAntallPersoner}
+                            onCheckedChange={(checked) => setFormData({...formData, dorerLiteAntallPersoner: checked as boolean})}
+                          />
+                          <Label htmlFor="dorerLiteAntallPersoner" className="text-sm cursor-pointer">
+                            Rom med &lt;10 personer (dør kan slå mot rømningsretning)
+                          </Label>
+                        </div>
+                        {(() => {
+                          const brannklasser = formData.bygningsdeler && formData.bygningsdeler.length > 0
+                            ? [...new Set(formData.bygningsdeler.map(d => d.brannklasse).filter(Boolean))]
+                            : formData.brannklasse ? [formData.brannklasse] : [];
+                          
+                          if (brannklasser.length > 1) {
+                            return (
+                              <div className="pt-2 border-t">
+                                <p className="text-xs text-muted-foreground mb-2">Velg brannklasser for strømforsyningskrav:</p>
+                                {brannklasser.includes("BKL1") && (
+                                  <div className="flex items-center space-x-2">
+                                    <Checkbox 
+                                      id="dorerStromforsyningBKL1"
+                                      checked={formData.dorerStromforsyningBKL1}
+                                      onCheckedChange={(checked) => setFormData({...formData, dorerStromforsyningBKL1: checked as boolean})}
+                                    />
+                                    <Label htmlFor="dorerStromforsyningBKL1" className="text-sm cursor-pointer">
+                                      BKL1 (30 min)
+                                    </Label>
+                                  </div>
+                                )}
+                                {(brannklasser.includes("BKL2") || brannklasser.includes("BKL3")) && (
+                                  <div className="flex items-center space-x-2">
+                                    <Checkbox 
+                                      id="dorerStromforsyningBKL2"
+                                      checked={formData.dorerStromforsyningBKL2 || formData.dorerStromforsyningBKL3}
+                                      onCheckedChange={(checked) => setFormData({...formData, dorerStromforsyningBKL2: checked as boolean, dorerStromforsyningBKL3: checked as boolean})}
+                                    />
+                                    <Label htmlFor="dorerStromforsyningBKL2" className="text-sm cursor-pointer">
+                                      BKL2/3 (60 min)
+                                    </Label>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Utganger beskrives</Label>
