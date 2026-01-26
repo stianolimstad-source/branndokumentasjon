@@ -400,6 +400,7 @@ const Konsept = () => {
     utgangBranncelleKommentar: "",
     boenhetKunEttTrapperom: false,
     branncelleFlereEtasjer: false,
+    lavtByggverkVinduerRomning: false,
     romningsvei: "",
     romningsveiKommentar: "",
     manuellSlokking: "",
@@ -1903,6 +1904,15 @@ const Konsept = () => {
                   <td className="border border-gray-400 p-2 align-top">Flere etasjer</td>
                   <td className="border border-gray-400 p-2">
                     Brannceller som består av flere etasjer, eller har mellometasje, skal ha minst én utgang fra hver etasje. I byggverk i risikoklasse 1, 2, 3 og 4 kan utgangen fra disse planene, utenom inngangsplanet, være vindu som er tilrettelagt for sikker rømning. I branncelle i byggverk i risikoklasse 4 uten krav om heis, kan øverste plan ha utgang via nærmeste underliggende plan dersom det installeres automatisk brannslokkeanlegg i branncellen.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              )}
+              {formData.lavtByggverkVinduerRomning && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Lave byggverk</td>
+                  <td className="border border-gray-400 p-2">
+                    I lave byggverk beregnet for virksomhet i risikoklasse 1, 2, 3 og 4 kan utgangen fra branncellen enten føre til sikkert sted, eller til rømningsvei som bare har én rømningsretning, forutsatt at hver branncelle har vinduer som er utformet og tilrettelagt for sikker rømning.
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
@@ -4202,6 +4212,16 @@ const Konsept = () => {
                         />
                         <Label htmlFor="branncelleFlereEtasjer" className="text-sm cursor-pointer">
                           Brannceller over flere etasjer / mellometasje
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2 p-2 bg-muted rounded">
+                        <Checkbox 
+                          id="lavtByggverkVinduerRomning"
+                          checked={formData.lavtByggverkVinduerRomning}
+                          onCheckedChange={(checked) => setFormData({...formData, lavtByggverkVinduerRomning: checked as boolean})}
+                        />
+                        <Label htmlFor="lavtByggverkVinduerRomning" className="text-sm cursor-pointer">
+                          Lavt byggverk (RK 1-4) med vinduer for sikker rømning
                         </Label>
                       </div>
                       <div>
