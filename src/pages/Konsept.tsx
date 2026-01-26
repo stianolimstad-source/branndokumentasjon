@@ -401,6 +401,7 @@ const Konsept = () => {
     boenhetKunEttTrapperom: false,
     branncelleFlereEtasjer: false,
     lavtByggverkVinduerRomning: false,
+    branncelleStortAntallPersoner: false,
     romningsvei: "",
     romningsveiKommentar: "",
     manuellSlokking: "",
@@ -1913,6 +1914,28 @@ const Konsept = () => {
                   <td className="border border-gray-400 p-2 align-top">Lave byggverk</td>
                   <td className="border border-gray-400 p-2">
                     I lave byggverk beregnet for virksomhet i risikoklasse 1, 2, 3 og 4 kan utgangen fra branncellen enten føre til sikkert sted, eller til rømningsvei som bare har én rømningsretning, forutsatt at hver branncelle har vinduer som er utformet og tilrettelagt for sikker rømning.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              )}
+              {formData.branncelleStortAntallPersoner && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Stort antall personer</td>
+                  <td className="border border-gray-400 p-2">
+                    <p className="mb-2">Brannceller for et stort antall personer skal ha tilstrekkelig antall, og minst to utganger til rømningsvei. Preaksepterte ytelser:</p>
+                    <ol className="list-decimal list-inside space-y-1 text-sm">
+                      <li>Antall personer i en branncelle uten faste sitteplasser bestemmes av tabell 3. I salgslokale legges alle de områder som er tilgjengelig for publikum til grunn for dimensjonering av fri bredde. Det gjøres ikke fradrag for inventar.</li>
+                      <li>Samlet fri bredde i utgangene bestemmes ut fra det antall personer branncellen er beregnet for. Dessuten gjelder:
+                        <ol className="list-decimal list-inside ml-4 mt-1">
+                          <li>Utgangene må være hensiktsmessig fordelt i lokalet.</li>
+                          <li>For dimensjoneringen av fri bredde benyttes 1 cm per person.</li>
+                        </ol>
+                      </li>
+                      <li>Brannceller må ha minst én utgang per 300 personer.</li>
+                      <li>Brannceller beregnet for inntil 600 personer må ha minst to utganger. Med mindre utgangene fører til sikkert sted, må de fordeles på minst to uavhengige rømningsveier eller på ulike deler av rømningsvei som er skilt med bygningsdel og dør minst klasse E 30-CS<sub>a</sub> [F 30S].</li>
+                      <li>Brannceller beregnet for mindre enn 150 personer kan ha bare én utgang dersom denne går til sikkert sted.</li>
+                      <li>Branncelle som har åpen forbindelse over flere etasjer, eller har mellometasje, må ha tilsvarende antall utganger fra hver etasje. Interntrapp kan anses likeverdig med en utgang. Det skal likevel være minst én utgang til rømningsvei eller sikkert sted fra hver etasje, jf. tredje ledd.</li>
+                    </ol>
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
@@ -4222,6 +4245,16 @@ const Konsept = () => {
                         />
                         <Label htmlFor="lavtByggverkVinduerRomning" className="text-sm cursor-pointer">
                           Lavt byggverk (RK 1-4) med vinduer for sikker rømning
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2 p-2 bg-muted rounded">
+                        <Checkbox 
+                          id="branncelleStortAntallPersoner"
+                          checked={formData.branncelleStortAntallPersoner}
+                          onCheckedChange={(checked) => setFormData({...formData, branncelleStortAntallPersoner: checked as boolean})}
+                        />
+                        <Label htmlFor="branncelleStortAntallPersoner" className="text-sm cursor-pointer">
+                          Brannceller for stort antall personer
                         </Label>
                       </div>
                       <div>
