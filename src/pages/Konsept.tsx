@@ -1875,6 +1875,11 @@ const Konsept = () => {
               <tr className="bg-blue-100">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.10 &nbsp;&nbsp; §11-13 Utgang fra branncelle</td>
               </tr>
+              <tr>
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  Fra en branncelle skal det minst være én utgang til sikkert sted, eller utganger til to uavhengige rømningsveier, eller én utgang til rømningsvei som har to alternative rømningsretninger som fører videre til uavhengige rømningsveier eller sikre steder.
+                </td>
+              </tr>
               <tr className="bg-gray-100">
                 <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
                 <th className="border border-gray-400 p-2 text-left">Løsning</th>
