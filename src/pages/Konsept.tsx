@@ -2623,8 +2623,8 @@ const Konsept = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto">
+      <div className="w-full px-4 py-6">
+        <div className="max-w-[1800px] mx-auto">
           {/* Project Selector */}
           <ProjectSelector
             selectedProjectId={selectedProjectId}
@@ -2634,7 +2634,7 @@ const Konsept = () => {
           />
 
           {selectedProjectId && conceptName && (
-            <div className="grid lg:grid-cols-2 gap-8 lg:h-[calc(100vh-280px)]">
+            <div className="grid lg:grid-cols-2 gap-6 lg:h-[calc(100vh-200px)]">
               {/* Input Form */}
               <Card className="shadow-medium flex flex-col overflow-hidden">
                 <CardHeader className="flex-shrink-0">
@@ -4411,7 +4411,7 @@ const Konsept = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="flex-1 overflow-hidden p-0">
-                  <ScrollArea className="h-full max-h-[calc(100vh-380px)]">
+                  <ScrollArea className="h-full max-h-[calc(100vh-280px)]">
                     <div className="px-6 pb-6">
                       {generatedConcept ? (
                         renderPreview()
