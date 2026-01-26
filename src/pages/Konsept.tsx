@@ -398,6 +398,7 @@ const Konsept = () => {
     romningTiltakKommentar: "",
     utgangBranncelle: "",
     utgangBranncelleKommentar: "",
+    boenhetKunEttTrapperom: false,
     romningsvei: "",
     romningsveiKommentar: "",
     manuellSlokking: "",
@@ -1887,8 +1888,7 @@ const Konsept = () => {
                 </td>
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
-              {(formData.risikoklasse === "RK4" && parseInt(formData.etasjer) >= 2) || 
-               formData.bygningsdeler.some(b => b.risikoklasse === "RK4" && parseInt(b.etasjer) >= 2) ? (
+              {formData.boenhetKunEttTrapperom && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Risikoklasse 4</td>
                   <td className="border border-gray-400 p-2">
@@ -1896,7 +1896,7 @@ const Konsept = () => {
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
-              ) : null}
+              )}
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Utganger</td>
                 <td className="border border-gray-400 p-2">{formData.utgangBranncelle || "[Utganger beskrives]"}</td>
@@ -4171,6 +4171,19 @@ const Konsept = () => {
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.10 § 11-13 Utgang fra branncelle</Label>
+                      {((formData.risikoklasse === "RK4" && parseInt(formData.etasjer) >= 2) || 
+                        formData.bygningsdeler.some(b => b.risikoklasse === "RK4" && parseInt(b.etasjer) >= 2)) && (
+                        <div className="flex items-center space-x-2 p-2 bg-muted rounded">
+                          <Checkbox 
+                            id="boenhetKunEttTrapperom"
+                            checked={formData.boenhetKunEttTrapperom}
+                            onCheckedChange={(checked) => setFormData({...formData, boenhetKunEttTrapperom: checked as boolean})}
+                          />
+                          <Label htmlFor="boenhetKunEttTrapperom" className="text-sm cursor-pointer">
+                            Boenheter har kun tilgang til ett trapperom
+                          </Label>
+                        </div>
+                      )}
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Utganger beskrives</Label>
                         <Textarea 
