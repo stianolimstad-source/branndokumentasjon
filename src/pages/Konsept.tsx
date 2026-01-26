@@ -406,6 +406,8 @@ const Konsept = () => {
     stortAntallOver600: false,
     stortAntallUnder150: false,
     stortAntallFlereEtasjer: false,
+    persontallAreal: "",
+    persontallKategori: "",
     romningsvei: "",
     romningsveiKommentar: "",
     manuellSlokking: "",
@@ -1929,42 +1931,34 @@ const Konsept = () => {
                     <p className="mb-2">Brannceller for et stort antall personer skal ha tilstrekkelig antall, og minst to utganger til rømningsvei. Preaksepterte ytelser:</p>
                     <ol className="list-decimal list-inside space-y-1 text-sm">
                       <li>
-                        Antall personer i en branncelle uten faste sitteplasser bestemmes ut fra brutto gulvareal per person:
-                        <table className="mt-2 mb-2 border-collapse text-xs">
-                          <thead>
-                            <tr className="bg-blue-100">
-                              <th className="border border-gray-400 p-1 text-left">Bruksområde</th>
-                              <th className="border border-gray-400 p-1 text-left">Brutto gulvareal i m² pr. person</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td className="border border-gray-400 p-1">Salgslokaler</td>
-                              <td className="border border-gray-400 p-1">2</td>
-                            </tr>
-                            <tr>
-                              <td className="border border-gray-400 p-1">Kontor</td>
-                              <td className="border border-gray-400 p-1">15</td>
-                            </tr>
-                            <tr>
-                              <td className="border border-gray-400 p-1">Skoler</td>
-                              <td className="border border-gray-400 p-1">2</td>
-                            </tr>
-                            <tr>
-                              <td className="border border-gray-400 p-1">Barnehager/fritidshjem</td>
-                              <td className="border border-gray-400 p-1">4–5</td>
-                            </tr>
-                            <tr>
-                              <td className="border border-gray-400 p-1">Forsamlingslokaler uten faste sitteplasser</td>
-                              <td className="border border-gray-400 p-1">0,6</td>
-                            </tr>
-                            <tr>
-                              <td className="border border-gray-400 p-1">Spisesaler</td>
-                              <td className="border border-gray-400 p-1">1,4</td>
-                            </tr>
-                          </tbody>
-                        </table>
-                        I salgslokale legges alle de områder som er tilgjengelig for publikum til grunn for dimensjonering av fri bredde. Det gjøres ikke fradrag for inventar.
+                        Antall personer i branncellen er beregnet ut fra brutto gulvareal per person.
+                        {formData.persontallAreal && formData.persontallKategori && (
+                          <span className="font-medium ml-1">
+                            ({(() => {
+                              const kategoriNavn: Record<string, string> = {
+                                salgslokaler: "Salgslokaler",
+                                kontor: "Kontor",
+                                skoler: "Skoler",
+                                barnehager: "Barnehager/fritidshjem",
+                                forsamlingslokaler: "Forsamlingslokaler",
+                                spisesaler: "Spisesaler"
+                              };
+                              const arealPerPerson: Record<string, number> = {
+                                salgslokaler: 2,
+                                kontor: 15,
+                                skoler: 2,
+                                barnehager: 4,
+                                forsamlingslokaler: 0.6,
+                                spisesaler: 1.4
+                              };
+                              const areal = parseFloat(formData.persontallAreal) || 0;
+                              const factor = arealPerPerson[formData.persontallKategori] || 1;
+                              const personer = Math.floor(areal / factor);
+                              return `${kategoriNavn[formData.persontallKategori]}: ${areal} m² / ${factor} m²/pers = ${personer} personer`;
+                            })()})
+                          </span>
+                        )}
+                        {" "}I salgslokale legges alle de områder som er tilgjengelig for publikum til grunn for dimensjonering av fri bredde. Det gjøres ikke fradrag for inventar.
                       </li>
                       <li>Samlet fri bredde i utgangene bestemmes ut fra det antall personer branncellen er beregnet for. Dessuten gjelder:
                         <ol className="list-decimal list-inside ml-4 mt-1">
@@ -4308,47 +4302,101 @@ const Konsept = () => {
                         </Label>
                       </div>
                       {formData.branncelleStortAntallPersoner && (
-                        <div className="ml-6 space-y-2 p-3 border-l-2 border-primary/30 bg-muted/50 rounded">
-                          <p className="text-xs text-muted-foreground mb-2">Velg relevante kategorier:</p>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox 
-                              id="stortAntallUnder600"
-                              checked={formData.stortAntallUnder600}
-                              onCheckedChange={(checked) => setFormData({...formData, stortAntallUnder600: checked as boolean})}
-                            />
-                            <Label htmlFor="stortAntallUnder600" className="text-sm cursor-pointer">
-                              Inntil 600 personer
-                            </Label>
+                        <div className="ml-6 space-y-3 p-3 border-l-2 border-primary/30 bg-muted/50 rounded">
+                          <div className="space-y-2">
+                            <p className="text-xs font-medium text-foreground">Persontallkalkulator</p>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <Label className="text-xs mb-1 block">Areal (m²)</Label>
+                                <Input
+                                  type="number"
+                                  placeholder="f.eks. 500"
+                                  value={formData.persontallAreal}
+                                  onChange={(e) => setFormData({...formData, persontallAreal: e.target.value})}
+                                  className="h-8"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-xs mb-1 block">Kategori</Label>
+                                <Select
+                                  value={formData.persontallKategori}
+                                  onValueChange={(value) => setFormData({...formData, persontallKategori: value})}
+                                >
+                                  <SelectTrigger className="h-8">
+                                    <SelectValue placeholder="Velg kategori" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="salgslokaler">Salgslokaler (2 m²/pers)</SelectItem>
+                                    <SelectItem value="kontor">Kontor (15 m²/pers)</SelectItem>
+                                    <SelectItem value="skoler">Skoler (2 m²/pers)</SelectItem>
+                                    <SelectItem value="barnehager">Barnehager/fritidshjem (4 m²/pers)</SelectItem>
+                                    <SelectItem value="forsamlingslokaler">Forsamlingslokaler (0,6 m²/pers)</SelectItem>
+                                    <SelectItem value="spisesaler">Spisesaler (1,4 m²/pers)</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                            {formData.persontallAreal && formData.persontallKategori && (
+                              <div className="text-sm bg-primary/10 p-2 rounded">
+                                <span className="font-medium">Beregnet persontall: </span>
+                                {(() => {
+                                  const arealPerPerson: Record<string, number> = {
+                                    salgslokaler: 2,
+                                    kontor: 15,
+                                    skoler: 2,
+                                    barnehager: 4,
+                                    forsamlingslokaler: 0.6,
+                                    spisesaler: 1.4
+                                  };
+                                  const areal = parseFloat(formData.persontallAreal) || 0;
+                                  const factor = arealPerPerson[formData.persontallKategori] || 1;
+                                  return Math.floor(areal / factor);
+                                })()}{" "}personer
+                              </div>
+                            )}
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox 
-                              id="stortAntallOver600"
-                              checked={formData.stortAntallOver600}
-                              onCheckedChange={(checked) => setFormData({...formData, stortAntallOver600: checked as boolean})}
-                            />
-                            <Label htmlFor="stortAntallOver600" className="text-sm cursor-pointer">
-                              Mer enn 600 personer
-                            </Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox 
-                              id="stortAntallUnder150"
-                              checked={formData.stortAntallUnder150}
-                              onCheckedChange={(checked) => setFormData({...formData, stortAntallUnder150: checked as boolean})}
-                            />
-                            <Label htmlFor="stortAntallUnder150" className="text-sm cursor-pointer">
-                              Mindre enn 150 personer
-                            </Label>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox 
-                              id="stortAntallFlereEtasjer"
-                              checked={formData.stortAntallFlereEtasjer}
-                              onCheckedChange={(checked) => setFormData({...formData, stortAntallFlereEtasjer: checked as boolean})}
-                            />
-                            <Label htmlFor="stortAntallFlereEtasjer" className="text-sm cursor-pointer">
-                              Branncelle over flere etasjer
-                            </Label>
+                          <div className="border-t pt-2">
+                            <p className="text-xs text-muted-foreground mb-2">Velg relevante kategorier:</p>
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="stortAntallUnder600"
+                                checked={formData.stortAntallUnder600}
+                                onCheckedChange={(checked) => setFormData({...formData, stortAntallUnder600: checked as boolean})}
+                              />
+                              <Label htmlFor="stortAntallUnder600" className="text-sm cursor-pointer">
+                                Inntil 600 personer
+                              </Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="stortAntallOver600"
+                                checked={formData.stortAntallOver600}
+                                onCheckedChange={(checked) => setFormData({...formData, stortAntallOver600: checked as boolean})}
+                              />
+                              <Label htmlFor="stortAntallOver600" className="text-sm cursor-pointer">
+                                Mer enn 600 personer
+                              </Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="stortAntallUnder150"
+                                checked={formData.stortAntallUnder150}
+                                onCheckedChange={(checked) => setFormData({...formData, stortAntallUnder150: checked as boolean})}
+                              />
+                              <Label htmlFor="stortAntallUnder150" className="text-sm cursor-pointer">
+                                Mindre enn 150 personer
+                              </Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Checkbox 
+                                id="stortAntallFlereEtasjer"
+                                checked={formData.stortAntallFlereEtasjer}
+                                onCheckedChange={(checked) => setFormData({...formData, stortAntallFlereEtasjer: checked as boolean})}
+                              />
+                              <Label htmlFor="stortAntallFlereEtasjer" className="text-sm cursor-pointer">
+                                Branncelle over flere etasjer
+                              </Label>
+                            </div>
                           </div>
                         </div>
                       )}
