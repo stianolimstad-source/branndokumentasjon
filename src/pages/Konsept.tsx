@@ -1887,7 +1887,8 @@ const Konsept = () => {
                 </td>
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
-              {formData.risikoklasse === "RK4" && parseInt(formData.etasjer) >= 2 && (
+              {(formData.risikoklasse === "RK4" && parseInt(formData.etasjer) >= 2) || 
+               formData.bygningsdeler.some(b => b.risikoklasse === "RK4" && parseInt(b.etasjer) >= 2) ? (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Risikoklasse 4</td>
                   <td className="border border-gray-400 p-2">
@@ -1895,7 +1896,7 @@ const Konsept = () => {
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
-              )}
+              ) : null}
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Utganger</td>
                 <td className="border border-gray-400 p-2">{formData.utgangBranncelle || "[Utganger beskrives]"}</td>
