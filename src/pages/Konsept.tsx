@@ -1928,7 +1928,44 @@ const Konsept = () => {
                   <td className="border border-gray-400 p-2">
                     <p className="mb-2">Brannceller for et stort antall personer skal ha tilstrekkelig antall, og minst to utganger til rømningsvei. Preaksepterte ytelser:</p>
                     <ol className="list-decimal list-inside space-y-1 text-sm">
-                      <li>Antall personer i en branncelle uten faste sitteplasser bestemmes av tabell 3. I salgslokale legges alle de områder som er tilgjengelig for publikum til grunn for dimensjonering av fri bredde. Det gjøres ikke fradrag for inventar.</li>
+                      <li>
+                        Antall personer i en branncelle uten faste sitteplasser bestemmes ut fra brutto gulvareal per person:
+                        <table className="mt-2 mb-2 border-collapse text-xs">
+                          <thead>
+                            <tr className="bg-blue-100">
+                              <th className="border border-gray-400 p-1 text-left">Bruksområde</th>
+                              <th className="border border-gray-400 p-1 text-left">Brutto gulvareal i m² pr. person</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td className="border border-gray-400 p-1">Salgslokaler</td>
+                              <td className="border border-gray-400 p-1">2</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-400 p-1">Kontor</td>
+                              <td className="border border-gray-400 p-1">15</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-400 p-1">Skoler</td>
+                              <td className="border border-gray-400 p-1">2</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-400 p-1">Barnehager/fritidshjem</td>
+                              <td className="border border-gray-400 p-1">4–5</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-400 p-1">Forsamlingslokaler uten faste sitteplasser</td>
+                              <td className="border border-gray-400 p-1">0,6</td>
+                            </tr>
+                            <tr>
+                              <td className="border border-gray-400 p-1">Spisesaler</td>
+                              <td className="border border-gray-400 p-1">1,4</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        I salgslokale legges alle de områder som er tilgjengelig for publikum til grunn for dimensjonering av fri bredde. Det gjøres ikke fradrag for inventar.
+                      </li>
                       <li>Samlet fri bredde i utgangene bestemmes ut fra det antall personer branncellen er beregnet for. Dessuten gjelder:
                         <ol className="list-decimal list-inside ml-4 mt-1">
                           <li>Utgangene må være hensiktsmessig fordelt i lokalet.</li>
