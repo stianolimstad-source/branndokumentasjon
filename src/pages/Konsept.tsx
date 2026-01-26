@@ -408,6 +408,7 @@ const Konsept = () => {
     stortAntallFlereEtasjer: false,
     persontallAreal: "",
     persontallKategori: "",
+    kravTilDorer: false,
     romningsvei: "",
     romningsveiKommentar: "",
     manuellSlokking: "",
@@ -1997,6 +1998,31 @@ const Konsept = () => {
                   <td className="border border-gray-400 p-2 align-top">Kommentar</td>
                   <td className="border border-gray-400 p-2 italic">{formData.utgangBranncelleKommentar}</td>
                   <td className="border border-gray-400 p-2 align-top">-</td>
+                </tr>
+              )}
+              {formData.kravTilDorer && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Dører til rømningsvei</td>
+                  <td className="border border-gray-400 p-2">
+                    <p className="mb-2 font-medium">Preaksepterte ytelser:</p>
+                    <ol className="list-decimal list-inside space-y-1 text-sm">
+                      <li>Åpningskraft for dører til rømningsvei må være maksimalt 67 Newton dersom det ikke følger andre krav av § 12–13.</li>
+                      <li>Dør til rømningsvei i byggverk i risikoklasse 1, 2, 3, 4 og 6 må ha fri bredde minimum 0,86 meter. Unntak gjelder for fritidsbolig med én boenhet.</li>
+                      <li>Dør til rømningsvei i byggverk i risikoklasse 5 må ha fri bredde minimum 1,16 meter.</li>
+                      <li>I byggverk hvor det er nødvendig med transport i seng, må dørbredden tilpasses dette.</li>
+                      <li>Samlet fri bredde på dører fra branncelle til rømningsvei bestemmes ut fra det antall personer som branncellen er beregnet for, jf. femte ledd.</li>
+                      <li>Dør til rømningsvei må ha fri høyde på minimum 2,0 meter. Unntak gjelder for fritidsbolig med én boenhet.</li>
+                      <li>Dør til rømningsvei må lett kunne åpnes slik at den er enkel å bruke for alle personer.</li>
+                      <li>Selvlukkende dør, benevnt C [S], kan settes i åpen stilling ved hjelp av elektromagnetiske holdere som utløses og lukker døren ved brannalarm. Døren må kunne åpnes igjen med dørautomatikk eller manuelt med åpningskraft i samsvar med § 12–13.</li>
+                      <li>Dør til rømningsvei må ha et låsesystem som gjør det mulig å vende tilbake dersom rømningsveien skulle være blokkert, med mindre andre tiltak gir tilsvarende sikkerhet.</li>
+                      <li>Dør til rømningsvei kan være låst når byggverket har brannalarmanlegg og låsesystemet åpnes automatisk ved alarm. I tillegg må det være tydelig merket knapp for manuell åpning av døren. Det kan aksepteres inntil 10 sekunders tidsforsinkelse på den manuelle åpningsmekanismen.</li>
+                      <li>Nattlåser må utføres slik at de ikke kommer i strid med kravene til sikker rømning.</li>
+                      <li>Dør til rømningsvei fra branncelle beregnet for et lite antall personer kan slå mot rømningsretning. Med et lite antall personer menes inntil 10. Brannceller med et lite antall personer kan for eksempel være boenhet, sykerom, hotellrom, og mindre kontorlokaler og salgslokaler.</li>
+                      <li>Utadslående dør i yttervegg som er utgang eller rømningsvei, må ikke kunne blokkeres av snø eller is. Takoverbygg, snøfangere på tak og lignende vil kunne forhindre dette.</li>
+                      <li>Avbruddsfri strømforsyning må fungere i minst 30 minutter i byggverk i brannklasse 1 og i minst 60 minutter i byggverk i brannklasse 2 og 3.</li>
+                    </ol>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
               )}
 
@@ -4403,6 +4429,16 @@ const Konsept = () => {
                           </div>
                         </div>
                       )}
+                      <div className="flex items-center space-x-2 pt-2 border-t">
+                        <Checkbox 
+                          id="kravTilDorer"
+                          checked={formData.kravTilDorer}
+                          onCheckedChange={(checked) => setFormData({...formData, kravTilDorer: checked as boolean})}
+                        />
+                        <Label htmlFor="kravTilDorer" className="text-sm cursor-pointer font-medium">
+                          Inkluder krav til dører (preaksepterte ytelser)
+                        </Label>
+                      </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Utganger beskrives</Label>
                         <Textarea 
