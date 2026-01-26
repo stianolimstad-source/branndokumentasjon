@@ -402,6 +402,10 @@ const Konsept = () => {
     branncelleFlereEtasjer: false,
     lavtByggverkVinduerRomning: false,
     branncelleStortAntallPersoner: false,
+    stortAntallUnder600: false,
+    stortAntallOver600: false,
+    stortAntallUnder150: false,
+    stortAntallFlereEtasjer: false,
     romningsvei: "",
     romningsveiKommentar: "",
     manuellSlokking: "",
@@ -1918,7 +1922,7 @@ const Konsept = () => {
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
               )}
-              {formData.branncelleStortAntallPersoner && (
+              {formData.branncelleStortAntallPersoner && (formData.stortAntallUnder600 || formData.stortAntallOver600 || formData.stortAntallUnder150 || formData.stortAntallFlereEtasjer) && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Stort antall personer</td>
                   <td className="border border-gray-400 p-2">
@@ -1932,9 +1936,18 @@ const Konsept = () => {
                         </ol>
                       </li>
                       <li>Brannceller må ha minst én utgang per 300 personer.</li>
-                      <li>Brannceller beregnet for inntil 600 personer må ha minst to utganger. Med mindre utgangene fører til sikkert sted, må de fordeles på minst to uavhengige rømningsveier eller på ulike deler av rømningsvei som er skilt med bygningsdel og dør minst klasse E 30-CS<sub>a</sub> [F 30S].</li>
-                      <li>Brannceller beregnet for mindre enn 150 personer kan ha bare én utgang dersom denne går til sikkert sted.</li>
-                      <li>Branncelle som har åpen forbindelse over flere etasjer, eller har mellometasje, må ha tilsvarende antall utganger fra hver etasje. Interntrapp kan anses likeverdig med en utgang. Det skal likevel være minst én utgang til rømningsvei eller sikkert sted fra hver etasje, jf. tredje ledd.</li>
+                      {formData.stortAntallUnder600 && (
+                        <li>Brannceller beregnet for inntil 600 personer må ha minst to utganger. Med mindre utgangene fører til sikkert sted, må de fordeles på minst to uavhengige rømningsveier eller på ulike deler av rømningsvei som er skilt med bygningsdel og dør minst klasse E 30-CS<sub>a</sub> [F 30S].</li>
+                      )}
+                      {formData.stortAntallOver600 && (
+                        <li>Brannceller beregnet for mer enn 600 personer må ha minst tre utganger. Med mindre utgangene fører til sikkert sted, må de fordeles på minst to uavhengige rømningsveier eller på ulike deler av rømningsvei som er skilt med bygningsdel og dør minst klasse E 30-CS<sub>a</sub> [F 30S].</li>
+                      )}
+                      {formData.stortAntallUnder150 && (
+                        <li>Brannceller beregnet for mindre enn 150 personer kan ha bare én utgang dersom denne går til sikkert sted.</li>
+                      )}
+                      {formData.stortAntallFlereEtasjer && (
+                        <li>Branncelle som har åpen forbindelse over flere etasjer, eller har mellometasje, må ha tilsvarende antall utganger fra hver etasje. Interntrapp kan anses likeverdig med en utgang. Det skal likevel være minst én utgang til rømningsvei eller sikkert sted fra hver etasje, jf. tredje ledd.</li>
+                      )}
                     </ol>
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
@@ -4257,6 +4270,51 @@ const Konsept = () => {
                           Brannceller for stort antall personer
                         </Label>
                       </div>
+                      {formData.branncelleStortAntallPersoner && (
+                        <div className="ml-6 space-y-2 p-3 border-l-2 border-primary/30 bg-muted/50 rounded">
+                          <p className="text-xs text-muted-foreground mb-2">Velg relevante kategorier:</p>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox 
+                              id="stortAntallUnder600"
+                              checked={formData.stortAntallUnder600}
+                              onCheckedChange={(checked) => setFormData({...formData, stortAntallUnder600: checked as boolean})}
+                            />
+                            <Label htmlFor="stortAntallUnder600" className="text-sm cursor-pointer">
+                              Inntil 600 personer
+                            </Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox 
+                              id="stortAntallOver600"
+                              checked={formData.stortAntallOver600}
+                              onCheckedChange={(checked) => setFormData({...formData, stortAntallOver600: checked as boolean})}
+                            />
+                            <Label htmlFor="stortAntallOver600" className="text-sm cursor-pointer">
+                              Mer enn 600 personer
+                            </Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox 
+                              id="stortAntallUnder150"
+                              checked={formData.stortAntallUnder150}
+                              onCheckedChange={(checked) => setFormData({...formData, stortAntallUnder150: checked as boolean})}
+                            />
+                            <Label htmlFor="stortAntallUnder150" className="text-sm cursor-pointer">
+                              Mindre enn 150 personer
+                            </Label>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Checkbox 
+                              id="stortAntallFlereEtasjer"
+                              checked={formData.stortAntallFlereEtasjer}
+                              onCheckedChange={(checked) => setFormData({...formData, stortAntallFlereEtasjer: checked as boolean})}
+                            />
+                            <Label htmlFor="stortAntallFlereEtasjer" className="text-sm cursor-pointer">
+                              Branncelle over flere etasjer
+                            </Label>
+                          </div>
+                        </div>
+                      )}
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Utganger beskrives</Label>
                         <Textarea 
