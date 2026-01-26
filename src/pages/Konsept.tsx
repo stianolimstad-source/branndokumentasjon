@@ -1887,6 +1887,15 @@ const Konsept = () => {
                 </td>
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
+              {formData.risikoklasse === "RK4" && parseInt(formData.etasjer) >= 2 && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Risikoklasse 4</td>
+                  <td className="border border-gray-400 p-2">
+                    Brannceller i byggverk i risikoklasse 4 med inntil 8 etasjer kan ha utgang til ett trapperom utført som rømningsvei. Dette forutsetter at hver boenhet har minst ett vindu eller balkong som er tilgjengelig for rednings- og slokkeinnsats, jf. § 11-17.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              )}
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Utganger</td>
                 <td className="border border-gray-400 p-2">{formData.utgangBranncelle || "[Utganger beskrives]"}</td>
