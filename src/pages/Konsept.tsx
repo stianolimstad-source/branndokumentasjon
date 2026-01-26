@@ -2703,7 +2703,7 @@ const Konsept = () => {
             conceptName={conceptName}
           />
 
-          {selectedProjectId && conceptName && (
+          {selectedProjectId && (
             <div className="grid lg:grid-cols-2 gap-6 lg:h-[calc(100vh-200px)]">
               {/* Input Form */}
               <Card className="shadow-medium flex flex-col overflow-hidden">
@@ -4552,7 +4552,7 @@ const Konsept = () => {
                   size="lg"
                   variant="outline"
                   onClick={handleSave}
-                  disabled={isSaving}
+                  disabled={isSaving || !conceptName}
                 >
                   <Save className="h-4 w-4 mr-2" />
                   {isSaving ? "Lagrer..." : "Lagre endringer"}
@@ -4561,7 +4561,7 @@ const Konsept = () => {
                   className="flex-1" 
                   size="lg"
                   onClick={handleGenerate}
-                  disabled={isGenerating}
+                  disabled={isGenerating || !conceptName}
                 >
                   {isGenerating ? "Genererer..." : "Generer brannkonsept"}
                 </Button>
