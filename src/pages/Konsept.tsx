@@ -399,6 +399,7 @@ const Konsept = () => {
     utgangBranncelle: "",
     utgangBranncelleKommentar: "",
     boenhetKunEttTrapperom: false,
+    branncelleFlereEtasjer: false,
     romningsvei: "",
     romningsveiKommentar: "",
     manuellSlokking: "",
@@ -1893,6 +1894,15 @@ const Konsept = () => {
                   <td className="border border-gray-400 p-2 align-top">Risikoklasse 4</td>
                   <td className="border border-gray-400 p-2">
                     Brannceller i byggverk i risikoklasse 4 med inntil 8 etasjer kan ha utgang til ett trapperom utført som rømningsvei. Dette forutsetter at hver boenhet har minst ett vindu eller balkong som er tilgjengelig for rednings- og slokkeinnsats, jf. § 11-17.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              )}
+              {formData.branncelleFlereEtasjer && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Flere etasjer</td>
+                  <td className="border border-gray-400 p-2">
+                    Brannceller som består av flere etasjer, eller har mellometasje, skal ha minst én utgang fra hver etasje. I byggverk i risikoklasse 1, 2, 3 og 4 kan utgangen fra disse planene, utenom inngangsplanet, være vindu som er tilrettelagt for sikker rømning. I branncelle i byggverk i risikoklasse 4 uten krav om heis, kan øverste plan ha utgang via nærmeste underliggende plan dersom det installeres automatisk brannslokkeanlegg i branncellen.
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
@@ -4184,6 +4194,16 @@ const Konsept = () => {
                           </Label>
                         </div>
                       )}
+                      <div className="flex items-center space-x-2 p-2 bg-muted rounded">
+                        <Checkbox 
+                          id="branncelleFlereEtasjer"
+                          checked={formData.branncelleFlereEtasjer}
+                          onCheckedChange={(checked) => setFormData({...formData, branncelleFlereEtasjer: checked as boolean})}
+                        />
+                        <Label htmlFor="branncelleFlereEtasjer" className="text-sm cursor-pointer">
+                          Brannceller over flere etasjer / mellometasje
+                        </Label>
+                      </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Utganger beskrives</Label>
                         <Textarea 
