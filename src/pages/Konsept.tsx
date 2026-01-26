@@ -4592,14 +4592,7 @@ const Konsept = () => {
                 <CardContent className="flex-1 overflow-hidden p-0">
                   <ScrollArea className="h-full max-h-[calc(100vh-280px)]">
                     <div className="px-6 pb-6">
-                      {generatedConcept ? (
-                        renderPreview()
-                      ) : (
-                        <div className="text-center py-12 text-muted-foreground">
-                          <FileDown className="h-12 w-12 mx-auto mb-4 opacity-20" />
-                          <p>Fyll ut skjemaet og klikk "Generer brannkonsept" for å se resultatet her</p>
-                        </div>
-                      )}
+                      {renderPreview()}
                     </div>
                   </ScrollArea>
                 </CardContent>
