@@ -105,19 +105,32 @@ const Index = () => {
       <section className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {features.map((feature) => (
-            <Card 
-              key={feature.title} 
-              className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer group"
-              onClick={() => feature.href !== "#" && (window.location.href = feature.href)}
-            >
-              <CardHeader>
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4 group-hover:bg-primary/20 transition-colors">
-                  <feature.icon className="h-6 w-6 text-primary" />
-                </div>
-                <CardTitle>{feature.title}</CardTitle>
-                <CardDescription>{feature.description}</CardDescription>
-              </CardHeader>
-            </Card>
+            feature.href === "#" ? (
+              <Card
+                key={feature.title}
+                className="shadow-soft transition-shadow group opacity-60 cursor-not-allowed"
+              >
+                <CardHeader>
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4 transition-colors">
+                    <feature.icon className="h-6 w-6 text-primary" />
+                  </div>
+                  <CardTitle>{feature.title}</CardTitle>
+                  <CardDescription>{feature.description}</CardDescription>
+                </CardHeader>
+              </Card>
+            ) : (
+              <Link key={feature.title} to={feature.href} className="block">
+                <Card className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer group">
+                  <CardHeader>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4 group-hover:bg-primary/20 transition-colors">
+                      <feature.icon className="h-6 w-6 text-primary" />
+                    </div>
+                    <CardTitle>{feature.title}</CardTitle>
+                    <CardDescription>{feature.description}</CardDescription>
+                  </CardHeader>
+                </Card>
+              </Link>
+            )
           ))}
         </div>
       </section>
