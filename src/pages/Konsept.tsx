@@ -1924,42 +1924,45 @@ const Konsept = () => {
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
               )}
+              {formData.branncelleStortAntallPersoner && formData.persontallAreal && formData.persontallKategori && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Beregnet persontall</td>
+                  <td className="border border-gray-400 p-2">
+                    <p className="text-sm">
+                      {(() => {
+                        const kategoriNavn: Record<string, string> = {
+                          salgslokaler: "Salgslokaler",
+                          kontor: "Kontor",
+                          skoler: "Skoler",
+                          barnehager: "Barnehager/fritidshjem",
+                          forsamlingslokaler: "Forsamlingslokaler",
+                          spisesaler: "Spisesaler"
+                        };
+                        const arealPerPerson: Record<string, number> = {
+                          salgslokaler: 2,
+                          kontor: 15,
+                          skoler: 2,
+                          barnehager: 4,
+                          forsamlingslokaler: 0.6,
+                          spisesaler: 1.4
+                        };
+                        const areal = parseFloat(formData.persontallAreal) || 0;
+                        const factor = arealPerPerson[formData.persontallKategori] || 1;
+                        const personer = Math.floor(areal / factor);
+                        return `${kategoriNavn[formData.persontallKategori]}: ${areal} m² / ${factor} m²/pers = ${personer} personer`;
+                      })()}
+                    </p>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top text-sm">ARK</td>
+                </tr>
+              )}
               {formData.branncelleStortAntallPersoner && (formData.stortAntallUnder600 || formData.stortAntallOver600 || formData.stortAntallUnder150 || formData.stortAntallFlereEtasjer) && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Stort antall personer</td>
                   <td className="border border-gray-400 p-2">
                     <p className="mb-2">Brannceller for et stort antall personer skal ha tilstrekkelig antall, og minst to utganger til rømningsvei. Preaksepterte ytelser:</p>
                     <ol className="list-decimal list-inside space-y-1 text-sm">
-                      <li>
-                        Antall personer i branncellen er beregnet ut fra brutto gulvareal per person.
-                        {formData.persontallAreal && formData.persontallKategori && (
-                          <span className="font-medium ml-1">
-                            ({(() => {
-                              const kategoriNavn: Record<string, string> = {
-                                salgslokaler: "Salgslokaler",
-                                kontor: "Kontor",
-                                skoler: "Skoler",
-                                barnehager: "Barnehager/fritidshjem",
-                                forsamlingslokaler: "Forsamlingslokaler",
-                                spisesaler: "Spisesaler"
-                              };
-                              const arealPerPerson: Record<string, number> = {
-                                salgslokaler: 2,
-                                kontor: 15,
-                                skoler: 2,
-                                barnehager: 4,
-                                forsamlingslokaler: 0.6,
-                                spisesaler: 1.4
-                              };
-                              const areal = parseFloat(formData.persontallAreal) || 0;
-                              const factor = arealPerPerson[formData.persontallKategori] || 1;
-                              const personer = Math.floor(areal / factor);
-                              return `${kategoriNavn[formData.persontallKategori]}: ${areal} m² / ${factor} m²/pers = ${personer} personer`;
-                            })()})
-                          </span>
-                        )}
-                        {" "}I salgslokale legges alle de områder som er tilgjengelig for publikum til grunn for dimensjonering av fri bredde. Det gjøres ikke fradrag for inventar.
-                      </li>
+                      <li>Antall personer i branncellen er beregnet ut fra brutto gulvareal per person. I salgslokale legges alle de områder som er tilgjengelig for publikum til grunn for dimensjonering av fri bredde. Det gjøres ikke fradrag for inventar.</li>
                       <li>Samlet fri bredde i utgangene bestemmes ut fra det antall personer branncellen er beregnet for. Dessuten gjelder:
                         <ol className="list-decimal list-inside ml-4 mt-1">
                           <li>Utgangene må være hensiktsmessig fordelt i lokalet.</li>
