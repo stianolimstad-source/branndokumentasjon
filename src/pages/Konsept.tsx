@@ -2231,7 +2231,7 @@ const Konsept = () => {
 
               {/* Preaksepterte ytelser for rømningsvei */}
               <tr>
-                <td className="border border-gray-400 p-2 align-top font-medium">Preaksepterte ytelser</td>
+                <td className="border border-gray-400 p-2 align-top font-medium">Rømningsvei</td>
                 <td className="border border-gray-400 p-2">
                   <ol className="list-decimal list-inside space-y-2">
                     {/* 1. Rom i rømningsvei maks 20 m² */}
@@ -2307,7 +2307,7 @@ const Konsept = () => {
               </tr>
 
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Rømningsveier</td>
+                <td className="border border-gray-400 p-2 align-top">Beskrivelse av rømningsvei</td>
                 <td className="border border-gray-400 p-2">{formData.romningsvei || "[Rømningsveier beskrives]"}</td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
