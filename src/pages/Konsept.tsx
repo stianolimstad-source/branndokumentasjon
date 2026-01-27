@@ -2009,10 +2009,34 @@ const Konsept = () => {
                 <td className="border border-gray-400 p-2 align-top">Dører til rømningsvei</td>
                 <td className="border border-gray-400 p-2">
                   <p className="mb-2 font-medium">Preaksepterte ytelser:</p>
-                  <ol className="list-decimal list-inside space-y-1 text-sm">
+                  <ul className="list-disc list-inside space-y-1 text-sm">
                     <li>Åpningskraft for dører til rømningsvei må være maksimalt 67 Newton dersom det ikke følger andre krav av § 12–13.</li>
-                    <li>Dør til rømningsvei i byggverk i risikoklasse 1, 2, 3, 4 og 6 må ha fri bredde minimum 0,86 meter. Unntak gjelder for fritidsbolig med én boenhet.</li>
-                    <li>Dør til rømningsvei i byggverk i risikoklasse 5 må ha fri bredde minimum 1,16 meter.</li>
+                    {(() => {
+                      // Determine risk class from building parts or global setting
+                      const risikoklasser = formData.bygningsdeler && formData.bygningsdeler.length > 0
+                        ? [...new Set(formData.bygningsdeler.map(d => d.risikoklasse).filter(Boolean))]
+                        : formData.risikoklasse ? [formData.risikoklasse] : [];
+                      
+                      const harRK5 = risikoklasser.some(rk => rk === "RK5" || rk === "5");
+                      const harAndreRK = risikoklasser.some(rk => rk !== "RK5" && rk !== "5" && rk);
+                      
+                      if (harRK5 && harAndreRK) {
+                        return (
+                          <>
+                            <li>Dør til rømningsvei i byggverk i risikoklasse 1, 2, 3, 4 og 6 må ha fri bredde minimum <span className="font-semibold text-red-600">0,86 meter</span>. Unntak gjelder for fritidsbolig med én boenhet.</li>
+                            <li>Dør til rømningsvei i byggverk i risikoklasse 5 må ha fri bredde minimum <span className="font-semibold text-red-600">1,16 meter</span>.</li>
+                          </>
+                        );
+                      } else if (harRK5) {
+                        return (
+                          <li>Dør til rømningsvei må ha fri bredde minimum <span className="font-semibold text-red-600">1,16 meter</span> (risikoklasse 5).</li>
+                        );
+                      } else {
+                        return (
+                          <li>Dør til rømningsvei må ha fri bredde minimum <span className="font-semibold text-red-600">0,86 meter</span>. Unntak gjelder for fritidsbolig med én boenhet.</li>
+                        );
+                      }
+                    })()}
                     <li>I byggverk hvor det er nødvendig med transport i seng, må dørbredden tilpasses dette.</li>
                     <li>Samlet fri bredde på dører fra branncelle til rømningsvei bestemmes ut fra det antall personer som branncellen er beregnet for, jf. femte ledd.</li>
                     <li>Dør til rømningsvei må ha fri høyde på minimum 2,0 meter. Unntak gjelder for fritidsbolig med én boenhet.</li>
@@ -2053,7 +2077,7 @@ const Konsept = () => {
                       }
                       return null;
                     })()}
-                  </ol>
+                  </ul>
                 </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
