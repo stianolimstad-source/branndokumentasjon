@@ -2217,6 +2217,13 @@ const Konsept = () => {
                 <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
               <tr>
+                <td className="border border-gray-400 p-2 align-top font-medium">Generelt</td>
+                <td className="border border-gray-400 p-2">
+                  Rømningsvei skal på en oversiktlig og lettfattelig måte føre til et sikkert sted. Den skal ha tilstrekkelig bredde og høyde og være utført som egen branncelle tilrettelagt for rask og effektiv rømning.
+                </td>
+                <td className="border border-gray-400 p-2 align-top">-</td>
+              </tr>
+              <tr>
                 <td className="border border-gray-400 p-2 align-top">Rømningsveier</td>
                 <td className="border border-gray-400 p-2">{formData.romningsvei || "[Rømningsveier beskrives]"}</td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
