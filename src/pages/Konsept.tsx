@@ -419,6 +419,11 @@ const Konsept = () => {
     romningsvinduGulvAvstand: "", // Avstand fra gulv til underkant vindu i meter
     romningsvinduHarStige: false, // Stige montert til vindu
     romningsvinduHarBalkong: false, // Utgang til balkong
+    // 3.11 Rømningsvei
+    romningsveiRomMaks20: false, // Rom i rømningsvei maks 20 m²
+    romningsveiRom50E30: false, // Oppholdsrom inntil 50 m² med E30
+    romningsveiSengeliggende: false, // Transport av sengeliggende
+    romningsveiSamtidigRomning: false, // Samtidig rømning fra flere etasjer
     romningsvei: "",
     romningsveiKommentar: "",
     manuellSlokking: "",
@@ -2223,6 +2228,84 @@ const Konsept = () => {
                 </td>
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
+
+              {/* Preaksepterte ytelser for rømningsvei */}
+              <tr>
+                <td className="border border-gray-400 p-2 align-top font-medium">Preaksepterte ytelser</td>
+                <td className="border border-gray-400 p-2">
+                  <ol className="list-decimal list-inside space-y-2">
+                    {/* 1. Rom i rømningsvei maks 20 m² */}
+                    {formData.romningsveiRomMaks20 && (
+                      <li>Rømningsvei kan inneholde mindre avgrensede rom for andre formål dersom dette nødvendig av byggverket gjør dette nødvendig og dersom disse ikke reduserer rømningsveiens funksjon. Eksempler er resepsjon og vaktrom med inntil <span className="font-bold text-red-600">20 m²</span> gulvareal som er knyttet til korridor, og som er avgrenset slik at møbleringen ikke har mulighet for å vanskeliggjøre rømningen. Dette unntaket kan ikke benyttes som grunnlag for dokumentere andre fravik i rømningsveier.</li>
+                    )}
+
+                    {/* 2. Oppholdsrom inntil 50 m² med E30 */}
+                    {formData.romningsveiRom50E30 && (
+                      <li>Oppholdsrom inntil <span className="font-bold text-red-600">50 m²</span> kan være del av rømningsvei når arealet har automatisk sprinkleranlegg og er skilt fra rømningsvei med konstruksjoner med brannmotstand minst <span className="font-bold text-red-600">E 30</span>.</li>
+                    )}
+
+                    {/* 3. Avstander */}
+                    <li>Avstand fra dør i branncelle til nærmeste trapp eller utgang til sikkert sted (terreng eller annen brannseksjon) må være:
+                      <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
+                        <li>Maksimum <span className="font-bold text-red-600">15 meter</span> der det er tilstrekkelig med én trapp.</li>
+                        <li>Maksimum <span className="font-bold text-red-600">15 meter</span> der det er utgang til korridor med sammenfallende rømningsretning.</li>
+                        <li>Maksimum <span className="font-bold text-red-600">30 meter</span> der det finnes flere trapper eller utganger.</li>
+                      </ul>
+                    </li>
+
+                    {/* 4. Samlet fri bredde */}
+                    <li>
+                      Samlet fri bredde i rømningsvei må minimum være <span className="font-bold text-red-600">1 cm per person</span>, men uansett minst som angitt i nr. 4 a og b. For dimensjonerende persontall vises til § 11-13 Tabell 3.
+                      <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
+                        {(() => {
+                          // Finn relevante risikoklasser for bredde-krav
+                          const alleRK = formData.harFlereRisikoklasser && formData.bygningsdeler.length > 0
+                            ? formData.bygningsdeler.map(b => b.risikoklasse)
+                            : [formData.risikoklasse];
+                          
+                          const harRK124 = alleRK.some(rk => ["RK1", "RK2", "RK4"].includes(rk));
+                          const harRK356 = alleRK.some(rk => ["RK3", "RK5", "RK6"].includes(rk));
+                          const harRK6Bolig = alleRK.includes("RK6") && formData.bygningstype?.toLowerCase().includes("bolig");
+                          
+                          return (
+                            <>
+                              {harRK124 && (
+                                <li>I byggverk i risikoklasse 1, 2, og 4 må fri bredde i rømningsvei være minimum <span className="font-bold text-red-600">0,86 meter</span>.</li>
+                              )}
+                              {harRK356 && (
+                                <li>
+                                  I byggverk i risikoklasse 3, 5 og 6 må fri bredde i rømningsvei være minimum <span className="font-bold text-red-600">1,16 meter</span>.
+                                  {harRK6Bolig && (
+                                    <span className="ml-1 text-muted-foreground"> Unntak gjelder boliger i risikoklasse 6 i samsvar med § 11-2 Tabell 1, hvor fri bredde kan være minimum 0,86 meter.</span>
+                                  )}
+                                </li>
+                              )}
+                            </>
+                          );
+                        })()}
+                      </ul>
+                    </li>
+
+                    {/* 5. Transport av sengeliggende */}
+                    {formData.romningsveiSengeliggende && (
+                      <li>I byggverk hvor det er nødvendig med transport av sengeliggende personer, må bredden av rømningsveien tilpasses dette.</li>
+                    )}
+
+                    {/* 6. Samtidig rømning fra flere etasjer */}
+                    {formData.romningsveiSamtidigRomning && (
+                      <li>I byggverk med flere etasjer må rømningsveiene dimensjoneres for samtidig rømning fra to etasjer. Det må dimensjoneres for de to etasjene som ligger over hverandre og til sammen har det største persontallet. Persontallet settes lik det største antallet personer som branncellen er beregnet for.</li>
+                    )}
+
+                    {/* 7. Ingen innsnevring */}
+                    <li>Rømningsvei må ikke ha innsnevring. Rekkverk, håndløper mv. i rømningsvei kan stikke inntil <span className="font-bold text-red-600">10 cm</span> ut fra vegg uten at den frie bredden må økes.</li>
+
+                    {/* 8. Fri bredde i trapp */}
+                    <li>Fri bredde i trapp må være som for rømningsvei generelt, men minimum som angitt i § 12–14.</li>
+                  </ol>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Rømningsveier</td>
                 <td className="border border-gray-400 p-2">{formData.romningsvei || "[Rømningsveier beskrives]"}</td>
@@ -4770,6 +4853,55 @@ const Konsept = () => {
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">3.11 § 11-14 Rømningsvei</Label>
+                      
+                      {/* Rom i rømningsvei maks 20 m² */}
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                        <Checkbox 
+                          id="romningsveiRomMaks20"
+                          checked={formData.romningsveiRomMaks20}
+                          onCheckedChange={(checked) => setFormData({...formData, romningsveiRomMaks20: checked === true})}
+                        />
+                        <Label htmlFor="romningsveiRomMaks20" className="text-xs cursor-pointer">
+                          Rom i rømningsvei maks 20 m² (resepsjon, vaktrom o.l.)
+                        </Label>
+                      </div>
+
+                      {/* Oppholdsrom inntil 50 m² med E30 */}
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                        <Checkbox 
+                          id="romningsveiRom50E30"
+                          checked={formData.romningsveiRom50E30}
+                          onCheckedChange={(checked) => setFormData({...formData, romningsveiRom50E30: checked === true})}
+                        />
+                        <Label htmlFor="romningsveiRom50E30" className="text-xs cursor-pointer">
+                          Oppholdsrom inntil 50 m² med sprinkler og E30
+                        </Label>
+                      </div>
+
+                      {/* Transport av sengeliggende */}
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                        <Checkbox 
+                          id="romningsveiSengeliggende"
+                          checked={formData.romningsveiSengeliggende}
+                          onCheckedChange={(checked) => setFormData({...formData, romningsveiSengeliggende: checked === true})}
+                        />
+                        <Label htmlFor="romningsveiSengeliggende" className="text-xs cursor-pointer">
+                          Transport av sengeliggende personer
+                        </Label>
+                      </div>
+
+                      {/* Samtidig rømning fra flere etasjer */}
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                        <Checkbox 
+                          id="romningsveiSamtidigRomning"
+                          checked={formData.romningsveiSamtidigRomning}
+                          onCheckedChange={(checked) => setFormData({...formData, romningsveiSamtidigRomning: checked === true})}
+                        />
+                        <Label htmlFor="romningsveiSamtidigRomning" className="text-xs cursor-pointer">
+                          Samtidig rømning fra flere etasjer
+                        </Label>
+                      </div>
+
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Rømningsveier beskrives</Label>
                         <Textarea 
