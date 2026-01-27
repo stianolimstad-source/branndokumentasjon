@@ -415,6 +415,10 @@ const Konsept = () => {
     dorerStromforsyningBKL2: false,
     dorerStromforsyningBKL3: false,
     romningsvinduRelevant: false, // Rømning via vindu er relevant
+    romningsvinduHoyde: "", // Høyde på vindu over terreng i meter
+    romningsvinduGulvAvstand: "", // Avstand fra gulv til underkant vindu i meter
+    romningsvinduHarStige: false, // Stige montert til vindu
+    romningsvinduHarBalkong: false, // Utgang til balkong
     romningsvei: "",
     romningsveiKommentar: "",
     manuellSlokking: "",
@@ -2104,35 +2108,101 @@ const Konsept = () => {
                         ? [...new Set(formData.bygningsdeler.map(d => d.risikoklasse).filter(Boolean))]
                         : formData.risikoklasse ? [formData.risikoklasse] : [];
                       
-                      const harRK1234 = risikoklasser.some(rk => 
-                        rk === "RK1" || rk === "RK2" || rk === "RK3" || rk === "RK4" || 
-                        rk === "1" || rk === "2" || rk === "3" || rk === "4"
+                      const harRK124 = risikoklasser.some(rk => 
+                        rk === "RK1" || rk === "RK2" || rk === "RK4" || 
+                        rk === "1" || rk === "2" || rk === "4"
                       );
+                      const harRK3 = risikoklasser.some(rk => rk === "RK3" || rk === "3");
                       const harRK4 = risikoklasser.some(rk => rk === "RK4" || rk === "4");
+                      const harRK123 = risikoklasser.some(rk => 
+                        rk === "RK1" || rk === "RK2" || rk === "RK3" || 
+                        rk === "1" || rk === "2" || rk === "3"
+                      );
+
+                      const vinduHoyde = parseFloat(formData.romningsvinduHoyde) || 0;
+                      const gulvAvstand = parseFloat(formData.romningsvinduGulvAvstand) || 0;
+                      const harStige = formData.romningsvinduHarStige;
+                      const harBalkong = formData.romningsvinduHarBalkong;
                       
                       return (
                         <>
-                          {harRK1234 && (
-                            <p className="mb-2">
-                              I byggverk i risikoklasse 1, 2, 3 og 4 kan utgangen fra disse planene, utenom inngangsplanet, være vindu som er tilrettelagt for sikker rømning.
-                            </p>
-                          )}
-                          {harRK4 && (
-                            <p className="mb-2">
-                              I branncelle i byggverk i risikoklasse 4 uten krav om heis, kan øverste plan ha utgang via nærmeste underliggende plan dersom det installeres automatisk brannslokkeanlegg i branncellen.
-                            </p>
-                          )}
+                          <p className="font-medium mt-2 mb-2">Preaksepterte ytelser:</p>
+                          <ul className="list-disc list-inside space-y-2 text-sm">
+                            {/* 1. RK 1, 2, 4 - høydekrav */}
+                            {harRK124 && (
+                              <li>
+                                I byggverk i risikoklasse 1, 2 og 4 kan utgangen være rømningsvindu som har underkant til og med <span className="font-semibold text-red-600">5,0 meter</span> over planert terreng, eller til og med <span className="font-semibold text-red-600">7,5 meter</span> over planert terreng dersom det er atkomst til fastmontert stige med ryggbøyler. Ved større høyder må det være atkomst fra rømningsvindu til utvendig trapp. Stige eller trapp må ha avstand minimum 2,0 meter fra vindu, eller være skjermet mot flammer og strålevarme.
+                                {vinduHoyde > 0 && (
+                                  <span className={`ml-1 font-medium ${vinduHoyde <= 5.0 || (vinduHoyde <= 7.5 && harStige) ? "text-green-600" : "text-red-600"}`}>
+                                    {vinduHoyde <= 5.0 ? " ✓ Oppfylt (≤5,0 m)" : vinduHoyde <= 7.5 && harStige ? " ✓ Oppfylt med stige (≤7,5 m)" : " ✗ Krever utvendig trapp"}
+                                  </span>
+                                )}
+                              </li>
+                            )}
+
+                            {/* 2. RK 3 - høydekrav */}
+                            {harRK3 && (
+                              <li>
+                                I byggverk i risikoklasse 3 kan utgangen være rømningsvindu som har underkant til og med <span className="font-semibold text-red-600">2,0 meter</span> over terreng. Ved større høyder må det være atkomst fra rømningsvindu til utvendig trapp. Trappen må ha avstand minimum 2,0 meter fra vindu, eller være skjermet mot flammer og strålevarme.
+                                {vinduHoyde > 0 && (
+                                  <span className={`ml-1 font-medium ${vinduHoyde <= 2.0 ? "text-green-600" : "text-red-600"}`}>
+                                    {vinduHoyde <= 2.0 ? " ✓ Oppfylt (≤2,0 m)" : " ✗ Krever utvendig trapp"}
+                                  </span>
+                                )}
+                              </li>
+                            )}
+
+                            {/* 3. RK 1, 2, 3 - persontall */}
+                            {harRK123 && (
+                              <li>I risikoklasse 1, 2 og 3 må etasjer som er beregnet for 15 personer eller mindre, ha minst ett rømningsvindu. Etasjer som er beregnet for mer enn 15 personer, må ha ett ekstra rømningsvindu per 15 personer. Vinduene må være hensiktsmessig fordelt i etasjen. Avstanden til nærmeste rømningsvindu må ikke være større enn angitt i tabell 1.</li>
+                            )}
+
+                            {/* 4. RK 4 - varig opphold */}
+                            {harRK4 && (
+                              <li>I risikoklasse 4 må minst annethvert rom for varig opphold ha rømningsvindu.</li>
+                            )}
+
+                            {/* 5. Mellometasje - RK 1, 2, 3 */}
+                            {harRK123 && (
+                              <li>Fra mellometasje beregnet for maksimum ti personer i byggverk i risikoklasse 1, 2, og 3, kan utgangen være interntrapp til underliggende plan.</li>
+                            )}
+
+                            {/* 6. Dimensjonskrav */}
+                            <li>Rømningsvindu må ha høyde minimum <span className="font-semibold text-red-600">0,6 meter</span> og bredde minimum <span className="font-semibold text-red-600">0,5 meter</span>. Summen av høyde og bredde må være minimum <span className="font-semibold text-red-600">1,5 meter</span>, jf. figur 5. Svingvinduer med dreieakse, må ha tilsvarende effektiv åpning.</li>
+
+                            {/* 7. Avstand gulv til underkant */}
+                            <li>
+                              Avstanden fra gulv til underkant av vindusåpningen må være maksimalt <span className="font-semibold text-red-600">1,0 meter</span> med mindre det er truffet tiltak for å lette rømning.
+                              {gulvAvstand > 0 && (
+                                <span className={`ml-1 font-medium ${gulvAvstand <= 1.0 ? "text-green-600" : "text-amber-600"}`}>
+                                  {gulvAvstand <= 1.0 ? " ✓ Oppfylt" : " ⚠ Krever tiltak for å lette rømning"}
+                                </span>
+                              )}
+                            </li>
+
+                            {/* 8. Åpning uten verktøy */}
+                            <li>Rømningsvindu må være lett å åpne uten bruk av spesialverktøy og må være hengslet slik at det er lett å komme ut av vinduet.</li>
+
+                            {/* 9. Markeringsskilt */}
+                            <li>Rømningsvindu, unntatt i boenheter, må ha markeringsskilt.</li>
+
+                            {/* 10. Brannvesenets høyderedskap */}
+                            <li>Rømningsvindu må være tilgjengelig for brannvesenets høyderedskap. I etasjer beregnet for inntil 15 personer, og i boenheter, er det tilstrekkelig at ett rømningsvindu er tilgjengelig for brannvesenets høyderedskap.</li>
+
+                            {/* 11. Balkong */}
+                            <li>
+                              Utgang til balkong anses likeverdig med rømningsvindu når tilhørende ytelser for å lette rømning er oppfylt.
+                              {harBalkong && <span className="ml-1 font-medium text-green-600"> ✓ Balkong tilgjengelig</span>}
+                            </li>
+
+                            {/* 12. RK 4 - automatisk slokkeanlegg */}
+                            {harRK4 && (
+                              <li>Forskriftens krav til automatisk slokkeanlegg i byggverk i risikoklasse 4 anses oppfylt når det installeres automatisk sprinkleranlegg i samsvar med § 11–12 første ledd bokstav a.</li>
+                            )}
+                          </ul>
                         </>
                       );
                     })()}
-                    <p className="font-medium mt-3 mb-2">Preaksepterte ytelser for rømningsvindu:</p>
-                    <ul className="list-disc list-inside space-y-1 text-sm">
-                      <li>Rømningsvindu må ha fri bredde minimum <span className="font-semibold text-red-600">0,5 meter</span> og fri høyde minimum <span className="font-semibold text-red-600">0,6 meter</span>.</li>
-                      <li>Summen av bredde og høyde må være minst <span className="font-semibold text-red-600">1,5 meter</span>.</li>
-                      <li>Underkant av rømningsvindu må ikke være høyere enn <span className="font-semibold text-red-600">1,2 meter</span> over gulv.</li>
-                      <li>Vinduet må være lett å åpne uten bruk av nøkkel eller spesialverktøy.</li>
-                      <li>Det må være tilstrekkelig plass til rømning utenfor vinduet (terreng eller balkong).</li>
-                    </ul>
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
@@ -4624,9 +4694,55 @@ const Konsept = () => {
                           </Label>
                         </div>
                         {formData.romningsvinduRelevant && (
-                          <p className="text-xs text-muted-foreground mt-2 ml-6">
-                            Krav til rømningsvindu vil bli inkludert i brannkonseptet.
-                          </p>
+                          <div className="mt-3 ml-6 space-y-3 p-3 bg-muted/30 rounded-md">
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Høyde over terreng (meter)</Label>
+                                <Input 
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  placeholder="f.eks. 3.5"
+                                  value={formData.romningsvinduHoyde}
+                                  onChange={(e) => setFormData({...formData, romningsvinduHoyde: e.target.value})}
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Avstand gulv til underkant vindu (meter)</Label>
+                                <Input 
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  max="1.2"
+                                  placeholder="maks 1.0"
+                                  value={formData.romningsvinduGulvAvstand}
+                                  onChange={(e) => setFormData({...formData, romningsvinduGulvAvstand: e.target.value})}
+                                />
+                              </div>
+                            </div>
+                            <div className="flex flex-col space-y-2">
+                              <div className="flex items-center space-x-2">
+                                <Checkbox 
+                                  id="romningsvinduHarStige"
+                                  checked={formData.romningsvinduHarStige}
+                                  onCheckedChange={(checked) => setFormData({...formData, romningsvinduHarStige: checked as boolean})}
+                                />
+                                <Label htmlFor="romningsvinduHarStige" className="text-xs cursor-pointer">
+                                  Fastmontert stige med ryggbøyler til rømningsvindu
+                                </Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Checkbox 
+                                  id="romningsvinduHarBalkong"
+                                  checked={formData.romningsvinduHarBalkong}
+                                  onCheckedChange={(checked) => setFormData({...formData, romningsvinduHarBalkong: checked as boolean})}
+                                />
+                                <Label htmlFor="romningsvinduHarBalkong" className="text-xs cursor-pointer">
+                                  Utgang til balkong tilgjengelig
+                                </Label>
+                              </div>
+                            </div>
+                          </div>
                         )}
                       </div>
                       <div>
