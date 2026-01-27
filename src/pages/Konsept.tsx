@@ -414,6 +414,7 @@ const Konsept = () => {
     dorerStromforsyningBKL1: false,
     dorerStromforsyningBKL2: false,
     dorerStromforsyningBKL3: false,
+    romningsvinduRelevant: false, // Rømning via vindu er relevant
     romningsvei: "",
     romningsveiKommentar: "",
     manuellSlokking: "",
@@ -2092,6 +2093,50 @@ const Konsept = () => {
                 </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
+              {formData.romningsvinduRelevant && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Rømningsvindu</td>
+                  <td className="border border-gray-400 p-2">
+                    <p className="mb-2">Brannceller som består av flere etasjer, eller har mellometasje, skal ha minst én utgang fra hver etasje.</p>
+                    {(() => {
+                      // Determine risk class from building parts or global setting
+                      const risikoklasser = formData.bygningsdeler && formData.bygningsdeler.length > 0
+                        ? [...new Set(formData.bygningsdeler.map(d => d.risikoklasse).filter(Boolean))]
+                        : formData.risikoklasse ? [formData.risikoklasse] : [];
+                      
+                      const harRK1234 = risikoklasser.some(rk => 
+                        rk === "RK1" || rk === "RK2" || rk === "RK3" || rk === "RK4" || 
+                        rk === "1" || rk === "2" || rk === "3" || rk === "4"
+                      );
+                      const harRK4 = risikoklasser.some(rk => rk === "RK4" || rk === "4");
+                      
+                      return (
+                        <>
+                          {harRK1234 && (
+                            <p className="mb-2">
+                              I byggverk i risikoklasse 1, 2, 3 og 4 kan utgangen fra disse planene, utenom inngangsplanet, være vindu som er tilrettelagt for sikker rømning.
+                            </p>
+                          )}
+                          {harRK4 && (
+                            <p className="mb-2">
+                              I branncelle i byggverk i risikoklasse 4 uten krav om heis, kan øverste plan ha utgang via nærmeste underliggende plan dersom det installeres automatisk brannslokkeanlegg i branncellen.
+                            </p>
+                          )}
+                        </>
+                      );
+                    })()}
+                    <p className="font-medium mt-3 mb-2">Preaksepterte ytelser for rømningsvindu:</p>
+                    <ul className="list-disc list-inside space-y-1 text-sm">
+                      <li>Rømningsvindu må ha fri bredde minimum <span className="font-semibold text-red-600">0,5 meter</span> og fri høyde minimum <span className="font-semibold text-red-600">0,6 meter</span>.</li>
+                      <li>Summen av bredde og høyde må være minst <span className="font-semibold text-red-600">1,5 meter</span>.</li>
+                      <li>Underkant av rømningsvindu må ikke være høyere enn <span className="font-semibold text-red-600">1,2 meter</span> over gulv.</li>
+                      <li>Vinduet må være lett å åpne uten bruk av nøkkel eller spesialverktøy.</li>
+                      <li>Det må være tilstrekkelig plass til rømning utenfor vinduet (terreng eller balkong).</li>
+                    </ul>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              )}
 
               <tr className="bg-blue-100">
                 <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.11 &nbsp;&nbsp; §11-14 Rømningsvei</td>
@@ -4566,6 +4611,23 @@ const Konsept = () => {
                           }
                           return null;
                         })()}
+                      </div>
+                      <div className="pt-2 border-t">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id="romningsvinduRelevant"
+                            checked={formData.romningsvinduRelevant}
+                            onCheckedChange={(checked) => setFormData({...formData, romningsvinduRelevant: checked as boolean})}
+                          />
+                          <Label htmlFor="romningsvinduRelevant" className="text-sm cursor-pointer font-medium">
+                            Evakuering via vindu er relevant
+                          </Label>
+                        </div>
+                        {formData.romningsvinduRelevant && (
+                          <p className="text-xs text-muted-foreground mt-2 ml-6">
+                            Krav til rømningsvindu vil bli inkludert i brannkonseptet.
+                          </p>
+                        )}
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Utganger beskrives</Label>
