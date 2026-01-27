@@ -2017,29 +2017,40 @@ const Konsept = () => {
                         ? [...new Set(formData.bygningsdeler.map(d => d.risikoklasse).filter(Boolean))]
                         : formData.risikoklasse ? [formData.risikoklasse] : [];
                       
+                      // Check if fritidsbolig is relevant
+                      const erFritidsbolig = formData.bygningstype?.toLowerCase().includes("fritidsbolig") || 
+                        formData.bygningsdeler?.some(d => d.bygningstype?.toLowerCase().includes("fritidsbolig"));
+                      
                       const harRK5 = risikoklasser.some(rk => rk === "RK5" || rk === "5");
                       const harAndreRK = risikoklasser.some(rk => rk !== "RK5" && rk !== "5" && rk);
+                      
+                      const fritidsboligUnntak = erFritidsbolig ? " Unntak gjelder for fritidsbolig med én boenhet." : "";
                       
                       if (harRK5 && harAndreRK) {
                         return (
                           <>
-                            <li>Dør til rømningsvei i byggverk i risikoklasse 1, 2, 3, 4 og 6 må ha fri bredde minimum <span className="font-semibold text-red-600">0,86 meter</span>. Unntak gjelder for fritidsbolig med én boenhet.</li>
+                            <li>Dør til rømningsvei i byggverk i risikoklasse 1, 2, 3, 4 og 6 må ha fri bredde minimum <span className="font-semibold text-red-600">0,86 meter</span>.{fritidsboligUnntak}</li>
                             <li>Dør til rømningsvei i byggverk i risikoklasse 5 må ha fri bredde minimum <span className="font-semibold text-red-600">1,16 meter</span>.</li>
                           </>
                         );
                       } else if (harRK5) {
                         return (
-                          <li>Dør til rømningsvei må ha fri bredde minimum <span className="font-semibold text-red-600">1,16 meter</span> (risikoklasse 5).</li>
+                          <li>Dør til rømningsvei må ha fri bredde minimum <span className="font-semibold text-red-600">1,16 meter</span>.</li>
                         );
                       } else {
                         return (
-                          <li>Dør til rømningsvei må ha fri bredde minimum <span className="font-semibold text-red-600">0,86 meter</span>. Unntak gjelder for fritidsbolig med én boenhet.</li>
+                          <li>Dør til rømningsvei må ha fri bredde minimum <span className="font-semibold text-red-600">0,86 meter</span>.{fritidsboligUnntak}</li>
                         );
                       }
                     })()}
                     <li>I byggverk hvor det er nødvendig med transport i seng, må dørbredden tilpasses dette.</li>
                     <li>Samlet fri bredde på dører fra branncelle til rømningsvei bestemmes ut fra det antall personer som branncellen er beregnet for, jf. femte ledd.</li>
-                    <li>Dør til rømningsvei må ha fri høyde på minimum 2,0 meter. Unntak gjelder for fritidsbolig med én boenhet.</li>
+                    {(() => {
+                      const erFritidsbolig = formData.bygningstype?.toLowerCase().includes("fritidsbolig") || 
+                        formData.bygningsdeler?.some(d => d.bygningstype?.toLowerCase().includes("fritidsbolig"));
+                      const fritidsboligUnntak = erFritidsbolig ? " Unntak gjelder for fritidsbolig med én boenhet." : "";
+                      return <li>Dør til rømningsvei må ha fri høyde på minimum 2,0 meter.{fritidsboligUnntak}</li>;
+                    })()}
                     <li>Dør til rømningsvei må lett kunne åpnes slik at den er enkel å bruke for alle personer.</li>
                     <li>Selvlukkende dør, benevnt C [S], kan settes i åpen stilling ved hjelp av elektromagnetiske holdere som utløses og lukker døren ved brannalarm. Døren må kunne åpnes igjen med dørautomatikk eller manuelt med åpningskraft i samsvar med § 12–13.</li>
                     {formData.dorerTilbakerømning && (
