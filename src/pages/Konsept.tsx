@@ -2317,6 +2317,14 @@ const Konsept = () => {
                     {formData.romningsveiKorridorOver30m && (
                       <li>Korridor som er lengre enn <span className="font-bold text-red-600">30 meter</span> må deles med bygningsdel og dør minst klasse <span className="font-bold text-red-600">E 30-CS<sub>a</sub></span> [F 30S] med innbyrdes avstand på høyst <span className="font-bold text-red-600">30 meter</span>.</li>
                     )}
+
+                    {/* Dør i rømningsvei */}
+                    <li>Dør i rømningsvei skal prosjekteres og utføres slik at den sikrer rask rømning og slik at det ikke oppstår fare for oppstuving. Følgende skal minst være oppfylt:
+                      <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
+                        <li>Døren skal ha tilstrekkelig bredde og høyde, og skal være lett å åpne uten bruk av nøkkel.</li>
+                        <li>Døren skal slå ut i rømningsretningen. Dør i rømningsvei kan likevel slå mot rømningsretningen dersom det ikke er fare for oppstuving ved rømning.</li>
+                      </ul>
+                    </li>
                   </ul>
                 </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
