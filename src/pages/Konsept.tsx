@@ -3072,9 +3072,14 @@ const Konsept = () => {
                     <div className="space-y-6">
               <Accordion type="multiple" defaultValue={["kap1"]} className="w-full">
                 {/* Kapittel 1: Innledning */}
-                <AccordionItem value="kap1">
-                  <AccordionTrigger className="text-base font-semibold">1. Innledning</AccordionTrigger>
-                  <AccordionContent className="space-y-4 pt-2">
+                <AccordionItem value="kap1" className="border-2 border-primary/20 rounded-lg mb-4 overflow-hidden">
+                  <AccordionTrigger className="text-lg font-bold bg-primary/10 hover:bg-primary/15 px-4 py-3 text-primary">
+                    <span className="flex items-center gap-3">
+                      <span className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">1</span>
+                      Innledning
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">1.1 Informasjon om tiltaket</Label>
                       <div className="space-y-3">
@@ -3233,9 +3238,14 @@ const Konsept = () => {
                 </AccordionItem>
 
                 {/* Kapittel 2: Grunnlag og forutsetninger */}
-                <AccordionItem value="kap2">
-                  <AccordionTrigger className="text-base font-semibold">2. Grunnlag og forutsetninger</AccordionTrigger>
-                  <AccordionContent className="space-y-4 pt-2">
+                <AccordionItem value="kap2" className="border-2 border-primary/20 rounded-lg mb-4 overflow-hidden">
+                  <AccordionTrigger className="text-lg font-bold bg-primary/10 hover:bg-primary/15 px-4 py-3 text-primary">
+                    <span className="flex items-center gap-3">
+                      <span className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">2</span>
+                      Grunnlag og forutsetninger
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.1 Bygningsinformasjon</Label>
                       <div className="space-y-3">
@@ -3841,9 +3851,14 @@ const Konsept = () => {
                 </AccordionItem>
 
                 {/* Kapittel 3: Branntekniske ytelseskrav */}
-                <AccordionItem value="kap3">
-                  <AccordionTrigger className="text-base font-semibold">3. Branntekniske ytelseskrav</AccordionTrigger>
-                  <AccordionContent className="space-y-4 pt-2">
+                <AccordionItem value="kap3" className="border-2 border-primary/20 rounded-lg mb-4 overflow-hidden">
+                  <AccordionTrigger className="text-lg font-bold bg-primary/10 hover:bg-primary/15 px-4 py-3 text-primary">
+                    <span className="flex items-center gap-3">
+                      <span className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">3</span>
+                      Branntekniske ytelseskrav
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
                     <div className="space-y-3">
                       <Label className="text-xs text-muted-foreground">3.1 § 11-4 Bæreevne og stabilitet</Label>
                       <div>
@@ -5054,9 +5069,14 @@ const Konsept = () => {
                 </AccordionItem>
 
                 {/* Kapittel 4: Utførelses- og driftsfasen */}
-                <AccordionItem value="kap4">
-                  <AccordionTrigger className="text-base font-semibold">4. Utførelses- og driftsfasen</AccordionTrigger>
-                  <AccordionContent className="space-y-4 pt-2">
+                <AccordionItem value="kap4" className="border-2 border-primary/20 rounded-lg mb-4 overflow-hidden">
+                  <AccordionTrigger className="text-lg font-bold bg-primary/10 hover:bg-primary/15 px-4 py-3 text-primary">
+                    <span className="flex items-center gap-3">
+                      <span className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">4</span>
+                      Utførelses- og driftsfasen
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">4.1 Utførelsesfasen</Label>
                       <div>
@@ -5081,9 +5101,14 @@ const Konsept = () => {
                 </AccordionItem>
 
                 {/* Kapittel 5: Revisjonshistorikk */}
-                <AccordionItem value="kap5">
-                  <AccordionTrigger className="text-base font-semibold">5. Revisjonshistorikk</AccordionTrigger>
-                  <AccordionContent className="space-y-4 pt-2">
+                <AccordionItem value="kap5" className="border-2 border-primary/20 rounded-lg mb-4 overflow-hidden">
+                  <AccordionTrigger className="text-lg font-bold bg-primary/10 hover:bg-primary/15 px-4 py-3 text-primary">
+                    <span className="flex items-center gap-3">
+                      <span className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">5</span>
+                      Revisjonshistorikk
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
                     <div>
                       <Label className="text-xs font-medium mb-1 block">Revisjonslogg</Label>
                       <Textarea 
@@ -5095,9 +5120,14 @@ const Konsept = () => {
                 </AccordionItem>
 
                 {/* Kapittel 6: Litteraturhenvisninger */}
-                <AccordionItem value="kap6">
-                  <AccordionTrigger className="text-base font-semibold">6. Litteraturhenvisninger</AccordionTrigger>
-                  <AccordionContent className="space-y-4 pt-2">
+                <AccordionItem value="kap6" className="border-2 border-primary/20 rounded-lg mb-4 overflow-hidden">
+                  <AccordionTrigger className="text-lg font-bold bg-primary/10 hover:bg-primary/15 px-4 py-3 text-primary">
+                    <span className="flex items-center gap-3">
+                      <span className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">6</span>
+                      Litteraturhenvisninger
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
                     <div>
                       <Label className="text-xs font-medium mb-1 block">TEK17, VTEK17, NS 3901 osv.</Label>
                       <Textarea 
@@ -5109,9 +5139,14 @@ const Konsept = () => {
                 </AccordionItem>
 
                 {/* Fravik */}
-                <AccordionItem value="fravik">
-                  <AccordionTrigger className="text-base font-semibold">Fravik og kompenserende tiltak</AccordionTrigger>
-                  <AccordionContent className="space-y-4 pt-2">
+                <AccordionItem value="fravik" className="border-2 border-amber-500/30 rounded-lg mb-4 overflow-hidden">
+                  <AccordionTrigger className="text-lg font-bold bg-amber-500/10 hover:bg-amber-500/15 px-4 py-3 text-amber-700">
+                    <span className="flex items-center gap-3">
+                      <span className="bg-amber-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">!</span>
+                      Fravik og kompenserende tiltak
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
                     <div>
                       <Label className="text-xs font-medium mb-1 block">Beskriv eventuelle fravik og kompenserende tiltak (valgfritt)</Label>
                       <Textarea 
