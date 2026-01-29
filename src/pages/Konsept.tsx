@@ -425,6 +425,7 @@ const Konsept = () => {
     romningsveiSengeliggende: false, // Transport av sengeliggende
     romningsveiSamtidigRomning: false, // Samtidig rømning fra flere etasjer
     romningsveiFlereTrapper: false, // Rømning mot flere trapperom
+    romningsveiSvalgang: false, // Svalgang relevant
     romningsvei: "",
     romningsveiKommentar: "",
     manuellSlokking: "",
@@ -2313,6 +2314,33 @@ const Konsept = () => {
                 </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
+
+              {/* Svalgang krav */}
+              {formData.romningsveiSvalgang && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Svalgang og altangang</td>
+                  <td className="border border-gray-400 p-2">
+                    <ul className="space-y-2">
+                      <li>Med mindre branncellene også har direkte utgang til sikkert sted, må svalgang og altangang utføres slik at de tilfredsstiller forutsetningene om to uavhengige rømningsveier. Svalgang og altangang må derfor ha minst to trapper til terreng, en i hver ende. Avstanden mellom trappene må ikke være over <span className="font-bold text-red-600">60 meter</span>.</li>
+                      
+                      <li>Svalgang som er lengre enn <span className="font-bold text-red-600">30 meter</span> må oppdeles med branncellebegrensende bygningsdeler med innbyrdes avstand på maksimum 30 meter for å begrense den horisontale brannspredningen.</li>
+                      
+                      <li>I byggverk i brannklasse 1 hvor det er tilrettelagt for bruk av vindu som rømningsvei, er det tilstrekkelig med én trapp. Dette gjelder under forutsetning av at avstanden fra dør i branncelle til trappen er maksimalt <span className="font-bold text-red-600">15 meter</span>, og at det ikke må rømmes forbi uklassifisert vindu i annen branncelle.</li>
+                      
+                      <li>Svalgangen må være mest mulig åpen slik at røyk- og branngasser kan unnslippe. Om den åpne delen er <span className="font-bold text-red-600">50 prosent</span> av den totale «veggflaten», antas dette å være tilfredsstillende. Det er den øverste delen av veggflatene som må være åpen. Åpning i rekkverk er ikke å anse som åpent areal.</li>
+                      
+                      <li>Gulvet i svalgang og altangang må være utført som branncellebegrensende konstruksjon med overflate <span className="font-bold text-red-600">D<sub>fl</sub>-s1</span> (G). Kledning på vegg og tak må være som for rømningsvei. Overflaten kan være <span className="font-bold text-red-600">B-s3,d0</span> (Ut 1). I byggverk med mer enn to etasjer må rekkverk og øvrige konstruksjoner bestå av ubrennbare eller begrenset brennbare materialer, det vil si klasse <span className="font-bold text-red-600">A2-s1,d0</span>.</li>
+                      
+                      <li>Svalgang og altangang må være minimum <span className="font-bold text-red-600">1,20 meter</span> bred for at den skal fungere som flammeskjerm.</li>
+                      
+                      <li>Dekke og takutstikk over svalgang må utføres horisontalt og tett (mot for eksempel oppforet tak eller kaldt loft) slik at røyk- og branngasser kan slippe uhindret ut til det fri.</li>
+                      
+                      <li>Trappene må være beskyttet mot strålevarme fra en eventuell brann i byggverket. Derfor må enten trapperomsveggene som vender mot byggverket eller byggverkets yttervegg mot trappen og <span className="font-bold text-red-600">5,0 meter</span> til hver side for denne, være utført som branncellebegrensende konstruksjon.</li>
+                    </ul>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              )}
 
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Beskrivelse av rømningsvei</td>
@@ -4919,6 +4947,18 @@ const Konsept = () => {
                         />
                         <Label htmlFor="romningsveiSamtidigRomning" className="text-xs cursor-pointer">
                           Samtidig rømning fra flere etasjer
+                        </Label>
+                      </div>
+
+                      {/* Svalgang */}
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                        <Checkbox 
+                          id="romningsveiSvalgang"
+                          checked={formData.romningsveiSvalgang}
+                          onCheckedChange={(checked) => setFormData({...formData, romningsveiSvalgang: checked === true})}
+                        />
+                        <Label htmlFor="romningsveiSvalgang" className="text-xs cursor-pointer">
+                          Svalgang/altangang er relevant
                         </Label>
                       </div>
 
