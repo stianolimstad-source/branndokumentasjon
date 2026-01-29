@@ -425,6 +425,7 @@ const Konsept = () => {
     romningsveiSengeliggende: false, // Transport av sengeliggende
     romningsveiSamtidigRomning: false, // Samtidig rømning fra flere etasjer
     romningsveiFlereTrapper: false, // Rømning mot flere trapperom
+    romningsveiKorridorOver30m: false, // Korridor over 30 meter
     romningsveiSvalgang: false, // Svalgang relevant
     romningsveiSvalgangOver30m: false, // Svalgang over 30 meter
     romningsvei: "",
@@ -2311,6 +2312,11 @@ const Konsept = () => {
 
                     {/* Fri bredde i trapp */}
                     <li>Fri bredde i trapp må være som for rømningsvei generelt, men minimum som angitt i § 12–14.</li>
+
+                    {/* Korridor over 30 meter */}
+                    {formData.romningsveiKorridorOver30m && (
+                      <li>Korridor som er lengre enn <span className="font-bold text-red-600">30 meter</span> må deles med bygningsdel og dør minst klasse <span className="font-bold text-red-600">E 30-CS<sub>a</sub></span> [F 30S] med innbyrdes avstand på høyst <span className="font-bold text-red-600">30 meter</span>.</li>
+                    )}
                   </ul>
                 </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
@@ -5004,6 +5010,18 @@ const Konsept = () => {
                         />
                         <Label htmlFor="romningsveiSamtidigRomning" className="text-xs cursor-pointer">
                           Samtidig rømning fra flere etasjer
+                        </Label>
+                      </div>
+
+                      {/* Korridor over 30 meter */}
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                        <Checkbox 
+                          id="romningsveiKorridorOver30m"
+                          checked={formData.romningsveiKorridorOver30m}
+                          onCheckedChange={(checked) => setFormData({...formData, romningsveiKorridorOver30m: checked === true})}
+                        />
+                        <Label htmlFor="romningsveiKorridorOver30m" className="text-xs cursor-pointer">
+                          Korridor er lengre enn 30 meter
                         </Label>
                       </div>
 
