@@ -3860,8 +3860,8 @@ const Konsept = () => {
                   </AccordionTrigger>
                   <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
                     <div className="space-y-3">
-                      <div className="border-b-2 border-primary/30 pb-2 mb-3">
-                        <Label className="text-sm font-bold text-primary">3.1 § 11-4 Bæreevne og stabilitet</Label>
+                      <div className="border-b-2 border-foreground/20 pb-2 mb-3">
+                        <Label className="text-base font-extrabold text-foreground">3.1 § 11-4 Bæreevne og stabilitet</Label>
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Krav til bærende konstruksjoner (automatisk basert på brannklasse)</Label>
@@ -3912,8 +3912,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-3">
-                      <div className="border-b-2 border-primary/30 pb-2 mb-3">
-                        <Label className="text-sm font-bold text-primary">3.2 § 11-5 Sikkerhet ved eksplosjon</Label>
+                      <div className="border-b-2 border-foreground/20 pb-2 mb-3">
+                        <Label className="text-base font-extrabold text-foreground">3.2 § 11-5 Sikkerhet ved eksplosjon</Label>
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Er eksplosjonsfare relevant for dette tiltaket?</Label>
@@ -3969,8 +3969,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <div className="border-b-2 border-primary/30 pb-2 mb-3">
-                        <Label className="text-sm font-bold text-primary">3.3 § 11-6 Tiltak mot brannspredning</Label>
+                      <div className="border-b-2 border-foreground/20 pb-2 mb-3">
+                        <Label className="text-base font-extrabold text-foreground">3.3 § 11-6 Tiltak mot brannspredning</Label>
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Bygningshøyde (meter)</Label>
@@ -4019,8 +4019,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <div className="border-b-2 border-primary/30 pb-2 mb-3">
-                        <Label className="text-sm font-bold text-primary">3.4 § 11-7 Brannseksjoner</Label>
+                      <div className="border-b-2 border-foreground/20 pb-2 mb-3">
+                        <Label className="text-base font-extrabold text-foreground">3.4 § 11-7 Brannseksjoner</Label>
                       </div>
                       
                       {/* Automatisk beregning basert på areal fra kap 2 */}
@@ -4136,8 +4136,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <div className="border-b-2 border-primary/30 pb-2 mb-3">
-                        <Label className="text-sm font-bold text-primary">3.5 § 11-8 Brannceller</Label>
+                      <div className="border-b-2 border-foreground/20 pb-2 mb-3">
+                        <Label className="text-base font-extrabold text-foreground">3.5 § 11-8 Brannceller</Label>
                       </div>
                       
                       <div>
@@ -4228,8 +4228,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <div className="border-b-2 border-primary/30 pb-2 mb-3">
-                        <Label className="text-sm font-bold text-primary">3.6 § 11-9 Materialer og produkters egenskaper ved brann</Label>
+                      <div className="border-b-2 border-foreground/20 pb-2 mb-3">
+                        <Label className="text-base font-extrabold text-foreground">3.6 § 11-9 Materialer og produkters egenskaper ved brann</Label>
                       </div>
                       <p className="text-xs text-muted-foreground">Krav til overflater og kledninger genereres automatisk basert på brannklasse ({formData.brannklasse || "ikke angitt"}).</p>
                       
@@ -4272,8 +4272,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <div className="border-b-2 border-primary/30 pb-2 mb-3">
-                        <Label className="text-sm font-bold text-primary">3.7 § 11-10 Tekniske installasjoner</Label>
+                      <div className="border-b-2 border-foreground/20 pb-2 mb-3">
+                        <Label className="text-base font-extrabold text-foreground">3.7 § 11-10 Tekniske installasjoner</Label>
                       </div>
                       
                       {/* Ventilasjonsanlegg */}
@@ -4398,8 +4398,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <div className="border-b-2 border-primary/30 pb-2 mb-3">
-                        <Label className="text-sm font-bold text-primary">3.8 § 11-11 Rømning og redning</Label>
+                      <div className="border-b-2 border-foreground/20 pb-2 mb-3">
+                        <Label className="text-base font-extrabold text-foreground">3.8 § 11-11 Rømning og redning</Label>
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Generelle krav om rømning</Label>
@@ -4418,8 +4418,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-4">
-                      <div className="border-b-2 border-primary/30 pb-2 mb-3">
-                        <Label className="text-sm font-bold text-primary">3.9 § 11-12 Tilrettelegging for rømning og redning</Label>
+                      <div className="border-b-2 border-foreground/20 pb-2 mb-3">
+                        <Label className="text-base font-extrabold text-foreground">3.9 § 11-12 Tilrettelegging for rømning og redning</Label>
                       </div>
                       
                       {/* Automatiske krav basert på RK */}
@@ -4647,8 +4647,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <div className="border-b-2 border-primary/30 pb-2 mb-3">
-                        <Label className="text-sm font-bold text-primary">3.10 § 11-13 Utgang fra branncelle</Label>
+                      <div className="border-b-2 border-foreground/20 pb-2 mb-3">
+                        <Label className="text-base font-extrabold text-foreground">3.10 § 11-13 Utgang fra branncelle</Label>
                       </div>
                       {((formData.risikoklasse === "RK4" && parseInt(formData.etasjer) >= 2) || 
                         formData.bygningsdeler.some(b => b.risikoklasse === "RK4" && parseInt(b.etasjer) >= 2)) && (
@@ -4943,8 +4943,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <div className="border-b-2 border-primary/30 pb-2 mb-3">
-                        <Label className="text-sm font-bold text-primary">3.11 § 11-14 Rømningsvei</Label>
+                      <div className="border-b-2 border-foreground/20 pb-2 mb-3">
+                        <Label className="text-base font-extrabold text-foreground">3.11 § 11-14 Rømningsvei</Label>
                       </div>
                       
                       {/* Rom i rømningsvei maks 20 m² */}
@@ -5052,8 +5052,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <div className="border-b-2 border-primary/30 pb-2 mb-3">
-                        <Label className="text-sm font-bold text-primary">3.12 § 11-16 Manuell slokking</Label>
+                      <div className="border-b-2 border-foreground/20 pb-2 mb-3">
+                        <Label className="text-base font-extrabold text-foreground">3.12 § 11-16 Manuell slokking</Label>
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Slokkeutstyr beskrives</Label>
@@ -5072,8 +5072,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <div className="border-b-2 border-primary/30 pb-2 mb-3">
-                        <Label className="text-sm font-bold text-primary">3.13 § 11-17 Redningsmannskap</Label>
+                      <div className="border-b-2 border-foreground/20 pb-2 mb-3">
+                        <Label className="text-base font-extrabold text-foreground">3.13 § 11-17 Redningsmannskap</Label>
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Tilrettelegging for rednings- og slokkemannskap</Label>
