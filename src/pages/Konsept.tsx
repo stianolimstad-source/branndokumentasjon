@@ -3072,10 +3072,10 @@ const Konsept = () => {
                     <div className="space-y-6">
               <Accordion type="multiple" defaultValue={["kap1"]} className="w-full">
                 {/* Kapittel 1: Innledning */}
-                <AccordionItem value="kap1" className="border-2 border-primary/20 rounded-lg mb-4 overflow-hidden">
-                  <AccordionTrigger className="text-lg font-bold bg-primary/10 hover:bg-primary/15 px-4 py-3 text-primary">
+                <AccordionItem value="kap1" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
+                  <AccordionTrigger className="text-lg font-bold bg-blue-50 hover:bg-blue-100 px-4 py-3 text-blue-800">
                     <span className="flex items-center gap-3">
-                      <span className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">1</span>
+                      <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">1</span>
                       Innledning
                     </span>
                   </AccordionTrigger>
@@ -3238,10 +3238,10 @@ const Konsept = () => {
                 </AccordionItem>
 
                 {/* Kapittel 2: Grunnlag og forutsetninger */}
-                <AccordionItem value="kap2" className="border-2 border-primary/20 rounded-lg mb-4 overflow-hidden">
-                  <AccordionTrigger className="text-lg font-bold bg-primary/10 hover:bg-primary/15 px-4 py-3 text-primary">
+                <AccordionItem value="kap2" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
+                  <AccordionTrigger className="text-lg font-bold bg-blue-50 hover:bg-blue-100 px-4 py-3 text-blue-800">
                     <span className="flex items-center gap-3">
-                      <span className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">2</span>
+                      <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">2</span>
                       Grunnlag og forutsetninger
                     </span>
                   </AccordionTrigger>
@@ -3851,10 +3851,10 @@ const Konsept = () => {
                 </AccordionItem>
 
                 {/* Kapittel 3: Branntekniske ytelseskrav */}
-                <AccordionItem value="kap3" className="border-2 border-primary/20 rounded-lg mb-4 overflow-hidden">
-                  <AccordionTrigger className="text-lg font-bold bg-primary/10 hover:bg-primary/15 px-4 py-3 text-primary">
+                <AccordionItem value="kap3" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
+                  <AccordionTrigger className="text-lg font-bold bg-blue-50 hover:bg-blue-100 px-4 py-3 text-blue-800">
                     <span className="flex items-center gap-3">
-                      <span className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">3</span>
+                      <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">3</span>
                       Branntekniske ytelseskrav
                     </span>
                   </AccordionTrigger>
@@ -5095,10 +5095,10 @@ const Konsept = () => {
                 </AccordionItem>
 
                 {/* Kapittel 4: Utførelses- og driftsfasen */}
-                <AccordionItem value="kap4" className="border-2 border-primary/20 rounded-lg mb-4 overflow-hidden">
-                  <AccordionTrigger className="text-lg font-bold bg-primary/10 hover:bg-primary/15 px-4 py-3 text-primary">
+                <AccordionItem value="kap4" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
+                  <AccordionTrigger className="text-lg font-bold bg-blue-50 hover:bg-blue-100 px-4 py-3 text-blue-800">
                     <span className="flex items-center gap-3">
-                      <span className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">4</span>
+                      <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">4</span>
                       Utførelses- og driftsfasen
                     </span>
                   </AccordionTrigger>
@@ -5127,10 +5127,10 @@ const Konsept = () => {
                 </AccordionItem>
 
                 {/* Kapittel 5: Revisjonshistorikk */}
-                <AccordionItem value="kap5" className="border-2 border-primary/20 rounded-lg mb-4 overflow-hidden">
-                  <AccordionTrigger className="text-lg font-bold bg-primary/10 hover:bg-primary/15 px-4 py-3 text-primary">
+                <AccordionItem value="kap5" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
+                  <AccordionTrigger className="text-lg font-bold bg-blue-50 hover:bg-blue-100 px-4 py-3 text-blue-800">
                     <span className="flex items-center gap-3">
-                      <span className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">5</span>
+                      <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">5</span>
                       Revisjonshistorikk
                     </span>
                   </AccordionTrigger>
@@ -5146,10 +5146,10 @@ const Konsept = () => {
                 </AccordionItem>
 
                 {/* Kapittel 6: Litteraturhenvisninger */}
-                <AccordionItem value="kap6" className="border-2 border-primary/20 rounded-lg mb-4 overflow-hidden">
-                  <AccordionTrigger className="text-lg font-bold bg-primary/10 hover:bg-primary/15 px-4 py-3 text-primary">
+                <AccordionItem value="kap6" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
+                  <AccordionTrigger className="text-lg font-bold bg-blue-50 hover:bg-blue-100 px-4 py-3 text-blue-800">
                     <span className="flex items-center gap-3">
-                      <span className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">6</span>
+                      <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">6</span>
                       Litteraturhenvisninger
                     </span>
                   </AccordionTrigger>
