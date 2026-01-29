@@ -426,6 +426,7 @@ const Konsept = () => {
     romningsveiSamtidigRomning: false, // Samtidig rømning fra flere etasjer
     romningsveiFlereTrapper: false, // Rømning mot flere trapperom
     romningsveiSvalgang: false, // Svalgang relevant
+    romningsveiSvalgangOver30m: false, // Svalgang over 30 meter
     romningsvei: "",
     romningsveiKommentar: "",
     manuellSlokking: "",
@@ -2323,9 +2324,25 @@ const Konsept = () => {
                     <ul className="space-y-2">
                       <li>Med mindre branncellene også har direkte utgang til sikkert sted, må svalgang og altangang utføres slik at de tilfredsstiller forutsetningene om to uavhengige rømningsveier. Svalgang og altangang må derfor ha minst to trapper til terreng, en i hver ende. Avstanden mellom trappene må ikke være over <span className="font-bold text-red-600">60 meter</span>.</li>
                       
-                      <li>Svalgang som er lengre enn <span className="font-bold text-red-600">30 meter</span> må oppdeles med branncellebegrensende bygningsdeler med innbyrdes avstand på maksimum 30 meter for å begrense den horisontale brannspredningen.</li>
+                      {/* Vis kun dersom svalgang er over 30 meter */}
+                      {formData.romningsveiSvalgangOver30m && (
+                        <li>Svalgang som er lengre enn <span className="font-bold text-red-600">30 meter</span> må oppdeles med branncellebegrensende bygningsdeler med innbyrdes avstand på maksimum 30 meter for å begrense den horisontale brannspredningen.</li>
+                      )}
                       
-                      <li>I byggverk i brannklasse 1 hvor det er tilrettelagt for bruk av vindu som rømningsvei, er det tilstrekkelig med én trapp. Dette gjelder under forutsetning av at avstanden fra dør i branncelle til trappen er maksimalt <span className="font-bold text-red-600">15 meter</span>, og at det ikke må rømmes forbi uklassifisert vindu i annen branncelle.</li>
+                      {/* Vis kun dersom noen bygningsdel er i BKL1 */}
+                      {formData.bygningsdeler.some(del => {
+                        const rk = parseInt(del.risikoklasse) || 0;
+                        const floors = parseInt(del.etasjer) || 1;
+                        // BKL1 logic
+                        if (rk === 1 && floors <= 2) return true;
+                        if (rk === 2 && floors <= 2) return true;
+                        if (rk === 4 && floors <= 3) return true;
+                        if (rk === 5 && floors <= 2 && (parseFloat(del.areal) || 0) < 800) return true;
+                        if (rk === 6 && floors <= 2) return true;
+                        return false;
+                      }) && (
+                        <li>I byggverk i brannklasse 1 hvor det er tilrettelagt for bruk av vindu som rømningsvei, er det tilstrekkelig med én trapp. Dette gjelder under forutsetning av at avstanden fra dør i branncelle til trappen er maksimalt <span className="font-bold text-red-600">15 meter</span>, og at det ikke må rømmes forbi uklassifisert vindu i annen branncelle.</li>
+                      )}
                       
                       <li>Svalgangen må være mest mulig åpen slik at røyk- og branngasser kan unnslippe. Om den åpne delen er <span className="font-bold text-red-600">50 prosent</span> av den totale «veggflaten», antas dette å være tilfredsstillende. Det er den øverste delen av veggflatene som må være åpen. Åpning i rekkverk er ikke å anse som åpent areal.</li>
                       
@@ -4961,6 +4978,22 @@ const Konsept = () => {
                           Svalgang/altangang er relevant
                         </Label>
                       </div>
+
+                      {/* Svalgang betingede alternativer */}
+                      {formData.romningsveiSvalgang && (
+                        <div className="ml-4 space-y-2 border-l-2 border-muted pl-3">
+                          <div className="flex items-center gap-2 p-2 bg-muted/30 rounded">
+                            <Checkbox 
+                              id="romningsveiSvalgangOver30m"
+                              checked={formData.romningsveiSvalgangOver30m}
+                              onCheckedChange={(checked) => setFormData({...formData, romningsveiSvalgangOver30m: checked === true})}
+                            />
+                            <Label htmlFor="romningsveiSvalgangOver30m" className="text-xs cursor-pointer">
+                              Svalgang er lengre enn 30 meter
+                            </Label>
+                          </div>
+                        </div>
+                      )}
 
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Rømningsveier beskrives</Label>
