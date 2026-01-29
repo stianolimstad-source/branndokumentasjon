@@ -2322,7 +2322,10 @@ const Konsept = () => {
                   <td className="border border-gray-400 p-2 align-top font-medium">Svalgang og altangang</td>
                   <td className="border border-gray-400 p-2">
                     <ul className="space-y-2">
-                      <li>Med mindre branncellene også har direkte utgang til sikkert sted, må svalgang og altangang utføres slik at de tilfredsstiller forutsetningene om to uavhengige rømningsveier. Svalgang og altangang må derfor ha minst to trapper til terreng, en i hver ende. Avstanden mellom trappene må ikke være over <span className="font-bold text-red-600">60 meter</span>.</li>
+                      {/* Vis 60m-kravet kun dersom svalgang IKKE er over 30 meter */}
+                      {!formData.romningsveiSvalgangOver30m && (
+                        <li>Med mindre branncellene også har direkte utgang til sikkert sted, må svalgang og altangang utføres slik at de tilfredsstiller forutsetningene om to uavhengige rømningsveier. Svalgang og altangang må derfor ha minst to trapper til terreng, en i hver ende. Avstanden mellom trappene må ikke være over <span className="font-bold text-red-600">60 meter</span>.</li>
+                      )}
                       
                       {/* Vis kun dersom svalgang er over 30 meter */}
                       {formData.romningsveiSvalgangOver30m && (
