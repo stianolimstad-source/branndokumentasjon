@@ -2332,6 +2332,19 @@ const Konsept = () => {
                     <li>Døren skal ha tilstrekkelig bredde og høyde, og skal være lett å åpne uten bruk av nøkkel.</li>
                     <li>Døren skal slå ut i rømningsretningen. Dør i rømningsvei kan likevel slå mot rømningsretningen dersom det ikke er fare for oppstuving ved rømning.</li>
                   </ul>
+                  
+                  <p className="mt-4 mb-2 font-medium">Preaksepterte ytelser:</p>
+                  <ul className="list-disc list-inside space-y-2">
+                    <li>Dør i rømningsvei må ha fri bredde som minst tilsvarer den nødvendige frie bredden i rømningsveien, jf. første ledd. I byggverk hvor det er nødvendig med transport av sengeliggende personer, må dørbredden tilpasses dette.</li>
+                    <li>Automatisk skyvedør, rotasjonsgrind, dør med dørautomatikk eller dør med annet elektromagnetisk åpne- og lukkesystem som ikke har brann- eller røykskillende funksjon, for eksempel dør til det fri, kan benyttes som dør i rømningsvei dersom døren har sikker funksjon ved bortfall av strøm, og
+                      <ul className="list-decimal list-inside ml-4 mt-1 space-y-1">
+                        <li>byggverket har brannalarmanlegg og døren ved alarm eller strømbrudd åpnes automatisk til den bredde som er nødvendig, eller</li>
+                        <li>døren manuelt kan føres til åpen stilling.</li>
+                      </ul>
+                    </li>
+                    <li>Dør i rømningsvei i byggverk i risikoklasse 5 og 6 må være utført for sikker rømning ved at døren må kunne åpnes manuelt med ett grep og uten bruk av nøkkel, jf. figur 6.</li>
+                    <li>Utadslående dør i yttervegg som er utgang eller rømningsvei, må ikke kunne blokkeres av snø eller is. Takoverbygg, snøfangere på tak og lignende vil kunne forhindre dette.</li>
+                  </ul>
                 </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
