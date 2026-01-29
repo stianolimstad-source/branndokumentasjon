@@ -424,6 +424,7 @@ const Konsept = () => {
     romningsveiRom50E30: false, // Oppholdsrom inntil 50 m² med E30
     romningsveiSengeliggende: false, // Transport av sengeliggende
     romningsveiSamtidigRomning: false, // Samtidig rømning fra flere etasjer
+    romningsveiFlereTrapper: false, // Rømning mot flere trapperom
     romningsvei: "",
     romningsveiKommentar: "",
     manuellSlokking: "",
@@ -2233,29 +2234,36 @@ const Konsept = () => {
               <tr>
                 <td className="border border-gray-400 p-2 align-top font-medium">Rømningsvei</td>
                 <td className="border border-gray-400 p-2">
-                  <ol className="list-decimal list-inside space-y-2">
-                    {/* 1. Rom i rømningsvei maks 20 m² */}
+                  <ul className="space-y-2">
+                    {/* Rom i rømningsvei maks 20 m² */}
                     {formData.romningsveiRomMaks20 && (
                       <li>Rømningsvei kan inneholde mindre avgrensede rom for andre formål dersom dette nødvendig av byggverket gjør dette nødvendig og dersom disse ikke reduserer rømningsveiens funksjon. Eksempler er resepsjon og vaktrom med inntil <span className="font-bold text-red-600">20 m²</span> gulvareal som er knyttet til korridor, og som er avgrenset slik at møbleringen ikke har mulighet for å vanskeliggjøre rømningen. Dette unntaket kan ikke benyttes som grunnlag for dokumentere andre fravik i rømningsveier.</li>
                     )}
 
-                    {/* 2. Oppholdsrom inntil 50 m² med E30 */}
+                    {/* Oppholdsrom inntil 50 m² med E30 */}
                     {formData.romningsveiRom50E30 && (
                       <li>Oppholdsrom inntil <span className="font-bold text-red-600">50 m²</span> kan være del av rømningsvei når arealet har automatisk sprinkleranlegg og er skilt fra rømningsvei med konstruksjoner med brannmotstand minst <span className="font-bold text-red-600">E 30</span>.</li>
                     )}
 
-                    {/* 3. Avstander */}
+                    {/* Avstander - basert på ett eller flere trapperom */}
                     <li>Avstand fra dør i branncelle til nærmeste trapp eller utgang til sikkert sted (terreng eller annen brannseksjon) må være:
                       <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
-                        <li>Maksimum <span className="font-bold text-red-600">15 meter</span> der det er tilstrekkelig med én trapp.</li>
-                        <li>Maksimum <span className="font-bold text-red-600">15 meter</span> der det er utgang til korridor med sammenfallende rømningsretning.</li>
-                        <li>Maksimum <span className="font-bold text-red-600">30 meter</span> der det finnes flere trapper eller utganger.</li>
+                        {formData.romningsveiFlereTrapper ? (
+                          <>
+                            <li>Maksimum <span className="font-bold text-red-600">30 meter</span> der det finnes flere trapper eller utganger.</li>
+                          </>
+                        ) : (
+                          <>
+                            <li>Maksimum <span className="font-bold text-red-600">15 meter</span> der det er tilstrekkelig med én trapp.</li>
+                            <li>Maksimum <span className="font-bold text-red-600">15 meter</span> der det er utgang til korridor med sammenfallende rømningsretning.</li>
+                          </>
+                        )}
                       </ul>
                     </li>
 
-                    {/* 4. Samlet fri bredde */}
+                    {/* Samlet fri bredde */}
                     <li>
-                      Samlet fri bredde i rømningsvei må minimum være <span className="font-bold text-red-600">1 cm per person</span>, men uansett minst som angitt i nr. 4 a og b. For dimensjonerende persontall vises til § 11-13 Tabell 3.
+                      Samlet fri bredde i rømningsvei må minimum være <span className="font-bold text-red-600">1 cm per person</span>, men uansett minst som angitt nedenfor. For dimensjonerende persontall vises til § 11-13 Tabell 3.
                       <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
                         {(() => {
                           // Finn relevante risikoklasser for bredde-krav
@@ -2286,22 +2294,22 @@ const Konsept = () => {
                       </ul>
                     </li>
 
-                    {/* 5. Transport av sengeliggende */}
+                    {/* Transport av sengeliggende */}
                     {formData.romningsveiSengeliggende && (
                       <li>I byggverk hvor det er nødvendig med transport av sengeliggende personer, må bredden av rømningsveien tilpasses dette.</li>
                     )}
 
-                    {/* 6. Samtidig rømning fra flere etasjer */}
+                    {/* Samtidig rømning fra flere etasjer */}
                     {formData.romningsveiSamtidigRomning && (
                       <li>I byggverk med flere etasjer må rømningsveiene dimensjoneres for samtidig rømning fra to etasjer. Det må dimensjoneres for de to etasjene som ligger over hverandre og til sammen har det største persontallet. Persontallet settes lik det største antallet personer som branncellen er beregnet for.</li>
                     )}
 
-                    {/* 7. Ingen innsnevring */}
+                    {/* Ingen innsnevring */}
                     <li>Rømningsvei må ikke ha innsnevring. Rekkverk, håndløper mv. i rømningsvei kan stikke inntil <span className="font-bold text-red-600">10 cm</span> ut fra vegg uten at den frie bredden må økes.</li>
 
-                    {/* 8. Fri bredde i trapp */}
+                    {/* Fri bredde i trapp */}
                     <li>Fri bredde i trapp må være som for rømningsvei generelt, men minimum som angitt i § 12–14.</li>
-                  </ol>
+                  </ul>
                 </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
@@ -4875,6 +4883,18 @@ const Konsept = () => {
                         />
                         <Label htmlFor="romningsveiRom50E30" className="text-xs cursor-pointer">
                           Oppholdsrom inntil 50 m² med sprinkler og E30
+                        </Label>
+                      </div>
+
+                      {/* Rømning mot flere trapperom */}
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                        <Checkbox 
+                          id="romningsveiFlereTrapper"
+                          checked={formData.romningsveiFlereTrapper}
+                          onCheckedChange={(checked) => setFormData({...formData, romningsveiFlereTrapper: checked === true})}
+                        />
+                        <Label htmlFor="romningsveiFlereTrapper" className="text-xs cursor-pointer">
+                          Rømning mot flere trapperom (30 m avstandskrav)
                         </Label>
                       </div>
 
