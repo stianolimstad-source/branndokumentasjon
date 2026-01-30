@@ -430,9 +430,9 @@ const Konsept = () => {
     romningsveiSvalgangOver30m: false, // Svalgang over 30 meter
     romningsvei: "",
     romningsveiKommentar: "",
-    // 3.12 §11-15 Ledesystem
-    ledesystemRelevant: true,
-    ledesystemKommentar: "",
+    // 3.12 §11-15 Tilrettelegging for redning av husdyr
+    husdyrRedningRelevant: false,
+    husdyrRedningKommentar: "",
     manuellSlokking: "",
     manuellSlokkingKommentar: "",
     redningsmannskap: "",
@@ -2411,42 +2411,44 @@ const Konsept = () => {
                 </tr>
               )}
 
-              {/* 3.12 §11-15 Ledesystem */}
-              <tr className="bg-blue-100">
-                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.12 &nbsp;&nbsp; §11-15 Ledesystem</td>
-              </tr>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
-                <th className="border border-gray-400 p-2 text-left">Løsning</th>
-                <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 align-top">Generelt</td>
-                <td className="border border-gray-400 p-2">
-                  Byggverk skal ha ledesystem som legger forholdene til rette for sikker evakuering. Ledesystemet skal virke under hele rømningsforløpet og skal bestå av markeringsskilt, ledelys og nødlys.
-                </td>
-                <td className="border border-gray-400 p-2 align-top">RIE</td>
-              </tr>
-              {formData.ledesystemRelevant && (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Ledesystem</td>
-                  <td className="border border-gray-400 p-2">
-                    <ul className="list-disc ml-4 space-y-1">
-                      <li>Markeringsskilt skal vise utganger og rømningsveier, og skal være synlige fra alle steder i rømningsveien. Skilt som kun er belyst innenfra, må ha nødstrømforsyning.</li>
-                      <li>Ledelys skal lede personer som beveger seg gjennom et rom ved å angi retning mot utgang. Ledelysets intensitet og plassering skal sikre at retningen er synlig fra alle steder i rommet.</li>
-                      <li>Nødlys skal gi tilstrekkelig lys til at personer kan orientere seg og bevege seg trygt mot utgang. Nødlyset må ha nødstrømforsyning.</li>
-                      <li>Ledesystemet skal ha batterireserve som sikrer drift i minimum 60 minutter ved bortfall av ordinær strømforsyning.</li>
-                    </ul>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">RIE</td>
-                </tr>
-              )}
-              {formData.ledesystemKommentar && (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Kommentar</td>
-                  <td className="border border-gray-400 p-2 italic">{formData.ledesystemKommentar}</td>
-                  <td className="border border-gray-400 p-2 align-top">-</td>
-                </tr>
+              {/* 3.12 §11-15 Tilrettelegging for redning av husdyr */}
+              {formData.husdyrRedningRelevant && (
+                <>
+                  <tr className="bg-blue-100">
+                    <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.12 &nbsp;&nbsp; §11-15 Tilrettelegging for redning av husdyr</td>
+                  </tr>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                    <th className="border border-gray-400 p-2 text-left">Løsning</th>
+                    <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Generelt</td>
+                    <td className="border border-gray-400 p-2">
+                      Byggverk som er beregnet for husdyrhold, skal være prosjektert og utført for rask og sikker redning av husdyr. Driftsbygning med husdyrrom utføres i samsvar med ytelser som angitt for risikoklasse 2.
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Preaksepterte ytelser</td>
+                    <td className="border border-gray-400 p-2">
+                      <ul className="list-disc ml-4 space-y-1">
+                        <li>Husdyrrom må ha minst to utganger uavhengig av størrelsen på rommet. Én av utgangene kan gå via annen branncelle eller annet rom.</li>
+                        <li>Utganger eller rømningsveier må ha fri bredde på minimum <span className="font-semibold text-red-600">1,6 meter</span> fra rom for okse, ku og hest, og minimum <span className="font-semibold text-red-600">1,0 meter</span> fra rom for gris, sau og geit.</li>
+                        <li>Avstand fra et hvert oppholdssted til nærmeste utgang i husdyrrom må ikke være mer enn <span className="font-semibold text-red-600">30 meter</span>.</li>
+                        <li>Utadslående dør i yttervegg som er utgang eller rømningsvei må ikke kunne blokkeres av snø eller is. Takoverbygg, snøfangere på tak og lignende vil kunne forhindre dette.</li>
+                      </ul>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
+                  {formData.husdyrRedningKommentar && (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Kommentar</td>
+                      <td className="border border-gray-400 p-2 italic">{formData.husdyrRedningKommentar}</td>
+                      <td className="border border-gray-400 p-2 align-top">-</td>
+                    </tr>
+                  )}
+                </>
               )}
 
               {/* 3.13 §11-16 Manuell slokking */}
@@ -2591,7 +2593,7 @@ const Konsept = () => {
             new Paragraph({ text: "    3.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider", spacing: { after: 30 } }),
             new Paragraph({ text: "    3.10 § 11-13 Utgang fra branncelle", spacing: { after: 30 } }),
             new Paragraph({ text: "    3.11 § 11-14 Rømningsvei", spacing: { after: 30 } }),
-            new Paragraph({ text: "    3.12 § 11-15 Ledesystem", spacing: { after: 30 } }),
+            new Paragraph({ text: "    3.12 § 11-15 Tilrettelegging for redning av husdyr", spacing: { after: 30 } }),
             new Paragraph({ text: "    3.13 § 11-16 Tilrettelegging for manuell slokking", spacing: { after: 30 } }),
             new Paragraph({ text: "    3.14 § 11-17 Tilrettelegging for rednings- og slokkemannskap", spacing: { after: 50 } }),
             new Paragraph({ children: [new TextRun({ text: "4. Utførelses- og driftsfasen", bold: true, size: 22 })], spacing: { after: 50 } }),
@@ -5142,23 +5144,23 @@ const Konsept = () => {
                     </div>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.12 § 11-15 Ledesystem</Label>
+                        <Label className="text-base font-extrabold text-foreground">3.12 § 11-15 Tilrettelegging for redning av husdyr</Label>
                       </div>
                       <div className="flex items-center gap-2 p-2 bg-muted/50 rounded mb-2">
                         <Checkbox 
-                          id="ledesystemRelevant"
-                          checked={formData.ledesystemRelevant}
-                          onCheckedChange={(checked) => setFormData({...formData, ledesystemRelevant: checked === true})}
+                          id="husdyrRedningRelevant"
+                          checked={formData.husdyrRedningRelevant}
+                          onCheckedChange={(checked) => setFormData({...formData, husdyrRedningRelevant: checked === true})}
                         />
-                        <Label htmlFor="ledesystemRelevant" className="text-xs cursor-pointer">
-                          Ledesystem med markeringsskilt, ledelys og nødlys er relevant
+                        <Label htmlFor="husdyrRedningRelevant" className="text-xs cursor-pointer">
+                          Bygget er beregnet for husdyrhold (driftsbygning med husdyrrom)
                         </Label>
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
                         <Textarea 
-                          value={formData.ledesystemKommentar}
-                          onChange={(e) => setFormData({...formData, ledesystemKommentar: e.target.value})}
+                          value={formData.husdyrRedningKommentar}
+                          onChange={(e) => setFormData({...formData, husdyrRedningKommentar: e.target.value})}
                           placeholder="Legg til kommentar..."
                         />
                       </div>
