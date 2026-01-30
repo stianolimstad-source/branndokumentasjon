@@ -2453,7 +2453,7 @@ const Konsept = () => {
 
               {/* 3.13 §11-16 Manuell slokking */}
               <tr className="bg-blue-100">
-                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.13 &nbsp;&nbsp; §11-16 Manuell slokking</td>
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.13 &nbsp;&nbsp; §11-16 Tilrettelegging for manuell slokking</td>
               </tr>
               <tr className="bg-gray-100">
                 <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
@@ -2461,10 +2461,30 @@ const Konsept = () => {
                 <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Slokkeutstyr</td>
-                <td className="border border-gray-400 p-2">{formData.manuellSlokking || "[Slokkeutstyr beskrives]"}</td>
+                <td className="border border-gray-400 p-2 align-top">Generelt</td>
+                <td className="border border-gray-400 p-2">
+                  Byggverk skal være tilrettelagt for effektiv manuell slokking av brann.
+                </td>
                 <td className="border border-gray-400 p-2 align-top">RIV</td>
               </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Brannslokkeutstyr</td>
+                <td className="border border-gray-400 p-2">
+                  <ul className="list-disc ml-4 space-y-1">
+                    <li>I eller på alle byggverk der brann kan oppstå, skal det være manuelt brannslokkeutstyr for effektiv slokkeinnsats i startfasen av brannen. Dette kommer i tillegg til et eventuelt automatisk brannslokkeanlegg.</li>
+                    <li>Brannslokkeutstyret skal være plassert slik at slokkeinnsatsen blir effektiv. For mindre byggverk med virksomhet i risikoklasse 1 kan utstyret være plassert i et nærliggende byggverk.</li>
+                    <li>Plasseringen av brannslokkeutstyret skal være tydelig merket med mindre det bare er beregnet for personer i én bruksenhet og personene må forventes å være godt kjent med plasseringen.</li>
+                  </ul>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIV</td>
+              </tr>
+              {formData.manuellSlokking && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
+                  <td className="border border-gray-400 p-2">{formData.manuellSlokking}</td>
+                  <td className="border border-gray-400 p-2 align-top">RIV</td>
+                </tr>
+              )}
               {formData.manuellSlokkingKommentar && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Kommentar</td>
