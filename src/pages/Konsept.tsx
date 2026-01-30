@@ -435,6 +435,9 @@ const Konsept = () => {
     husdyrRedningKommentar: "",
     manuellSlokking: "",
     manuellSlokkingKommentar: "",
+    // Brannslokkeutstyr valg
+    slokkeBrannslange: false,
+    slokkeHandslukker: false,
     redningsmannskap: "",
     redningsmannskapKommentar: "",
     eksplosjonKommentar: "",
@@ -2476,13 +2479,49 @@ const Konsept = () => {
                     <li>Plasseringen av brannslokkeutstyret skal være tydelig merket med mindre det bare er beregnet for personer i én bruksenhet og personene må forventes å være godt kjent med plasseringen.</li>
                   </ul>
                 </td>
-                <td className="border border-gray-400 p-2 align-top">RIV</td>
+                <td className="border border-gray-400 p-2 align-top">RIBr</td>
               </tr>
+              {/* Krav basert på risikoklasse */}
+              {(() => {
+                const rk = parseInt(formData.risikoklasse.replace(/\D/g, ''), 10);
+                const isRK356 = [3, 5, 6].includes(rk);
+                const isRK124 = [1, 2, 4].includes(rk);
+                const isRK4Bolig = rk === 4;
+                const showBrannslange = formData.slokkeBrannslange || isRK356;
+                const showHandslukker = formData.slokkeHandslukker || isRK124;
+                
+                return (
+                  <>
+                    {(isRK356 || isRK124 || formData.slokkeBrannslange || formData.slokkeHandslukker) && (
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">Preaksepterte ytelser</td>
+                        <td className="border border-gray-400 p-2">
+                          <ul className="list-disc ml-4 space-y-1">
+                            {isRK356 && (
+                              <li>Byggverk i risikoklasse 3, 5 og 6 hvor det er trykkvann, må ha brannslange. Dersom det ikke er tilgang på tilstrekkelig mengde vann, må byggverket ha håndslokkeapparater.</li>
+                            )}
+                            {isRK124 && (
+                              <li>Byggverk i risikoklasse 1, 2 og 4 må ha enten håndslokkeapparat eller egnet brannslange som rekker inn i alle rom.</li>
+                            )}
+                            {(showBrannslange || showHandslukker) && (
+                              <li>Håndslokkeapparater kan være pulverapparater på minimum <span className="font-semibold text-red-600">6 kg</span> med ABC-pulver, eller skum- og vannapparater på minimum <span className="font-semibold text-red-600">9 liter</span> eller på minimum <span className="font-semibold text-red-600">6 liter</span> og med effektivitetsklasse minst <span className="font-semibold text-red-600">21A</span> etter <span className="underline">NS-EN 3-7:2004+A1:2007</span>.</li>
+                            )}
+                            {(showBrannslange && isRK4Bolig) && (
+                              <li>I bolig kan det benyttes formstabil brannslange med innvendig diameter på minimum <span className="font-semibold text-red-600">10 mm</span>.</li>
+                            )}
+                          </ul>
+                        </td>
+                        <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                      </tr>
+                    )}
+                  </>
+                );
+              })()}
               {formData.manuellSlokking && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
                   <td className="border border-gray-400 p-2">{formData.manuellSlokking}</td>
-                  <td className="border border-gray-400 p-2 align-top">RIV</td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
                 </tr>
               )}
               {formData.manuellSlokkingKommentar && (
@@ -5188,6 +5227,31 @@ const Konsept = () => {
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.13 § 11-16 Manuell slokking</Label>
+                      </div>
+                      <div className="text-xs text-muted-foreground mb-2">
+                        Brannslokkeutstyr-krav bestemmes automatisk basert på risikoklasse. Du kan også manuelt velge spesifikke utstyrstyper nedenfor.
+                      </div>
+                      <div className="flex flex-col gap-2 p-2 bg-muted/50 rounded mb-2">
+                        <div className="flex items-center gap-2">
+                          <Checkbox 
+                            id="slokkeBrannslange"
+                            checked={formData.slokkeBrannslange}
+                            onCheckedChange={(checked) => setFormData({...formData, slokkeBrannslange: checked === true})}
+                          />
+                          <Label htmlFor="slokkeBrannslange" className="text-xs cursor-pointer">
+                            Brannslange
+                          </Label>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Checkbox 
+                            id="slokkeHandslukker"
+                            checked={formData.slokkeHandslukker}
+                            onCheckedChange={(checked) => setFormData({...formData, slokkeHandslukker: checked === true})}
+                          />
+                          <Label htmlFor="slokkeHandslukker" className="text-xs cursor-pointer">
+                            Håndslokkeapparat
+                          </Label>
+                        </div>
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Slokkeutstyr beskrives</Label>
