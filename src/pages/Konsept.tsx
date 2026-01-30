@@ -2487,7 +2487,9 @@ const Konsept = () => {
                 const isRK356 = [3, 5, 6].includes(rk);
                 const isRK124 = [1, 2, 4].includes(rk);
                 const isRK4Bolig = rk === 4;
-                const showBrannslange = formData.slokkeBrannslange || isRK356;
+                // For RK 3/5/6: brannslange er alltid påkrevd
+                // For RK 1/2/4: håndslukker er minimum, men brannslange kan velges i tillegg
+                const showBrannslange = isRK356 || formData.slokkeBrannslange;
                 const showHandslukker = formData.slokkeHandslukker || isRK124;
                 
                 return (
@@ -2503,10 +2505,10 @@ const Konsept = () => {
                             {isRK124 && (
                               <li>Byggverk i risikoklasse 1, 2 og 4 må ha enten håndslokkeapparat eller egnet brannslange som rekker inn i alle rom.</li>
                             )}
-                            {(showBrannslange || showHandslukker) && (
+                            {(showHandslukker || showBrannslange) && (
                               <li>Håndslokkeapparater kan være pulverapparater på minimum <span className="font-semibold text-red-600">6 kg</span> med ABC-pulver, eller skum- og vannapparater på minimum <span className="font-semibold text-red-600">9 liter</span> eller på minimum <span className="font-semibold text-red-600">6 liter</span> og med effektivitetsklasse minst <span className="font-semibold text-red-600">21A</span> etter <span className="underline">NS-EN 3-7:2004+A1:2007</span>.</li>
                             )}
-                            {(showBrannslange && isRK4Bolig) && (
+                            {showBrannslange && isRK4Bolig && (
                               <li>I bolig kan det benyttes formstabil brannslange med innvendig diameter på minimum <span className="font-semibold text-red-600">10 mm</span>.</li>
                             )}
                           </ul>
@@ -5228,31 +5230,47 @@ const Konsept = () => {
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.13 § 11-16 Manuell slokking</Label>
                       </div>
-                      <div className="text-xs text-muted-foreground mb-2">
-                        Brannslokkeutstyr-krav bestemmes automatisk basert på risikoklasse. Du kan også manuelt velge spesifikke utstyrstyper nedenfor.
-                      </div>
-                      <div className="flex flex-col gap-2 p-2 bg-muted/50 rounded mb-2">
-                        <div className="flex items-center gap-2">
-                          <Checkbox 
-                            id="slokkeBrannslange"
-                            checked={formData.slokkeBrannslange}
-                            onCheckedChange={(checked) => setFormData({...formData, slokkeBrannslange: checked === true})}
-                          />
-                          <Label htmlFor="slokkeBrannslange" className="text-xs cursor-pointer">
-                            Brannslange
-                          </Label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Checkbox 
-                            id="slokkeHandslukker"
-                            checked={formData.slokkeHandslukker}
-                            onCheckedChange={(checked) => setFormData({...formData, slokkeHandslukker: checked === true})}
-                          />
-                          <Label htmlFor="slokkeHandslukker" className="text-xs cursor-pointer">
-                            Håndslokkeapparat
-                          </Label>
-                        </div>
-                      </div>
+                      {(() => {
+                        const rk = parseInt(formData.risikoklasse.replace(/\D/g, ''), 10);
+                        const isRK356 = [3, 5, 6].includes(rk);
+                        const isRK124 = [1, 2, 4].includes(rk);
+                        
+                        return (
+                          <>
+                            <div className="text-xs text-muted-foreground mb-2">
+                              {isRK356 
+                                ? "Risikoklasse 3, 5 eller 6 krever brannslange. Du kan også legge til håndslokkeapparater."
+                                : isRK124
+                                  ? "Risikoklasse 1, 2 eller 4 krever håndslokkeapparat eller brannslange. Du kan velge å legge til brannslange."
+                                  : "Velg risikoklasse for å se automatiske krav. Du kan også manuelt velge utstyrstyper nedenfor."
+                              }
+                            </div>
+                            <div className="flex flex-col gap-2 p-2 bg-muted/50 rounded mb-2">
+                              <div className="flex items-center gap-2">
+                                <Checkbox 
+                                  id="slokkeBrannslange"
+                                  checked={isRK356 || formData.slokkeBrannslange}
+                                  disabled={isRK356}
+                                  onCheckedChange={(checked) => setFormData({...formData, slokkeBrannslange: checked === true})}
+                                />
+                                <Label htmlFor="slokkeBrannslange" className={`text-xs cursor-pointer ${isRK356 ? 'text-muted-foreground' : ''}`}>
+                                  Brannslange {isRK356 && "(påkrevd for RK 3, 5, 6)"}
+                                </Label>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Checkbox 
+                                  id="slokkeHandslukker"
+                                  checked={formData.slokkeHandslukker}
+                                  onCheckedChange={(checked) => setFormData({...formData, slokkeHandslukker: checked === true})}
+                                />
+                                <Label htmlFor="slokkeHandslukker" className="text-xs cursor-pointer">
+                                  Håndslokkeapparat {isRK124 && !isRK356 && "(minimum for RK 1, 2, 4)"}
+                                </Label>
+                              </div>
+                            </div>
+                          </>
+                        );
+                      })()}
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Slokkeutstyr beskrives</Label>
                         <Textarea 
