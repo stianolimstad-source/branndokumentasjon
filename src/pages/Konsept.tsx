@@ -2546,9 +2546,9 @@ const Konsept = () => {
                 </tr>
               )}
 
-              {/* 3.14 §11-17 Redningsmannskap */}
+              {/* 3.14 §11-17 Tilrettelegging for slokkemannskap */}
               <tr className="bg-blue-100">
-                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.14 &nbsp;&nbsp; §11-17 Redningsmannskap</td>
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.14 &nbsp;&nbsp; §11-17 Tilrettelegging for slokkemannskap</td>
               </tr>
               <tr className="bg-gray-100">
                 <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
@@ -2556,10 +2556,23 @@ const Konsept = () => {
                 <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
               </tr>
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Tilrettelegging</td>
-                <td className="border border-gray-400 p-2">{formData.redningsmannskap || "[Tilrettelegging beskrives]"}</td>
+                <td className="border border-gray-400 p-2 align-top">Generelt</td>
+                <td className="border border-gray-400 p-2">
+                  <ul className="list-disc ml-4 space-y-1">
+                    <li>Byggverk skal plasseres og utformes slik at rednings- og slokkemannskap, med nødvendig utstyr, har brukbar tilgjengelighet til og i byggverket for rednings- og slokkeinnsats.</li>
+                    <li>Byggverk skal tilrettelegges slik at en brann lett kan lokaliseres og bekjempes.</li>
+                    <li>Branntekniske installasjoner som har betydning for rednings- og slokkeinnsatsen skal være tydelig merket.</li>
+                  </ul>
+                </td>
                 <td className="border border-gray-400 p-2 align-top">RIBr</td>
               </tr>
+              {formData.redningsmannskap && (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
+                  <td className="border border-gray-400 p-2">{formData.redningsmannskap}</td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                </tr>
+              )}
               {formData.redningsmannskapKommentar && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Kommentar</td>
@@ -5301,7 +5314,7 @@ const Konsept = () => {
                     </div>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.14 § 11-17 Redningsmannskap</Label>
+                        <Label className="text-base font-extrabold text-foreground">3.14 § 11-17 Tilrettelegging for slokkemannskap</Label>
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Tilrettelegging for rednings- og slokkemannskap</Label>
