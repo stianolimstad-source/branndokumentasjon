@@ -2502,11 +2502,17 @@ const Konsept = () => {
                             {isRK356 && (
                               <li>Byggverk i risikoklasse 3, 5 og 6 hvor det er trykkvann, må ha brannslange. Dersom det ikke er tilgang på tilstrekkelig mengde vann, må byggverket ha håndslokkeapparater.</li>
                             )}
-                            {isRK124 && (
+                            {isRK124 && !formData.slokkeBrannslange && (
                               <li>Byggverk i risikoklasse 1, 2 og 4 må ha enten håndslokkeapparat eller egnet brannslange som rekker inn i alle rom.</li>
                             )}
-                            {(showHandslukker || showBrannslange) && (
+                            {isRK124 && formData.slokkeBrannslange && (
+                              <li>Byggverk i risikoklasse 1, 2 og 4 må ha enten håndslokkeapparat eller egnet brannslange som rekker inn i alle rom. <span className="font-semibold">Brannslange er valgt for dette tiltaket.</span></li>
+                            )}
+                            {showHandslukker && (
                               <li>Håndslokkeapparater kan være pulverapparater på minimum <span className="font-semibold text-red-600">6 kg</span> med ABC-pulver, eller skum- og vannapparater på minimum <span className="font-semibold text-red-600">9 liter</span> eller på minimum <span className="font-semibold text-red-600">6 liter</span> og med effektivitetsklasse minst <span className="font-semibold text-red-600">21A</span> etter <span className="underline">NS-EN 3-7:2004+A1:2007</span>.</li>
+                            )}
+                            {showBrannslange && (
+                              <li>Brannslanger må ha tilstrekkelig lengde til å nå alle deler av byggverket. Slangene skal være lett tilgjengelige og tydelig merket.</li>
                             )}
                             {showBrannslange && isRK4Bolig && (
                               <li>I bolig kan det benyttes formstabil brannslange med innvendig diameter på minimum <span className="font-semibold text-red-600">10 mm</span>.</li>
