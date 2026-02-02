@@ -2566,22 +2566,37 @@ const Konsept = () => {
                 </td>
                 <td className="border border-gray-400 p-2 align-top">RIBr</td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 align-top">Tilgjengelighet til byggverket</td>
-                <td className="border border-gray-400 p-2">
-                  <ul className="list-disc ml-4 space-y-1">
-                    <li>Byggverk inntil 8 etasjer må ha tilgjengelighet for brannvesenets høyderedskap (brannbil utstyrt med maskinstige eller snorkel) slik at alle etasjer og brannseksjoner kan nås.</li>
-                    <li>For å oppnå tilgjengelighet må øverste gulv ikke være høyere enn <span className="font-semibold text-red-600">23 meter</span> over laveste punkt på oppstillingsplasser for brannvesenets høyderedskap. I lave byggverk kan det tilrettelegges for bruk av bærbare stiger.</li>
-                    <li>Det må være tilrettelagt for kjørbar atkomst helt fram til hovedinngangen og brannvesenets angrepsvei i byggverket. For mindre byggverk i risikoklasse 4 og brannklasse 1 kan det aksepteres avstand på inntil <span className="font-semibold text-red-600">50 meter</span>.</li>
-                    <li>I byggverk hvor vindu eller balkong utgjør en av rømningsveiene, må det være tilgjengelighet for brannvesenets høyderedskap i samsvar med ytelser angitt i § 11-13.</li>
-                    <li>I byggverk med et stort antall personer (vanligvis risikoklasse 5 og 6), må atkomsten som forutsettes benyttet for rednings- og slokkeinnsats, lett kunne åpnes av brannvesenet.</li>
-                    <li>I byggverk hvor brannvesenet vil måtte søke gjennom et større antall rom (mer enn 50 rom), må inngangsdør og dører til de enkelte rommene lett kunne åpnes ved hjelp av universalnøkkel som plasseres slik at den er lett tilgjengelig for brannvesenet.</li>
-                    <li>For å sikre radiokommunikasjon for rednings- og slokkemannskap, må det i byggverk uten tilfredsstillende innvendig radiodekning og hvor det kan bli behov for redningsinnsats, tilrettelegges med teknisk installasjon slik at rednings- og slokkemannskap kan benytte eget samband.</li>
-                    <li>Alle deler av en etasje må kunne nås med maksimalt <span className="font-semibold text-red-600">50 m slangeutlegg</span>. Avstand regnes fra nærmeste brannskille.</li>
-                  </ul>
-                </td>
-                <td className="border border-gray-400 p-2 align-top">ARK / RIBr</td>
-              </tr>
+              {(() => {
+                // Beregn maksimalt etasjeantall fra alle bygningsdeler
+                const maxEtasjer = formData.bygningsdeler && formData.bygningsdeler.length > 0
+                  ? Math.max(...formData.bygningsdeler.map(del => parseInt(del.etasjer) || 0))
+                  : parseInt(formData.etasjer) || 0;
+                // Sjekk om høyde er over 23m eller etasjer over 8
+                const kreverHoyderedskap = maxEtasjer > 8;
+                
+                return (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Tilgjengelighet til byggverket</td>
+                    <td className="border border-gray-400 p-2">
+                      <ul className="list-disc ml-4 space-y-1">
+                        {kreverHoyderedskap && (
+                          <>
+                            <li>Byggverk inntil 8 etasjer må ha tilgjengelighet for brannvesenets høyderedskap (brannbil utstyrt med maskinstige eller snorkel) slik at alle etasjer og brannseksjoner kan nås.</li>
+                            <li>For å oppnå tilgjengelighet må øverste gulv ikke være høyere enn <span className="font-semibold text-red-600">23 meter</span> over laveste punkt på oppstillingsplasser for brannvesenets høyderedskap. I lave byggverk kan det tilrettelegges for bruk av bærbare stiger.</li>
+                            <li>I byggverk hvor vindu eller balkong utgjør en av rømningsveiene, må det være tilgjengelighet for brannvesenets høyderedskap i samsvar med ytelser angitt i § 11-13.</li>
+                          </>
+                        )}
+                        <li>Det må være tilrettelagt for kjørbar atkomst helt fram til hovedinngangen og brannvesenets angrepsvei i byggverket. For mindre byggverk i risikoklasse 4 og brannklasse 1 kan det aksepteres avstand på inntil <span className="font-semibold text-red-600">50 meter</span>.</li>
+                        <li>I byggverk med et stort antall personer (vanligvis risikoklasse 5 og 6), må atkomsten som forutsettes benyttet for rednings- og slokkeinnsats, lett kunne åpnes av brannvesenet.</li>
+                        <li>I byggverk hvor brannvesenet vil måtte søke gjennom et større antall rom (mer enn 50 rom), må inngangsdør og dører til de enkelte rommene lett kunne åpnes ved hjelp av universalnøkkel som plasseres slik at den er lett tilgjengelig for brannvesenet.</li>
+                        <li>For å sikre radiokommunikasjon for rednings- og slokkemannskap, må det i byggverk uten tilfredsstillende innvendig radiodekning og hvor det kan bli behov for redningsinnsats, tilrettelegges med teknisk installasjon slik at rednings- og slokkemannskap kan benytte eget samband.</li>
+                        <li>Alle deler av en etasje må kunne nås med maksimalt <span className="font-semibold text-red-600">50 m slangeutlegg</span>. Avstand regnes fra nærmeste brannskille.</li>
+                      </ul>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK / RIBr</td>
+                  </tr>
+                );
+              })()}
               {formData.redningsmannskap && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
