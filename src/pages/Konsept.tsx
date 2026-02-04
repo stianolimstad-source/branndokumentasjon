@@ -5461,10 +5461,10 @@ const Konsept = () => {
                   {isGenerating ? "Genererer..." : "Generer brannkonsept"}
                 </Button>
               </div>
-                    </div>
-                  </ScrollArea>
-                </CardContent>
-              </Card>
+            </div>
+          </ScrollArea>
+        </CardContent>
+      </Card>
 
               {/* Generated Output */}
               <Card className="shadow-medium flex flex-col overflow-hidden lg:sticky lg:top-4">
