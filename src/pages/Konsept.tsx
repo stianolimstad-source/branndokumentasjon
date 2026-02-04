@@ -440,7 +440,6 @@ const Konsept = () => {
     slokkeHandslukker: false,
     redningsmannskap: "",
     redningsmannskapKommentar: "",
-    stortAntallPersoner: false, // 3.14 checkbox for stort antall personer
     eksplosjonKommentar: "",
     // 4. Utførelses- og driftsfasen
     utfoerelse: "",
@@ -2588,9 +2587,7 @@ const Konsept = () => {
                           </>
                         )}
                         <li>Det må være tilrettelagt for kjørbar atkomst helt fram til hovedinngangen og brannvesenets angrepsvei i byggverket. For mindre byggverk i risikoklasse 4 og brannklasse 1 kan det aksepteres avstand på inntil <span className="font-semibold text-red-600">50 meter</span>.</li>
-                        {formData.stortAntallPersoner && (
-                          <li>I byggverk med et stort antall personer (vanligvis risikoklasse 5 og 6), må atkomsten som forutsettes benyttet for rednings- og slokkeinnsats, lett kunne åpnes av brannvesenet.</li>
-                        )}
+                        <li>I byggverk med et stort antall personer (vanligvis risikoklasse 5 og 6), må atkomsten som forutsettes benyttet for rednings- og slokkeinnsats, lett kunne åpnes av brannvesenet.</li>
                         <li>I byggverk hvor brannvesenet vil måtte søke gjennom et større antall rom (mer enn 50 rom), må inngangsdør og dører til de enkelte rommene lett kunne åpnes ved hjelp av universalnøkkel som plasseres slik at den er lett tilgjengelig for brannvesenet.</li>
                         <li>For å sikre radiokommunikasjon for rednings- og slokkemannskap, må det i byggverk uten tilfredsstillende innvendig radiodekning og hvor det kan bli behov for redningsinnsats, tilrettelegges med teknisk installasjon slik at rednings- og slokkemannskap kan benytte eget samband.</li>
                         <li>Alle deler av en etasje må kunne nås med maksimalt <span className="font-semibold text-red-600">50 m slangeutlegg</span>. Avstand regnes fra nærmeste brannskille.</li>
@@ -5346,19 +5343,9 @@ const Konsept = () => {
                         />
                       </div>
                     </div>
-                      <div className="space-y-2">
+                    <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.14 § 11-17 Tilrettelegging for slokkemannskap</Label>
-                      </div>
-                      <div className="flex items-center space-x-2 p-2 border border-border rounded-md bg-muted/30">
-                        <Checkbox 
-                          id="stortAntallPersoner"
-                          checked={formData.stortAntallPersoner}
-                          onCheckedChange={(checked) => setFormData({...formData, stortAntallPersoner: !!checked})}
-                        />
-                        <Label htmlFor="stortAntallPersoner" className="text-sm cursor-pointer">
-                          Byggverk med stort antall personer (vanligvis RK5/RK6)
-                        </Label>
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Tilrettelegging for rednings- og slokkemannskap</Label>
