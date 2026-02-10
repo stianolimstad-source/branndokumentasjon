@@ -36,7 +36,7 @@ const SolidFlamme = () => {
   return (
     <Card className="shadow-medium">
       <CardHeader>
-        <CardTitle>3) Solid flamme-modell</CardTitle>
+        <CardTitle>1) Solid flamme-modell</CardTitle>
         <CardDescription>
           Ofte brukt for objekter/vegger — modellerer flammen som en strålende flate (rektangel/sylinder),
           beregner F₁₂ og ganger med E<sub>f</sub>.

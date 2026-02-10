@@ -32,7 +32,7 @@ const Punktkilde = () => {
   return (
     <Card className="shadow-medium">
       <CardHeader>
-        <CardTitle>2) Forenklet punktkildemodell</CardTitle>
+        <CardTitle>3) Forenklet punktkildemodell</CardTitle>
         <CardDescription>
           Superpraktisk i brann — beregner stråling som fraksjon av HRR (varmeavgivelse).
           Ofte den raskeste veien til kW/m² når du kjenner/estimerer Q̇.
