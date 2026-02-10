@@ -273,6 +273,36 @@ const baereevneUnntakTekster: Record<string, string> = {
   unntak7: "Under forutsetning av at nødvendig tid til rømning og sikkerhet for slokkemannskaper er ivaretatt, kan parkeringshus med mer enn 1/3 av veggflatene åpne, oppføres med brannmotstand R 15 A2-s1,d0 [ubrennbart materiale].",
 };
 
+// Funksjon for å beregne tiltaksklasse basert på brannklasse og risikoklasse
+const getTiltaksklasse = (brannklasse: string, risikoklasse: string, prosjekteringsmetode: string): string => {
+  const bkl = parseInt(brannklasse.replace(/\D/g, ''), 10);
+  const rk = parseInt(risikoklasse.replace(/\D/g, ''), 10);
+  
+  if (isNaN(bkl) || isNaN(rk)) return "";
+
+  // Tiltaksklasse 3: Alle brannklasser og alle risikoklasser med fravik
+  if (prosjekteringsmetode === "analyse" || prosjekteringsmetode === "blanding") {
+    return "Tiltaksklasse 3";
+  }
+
+  // Tiltaksklasse 1: BKL1 og RK 1, 2, 4 med preaksepterte ytelser
+  if (bkl === 1 && [1, 2, 4].includes(rk)) {
+    return "Tiltaksklasse 1";
+  }
+
+  // Tiltaksklasse 2: BKL1 og RK 3, 5, 6 ELLER BKL2 og RK 1, 2, 4
+  if ((bkl === 1 && [3, 5, 6].includes(rk)) || (bkl === 2 && [1, 2, 4].includes(rk))) {
+    return "Tiltaksklasse 2";
+  }
+
+  // Tiltaksklasse 3: BKL2 og RK 3, 5, 6 ELLER BKL3+
+  if ((bkl === 2 && [3, 5, 6].includes(rk)) || bkl >= 3) {
+    return "Tiltaksklasse 3";
+  }
+
+  return "";
+};
+
 const Konsept = () => {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
@@ -492,6 +522,17 @@ const Konsept = () => {
       }));
     }
   }, [formData.brannklasse, formData.risikoklasse, formData.etasjer]);
+
+  // Automatisk beregning av tiltaksklasse
+  const beregnetTiltaksklasse = getTiltaksklasse(formData.brannklasse, formData.risikoklasse, formData.prosjekteringsmetode);
+  
+  useEffect(() => {
+    if (beregnetTiltaksklasse) {
+      setFormData(prev => ({ ...prev, tiltaksklasse: beregnetTiltaksklasse }));
+    }
+  }, [formData.brannklasse, formData.risikoklasse, formData.prosjekteringsmetode]);
+
+  const erTiltaksklasseOverstyrt = beregnetTiltaksklasse && formData.tiltaksklasse !== beregnetTiltaksklasse;
   
   const erBrannklasseOverstyrt = beregnetBrannklasseResult.brannklasse && formData.brannklasse !== beregnetBrannklasseResult.brannklasse;
 
@@ -4128,7 +4169,12 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">Tiltaksklasse</Label>
+                      <Label className="text-xs text-muted-foreground">
+                        Tiltaksklasse
+                        {beregnetTiltaksklasse && (
+                          <span className="text-muted-foreground ml-2">(Automatisk: {beregnetTiltaksklasse})</span>
+                        )}
+                      </Label>
                       <Select 
                         value={formData.tiltaksklasse}
                         onValueChange={(value) => setFormData({...formData, tiltaksklasse: value})}
@@ -4142,6 +4188,15 @@ const Konsept = () => {
                           <SelectItem value="Tiltaksklasse 3">Tiltaksklasse 3</SelectItem>
                         </SelectContent>
                       </Select>
+                      {erTiltaksklasseOverstyrt && (
+                        <Alert variant="destructive" className="border-amber-500 bg-amber-50 text-amber-800">
+                          <AlertTriangle className="h-4 w-4 !text-amber-600" />
+                          <AlertTitle className="text-amber-800">Tiltaksklasse avviker fra beregnet verdi</AlertTitle>
+                          <AlertDescription className="text-amber-700">
+                            Basert på brannklasse ({formData.brannklasse}) og risikoklasse ({formData.risikoklasse}) er beregnet tiltaksklasse {beregnetTiltaksklasse}.
+                          </AlertDescription>
+                        </Alert>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.4 Tilleggskrav</Label>
