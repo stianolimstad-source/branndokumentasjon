@@ -500,12 +500,17 @@ const Konsept = () => {
   
   useEffect(() => {
     if (beregnetBrannklasseResult.brannklasse) {
-      setFormData(prev => ({ 
-        ...prev, 
-        brannklasse: beregnetBrannklasseResult.brannklasse,
-        brannklasseUnntak: beregnetBrannklasseResult.brannklasseUnntak || "",
-        brannklasseBegrunnelse: "" // Nullstill begrunnelse når automatisk beregnet
-      }));
+      setFormData(prev => {
+        // Beregn tiltaksklasse basert på den nye brannklassen
+        const nyTiltaksklasse = getTiltaksklasse(beregnetBrannklasseResult.brannklasse, prev.risikoklasse, prev.prosjekteringsmetode);
+        return {
+          ...prev, 
+          brannklasse: beregnetBrannklasseResult.brannklasse,
+          brannklasseUnntak: beregnetBrannklasseResult.brannklasseUnntak || "",
+          brannklasseBegrunnelse: "",
+          ...(nyTiltaksklasse ? { tiltaksklasse: nyTiltaksklasse } : {}),
+        };
+      });
     }
   }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal]);
 
@@ -521,7 +526,7 @@ const Konsept = () => {
     }
   }, [formData.brannklasse, formData.risikoklasse, formData.etasjer]);
 
-  // Automatisk beregning av tiltaksklasse
+  // Automatisk beregning av tiltaksklasse ved manuell endring av brannklasse eller prosjekteringsmetode
   const beregnetTiltaksklasse = getTiltaksklasse(formData.brannklasse, formData.risikoklasse, formData.prosjekteringsmetode);
   
   useEffect(() => {
