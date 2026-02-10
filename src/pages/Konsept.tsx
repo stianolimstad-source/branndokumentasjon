@@ -281,8 +281,9 @@ const getTiltaksklasse = (brannklasse: string, risikoklasse: string, prosjekteri
   const rk = parseInt(risikoklasse.replace(/\D/g, ''), 10);
   if (isNaN(bkl) || isNaN(rk)) return "";
 
-  // Kun preakseptert gir tiltaksklasse 1 eller 2
-  if (prosjekteringsmetode !== "preakseptert") {
+  // Ingen metode eller preakseptert = standard
+  const metode = prosjekteringsmetode || "preakseptert";
+  if (metode !== "preakseptert") {
     return "Tiltaksklasse 3";
   }
 
@@ -527,6 +528,7 @@ const Konsept = () => {
   useEffect(() => {
     const effBkl = beregnetBrannklasseResult.brannklasse || formData.brannklasse;
     const nyTiltaksklasse = getTiltaksklasse(effBkl, formData.risikoklasse, formData.prosjekteringsmetode);
+    console.log('[TK]', { effBkl, rk: formData.risikoklasse, metode: formData.prosjekteringsmetode, resultat: nyTiltaksklasse });
     if (nyTiltaksklasse && nyTiltaksklasse !== formData.tiltaksklasse) {
       setFormData(prev => ({ ...prev, tiltaksklasse: nyTiltaksklasse }));
     }
