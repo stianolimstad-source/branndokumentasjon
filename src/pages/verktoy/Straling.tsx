@@ -3,7 +3,6 @@ import { Flame, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import SolidFlamme from "@/components/verktoy/SolidFlamme";
 import StralingGrenseverdier from "@/components/verktoy/StralingGrenseverdier";
-import Synsfaktor from "@/components/verktoy/Synsfaktor";
 
 const Straling = () => {
   return (
@@ -30,7 +29,6 @@ const Straling = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-8">
           <SolidFlamme />
-          <Synsfaktor />
           <StralingGrenseverdier />
         </div>
       </div>
