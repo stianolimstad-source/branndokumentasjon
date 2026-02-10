@@ -274,33 +274,31 @@ const baereevneUnntakTekster: Record<string, string> = {
 };
 
 // Funksjon for å beregne tiltaksklasse basert på brannklasse og risikoklasse
+// Ref. SAK10 §9-4
 const getTiltaksklasse = (brannklasse: string, risikoklasse: string, prosjekteringsmetode: string): string => {
   const bkl = parseInt(brannklasse.replace(/\D/g, ''), 10);
   const rk = parseInt(risikoklasse.replace(/\D/g, ''), 10);
   
   if (isNaN(bkl) || isNaN(rk)) return "";
 
-  // Tiltaksklasse 3: Alle brannklasser og alle risikoklasser med fravik
+  // Fravik fra preaksepterte ytelser gir alltid tiltaksklasse 3
   if (prosjekteringsmetode === "analyse" || prosjekteringsmetode === "blanding") {
     return "Tiltaksklasse 3";
   }
 
-  // Tiltaksklasse 1: BKL1 og RK 1, 2, 4 med preaksepterte ytelser
-  if (bkl === 1 && [1, 2, 4].includes(rk)) {
+  // Tiltaksklasse 1: BKL1 + RK 1, 2, 4 (preaksepterte ytelser)
+  if (bkl === 1 && (rk === 1 || rk === 2 || rk === 4)) {
     return "Tiltaksklasse 1";
   }
 
-  // Tiltaksklasse 2: BKL1 og RK 3, 5, 6 ELLER BKL2 og RK 1, 2, 4
-  if ((bkl === 1 && [3, 5, 6].includes(rk)) || (bkl === 2 && [1, 2, 4].includes(rk))) {
+  // Tiltaksklasse 2: BKL1 + RK 3, 5, 6 ELLER BKL2 + RK 1, 2, 4 (preaksepterte ytelser)
+  if ((bkl === 1 && (rk === 3 || rk === 5 || rk === 6)) || 
+      (bkl === 2 && (rk === 1 || rk === 2 || rk === 4))) {
     return "Tiltaksklasse 2";
   }
 
-  // Tiltaksklasse 3: BKL2 og RK 3, 5, 6 ELLER BKL3+
-  if ((bkl === 2 && [3, 5, 6].includes(rk)) || bkl >= 3) {
-    return "Tiltaksklasse 3";
-  }
-
-  return "";
+  // Tiltaksklasse 3: Alle andre kombinasjoner
+  return "Tiltaksklasse 3";
 };
 
 const Konsept = () => {
