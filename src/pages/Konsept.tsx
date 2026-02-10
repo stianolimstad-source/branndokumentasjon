@@ -441,6 +441,7 @@ const Konsept = () => {
     redningsmannskap: "",
     redningsmannskapKommentar: "",
     byggOver23m: false, // Bygget er over 23 meter
+    slangeutlegg50m: false, // Alle deler av etasje nås med 50m slangeutlegg
     eksplosjonKommentar: "",
     // 4. Utførelses- og driftsfasen
     utfoerelse: "",
@@ -2580,7 +2581,9 @@ const Konsept = () => {
                     <li>I byggverk med et stort antall personer (vanligvis risikoklasse 5 og 6), må atkomsten som forutsettes benyttet for rednings- og slokkeinnsats, lett kunne åpnes av brannvesenet.</li>
                     <li>I byggverk hvor brannvesenet vil måtte søke gjennom et større antall rom (mer enn 50 rom), må inngangsdør og dører til de enkelte rommene lett kunne åpnes ved hjelp av universalnøkkel som plasseres slik at den er lett tilgjengelig for brannvesenet.</li>
                     <li>For å sikre radiokommunikasjon for rednings- og slokkemannskap, må det i byggverk uten tilfredsstillende innvendig radiodekning og hvor det kan bli behov for redningsinnsats, tilrettelegges med teknisk installasjon slik at rednings- og slokkemannskap kan benytte eget samband.</li>
-                    <li>Alle deler av en etasje må kunne nås med maksimalt <span className="font-semibold text-red-600">50 m slangeutlegg</span>. Avstand regnes fra nærmeste brannskille.</li>
+                    {formData.slangeutlegg50m && (
+                      <li>Alle deler av en etasje må kunne nås med maksimalt <span className="font-semibold text-red-600">50 m slangeutlegg</span>. Avstand regnes fra nærmeste brannskille.</li>
+                    )}
                   </ul>
                 </td>
                 <td className="border border-gray-400 p-2 align-top">ARK / RIBr</td>
@@ -5343,7 +5346,13 @@ const Konsept = () => {
                         />
                         <Label htmlFor="byggOver23m" className="text-sm font-medium">Bygget er over 23 meter</Label>
                       </div>
-                      <div>
+                      <div className="flex items-center space-x-2 mb-3">
+                        <Checkbox
+                          id="slangeutlegg50m"
+                          checked={formData.slangeutlegg50m}
+                          onCheckedChange={(checked) => setFormData({...formData, slangeutlegg50m: checked === true})}
+                        />
+                        <Label htmlFor="slangeutlegg50m" className="text-sm font-medium">Alle deler av en etasje kan nås med maks 50 m slangeutlegg</Label>
                         <Label className="text-xs font-medium mb-1 block">Tilrettelegging for rednings- og slokkemannskap</Label>
                         <Textarea 
                           value={formData.redningsmannskap}
