@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -335,41 +336,47 @@ export const ProjectSelector = ({
           </Dialog>
         </div>
 
-        {/* Show choice when project has existing concepts */}
-        {showConceptChoice && selectedProjectId && (
-          <Card className="border-primary/20 bg-primary/5">
-            <CardContent className="py-4 space-y-3">
-              <p className="text-sm font-medium">
+        {/* Popup dialog when project has existing concepts */}
+        <AlertDialog open={showConceptChoice && !!selectedProjectId} onOpenChange={(open) => {
+          if (!open) {
+            setShowConceptChoice(false);
+            setChoiceMade(true);
+          }
+        }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Eksisterende brannkonsept funnet</AlertDialogTitle>
+              <AlertDialogDescription>
                 Dette prosjektet har {existingConcepts.length} eksisterende brannkonsept{existingConcepts.length !== 1 ? "er" : ""}:
-              </p>
-              <div className="space-y-1.5">
-                {existingConcepts.map((concept) => (
-                  <div key={concept.id} className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <FileText className="h-3.5 w-3.5 text-primary" />
-                    <span>{concept.name}</span>
-                    <span className={`text-xs px-1.5 py-0.5 rounded ${
-                      concept.status === 'draft' 
-                        ? 'bg-yellow-100 text-yellow-800' 
-                        : 'bg-green-100 text-green-800'
-                    }`}>
-                      {concept.status === 'draft' ? 'Utkast' : 'Ferdig'}
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className="flex gap-2 pt-1">
-                <Button size="sm" onClick={handleGoToExisting}>
-                  <FileText className="h-4 w-4 mr-2" />
-                  Åpne siste konsept
-                </Button>
-                <Button size="sm" variant="outline" onClick={handleStartNew}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Start nytt brannkonsept
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <div className="space-y-1.5 py-2">
+              {existingConcepts.map((concept) => (
+                <div key={concept.id} className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <FileText className="h-3.5 w-3.5 text-primary" />
+                  <span>{concept.name}</span>
+                  <span className={`text-xs px-1.5 py-0.5 rounded ${
+                    concept.status === 'draft' 
+                      ? 'bg-yellow-100 text-yellow-800' 
+                      : 'bg-green-100 text-green-800'
+                  }`}>
+                    {concept.status === 'draft' ? 'Utkast' : 'Ferdig'}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <AlertDialogFooter>
+              <Button variant="outline" onClick={handleStartNew}>
+                <Plus className="h-4 w-4 mr-2" />
+                Start nytt brannkonsept
+              </Button>
+              <Button onClick={handleGoToExisting}>
+                <FileText className="h-4 w-4 mr-2" />
+                Åpne siste konsept
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {selectedProjectId && choiceMade && (
           <div className="space-y-2">
