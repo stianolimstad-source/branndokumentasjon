@@ -30,8 +30,9 @@ const SolidFlamme = () => {
     const x = Hv / (2 * R);
     const y = Bv / (2 * R);
 
-    const term1 = (x / Math.sqrt(1 + x * x)) * Math.atan(y / Math.sqrt(1 + x * x));
-    const term2 = (y / Math.sqrt(1 + y * y)) * Math.atan(x / Math.sqrt(1 + y * y));
+    const toDeg = (rad: number) => rad * (180 / Math.PI);
+    const term1 = (x / Math.sqrt(1 + x * x)) * toDeg(Math.atan(y / Math.sqrt(1 + x * x)));
+    const term2 = (y / Math.sqrt(1 + y * y)) * toDeg(Math.atan(x / Math.sqrt(1 + y * y)));
 
     const F12 = (1 / 90) * Math.abs(term1 + term2);
     const rounded = Math.round(F12 * 10000) / 10000;
