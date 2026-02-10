@@ -6,35 +6,37 @@ import { Label } from "@/components/ui/label";
 import { Flame, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
+const SIGMA = 5.67e-8; // Stefan-Boltzmann constant [W/m²K⁴]
+
 const Straling = () => {
-  const [branneffekt, setBranneffekt] = useState("");
-  const [avstand, setAvstand] = useState("");
-  const [bredde, setBredde] = useState("");
-  const [hoyde, setHoyde] = useState("");
+  const [emissivitet, setEmissivitet] = useState("0.9");
+  const [transmisjon, setTransmisjon] = useState("1.0");
+  const [siktfaktor, setSiktfaktor] = useState("");
+  const [flammeTemp, setFlammeTemp] = useState("");
+  const [objektTemp, setObjektTemp] = useState("293");
   const [result, setResult] = useState<{
     straling: number;
     status: "ok" | "warning" | "error";
   } | null>(null);
 
   const calculate = () => {
-    const Q = parseFloat(branneffekt); // kW
-    const d = parseFloat(avstand); // m
-    const W = parseFloat(bredde); // m
-    const H = parseFloat(hoyde); // m
+    const eps = parseFloat(emissivitet);
+    const tau = parseFloat(transmisjon);
+    const F12 = parseFloat(siktfaktor);
+    const Tf = parseFloat(flammeTemp);
+    const To = parseFloat(objektTemp);
 
-    if (isNaN(Q) || isNaN(d) || isNaN(W) || isNaN(H) || d <= 0 || W <= 0 || H <= 0) return;
+    if ([eps, tau, F12, Tf, To].some((v) => isNaN(v)) || F12 < 0 || F12 > 1) return;
 
-    // Simplified point source radiation model: q = Q / (4 * π * d²)
-    // With radiation fraction χ ≈ 0.3
-    const chi = 0.3;
-    const q = (chi * Q) / (4 * Math.PI * d * d);
-    const straling = Math.round(q * 100) / 100;
+    // q_rad = ε · τ · σ · F12 · (Tf⁴ - To⁴)
+    const q = eps * tau * SIGMA * F12 * (Math.pow(Tf, 4) - Math.pow(To, 4));
+    const stralingKW = Math.round((q / 1000) * 100) / 100; // Convert W/m² to kW/m²
 
     let status: "ok" | "warning" | "error" = "ok";
-    if (straling > 12.5) status = "error";
-    else if (straling > 8) status = "warning";
+    if (stralingKW > 12.5) status = "error";
+    else if (stralingKW > 8) status = "warning";
 
-    setResult({ straling, status });
+    setResult({ straling: stralingKW, status });
   };
 
   return (
@@ -62,33 +64,50 @@ const Straling = () => {
         <div className="max-w-4xl mx-auto space-y-8">
           <Card className="shadow-medium">
             <CardHeader>
-              <CardTitle>Strålingsberegning</CardTitle>
+              <CardTitle>Flate-til-flate strålingsberegning</CardTitle>
               <CardDescription>
-                Beregn strålingsnivå (kW/m²) fra brann mot fasade eller nabobygning.
-                Basert på forenklet punktkildemodell.
+                Stefan–Boltzmann med siktfaktor. Beregner strålingsvarmefluksen q″<sub>rad</sub> mot et objekt.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              {/* Formula display */}
+              <div className="bg-muted p-4 rounded-lg text-center">
+                <p className="font-mono text-sm md:text-base">
+                  q″<sub>rad</sub> = ε · τ · σ · F<sub>12</sub> · (T<sub>f</sub>⁴ − T<sub>o</sub>⁴)
+                </p>
+              </div>
+
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="branneffekt">Branneffekt (kW)</Label>
-                  <Input id="branneffekt" type="number" placeholder="f.eks. 3000" value={branneffekt} onChange={(e) => setBranneffekt(e.target.value)} />
-                  <p className="text-xs text-muted-foreground">Total branneffekt i kilowatt</p>
+                  <Label htmlFor="emissivitet">ε — Emissivitet [-]</Label>
+                  <Input id="emissivitet" type="number" step="0.01" placeholder="0.9" value={emissivitet} onChange={(e) => setEmissivitet(e.target.value)} />
+                  <p className="text-xs text-muted-foreground">Flammen/strålende overflate (ofte 0,8–1,0)</p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="avstand">Avstand (m)</Label>
-                  <Input id="avstand" type="number" step="0.1" placeholder="f.eks. 4" value={avstand} onChange={(e) => setAvstand(e.target.value)} />
-                  <p className="text-xs text-muted-foreground">Avstand fra brannkilde til mottaker</p>
+                  <Label htmlFor="transmisjon">τ — Transmisjon i luft [-]</Label>
+                  <Input id="transmisjon" type="number" step="0.01" placeholder="1.0" value={transmisjon} onChange={(e) => setTransmisjon(e.target.value)} />
+                  <p className="text-xs text-muted-foreground">Ofte ≈ 1 for kort avstand og «ren» luft</p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="bredde">Åpningsbredde (m)</Label>
-                  <Input id="bredde" type="number" step="0.1" placeholder="f.eks. 2" value={bredde} onChange={(e) => setBredde(e.target.value)} />
-                  <p className="text-xs text-muted-foreground">Bredde på stråleflaten/åpning</p>
+                  <Label htmlFor="siktfaktor">F<sub>12</sub> — Siktfaktor (view factor) [-]</Label>
+                  <Input id="siktfaktor" type="number" step="0.01" min="0" max="1" placeholder="f.eks. 0.15" value={siktfaktor} onChange={(e) => setSiktfaktor(e.target.value)} />
+                  <p className="text-xs text-muted-foreground">Fra brann (1) til objekt (2), verdi 0–1</p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="hoyde">Åpningshøyde (m)</Label>
-                  <Input id="hoyde" type="number" step="0.1" placeholder="f.eks. 1.5" value={hoyde} onChange={(e) => setHoyde(e.target.value)} />
-                  <p className="text-xs text-muted-foreground">Høyde på stråleflaten/åpning</p>
+                  <Label htmlFor="flammeTemp">T<sub>f</sub> — Flammetemperatur [K]</Label>
+                  <Input id="flammeTemp" type="number" placeholder="f.eks. 1273" value={flammeTemp} onChange={(e) => setFlammeTemp(e.target.value)} />
+                  <p className="text-xs text-muted-foreground">Effektiv flammetemperatur (1000°C ≈ 1273 K)</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="objektTemp">T<sub>o</sub> — Objekttemperatur [K]</Label>
+                  <Input id="objektTemp" type="number" placeholder="293" value={objektTemp} onChange={(e) => setObjektTemp(e.target.value)} />
+                  <p className="text-xs text-muted-foreground">Omgivelsestemperatur (20°C ≈ 293 K)</p>
+                </div>
+                <div className="space-y-2 flex items-end">
+                  <div className="bg-muted/50 p-3 rounded-lg text-xs text-muted-foreground w-full">
+                    <p>σ = 5,67 · 10⁻⁸ W/m²K⁴</p>
+                    <p className="mt-1">Stefan–Boltzmann konstant (fast verdi)</p>
+                  </div>
                 </div>
               </div>
 
@@ -102,10 +121,12 @@ const Straling = () => {
                     result.status === "warning" ? "border-yellow-500 bg-yellow-50 dark:bg-yellow-950" :
                     "border-red-500 bg-red-50 dark:bg-red-950"
                   }>
-                    <CardHeader><CardTitle className="text-base">Mottatt stråling</CardTitle></CardHeader>
+                    <CardHeader><CardTitle className="text-base">Mottatt stråling q″<sub>rad</sub></CardTitle></CardHeader>
                     <CardContent>
                       <p className="text-2xl font-bold">{result.straling} kW/m²</p>
-                      <p className="text-sm text-muted-foreground mt-1">Ved {avstand} m avstand</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        ({(result.straling * 1000).toFixed(0)} W/m²)
+                      </p>
                     </CardContent>
                   </Card>
 
@@ -120,19 +141,20 @@ const Straling = () => {
                       {result.status === "error" && "✗ Strålingsnivået overskrider grenseverdien"}
                     </p>
                     <p className="text-sm">
-                      {result.status === "ok" && "Under 8 kW/m² - ingen spesiell beskyttelse nødvendig."}
-                      {result.status === "warning" && "Mellom 8-12.5 kW/m² - vurder tiltak for å redusere stråling."}
-                      {result.status === "error" && "Over 12.5 kW/m² - tiltak for brannspredning er påkrevd."}
+                      {result.status === "ok" && "Under 8 kW/m² — ingen spesiell beskyttelse nødvendig."}
+                      {result.status === "warning" && "Mellom 8–12,5 kW/m² — vurder tiltak for å redusere stråling."}
+                      {result.status === "error" && "Over 12,5 kW/m² — tiltak for brannspredning er påkrevd."}
                     </p>
                   </div>
 
                   <div className="bg-muted p-4 rounded-lg text-sm space-y-2">
                     <p className="font-semibold">Grunnlag:</p>
                     <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                      <li>Forenklet punktkildemodell med strålingsfaktor χ = 0.3</li>
-                      <li>Grenseverdi: 12.5 kW/m² for brannspredning til annen bygning</li>
+                      <li>Stefan–Boltzmann: q″ = ε·τ·σ·F₁₂·(T<sub>f</sub>⁴ − T<sub>o</sub>⁴)</li>
+                      <li>Grenseverdi: 12,5 kW/m² for brannspredning til annen bygning</li>
                       <li>8 kW/m² som anbefalt varselgrense</li>
-                      <li>Basert på TEK17 § 11-6 og VTEK</li>
+                      <li>Nøkkelen er å finne fornuftig F₁₂ for geometrien</li>
+                      <li>Ref. TEK17 § 11-6 og VTEK</li>
                     </ul>
                   </div>
                 </div>
