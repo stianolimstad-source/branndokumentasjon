@@ -8,7 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Flame, ArrowLeft, FileDown, Download, Save, LogIn, X, Plus } from "lucide-react";
+import { Flame, ArrowLeft, FileDown, Download, Save, LogIn, X, Plus, AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle } from "docx";
@@ -451,6 +453,9 @@ const Konsept = () => {
     revisjon: "",
     // 6. Litteraturhenvisninger
     litteratur: "",
+    // Prosjekteringsmetode
+    prosjekteringsmetode: "preakseptert" as "preakseptert" | "analyse" | "blanding",
+    fravikBeskrivelse: "",
     // Fravik
     fravik: "",
   });
@@ -643,8 +648,9 @@ const Konsept = () => {
             <p><span className="font-bold">1.</span> Innledning</p>
             <p className="ml-4">1.1 Informasjon om tiltaket</p>
             <p className="ml-4">1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)</p>
-            <p className="ml-4">1.3 Avgrensning av tiltak</p>
-            <p className="ml-4">1.4 Gjeldende regelverk</p>
+            <p className="ml-4">1.3 Prosjekteringsmetode</p>
+            <p className="ml-4">1.4 Avgrensning av tiltak</p>
+            <p className="ml-4">1.5 Gjeldende regelverk</p>
             <p><span className="font-bold">2.</span> Grunnlag og forutsetninger for brannteknisk prosjektering</p>
             <p className="ml-4">2.1 Grunnlagsdokumenter</p>
             <p className="ml-4">2.2 Beskrivelse av bygning og branntekniske forutsetninger</p>
@@ -745,10 +751,28 @@ const Konsept = () => {
             </tbody>
           </table>
 
-          <h3 className="font-semibold mb-2">1.3 Avgrensning av tiltak</h3>
+          <h3 className="font-semibold mb-2">1.3 Prosjekteringsmetode</h3>
+          <p className="ml-4 mb-2">
+            {formData.prosjekteringsmetode === "preakseptert" && "Prosjekteringen er basert på preaksepterte ytelser i henhold til VTEK17."}
+            {formData.prosjekteringsmetode === "analyse" && "Prosjekteringen er basert på analyse (fraviksprosjektering)."}
+            {formData.prosjekteringsmetode === "blanding" && "Prosjekteringen er basert på en blandingsløsning med preaksepterte ytelser og analyse."}
+          </p>
+          {(formData.prosjekteringsmetode === "analyse" || formData.prosjekteringsmetode === "blanding") && (
+            <div className="ml-4 mb-3">
+              <p className="font-medium text-xs mb-1">Beskrivelse av fravik:</p>
+              <p className="text-xs">{formData.fravikBeskrivelse || "[Fraviksbeskrivelse angis]"}</p>
+              {formData.tiltaksklasse === "Tiltaksklasse 1" && (
+                <div className="mt-2 p-2 bg-amber-50 border border-amber-300 rounded text-xs text-amber-800">
+                  <strong>Merk:</strong> Prosjektet er i tiltaksklasse 1. Fravik fra preaksepterte ytelser krever normalt høyere tiltaksklasse.
+                </div>
+              )}
+            </div>
+          )}
+
+          <h3 className="font-semibold mb-2">1.4 Avgrensning av tiltak</h3>
           <p className="ml-4 mb-3">{formData.avgrensning || "[Avgrensning beskrives]"}</p>
 
-          <h3 className="font-semibold mb-2">1.4 Gjeldende regelverk</h3>
+          <h3 className="font-semibold mb-2">1.5 Gjeldende regelverk</h3>
           <ul className="ml-4 mb-3 list-disc list-inside">
             <li>TEK17 - Forskrift om tekniske krav til byggverk</li>
             <li>VTEK17 - Veiledning til teknisk forskrift</li>
@@ -2684,8 +2708,9 @@ const Konsept = () => {
             new Paragraph({ children: [new TextRun({ text: "1. Innledning", bold: true, size: 22 })], spacing: { after: 50 } }),
             new Paragraph({ text: "    1.1 Informasjon om tiltaket", spacing: { after: 30 } }),
             new Paragraph({ text: "    1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)", spacing: { after: 30 } }),
-            new Paragraph({ text: "    1.3 Avgrensning av tiltak", spacing: { after: 30 } }),
-            new Paragraph({ text: "    1.4 Gjeldende regelverk", spacing: { after: 50 } }),
+            new Paragraph({ text: "    1.3 Prosjekteringsmetode", spacing: { after: 30 } }),
+            new Paragraph({ text: "    1.4 Avgrensning av tiltak", spacing: { after: 30 } }),
+            new Paragraph({ text: "    1.5 Gjeldende regelverk", spacing: { after: 50 } }),
             new Paragraph({ children: [new TextRun({ text: "2. Grunnlag og forutsetninger for brannteknisk prosjektering", bold: true, size: 22 })], spacing: { after: 50 } }),
             new Paragraph({ text: "    2.1 Grunnlagsdokumenter", spacing: { after: 30 } }),
             new Paragraph({ text: "    2.2 Beskrivelse av bygning og branntekniske forutsetninger", spacing: { after: 30 } }),
@@ -2753,12 +2778,44 @@ const Konsept = () => {
               spacing: { after: 100 },
             }),
             new Paragraph({
-              children: [new TextRun({ text: "1.3 Avgrensning av tiltak", bold: true, size: 24 })],
+              children: [new TextRun({ text: "1.3 Prosjekteringsmetode", bold: true, size: 24 })],
               spacing: { before: 200, after: 100 },
             }),
             new Paragraph({
-              text: "[Avgrensning beskrives]",
+              text: formData.prosjekteringsmetode === "preakseptert" 
+                ? "Prosjekteringen er basert på preaksepterte ytelser i henhold til VTEK17."
+                : formData.prosjekteringsmetode === "analyse"
+                ? "Prosjekteringen er basert på analyse (fraviksprosjektering)."
+                : "Prosjekteringen er basert på en blandingsløsning med preaksepterte ytelser og analyse.",
               spacing: { after: 100 },
+            }),
+            ...((formData.prosjekteringsmetode === "analyse" || formData.prosjekteringsmetode === "blanding") ? [
+              new Paragraph({
+                children: [new TextRun({ text: "Beskrivelse av fravik:", bold: true })],
+                spacing: { after: 50 },
+              }),
+              new Paragraph({
+                text: formData.fravikBeskrivelse || "[Fraviksbeskrivelse angis]",
+                spacing: { after: 100 },
+              }),
+              ...(formData.tiltaksklasse === "Tiltaksklasse 1" ? [
+                new Paragraph({
+                  children: [new TextRun({ text: "Merk: Prosjektet er i tiltaksklasse 1. Fravik fra preaksepterte ytelser krever normalt høyere tiltaksklasse.", bold: true, italics: true })],
+                  spacing: { after: 100 },
+                }),
+              ] : []),
+            ] : []),
+            new Paragraph({
+              children: [new TextRun({ text: "1.4 Avgrensning av tiltak", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
+            }),
+            new Paragraph({
+              text: formData.avgrensning || "[Avgrensning beskrives]",
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "1.5 Gjeldende regelverk", bold: true, size: 24 })],
+              spacing: { before: 200, after: 100 },
             }),
             new Paragraph({
               children: [new TextRun({ text: "1.4 Gjeldende regelverk", bold: true, size: 24 })],
@@ -3424,7 +3481,49 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">1.3 Avgrensning av tiltak</Label>
+                      <Label className="text-xs text-muted-foreground">1.3 Prosjekteringsmetode</Label>
+                      <RadioGroup
+                        value={formData.prosjekteringsmetode}
+                        onValueChange={(value: "preakseptert" | "analyse" | "blanding") => setFormData({...formData, prosjekteringsmetode: value})}
+                        className="space-y-2"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="preakseptert" id="metode-preakseptert" />
+                          <Label htmlFor="metode-preakseptert" className="text-xs">Preaksepterte ytelser</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="analyse" id="metode-analyse" />
+                          <Label htmlFor="metode-analyse" className="text-xs">Analyse</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="blanding" id="metode-blanding" />
+                          <Label htmlFor="metode-blanding" className="text-xs">Blandingsløsning</Label>
+                        </div>
+                      </RadioGroup>
+                      {(formData.prosjekteringsmetode === "analyse" || formData.prosjekteringsmetode === "blanding") && (
+                        <div className="space-y-2 mt-2">
+                          {formData.tiltaksklasse === "Tiltaksklasse 1" && (
+                            <Alert variant="destructive" className="border-amber-500 bg-amber-50 text-amber-800">
+                              <AlertTriangle className="h-4 w-4 !text-amber-600" />
+                              <AlertTitle className="text-amber-800">Fravik i tiltaksklasse 1</AlertTitle>
+                              <AlertDescription className="text-amber-700">
+                                Prosjektet er i tiltaksklasse 1. Bruk av {formData.prosjekteringsmetode === "analyse" ? "analyse" : "blandingsløsning"} innebærer fravik fra preaksepterte ytelser, som normalt krever høyere tiltaksklasse.
+                              </AlertDescription>
+                            </Alert>
+                          )}
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Beskrivelse av fravik</Label>
+                            <Textarea
+                              value={formData.fravikBeskrivelse}
+                              onChange={(e) => setFormData({...formData, fravikBeskrivelse: e.target.value})}
+                              placeholder="Beskriv fravikene fra preaksepterte ytelser..."
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs text-muted-foreground">1.4 Avgrensning av tiltak</Label>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Beskriv avgrensning av tiltaket</Label>
                         <Textarea 
