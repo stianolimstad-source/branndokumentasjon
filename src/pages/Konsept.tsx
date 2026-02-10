@@ -3586,7 +3586,10 @@ const Konsept = () => {
                             value={formData.bygningstype}
                             onValueChange={(value) => {
                               const risikoklasse = bygningsTypeRisikoklasseMap[value] || "";
-                              setFormData({...formData, bygningstype: value, risikoklasse: risikoklasse});
+                              const bkl = getBrannklasse(risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal);
+                              const effBkl = bkl.brannklasse || formData.brannklasse;
+                              const nyTiltaksklasse = getTiltaksklasse(effBkl, risikoklasse, formData.prosjekteringsmetode);
+                              setFormData({...formData, bygningstype: value, risikoklasse: risikoklasse, ...(nyTiltaksklasse ? { tiltaksklasse: nyTiltaksklasse } : {})});
                             }}
                           >
                             <SelectTrigger>
@@ -3658,14 +3661,26 @@ const Konsept = () => {
                             <Label className="text-xs font-medium mb-1 block">Bruttoareal (m²)</Label>
                             <Input 
                               value={formData.areal}
-                              onChange={(e) => setFormData({...formData, areal: e.target.value})}
+                              onChange={(e) => {
+                                const nyAreal = e.target.value;
+                                const bkl = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, nyAreal);
+                                const effBkl = bkl.brannklasse || formData.brannklasse;
+                                const nyTiltaksklasse = getTiltaksklasse(effBkl, formData.risikoklasse, formData.prosjekteringsmetode);
+                                setFormData({...formData, areal: nyAreal, ...(nyTiltaksklasse ? { tiltaksklasse: nyTiltaksklasse } : {})});
+                              }}
                             />
                           </div>
                           <div>
                             <Label className="text-xs font-medium mb-1 block">Antall etasjer</Label>
                             <Input 
                               value={formData.etasjer}
-                              onChange={(e) => setFormData({...formData, etasjer: e.target.value})}
+                              onChange={(e) => {
+                                const nyEtasjer = e.target.value;
+                                const bkl = getBrannklasse(formData.risikoklasse, nyEtasjer, formData.harTerrengTilgang, formData.areal);
+                                const effBkl = bkl.brannklasse || formData.brannklasse;
+                                const nyTiltaksklasse = getTiltaksklasse(effBkl, formData.risikoklasse, formData.prosjekteringsmetode);
+                                setFormData({...formData, etasjer: nyEtasjer, ...(nyTiltaksklasse ? { tiltaksklasse: nyTiltaksklasse } : {})});
+                              }}
                             />
                           </div>
                         </div>
