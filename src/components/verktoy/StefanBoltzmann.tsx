@@ -35,7 +35,7 @@ const StefanBoltzmann = () => {
   return (
     <Card className="shadow-medium">
       <CardHeader>
-        <CardTitle>1) Flate-til-flate (Stefan–Boltzmann + siktfaktor)</CardTitle>
+        <CardTitle>2) Flate-til-flate (Stefan–Boltzmann + siktfaktor)</CardTitle>
         <CardDescription>
           Mest generell modell. Beregner strålingsvarmefluksen q″<sub>rad</sub> mot et objekt.
         </CardDescription>
