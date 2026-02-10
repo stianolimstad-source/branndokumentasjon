@@ -3,6 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown } from "lucide-react";
 import StralingResultat from "./StralingResultat";
 
 const SIGMA = 5.67e-8;
@@ -13,6 +15,29 @@ const SolidFlamme = () => {
   const [siktfaktor, setSiktfaktor] = useState("");
   const [result, setResult] = useState<{ straling: number; Ef: number; status: "ok" | "warning" | "error" } | null>(null);
 
+  // Synsfaktor-beregning
+  const [hv, setHv] = useState("");
+  const [bv, setBv] = useState("");
+  const [r, setR] = useState("");
+  const [synsfaktorOpen, setSynsfaktorOpen] = useState(false);
+
+  const calculateSynsfaktor = () => {
+    const Hv = parseFloat(hv);
+    const Bv = parseFloat(bv);
+    const R = parseFloat(r);
+    if ([Hv, Bv, R].some((v) => isNaN(v)) || R <= 0) return;
+
+    const x = Hv / (2 * R);
+    const y = Bv / (2 * R);
+
+    const term1 = (x / Math.sqrt(1 + x * x)) * Math.atan(y / Math.sqrt(1 + x * x));
+    const term2 = (y / Math.sqrt(1 + y * y)) * Math.atan(x / Math.sqrt(1 + y * y));
+
+    const F12 = (1 / 90) * Math.abs(term1 + term2);
+    const rounded = Math.round(F12 * 10000) / 10000;
+    setSiktfaktor(rounded.toString());
+  };
+
   const calculate = () => {
     const eps = parseFloat(emissivitet);
     const TfC = parseFloat(flammeTempC);
@@ -20,9 +45,7 @@ const SolidFlamme = () => {
     if ([eps, TfC, F12].some((v) => isNaN(v)) || F12 < 0 || F12 > 1) return;
 
     const Tf = TfC + 273.15;
-    // Ef = ε · σ · Tf⁴
-    const Ef = eps * SIGMA * Math.pow(Tf, 4); // W/m²
-    // q_rad ≈ Ef · F12
+    const Ef = eps * SIGMA * Math.pow(Tf, 4);
     const q = Ef * F12;
     const stralingKW = Math.round((q / 1000) * 100) / 100;
     const EfKW = Math.round((Ef / 1000) * 100) / 100;
@@ -36,7 +59,7 @@ const SolidFlamme = () => {
   return (
     <Card className="shadow-medium">
       <CardHeader>
-        <CardTitle>1) Solid flamme-modell</CardTitle>
+        <CardTitle>Solid flamme-modell</CardTitle>
         <CardDescription>
           Ofte brukt for objekter/vegger — modellerer flammen som en strålende flate (rektangel/sylinder),
           beregner F₁₂ og ganger med E<sub>f</sub>.
@@ -65,10 +88,54 @@ const SolidFlamme = () => {
           </div>
           <div className="space-y-2">
             <Label htmlFor="sf-siktfaktor">F<sub>12</sub> — Siktfaktor (view factor) [-]</Label>
-            <Input id="sf-siktfaktor" type="number" step="0.01" min="0" max="1" placeholder="f.eks. 0.15" value={siktfaktor} onChange={(e) => setSiktfaktor(e.target.value)} />
-            <p className="text-xs text-muted-foreground">Beregnes ut fra geometri (rektangel/sylinder mot mottaker)</p>
+            <Input id="sf-siktfaktor" type="number" step="0.0001" min="0" max="1" placeholder="f.eks. 0.15" value={siktfaktor} onChange={(e) => setSiktfaktor(e.target.value)} />
+            <p className="text-xs text-muted-foreground">Tast inn manuelt eller beregn med verktøyet under</p>
           </div>
         </div>
+
+        {/* Synsfaktor-kalkulator */}
+        <Collapsible open={synsfaktorOpen} onOpenChange={setSynsfaktorOpen}>
+          <CollapsibleTrigger asChild>
+            <Button variant="outline" className="w-full justify-between">
+              <span>Beregn F<sub>12</sub> fra geometri (rektangulær åpning)</span>
+              <ChevronDown className={`h-4 w-4 transition-transform ${synsfaktorOpen ? "rotate-180" : ""}`} />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="pt-4 space-y-4">
+            <div className="bg-muted/50 p-4 rounded-lg border border-border space-y-4">
+              <div className="text-center">
+                <p className="font-mono text-xs md:text-sm">
+                  F<sub>1→2</sub> = (1/90) · | (x/√(1+x²)) · arctan(y/√(1+x²)) + (y/√(1+y²)) · arctan(x/√(1+y²)) |
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  x = H<sub>v</sub> / 2R &nbsp;&nbsp; y = B<sub>v</sub> / 2R
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="syn-hv">H<sub>v</sub> — Høyde [m]</Label>
+                  <Input id="syn-hv" type="number" step="0.1" placeholder="f.eks. 1.2" value={hv} onChange={(e) => setHv(e.target.value)} />
+                  <p className="text-xs text-muted-foreground">Høyde vindusåpning</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="syn-bv">B<sub>v</sub> — Bredde [m]</Label>
+                  <Input id="syn-bv" type="number" step="0.1" placeholder="f.eks. 2.0" value={bv} onChange={(e) => setBv(e.target.value)} />
+                  <p className="text-xs text-muted-foreground">Bredde vindusåpning</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="syn-r">R — Avstand [m]</Label>
+                  <Input id="syn-r" type="number" step="0.1" placeholder="f.eks. 4.0" value={r} onChange={(e) => setR(e.target.value)} />
+                  <p className="text-xs text-muted-foreground">Mellom flatene</p>
+                </div>
+              </div>
+
+              <Button variant="secondary" onClick={calculateSynsfaktor} className="w-full">
+                Beregn og sett F₁₂
+              </Button>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
 
         <Button onClick={calculate} className="w-full">Beregn stråling</Button>
 
