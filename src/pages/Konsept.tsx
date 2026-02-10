@@ -495,38 +495,32 @@ const Konsept = () => {
     }
   }, [conceptId, user]);
 
-  // Automatisk beregning av brannklasse basert på risikoklasse, etasjer, terreng-tilgang og areal
+  // Automatisk beregning av brannklasse, tiltaksklasse og bæreevne i én samlet useEffect
   const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal);
   
   useEffect(() => {
-    if (beregnetBrannklasseResult.brannklasse) {
-      setFormData(prev => {
-        // Beregn tiltaksklasse basert på den nye brannklassen
-        const nyTiltaksklasse = getTiltaksklasse(beregnetBrannklasseResult.brannklasse, prev.risikoklasse, prev.prosjekteringsmetode);
-        return {
-          ...prev, 
+    setFormData(prev => {
+      const nyBrannklasse = beregnetBrannklasseResult.brannklasse || prev.brannklasse;
+      const nyTiltaksklasse = getTiltaksklasse(nyBrannklasse, prev.risikoklasse, prev.prosjekteringsmetode) || prev.tiltaksklasse;
+      const baereevneResult = getBaereevneTekst(nyBrannklasse, prev.risikoklasse, prev.etasjer);
+      
+      return {
+        ...prev,
+        ...(beregnetBrannklasseResult.brannklasse ? {
           brannklasse: beregnetBrannklasseResult.brannklasse,
           brannklasseUnntak: beregnetBrannklasseResult.brannklasseUnntak || "",
           brannklasseBegrunnelse: "",
-          ...(nyTiltaksklasse ? { tiltaksklasse: nyTiltaksklasse } : {}),
-        };
-      });
-    }
-  }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal]);
+        } : {}),
+        tiltaksklasse: nyTiltaksklasse,
+        ...(baereevneResult.tekst ? {
+          baereevne: baereevneResult.tekst,
+          baereevneUnntak: baereevneResult.anvendteUnntak,
+        } : {}),
+      };
+    });
+  }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.prosjekteringsmetode]);
 
-  // Automatisk generering av bæreevne tekst basert på brannklasse, risikoklasse og etasjer
-  useEffect(() => {
-    const result = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer);
-    if (result.tekst) {
-      setFormData(prev => ({ 
-        ...prev, 
-        baereevne: result.tekst,
-        baereevneUnntak: result.anvendteUnntak
-      }));
-    }
-  }, [formData.brannklasse, formData.risikoklasse, formData.etasjer]);
-
-  // Bruk den ferske auto-beregnede brannklassen (ikke stale formData) for tiltaksklasse-beregning
+  // Bruk den ferske auto-beregnede brannklassen for tiltaksklasse-beregning i UI
   const effektivBrannklasse = beregnetBrannklasseResult.brannklasse || formData.brannklasse;
   const beregnetTiltaksklasse = getTiltaksklasse(effektivBrannklasse, formData.risikoklasse, formData.prosjekteringsmetode);
 
