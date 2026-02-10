@@ -5,6 +5,7 @@ import StefanBoltzmann from "@/components/verktoy/StefanBoltzmann";
 import Punktkilde from "@/components/verktoy/Punktkilde";
 import SolidFlamme from "@/components/verktoy/SolidFlamme";
 import StralingGrenseverdier from "@/components/verktoy/StralingGrenseverdier";
+import Synsfaktor from "@/components/verktoy/Synsfaktor";
 
 const Straling = () => {
   return (
@@ -33,6 +34,7 @@ const Straling = () => {
           <SolidFlamme />
           <StefanBoltzmann />
           <Punktkilde />
+          <Synsfaktor />
           <StralingGrenseverdier />
         </div>
       </div>
