@@ -307,7 +307,8 @@ const Konsept = () => {
     oppdragsgiver: "",
     prosjektnavn: "",
     adresse: "",
-    gnrBnr: "",
+    gnr: "",
+    bnr: "",
     kommune: "",
     tiltakstype: "",
     tiltaksbeskrivelse: "",
@@ -693,7 +694,7 @@ const Konsept = () => {
               </tr>
               <tr>
                 <td className="border border-gray-400 p-2 font-semibold">Gnr/Bnr</td>
-                <td className="border border-gray-400 p-2">{formData.gnrBnr || "[Angis]"}</td>
+                <td className="border border-gray-400 p-2">{formData.gnr || formData.bnr ? `${formData.gnr || "—"}/${formData.bnr || "—"}` : "[Angis]"}</td>
               </tr>
               <tr>
                 <td className="border border-gray-400 p-2 font-semibold">Kommune</td>
@@ -3292,12 +3293,23 @@ const Konsept = () => {
                           />
                         </div>
                         <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <Label className="text-xs font-medium mb-1 block">Gnr/Bnr</Label>
-                            <Input 
-                              value={formData.gnrBnr}
-                              onChange={(e) => setFormData({...formData, gnrBnr: e.target.value})}
-                            />
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <Label className="text-xs font-medium mb-1 block">Gnr</Label>
+                              <Input 
+                                value={formData.gnr}
+                                onChange={(e) => setFormData({...formData, gnr: e.target.value})}
+                                placeholder="Gårdsnr"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs font-medium mb-1 block">Bnr</Label>
+                              <Input 
+                                value={formData.bnr}
+                                onChange={(e) => setFormData({...formData, bnr: e.target.value})}
+                                placeholder="Bruksnr"
+                              />
+                            </div>
                           </div>
                           <div>
                             <Label className="text-xs font-medium mb-1 block">Kommune</Label>
