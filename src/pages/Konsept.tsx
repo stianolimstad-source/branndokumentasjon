@@ -526,8 +526,9 @@ const Konsept = () => {
     }
   }, [formData.brannklasse, formData.risikoklasse, formData.etasjer]);
 
-  // Beregn tiltaksklasse direkte fra formData (ikke via stale useEffect)
-  const beregnetTiltaksklasse = getTiltaksklasse(formData.brannklasse, formData.risikoklasse, formData.prosjekteringsmetode);
+  // Bruk den ferske auto-beregnede brannklassen (ikke stale formData) for tiltaksklasse-beregning
+  const effektivBrannklasse = beregnetBrannklasseResult.brannklasse || formData.brannklasse;
+  const beregnetTiltaksklasse = getTiltaksklasse(effektivBrannklasse, formData.risikoklasse, formData.prosjekteringsmetode);
 
   const erTiltaksklasseOverstyrt = beregnetTiltaksklasse && formData.tiltaksklasse !== beregnetTiltaksklasse;
   
