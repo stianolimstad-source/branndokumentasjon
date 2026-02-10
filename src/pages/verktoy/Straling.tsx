@@ -12,8 +12,8 @@ const Straling = () => {
   const [emissivitet, setEmissivitet] = useState("0.9");
   const [transmisjon, setTransmisjon] = useState("1.0");
   const [siktfaktor, setSiktfaktor] = useState("");
-  const [flammeTemp, setFlammeTemp] = useState("");
-  const [objektTemp, setObjektTemp] = useState("293");
+  const [flammeTempC, setFlammeTempC] = useState("1000");
+  const [objektTempC, setObjektTempC] = useState("20");
   const [result, setResult] = useState<{
     straling: number;
     status: "ok" | "warning" | "error";
@@ -23,8 +23,8 @@ const Straling = () => {
     const eps = parseFloat(emissivitet);
     const tau = parseFloat(transmisjon);
     const F12 = parseFloat(siktfaktor);
-    const Tf = parseFloat(flammeTemp);
-    const To = parseFloat(objektTemp);
+    const Tf = parseFloat(flammeTempC) + 273.15;
+    const To = parseFloat(objektTempC) + 273.15;
 
     if ([eps, tau, F12, Tf, To].some((v) => isNaN(v)) || F12 < 0 || F12 > 1) return;
 
@@ -94,14 +94,18 @@ const Straling = () => {
                   <p className="text-xs text-muted-foreground">Fra brann (1) til objekt (2), verdi 0–1</p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="flammeTemp">T<sub>f</sub> — Flammetemperatur [K]</Label>
-                  <Input id="flammeTemp" type="number" placeholder="f.eks. 1273" value={flammeTemp} onChange={(e) => setFlammeTemp(e.target.value)} />
-                  <p className="text-xs text-muted-foreground">Effektiv flammetemperatur (1000°C ≈ 1273 K)</p>
+                  <Label htmlFor="flammeTemp">T<sub>f</sub> — Flammetemperatur [°C]</Label>
+                  <Input id="flammeTemp" type="number" placeholder="f.eks. 1000" value={flammeTempC} onChange={(e) => setFlammeTempC(e.target.value)} />
+                  <p className="text-xs text-muted-foreground">
+                    = {flammeTempC && !isNaN(parseFloat(flammeTempC)) ? (parseFloat(flammeTempC) + 273.15).toFixed(1) : "—"} K
+                  </p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="objektTemp">T<sub>o</sub> — Objekttemperatur [K]</Label>
-                  <Input id="objektTemp" type="number" placeholder="293" value={objektTemp} onChange={(e) => setObjektTemp(e.target.value)} />
-                  <p className="text-xs text-muted-foreground">Omgivelsestemperatur (20°C ≈ 293 K)</p>
+                  <Label htmlFor="objektTemp">T<sub>o</sub> — Objekttemperatur [°C]</Label>
+                  <Input id="objektTemp" type="number" placeholder="20" value={objektTempC} onChange={(e) => setObjektTempC(e.target.value)} />
+                  <p className="text-xs text-muted-foreground">
+                    = {objektTempC && !isNaN(parseFloat(objektTempC)) ? (parseFloat(objektTempC) + 273.15).toFixed(1) : "—"} K
+                  </p>
                 </div>
                 <div className="space-y-2 flex items-end">
                   <div className="bg-muted/50 p-3 rounded-lg text-xs text-muted-foreground w-full">
