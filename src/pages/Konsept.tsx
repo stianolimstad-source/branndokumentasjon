@@ -526,14 +526,8 @@ const Konsept = () => {
     }
   }, [formData.brannklasse, formData.risikoklasse, formData.etasjer]);
 
-  // Automatisk beregning av tiltaksklasse ved manuell endring av brannklasse eller prosjekteringsmetode
+  // Beregn tiltaksklasse direkte fra formData (ikke via stale useEffect)
   const beregnetTiltaksklasse = getTiltaksklasse(formData.brannklasse, formData.risikoklasse, formData.prosjekteringsmetode);
-  
-  useEffect(() => {
-    if (beregnetTiltaksklasse) {
-      setFormData(prev => ({ ...prev, tiltaksklasse: beregnetTiltaksklasse }));
-    }
-  }, [formData.brannklasse, formData.risikoklasse, formData.prosjekteringsmetode]);
 
   const erTiltaksklasseOverstyrt = beregnetTiltaksklasse && formData.tiltaksklasse !== beregnetTiltaksklasse;
   
@@ -3519,7 +3513,10 @@ const Konsept = () => {
                       <Label className="text-xs text-muted-foreground">1.3 Prosjekteringsmetode</Label>
                       <RadioGroup
                         value={formData.prosjekteringsmetode}
-                        onValueChange={(value: "preakseptert" | "analyse" | "blanding") => setFormData({...formData, prosjekteringsmetode: value})}
+                        onValueChange={(value: "preakseptert" | "analyse" | "blanding") => {
+                          const nyTiltaksklasse = getTiltaksklasse(formData.brannklasse, formData.risikoklasse, value);
+                          setFormData({...formData, prosjekteringsmetode: value, ...(nyTiltaksklasse ? { tiltaksklasse: nyTiltaksklasse } : {})});
+                        }}
                         className="space-y-2"
                       >
                         <div className="flex items-center space-x-2">
@@ -3765,7 +3762,12 @@ const Konsept = () => {
                               <Label className="text-xs font-medium mb-1 block">Risikoklasse</Label>
                               <Select 
                                 value={formData.risikoklasse}
-                                onValueChange={(value) => setFormData({...formData, risikoklasse: value})}
+                                onValueChange={(value) => {
+                                  const nyBrannklasse = getBrannklasse(value, formData.etasjer, formData.harTerrengTilgang, formData.areal);
+                                  const bkl = nyBrannklasse.brannklasse || formData.brannklasse;
+                                  const nyTiltaksklasse = getTiltaksklasse(bkl, value, formData.prosjekteringsmetode);
+                                  setFormData({...formData, risikoklasse: value, ...(nyTiltaksklasse ? { tiltaksklasse: nyTiltaksklasse } : {})});
+                                }}
                               >
                                 <SelectTrigger>
                                   <SelectValue placeholder="Velg" />
@@ -3789,7 +3791,10 @@ const Konsept = () => {
                               </Label>
                               <Select 
                                 value={formData.brannklasse} 
-                                onValueChange={(value) => setFormData({...formData, brannklasse: value})}
+                                onValueChange={(value) => {
+                                  const nyTiltaksklasse = getTiltaksklasse(value, formData.risikoklasse, formData.prosjekteringsmetode);
+                                  setFormData({...formData, brannklasse: value, ...(nyTiltaksklasse ? { tiltaksklasse: nyTiltaksklasse } : {})});
+                                }}
                               >
                                 <SelectTrigger>
                                   <SelectValue placeholder="Velg" />
