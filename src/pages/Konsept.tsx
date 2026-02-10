@@ -4195,6 +4195,11 @@ const Konsept = () => {
                           <SelectItem value="Tiltaksklasse 3">Tiltaksklasse 3</SelectItem>
                         </SelectContent>
                       </Select>
+                      {formData.tiltaksklasse === "Tiltaksklasse 3" && (formData.prosjekteringsmetode === "analyse" || formData.prosjekteringsmetode === "blanding") && (
+                        <p className="text-xs text-amber-600 mt-1">
+                          Tiltaksklasse 3 er satt fordi prosjekteringsmetode er {formData.prosjekteringsmetode === "analyse" ? "analyse" : "blandingsløsning"}.
+                        </p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.4 Tilleggskrav</Label>
