@@ -3299,6 +3299,11 @@ const Konsept = () => {
             selectedProjectId={selectedProjectId}
             onProjectSelect={setSelectedProjectId}
             onConceptNameChange={setConceptName}
+            onConceptSelect={(cId, pId) => {
+              setSelectedProjectId(pId);
+              setConceptId(cId);
+              loadConcept(cId);
+            }}
             conceptName={conceptName}
           />
 

@@ -30,6 +30,7 @@ interface ProjectSelectorProps {
   selectedProjectId: string | null;
   onProjectSelect: (projectId: string) => void;
   onConceptNameChange: (name: string) => void;
+  onConceptSelect?: (conceptId: string, projectId: string) => void;
   conceptName: string;
 }
 
@@ -37,6 +38,7 @@ export const ProjectSelector = ({
   selectedProjectId,
   onProjectSelect,
   onConceptNameChange,
+  onConceptSelect,
   conceptName,
 }: ProjectSelectorProps) => {
   const { user } = useAuth();
@@ -105,9 +107,13 @@ export const ProjectSelector = ({
 
   const handleGoToExisting = () => {
     if (existingConcepts.length > 0 && selectedProjectId) {
-      // Navigate to the most recently updated concept
       const mostRecent = existingConcepts[0];
-      navigate(`/konsept?project=${selectedProjectId}&concept=${mostRecent.id}`);
+      setShowConceptChoice(false);
+      if (onConceptSelect) {
+        onConceptSelect(mostRecent.id, selectedProjectId);
+      } else {
+        navigate(`/konsept?project=${selectedProjectId}&concept=${mostRecent.id}`);
+      }
     }
   };
 
