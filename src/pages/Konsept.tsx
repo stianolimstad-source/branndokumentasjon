@@ -273,33 +273,6 @@ const baereevneUnntakTekster: Record<string, string> = {
   unntak7: "Under forutsetning av at nødvendig tid til rømning og sikkerhet for slokkemannskaper er ivaretatt, kan parkeringshus med mer enn 1/3 av veggflatene åpne, oppføres med brannmotstand R 15 A2-s1,d0 [ubrennbart materiale].",
 };
 
-// Funksjon for å beregne tiltaksklasse basert på brannklasse og risikoklasse
-// Ref. SAK10 §9-4
-const getTiltaksklasse = (brannklasse: string, risikoklasse: string, prosjekteringsmetode: string): string => {
-  const bkl = parseInt(brannklasse.replace(/\D/g, ''), 10);
-  const rk = parseInt(risikoklasse.replace(/\D/g, ''), 10);
-  
-  if (isNaN(bkl) || isNaN(rk)) return "";
-
-  // Fravik fra preaksepterte ytelser gir alltid tiltaksklasse 3
-  if (prosjekteringsmetode === "analyse" || prosjekteringsmetode === "blanding") {
-    return "Tiltaksklasse 3";
-  }
-
-  // Tiltaksklasse 1: BKL1 + RK 1, 2, 4 (preaksepterte ytelser)
-  if (bkl === 1 && (rk === 1 || rk === 2 || rk === 4)) {
-    return "Tiltaksklasse 1";
-  }
-
-  // Tiltaksklasse 2: BKL1 + RK 3, 5, 6 ELLER BKL2 + RK 1, 2, 4 (preaksepterte ytelser)
-  if ((bkl === 1 && (rk === 3 || rk === 5 || rk === 6)) || 
-      (bkl === 2 && (rk === 1 || rk === 2 || rk === 4))) {
-    return "Tiltaksklasse 2";
-  }
-
-  // Tiltaksklasse 3: Alle andre kombinasjoner
-  return "Tiltaksklasse 3";
-};
 
 const Konsept = () => {
   const { toast } = useToast();
@@ -521,22 +494,6 @@ const Konsept = () => {
     }
   }, [formData.brannklasse, formData.risikoklasse, formData.etasjer]);
 
-  // TILTAKSKLASSE: Alltid beregnet direkte fra gjeldende verdier - IKKE via useEffect/formData
-  const effektivBrannklasse = beregnetBrannklasseResult.brannklasse || formData.brannklasse;
-  const beregnetTiltaksklasse = getTiltaksklasse(effektivBrannklasse, formData.risikoklasse, formData.prosjekteringsmetode);
-  // Bruk beregnet verdi med mindre bruker har overstyrt manuelt
-  const aktivTiltaksklasse = formData.tiltaksklasse && formData.tiltaksklasse !== beregnetTiltaksklasse 
-    ? formData.tiltaksklasse  // manuelt overstyrt
-    : (beregnetTiltaksklasse || formData.tiltaksklasse); // automatisk
-
-  const erTiltaksklasseOverstyrt = beregnetTiltaksklasse && formData.tiltaksklasse !== beregnetTiltaksklasse && formData.tiltaksklasse !== "";
-  
-  // Synkroniser formData.tiltaksklasse med beregnet verdi (for lagring/eksport)
-  useEffect(() => {
-    if (beregnetTiltaksklasse && formData.tiltaksklasse !== beregnetTiltaksklasse) {
-      setFormData(prev => ({ ...prev, tiltaksklasse: beregnetTiltaksklasse }));
-    }
-  }, [beregnetTiltaksklasse]);
 
   const erBrannklasseOverstyrt = beregnetBrannklasseResult.brannklasse && formData.brannklasse !== beregnetBrannklasseResult.brannklasse;
 
@@ -3521,8 +3478,7 @@ const Konsept = () => {
                       <RadioGroup
                         value={formData.prosjekteringsmetode}
                         onValueChange={(value: "preakseptert" | "analyse" | "blanding") => {
-                          const nyTiltaksklasse = getTiltaksklasse(formData.brannklasse, formData.risikoklasse, value);
-                          setFormData({...formData, prosjekteringsmetode: value, ...(nyTiltaksklasse ? { tiltaksklasse: nyTiltaksklasse } : {})});
+                          setFormData({...formData, prosjekteringsmetode: value});
                         }}
                         className="space-y-2"
                       >
@@ -3592,10 +3548,7 @@ const Konsept = () => {
                             value={formData.bygningstype}
                             onValueChange={(value) => {
                               const risikoklasse = bygningsTypeRisikoklasseMap[value] || "";
-                              const bkl = getBrannklasse(risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal);
-                              const effBkl = bkl.brannklasse || formData.brannklasse;
-                              const nyTiltaksklasse = getTiltaksklasse(effBkl, risikoklasse, formData.prosjekteringsmetode);
-                              setFormData({...formData, bygningstype: value, risikoklasse: risikoklasse, ...(nyTiltaksklasse ? { tiltaksklasse: nyTiltaksklasse } : {})});
+                              setFormData({...formData, bygningstype: value, risikoklasse: risikoklasse});
                             }}
                           >
                             <SelectTrigger>
@@ -3669,10 +3622,7 @@ const Konsept = () => {
                               value={formData.areal}
                               onChange={(e) => {
                                 const nyAreal = e.target.value;
-                                const bkl = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, nyAreal);
-                                const effBkl = bkl.brannklasse || formData.brannklasse;
-                                const nyTiltaksklasse = getTiltaksklasse(effBkl, formData.risikoklasse, formData.prosjekteringsmetode);
-                                setFormData({...formData, areal: nyAreal, ...(nyTiltaksklasse ? { tiltaksklasse: nyTiltaksklasse } : {})});
+                                setFormData({...formData, areal: nyAreal});
                               }}
                             />
                           </div>
@@ -3682,10 +3632,7 @@ const Konsept = () => {
                               value={formData.etasjer}
                               onChange={(e) => {
                                 const nyEtasjer = e.target.value;
-                                const bkl = getBrannklasse(formData.risikoklasse, nyEtasjer, formData.harTerrengTilgang, formData.areal);
-                                const effBkl = bkl.brannklasse || formData.brannklasse;
-                                const nyTiltaksklasse = getTiltaksklasse(effBkl, formData.risikoklasse, formData.prosjekteringsmetode);
-                                setFormData({...formData, etasjer: nyEtasjer, ...(nyTiltaksklasse ? { tiltaksklasse: nyTiltaksklasse } : {})});
+                                setFormData({...formData, etasjer: nyEtasjer});
                               }}
                             />
                           </div>
@@ -3785,10 +3732,7 @@ const Konsept = () => {
                               <Select 
                                 value={formData.risikoklasse}
                                 onValueChange={(value) => {
-                                  const nyBrannklasse = getBrannklasse(value, formData.etasjer, formData.harTerrengTilgang, formData.areal);
-                                  const bkl = nyBrannklasse.brannklasse || formData.brannklasse;
-                                  const nyTiltaksklasse = getTiltaksklasse(bkl, value, formData.prosjekteringsmetode);
-                                  setFormData({...formData, risikoklasse: value, ...(nyTiltaksklasse ? { tiltaksklasse: nyTiltaksklasse } : {})});
+                                  setFormData({...formData, risikoklasse: value});
                                 }}
                               >
                                 <SelectTrigger>
@@ -3814,8 +3758,7 @@ const Konsept = () => {
                               <Select 
                                 value={formData.brannklasse} 
                                 onValueChange={(value) => {
-                                  const nyTiltaksklasse = getTiltaksklasse(value, formData.risikoklasse, formData.prosjekteringsmetode);
-                                  setFormData({...formData, brannklasse: value, ...(nyTiltaksklasse ? { tiltaksklasse: nyTiltaksklasse } : {})});
+                                  setFormData({...formData, brannklasse: value});
                                 }}
                               >
                                 <SelectTrigger>
@@ -4199,14 +4142,9 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">
-                        Tiltaksklasse
-                        {beregnetTiltaksklasse && (
-                          <span className="text-muted-foreground ml-2">(Automatisk: {beregnetTiltaksklasse})</span>
-                        )}
-                      </Label>
+                      <Label className="text-xs text-muted-foreground">Tiltaksklasse</Label>
                       <Select 
-                        value={aktivTiltaksklasse}
+                        value={formData.tiltaksklasse}
                         onValueChange={(value) => setFormData({...formData, tiltaksklasse: value})}
                       >
                         <SelectTrigger>
@@ -4218,15 +4156,6 @@ const Konsept = () => {
                           <SelectItem value="Tiltaksklasse 3">Tiltaksklasse 3</SelectItem>
                         </SelectContent>
                       </Select>
-                      {erTiltaksklasseOverstyrt && (
-                        <Alert variant="destructive" className="border-amber-500 bg-amber-50 text-amber-800">
-                          <AlertTriangle className="h-4 w-4 !text-amber-600" />
-                          <AlertTitle className="text-amber-800">Tiltaksklasse avviker fra beregnet verdi</AlertTitle>
-                          <AlertDescription className="text-amber-700">
-                            Basert på brannklasse ({formData.brannklasse}) og risikoklasse ({formData.risikoklasse}) er beregnet tiltaksklasse {beregnetTiltaksklasse}.
-                          </AlertDescription>
-                        </Alert>
-                      )}
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.4 Tilleggskrav</Label>
