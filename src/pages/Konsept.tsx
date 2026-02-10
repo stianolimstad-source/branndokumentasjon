@@ -495,37 +495,49 @@ const Konsept = () => {
     }
   }, [conceptId, user]);
 
-  // Automatisk beregning av brannklasse, tiltaksklasse og bæreevne i én samlet useEffect
+  // Automatisk beregning av brannklasse
   const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal);
   
   useEffect(() => {
-    setFormData(prev => {
-      const nyBrannklasse = beregnetBrannklasseResult.brannklasse || prev.brannklasse;
-      const nyTiltaksklasse = getTiltaksklasse(nyBrannklasse, prev.risikoklasse, prev.prosjekteringsmetode) || prev.tiltaksklasse;
-      const baereevneResult = getBaereevneTekst(nyBrannklasse, prev.risikoklasse, prev.etasjer);
-      
-      return {
-        ...prev,
-        ...(beregnetBrannklasseResult.brannklasse ? {
-          brannklasse: beregnetBrannklasseResult.brannklasse,
-          brannklasseUnntak: beregnetBrannklasseResult.brannklasseUnntak || "",
-          brannklasseBegrunnelse: "",
-        } : {}),
-        tiltaksklasse: nyTiltaksklasse,
-        ...(baereevneResult.tekst ? {
-          baereevne: baereevneResult.tekst,
-          baereevneUnntak: baereevneResult.anvendteUnntak,
-        } : {}),
-      };
-    });
-  }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.prosjekteringsmetode]);
+    if (beregnetBrannklasseResult.brannklasse) {
+      setFormData(prev => ({
+        ...prev, 
+        brannklasse: beregnetBrannklasseResult.brannklasse,
+        brannklasseUnntak: beregnetBrannklasseResult.brannklasseUnntak || "",
+        brannklasseBegrunnelse: "",
+      }));
+    }
+  }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal]);
 
-  // Bruk den ferske auto-beregnede brannklassen for tiltaksklasse-beregning i UI
+  // Automatisk generering av bæreevne tekst
+  useEffect(() => {
+    const result = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer);
+    if (result.tekst) {
+      setFormData(prev => ({ 
+        ...prev, 
+        baereevne: result.tekst,
+        baereevneUnntak: result.anvendteUnntak
+      }));
+    }
+  }, [formData.brannklasse, formData.risikoklasse, formData.etasjer]);
+
+  // TILTAKSKLASSE: Alltid beregnet direkte fra gjeldende verdier - IKKE via useEffect/formData
   const effektivBrannklasse = beregnetBrannklasseResult.brannklasse || formData.brannklasse;
   const beregnetTiltaksklasse = getTiltaksklasse(effektivBrannklasse, formData.risikoklasse, formData.prosjekteringsmetode);
+  // Bruk beregnet verdi med mindre bruker har overstyrt manuelt
+  const aktivTiltaksklasse = formData.tiltaksklasse && formData.tiltaksklasse !== beregnetTiltaksklasse 
+    ? formData.tiltaksklasse  // manuelt overstyrt
+    : (beregnetTiltaksklasse || formData.tiltaksklasse); // automatisk
 
-  const erTiltaksklasseOverstyrt = beregnetTiltaksklasse && formData.tiltaksklasse !== beregnetTiltaksklasse;
+  const erTiltaksklasseOverstyrt = beregnetTiltaksklasse && formData.tiltaksklasse !== beregnetTiltaksklasse && formData.tiltaksklasse !== "";
   
+  // Synkroniser formData.tiltaksklasse med beregnet verdi (for lagring/eksport)
+  useEffect(() => {
+    if (beregnetTiltaksklasse && formData.tiltaksklasse !== beregnetTiltaksklasse) {
+      setFormData(prev => ({ ...prev, tiltaksklasse: beregnetTiltaksklasse }));
+    }
+  }, [beregnetTiltaksklasse]);
+
   const erBrannklasseOverstyrt = beregnetBrannklasseResult.brannklasse && formData.brannklasse !== beregnetBrannklasseResult.brannklasse;
 
   const loadConcept = async (id: string) => {
@@ -4194,7 +4206,7 @@ const Konsept = () => {
                         )}
                       </Label>
                       <Select 
-                        value={formData.tiltaksklasse}
+                        value={aktivTiltaksklasse}
                         onValueChange={(value) => setFormData({...formData, tiltaksklasse: value})}
                       >
                         <SelectTrigger>
