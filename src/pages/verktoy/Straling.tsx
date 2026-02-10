@@ -151,12 +151,32 @@ const Straling = () => {
                     </p>
                   </div>
 
+                  <div className="bg-muted p-4 rounded-lg text-sm space-y-3">
+                    <p className="font-semibold">Grenseverdier for strålingsintensitet:</p>
+                    <div className="space-y-2">
+                      {[
+                        { kw: "< 2,5", desc: "Ingen risiko for antennelse selv ved langvarig eksponering. Trygg avstand for personer.", color: "text-green-700 dark:text-green-400" },
+                        { kw: "2,5", desc: "Grense for smerte ved eksponering av hud i mer enn noen sekunder.", color: "text-green-700 dark:text-green-400" },
+                        { kw: "4,0", desc: "Kritisk grense for personer som ikke kan søke ly. Brannskade ved langvarig eksponering.", color: "text-yellow-700 dark:text-yellow-400" },
+                        { kw: "8,0", desc: "Spontan antennelse av trevirke ved langvarig eksponering. Anbefalt varselgrense for nabobygninger.", color: "text-yellow-700 dark:text-yellow-400" },
+                        { kw: "12,5", desc: "Grenseverdi iht. TEK17 § 11-6 / VTEK for brannspredning mellom bygninger. Tiltak påkrevd over denne verdien.", color: "text-orange-700 dark:text-orange-400" },
+                        { kw: "20", desc: "Antennelse av trevirke uten pilotflamme ved kort eksponeringstid.", color: "text-red-700 dark:text-red-400" },
+                        { kw: "> 30", desc: "Umiddelbar antennelse av de fleste brennbare materialer. Svært farlig for personer.", color: "text-red-700 dark:text-red-400" },
+                      ].map((row) => (
+                        <div key={row.kw} className="flex gap-3 items-start">
+                          <span className={`font-mono font-semibold whitespace-nowrap min-w-[5rem] text-right ${row.color}`}>
+                            {row.kw} kW/m²
+                          </span>
+                          <span className="text-muted-foreground">{row.desc}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                   <div className="bg-muted p-4 rounded-lg text-sm space-y-2">
-                    <p className="font-semibold">Grunnlag:</p>
+                    <p className="font-semibold">Grunnlag for beregningen:</p>
                     <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                       <li>Stefan–Boltzmann: q″ = ε·τ·σ·F₁₂·(T<sub>f</sub>⁴ − T<sub>o</sub>⁴)</li>
-                      <li>Grenseverdi: 12,5 kW/m² for brannspredning til annen bygning</li>
-                      <li>8 kW/m² som anbefalt varselgrense</li>
                       <li>Nøkkelen er å finne fornuftig F₁₂ for geometrien</li>
                       <li>Ref. TEK17 § 11-6 og VTEK</li>
                     </ul>
