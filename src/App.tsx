@@ -7,6 +7,11 @@ import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Konsept from "./pages/Konsept";
 import Verktoy from "./pages/Verktoy";
+import Romningsvei from "./pages/verktoy/Romningsvei";
+import Straling from "./pages/verktoy/Straling";
+import Flammehoyde from "./pages/verktoy/Flammehoyde";
+import Omhyllingsflate from "./pages/verktoy/Omhyllingsflate";
+import Persontall from "./pages/verktoy/Persontall";
 import Priskalkulator from "./pages/Priskalkulator";
 import Auth from "./pages/Auth";
 import MineProsjekter from "./pages/MineProsjekter";
@@ -25,6 +30,11 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/konsept" element={<Konsept />} />
             <Route path="/verktoy" element={<Verktoy />} />
+            <Route path="/verktoy/romningsvei" element={<Romningsvei />} />
+            <Route path="/verktoy/straling" element={<Straling />} />
+            <Route path="/verktoy/flammehoyde" element={<Flammehoyde />} />
+            <Route path="/verktoy/omhyllingsflate" element={<Omhyllingsflate />} />
+            <Route path="/verktoy/persontall" element={<Persontall />} />
             <Route path="/priskalkulator" element={<Priskalkulator />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/mine-prosjekter" element={<MineProsjekter />} />
