@@ -440,6 +440,7 @@ const Konsept = () => {
     slokkeHandslukker: false,
     redningsmannskap: "",
     redningsmannskapKommentar: "",
+    byggOver23m: false, // Bygget er over 23 meter
     eksplosjonKommentar: "",
     // 4. Utførelses- og driftsfasen
     utfoerelse: "",
@@ -2571,7 +2572,9 @@ const Konsept = () => {
                 <td className="border border-gray-400 p-2">
                   <ul className="list-disc ml-4 space-y-1">
                     <li>Byggverk inntil 8 etasjer må ha tilgjengelighet for brannvesenets høyderedskap (brannbil utstyrt med maskinstige eller snorkel) slik at alle etasjer og brannseksjoner kan nås.</li>
-                    <li>For å oppnå tilgjengelighet må øverste gulv ikke være høyere enn <span className="font-semibold text-red-600">23 meter</span> over laveste punkt på oppstillingsplasser for brannvesenets høyderedskap. I lave byggverk kan det tilrettelegges for bruk av bærbare stiger.</li>
+                    {formData.byggOver23m && (
+                      <li>For å oppnå tilgjengelighet må øverste gulv ikke være høyere enn <span className="font-semibold text-red-600">23 meter</span> over laveste punkt på oppstillingsplasser for brannvesenets høyderedskap. I lave byggverk kan det tilrettelegges for bruk av bærbare stiger.</li>
+                    )}
                     <li>Det må være tilrettelagt for kjørbar atkomst helt fram til hovedinngangen og brannvesenets angrepsvei i byggverket. For mindre byggverk i risikoklasse 4 og brannklasse 1 kan det aksepteres avstand på inntil <span className="font-semibold text-red-600">50 meter</span>.</li>
                     <li>I byggverk hvor vindu eller balkong utgjør en av rømningsveiene, må det være tilgjengelighet for brannvesenets høyderedskap i samsvar med ytelser angitt i § 11-13.</li>
                     <li>I byggverk med et stort antall personer (vanligvis risikoklasse 5 og 6), må atkomsten som forutsettes benyttet for rednings- og slokkeinnsats, lett kunne åpnes av brannvesenet.</li>
@@ -5331,6 +5334,14 @@ const Konsept = () => {
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.14 § 11-17 Tilrettelegging for slokkemannskap</Label>
+                      </div>
+                      <div className="flex items-center space-x-2 mb-3">
+                        <Checkbox
+                          id="byggOver23m"
+                          checked={formData.byggOver23m}
+                          onCheckedChange={(checked) => setFormData({...formData, byggOver23m: checked === true})}
+                        />
+                        <Label htmlFor="byggOver23m" className="text-sm font-medium">Bygget er over 23 meter</Label>
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Tilrettelegging for rednings- og slokkemannskap</Label>
