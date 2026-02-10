@@ -6,16 +6,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building, Plus, AlertCircle, FolderOpen } from "lucide-react";
+import { Building, Plus, AlertCircle, FolderOpen, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface Project {
   id: string;
   name: string;
   address: string | null;
+}
+
+interface ExistingConcept {
+  id: string;
+  name: string;
+  status: string;
+  updated_at: string;
 }
 
 interface ProjectSelectorProps {
@@ -33,11 +40,15 @@ export const ProjectSelector = ({
 }: ProjectSelectorProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [existingConcepts, setExistingConcepts] = useState<ExistingConcept[]>([]);
+  const [showConceptChoice, setShowConceptChoice] = useState(false);
+  const [choiceMade, setChoiceMade] = useState(false);
   
   const [newProject, setNewProject] = useState({
     name: "",
@@ -67,6 +78,41 @@ export const ProjectSelector = ({
       setProjects(data || []);
     }
     setIsLoading(false);
+  };
+
+  const handleProjectSelect = async (projectId: string) => {
+    setChoiceMade(false);
+    setShowConceptChoice(false);
+    onProjectSelect(projectId);
+
+    // Check for existing concepts
+    const { data, error } = await supabase
+      .from('fire_concepts')
+      .select('id, name, status, updated_at')
+      .eq('project_id', projectId)
+      .order('updated_at', { ascending: false });
+
+    if (!error && data && data.length > 0) {
+      setExistingConcepts(data);
+      setShowConceptChoice(true);
+    } else {
+      setExistingConcepts([]);
+      setShowConceptChoice(false);
+      setChoiceMade(true);
+    }
+  };
+
+  const handleGoToExisting = () => {
+    if (existingConcepts.length > 0 && selectedProjectId) {
+      // Navigate to the most recently updated concept
+      const mostRecent = existingConcepts[0];
+      navigate(`/konsept?project=${selectedProjectId}&concept=${mostRecent.id}`);
+    }
+  };
+
+  const handleStartNew = () => {
+    setShowConceptChoice(false);
+    setChoiceMade(true);
   };
 
   const handleCreateProject = async () => {
@@ -106,6 +152,7 @@ export const ProjectSelector = ({
       setIsCreateOpen(false);
       fetchProjects();
       onProjectSelect(data.id);
+      setChoiceMade(true);
     }
     setIsCreating(false);
   };
@@ -212,7 +259,7 @@ export const ProjectSelector = ({
       <CardContent className="space-y-4">
         <div className="flex gap-2">
           <div className="flex-1">
-            <Select value={selectedProjectId || ""} onValueChange={onProjectSelect}>
+            <Select value={selectedProjectId || ""} onValueChange={handleProjectSelect}>
               <SelectTrigger>
                 <SelectValue placeholder="Velg et prosjekt" />
               </SelectTrigger>
@@ -288,7 +335,43 @@ export const ProjectSelector = ({
           </Dialog>
         </div>
 
-        {selectedProjectId && (
+        {/* Show choice when project has existing concepts */}
+        {showConceptChoice && selectedProjectId && (
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="py-4 space-y-3">
+              <p className="text-sm font-medium">
+                Dette prosjektet har {existingConcepts.length} eksisterende brannkonsept{existingConcepts.length !== 1 ? "er" : ""}:
+              </p>
+              <div className="space-y-1.5">
+                {existingConcepts.map((concept) => (
+                  <div key={concept.id} className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <FileText className="h-3.5 w-3.5 text-primary" />
+                    <span>{concept.name}</span>
+                    <span className={`text-xs px-1.5 py-0.5 rounded ${
+                      concept.status === 'draft' 
+                        ? 'bg-yellow-100 text-yellow-800' 
+                        : 'bg-green-100 text-green-800'
+                    }`}>
+                      {concept.status === 'draft' ? 'Utkast' : 'Ferdig'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="flex gap-2 pt-1">
+                <Button size="sm" onClick={handleGoToExisting}>
+                  <FileText className="h-4 w-4 mr-2" />
+                  Åpne siste konsept
+                </Button>
+                <Button size="sm" variant="outline" onClick={handleStartNew}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Start nytt brannkonsept
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {selectedProjectId && choiceMade && (
           <div className="space-y-2">
             <Label htmlFor="concept-name">Navn på brannkonseptet *</Label>
             <Input
