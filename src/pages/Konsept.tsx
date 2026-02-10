@@ -272,6 +272,34 @@ const baereevneUnntakTekster: Record<string, string> = {
   unntak6: "I byggverk uten loft eller med loft som bare kan benyttes som lager, kan takkonstruksjon oppføres uten spesifisert brannmotstand, forutsatt at denne ikke har avgjørende betydning for byggverkets stabilitet i rømningsfasen.",
   unntak7: "Under forutsetning av at nødvendig tid til rømning og sikkerhet for slokkemannskaper er ivaretatt, kan parkeringshus med mer enn 1/3 av veggflatene åpne, oppføres med brannmotstand R 15 A2-s1,d0 [ubrennbart materiale].",
 };
+// Automatisk tiltaksklasse basert på SAK10 §9-4
+// Tiltaksklasse 1: BKL1 + RK1/2/4, preakseptert
+// Tiltaksklasse 2: BKL1 + RK3/5/6 ELLER BKL2 + RK1/2/4, preakseptert
+// Tiltaksklasse 3: Alt annet (BKL2 + RK3/5/6, BKL3, eller analyse/blanding)
+const getTiltaksklasse = (brannklasse: string, risikoklasse: string, prosjekteringsmetode: string): string => {
+  const bkl = parseInt(brannklasse.replace(/\D/g, ''), 10);
+  const rk = parseInt(risikoklasse.replace(/\D/g, ''), 10);
+  if (isNaN(bkl) || isNaN(rk)) return "";
+
+  // Kun preakseptert gir tiltaksklasse 1 eller 2
+  if (prosjekteringsmetode !== "preakseptert") {
+    return "Tiltaksklasse 3";
+  }
+
+  // Tiltaksklasse 1: BKL1 + RK 1, 2, 4
+  if (bkl === 1 && (rk === 1 || rk === 2 || rk === 4)) {
+    return "Tiltaksklasse 1";
+  }
+
+  // Tiltaksklasse 2: BKL1 + RK 3, 5, 6 ELLER BKL2 + RK 1, 2, 4
+  if ((bkl === 1 && (rk === 3 || rk === 5 || rk === 6)) || 
+      (bkl === 2 && (rk === 1 || rk === 2 || rk === 4))) {
+    return "Tiltaksklasse 2";
+  }
+
+  // Alt annet = Tiltaksklasse 3
+  return "Tiltaksklasse 3";
+};
 
 
 const Konsept = () => {
@@ -494,6 +522,15 @@ const Konsept = () => {
     }
   }, [formData.brannklasse, formData.risikoklasse, formData.etasjer]);
 
+
+  // Automatisk tiltaksklasse
+  useEffect(() => {
+    const effBkl = beregnetBrannklasseResult.brannklasse || formData.brannklasse;
+    const nyTiltaksklasse = getTiltaksklasse(effBkl, formData.risikoklasse, formData.prosjekteringsmetode);
+    if (nyTiltaksklasse && nyTiltaksklasse !== formData.tiltaksklasse) {
+      setFormData(prev => ({ ...prev, tiltaksklasse: nyTiltaksklasse }));
+    }
+  }, [formData.brannklasse, formData.risikoklasse, formData.prosjekteringsmetode, beregnetBrannklasseResult.brannklasse]);
 
   const erBrannklasseOverstyrt = beregnetBrannklasseResult.brannklasse && formData.brannklasse !== beregnetBrannklasseResult.brannklasse;
 
