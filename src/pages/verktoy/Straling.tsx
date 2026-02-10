@@ -9,12 +9,23 @@ import { Link } from "react-router-dom";
 const SIGMA = 5.67e-8; // Stefan-Boltzmann constant [W/m²K⁴]
 
 const Straling = () => {
+  // Stefan-Boltzmann state
   const [emissivitet, setEmissivitet] = useState("0.9");
   const [transmisjon, setTransmisjon] = useState("1.0");
   const [siktfaktor, setSiktfaktor] = useState("");
   const [flammeTempC, setFlammeTempC] = useState("1000");
   const [objektTempC, setObjektTempC] = useState("20");
   const [result, setResult] = useState<{
+    straling: number;
+    status: "ok" | "warning" | "error";
+  } | null>(null);
+
+  // Punktkilde state
+  const [pkHRR, setPkHRR] = useState("");
+  const [pkChi, setPkChi] = useState("0.3");
+  const [pkR, setPkR] = useState("");
+  const [pkCosTheta, setPkCosTheta] = useState("1.0");
+  const [pkResult, setPkResult] = useState<{
     straling: number;
     status: "ok" | "warning" | "error";
   } | null>(null);
@@ -37,6 +48,24 @@ const Straling = () => {
     else if (stralingKW > 8) status = "warning";
 
     setResult({ straling: stralingKW, status });
+  };
+  const calculatePunktkilde = () => {
+    const Q = parseFloat(pkHRR); // W
+    const chi = parseFloat(pkChi);
+    const r = parseFloat(pkR);
+    const cosTheta = parseFloat(pkCosTheta);
+
+    if ([Q, chi, r, cosTheta].some((v) => isNaN(v)) || r <= 0) return;
+
+    // q_rad(r) = (χr · Q̇) / (4π r²) · cos θ
+    const q = (chi * Q * 1000 * cosTheta) / (4 * Math.PI * r * r); // HRR input in kW, convert to W
+    const stralingKW = Math.round((q / 1000) * 100) / 100;
+
+    let status: "ok" | "warning" | "error" = "ok";
+    if (stralingKW > 12.5) status = "error";
+    else if (stralingKW > 8) status = "warning";
+
+    setPkResult({ straling: stralingKW, status });
   };
 
   return (
@@ -178,6 +207,93 @@ const Straling = () => {
                     <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                       <li>Stefan–Boltzmann: q″ = ε·τ·σ·F₁₂·(T<sub>f</sub>⁴ − T<sub>o</sub>⁴)</li>
                       <li>Nøkkelen er å finne fornuftig F₁₂ for geometrien</li>
+                      <li>Ref. TEK17 § 11-6 og VTEK</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Punktkildemodell */}
+          <Card className="shadow-medium">
+            <CardHeader>
+              <CardTitle>Forenklet punktkildemodell</CardTitle>
+              <CardDescription>
+                Superpraktisk i brann — beregner stråling som fraksjon av HRR (varmeavgivelse).
+                Ofte den raskeste veien til kW/m² når du kjenner/estimerer Q̇.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="bg-muted p-4 rounded-lg text-center">
+                <p className="font-mono text-sm md:text-base">
+                  q″<sub>rad</sub>(r) = (χ<sub>r</sub> · Q̇) / (4π r²) · cos θ
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="pkHRR">Q̇ — HRR / branneffekt [kW]</Label>
+                  <Input id="pkHRR" type="number" placeholder="f.eks. 3000" value={pkHRR} onChange={(e) => setPkHRR(e.target.value)} />
+                  <p className="text-xs text-muted-foreground">Brannens varmeavgivelse i kilowatt</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="pkChi">χ<sub>r</sub> — Radiativ fraksjon [-]</Label>
+                  <Input id="pkChi" type="number" step="0.01" placeholder="0.3" value={pkChi} onChange={(e) => setPkChi(e.target.value)} />
+                  <p className="text-xs text-muted-foreground">Ofte ~0,2–0,4 for hydrokarbonbranner; lavere for ventilerte</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="pkR">r — Avstand [m]</Label>
+                  <Input id="pkR" type="number" step="0.1" placeholder="f.eks. 4" value={pkR} onChange={(e) => setPkR(e.target.value)} />
+                  <p className="text-xs text-muted-foreground">Fra «kilden» til treffpunkt</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="pkCosTheta">cos θ — Vinkelfaktor [-]</Label>
+                  <Input id="pkCosTheta" type="number" step="0.01" min="0" max="1" placeholder="1.0" value={pkCosTheta} onChange={(e) => setPkCosTheta(e.target.value)} />
+                  <p className="text-xs text-muted-foreground">Sett cos θ = 1 hvis flaten vender rett mot brannen</p>
+                </div>
+              </div>
+
+              <Button onClick={calculatePunktkilde} className="w-full">Beregn stråling</Button>
+
+              {pkResult && (
+                <div className="space-y-4 pt-4 border-t">
+                  <h3 className="font-semibold">Resultater:</h3>
+                  <Card className={
+                    pkResult.status === "ok" ? "border-green-500 bg-green-50 dark:bg-green-950" :
+                    pkResult.status === "warning" ? "border-yellow-500 bg-yellow-50 dark:bg-yellow-950" :
+                    "border-red-500 bg-red-50 dark:bg-red-950"
+                  }>
+                    <CardHeader><CardTitle className="text-base">Mottatt stråling q″<sub>rad</sub></CardTitle></CardHeader>
+                    <CardContent>
+                      <p className="text-2xl font-bold">{pkResult.straling} kW/m²</p>
+                      <p className="text-sm text-muted-foreground mt-1">Ved {pkR} m avstand</p>
+                    </CardContent>
+                  </Card>
+
+                  <div className={`p-4 rounded-lg ${
+                    pkResult.status === "ok" ? "bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100" :
+                    pkResult.status === "warning" ? "bg-yellow-100 dark:bg-yellow-900 text-yellow-900 dark:text-yellow-100" :
+                    "bg-red-100 dark:bg-red-900 text-red-900 dark:text-red-100"
+                  }`}>
+                    <p className="font-semibold mb-1">
+                      {pkResult.status === "ok" && "✓ Strålingsnivået er akseptabelt"}
+                      {pkResult.status === "warning" && "⚠ Strålingsnivået nærmer seg grensen"}
+                      {pkResult.status === "error" && "✗ Strålingsnivået overskrider grenseverdien"}
+                    </p>
+                    <p className="text-sm">
+                      {pkResult.status === "ok" && "Under 8 kW/m² — ingen spesiell beskyttelse nødvendig."}
+                      {pkResult.status === "warning" && "Mellom 8–12,5 kW/m² — vurder tiltak."}
+                      {pkResult.status === "error" && "Over 12,5 kW/m² — tiltak for brannspredning påkrevd."}
+                    </p>
+                  </div>
+
+                  <div className="bg-muted p-4 rounded-lg text-sm space-y-2">
+                    <p className="font-semibold">Grunnlag:</p>
+                    <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                      <li>Punktkildemodell: q″ = (χ<sub>r</sub>·Q̇) / (4πr²) · cos θ</li>
+                      <li>Forutsetter at brannen kan modelleres som en punktkilde</li>
+                      <li>Best egnet for avstand {'>'} 2× branndiameter</li>
                       <li>Ref. TEK17 § 11-6 og VTEK</li>
                     </ul>
                   </div>
