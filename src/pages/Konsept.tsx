@@ -744,10 +744,6 @@ const Konsept = () => {
                 <td className="border border-gray-400 p-2 font-semibold">KPR RiBr</td>
                 <td className="border border-gray-400 p-2">{formData.kprRibr || "[Angis]"}</td>
               </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold">Tiltaksklasse</td>
-                <td className="border border-gray-400 p-2">{formData.tiltaksklasse || "[Angis]"}</td>
-              </tr>
             </tbody>
           </table>
 
@@ -856,6 +852,10 @@ const Konsept = () => {
               <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
                 <tbody>
                   <tr>
+                    <td className="border border-gray-400 p-2 font-semibold w-1/3">Tiltaksklasse</td>
+                    <td className="border border-gray-400 p-2">{formData.tiltaksklasse || "[Angis]"}</td>
+                  </tr>
+                  <tr>
                     <td className="border border-gray-400 p-2 font-semibold w-1/3">Bæresystem</td>
                     <td className="border border-gray-400 p-2">{formData.baeresystem || "[Angis]"}</td>
                   </tr>
@@ -877,7 +877,11 @@ const Konsept = () => {
                     {formData.brannklasseUnntak && (
                       <span className="block text-blue-600 text-xs mt-1 italic">{formData.brannklasseUnntak}</span>
                     )}
-                  </td>
+                </td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 font-semibold">Tiltaksklasse</td>
+                  <td className="border border-gray-400 p-2">{formData.tiltaksklasse || "[Angis]"}</td>
                 </tr>
                 <tr>
                   <td className="border border-gray-400 p-2 font-semibold">Bæresystem</td>
@@ -3458,30 +3462,12 @@ const Konsept = () => {
                             />
                           </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <Label className="text-xs font-medium mb-1 block">Kontrollerende (KPR RiBr)</Label>
-                            <Input 
-                              value={formData.kprRibr}
-                              onChange={(e) => setFormData({...formData, kprRibr: e.target.value})}
-                            />
-                          </div>
-                          <div>
-                            <Label className="text-xs font-medium mb-1 block">Tiltaksklasse</Label>
-                            <Select 
-                              value={formData.tiltaksklasse}
-                              onValueChange={(value) => setFormData({...formData, tiltaksklasse: value})}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Velg tiltaksklasse" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Tiltaksklasse 1">Tiltaksklasse 1</SelectItem>
-                                <SelectItem value="Tiltaksklasse 2">Tiltaksklasse 2</SelectItem>
-                                <SelectItem value="Tiltaksklasse 3">Tiltaksklasse 3</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
+                        <div>
+                          <Label className="text-xs font-medium mb-1 block">Kontrollerende (KPR RiBr)</Label>
+                          <Input 
+                            value={formData.kprRibr}
+                            onChange={(e) => setFormData({...formData, kprRibr: e.target.value})}
+                          />
                         </div>
                       </div>
                     </div>
@@ -4140,6 +4126,22 @@ const Konsept = () => {
                           </div>
                         )}
                       </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs text-muted-foreground">Tiltaksklasse</Label>
+                      <Select 
+                        value={formData.tiltaksklasse}
+                        onValueChange={(value) => setFormData({...formData, tiltaksklasse: value})}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Velg tiltaksklasse" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Tiltaksklasse 1">Tiltaksklasse 1</SelectItem>
+                          <SelectItem value="Tiltaksklasse 2">Tiltaksklasse 2</SelectItem>
+                          <SelectItem value="Tiltaksklasse 3">Tiltaksklasse 3</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.4 Tilleggskrav</Label>
