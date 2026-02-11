@@ -4334,12 +4334,17 @@ const Konsept = () => {
                         </div>
                       )}
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
-                        <Textarea 
-                          value={formData.eksplosjonKommentar}
-                          onChange={(e) => setFormData({...formData, eksplosjonKommentar: e.target.value})}
-                          placeholder="Legg til kommentar..."
-                        />
+                        <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('eksplosjon-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
+                        <div id="eksplosjon-kommentar" className={formData.eksplosjonKommentar ? "" : "hidden"}>
+                          <div className="mt-2">
+                            <Label className="text-xs font-medium mb-1 block">Kommentar / tilleggsbeskrivelse</Label>
+                            <Textarea 
+                              value={formData.eksplosjonKommentar}
+                              onChange={(e) => setFormData({...formData, eksplosjonKommentar: e.target.value})}
+                              placeholder="Legg til kommentar..."
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -4384,12 +4389,17 @@ const Konsept = () => {
                       )}
                       
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
-                        <Textarea 
-                          value={formData.brannspredningKommentar}
-                          onChange={(e) => setFormData({...formData, brannspredningKommentar: e.target.value})}
-                          placeholder="Legg til kommentar..."
-                        />
+                        <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('brannspredning-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
+                        <div id="brannspredning-kommentar" className={formData.brannspredningKommentar ? "" : "hidden"}>
+                          <div className="mt-2">
+                            <Label className="text-xs font-medium mb-1 block">Kommentar / tilleggsbeskrivelse</Label>
+                            <Textarea 
+                              value={formData.brannspredningKommentar}
+                              onChange={(e) => setFormData({...formData, brannspredningKommentar: e.target.value})}
+                              placeholder="Legg til kommentar..."
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -4501,12 +4511,17 @@ const Konsept = () => {
                       )}
                       
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
-                        <Textarea 
-                          value={formData.brannseksjonerKommentar}
-                          onChange={(e) => setFormData({...formData, brannseksjonerKommentar: e.target.value})}
-                          placeholder="Legg til kommentar..."
-                        />
+                        <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('brannseksjoner-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
+                        <div id="brannseksjoner-kommentar" className={formData.brannseksjonerKommentar ? "" : "hidden"}>
+                          <div className="mt-2">
+                            <Label className="text-xs font-medium mb-1 block">Kommentar / tilleggsbeskrivelse</Label>
+                            <Textarea 
+                              value={formData.brannseksjonerKommentar}
+                              onChange={(e) => setFormData({...formData, brannseksjonerKommentar: e.target.value})}
+                              placeholder="Legg til kommentar..."
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -4593,12 +4608,17 @@ const Konsept = () => {
                         </div>
                       )}
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
-                        <Textarea 
-                          value={formData.branncellerKommentar}
-                          onChange={(e) => setFormData({...formData, branncellerKommentar: e.target.value})}
-                          placeholder="Legg til kommentar..."
-                        />
+                        <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('brannceller-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
+                        <div id="brannceller-kommentar" className={formData.branncellerKommentar ? "" : "hidden"}>
+                          <div className="mt-2">
+                            <Label className="text-xs font-medium mb-1 block">Kommentar / tilleggsbeskrivelse</Label>
+                            <Textarea 
+                              value={formData.branncellerKommentar}
+                              onChange={(e) => setFormData({...formData, branncellerKommentar: e.target.value})}
+                              placeholder="Legg til kommentar..."
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -4637,12 +4657,17 @@ const Konsept = () => {
                       </div>
                       
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
-                        <Textarea 
-                          value={formData.materialerKommentar}
-                          onChange={(e) => setFormData({...formData, materialerKommentar: e.target.value})}
-                          placeholder="Legg til kommentar..."
-                        />
+                        <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('materialer-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
+                        <div id="materialer-kommentar" className={formData.materialerKommentar ? "" : "hidden"}>
+                          <div className="mt-2">
+                            <Label className="text-xs font-medium mb-1 block">Kommentar / tilleggsbeskrivelse</Label>
+                            <Textarea 
+                              value={formData.materialerKommentar}
+                              onChange={(e) => setFormData({...formData, materialerKommentar: e.target.value})}
+                              placeholder="Legg til kommentar..."
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -4763,12 +4788,17 @@ const Konsept = () => {
                       </div>
                       
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
-                        <Textarea 
-                          value={formData.installasjonerKommentar}
-                          onChange={(e) => setFormData({...formData, installasjonerKommentar: e.target.value})}
-                          placeholder="Legg til kommentar..."
-                        />
+                        <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('installasjoner-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
+                        <div id="installasjoner-kommentar" className={formData.installasjonerKommentar ? "" : "hidden"}>
+                          <div className="mt-2">
+                            <Label className="text-xs font-medium mb-1 block">Kommentar / tilleggsbeskrivelse</Label>
+                            <Textarea 
+                              value={formData.installasjonerKommentar}
+                              onChange={(e) => setFormData({...formData, installasjonerKommentar: e.target.value})}
+                              placeholder="Legg til kommentar..."
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -4783,12 +4813,17 @@ const Konsept = () => {
                         />
                       </div>
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
-                        <Textarea 
-                          value={formData.romningSikkerhetKommentar}
-                          onChange={(e) => setFormData({...formData, romningSikkerhetKommentar: e.target.value})}
-                          placeholder="Legg til kommentar..."
-                        />
+                        <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('romning-sikkerhet-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
+                        <div id="romning-sikkerhet-kommentar" className={formData.romningSikkerhetKommentar ? "" : "hidden"}>
+                          <div className="mt-2">
+                            <Label className="text-xs font-medium mb-1 block">Kommentar / tilleggsbeskrivelse</Label>
+                            <Textarea 
+                              value={formData.romningSikkerhetKommentar}
+                              onChange={(e) => setFormData({...formData, romningSikkerhetKommentar: e.target.value})}
+                              placeholder="Legg til kommentar..."
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-4">
@@ -5012,12 +5047,17 @@ const Konsept = () => {
                       </div>
 
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
-                        <Textarea 
-                          value={formData.tilretteleggingKommentar}
-                          onChange={(e) => setFormData({...formData, tilretteleggingKommentar: e.target.value})}
-                          placeholder="Legg til kommentar..."
-                        />
+                        <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('tilrettelegging-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
+                        <div id="tilrettelegging-kommentar" className={formData.tilretteleggingKommentar ? "" : "hidden"}>
+                          <div className="mt-2">
+                            <Label className="text-xs font-medium mb-1 block">Kommentar / tilleggsbeskrivelse</Label>
+                            <Textarea 
+                              value={formData.tilretteleggingKommentar}
+                              onChange={(e) => setFormData({...formData, tilretteleggingKommentar: e.target.value})}
+                              placeholder="Legg til kommentar..."
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -5308,12 +5348,17 @@ const Konsept = () => {
                         />
                       </div>
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
-                        <Textarea 
-                          value={formData.utgangBranncelleKommentar}
-                          onChange={(e) => setFormData({...formData, utgangBranncelleKommentar: e.target.value})}
-                          placeholder="Legg til kommentar..."
-                        />
+                        <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('utgang-branncelle-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
+                        <div id="utgang-branncelle-kommentar" className={formData.utgangBranncelleKommentar ? "" : "hidden"}>
+                          <div className="mt-2">
+                            <Label className="text-xs font-medium mb-1 block">Kommentar / tilleggsbeskrivelse</Label>
+                            <Textarea 
+                              value={formData.utgangBranncelleKommentar}
+                              onChange={(e) => setFormData({...formData, utgangBranncelleKommentar: e.target.value})}
+                              placeholder="Legg til kommentar..."
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -5429,12 +5474,17 @@ const Konsept = () => {
                         />
                       </div>
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
-                        <Textarea 
-                          value={formData.romningsveiKommentar}
-                          onChange={(e) => setFormData({...formData, romningsveiKommentar: e.target.value})}
-                          placeholder="Legg til kommentar..."
-                        />
+                        <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('romningsvei-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
+                        <div id="romningsvei-kommentar" className={formData.romningsveiKommentar ? "" : "hidden"}>
+                          <div className="mt-2">
+                            <Label className="text-xs font-medium mb-1 block">Kommentar / tilleggsbeskrivelse</Label>
+                            <Textarea 
+                              value={formData.romningsveiKommentar}
+                              onChange={(e) => setFormData({...formData, romningsveiKommentar: e.target.value})}
+                              placeholder="Legg til kommentar..."
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -5452,12 +5502,17 @@ const Konsept = () => {
                         </Label>
                       </div>
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
-                        <Textarea 
-                          value={formData.husdyrRedningKommentar}
-                          onChange={(e) => setFormData({...formData, husdyrRedningKommentar: e.target.value})}
-                          placeholder="Legg til kommentar..."
-                        />
+                        <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('husdyr-redning-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
+                        <div id="husdyr-redning-kommentar" className={formData.husdyrRedningKommentar ? "" : "hidden"}>
+                          <div className="mt-2">
+                            <Label className="text-xs font-medium mb-1 block">Kommentar / tilleggsbeskrivelse</Label>
+                            <Textarea 
+                              value={formData.husdyrRedningKommentar}
+                              onChange={(e) => setFormData({...formData, husdyrRedningKommentar: e.target.value})}
+                              placeholder="Legg til kommentar..."
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -5513,12 +5568,17 @@ const Konsept = () => {
                         />
                       </div>
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
-                        <Textarea 
-                          value={formData.manuellSlokkingKommentar}
-                          onChange={(e) => setFormData({...formData, manuellSlokkingKommentar: e.target.value})}
-                          placeholder="Legg til kommentar..."
-                        />
+                        <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('manuell-slokking-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
+                        <div id="manuell-slokking-kommentar" className={formData.manuellSlokkingKommentar ? "" : "hidden"}>
+                          <div className="mt-2">
+                            <Label className="text-xs font-medium mb-1 block">Kommentar / tilleggsbeskrivelse</Label>
+                            <Textarea 
+                              value={formData.manuellSlokkingKommentar}
+                              onChange={(e) => setFormData({...formData, manuellSlokkingKommentar: e.target.value})}
+                              placeholder="Legg til kommentar..."
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -5547,12 +5607,17 @@ const Konsept = () => {
                         />
                       </div>
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Kommentar</Label>
-                        <Textarea 
-                          value={formData.redningsmannskapKommentar}
-                          onChange={(e) => setFormData({...formData, redningsmannskapKommentar: e.target.value})}
-                          placeholder="Legg til kommentar..."
-                        />
+                        <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('redningsmannskap-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
+                        <div id="redningsmannskap-kommentar" className={formData.redningsmannskapKommentar ? "" : "hidden"}>
+                          <div className="mt-2">
+                            <Label className="text-xs font-medium mb-1 block">Kommentar / tilleggsbeskrivelse</Label>
+                            <Textarea 
+                              value={formData.redningsmannskapKommentar}
+                              onChange={(e) => setFormData({...formData, redningsmannskapKommentar: e.target.value})}
+                              placeholder="Legg til kommentar..."
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </AccordionContent>
