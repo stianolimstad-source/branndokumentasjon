@@ -4227,12 +4227,23 @@ const Konsept = () => {
                         <Label className="text-base font-extrabold text-foreground">3.1 § 11-4 Bæreevne og stabilitet</Label>
                       </div>
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Krav til bærende konstruksjoner (automatisk basert på brannklasse)</Label>
+                        <Label className="text-xs font-medium mb-1 block">Krav til bærende konstruksjoner (automatisk basert på brannklasse — kan redigeres)</Label>
                         <Textarea 
                           value={formData.baereevne}
-                          readOnly
-                          className="min-h-[140px] bg-muted/50 cursor-default"
+                          onChange={(e) => setFormData({...formData, baereevne: e.target.value})}
+                          className="min-h-[140px]"
                         />
+                        {formData.baereevne && formData.brannklasse && (() => {
+                          const auto = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer);
+                          return auto.tekst && formData.baereevne !== auto.tekst;
+                        })() && (
+                          <div className="flex items-start gap-2 mt-2 p-2 border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 rounded-md">
+                            <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                            <p className="text-xs text-amber-700 dark:text-amber-400">
+                              Bæreevne-kravene er endret fra automatisk beregnet verdi. Beskriv begrunnelsen i kommentarfeltet under.
+                            </p>
+                          </div>
+                        )}
                       </div>
                       {formData.baereevneUnntak.length > 0 && (
                         <div className="space-y-2">
