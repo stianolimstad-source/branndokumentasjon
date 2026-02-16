@@ -179,6 +179,55 @@ export type Database = {
         }
         Relationships: []
       }
+      project_shares: {
+        Row: {
+          contact_id: string | null
+          created_at: string
+          group_id: string | null
+          id: string
+          project_id: string
+          shared_by: string
+        }
+        Insert: {
+          contact_id?: string | null
+          created_at?: string
+          group_id?: string | null
+          id?: string
+          project_id: string
+          shared_by: string
+        }
+        Update: {
+          contact_id?: string | null
+          created_at?: string
+          group_id?: string | null
+          id?: string
+          project_id?: string
+          shared_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_shares_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_shares_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "contact_groups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_shares_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           address: string | null

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, FolderOpen, FileText, Trash2, Building, Search } from "lucide-react";
+import ShareProjectDialog from "@/components/prosjekt/ShareProjectDialog";
 import { Link, useNavigate } from "react-router-dom";
 import PageHeader from "@/components/PageHeader";
 import { useAuth } from "@/hooks/useAuth";
@@ -353,12 +354,15 @@ const MineProsjekter = () => {
                           {(conceptsByProject[project.id]?.length || 0) !== 1 ? "er" : ""}
                         </span>
                       </div>
-                      <Link to={`/konsept?project=${project.id}`}>
+                      <div className="flex items-center gap-2">
+                        <ShareProjectDialog projectId={project.id} projectName={project.name} />
+                        <Link to={`/konsept?project=${project.id}`}>
                         <Button size="sm">
                           <Plus className="h-4 w-4 mr-2" />
                           Nytt brannkonsept
                         </Button>
                       </Link>
+                      </div>
                     </div>
                     
                     {conceptsByProject[project.id] && conceptsByProject[project.id].length > 0 && (
