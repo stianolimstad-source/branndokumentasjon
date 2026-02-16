@@ -108,6 +108,13 @@ const SendToKSDialog = ({ conceptName, projectId, conceptId, disabled }: SendToK
     if (error) {
       toast({ title: "Feil", description: "Kunne ikke sende til KS", variant: "destructive" });
     } else {
+      // Send notification to the recipient via RPC (bypasses RLS)
+      await supabase.rpc("create_notification", {
+        _user_id: selectedUserId,
+        _type: "task_assigned",
+        _title: `Ny KS-oppgave: ${conceptName}`,
+        _message: message || `Du har fått en KS-oppgave fra en kollega.`,
+      });
       toast({ title: "Sendt!", description: "Brannkonseptet er sendt til KS" });
       setSelectedUserId("");
       setMessage("");
