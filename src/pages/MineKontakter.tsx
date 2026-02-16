@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Flame, ArrowLeft, Plus, Users, UserPlus, Trash2, Pencil, Search, ChevronRight, Shield, User } from "lucide-react";
+import { Flame, ArrowLeft, Plus, Users, UserPlus, Trash2, Pencil, Search, ChevronRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,6 +36,7 @@ interface GroupMember {
   role: string;
 }
 
+
 const MineKontakter = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -47,7 +48,6 @@ const MineKontakter = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGroup, setSelectedGroup] = useState<ContactGroup | null>(null);
-  const [memberProfiles, setMemberProfiles] = useState<Record<string, { email: string | null; full_name: string | null }>>({});
 
   // Dialog states
   const [showGroupDialog, setShowGroupDialog] = useState(false);
@@ -179,22 +179,8 @@ const MineKontakter = () => {
     return groups.find((g) => g.id === groupId)?.name || null;
   };
 
-  const openGroupDetail = async (group: ContactGroup) => {
-    setSelectedGroup(group);
-    // Fetch profile info for members of this group
-    const members = groupMembers.filter((m) => m.group_id === group.id);
-    const userIds = members.map((m) => m.user_id);
-    if (userIds.length > 0) {
-      const { data } = await supabase
-        .from("profiles")
-        .select("id, email, full_name")
-        .in("id", userIds);
-      if (data) {
-        const map: Record<string, { email: string | null; full_name: string | null }> = {};
-        data.forEach((p) => { map[p.id] = { email: p.email, full_name: p.full_name }; });
-        setMemberProfiles(map);
-      }
-    }
+  const openGroupDetail = (group: ContactGroup) => {
+    navigate(`/mine-kontakter/gruppe/${group.id}`);
   };
 
   const filteredContacts = contacts.filter((c) => {
@@ -410,55 +396,6 @@ const MineKontakter = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Group detail dialog */}
-      <Dialog open={!!selectedGroup} onOpenChange={(open) => { if (!open) setSelectedGroup(null); }}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              {selectedGroup?.name}
-            </DialogTitle>
-            {selectedGroup?.description && (
-              <p className="text-sm text-muted-foreground">{selectedGroup.description}</p>
-            )}
-          </DialogHeader>
-          <div className="space-y-3">
-            <h4 className="text-sm font-medium text-muted-foreground">Medlemmer</h4>
-            {selectedGroup && groupMembers.filter((m) => m.group_id === selectedGroup.id).length === 0 ? (
-              <p className="text-sm text-muted-foreground">Ingen medlemmer ennå.</p>
-            ) : (
-              <div className="space-y-2">
-                {selectedGroup && groupMembers
-                  .filter((m) => m.group_id === selectedGroup.id)
-                  .map((member) => {
-                    const profile = memberProfiles[member.user_id];
-                    return (
-                      <div key={member.id} className="flex items-center justify-between rounded-lg border p-3">
-                        <div className="flex items-center gap-3">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
-                            <User className="h-4 w-4 text-muted-foreground" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium">{profile?.full_name || profile?.email || "Ukjent bruker"}</p>
-                            {profile?.full_name && profile?.email && (
-                              <p className="text-xs text-muted-foreground">{profile.email}</p>
-                            )}
-                          </div>
-                        </div>
-                        {member.role === "admin" && (
-                          <Badge variant="outline" className="flex items-center gap-1">
-                            <Shield className="h-3 w-3" />
-                            Admin
-                          </Badge>
-                        )}
-                      </div>
-                    );
-                  })}
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

@@ -16,6 +16,7 @@ import Priskalkulator from "./pages/Priskalkulator";
 import Auth from "./pages/Auth";
 import MineProsjekter from "./pages/MineProsjekter";
 import MineKontakter from "./pages/MineKontakter";
+import GruppeDetalj from "./pages/GruppeDetalj";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/mine-prosjekter" element={<MineProsjekter />} />
             <Route path="/mine-kontakter" element={<MineKontakter />} />
+            <Route path="/mine-kontakter/gruppe/:id" element={<GruppeDetalj />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
