@@ -61,7 +61,7 @@ const KSGjennomgang = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showComments, setShowComments] = useState<Record<string, boolean>>({});
-  const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [iframeReady, setIframeReady] = useState(false);
 
   // Stable iframe URL - compute once to prevent re-renders from changing it
   const iframeSrc = useRef(
@@ -69,6 +69,13 @@ const KSGjennomgang = () => {
       ? `/konsept?project=${projectId}&concept=${conceptId}&view=true`
       : ""
   );
+
+  // Delay showing iframe to let Konsept page finish its cascading state updates
+  const iframeLoadTimer = useRef<ReturnType<typeof setTimeout>>();
+  const handleIframeLoad = () => {
+    clearTimeout(iframeLoadTimer.current);
+    iframeLoadTimer.current = setTimeout(() => setIframeReady(true), 800);
+  };
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
@@ -262,7 +269,7 @@ const KSGjennomgang = () => {
               </CardHeader>
               <CardContent className="flex-1 overflow-hidden p-0 relative">
                 {/* Loading overlay */}
-                {!iframeLoaded && (
+                {!iframeReady && (
                   <div className="absolute inset-0 flex items-center justify-center bg-background z-10">
                     <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                     <p className="text-muted-foreground ml-2 text-sm">Laster konsept…</p>
@@ -271,9 +278,9 @@ const KSGjennomgang = () => {
                 {iframeSrc.current && (
                   <iframe
                     src={iframeSrc.current}
-                    className="w-full h-full border-0"
+                    className={`w-full h-full border-0 transition-opacity duration-300 ${iframeReady ? 'opacity-100' : 'opacity-0'}`}
                     title="Brannkonsept lesevisning"
-                    onLoad={() => setIframeLoaded(true)}
+                    onLoad={handleIframeLoad}
                   />
                 )}
               </CardContent>
