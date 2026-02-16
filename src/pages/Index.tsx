@@ -3,14 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Banknote, LogIn, LogOut, FolderOpen, Plus, Users, Bell } from "lucide-react";
+import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Banknote, LogIn, LogOut, FolderOpen, Plus, Users, Bell, X } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useNotifications } from "@/hooks/useNotifications";
 
 const Index = () => {
   const { user, loading, signOut } = useAuth();
-  const { notifications, unreadCount, markAllRead } = useNotifications();
+  const { notifications, unreadCount, markAllRead, deleteNotification } = useNotifications();
   const navigate = useNavigate();
   const [showConceptDialog, setShowConceptDialog] = useState(false);
 
@@ -107,10 +107,15 @@ const Index = () => {
                           notifications.map((n) => (
                             <div
                               key={n.id}
-                              className={`p-3 border-b last:border-b-0 text-sm ${!n.read ? "bg-accent/50" : ""}`}
+                              className={`p-3 border-b last:border-b-0 text-sm flex items-start justify-between gap-2 ${!n.read ? "bg-accent/50" : ""}`}
                             >
-                              <p className="font-medium">{n.title}</p>
-                              {n.message && <p className="text-muted-foreground text-xs mt-0.5">{n.message}</p>}
+                              <div>
+                                <p className="font-medium">{n.title}</p>
+                                {n.message && <p className="text-muted-foreground text-xs mt-0.5">{n.message}</p>}
+                              </div>
+                              <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => deleteNotification(n.id)}>
+                                <X className="h-3.5 w-3.5" />
+                              </Button>
                             </div>
                           ))
                         )}
