@@ -442,16 +442,10 @@ const KSGjennomgang = () => {
                   <Save className="h-4 w-4 mr-2" />
                   {saving ? "Lagrer…" : "Lagre sjekkpunkter"}
                 </Button>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="flex-1" onClick={() => downloadChecklist("egenkontroll")}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Last ned egenkontroll
-                  </Button>
-                  <Button variant="outline" size="sm" className="flex-1" onClick={() => downloadChecklist("sidemannskontroll")}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Last ned sidemannskontroll
-                  </Button>
-                </div>
+                <Button variant="outline" size="sm" className="w-full" onClick={() => downloadChecklist(reviewType)}>
+                  <Download className="h-4 w-4 mr-2" />
+                  {reviewType === "egenkontroll" ? "Last ned egenkontroll" : "Last ned sidemannskontroll"}
+                </Button>
               </div>
             </Card>
           </div>
