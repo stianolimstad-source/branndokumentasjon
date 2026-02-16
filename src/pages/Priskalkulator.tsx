@@ -4,9 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calculator, ArrowLeft, Info } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Calculator, Info } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import PageHeader from "@/components/PageHeader";
 
 const Priskalkulator = () => {
   const [area, setArea] = useState<string>("");
@@ -85,25 +85,10 @@ const Priskalkulator = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Tilbake
-              </Link>
-            </Button>
-            <div className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
-                <Calculator className="h-6 w-6 text-primary-foreground" />
-              </div>
-              <h1 className="text-xl font-bold">Priskalkulator</h1>
-            </div>
-          </div>
-        </div>
-      </header>
+      <PageHeader
+        title="Priskalkulator"
+        icon={<Calculator className="h-6 w-6 text-primary-foreground" />}
+      />
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-8">
