@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, FolderOpen, FileText, Trash2, Building, Search } from "lucide-react";
+import { Plus, FolderOpen, FileText, Trash2, Building, Search, Users, User, Share2 } from "lucide-react";
 import ShareProjectDialog from "@/components/prosjekt/ShareProjectDialog";
 import { Link, useNavigate } from "react-router-dom";
 import PageHeader from "@/components/PageHeader";
@@ -30,6 +30,14 @@ interface FireConcept {
   created_at: string;
 }
 
+interface ShareInfo {
+  id: string;
+  group_id: string | null;
+  contact_id: string | null;
+  group_name?: string;
+  contact_name?: string;
+}
+
 const MineProsjekter = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -37,6 +45,7 @@ const MineProsjekter = () => {
   
   const [projects, setProjects] = useState<Project[]>([]);
   const [conceptsByProject, setConceptsByProject] = useState<Record<string, FireConcept[]>>({});
+  const [sharesByProject, setSharesByProject] = useState<Record<string, ShareInfo[]>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -99,21 +108,58 @@ const MineProsjekter = () => {
 
     // Fetch concepts for each project
     if (projectsData && projectsData.length > 0) {
-      const { data: conceptsData, error: conceptsError } = await supabase
-        .from('fire_concepts')
-        .select('id, name, status, created_at, project_id')
-        .in('project_id', projectsData.map(p => p.id))
-        .order('created_at', { ascending: false });
+      const projectIds = projectsData.map(p => p.id);
 
-      if (!conceptsError && conceptsData) {
+      const [conceptsRes, sharesRes] = await Promise.all([
+        supabase
+          .from('fire_concepts')
+          .select('id, name, status, created_at, project_id')
+          .in('project_id', projectIds)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('project_shares')
+          .select('id, project_id, group_id, contact_id')
+          .in('project_id', projectIds),
+      ]);
+
+      if (!conceptsRes.error && conceptsRes.data) {
         const grouped: Record<string, FireConcept[]> = {};
-        conceptsData.forEach((concept: any) => {
-          if (!grouped[concept.project_id]) {
-            grouped[concept.project_id] = [];
-          }
+        conceptsRes.data.forEach((concept: any) => {
+          if (!grouped[concept.project_id]) grouped[concept.project_id] = [];
           grouped[concept.project_id].push(concept);
         });
         setConceptsByProject(grouped);
+      }
+
+      if (!sharesRes.error && sharesRes.data && sharesRes.data.length > 0) {
+        // Fetch group and contact names
+        const groupIds = [...new Set(sharesRes.data.filter(s => s.group_id).map(s => s.group_id!))];
+        const contactIds = [...new Set(sharesRes.data.filter(s => s.contact_id).map(s => s.contact_id!))];
+
+        const [groupsRes, contactsRes] = await Promise.all([
+          groupIds.length > 0
+            ? supabase.from('contact_groups').select('id, name').in('id', groupIds)
+            : Promise.resolve({ data: [] as { id: string; name: string }[] }),
+          contactIds.length > 0
+            ? supabase.from('contacts').select('id, name').in('id', contactIds)
+            : Promise.resolve({ data: [] as { id: string; name: string }[] }),
+        ]);
+
+        const groupMap = new Map((groupsRes.data || []).map(g => [g.id, g.name]));
+        const contactMap = new Map((contactsRes.data || []).map(c => [c.id, c.name]));
+
+        const grouped: Record<string, ShareInfo[]> = {};
+        sharesRes.data.forEach((share: any) => {
+          if (!grouped[share.project_id]) grouped[share.project_id] = [];
+          grouped[share.project_id].push({
+            ...share,
+            group_name: share.group_id ? groupMap.get(share.group_id) : undefined,
+            contact_name: share.contact_id ? contactMap.get(share.contact_id) : undefined,
+          });
+        });
+        setSharesByProject(grouped);
+      } else {
+        setSharesByProject({});
       }
     }
 
@@ -390,6 +436,26 @@ const MineProsjekter = () => {
                             </Link>
                           </div>
                         ))}
+                      </div>
+                    )}
+
+                    {sharesByProject[project.id] && sharesByProject[project.id].length > 0 && (
+                      <div className="mt-4">
+                        <div className="flex items-center gap-1.5 mb-2">
+                          <Share2 className="h-3.5 w-3.5 text-muted-foreground" />
+                          <span className="text-xs font-medium text-muted-foreground">Delt med</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {sharesByProject[project.id].map((share) => (
+                            <span
+                              key={share.id}
+                              className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-primary/10 text-primary"
+                            >
+                              {share.group_id ? <Users className="h-3 w-3" /> : <User className="h-3 w-3" />}
+                              {share.group_name || share.contact_name}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </CardContent>
