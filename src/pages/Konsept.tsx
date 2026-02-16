@@ -553,8 +553,10 @@ const Konsept = () => {
 
   // Automatisk beregning av brannklasse
   const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal);
-  
+
+  // Automatisk beregning av brannklasse – skip i view-modus (data er allerede lagret)
   useEffect(() => {
+    if (isViewMode) return;
     if (beregnetBrannklasseResult.brannklasse) {
       setFormData(prev => ({
         ...prev, 
@@ -565,8 +567,9 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal]);
 
-  // Automatisk generering av bæreevne tekst
+  // Automatisk generering av bæreevne tekst – skip i view-modus
   useEffect(() => {
+    if (isViewMode) return;
     const result = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer);
     if (result.tekst) {
       setFormData(prev => ({ 
@@ -578,8 +581,9 @@ const Konsept = () => {
   }, [formData.brannklasse, formData.risikoklasse, formData.etasjer]);
 
 
-  // Automatisk tiltaksklasse
+  // Automatisk tiltaksklasse – skip i view-modus
   useEffect(() => {
+    if (isViewMode) return;
     const effBkl = beregnetBrannklasseResult.brannklasse || formData.brannklasse;
     const nyTiltaksklasse = getTiltaksklasse(effBkl, formData.risikoklasse, formData.prosjekteringsmetode);
     console.log('[TK]', { effBkl, rk: formData.risikoklasse, metode: formData.prosjekteringsmetode, resultat: nyTiltaksklasse });
