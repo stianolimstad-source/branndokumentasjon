@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Shield, User, FolderOpen, Building } from "lucide-react";
+import { Users, Shield, User, FolderOpen, Building, FileText, ChevronDown, ChevronRight } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,12 +20,19 @@ interface MemberProfile {
   full_name: string | null;
 }
 
+interface FireConcept {
+  id: string;
+  name: string;
+  status: string;
+}
+
 interface SharedProject {
   id: string;
   name: string;
   address: string | null;
   description: string | null;
   shared_by_name: string | null;
+  fire_concepts: FireConcept[];
 }
 
 const GruppeDetalj = () => {
@@ -38,6 +45,7 @@ const GruppeDetalj = () => {
   const [members, setMembers] = useState<GroupMember[]>([]);
   const [memberProfiles, setMemberProfiles] = useState<Record<string, MemberProfile>>({});
   const [sharedProjects, setSharedProjects] = useState<SharedProject[]>([]);
+  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -90,9 +98,10 @@ const GruppeDetalj = () => {
       const projectIds = sharesRes.data.map((s: any) => s.project_id);
       const sharedByIds = [...new Set(sharesRes.data.map((s: any) => s.shared_by))];
 
-      const [projectsRes, sharedByProfilesRes] = await Promise.all([
+      const [projectsRes, sharedByProfilesRes, conceptsRes] = await Promise.all([
         supabase.from("projects").select("id, name, address, description").in("id", projectIds),
         supabase.from("profiles").select("id, full_name, email").in("id", sharedByIds),
+        supabase.from("fire_concepts").select("id, name, status, project_id").in("project_id", projectIds),
       ]);
 
       const profileMap = new Map(
@@ -102,10 +111,18 @@ const GruppeDetalj = () => {
         sharesRes.data.map((s: any) => [s.project_id, s.shared_by])
       );
 
+      const conceptsByProject = new Map<string, FireConcept[]>();
+      (conceptsRes.data || []).forEach((c: any) => {
+        const list = conceptsByProject.get(c.project_id) || [];
+        list.push({ id: c.id, name: c.name, status: c.status });
+        conceptsByProject.set(c.project_id, list);
+      });
+
       setSharedProjects(
         (projectsRes.data || []).map((p: any) => ({
           ...p,
           shared_by_name: profileMap.get(shareByMap.get(p.id)) || null,
+          fire_concepts: conceptsByProject.get(p.id) || [],
         }))
       );
     } else {
@@ -194,26 +211,62 @@ const GruppeDetalj = () => {
               </Card>
             ) : (
               <div className="space-y-2">
-                {sharedProjects.map((project) => (
-                  <Card key={project.id} className="shadow-soft">
-                    <CardContent className="py-4 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                          <Building className="h-5 w-5 text-primary" />
+                {sharedProjects.map((project) => {
+                  const isExpanded = expandedProjects.has(project.id);
+                  return (
+                    <Card key={project.id} className="shadow-soft">
+                      <CardContent className="py-4">
+                        <div
+                          className="flex items-center justify-between cursor-pointer"
+                          onClick={() => {
+                            setExpandedProjects((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(project.id)) next.delete(project.id);
+                              else next.add(project.id);
+                              return next;
+                            });
+                          }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                              <Building className="h-5 w-5 text-primary" />
+                            </div>
+                            <div>
+                              <p className="font-medium">{project.name}</p>
+                              {project.address && (
+                                <p className="text-sm text-muted-foreground">{project.address}</p>
+                              )}
+                              {project.shared_by_name && (
+                                <p className="text-xs text-muted-foreground">Delt av {project.shared_by_name}</p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <span className="text-xs">{project.fire_concepts.length} dokument{project.fire_concepts.length !== 1 ? "er" : ""}</span>
+                            {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium">{project.name}</p>
-                          {project.address && (
-                            <p className="text-sm text-muted-foreground">{project.address}</p>
-                          )}
-                          {project.shared_by_name && (
-                            <p className="text-xs text-muted-foreground">Delt av {project.shared_by_name}</p>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                        {isExpanded && (
+                          <div className="mt-4 ml-13 space-y-2 border-l-2 border-muted pl-4">
+                            {project.fire_concepts.length === 0 ? (
+                              <p className="text-sm text-muted-foreground">Ingen dokumenter i dette prosjektet.</p>
+                            ) : (
+                              project.fire_concepts.map((concept) => (
+                                <div key={concept.id} className="flex items-center gap-2 py-1">
+                                  <FileText className="h-4 w-4 text-muted-foreground" />
+                                  <span className="text-sm">{concept.name}</span>
+                                  <Badge variant="outline" className="text-xs ml-auto">
+                                    {concept.status === "draft" ? "Utkast" : concept.status}
+                                  </Badge>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             )}
           </TabsContent>
