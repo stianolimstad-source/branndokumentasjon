@@ -538,19 +538,6 @@ const Konsept = () => {
     }
   }, [conceptId, user]);
 
-  // Signal parent (iframe host) when view-mode content is fully ready
-  const viewReadySignalled = React.useRef(false);
-  useEffect(() => {
-    if (isViewMode && conceptName && !viewReadySignalled.current) {
-      viewReadySignalled.current = true;
-      // Small delay to let cascading state updates finish
-      const t = setTimeout(() => {
-        window.parent.postMessage({ type: 'konsept-view-ready' }, '*');
-      }, 300);
-      return () => clearTimeout(t);
-    }
-  }, [isViewMode, conceptName]);
-
   // Automatisk beregning av brannklasse
   const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal);
 
@@ -3315,6 +3302,47 @@ const Konsept = () => {
     });
   };
 
+  // In view mode, show nothing until auth + data are fully ready (prevents flash of editor UI in iframes)
+  if (isViewMode) {
+    if (authLoading || !conceptName) {
+      return null; // blank until ready – the parent (KSGjennomgang) shows its own loading spinner
+    }
+    return (
+      <div className="min-h-screen bg-gradient-subtle">
+        <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Tilbake
+                </Button>
+                <div className="flex items-center gap-2">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
+                    <Flame className="h-6 w-6 text-primary-foreground" />
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-bold">{conceptName || "Brannkonsept"}</h1>
+                    <p className="text-xs text-muted-foreground">Kvalitetssikring (KS) – Lesevisning</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+        <div className="container mx-auto px-4 py-8 max-w-4xl">
+          <Card className="shadow-medium">
+            <CardContent className="p-0">
+              <div className="p-6">
+                {renderPreview()}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   // Show login prompt if not authenticated
   if (!authLoading && !user) {
     return (
@@ -3351,44 +3379,6 @@ const Konsept = () => {
                   Logg inn
                 </Button>
               </Link>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
-
-  // Read-only view mode for shared concepts (quality assurance / KS)
-  if (isViewMode) {
-    return (
-      <div className="min-h-screen bg-gradient-subtle">
-        <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Tilbake
-                </Button>
-                <div className="flex items-center gap-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
-                    <Flame className="h-6 w-6 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <h1 className="text-xl font-bold">{conceptName || "Brannkonsept"}</h1>
-                    <p className="text-xs text-muted-foreground">Kvalitetssikring (KS) – Lesevisning</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </header>
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
-          <Card className="shadow-medium">
-            <CardContent className="p-0">
-              <div className="p-6">
-                {renderPreview()}
-              </div>
             </CardContent>
           </Card>
         </div>
