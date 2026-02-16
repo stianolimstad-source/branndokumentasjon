@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, Shield, User, FolderOpen, Building, FileText, ChevronDown, ChevronRight, UserPlus } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import PageHeader from "@/components/PageHeader";
 import AddMemberDialog from "@/components/gruppe/AddMemberDialog";
@@ -201,12 +202,56 @@ const GruppeDetalj = () => {
                             )}
                           </div>
                         </div>
-                        {member.role === "admin" && (
-                          <Badge variant="outline" className="flex items-center gap-1">
-                            <Shield className="h-3 w-3" />
-                            Admin
-                          </Badge>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {member.role === "admin" && (
+                            <Badge variant="outline" className="flex items-center gap-1">
+                              <Shield className="h-3 w-3" />
+                              Admin
+                            </Badge>
+                          )}
+                          {isCurrentUser && member.role !== "admin" && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:text-destructive"
+                              onClick={async () => {
+                                const { error } = await supabase
+                                  .from("group_members")
+                                  .delete()
+                                  .eq("id", member.id);
+                                if (error) {
+                                  toast.error("Kunne ikke forlate gruppen");
+                                } else {
+                                  toast.success("Du har forlatt gruppen");
+                                  navigate("/mine-kontakter");
+                                }
+                              }}
+                            >
+                              Forlat gruppe
+                            </Button>
+                          )}
+                          {isAdmin && !isCurrentUser && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:text-destructive"
+                              onClick={async () => {
+                                const { error } = await supabase
+                                  .from("group_members")
+                                  .delete()
+                                  .eq("id", member.id);
+                                if (error) {
+                                  toast.error("Kunne ikke fjerne medlem");
+                                } else {
+                                  toast.success("Medlem fjernet");
+                                  fetchGroupData();
+                                }
+                              }}
+                            >
+                              Fjern
+                            </Button>
+                          )}
+                        </div>
                       </CardContent>
                     </Card>
                   );
