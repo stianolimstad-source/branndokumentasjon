@@ -62,6 +62,7 @@ const KSGjennomgang = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showComments, setShowComments] = useState<Record<string, boolean>>({});
+  const [reviewType, setReviewType] = useState<"egenkontroll" | "sidemannskontroll">("sidemannskontroll");
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
@@ -71,7 +72,7 @@ const KSGjennomgang = () => {
     if (user && taskId && conceptId) {
       fetchData();
     }
-  }, [user, taskId, conceptId]);
+  }, [user, taskId, conceptId, reviewType]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -79,7 +80,7 @@ const KSGjennomgang = () => {
     const [snapshotRes, taskRes, checkpointRes] = await Promise.all([
       supabase.from("concept_snapshots").select("*").eq("task_id", taskId!).maybeSingle(),
       supabase.from("tasks").select("*").eq("id", taskId!).single(),
-      supabase.from("qa_checkpoints").select("*").eq("task_id", taskId!).eq("concept_id", conceptId!),
+      supabase.from("qa_checkpoints").select("*").eq("task_id", taskId!).eq("concept_id", conceptId!).eq("review_type", reviewType),
     ]);
 
     // Use snapshot if available, otherwise fall back to live concept
@@ -139,9 +140,10 @@ const KSGjennomgang = () => {
       section_key: cp.section_key,
       status: cp.status,
       comment: cp.comment || null,
+      review_type: reviewType,
     }));
 
-    await supabase.from("qa_checkpoints").delete().eq("task_id", taskId).eq("concept_id", conceptId);
+    await supabase.from("qa_checkpoints").delete().eq("task_id", taskId).eq("concept_id", conceptId).eq("review_type", reviewType);
     const { error } = await supabase.from("qa_checkpoints").insert(upserts);
 
     if (error) {
@@ -265,11 +267,31 @@ const KSGjennomgang = () => {
 
             {/* Right: Checkpoints */}
             <Card className="shadow-medium flex flex-col overflow-hidden">
-              <CardHeader className="flex-shrink-0 pb-2">
-                <CardTitle>Sjekkpunkter</CardTitle>
-                <CardDescription>
-                  Vurder hvert punkt i brannkonseptet
-                </CardDescription>
+              <CardHeader className="flex-shrink-0 pb-2 space-y-3">
+                <div className="flex gap-2">
+                  <Button
+                    variant={reviewType === "egenkontroll" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setReviewType("egenkontroll")}
+                    className="flex-1"
+                  >
+                    Egenkontroll
+                  </Button>
+                  <Button
+                    variant={reviewType === "sidemannskontroll" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setReviewType("sidemannskontroll")}
+                    className="flex-1"
+                  >
+                    Sidemannskontroll
+                  </Button>
+                </div>
+                <div>
+                  <CardTitle>Sjekkpunkter</CardTitle>
+                  <CardDescription>
+                    {reviewType === "egenkontroll" ? "Kontroller ditt eget arbeid" : "Vurder hvert punkt i brannkonseptet"}
+                  </CardDescription>
+                </div>
               </CardHeader>
               <CardContent className="flex-1 overflow-hidden p-0">
                 <ScrollArea className="h-full px-6 pb-6">
