@@ -60,7 +60,7 @@ const Index = () => {
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
                 <Flame className="h-6 w-6 text-primary-foreground" />
               </div>
-              <h1 className="text-xl font-bold">BrannRådgiver Pro</h1>
+              <h1 className="text-xl font-bold">Branndokumentasjon.no</h1>
             </div>
             <div className="flex items-center gap-2">
               {loading ? null : user ? (
@@ -238,7 +238,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t mt-16">
         <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
-          <p>BrannRådgiver Pro - Regelverksforankret dokumentasjon for brannsikkerhet</p>
+          <p>Branndokumentasjon.no - Regelverksforankret dokumentasjon for brannsikkerhet</p>
         </div>
       </footer>
     </div>
