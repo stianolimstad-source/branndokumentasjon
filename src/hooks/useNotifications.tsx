@@ -42,9 +42,18 @@ export const useNotifications = () => {
     setUnreadCount(0);
   };
 
+  const deleteNotification = async (id: string) => {
+    await supabase.from("notifications").delete().eq("id", id);
+    setNotifications((prev) => {
+      const updated = prev.filter((n) => n.id !== id);
+      setUnreadCount(updated.filter((n) => !n.read).length);
+      return updated;
+    });
+  };
+
   useEffect(() => {
     if (user) fetchNotifications();
   }, [user]);
 
-  return { notifications, unreadCount, fetchNotifications, markAllRead };
+  return { notifications, unreadCount, fetchNotifications, markAllRead, deleteNotification };
 };
