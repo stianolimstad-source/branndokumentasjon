@@ -74,7 +74,7 @@ const Index = () => {
                   <Link to="/mine-kontakter">
                     <Button variant="outline" size="sm">
                       <Users className="h-4 w-4 mr-2" />
-                      Mine kontakter
+                      Mine kontakter og grupper
                     </Button>
                   </Link>
                   <span className="text-sm text-muted-foreground hidden sm:inline">
