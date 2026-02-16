@@ -5887,6 +5887,7 @@ const Konsept = () => {
             conceptName={conceptName}
             projectId={selectedProjectId}
             conceptId={conceptId}
+            conceptContent={formData}
             disabled={!conceptName}
           />
         </div>

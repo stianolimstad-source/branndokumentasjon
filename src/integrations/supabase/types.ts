@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      concept_snapshots: {
+        Row: {
+          concept_id: string
+          created_at: string
+          created_by: string
+          id: string
+          snapshot_content: Json
+          snapshot_name: string
+          task_id: string
+        }
+        Insert: {
+          concept_id: string
+          created_at?: string
+          created_by: string
+          id?: string
+          snapshot_content?: Json
+          snapshot_name: string
+          task_id: string
+        }
+        Update: {
+          concept_id?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          snapshot_content?: Json
+          snapshot_name?: string
+          task_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concept_snapshots_concept_id_fkey"
+            columns: ["concept_id"]
+            isOneToOne: false
+            referencedRelation: "fire_concepts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "concept_snapshots_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_groups: {
         Row: {
           created_at: string
