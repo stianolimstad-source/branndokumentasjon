@@ -2,12 +2,15 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Banknote, LogIn, LogOut, FolderOpen, Plus, Users } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Banknote, LogIn, LogOut, FolderOpen, Plus, Users, Bell } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useNotifications } from "@/hooks/useNotifications";
 
 const Index = () => {
   const { user, loading, signOut } = useAuth();
+  const { notifications, unreadCount, markAllRead } = useNotifications();
   const navigate = useNavigate();
   const [showConceptDialog, setShowConceptDialog] = useState(false);
 
@@ -72,11 +75,53 @@ const Index = () => {
                     </Button>
                   </Link>
                   <Link to="/mine-kontakter">
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="relative">
                       <Users className="h-4 w-4 mr-2" />
                       Mine kontakter og grupper
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+                          {unreadCount}
+                        </span>
+                      )}
                     </Button>
                   </Link>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="ghost" size="icon" className="relative">
+                        <Bell className="h-4 w-4" />
+                        {unreadCount > 0 && (
+                          <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground">
+                            {unreadCount}
+                          </span>
+                        )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent align="end" className="w-80 p-0">
+                      <div className="flex items-center justify-between p-3 border-b">
+                        <p className="font-semibold text-sm">Varsler</p>
+                        {unreadCount > 0 && (
+                          <Button variant="ghost" size="sm" className="text-xs h-7" onClick={markAllRead}>
+                            Merk alle som lest
+                          </Button>
+                        )}
+                      </div>
+                      <div className="max-h-64 overflow-y-auto">
+                        {notifications.length === 0 ? (
+                          <p className="text-sm text-muted-foreground p-4 text-center">Ingen varsler</p>
+                        ) : (
+                          notifications.map((n) => (
+                            <div
+                              key={n.id}
+                              className={`p-3 border-b last:border-b-0 text-sm ${!n.read ? "bg-accent/50" : ""}`}
+                            >
+                              <p className="font-medium">{n.title}</p>
+                              {n.message && <p className="text-muted-foreground text-xs mt-0.5">{n.message}</p>}
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                   <span className="text-sm text-muted-foreground hidden sm:inline">
                     {user.email}
                   </span>
