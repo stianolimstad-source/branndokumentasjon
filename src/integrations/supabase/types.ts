@@ -342,6 +342,7 @@ export type Database = {
           concept_id: string
           created_at: string
           id: string
+          review_type: string
           reviewer_id: string
           section_key: string
           status: string
@@ -353,6 +354,7 @@ export type Database = {
           concept_id: string
           created_at?: string
           id?: string
+          review_type?: string
           reviewer_id: string
           section_key: string
           status?: string
@@ -364,6 +366,7 @@ export type Database = {
           concept_id?: string
           created_at?: string
           id?: string
+          review_type?: string
           reviewer_id?: string
           section_key?: string
           status?: string
