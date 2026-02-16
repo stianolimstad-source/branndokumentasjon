@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Flame, Plus, FolderOpen, ArrowLeft, FileText, Trash2, Building } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Flame, Plus, FolderOpen, ArrowLeft, FileText, Trash2, Building, Search } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,6 +44,25 @@ const MineProsjekter = () => {
     description: "",
     address: "",
   });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+
+  const filteredProjects = useMemo(() => {
+    let result = projects.filter((p) => {
+      const q = searchQuery.toLowerCase();
+      return (
+        p.name.toLowerCase().includes(q) ||
+        (p.address?.toLowerCase().includes(q) ?? false) ||
+        (p.description?.toLowerCase().includes(q) ?? false)
+      );
+    });
+    result.sort((a, b) => {
+      const da = new Date(a.created_at).getTime();
+      const db = new Date(b.created_at).getTime();
+      return sortOrder === "newest" ? db - da : da - db;
+    });
+    return result;
+  }, [projects, searchQuery, sortOrder]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -200,7 +220,7 @@ const MineProsjekter = () => {
       {/* Main Content */}
       <section className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-3xl font-bold">Mine prosjekter</h2>
               <p className="text-muted-foreground mt-1">
@@ -262,6 +282,28 @@ const MineProsjekter = () => {
             </Dialog>
           </div>
 
+          {/* Search and Sort */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Søk etter prosjekt..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as "newest" | "oldest")}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Nyeste først</SelectItem>
+                <SelectItem value="oldest">Eldste først</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           {isLoading ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground">Laster prosjekter...</p>
@@ -283,10 +325,17 @@ const MineProsjekter = () => {
                 </Button>
               </CardContent>
             </Card>
+          ) : filteredProjects.length === 0 ? (
+            <Card className="shadow-soft">
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <Search className="h-8 w-8 text-muted-foreground mb-3" />
+                <p className="text-muted-foreground">Ingen prosjekter matcher søket ditt</p>
+              </CardContent>
+            </Card>
           ) : (
             /* Projects List */
             <div className="space-y-4">
-              {projects.map((project) => (
+              {filteredProjects.map((project) => (
                 <Card key={project.id} className="shadow-soft hover:shadow-medium transition-shadow">
                   <CardHeader>
                     <div className="flex items-start justify-between">
