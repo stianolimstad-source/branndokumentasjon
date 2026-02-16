@@ -3454,6 +3454,16 @@ const Konsept = () => {
                 <CardContent className="flex-1 overflow-hidden p-0">
                   <ScrollArea className="h-full px-6 pb-6">
                     <div className="space-y-6">
+                      {/* Konseptnavn */}
+                      <div className="space-y-2">
+                        <Label htmlFor="concept-name" className="text-sm font-semibold">Navn på brannkonseptet *</Label>
+                        <Input
+                          id="concept-name"
+                          placeholder="f.eks. Brannkonsept rev. A"
+                          value={conceptName}
+                          onChange={(e) => setConceptName(e.target.value)}
+                        />
+                      </div>
               <Accordion type="multiple" defaultValue={["kap1"]} className="w-full">
                 {/* Kapittel 1: Innledning */}
                 <AccordionItem value="kap1" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
