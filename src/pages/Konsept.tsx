@@ -15,7 +15,7 @@ import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle } from "docx";
 import { saveAs } from "file-saver";
-import { ProjectSelector } from "@/components/ProjectSelector";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -306,7 +306,7 @@ const getTiltaksklasse = (brannklasse: string, risikoklasse: string, prosjekteri
 const Konsept = () => {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   
   const [isGenerating, setIsGenerating] = useState(false);
@@ -320,6 +320,45 @@ const Konsept = () => {
     searchParams.get('concept')
   );
   const [conceptName, setConceptName] = useState("");
+
+  // Create project dialog state
+  const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(searchParams.get("new") === "true");
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [newProjectData, setNewProjectData] = useState({ name: "", description: "", address: "" });
+
+  const handleCreateProject = async () => {
+    if (!newProjectData.name.trim()) {
+      toast({ title: "Mangler navn", description: "Vennligst skriv inn et prosjektnavn", variant: "destructive" });
+      return;
+    }
+    if (!conceptName.trim()) {
+      toast({ title: "Mangler konseptnavn", description: "Vennligst skriv inn et navn for brannkonseptet", variant: "destructive" });
+      return;
+    }
+    setIsCreatingProject(true);
+    const { data, error } = await supabase
+      .from('projects')
+      .insert({
+        name: newProjectData.name,
+        description: newProjectData.description || null,
+        address: newProjectData.address || null,
+        user_id: user!.id,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      toast({ title: "Feil", description: "Kunne ikke opprette prosjekt", variant: "destructive" });
+    } else if (data) {
+      toast({ title: "Prosjekt opprettet", description: `"${newProjectData.name}" er nå opprettet` });
+      setSelectedProjectId(data.id);
+      setNewProjectData({ name: "", description: "", address: "" });
+      setIsCreateProjectOpen(false);
+      searchParams.delete("new");
+      setSearchParams({ project: data.id }, { replace: true });
+    }
+    setIsCreatingProject(false);
+  };
 
   // Type for bygningsdeler med egen risikoklasse
   type Bygningsdel = {
@@ -3339,21 +3378,71 @@ const Konsept = () => {
 
       <div className="w-full px-4 py-6">
         <div className="max-w-[1800px] mx-auto">
-          {/* Project Selector */}
-          <ProjectSelector
-            selectedProjectId={selectedProjectId}
-            onProjectSelect={setSelectedProjectId}
-            onConceptNameChange={setConceptName}
-            onConceptSelect={(cId, pId) => {
-              setSelectedProjectId(pId);
-              setConceptId(cId);
-              loadConcept(cId);
-            }}
-            conceptName={conceptName}
-          />
+          {/* Create Project Dialog - triggered by ?new=true */}
+          <Dialog open={isCreateProjectOpen} onOpenChange={(open) => {
+            setIsCreateProjectOpen(open);
+            if (!open && searchParams.has("new")) {
+              searchParams.delete("new");
+              setSearchParams(searchParams, { replace: true });
+            }
+          }}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Opprett nytt prosjekt</DialogTitle>
+                <DialogDescription>
+                  Fyll inn informasjon om prosjektet
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="create-project-name">Prosjektnavn *</Label>
+                  <Input
+                    id="create-project-name"
+                    placeholder="f.eks. Nybygg Storgata 1"
+                    value={newProjectData.name}
+                    onChange={(e) => setNewProjectData({ ...newProjectData, name: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="create-project-address">Adresse</Label>
+                  <Input
+                    id="create-project-address"
+                    placeholder="f.eks. Storgata 1, 0001 Oslo"
+                    value={newProjectData.address}
+                    onChange={(e) => setNewProjectData({ ...newProjectData, address: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="create-project-desc">Beskrivelse</Label>
+                  <Textarea
+                    id="create-project-desc"
+                    placeholder="Kort beskrivelse av prosjektet"
+                    value={newProjectData.description}
+                    onChange={(e) => setNewProjectData({ ...newProjectData, description: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="create-concept-name">Navn på brannkonseptet *</Label>
+                  <Input
+                    id="create-concept-name"
+                    placeholder="f.eks. Brannkonsept rev. A"
+                    value={conceptName}
+                    onChange={(e) => setConceptName(e.target.value)}
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsCreateProjectOpen(false)}>
+                  Avbryt
+                </Button>
+                <Button onClick={handleCreateProject} disabled={isCreatingProject}>
+                  {isCreatingProject ? "Oppretter..." : "Opprett og start"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
-          {selectedProjectId && (
-            <div className="grid lg:grid-cols-2 gap-6 lg:h-[calc(100vh-200px)]">
+          <div className="grid lg:grid-cols-2 gap-6 lg:h-[calc(100vh-200px)]">
               {/* Input Form */}
               <Card className="shadow-medium flex flex-col overflow-hidden">
                 <CardHeader className="flex-shrink-0">
@@ -5765,10 +5854,9 @@ const Konsept = () => {
                 </CardContent>
               </Card>
             </div>
-          )}
+          </div>
         </div>
       </div>
-    </div>
   );
 };
 
