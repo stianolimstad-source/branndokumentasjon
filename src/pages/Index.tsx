@@ -1,18 +1,22 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Banknote, LogIn, LogOut, FolderOpen } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Banknote, LogIn, LogOut, FolderOpen, Plus } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const { user, loading, signOut } = useAuth();
+  const navigate = useNavigate();
+  const [showConceptDialog, setShowConceptDialog] = useState(false);
 
   const features = [
     {
       icon: FileText,
       title: "Brannkonsepter",
       description: "Generer profesjonelle brannkonsepter basert på prosjektdata",
-      href: "/konsept",
+      href: "dialog",
     },
     {
       icon: Calculator,
@@ -104,21 +108,41 @@ const Index = () => {
       {/* Features Grid */}
       <section className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {features.map((feature) => (
-            feature.href === "#" ? (
-              <Card
-                key={feature.title}
-                className="shadow-soft transition-shadow group opacity-60 cursor-not-allowed"
-              >
-                <CardHeader>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4 transition-colors">
-                    <feature.icon className="h-6 w-6 text-primary" />
-                  </div>
-                  <CardTitle>{feature.title}</CardTitle>
-                  <CardDescription>{feature.description}</CardDescription>
-                </CardHeader>
-              </Card>
-            ) : (
+          {features.map((feature) => {
+            if (feature.href === "#") {
+              return (
+                <Card
+                  key={feature.title}
+                  className="shadow-soft transition-shadow group opacity-60 cursor-not-allowed"
+                >
+                  <CardHeader>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4 transition-colors">
+                      <feature.icon className="h-6 w-6 text-primary" />
+                    </div>
+                    <CardTitle>{feature.title}</CardTitle>
+                    <CardDescription>{feature.description}</CardDescription>
+                  </CardHeader>
+                </Card>
+              );
+            }
+            if (feature.href === "dialog") {
+              return (
+                <Card
+                  key={feature.title}
+                  className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer group"
+                  onClick={() => setShowConceptDialog(true)}
+                >
+                  <CardHeader>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4 group-hover:bg-primary/20 transition-colors">
+                      <feature.icon className="h-6 w-6 text-primary" />
+                    </div>
+                    <CardTitle>{feature.title}</CardTitle>
+                    <CardDescription>{feature.description}</CardDescription>
+                  </CardHeader>
+                </Card>
+              );
+            }
+            return (
               <Link key={feature.title} to={feature.href} className="block">
                 <Card className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer group">
                   <CardHeader>
@@ -130,10 +154,44 @@ const Index = () => {
                   </CardHeader>
                 </Card>
               </Link>
-            )
-          ))}
+            );
+          })}
         </div>
       </section>
+
+      {/* Brannkonsept choice dialog */}
+      <Dialog open={showConceptDialog} onOpenChange={setShowConceptDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Brannkonsepter</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-3 py-4">
+            <Button
+              size="lg"
+              className="justify-start h-auto py-4 px-5"
+              onClick={() => { setShowConceptDialog(false); navigate("/konsept"); }}
+            >
+              <Plus className="h-5 w-5 mr-3" />
+              <div className="text-left">
+                <p className="font-medium">Start nytt brannkonsept</p>
+                <p className="text-sm text-primary-foreground/70 font-normal">Opprett et nytt konsept for et prosjekt</p>
+              </div>
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="justify-start h-auto py-4 px-5"
+              onClick={() => { setShowConceptDialog(false); navigate("/mine-prosjekter"); }}
+            >
+              <FolderOpen className="h-5 w-5 mr-3" />
+              <div className="text-left">
+                <p className="font-medium">Mine prosjekter</p>
+                <p className="text-sm text-muted-foreground font-normal">Se og rediger eksisterende brannkonsepter</p>
+              </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* News Section Placeholder */}
       <section className="container mx-auto px-4 py-12">
