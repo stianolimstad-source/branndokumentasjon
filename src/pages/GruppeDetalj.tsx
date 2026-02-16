@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Shield, User, FolderOpen } from "lucide-react";
+import { Users, Shield, User, FolderOpen, Building } from "lucide-react";
 import PageHeader from "@/components/PageHeader";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,6 +20,14 @@ interface MemberProfile {
   full_name: string | null;
 }
 
+interface SharedProject {
+  id: string;
+  name: string;
+  address: string | null;
+  description: string | null;
+  shared_by_name: string | null;
+}
+
 const GruppeDetalj = () => {
   const { id } = useParams<{ id: string }>();
   const { user, loading: authLoading } = useAuth();
@@ -29,6 +37,7 @@ const GruppeDetalj = () => {
   const [groupDescription, setGroupDescription] = useState<string | null>(null);
   const [members, setMembers] = useState<GroupMember[]>([]);
   const [memberProfiles, setMemberProfiles] = useState<Record<string, MemberProfile>>({});
+  const [sharedProjects, setSharedProjects] = useState<SharedProject[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -46,9 +55,10 @@ const GruppeDetalj = () => {
   const fetchGroupData = async () => {
     setLoading(true);
 
-    const [groupRes, membersRes] = await Promise.all([
+    const [groupRes, membersRes, sharesRes] = await Promise.all([
       supabase.from("contact_groups").select("*").eq("id", id!).single(),
       supabase.from("group_members").select("*").eq("group_id", id!),
+      supabase.from("project_shares").select("id, project_id, shared_by").eq("group_id", id!),
     ]);
 
     if (groupRes.data) {
@@ -73,6 +83,33 @@ const GruppeDetalj = () => {
           setMemberProfiles(map);
         }
       }
+    }
+
+    // Fetch shared projects
+    if (sharesRes.data && sharesRes.data.length > 0) {
+      const projectIds = sharesRes.data.map((s: any) => s.project_id);
+      const sharedByIds = [...new Set(sharesRes.data.map((s: any) => s.shared_by))];
+
+      const [projectsRes, sharedByProfilesRes] = await Promise.all([
+        supabase.from("projects").select("id, name, address, description").in("id", projectIds),
+        supabase.from("profiles").select("id, full_name, email").in("id", sharedByIds),
+      ]);
+
+      const profileMap = new Map(
+        (sharedByProfilesRes.data || []).map((p: any) => [p.id, p.full_name || p.email])
+      );
+      const shareByMap = new Map(
+        sharesRes.data.map((s: any) => [s.project_id, s.shared_by])
+      );
+
+      setSharedProjects(
+        (projectsRes.data || []).map((p: any) => ({
+          ...p,
+          shared_by_name: profileMap.get(shareByMap.get(p.id)) || null,
+        }))
+      );
+    } else {
+      setSharedProjects([]);
     }
 
     setLoading(false);
@@ -149,11 +186,36 @@ const GruppeDetalj = () => {
           </TabsContent>
 
           <TabsContent value="delt">
-            <Card className="shadow-soft">
-              <CardContent className="py-8 text-center text-muted-foreground">
-                Ingen delte prosjekter eller dokumenter ennå.
-              </CardContent>
-            </Card>
+            {sharedProjects.length === 0 ? (
+              <Card className="shadow-soft">
+                <CardContent className="py-8 text-center text-muted-foreground">
+                  Ingen delte prosjekter eller dokumenter ennå.
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-2">
+                {sharedProjects.map((project) => (
+                  <Card key={project.id} className="shadow-soft">
+                    <CardContent className="py-4 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                          <Building className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="font-medium">{project.name}</p>
+                          {project.address && (
+                            <p className="text-sm text-muted-foreground">{project.address}</p>
+                          )}
+                          {project.shared_by_name && (
+                            <p className="text-xs text-muted-foreground">Delt av {project.shared_by_name}</p>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>
