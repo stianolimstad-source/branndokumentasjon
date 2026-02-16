@@ -182,8 +182,9 @@ const ShareProjectDialog = ({ projectId, projectName }: ShareProjectDialogProps)
               </SelectContent>
             </Select>
 
-            <Button size="icon" onClick={handleShare} disabled={!selectedId}>
-              <Plus className="h-4 w-4" />
+            <Button size="sm" onClick={handleShare} disabled={!selectedId}>
+              <Plus className="h-4 w-4 mr-1" />
+              Del
             </Button>
           </div>
         </div>
