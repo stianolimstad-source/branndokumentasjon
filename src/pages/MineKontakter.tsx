@@ -29,6 +29,13 @@ interface Contact {
   created_at: string;
 }
 
+interface GroupMember {
+  id: string;
+  group_id: string;
+  user_id: string;
+  role: string;
+}
+
 const MineKontakter = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -36,6 +43,7 @@ const MineKontakter = () => {
 
   const [groups, setGroups] = useState<ContactGroup[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
+  const [groupMembers, setGroupMembers] = useState<GroupMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -66,12 +74,14 @@ const MineKontakter = () => {
 
   const fetchData = async () => {
     setLoading(true);
-    const [groupsRes, contactsRes] = await Promise.all([
+    const [groupsRes, contactsRes, membersRes] = await Promise.all([
       supabase.from("contact_groups").select("*").order("name"),
       supabase.from("contacts").select("*").order("name"),
+      supabase.from("group_members").select("*"),
     ]);
     if (groupsRes.data) setGroups(groupsRes.data);
     if (contactsRes.data) setContacts(contactsRes.data);
+    if (membersRes.data) setGroupMembers(membersRes.data);
     setLoading(false);
   };
 
@@ -226,7 +236,8 @@ const MineKontakter = () => {
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {groups.map((group) => {
-                const memberCount = contacts.filter((c) => c.group_id === group.id).length;
+                const memberCount = groupMembers.filter((m) => m.group_id === group.id).length;
+                const myRole = groupMembers.find((m) => m.group_id === group.id && m.user_id === user?.id)?.role;
                 return (
                   <Card key={group.id} className="shadow-soft">
                     <CardHeader className="pb-2">
@@ -245,8 +256,9 @@ const MineKontakter = () => {
                         <CardDescription>{group.description}</CardDescription>
                       )}
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="flex gap-2">
                       <Badge variant="secondary">{memberCount} {memberCount === 1 ? "medlem" : "medlemmer"}</Badge>
+                      {myRole === "admin" && <Badge>Admin</Badge>}
                     </CardContent>
                   </Card>
                 );
