@@ -346,6 +346,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_notification: {
+        Args: {
+          _message?: string
+          _title: string
+          _type: string
+          _user_id: string
+        }
+        Returns: undefined
+      }
       get_user_group_ids: { Args: { _user_id: string }; Returns: string[] }
       is_group_admin: {
         Args: { _group_id: string; _user_id: string }
