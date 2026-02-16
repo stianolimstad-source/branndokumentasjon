@@ -291,6 +291,57 @@ export type Database = {
         }
         Relationships: []
       }
+      qa_checkpoints: {
+        Row: {
+          comment: string | null
+          concept_id: string
+          created_at: string
+          id: string
+          reviewer_id: string
+          section_key: string
+          status: string
+          task_id: string
+          updated_at: string
+        }
+        Insert: {
+          comment?: string | null
+          concept_id: string
+          created_at?: string
+          id?: string
+          reviewer_id: string
+          section_key: string
+          status?: string
+          task_id: string
+          updated_at?: string
+        }
+        Update: {
+          comment?: string | null
+          concept_id?: string
+          created_at?: string
+          id?: string
+          reviewer_id?: string
+          section_key?: string
+          status?: string
+          task_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qa_checkpoints_concept_id_fkey"
+            columns: ["concept_id"]
+            isOneToOne: false
+            referencedRelation: "fire_concepts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "qa_checkpoints_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
           assigned_by: string

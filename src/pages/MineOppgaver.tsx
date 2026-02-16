@@ -157,7 +157,18 @@ const MineOppgaver = () => {
               const StatusIcon = sc.icon;
 
               return (
-                <Card key={task.id} className="shadow-soft">
+                <Card
+                  key={task.id}
+                  className="shadow-soft cursor-pointer hover:shadow-medium transition-shadow"
+                  onClick={() => {
+                    // Extract project and concept IDs from description
+                    const projMatch = task.description?.match(/Prosjekt-ID:\s*([^\s\n]+)/);
+                    const concMatch = task.description?.match(/Konsept-ID:\s*([^\s\n]+)/);
+                    if (projMatch && concMatch) {
+                      navigate(`/ks-gjennomgang?task=${task.id}&concept=${concMatch[1]}&project=${projMatch[1]}`);
+                    }
+                  }}
+                >
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3 min-w-0">
@@ -165,7 +176,9 @@ const MineOppgaver = () => {
                         <div className="min-w-0">
                           <CardTitle className="text-base">{task.title}</CardTitle>
                           {task.description && (
-                            <p className="text-sm text-muted-foreground mt-1">{task.description}</p>
+                            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                              {task.description.split("\n").find((l) => l.startsWith("Brannkonsept:")) || task.description.split("\n")[0]}
+                            </p>
                           )}
                         </div>
                       </div>
@@ -189,7 +202,7 @@ const MineOppgaver = () => {
                           <span>Frist: {new Date(task.due_date).toLocaleDateString("nb-NO")}</span>
                         )}
                         {filter === "assigned" && task.status !== "completed" && (
-                          <div className="flex gap-1 ml-2">
+                          <div className="flex gap-1 ml-2" onClick={(e) => e.stopPropagation()}>
                             {task.status === "pending" && (
                               <Button size="sm" variant="outline" className="h-6 text-xs" onClick={() => updateStatus(task.id, "in_progress")}>
                                 Start

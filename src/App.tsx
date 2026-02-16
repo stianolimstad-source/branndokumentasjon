@@ -18,6 +18,7 @@ import MineProsjekter from "./pages/MineProsjekter";
 import MineKontakter from "./pages/MineKontakter";
 import MineOppgaver from "./pages/MineOppgaver";
 import GruppeDetalj from "./pages/GruppeDetalj";
+import KSGjennomgang from "./pages/KSGjennomgang";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/mine-prosjekter" element={<MineProsjekter />} />
             <Route path="/mine-oppgaver" element={<MineOppgaver />} />
+            <Route path="/ks-gjennomgang" element={<KSGjennomgang />} />
             <Route path="/mine-kontakter" element={<MineKontakter />} />
             <Route path="/mine-kontakter/gruppe/:id" element={<GruppeDetalj />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
