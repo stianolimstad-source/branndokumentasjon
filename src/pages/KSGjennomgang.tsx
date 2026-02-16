@@ -61,32 +61,13 @@ const KSGjennomgang = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showComments, setShowComments] = useState<Record<string, boolean>>({});
-  const [iframeReady, setIframeReady] = useState(false);
 
-  // Stable iframe URL - compute once to prevent re-renders from changing it
+  // Build iframe URL once and never change it
   const iframeSrc = useRef(
     projectId && conceptId
       ? `/konsept?project=${projectId}&concept=${conceptId}&view=true`
       : ""
   );
-
-  // Listen for postMessage from the Konsept iframe when it's fully loaded
-  useEffect(() => {
-    const handler = (e: MessageEvent) => {
-      if (e.data?.type === 'konsept-view-ready') {
-        setIframeReady(true);
-      }
-    };
-    window.addEventListener('message', handler);
-    return () => window.removeEventListener('message', handler);
-  }, []);
-
-  // Fallback: if postMessage never arrives, show after 5s
-  useEffect(() => {
-    if (iframeReady) return;
-    const t = setTimeout(() => setIframeReady(true), 5000);
-    return () => clearTimeout(t);
-  }, [iframeReady]);
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
@@ -278,18 +259,11 @@ const KSGjennomgang = () => {
                 <CardTitle>Brannkonsept</CardTitle>
                 <CardDescription>Lesevisning av konseptet</CardDescription>
               </CardHeader>
-              <CardContent className="flex-1 overflow-hidden p-0 relative">
-                {/* Loading overlay */}
-                {!iframeReady && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-background z-10">
-                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                    <p className="text-muted-foreground ml-2 text-sm">Laster konsept…</p>
-                  </div>
-                )}
+              <CardContent className="flex-1 overflow-hidden p-0">
                 {iframeSrc.current && (
                   <iframe
                     src={iframeSrc.current}
-                    className={`w-full h-full border-0 transition-opacity duration-300 ${iframeReady ? 'opacity-100' : 'opacity-0'}`}
+                    className="w-full h-full border-0"
                     title="Brannkonsept lesevisning"
                   />
                 )}
