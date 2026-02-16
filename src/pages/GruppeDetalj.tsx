@@ -3,8 +3,10 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Shield, User, FolderOpen, Building, FileText, ChevronDown, ChevronRight } from "lucide-react";
+import { Users, Shield, User, FolderOpen, Building, FileText, ChevronDown, ChevronRight, UserPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import PageHeader from "@/components/PageHeader";
+import AddMemberDialog from "@/components/gruppe/AddMemberDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -47,6 +49,9 @@ const GruppeDetalj = () => {
   const [sharedProjects, setSharedProjects] = useState<SharedProject[]>([]);
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [showAddMember, setShowAddMember] = useState(false);
+
+  const isAdmin = members.some((m) => m.user_id === user?.id && m.role === "admin");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -158,6 +163,14 @@ const GruppeDetalj = () => {
           </TabsList>
 
           <TabsContent value="medlemmer">
+            {isAdmin && (
+              <div className="mb-4 flex justify-end">
+                <Button onClick={() => setShowAddMember(true)} size="sm" className="flex items-center gap-2">
+                  <UserPlus className="h-4 w-4" />
+                  Legg til medlem
+                </Button>
+              </div>
+            )}
             {members.length === 0 ? (
               <Card className="shadow-soft">
                 <CardContent className="py-8 text-center text-muted-foreground">
@@ -276,6 +289,14 @@ const GruppeDetalj = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <AddMemberDialog
+        open={showAddMember}
+        onOpenChange={setShowAddMember}
+        groupId={id!}
+        existingUserIds={members.map((m) => m.user_id)}
+        onMemberAdded={fetchGroupData}
+      />
     </div>
   );
 };
