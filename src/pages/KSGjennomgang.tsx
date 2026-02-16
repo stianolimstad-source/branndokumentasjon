@@ -11,7 +11,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Flame, CheckCircle, XCircle, Clock, MessageSquare, Save, Loader2 } from "lucide-react";
+import { ArrowLeft, Flame, CheckCircle, XCircle, Clock, MessageSquare, Save, Loader2, Eye } from "lucide-react";
+import KonseptVisning from "@/components/ks/KonseptVisning";
 
 const sections = [
   { key: "kap1_1", label: "1.1 Informasjon om tiltaket" },
@@ -254,8 +255,13 @@ const KSGjennomgang = () => {
       {renderHeader()}
 
       <div className="w-full px-4 py-6">
-        <div className="max-w-[900px] mx-auto">
-          <div className="lg:h-[calc(100vh-120px)]">
+        <div className="max-w-[1400px] mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:h-[calc(100vh-120px)]">
+
+            {/* Left: Concept Viewer */}
+            <div className="lg:h-full overflow-hidden">
+              <KonseptVisning content={conceptData?.content || {}} name={conceptData?.name || "Brannkonsept"} />
+            </div>
 
             {/* Right: Checkpoints */}
             <Card className="shadow-medium flex flex-col overflow-hidden">
