@@ -6,7 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, FolderOpen, FileText, Trash2, Building, Search, Users, User, Share2 } from "lucide-react";
+import { Plus, FolderOpen, FileText, Trash2, Building, Search, Users, User, Share2, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import ShareProjectDialog from "@/components/prosjekt/ShareProjectDialog";
 import { Link, useNavigate } from "react-router-dom";
 import PageHeader from "@/components/PageHeader";
@@ -38,6 +40,14 @@ interface ShareInfo {
   contact_name?: string;
 }
 
+interface KSStatus {
+  total: number;
+  completed: number;
+  hasFeil: boolean;
+}
+
+const TOTAL_KS_SECTIONS = 24;
+
 const MineProsjekter = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -46,6 +56,7 @@ const MineProsjekter = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [conceptsByProject, setConceptsByProject] = useState<Record<string, FireConcept[]>>({});
   const [sharesByProject, setSharesByProject] = useState<Record<string, ShareInfo[]>>({});
+  const [ksStatusByConcept, setKsStatusByConcept] = useState<Record<string, KSStatus>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -129,6 +140,29 @@ const MineProsjekter = () => {
           grouped[concept.project_id].push(concept);
         });
         setConceptsByProject(grouped);
+
+        // Fetch KS status (sidemannskontroll checkpoints) for all concepts
+        const conceptIds = conceptsRes.data.map(c => c.id);
+        if (conceptIds.length > 0) {
+          const { data: ksData } = await supabase
+            .from('qa_checkpoints')
+            .select('concept_id, status')
+            .in('concept_id', conceptIds)
+            .eq('review_type', 'sidemannskontroll');
+
+          if (ksData) {
+            const statusMap: Record<string, KSStatus> = {};
+            ksData.forEach((cp: any) => {
+              if (!statusMap[cp.concept_id]) {
+                statusMap[cp.concept_id] = { total: 0, completed: 0, hasFeil: false };
+              }
+              statusMap[cp.concept_id].total++;
+              if (cp.status !== 'pending') statusMap[cp.concept_id].completed++;
+              if (cp.status === 'feil') statusMap[cp.concept_id].hasFeil = true;
+            });
+            setKsStatusByConcept(statusMap);
+          }
+        }
       }
 
       if (!sharesRes.error && sharesRes.data && sharesRes.data.length > 0) {
@@ -413,12 +447,16 @@ const MineProsjekter = () => {
                     
                     {conceptsByProject[project.id] && conceptsByProject[project.id].length > 0 && (
                       <div className="mt-4 space-y-2">
-                        {conceptsByProject[project.id].map((concept) => (
+                        {conceptsByProject[project.id].map((concept) => {
+                          const ks = ksStatusByConcept[concept.id];
+                          const ksComplete = ks && ks.completed >= TOTAL_KS_SECTIONS;
+                          const ksStarted = ks && ks.total > 0;
+                          return (
                           <div
                             key={concept.id}
                             className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
                           >
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 flex-wrap">
                               <FileText className="h-4 w-4 text-primary" />
                               <span className="text-sm font-medium">{concept.name}</span>
                               <span className={`text-xs px-2 py-0.5 rounded ${
@@ -428,6 +466,17 @@ const MineProsjekter = () => {
                               }`}>
                                 {concept.status === 'draft' ? 'Utkast' : 'Ferdig'}
                               </span>
+                              {ksComplete ? (
+                                <Badge variant="default" className="gap-1 bg-green-600 hover:bg-green-700 text-white">
+                                  <CheckCircle2 className="h-3 w-3" />
+                                  KS fullført
+                                </Badge>
+                              ) : ksStarted ? (
+                                <Badge variant="outline" className="gap-1 text-amber-600 border-amber-300">
+                                  <Clock className="h-3 w-3" />
+                                  KS {ks.completed}/{TOTAL_KS_SECTIONS}
+                                </Badge>
+                              ) : null}
                             </div>
                             <Link to={`/konsept?project=${project.id}&concept=${concept.id}`}>
                               <Button variant="ghost" size="sm">
@@ -435,7 +484,8 @@ const MineProsjekter = () => {
                               </Button>
                             </Link>
                           </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     )}
 
