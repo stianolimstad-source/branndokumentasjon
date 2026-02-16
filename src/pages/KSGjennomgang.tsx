@@ -70,12 +70,23 @@ const KSGjennomgang = () => {
       : ""
   );
 
-  // Delay showing iframe to let Konsept page finish its cascading state updates
-  const iframeLoadTimer = useRef<ReturnType<typeof setTimeout>>();
-  const handleIframeLoad = () => {
-    clearTimeout(iframeLoadTimer.current);
-    iframeLoadTimer.current = setTimeout(() => setIframeReady(true), 800);
-  };
+  // Listen for postMessage from the Konsept iframe when it's fully loaded
+  useEffect(() => {
+    const handler = (e: MessageEvent) => {
+      if (e.data?.type === 'konsept-view-ready') {
+        setIframeReady(true);
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
+  // Fallback: if postMessage never arrives, show after 5s
+  useEffect(() => {
+    if (iframeReady) return;
+    const t = setTimeout(() => setIframeReady(true), 5000);
+    return () => clearTimeout(t);
+  }, [iframeReady]);
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
@@ -280,7 +291,6 @@ const KSGjennomgang = () => {
                     src={iframeSrc.current}
                     className={`w-full h-full border-0 transition-opacity duration-300 ${iframeReady ? 'opacity-100' : 'opacity-0'}`}
                     title="Brannkonsept lesevisning"
-                    onLoad={handleIframeLoad}
                   />
                 )}
               </CardContent>

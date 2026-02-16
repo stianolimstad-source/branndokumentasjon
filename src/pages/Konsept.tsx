@@ -538,6 +538,19 @@ const Konsept = () => {
     }
   }, [conceptId, user]);
 
+  // Signal parent (iframe host) when view-mode content is fully ready
+  const viewReadySignalled = React.useRef(false);
+  useEffect(() => {
+    if (isViewMode && conceptName && !viewReadySignalled.current) {
+      viewReadySignalled.current = true;
+      // Small delay to let cascading state updates finish
+      const t = setTimeout(() => {
+        window.parent.postMessage({ type: 'konsept-view-ready' }, '*');
+      }, 300);
+      return () => clearTimeout(t);
+    }
+  }, [isViewMode, conceptName]);
+
   // Automatisk beregning av brannklasse
   const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal);
   
