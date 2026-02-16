@@ -3368,11 +3368,9 @@ const Konsept = () => {
         <div className="container mx-auto px-4 py-8 max-w-4xl">
           <Card className="shadow-medium">
             <CardContent className="p-0">
-              <ScrollArea className="max-h-[calc(100vh-200px)]">
-                <div className="p-6">
-                  {renderPreview()}
-                </div>
-              </ScrollArea>
+              <div className="p-6">
+                {renderPreview()}
+              </div>
             </CardContent>
           </Card>
         </div>
