@@ -74,6 +74,12 @@ const Index = () => {
                       Mine prosjekter
                     </Button>
                   </Link>
+                  <Link to="/mine-oppgaver">
+                    <Button variant="outline" size="sm">
+                      <ClipboardCheck className="h-4 w-4 mr-2" />
+                      Mine oppgaver
+                    </Button>
+                  </Link>
                   <Link to="/mine-kontakter">
                     <Button variant="outline" size="sm">
                       <Users className="h-4 w-4 mr-2" />
