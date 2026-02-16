@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Flame, ArrowLeft, Plus, Users, UserPlus, Trash2, Pencil, Search } from "lucide-react";
+import { Flame, ArrowLeft, Plus, Users, UserPlus, Trash2, Pencil, Search, ChevronRight, Shield, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,6 +46,8 @@ const MineKontakter = () => {
   const [groupMembers, setGroupMembers] = useState<GroupMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState<ContactGroup | null>(null);
+  const [memberProfiles, setMemberProfiles] = useState<Record<string, { email: string | null; full_name: string | null }>>({});
 
   // Dialog states
   const [showGroupDialog, setShowGroupDialog] = useState(false);
@@ -177,6 +179,24 @@ const MineKontakter = () => {
     return groups.find((g) => g.id === groupId)?.name || null;
   };
 
+  const openGroupDetail = async (group: ContactGroup) => {
+    setSelectedGroup(group);
+    // Fetch profile info for members of this group
+    const members = groupMembers.filter((m) => m.group_id === group.id);
+    const userIds = members.map((m) => m.user_id);
+    if (userIds.length > 0) {
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, email, full_name")
+        .in("id", userIds);
+      if (data) {
+        const map: Record<string, { email: string | null; full_name: string | null }> = {};
+        data.forEach((p) => { map[p.id] = { email: p.email, full_name: p.full_name }; });
+        setMemberProfiles(map);
+      }
+    }
+  };
+
   const filteredContacts = contacts.filter((c) => {
     const q = searchQuery.toLowerCase();
     return c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q);
@@ -239,15 +259,15 @@ const MineKontakter = () => {
                 const memberCount = groupMembers.filter((m) => m.group_id === group.id).length;
                 const myRole = groupMembers.find((m) => m.group_id === group.id && m.user_id === user?.id)?.role;
                 return (
-                  <Card key={group.id} className="shadow-soft">
+                  <Card key={group.id} className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer" onClick={() => openGroupDetail(group)}>
                     <CardHeader className="pb-2">
                       <div className="flex items-start justify-between">
                         <CardTitle className="text-lg">{group.name}</CardTitle>
                         <div className="flex gap-1">
-                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditGroup(group)}>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); openEditGroup(group); }}>
                             <Pencil className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => deleteGroup(group.id)}>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={(e) => { e.stopPropagation(); deleteGroup(group.id); }}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -256,9 +276,12 @@ const MineKontakter = () => {
                         <CardDescription>{group.description}</CardDescription>
                       )}
                     </CardHeader>
-                    <CardContent className="flex gap-2">
-                      <Badge variant="secondary">{memberCount} {memberCount === 1 ? "medlem" : "medlemmer"}</Badge>
-                      {myRole === "admin" && <Badge>Admin</Badge>}
+                    <CardContent className="flex items-center justify-between">
+                      <div className="flex gap-2">
+                        <Badge variant="secondary">{memberCount} {memberCount === 1 ? "medlem" : "medlemmer"}</Badge>
+                        {myRole === "admin" && <Badge>Admin</Badge>}
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     </CardContent>
                   </Card>
                 );
@@ -384,6 +407,56 @@ const MineKontakter = () => {
             <Button variant="outline" onClick={() => setShowContactDialog(false)}>Avbryt</Button>
             <Button onClick={saveContact} disabled={!contactName.trim() || !contactEmail.trim()}>Lagre</Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Group detail dialog */}
+      <Dialog open={!!selectedGroup} onOpenChange={(open) => { if (!open) setSelectedGroup(null); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              {selectedGroup?.name}
+            </DialogTitle>
+            {selectedGroup?.description && (
+              <p className="text-sm text-muted-foreground">{selectedGroup.description}</p>
+            )}
+          </DialogHeader>
+          <div className="space-y-3">
+            <h4 className="text-sm font-medium text-muted-foreground">Medlemmer</h4>
+            {selectedGroup && groupMembers.filter((m) => m.group_id === selectedGroup.id).length === 0 ? (
+              <p className="text-sm text-muted-foreground">Ingen medlemmer ennå.</p>
+            ) : (
+              <div className="space-y-2">
+                {selectedGroup && groupMembers
+                  .filter((m) => m.group_id === selectedGroup.id)
+                  .map((member) => {
+                    const profile = memberProfiles[member.user_id];
+                    return (
+                      <div key={member.id} className="flex items-center justify-between rounded-lg border p-3">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+                            <User className="h-4 w-4 text-muted-foreground" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">{profile?.full_name || profile?.email || "Ukjent bruker"}</p>
+                            {profile?.full_name && profile?.email && (
+                              <p className="text-xs text-muted-foreground">{profile.email}</p>
+                            )}
+                          </div>
+                        </div>
+                        {member.role === "admin" && (
+                          <Badge variant="outline" className="flex items-center gap-1">
+                            <Shield className="h-3 w-3" />
+                            Admin
+                          </Badge>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </div>
