@@ -6,8 +6,8 @@ import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFoo
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Building, Plus, AlertCircle, FolderOpen, FileText } from "lucide-react";
+
+import { Building, Plus, AlertCircle, FolderOpen, FileText, Search, Check } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -53,6 +53,7 @@ export const ProjectSelector = ({
   const [showConceptChoice, setShowConceptChoice] = useState(false);
   const [choiceMade, setChoiceMade] = useState(false);
   
+  const [searchQuery, setSearchQuery] = useState("");
   const [newProject, setNewProject] = useState({
     name: "",
     description: "",
@@ -265,27 +266,14 @@ export const ProjectSelector = ({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex gap-2">
-          <div className="flex-1">
-            <Select value={selectedProjectId || ""} onValueChange={handleProjectSelect}>
-              <SelectTrigger>
-                <SelectValue placeholder="Velg et prosjekt" />
-              </SelectTrigger>
-              <SelectContent>
-                {projects.map((project) => (
-                  <SelectItem key={project.id} value={project.id}>
-                    <div className="flex items-center gap-2">
-                      <Building className="h-4 w-4" />
-                      <span>{project.name}</span>
-                      {project.address && (
-                        <span className="text-muted-foreground text-xs">
-                          - {project.address}
-                        </span>
-                      )}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Søk etter prosjekt..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
           </div>
           <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
             <DialogTrigger asChild>
@@ -340,6 +328,48 @@ export const ProjectSelector = ({
               </DialogFooter>
             </DialogContent>
           </Dialog>
+        </div>
+
+        {/* Project list */}
+        <div className="grid gap-2 max-h-[340px] overflow-y-auto pr-1">
+          {projects
+            .filter(p => {
+              if (!searchQuery.trim()) return true;
+              const q = searchQuery.toLowerCase();
+              return p.name.toLowerCase().includes(q) || (p.address && p.address.toLowerCase().includes(q));
+            })
+            .map((project) => {
+              const isSelected = selectedProjectId === project.id;
+              return (
+                <button
+                  key={project.id}
+                  onClick={() => handleProjectSelect(project.id)}
+                  className={`flex items-center gap-3 w-full text-left rounded-lg border p-4 transition-colors hover:bg-accent/50 ${
+                    isSelected ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border"
+                  }`}
+                >
+                  <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${
+                    isSelected ? "bg-primary text-primary-foreground" : "bg-muted"
+                  }`}>
+                    <Building className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={`font-medium truncate ${isSelected ? "text-primary" : ""}`}>{project.name}</p>
+                    {project.address && (
+                      <p className="text-sm text-muted-foreground truncate">{project.address}</p>
+                    )}
+                  </div>
+                  {isSelected && <Check className="h-5 w-5 text-primary shrink-0" />}
+                </button>
+              );
+            })}
+          {projects.filter(p => {
+            if (!searchQuery.trim()) return true;
+            const q = searchQuery.toLowerCase();
+            return p.name.toLowerCase().includes(q) || (p.address && p.address.toLowerCase().includes(q));
+          }).length === 0 && (
+            <p className="text-sm text-muted-foreground text-center py-4">Ingen prosjekter funnet</p>
+          )}
         </div>
 
         {/* Popup dialog when project has existing concepts */}
