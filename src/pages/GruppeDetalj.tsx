@@ -252,13 +252,17 @@ const GruppeDetalj = () => {
                               <p className="text-sm text-muted-foreground">Ingen dokumenter i dette prosjektet.</p>
                             ) : (
                               project.fire_concepts.map((concept) => (
-                                <div key={concept.id} className="flex items-center gap-2 py-1">
+                                <Link
+                                  key={concept.id}
+                                  to={`/konsept?concept=${concept.id}&view=true`}
+                                  className="flex items-center gap-2 py-2 px-2 rounded-md hover:bg-muted/50 transition-colors cursor-pointer"
+                                >
                                   <FileText className="h-4 w-4 text-muted-foreground" />
                                   <span className="text-sm">{concept.name}</span>
                                   <Badge variant="outline" className="text-xs ml-auto">
                                     {concept.status === "draft" ? "Utkast" : concept.status}
                                   </Badge>
-                                </div>
+                                </Link>
                               ))
                             )}
                           </div>
