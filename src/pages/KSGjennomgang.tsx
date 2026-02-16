@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -61,13 +61,6 @@ const KSGjennomgang = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showComments, setShowComments] = useState<Record<string, boolean>>({});
-
-  // Build iframe URL once and never change it
-  const iframeSrc = useRef(
-    projectId && conceptId
-      ? `/konsept?project=${projectId}&concept=${conceptId}&view=true`
-      : ""
-  );
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
@@ -249,26 +242,9 @@ const KSGjennomgang = () => {
     <div className="min-h-screen bg-gradient-subtle">
       {renderHeader()}
 
-      {/* Split screen layout */}
       <div className="w-full px-4 py-6">
-        <div className="max-w-[1800px] mx-auto">
-          <div className="grid lg:grid-cols-2 gap-6 lg:h-[calc(100vh-120px)]">
-            {/* Left: Fire concept preview */}
-            <Card className="shadow-medium flex flex-col overflow-hidden">
-              <CardHeader className="flex-shrink-0 pb-2">
-                <CardTitle>Brannkonsept</CardTitle>
-                <CardDescription>Lesevisning av konseptet</CardDescription>
-              </CardHeader>
-              <CardContent className="flex-1 overflow-hidden p-0">
-                {iframeSrc.current && (
-                  <iframe
-                    src={iframeSrc.current}
-                    className="w-full h-full border-0"
-                    title="Brannkonsept lesevisning"
-                  />
-                )}
-              </CardContent>
-            </Card>
+        <div className="max-w-[900px] mx-auto">
+          <div className="lg:h-[calc(100vh-120px)]">
 
             {/* Right: Checkpoints */}
             <Card className="shadow-medium flex flex-col overflow-hidden">
