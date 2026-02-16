@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -11,8 +11,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Flame, CheckCircle, XCircle, Clock, MessageSquare, Save } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ArrowLeft, Flame, CheckCircle, XCircle, Clock, MessageSquare, Save, Loader2 } from "lucide-react";
 
 const sections = [
   { key: "kap1_1", label: "1.1 Informasjon om tiltaket" },
@@ -62,6 +61,14 @@ const KSGjennomgang = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showComments, setShowComments] = useState<Record<string, boolean>>({});
+  const [iframeLoaded, setIframeLoaded] = useState(false);
+
+  // Stable iframe URL - compute once to prevent re-renders from changing it
+  const iframeSrc = useRef(
+    projectId && conceptId
+      ? `/konsept?project=${projectId}&concept=${conceptId}&view=true`
+      : ""
+  );
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/auth");
@@ -175,27 +182,51 @@ const KSGjennomgang = () => {
 
   if (authLoading || !user) return null;
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-subtle">
-        <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={() => navigate("/mine-oppgaver")}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Tilbake
-              </Button>
-              <div className="flex items-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
-                  <Flame className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <h1 className="text-xl font-bold">Kvalitetssikring</h1>
+  const renderHeader = () => (
+    <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/mine-oppgaver")}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Tilbake
+            </Button>
+            <div className="flex items-center gap-2">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
+                <Flame className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold">Kvalitetssikring (KS)</h1>
+                <p className="text-xs text-muted-foreground">{conceptName}</p>
               </div>
             </div>
           </div>
-        </header>
+          <div className="flex items-center gap-3 text-sm">
+            <div className="flex items-center gap-1.5">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <span>{okCount}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <XCircle className="h-4 w-4 text-destructive" />
+              <span>{feilCount}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <span>{pendingCount}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-subtle">
+        {renderHeader()}
         <div className="flex items-center justify-center py-24">
-          <p className="text-muted-foreground">Laster brannkonsept…</p>
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          <p className="text-muted-foreground ml-2">Laster brannkonsept…</p>
         </div>
       </div>
     );
@@ -204,22 +235,7 @@ const KSGjennomgang = () => {
   if (!conceptData) {
     return (
       <div className="min-h-screen bg-gradient-subtle">
-        <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={() => navigate("/mine-oppgaver")}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Tilbake
-              </Button>
-              <div className="flex items-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
-                  <Flame className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <h1 className="text-xl font-bold">Kvalitetssikring</h1>
-              </div>
-            </div>
-          </div>
-        </header>
+        {renderHeader()}
         <div className="flex flex-col items-center justify-center py-24 gap-4">
           <p className="text-muted-foreground">Kunne ikke finne brannkonseptet.</p>
           <Button variant="outline" onClick={() => navigate("/mine-oppgaver")}>
@@ -230,64 +246,36 @@ const KSGjennomgang = () => {
     );
   }
 
-  // Build the view URL for the concept iframe
-  const conceptViewUrl = `/konsept?project=${projectId}&concept=${conceptId}&view=true`;
-
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={() => navigate("/mine-oppgaver")}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Tilbake
-              </Button>
-              <div className="flex items-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
-                  <Flame className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold">Kvalitetssikring (KS)</h1>
-                  <p className="text-xs text-muted-foreground">{conceptName}</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <div className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <span>{okCount}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <XCircle className="h-4 w-4 text-destructive" />
-                <span>{feilCount}</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span>{pendingCount}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      {renderHeader()}
 
       {/* Split screen layout */}
       <div className="w-full px-4 py-6">
         <div className="max-w-[1800px] mx-auto">
           <div className="grid lg:grid-cols-2 gap-6 lg:h-[calc(100vh-120px)]">
-            {/* Left: Fire concept preview (iframe) */}
+            {/* Left: Fire concept preview */}
             <Card className="shadow-medium flex flex-col overflow-hidden">
               <CardHeader className="flex-shrink-0 pb-2">
                 <CardTitle>Brannkonsept</CardTitle>
                 <CardDescription>Lesevisning av konseptet</CardDescription>
               </CardHeader>
-              <CardContent className="flex-1 overflow-hidden p-0">
-                <iframe
-                  src={conceptViewUrl}
-                  className="w-full h-full border-0"
-                  title="Brannkonsept lesevisning"
-                />
+              <CardContent className="flex-1 overflow-hidden p-0 relative">
+                {/* Loading overlay */}
+                {!iframeLoaded && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-background z-10">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    <p className="text-muted-foreground ml-2 text-sm">Laster konsept…</p>
+                  </div>
+                )}
+                {iframeSrc.current && (
+                  <iframe
+                    src={iframeSrc.current}
+                    className="w-full h-full border-0"
+                    title="Brannkonsept lesevisning"
+                    onLoad={() => setIframeLoaded(true)}
+                  />
+                )}
               </CardContent>
             </Card>
 
