@@ -18,6 +18,7 @@ import { saveAs } from "file-saver";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import SendToKSDialog from "@/components/konsept/SendToKSDialog";
 
 // Mapping av bygningstype til risikoklasse basert på TEK17
 const bygningsTypeRisikoklasseMap: Record<string, string> = {
@@ -5854,25 +5855,33 @@ const Konsept = () => {
             </div>
           </ScrollArea>
         </CardContent>
-        <div className="flex-shrink-0 border-t bg-background p-4 flex gap-2">
-          <Button 
-            className="flex-1" 
-            size="lg"
-            variant="outline"
-            onClick={handleSave}
-            disabled={isSaving || !conceptName}
-          >
-            <Save className="h-4 w-4 mr-2" />
-            {isSaving ? "Lagrer..." : "Lagre endringer"}
-          </Button>
-          <Button 
-            className="flex-1" 
-            size="lg"
-            onClick={handleGenerate}
-            disabled={isGenerating || !conceptName}
-          >
-            {isGenerating ? "Genererer..." : "Generer brannkonsept"}
-          </Button>
+        <div className="flex-shrink-0 border-t bg-background p-4 flex flex-col gap-2">
+          <div className="flex gap-2">
+            <Button 
+              className="flex-1" 
+              size="lg"
+              variant="outline"
+              onClick={handleSave}
+              disabled={isSaving || !conceptName}
+            >
+              <Save className="h-4 w-4 mr-2" />
+              {isSaving ? "Lagrer..." : "Lagre endringer"}
+            </Button>
+            <Button 
+              className="flex-1" 
+              size="lg"
+              onClick={handleGenerate}
+              disabled={isGenerating || !conceptName}
+            >
+              {isGenerating ? "Genererer..." : "Generer brannkonsept"}
+            </Button>
+          </div>
+          <SendToKSDialog
+            conceptName={conceptName}
+            projectId={selectedProjectId}
+            conceptId={conceptId}
+            disabled={!conceptName}
+          />
         </div>
       </Card>
 
