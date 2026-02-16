@@ -15,6 +15,7 @@ import Persontall from "./pages/verktoy/Persontall";
 import Priskalkulator from "./pages/Priskalkulator";
 import Auth from "./pages/Auth";
 import MineProsjekter from "./pages/MineProsjekter";
+import MineKontakter from "./pages/MineKontakter";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/priskalkulator" element={<Priskalkulator />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/mine-prosjekter" element={<MineProsjekter />} />
+            <Route path="/mine-kontakter" element={<MineKontakter />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
