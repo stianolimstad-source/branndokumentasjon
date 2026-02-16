@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Flame, ArrowLeft, Users, Shield, User, FolderOpen } from "lucide-react";
+import { Users, Shield, User, FolderOpen } from "lucide-react";
+import PageHeader from "@/components/PageHeader";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -88,31 +88,7 @@ const GruppeDetalj = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Link to="/">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
-                  <Flame className="h-6 w-6 text-primary-foreground" />
-                </div>
-              </Link>
-              <div>
-                <h1 className="text-xl font-bold">{groupName}</h1>
-                {groupDescription && (
-                  <p className="text-sm text-muted-foreground">{groupDescription}</p>
-                )}
-              </div>
-            </div>
-            <Link to="/mine-kontakter">
-              <Button variant="outline" size="sm">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Tilbake
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <PageHeader title={groupName} subtitle={groupDescription || undefined} />
 
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <Tabs defaultValue="medlemmer">
