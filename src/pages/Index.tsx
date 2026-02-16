@@ -169,7 +169,7 @@ const Index = () => {
             <Button
               size="lg"
               className="justify-start h-auto py-4 px-5"
-              onClick={() => { setShowConceptDialog(false); navigate("/konsept"); }}
+              onClick={() => { setShowConceptDialog(false); navigate("/konsept?new=true"); }}
             >
               <Plus className="h-5 w-5 mr-3" />
               <div className="text-left">

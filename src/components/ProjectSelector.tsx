@@ -11,7 +11,7 @@ import { Building, Plus, AlertCircle, FolderOpen, FileText, Search, Check } from
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 interface Project {
   id: string;
@@ -44,10 +44,11 @@ export const ProjectSelector = ({
   const { user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   
   const [projects, setProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(searchParams.get("new") === "true");
   const [isCreating, setIsCreating] = useState(false);
   const [existingConcepts, setExistingConcepts] = useState<ExistingConcept[]>([]);
   const [showConceptChoice, setShowConceptChoice] = useState(false);
@@ -275,7 +276,13 @@ export const ProjectSelector = ({
               className="pl-9"
             />
           </div>
-          <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+          <Dialog open={isCreateOpen} onOpenChange={(open) => {
+            setIsCreateOpen(open);
+            if (!open && searchParams.has("new")) {
+              searchParams.delete("new");
+              setSearchParams(searchParams, { replace: true });
+            }
+          }}>
             <DialogTrigger asChild>
               <Button variant="outline">
                 <Plus className="h-4 w-4 mr-2" />
