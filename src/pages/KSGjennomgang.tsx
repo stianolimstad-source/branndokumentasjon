@@ -11,8 +11,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Flame, CheckCircle, XCircle, Clock, MessageSquare, Save, Loader2, Eye } from "lucide-react";
+import { ArrowLeft, Flame, CheckCircle, XCircle, Clock, MessageSquare, Save, Loader2, Eye, Download } from "lucide-react";
 import KonseptVisning from "@/components/ks/KonseptVisning";
+import { exportKSToWord } from "@/lib/ks-word-export";
 
 const sections = [
   { key: "kap1_1", label: "1.1 Informasjon om tiltaket" },
@@ -152,6 +153,59 @@ const KSGjennomgang = () => {
       toast({ title: "Lagret", description: "Sjekkpunktene er lagret" });
     }
     setSaving(false);
+  };
+
+  const downloadChecklist = async (type: "egenkontroll" | "sidemannskontroll") => {
+    if (!taskId || !conceptId) return;
+
+    // Fetch checkpoints for the requested type
+    const { data: cpData } = await supabase
+      .from("qa_checkpoints")
+      .select("*")
+      .eq("task_id", taskId)
+      .eq("concept_id", conceptId)
+      .eq("review_type", type);
+
+    if (!cpData || cpData.length === 0) {
+      toast({ title: "Ingen data", description: `Ingen sjekkpunkter funnet for ${type}`, variant: "destructive" });
+      return;
+    }
+
+    // Get reviewer profile
+    const reviewerId = cpData[0].reviewer_id;
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name, email, company")
+      .eq("id", reviewerId)
+      .maybeSingle();
+
+    const cpMap: Record<string, { section_key: string; status: string; comment: string }> = {};
+    sections.forEach((s) => {
+      cpMap[s.key] = { section_key: s.key, status: "pending", comment: "" };
+    });
+    cpData.forEach((cp: any) => {
+      if (cpMap[cp.section_key]) {
+        cpMap[cp.section_key] = { section_key: cp.section_key, status: cp.status, comment: cp.comment || "" };
+      }
+    });
+
+    const date = new Date(cpData[0].updated_at || cpData[0].created_at).toLocaleDateString("nb-NO");
+
+    await exportKSToWord({
+      conceptName: conceptName,
+      reviewType: type,
+      checkpoints: cpMap,
+      sections,
+      chapters,
+      reviewer: {
+        name: profile?.full_name || "",
+        email: profile?.email || "",
+        company: (profile as any)?.company || "",
+      },
+      date,
+    });
+
+    toast({ title: "Lastet ned", description: `${type === "egenkontroll" ? "Egenkontroll" : "Sidemannskontroll"} lastet ned som Word-fil` });
   };
 
   const getStatusIcon = (status: string) => {
@@ -382,12 +436,22 @@ const KSGjennomgang = () => {
                 </ScrollArea>
               </CardContent>
 
-              {/* Sticky save button */}
-              <div className="flex-shrink-0 border-t bg-background p-4">
+              {/* Sticky save & download buttons */}
+              <div className="flex-shrink-0 border-t bg-background p-4 space-y-2">
                 <Button onClick={saveCheckpoints} disabled={saving} size="lg" className="w-full">
                   <Save className="h-4 w-4 mr-2" />
                   {saving ? "Lagrer…" : "Lagre sjekkpunkter"}
                 </Button>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => downloadChecklist("egenkontroll")}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Last ned egenkontroll
+                  </Button>
+                  <Button variant="outline" size="sm" className="flex-1" onClick={() => downloadChecklist("sidemannskontroll")}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Last ned sidemannskontroll
+                  </Button>
+                </div>
               </div>
             </Card>
           </div>
