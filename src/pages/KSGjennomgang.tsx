@@ -75,13 +75,24 @@ const KSGjennomgang = () => {
   const fetchData = async () => {
     setLoading(true);
 
-    const [conceptRes, taskRes, checkpointRes] = await Promise.all([
-      supabase.from("fire_concepts").select("*").eq("id", conceptId!).single(),
+    const [snapshotRes, taskRes, checkpointRes] = await Promise.all([
+      supabase.from("concept_snapshots").select("*").eq("task_id", taskId!).maybeSingle(),
       supabase.from("tasks").select("*").eq("id", taskId!).single(),
       supabase.from("qa_checkpoints").select("*").eq("task_id", taskId!).eq("concept_id", conceptId!),
     ]);
 
-    if (conceptRes.data) setConceptData(conceptRes.data);
+    // Use snapshot if available, otherwise fall back to live concept
+    if (snapshotRes.data) {
+      setConceptData({
+        id: snapshotRes.data.concept_id,
+        name: snapshotRes.data.snapshot_name,
+        content: snapshotRes.data.snapshot_content,
+      });
+    } else {
+      const { data: conceptLive } = await supabase.from("fire_concepts").select("*").eq("id", conceptId!).single();
+      if (conceptLive) setConceptData(conceptLive);
+    }
+
     if (taskRes.data) setTaskData(taskRes.data);
 
     const initial: Record<string, Checkpoint> = {};

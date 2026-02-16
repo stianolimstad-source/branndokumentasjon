@@ -13,6 +13,7 @@ interface SendToKSDialogProps {
   conceptName: string;
   projectId: string | null;
   conceptId: string | null;
+  conceptContent: Record<string, any>;
   disabled?: boolean;
 }
 
@@ -22,7 +23,7 @@ interface GroupMember {
   profile_email: string;
 }
 
-const SendToKSDialog = ({ conceptName, projectId, conceptId, disabled }: SendToKSDialogProps) => {
+const SendToKSDialog = ({ conceptName, projectId, conceptId, conceptContent, disabled }: SendToKSDialogProps) => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [members, setMembers] = useState<GroupMember[]>([]);
@@ -96,30 +97,48 @@ const SendToKSDialog = ({ conceptName, projectId, conceptId, disabled }: SendToK
       conceptId ? `\nKonsept-ID: ${conceptId}` : "",
     ].join("");
 
-    const { error } = await supabase.from("tasks").insert({
+    // 1. Create the task
+    const { data: taskData, error: taskError } = await supabase.from("tasks").insert({
       title: `KS – ${conceptName}`,
       description,
       assigned_to: selectedUserId,
       assigned_by: userData.user.id,
       priority: "normal",
       status: "pending",
+    }).select("id").single();
+
+    if (taskError || !taskData) {
+      toast({ title: "Feil", description: "Kunne ikke sende til KS", variant: "destructive" });
+      setIsSending(false);
+      return;
+    }
+
+    // 2. Create a frozen snapshot of the concept
+    const { error: snapError } = await supabase.from("concept_snapshots").insert({
+      concept_id: conceptId,
+      task_id: taskData.id,
+      snapshot_content: conceptContent,
+      snapshot_name: conceptName,
+      created_by: userData.user.id,
     });
 
-    if (error) {
-      toast({ title: "Feil", description: "Kunne ikke sende til KS", variant: "destructive" });
-    } else {
-      // Send notification to the recipient via RPC (bypasses RLS)
-      await supabase.rpc("create_notification", {
-        _user_id: selectedUserId,
-        _type: "task_assigned",
-        _title: `Ny KS-oppgave: ${conceptName}`,
-        _message: message || `Du har fått en KS-oppgave fra en kollega.`,
-      });
-      toast({ title: "Sendt!", description: "Brannkonseptet er sendt til KS" });
-      setSelectedUserId("");
-      setMessage("");
-      setOpen(false);
+    if (snapError) {
+      toast({ title: "Feil", description: "Kunne ikke lagre øyeblikksbilde", variant: "destructive" });
+      setIsSending(false);
+      return;
     }
+
+    // 3. Send notification
+    await supabase.rpc("create_notification", {
+      _user_id: selectedUserId,
+      _type: "task_assigned",
+      _title: `Ny KS-oppgave: ${conceptName}`,
+      _message: message || `Du har fått en KS-oppgave fra en kollega.`,
+    });
+    toast({ title: "Sendt!", description: "Brannkonseptet er sendt til KS" });
+    setSelectedUserId("");
+    setMessage("");
+    setOpen(false);
 
     setIsSending(false);
   };
