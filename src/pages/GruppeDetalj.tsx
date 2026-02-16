@@ -3,7 +3,8 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Flame, ArrowLeft, Users, Shield, User } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Flame, ArrowLeft, Users, Shield, User, FolderOpen } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -45,7 +46,6 @@ const GruppeDetalj = () => {
   const fetchGroupData = async () => {
     setLoading(true);
 
-    // Fetch group info and members in parallel
     const [groupRes, membersRes] = await Promise.all([
       supabase.from("contact_groups").select("*").eq("id", id!).single(),
       supabase.from("group_members").select("*").eq("group_id", id!),
@@ -59,7 +59,6 @@ const GruppeDetalj = () => {
     if (membersRes.data) {
       setMembers(membersRes.data);
 
-      // Fetch profiles for all members
       const userIds = membersRes.data.map((m) => m.user_id);
       if (userIds.length > 0) {
         const { data: profiles } = await supabase
@@ -116,53 +115,71 @@ const GruppeDetalj = () => {
       </header>
 
       <div className="container mx-auto px-4 py-8 max-w-3xl">
-        <h2 className="text-lg font-semibold flex items-center gap-2 mb-4">
-          <Users className="h-5 w-5" />
-          Medlemmer ({members.length})
-        </h2>
+        <Tabs defaultValue="medlemmer">
+          <TabsList className="mb-6">
+            <TabsTrigger value="medlemmer" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Medlemmer ({members.length})
+            </TabsTrigger>
+            <TabsTrigger value="delt" className="flex items-center gap-2">
+              <FolderOpen className="h-4 w-4" />
+              Delte prosjekter og dokumenter
+            </TabsTrigger>
+          </TabsList>
 
-        {members.length === 0 ? (
-          <Card className="shadow-soft">
-            <CardContent className="py-8 text-center text-muted-foreground">
-              Ingen medlemmer ennå.
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-2">
-            {members.map((member) => {
-              const profile = memberProfiles[member.user_id];
-              const isCurrentUser = member.user_id === user?.id;
-              return (
-                <Card key={member.id} className="shadow-soft">
-                  <CardContent className="py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                        <User className="h-5 w-5 text-muted-foreground" />
-                      </div>
-                      <div>
-                        <p className="font-medium">
-                          {profile?.full_name || profile?.email || "Ukjent bruker"}
-                          {isCurrentUser && (
-                            <span className="text-muted-foreground text-sm ml-2">(deg)</span>
-                          )}
-                        </p>
-                        {profile?.email && (
-                          <p className="text-sm text-muted-foreground">{profile.email}</p>
+          <TabsContent value="medlemmer">
+            {members.length === 0 ? (
+              <Card className="shadow-soft">
+                <CardContent className="py-8 text-center text-muted-foreground">
+                  Ingen medlemmer ennå.
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-2">
+                {members.map((member) => {
+                  const profile = memberProfiles[member.user_id];
+                  const isCurrentUser = member.user_id === user?.id;
+                  return (
+                    <Card key={member.id} className="shadow-soft">
+                      <CardContent className="py-4 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                            <User className="h-5 w-5 text-muted-foreground" />
+                          </div>
+                          <div>
+                            <p className="font-medium">
+                              {profile?.full_name || profile?.email || "Ukjent bruker"}
+                              {isCurrentUser && (
+                                <span className="text-muted-foreground text-sm ml-2">(deg)</span>
+                              )}
+                            </p>
+                            {profile?.email && (
+                              <p className="text-sm text-muted-foreground">{profile.email}</p>
+                            )}
+                          </div>
+                        </div>
+                        {member.role === "admin" && (
+                          <Badge variant="outline" className="flex items-center gap-1">
+                            <Shield className="h-3 w-3" />
+                            Admin
+                          </Badge>
                         )}
-                      </div>
-                    </div>
-                    {member.role === "admin" && (
-                      <Badge variant="outline" className="flex items-center gap-1">
-                        <Shield className="h-3 w-3" />
-                        Admin
-                      </Badge>
-                    )}
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="delt">
+            <Card className="shadow-soft">
+              <CardContent className="py-8 text-center text-muted-foreground">
+                Ingen delte prosjekter eller dokumenter ennå.
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
