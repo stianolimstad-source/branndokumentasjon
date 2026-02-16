@@ -7,7 +7,18 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import PageHeader from "@/components/PageHeader";
-import { CheckCircle, Clock, AlertCircle, User } from "lucide-react";
+import { CheckCircle, Clock, AlertCircle, User, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface Task {
   id: string;
@@ -108,6 +119,16 @@ const MineOppgaver = () => {
     setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t)));
   };
 
+  const deleteTask = async (taskId: string) => {
+    const { error } = await supabase.from("tasks").delete().eq("id", taskId);
+    if (error) {
+      toast({ title: "Feil", description: "Kunne ikke slette oppgaven", variant: "destructive" });
+      return;
+    }
+    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    toast({ title: "Slettet", description: "Oppgaven ble slettet" });
+  };
+
   const getProfileName = (userId: string) => {
     const p = profiles[userId];
     return p?.full_name || p?.email || "Ukjent bruker";
@@ -189,7 +210,7 @@ const MineOppgaver = () => {
                     </div>
                   </CardHeader>
                   <CardContent className="pt-0">
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <User className="h-3 w-3" />
                         <span>
@@ -197,12 +218,12 @@ const MineOppgaver = () => {
                           {getProfileName(filter === "assigned" ? task.assigned_by : task.assigned_to)}
                         </span>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                         {task.due_date && (
                           <span>Frist: {new Date(task.due_date).toLocaleDateString("nb-NO")}</span>
                         )}
                         {filter === "assigned" && task.status !== "completed" && (
-                          <div className="flex gap-1 ml-2" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex gap-1 ml-2">
                             {task.status === "pending" && (
                               <Button size="sm" variant="outline" className="h-6 text-xs" onClick={() => updateStatus(task.id, "in_progress")}>
                                 Start
@@ -213,6 +234,25 @@ const MineOppgaver = () => {
                             </Button>
                           </div>
                         )}
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive">
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Slette oppgave?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Er du sikker på at du vil slette «{task.title}»? Dette kan ikke angres.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => deleteTask(task.id)}>Slett</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </div>
                   </CardContent>
