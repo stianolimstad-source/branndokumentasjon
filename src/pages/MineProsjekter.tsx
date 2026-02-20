@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, FolderOpen, FileText, Trash2, Building, Search, Users, User, Share2, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { Plus, FolderOpen, FileText, Trash2, Building, Search, Users, User, Share2, CheckCircle2, Clock, AlertCircle, FileWarning } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import ShareProjectDialog from "@/components/prosjekt/ShareProjectDialog";
@@ -31,6 +31,7 @@ interface FireConcept {
   name: string;
   status: string;
   created_at: string;
+  contentType?: string;
 }
 
 interface ShareInfo {
@@ -125,7 +126,7 @@ const MineProsjekter = () => {
       const [conceptsRes, sharesRes] = await Promise.all([
         supabase
           .from('fire_concepts')
-          .select('id, name, status, created_at, project_id')
+          .select('id, name, status, created_at, project_id, content')
           .in('project_id', projectIds)
           .order('created_at', { ascending: false }),
         supabase
@@ -138,7 +139,8 @@ const MineProsjekter = () => {
         const grouped: Record<string, FireConcept[]> = {};
         conceptsRes.data.forEach((concept: any) => {
           if (!grouped[concept.project_id]) grouped[concept.project_id] = [];
-          grouped[concept.project_id].push(concept);
+          const contentType = concept.content?.type || undefined;
+          grouped[concept.project_id].push({ ...concept, contentType, content: undefined });
         });
         setConceptsByProject(grouped);
 
@@ -448,94 +450,179 @@ const MineProsjekter = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <FileText className="h-4 w-4" />
-                        <span>
-                          {conceptsByProject[project.id]?.length || 0} brannkonsept
-                          {(conceptsByProject[project.id]?.length || 0) !== 1 ? "er" : ""}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <ShareProjectDialog projectId={project.id} projectName={project.name} />
-                        <Link to={`/konsept?project=${project.id}`}>
-                        <Button size="sm">
-                          <Plus className="h-4 w-4 mr-2" />
-                          Nytt brannkonsept
-                        </Button>
-                      </Link>
-                      </div>
-                    </div>
-                    
-                    {conceptsByProject[project.id] && conceptsByProject[project.id].length > 0 && (
-                      <div className="mt-4 space-y-2">
-                        {conceptsByProject[project.id].map((concept) => {
-                          const ks = ksStatusByConcept[concept.id];
-                          const ksComplete = ks && ks.completed >= TOTAL_KS_SECTIONS;
-                          const ksStarted = ks && ks.total > 0;
-                          return (
-                          <div
-                            key={concept.id}
-                            className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
-                          >
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <FileText className="h-4 w-4 text-primary" />
-                              <span className="text-sm font-medium">{concept.name}</span>
-                              <span className={`text-xs px-2 py-0.5 rounded ${
-                                concept.status === 'draft' 
-                                  ? 'bg-yellow-100 text-yellow-800' 
-                                  : 'bg-green-100 text-green-800'
-                              }`}>
-                                {concept.status === 'draft' ? 'Utkast' : 'Ferdig'}
+                    {(() => {
+                      const allConcepts = conceptsByProject[project.id] || [];
+                      const brannkonsepter = allConcepts.filter(c => !c.contentType);
+                      const fraviksdokumenter = allConcepts.filter(c => c.contentType === "kvalitativ" || c.contentType === "komparativ" || c.contentType === "risikoanalyse");
+
+                      return (
+                        <>
+                          {/* Brannkonsepter */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <FileText className="h-4 w-4" />
+                              <span>
+                                {brannkonsepter.length} brannkonsept
+                                {brannkonsepter.length !== 1 ? "er" : ""}
                               </span>
-                              {ksComplete ? (
-                                <Badge variant="default" className="gap-1 bg-green-600 hover:bg-green-700 text-white">
-                                  <CheckCircle2 className="h-3 w-3" />
-                                  KS fullført
-                                </Badge>
-                              ) : ksStarted ? (
-                                <Badge variant="outline" className="gap-1 text-amber-600 border-amber-300">
-                                  <Clock className="h-3 w-3" />
-                                  KS {ks.completed}/{TOTAL_KS_SECTIONS}
-                                </Badge>
-                              ) : null}
                             </div>
-                            <div className="flex items-center gap-1">
-                              <Link to={`/konsept?project=${project.id}&concept=${concept.id}`}>
-                                <Button variant="ghost" size="sm">
-                                  Åpne
+                            <div className="flex items-center gap-2">
+                              <ShareProjectDialog projectId={project.id} projectName={project.name} />
+                              <Link to={`/konsept?project=${project.id}`}>
+                                <Button size="sm">
+                                  <Plus className="h-4 w-4 mr-2" />
+                                  Nytt brannkonsept
                                 </Button>
                               </Link>
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Slette brannkonsept?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Er du sikker på at du vil slette "{concept.name}"? Denne handlingen kan ikke angres.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Avbryt</AlertDialogCancel>
-                                    <AlertDialogAction
-                                      onClick={() => handleDeleteConcept(concept.id, concept.name)}
-                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                    >
-                                      Slett
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
                             </div>
                           </div>
-                          );
-                        })}
-                      </div>
-                    )}
+
+                          {brannkonsepter.length > 0 && (
+                            <div className="mt-4 space-y-2">
+                              {brannkonsepter.map((concept) => {
+                                const ks = ksStatusByConcept[concept.id];
+                                const ksComplete = ks && ks.completed >= TOTAL_KS_SECTIONS;
+                                const ksStarted = ks && ks.total > 0;
+                                return (
+                                  <div
+                                    key={concept.id}
+                                    className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                                  >
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <FileText className="h-4 w-4 text-primary" />
+                                      <span className="text-sm font-medium">{concept.name}</span>
+                                      <span className={`text-xs px-2 py-0.5 rounded ${
+                                        concept.status === 'draft' 
+                                          ? 'bg-yellow-100 text-yellow-800' 
+                                          : 'bg-green-100 text-green-800'
+                                      }`}>
+                                        {concept.status === 'draft' ? 'Utkast' : 'Ferdig'}
+                                      </span>
+                                      {ksComplete ? (
+                                        <Badge variant="default" className="gap-1 bg-green-600 hover:bg-green-700 text-white">
+                                          <CheckCircle2 className="h-3 w-3" />
+                                          KS fullført
+                                        </Badge>
+                                      ) : ksStarted ? (
+                                        <Badge variant="outline" className="gap-1 text-amber-600 border-amber-300">
+                                          <Clock className="h-3 w-3" />
+                                          KS {ks.completed}/{TOTAL_KS_SECTIONS}
+                                        </Badge>
+                                      ) : null}
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <Link to={`/konsept?project=${project.id}&concept=${concept.id}`}>
+                                        <Button variant="ghost" size="sm">
+                                          Åpne
+                                        </Button>
+                                      </Link>
+                                      <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                                            <Trash2 className="h-4 w-4" />
+                                          </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                          <AlertDialogHeader>
+                                            <AlertDialogTitle>Slette brannkonsept?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                              Er du sikker på at du vil slette "{concept.name}"? Denne handlingen kan ikke angres.
+                                            </AlertDialogDescription>
+                                          </AlertDialogHeader>
+                                          <AlertDialogFooter>
+                                            <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                                            <AlertDialogAction
+                                              onClick={() => handleDeleteConcept(concept.id, concept.name)}
+                                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                            >
+                                              Slett
+                                            </AlertDialogAction>
+                                          </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                      </AlertDialog>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          {/* Fraviksdokumenter */}
+                          <div className="flex items-center justify-between mt-4">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <FileWarning className="h-4 w-4" />
+                              <span>
+                                {fraviksdokumenter.length} fraviksdokument
+                                {fraviksdokumenter.length !== 1 ? "er" : ""}
+                              </span>
+                            </div>
+                            <Link to={`/fraviksdokumentasjon?project=${project.id}`}>
+                              <Button size="sm" variant="outline">
+                                <Plus className="h-4 w-4 mr-2" />
+                                Nytt fravik
+                              </Button>
+                            </Link>
+                          </div>
+
+                          {fraviksdokumenter.length > 0 && (
+                            <div className="mt-2 space-y-2">
+                              {fraviksdokumenter.map((doc) => (
+                                <div
+                                  key={doc.id}
+                                  className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                                >
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <FileWarning className="h-4 w-4 text-orange-500" />
+                                    <span className="text-sm font-medium">{doc.name}</span>
+                                    <span className="text-xs px-2 py-0.5 rounded bg-orange-100 text-orange-800 capitalize">
+                                      {doc.contentType}
+                                    </span>
+                                    <span className={`text-xs px-2 py-0.5 rounded ${
+                                      doc.status === 'draft' 
+                                        ? 'bg-yellow-100 text-yellow-800' 
+                                        : 'bg-green-100 text-green-800'
+                                    }`}>
+                                      {doc.status === 'draft' ? 'Utkast' : 'Ferdig'}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <Link to={`/fraviksdokumentasjon/${doc.contentType}?project=${project.id}&concept=${doc.id}`}>
+                                      <Button variant="ghost" size="sm">
+                                        Åpne
+                                      </Button>
+                                    </Link>
+                                    <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>Slette fraviksdokument?</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            Er du sikker på at du vil slette "{doc.name}"? Denne handlingen kan ikke angres.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                                          <AlertDialogAction
+                                            onClick={() => handleDeleteConcept(doc.id, doc.name)}
+                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                          >
+                                            Slett
+                                          </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
 
                     {sharesByProject[project.id] && sharesByProject[project.id].length > 0 && (
                       <div className="mt-4">
