@@ -61,6 +61,7 @@ const KvalitativAnalyse = () => {
           tiltakOmrader: c.tiltakOmrader || [],
           sammenligning: c.sammenligning || "",
           maleparametre: c.maleparametre || "",
+          visReferanser: c.visReferanser !== false,
           referanser: c.referanser || "",
           konklusjon: c.konklusjon || "",
           begrunnelseKonklusjon: c.begrunnelseKonklusjon || "",

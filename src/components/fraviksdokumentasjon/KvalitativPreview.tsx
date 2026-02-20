@@ -186,8 +186,12 @@ const KvalitativPreview = ({ fravikEntries }: { fravikEntries: FravikEntry[] }) 
               <p className="ml-4 mb-3">{fravik.sammenligning || "[Angis]"}</p>
               <h4 className="font-semibold mb-1 ml-4 text-xs">Måleparametre</h4>
               <p className="ml-4 mb-3">{fravik.maleparametre || "[Angis]"}</p>
-              <h4 className="font-semibold mb-1 ml-4 text-xs">Referanser</h4>
-              <p className="ml-4 mb-3">{fravik.referanser || "[Angis]"}</p>
+              {fravik.visReferanser !== false && (
+                <>
+                  <h4 className="font-semibold mb-1 ml-4 text-xs">Referanser</h4>
+                  <p className="ml-4 mb-3">{fravik.referanser || "[Angis]"}</p>
+                </>
+              )}
 
               {/* Konklusjon */}
               <h3 className="font-semibold mb-2">{n}.8 Konklusjon</h3>
