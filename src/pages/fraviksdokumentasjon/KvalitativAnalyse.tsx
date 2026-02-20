@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FileWarning, Plus, Trash2, ChevronDown, ChevronUp, Download } from "lucide-react";
-import PageHeader from "@/components/PageHeader";
+import { FileWarning, Plus, Trash2, ChevronDown, ChevronUp, Download, Save, ArrowLeft } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import KvalitativPreview from "@/components/fraviksdokumentasjon/KvalitativPreview";
 
 const hovedomrader = [
@@ -65,6 +69,17 @@ const emptyTiltak = (): KompenserendeTiltak => ({
 });
 
 const KvalitativAnalyse = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const projectId = searchParams.get("project");
+  const conceptId = searchParams.get("concept");
+
+  const [dokumentNavn, setDokumentNavn] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedConceptId, setSavedConceptId] = useState<string | null>(conceptId);
+
   const [funksjonskrav, setFunksjonskrav] = useState("");
   const [preakseptertYtelse, setPreakseptertYtelse] = useState("");
   const [hensiktYtelse, setHensiktYtelse] = useState("");
@@ -78,6 +93,64 @@ const KvalitativAnalyse = () => {
   const [konklusjon, setKonklusjon] = useState<"tilstrekkelig" | "komparativ" | "risikoanalyse" | "">("");
   const [begrunnelseKonklusjon, setBegrunnelseKonklusjon] = useState("");
   const [showComments, setShowComments] = useState<Record<string, boolean>>({});
+
+  // Load existing concept
+  useEffect(() => {
+    if (conceptId && user) loadConcept(conceptId);
+  }, [conceptId, user]);
+
+  const loadConcept = async (id: string) => {
+    const { data, error } = await supabase
+      .from("fire_concepts")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error || !data) return;
+
+    setDokumentNavn(data.name);
+    const c = data.content as any;
+    if (c) {
+      setFunksjonskrav(c.funksjonskrav || "");
+      setPreakseptertYtelse(c.preakseptertYtelse || "");
+      setHensiktYtelse(c.hensiktYtelse || "");
+      setFravikBeskrivelse(c.fravikBeskrivelse || "");
+      setTiltak(c.tiltak || [emptyTiltak()]);
+      setFraviketOmrader(c.fraviketOmrader || []);
+      setTiltakOmrader(c.tiltakOmrader || []);
+      setSammenligning(c.sammenligning || "");
+      setMaleparametre(c.maleparametre || "");
+      setReferanser(c.referanser || "");
+      setKonklusjon(c.konklusjon || "");
+      setBegrunnelseKonklusjon(c.begrunnelseKonklusjon || "");
+    }
+  };
+
+  const handleSave = async () => {
+    if (!user || !projectId) return;
+    if (!dokumentNavn.trim()) {
+      toast({ title: "Mangler navn", description: "Gi dokumentet et navn før du lagrer", variant: "destructive" });
+      return;
+    }
+
+    setIsSaving(true);
+    const content = JSON.parse(JSON.stringify({ funksjonskrav, preakseptertYtelse, hensiktYtelse, fravikBeskrivelse, tiltak, fraviketOmrader, tiltakOmrader, sammenligning, maleparametre, referanser, konklusjon, begrunnelseKonklusjon, type: "kvalitativ" }));
+
+    if (savedConceptId) {
+      const { error } = await supabase.from("fire_concepts").update({ name: dokumentNavn, content, status: "draft" }).eq("id", savedConceptId);
+      if (error) toast({ title: "Feil", description: "Kunne ikke oppdatere", variant: "destructive" });
+      else toast({ title: "Lagret", description: "Dokumentet er oppdatert" });
+    } else {
+      const { data, error } = await supabase.from("fire_concepts").insert([{ project_id: projectId, user_id: user.id, name: dokumentNavn, content, status: "draft" }]).select().single();
+      if (error) toast({ title: "Feil", description: "Kunne ikke lagre", variant: "destructive" });
+      else if (data) {
+        setSavedConceptId(data.id);
+        toast({ title: "Lagret", description: "Dokumentet er lagret" });
+        navigate(`/fraviksdokumentasjon/kvalitativ?project=${projectId}&concept=${data.id}`, { replace: true });
+      }
+    }
+    setIsSaving(false);
+  };
 
   const toggleOmrade = (id: string, type: "fravik" | "tiltak") => {
     const setter = type === "fravik" ? setFraviketOmrader : setTiltakOmrader;
@@ -99,13 +172,37 @@ const KvalitativAnalyse = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <PageHeader
-        title="Kvalitativ analyse"
-        subtitle="Fraviksdokumentasjon iht. Byggforsk 321.026 kap. 6"
-        icon={<FileWarning className="h-6 w-6 text-primary-foreground" />}
-      />
+      {/* Header */}
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to={projectId ? `/fraviksdokumentasjon?project=${projectId}` : "/fraviksdokumentasjon"}>
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Tilbake
+                </Link>
+              </Button>
+              <div className="flex items-center gap-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
+                  <FileWarning className="h-6 w-6 text-primary-foreground" />
+                </div>
+                <h1 className="text-xl font-bold">Kvalitativ analyse</h1>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {projectId && dokumentNavn && (
+                <Button variant="outline" size="sm" onClick={handleSave} disabled={isSaving}>
+                  <Save className="h-4 w-4 mr-2" />
+                  {isSaving ? "Lagrer..." : "Lagre"}
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
 
-      <main className="container mx-auto px-4 py-6">
+      <div className="w-full px-4 py-6">
         <div className="max-w-[1800px] mx-auto">
           <div className="grid lg:grid-cols-2 gap-6 lg:h-[calc(100vh-200px)]">
 
@@ -119,12 +216,17 @@ const KvalitativAnalyse = () => {
                 <ScrollArea className="h-full px-6 pb-6">
                   <div className="space-y-8">
 
+                    {/* Dokumentnavn */}
+                    <div className="space-y-2">
+                      <Label htmlFor="dokument-name" className="text-sm font-semibold">Navn på dokumentet *</Label>
+                      <Input id="dokument-name" placeholder="f.eks. Fravik brannmotstand EI60 → EI30" value={dokumentNavn} onChange={(e) => setDokumentNavn(e.target.value)} />
+                    </div>
+
                     {/* Dokumentasjonsbehov */}
                     <div className="space-y-4">
                       <div className="border-b-2 border-foreground/20 pb-2">
                         <Label className="text-base font-extrabold text-foreground">Vurdering av dokumentasjonsbehov</Label>
                       </div>
-
                       <div className="space-y-2">
                         <Label htmlFor="funksjonskrav" className="text-xs font-medium">Funksjonskravet i TEK17</Label>
                         <Textarea id="funksjonskrav" placeholder="F.eks. § 11-8 (1): Byggverk skal ha bæresystem og brannceller som gjør at bygningen..." value={funksjonskrav} onChange={(e) => setFunksjonskrav(e.target.value)} />
@@ -148,7 +250,6 @@ const KvalitativAnalyse = () => {
                       <div className="border-b-2 border-foreground/20 pb-2">
                         <Label className="text-base font-extrabold text-foreground">Kompenserende tiltak</Label>
                       </div>
-
                       {tiltak.map((t, index) => (
                         <div key={t.id} className="space-y-3 p-4 border rounded-lg relative">
                           <div className="flex items-center justify-between">
@@ -163,7 +264,6 @@ const KvalitativAnalyse = () => {
                             <Label className="text-xs font-medium">Beskrivelse av tiltaket</Label>
                             <Textarea placeholder="F.eks. automatisk slokkeanlegg, branngardin, røykventilasjon..." value={t.beskrivelse} onChange={(e) => updateTiltak(t.id, "beskrivelse", e.target.value)} />
                           </div>
-
                           <Collapsible open={showComments[`tiltak-${t.id}`]} onOpenChange={(open) => setShowComments(prev => ({ ...prev, [`tiltak-${t.id}`]: open }))}>
                             <CollapsibleTrigger asChild>
                               <Button variant="outline" size="sm" className="text-xs">
@@ -199,7 +299,6 @@ const KvalitativAnalyse = () => {
                         <Label className="text-base font-extrabold text-foreground">Fravikets områder for innvirkning</Label>
                       </div>
                       <p className="text-xs text-muted-foreground">Velg hvilke delområder fraviket og tiltaket virker inn på (tabell 641).</p>
-
                       <div className="grid md:grid-cols-2 gap-4">
                         <div className="space-y-3">
                           <h4 className="font-semibold text-xs text-destructive">Fravikets områder</h4>
@@ -314,7 +413,7 @@ const KvalitativAnalyse = () => {
 
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
