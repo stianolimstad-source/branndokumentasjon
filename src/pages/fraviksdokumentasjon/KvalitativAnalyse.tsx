@@ -190,12 +190,6 @@ const KvalitativAnalyse = () => {
                 <h1 className="text-xl font-bold">Kvalitativ analyse</h1>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={handleSave} disabled={isSaving || !projectId || !dokumentNavn.trim()}>
-                <Save className="h-4 w-4 mr-2" />
-                {isSaving ? "Lagrer..." : "Lagre"}
-              </Button>
-            </div>
           </div>
         </div>
       </header>
@@ -384,6 +378,12 @@ const KvalitativAnalyse = () => {
                   </div>
                 </ScrollArea>
               </CardContent>
+              <div className="flex-shrink-0 border-t bg-background p-4">
+                <Button className="w-full" onClick={handleSave} disabled={isSaving || !projectId || !dokumentNavn.trim()}>
+                  <Save className="h-4 w-4 mr-2" />
+                  {isSaving ? "Lagrer..." : "Lagre"}
+                </Button>
+              </div>
             </Card>
 
             {/* Preview */}
