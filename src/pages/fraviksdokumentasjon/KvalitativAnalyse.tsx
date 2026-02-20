@@ -191,12 +191,10 @@ const KvalitativAnalyse = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {projectId && dokumentNavn && (
-                <Button variant="outline" size="sm" onClick={handleSave} disabled={isSaving}>
-                  <Save className="h-4 w-4 mr-2" />
-                  {isSaving ? "Lagrer..." : "Lagre"}
-                </Button>
-              )}
+              <Button variant="outline" size="sm" onClick={handleSave} disabled={isSaving || !projectId || !dokumentNavn.trim()}>
+                <Save className="h-4 w-4 mr-2" />
+                {isSaving ? "Lagrer..." : "Lagre"}
+              </Button>
             </div>
           </div>
         </div>
