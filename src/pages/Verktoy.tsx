@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, MoveVertical, Box, Users } from "lucide-react";
+import { Flame, MoveVertical, Box, Users, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "@/components/PageHeader";
 
@@ -33,6 +33,12 @@ const tools = [
     title: "Persontallsberegning",
     description: "Beregn persontall basert på areal og brukskategori",
     href: "/verktoy/persontall",
+  },
+  {
+    icon: Zap,
+    title: "Brannenergi",
+    description: "Beregn total og spesifikk brannenergi basert på materialer og mengder",
+    href: "/verktoy/brannenergi",
   },
 ];
 
