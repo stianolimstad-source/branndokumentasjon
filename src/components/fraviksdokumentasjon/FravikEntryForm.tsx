@@ -95,6 +95,26 @@ const hovedomrader = [
   },
 ];
 
+const tek17Paragrafer = [
+  { id: "11-1", label: "§ 11-1. Sikkerhet ved brann" },
+  { id: "11-2", label: "§ 11-2. Risikoklasser" },
+  { id: "11-3", label: "§ 11-3. Brannklasser" },
+  { id: "11-4", label: "§ 11-4. Bæreevne og stabilitet" },
+  { id: "11-5", label: "§ 11-5. Sikkerhet ved eksplosjon" },
+  { id: "11-6", label: "§ 11-6. Tiltak mot brannspredning mellom byggverk" },
+  { id: "11-7", label: "§ 11-7. Brannseksjoner" },
+  { id: "11-8", label: "§ 11-8. Brannceller" },
+  { id: "11-9", label: "§ 11-9. Materialer og produkters egenskaper ved brann" },
+  { id: "11-10", label: "§ 11-10. Tekniske installasjoner" },
+  { id: "11-11", label: "§ 11-11. Generelle krav om rømning og redning" },
+  { id: "11-12", label: "§ 11-12. Tiltak for å påvirke rømnings- og redningstider" },
+  { id: "11-13", label: "§ 11-13. Utgang fra branncelle" },
+  { id: "11-14", label: "§ 11-14. Rømningsvei" },
+  { id: "11-15", label: "§ 11-15. Tilrettelegging for redning av husdyr" },
+  { id: "11-16", label: "§ 11-16. Tilrettelegging for manuell slokking" },
+  { id: "11-17", label: "§ 11-17. Tilrettelegging for rednings- og slokkemannskap" },
+];
+
 const predefinerteTiltak: Omit<KompenserendeTiltak, "id">[] = [
   {
     beskrivelse: "Automatisk slokkeanlegg (sprinkler) iht. NS-EN 12845",
@@ -180,7 +200,25 @@ const FravikEntryForm = ({ fravik, index, onChange }: Props) => {
         </div>
         <div className="space-y-2">
           <Label className="text-xs font-medium">Funksjonskravet i TEK17</Label>
-          <Textarea placeholder="F.eks. § 11-8 (1): Byggverk skal ha bæresystem og brannceller som gjør at bygningen..." value={fravik.funksjonskrav} onChange={(e) => update("funksjonskrav", e.target.value)} />
+          <div className="space-y-1 max-h-48 overflow-y-auto border rounded-md p-2">
+            {tek17Paragrafer.map((p) => (
+              <div key={p.id} className="flex items-center gap-2">
+                <Checkbox
+                  id={`tek17-${index}-${p.id}`}
+                  checked={fravik.funksjonskrav.includes(p.label)}
+                  onCheckedChange={(checked) => {
+                    const current = fravik.funksjonskrav ? fravik.funksjonskrav.split("\n").filter(Boolean) : [];
+                    if (checked) {
+                      update("funksjonskrav", [...current, p.label].join("\n"));
+                    } else {
+                      update("funksjonskrav", current.filter(l => l !== p.label).join("\n"));
+                    }
+                  }}
+                />
+                <Label htmlFor={`tek17-${index}-${p.id}`} className="text-xs font-normal cursor-pointer">{p.label}</Label>
+              </div>
+            ))}
+          </div>
         </div>
         <div className="space-y-2">
           <Label className="text-xs font-medium">Preakseptert ytelse som det fravikes fra</Label>
