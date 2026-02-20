@@ -11,12 +11,6 @@ const tools = [
     href: "/verktoy/straling",
   },
   {
-    icon: Flame,
-    title: "Strålingsberegning",
-    description: "Beregn strålingsnivå fra brann mot fasade eller nabobygning",
-    href: "/verktoy/straling",
-  },
-  {
     icon: MoveVertical,
     title: "Flammehøyde",
     description: "Beregn flammehøyde basert på branneffekt og åpningsgeometri",
