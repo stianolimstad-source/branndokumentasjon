@@ -159,7 +159,12 @@ const FravikEntryForm = ({ fravik, index, onChange }: Props) => {
 
   const addTiltak = () => update("tiltak", [...fravik.tiltak, emptyTiltak()]);
   const addPredefinertTiltak = (predefined: Omit<KompenserendeTiltak, "id">) => {
-    update("tiltak", [...fravik.tiltak, { ...predefined, id: crypto.randomUUID() }]);
+    const firstIsEmpty = fravik.tiltak.length === 1 && !fravik.tiltak[0].beskrivelse && !fravik.tiltak[0].funksjonalitet && !fravik.tiltak[0].palitelighet && !fravik.tiltak[0].robusthet && !fravik.tiltak[0].vedlikehold && !fravik.tiltak[0].andreEffekter;
+    if (firstIsEmpty) {
+      update("tiltak", [{ ...predefined, id: fravik.tiltak[0].id }]);
+    } else {
+      update("tiltak", [...fravik.tiltak, { ...predefined, id: crypto.randomUUID() }]);
+    }
   };
   const removeTiltak = (id: string) => update("tiltak", fravik.tiltak.filter(t => t.id !== id));
   const updateTiltak = (id: string, field: keyof KompenserendeTiltak, value: string) => {
