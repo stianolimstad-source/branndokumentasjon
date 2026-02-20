@@ -27,6 +27,7 @@ export interface FravikEntry {
   tiltakOmrader: string[];
   sammenligning: string;
   maleparametre: string;
+  visReferanser: boolean;
   referanser: string;
   konklusjon: "tilstrekkelig" | "komparativ" | "risikoanalyse" | "";
   begrunnelseKonklusjon: string;
@@ -53,6 +54,7 @@ export const emptyFravik = (): FravikEntry => ({
   tiltakOmrader: [],
   sammenligning: "",
   maleparametre: "",
+  visReferanser: true,
   referanser: "",
   konklusjon: "",
   begrunnelseKonklusjon: "",
@@ -246,8 +248,19 @@ const FravikEntryForm = ({ fravik, index, onChange }: Props) => {
           <Textarea placeholder="F.eks. avstand (m), rømningstid (min), branneffekt (MW), brannmotstand (min)..." value={fravik.maleparametre} onChange={(e) => update("maleparametre", e.target.value)} />
         </div>
         <div className="space-y-2">
-          <Label className="text-xs font-medium">Referanser og dokumentasjon</Label>
-          <Textarea placeholder="Testrapporter, forskningsartikler, standarder, fagbøker..." value={fravik.referanser} onChange={(e) => update("referanser", e.target.value)} />
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id={`vis-referanser-${index}`}
+              checked={fravik.visReferanser}
+              onCheckedChange={(checked) => update("visReferanser", !!checked)}
+            />
+            <Label htmlFor={`vis-referanser-${index}`} className="text-xs font-medium cursor-pointer">
+              Inkluder referanser og dokumentasjon
+            </Label>
+          </div>
+          {fravik.visReferanser && (
+            <Textarea placeholder="Testrapporter, forskningsartikler, standarder, fagbøker..." value={fravik.referanser} onChange={(e) => update("referanser", e.target.value)} />
+          )}
         </div>
       </div>
 

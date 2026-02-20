@@ -156,8 +156,10 @@ export async function exportKvalitativWord(fravikEntries: FravikEntry[], dokumen
     elements.push(new Paragraph({ spacing: { after: 100 }, children: [new TextRun({ text: fravik.sammenligning || "[Angis]", size: 22, font: "Calibri" })] }));
     elements.push(new Paragraph({ children: [new TextRun({ text: "Måleparametre:", bold: true, size: 22, font: "Calibri" })] }));
     elements.push(new Paragraph({ spacing: { after: 100 }, children: [new TextRun({ text: fravik.maleparametre || "[Angis]", size: 22, font: "Calibri" })] }));
-    elements.push(new Paragraph({ children: [new TextRun({ text: "Referanser:", bold: true, size: 22, font: "Calibri" })] }));
-    elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: fravik.referanser || "[Angis]", size: 22, font: "Calibri" })] }));
+    if (fravik.visReferanser !== false) {
+      elements.push(new Paragraph({ children: [new TextRun({ text: "Referanser:", bold: true, size: 22, font: "Calibri" })] }));
+      elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: fravik.referanser || "[Angis]", size: 22, font: "Calibri" })] }));
+    }
 
     // Konklusjon
     elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.8 Konklusjon`, font: "Calibri" })] }));
