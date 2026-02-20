@@ -86,10 +86,37 @@ const Flammehoyde = () => {
               </div>
 
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <Label htmlFor="branneffekt">Q̇ — Branneffekt (kW)</Label>
                   <Input id="branneffekt" type="number" placeholder="f.eks. 3000" value={branneffekt} onChange={(e) => setBranneffekt(e.target.value)} />
                   <p className="text-xs text-muted-foreground">Total branneffekt / HRR i kilowatt</p>
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-medium text-muted-foreground">Typiske verdier:</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[
+                        { label: "Papirkurv", kw: 100 },
+                        { label: "Stol (polstret)", kw: 300 },
+                        { label: "Kontorstol", kw: 500 },
+                        { label: "Sofa", kw: 2000 },
+                        { label: "Seng (madrass)", kw: 1000 },
+                        { label: "Juletre", kw: 500 },
+                        { label: "Kontor (10 m²)", kw: 3000 },
+                        { label: "Bolig (rom)", kw: 5000 },
+                        { label: "Butikk/lager", kw: 10000 },
+                        { label: "Poolbrann (1 m²)", kw: 2000 },
+                      ].map((ex) => (
+                        <button
+                          key={ex.label}
+                          type="button"
+                          onClick={() => setBranneffekt(String(ex.kw))}
+                          className="inline-flex items-center gap-1 rounded-md border border-border bg-background px-2 py-1 text-xs hover:bg-accent hover:text-accent-foreground transition-colors"
+                        >
+                          <span>{ex.label}</span>
+                          <span className="text-muted-foreground">({ex.kw})</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-4">
