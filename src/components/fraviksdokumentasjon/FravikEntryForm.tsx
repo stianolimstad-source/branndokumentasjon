@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Trash2, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { Trash2, Plus, ChevronDown, ChevronUp, ListPlus } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export interface KompenserendeTiltak {
   id: string;
@@ -94,6 +95,49 @@ const hovedomrader = [
   },
 ];
 
+const predefinerteTiltak: Omit<KompenserendeTiltak, "id">[] = [
+  {
+    beskrivelse: "Automatisk slokkeanlegg (sprinkler) iht. NS-EN 12845",
+    funksjonalitet: "Sprinkleranlegget detekterer og kontrollerer/slokker brann i tidlig fase. Anlegget aktiveres automatisk ved termisk påvirkning av sprinklerhoder. Kun sprinklerhoder i brannområdet aktiveres, noe som begrenser vannskader. Anlegget gir også automatisk brannvarsling ved vannstrøm.",
+    palitelighet: "Sprinkleranlegg har dokumentert høy pålitelighet. Statistikk viser at sprinkleranlegg kontrollerer eller slokker brann i over 90 % av tilfellene. Anlegget prosjekteres og installeres iht. NS-EN 12845 av FG-godkjent foretak, og kontrolleres av akkreditert inspeksjonsorgan.",
+    robusthet: "Anlegget er robust mot de fleste brannscenarioer. Vannforsyningen dimensjoneres med tilstrekkelig kapasitet og redundans. Anlegget fungerer uavhengig av strømforsyning (ved bruk av kommunalt vanntrykk eller dieseldrevet pumpe). Anlegget er ikke følsomt for vindforhold eller røyksjiktning.",
+    vedlikehold: "Anlegget krever regelmessig vedlikehold iht. NS-EN 12845 og FG-regler. Kvartalsvis kontroll og årlig funksjonstest av akkreditert inspeksjonsorgan. Eier/bruker har ansvar for daglig tilsyn og at anlegget holdes i driftsklar stand.",
+    andreEffekter: "Sprinkleranlegg gir økt personsikkerhet ved å begrense brannens utvikling og opprettholde akseptable rømningsforhold lengre. Kan gi forsikringsmessige fordeler. Kan medføre vannskader ved utilsiktet utløsning, men risikoen for dette er svært lav.",
+  },
+  {
+    beskrivelse: "Brannalarmanlegg iht. NS 3960",
+    funksjonalitet: "Brannalarmanlegget detekterer brann i tidlig fase ved hjelp av røyk- og/eller varmedetektorer. Anlegget varsler personer i bygningen via alarmsignal og kan gi automatisk varsling til brannvesenet. Anlegget gir tidlig varsling som øker tilgjengelig rømningstid.",
+    palitelighet: "Anlegget prosjekteres og installeres iht. NS 3960 av FG-godkjent foretak. Detektorer velges og plasseres basert på rommets bruk, geometri og ventilasjon. Anlegget overvåkes kontinuerlig for feil og har batteribackup ved strømbrudd.",
+    robusthet: "Anlegget er robust ved at det har redundans i strømforsyning (nett + batteri) og overvåking av alle kretser. Detektortyper tilpasses omgivelsene for å minimere uønskede alarmer. Feilsignaler genereres automatisk ved kabelfeil, komponentfeil eller strømsvikt.",
+    vedlikehold: "Anlegget krever regelmessig vedlikehold iht. NS 3960. Årlig kontroll og funksjonstest utføres av FG-godkjent foretak. Eier/bruker har ansvar for daglig tilsyn, testing av manuell melder kvartalsvis, og utskifting av detektorer etter produsentens anbefalinger.",
+    andreEffekter: "Brannalarmanlegget bidrar til tidlig rømning og reduserer risiko for personskade. Gir brannvesenet tidlig varsel som kan redusere materielle skader. Risiko for uønskede alarmer kan håndteres med riktig detektorvalg og vedlikehold.",
+  },
+  {
+    beskrivelse: "Talevarslingsanlegg iht. NS 3960 og NS-EN 54-del 16/24",
+    funksjonalitet: "Talevarslingsanlegget gir tydelig, forståelig talebeskjed til alle personer i bygningen ved brannalarm. Systemet kan gi differensiert varsling i ulike soner og kan brukes til evakueringsledelse. Erstatter eller supplerer tradisjonelle alarmsignaler med forhåndsinnspilte eller direktesendte meldinger.",
+    palitelighet: "Anlegget prosjekteres iht. NS-EN 54-del 16 (talevarslingssentraler) og del 24 (høyttalere). Talekvaliteten verifiseres ved STI-målinger (Speech Transmission Index) for å sikre forståelighet i alle soner. Anlegget har batteribackup og feilmonitoring.",
+    robusthet: "Systemet har redundans i forsterkere og strømforsyning. Høyttalerkretser overvåkes for feil. Systemet er designet for å fungere også ved delvis ødeleggelse av kabelnett (A/B-linjer). Talekvaliteten opprettholdes selv ved høyt bakgrunnsstøy (min. STI 0,50).",
+    vedlikehold: "Årlig kontroll og funksjonstest av FG-godkjent foretak. STI-målinger bør utføres ved installasjon og etter endringer. Eier/bruker har ansvar for daglig tilsyn og testing av systemet.",
+    andreEffekter: "Talevarsling gir vesentlig bedre forståelse av alarmsituasjonen sammenlignet med tradisjonelle alarmsignaler, spesielt for personer som ikke er kjent i bygningen. Reduserer reaksjonstid og kan gi spesifikke evakueringsinstruksjoner. Særlig viktig i store, komplekse bygninger og bygninger med overnattende personer.",
+  },
+  {
+    beskrivelse: "Røykventilasjon",
+    funksjonalitet: "Røykventilasjon fjerner røyk og varme fra brannsoner og/eller rømningsveier, slik at rømningsforholdene opprettholdes og brannvesenets innsatsmuligheter forbedres. Kan utføres som naturlig (røykluker) eller mekanisk røykventilasjon.",
+    palitelighet: "Naturlig røykventilasjon er pålitelig da den ikke er avhengig av strøm. Mekanisk røykventilasjon krever redundans i strømforsyning og vifte/motor. Systemet prosjekteres for å håndtere relevante brannscenarioer basert på beregnet branneffekt og røykproduksjon.",
+    robusthet: "Naturlige systemer er robuste mot strømsvikt. Mekaniske systemer skal ha nødstrømsforsyning. Kanaler og komponenter dimensjoneres for brannpåkjenning (temperatur). Systemet skal fungere uavhengig av klimatiske forhold (vind, temperatur).",
+    vedlikehold: "Regelmessig kontroll av luker, vifter, motorer og styringskomponenter. Funksjonstest minst årlig. Tilluftåpninger må holdes frie for hindringer.",
+    andreEffekter: "Røykventilasjon kan gi bedre oversikt for rømning og innsats, reduserer røykskader og kan begrense brannspredning ved å redusere temperaturen i røyklaget. Kan påvirke brannforløpet ved tilførsel av frisk luft – krever helhetlig vurdering.",
+  },
+  {
+    beskrivelse: "Branngardin / brannskjerm",
+    funksjonalitet: "Branngardin/brannskjerm fungerer som brannskille som senkes ned eller lukkes automatisk ved brannalarm. Hindrer brannspredning og/eller røykspredning mellom brannceller eller brannseksjoner uten å kreve permanent fysisk skille.",
+    palitelighet: "Branngardinen aktiveres automatisk via signal fra brannalarmanlegget eller lokale detektorer. Kan også aktiveres manuelt. Produktet skal ha dokumentert brannmotstand (EI-klassifisering) iht. NS-EN 16034.",
+    robusthet: "Gardinen/skjermen lukkes ved hjelp av gravitasjon (failsafe) og krever kun strøm for å holdes åpen. Dette gir høy robusthet ved strømsvikt. Mekanismen er enkel med få bevegelige deler.",
+    vedlikehold: "Funksjonstest minimum årlig. Visuell kontroll av gardin/skjerm, føringer og motor kvartalsvis. Smøring og justering iht. produsentens anbefalinger.",
+    andreEffekter: "Gir fleksibel planløsning uten permanente brannskiller. Kan kombineres med daglig bruk (innsyn, gjennomgang). Må koordineres med rømningsveier for å sikre at gardinen ikke blokkerer rømning.",
+  },
+];
+
 interface Props {
   fravik: FravikEntry;
   index: number;
@@ -114,6 +158,9 @@ const FravikEntryForm = ({ fravik, index, onChange }: Props) => {
   };
 
   const addTiltak = () => update("tiltak", [...fravik.tiltak, emptyTiltak()]);
+  const addPredefinertTiltak = (predefined: Omit<KompenserendeTiltak, "id">) => {
+    update("tiltak", [...fravik.tiltak, { ...predefined, id: crypto.randomUUID() }]);
+  };
   const removeTiltak = (id: string) => update("tiltak", fravik.tiltak.filter(t => t.id !== id));
   const updateTiltak = (id: string, field: keyof KompenserendeTiltak, value: string) => {
     update("tiltak", fravik.tiltak.map(t => t.id === id ? { ...t, [field]: value } : t));
@@ -187,9 +234,35 @@ const FravikEntryForm = ({ fravik, index, onChange }: Props) => {
             </Collapsible>
           </div>
         ))}
-        <Button variant="outline" onClick={addTiltak} className="w-full">
-          <Plus className="h-4 w-4 mr-2" /> Legg til tiltak
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={addTiltak} className="flex-1">
+            <Plus className="h-4 w-4 mr-2" /> Tomt tiltak
+          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="flex-1">
+                <ListPlus className="h-4 w-4 mr-2" /> Velg ferdig tiltak
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-0" align="start">
+              <div className="p-3 border-b">
+                <p className="text-sm font-semibold">Vanlige kompenserende tiltak</p>
+                <p className="text-xs text-muted-foreground">Basert på NS-EN 12845, NS 3960, NS-EN 54</p>
+              </div>
+              <div className="max-h-60 overflow-y-auto">
+                {predefinerteTiltak.map((pt, idx) => (
+                  <button
+                    key={idx}
+                    className="w-full text-left px-3 py-2.5 hover:bg-accent text-xs border-b last:border-b-0 transition-colors"
+                    onClick={() => addPredefinertTiltak(pt)}
+                  >
+                    {pt.beskrivelse}
+                  </button>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       {/* Innvirkningsområder */}
