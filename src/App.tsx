@@ -20,6 +20,7 @@ import MineKontakter from "./pages/MineKontakter";
 import MineOppgaver from "./pages/MineOppgaver";
 import GruppeDetalj from "./pages/GruppeDetalj";
 import KSGjennomgang from "./pages/KSGjennomgang";
+import Fraviksdokumentasjon from "./pages/Fraviksdokumentasjon";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,6 +49,7 @@ const App = () => (
             <Route path="/ks-gjennomgang" element={<KSGjennomgang />} />
             <Route path="/mine-kontakter" element={<MineKontakter />} />
             <Route path="/mine-kontakter/gruppe/:id" element={<GruppeDetalj />} />
+            <Route path="/fraviksdokumentasjon" element={<Fraviksdokumentasjon />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
