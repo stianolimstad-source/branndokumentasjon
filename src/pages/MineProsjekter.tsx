@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -263,6 +264,27 @@ const MineProsjekter = () => {
     }
   };
 
+  const handleDeleteConcept = async (conceptId: string, conceptName: string) => {
+    const { error } = await supabase
+      .from('fire_concepts')
+      .delete()
+      .eq('id', conceptId);
+
+    if (error) {
+      toast({
+        title: "Feil",
+        description: "Kunne ikke slette brannkonseptet",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Slettet",
+        description: `"${conceptName}" er slettet`,
+      });
+      fetchProjects();
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-subtle flex items-center justify-center">
@@ -478,11 +500,37 @@ const MineProsjekter = () => {
                                 </Badge>
                               ) : null}
                             </div>
-                            <Link to={`/konsept?project=${project.id}&concept=${concept.id}`}>
-                              <Button variant="ghost" size="sm">
-                                Åpne
-                              </Button>
-                            </Link>
+                            <div className="flex items-center gap-1">
+                              <Link to={`/konsept?project=${project.id}&concept=${concept.id}`}>
+                                <Button variant="ghost" size="sm">
+                                  Åpne
+                                </Button>
+                              </Link>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Slette brannkonsept?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Er du sikker på at du vil slette "{concept.name}"? Denne handlingen kan ikke angres.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => handleDeleteConcept(concept.id, concept.name)}
+                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                      Slett
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
                           </div>
                           );
                         })}
