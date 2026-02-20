@@ -155,6 +155,38 @@ const KSGjennomgang = () => {
     setSaving(false);
   };
 
+  const markKSComplete = async () => {
+    if (!user || !taskId || !taskData) return;
+    setSaving(true);
+
+    // Update task status to completed
+    const { error: taskError } = await supabase
+      .from("tasks")
+      .update({ status: "completed" })
+      .eq("id", taskId);
+
+    if (taskError) {
+      toast({ title: "Feil", description: "Kunne ikke oppdatere oppgavestatus", variant: "destructive" });
+      setSaving(false);
+      return;
+    }
+
+    // Notify the person who assigned the task (prosjekterende)
+    const { error: notifError } = await supabase.rpc("create_notification", {
+      _user_id: taskData.assigned_by,
+      _type: "ks_completed",
+      _title: "KS ferdig",
+      _message: `Sidemannskontroll for "${conceptName}" er fullført og kan kontrolleres.`,
+    });
+
+    if (notifError) {
+      toast({ title: "Advarsel", description: "Oppgaven er oppdatert, men varsling feilet", variant: "destructive" });
+    } else {
+      toast({ title: "KS ferdig", description: "Prosjekterende er varslet om at KS er fullført" });
+    }
+    setSaving(false);
+  };
+
   const downloadChecklist = async (type: "egenkontroll" | "sidemannskontroll") => {
     if (!taskId || !conceptId) return;
 
@@ -442,6 +474,16 @@ const KSGjennomgang = () => {
                   <Save className="h-4 w-4 mr-2" />
                   {saving ? "Lagrer…" : "Lagre sjekkpunkter"}
                 </Button>
+                {reviewType === "sidemannskontroll" && (
+                  <Button
+                    onClick={markKSComplete}
+                    disabled={saving || taskData?.status === "completed"}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    {taskData?.status === "completed" ? "KS er fullført" : "KS ferdig"}
+                  </Button>
+                )}
                 <Button variant="outline" size="sm" className="w-full" onClick={() => downloadChecklist(reviewType)}>
                   <Download className="h-4 w-4 mr-2" />
                   {reviewType === "egenkontroll" ? "Last ned egenkontroll" : "Last ned sidemannskontroll"}
