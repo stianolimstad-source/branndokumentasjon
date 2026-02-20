@@ -1,14 +1,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, Ruler, MoveVertical, Box, Users } from "lucide-react";
+import { Flame, MoveVertical, Box, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import PageHeader from "@/components/PageHeader";
 
 const tools = [
   {
-    icon: Ruler,
-    title: "Rømningsveibredde",
-    description: "Beregn nødvendig bredde på rømningsveier basert på antall personer",
-    href: "/verktoy/romningsvei",
+    icon: Flame,
+    title: "Strålingsberegning",
+    description: "Beregn strålingsnivå fra brann mot fasade eller nabobygning",
+    href: "/verktoy/straling",
   },
   {
     icon: Flame,
