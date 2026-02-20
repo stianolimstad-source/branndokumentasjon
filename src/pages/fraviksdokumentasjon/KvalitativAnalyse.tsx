@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileWarning, Plus, Trash2, ChevronDown, ChevronUp, Download, Save, ArrowLeft } from "lucide-react";
+import { exportKvalitativWord } from "@/lib/kvalitativ-word-export";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -394,7 +395,7 @@ const KvalitativAnalyse = () => {
                     <CardTitle>Forhåndsvisning</CardTitle>
                     <CardDescription>Fraviksdokumentasjonen oppdateres i sanntid</CardDescription>
                   </div>
-                  <Button variant="outline" size="sm" disabled>
+                  <Button variant="outline" size="sm" onClick={() => exportKvalitativWord(formData, dokumentNavn)}>
                     <Download className="h-4 w-4 mr-2" />
                     Last ned Word
                   </Button>
