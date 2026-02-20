@@ -116,6 +116,9 @@ const Flammehoyde = () => {
                         </button>
                       ))}
                     </div>
+                    <p className="text-xs text-muted-foreground italic">
+                      Verdiene er veiledende og basert på SFPE Handbook of Fire Protection Engineering og Enclosure Fire Dynamics (Karlsson & Quintiere). Faktisk HRR avhenger av materiale, ventilasjon og geometri.
+                    </p>
                   </div>
                 </div>
 
