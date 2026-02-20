@@ -19,6 +19,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import SendToKSDialog from "@/components/konsept/SendToKSDialog";
+import UpdateKSButton from "@/components/konsept/UpdateKSButton";
 import KonseptPreview from "@/components/konsept/KonseptPreview";
 
 // Mapping av bygningstype til risikoklasse basert på TEK17
@@ -3852,6 +3853,12 @@ const Konsept = () => {
             conceptName={conceptName}
             projectId={selectedProjectId}
             conceptId={conceptId}
+            conceptContent={formData}
+            disabled={!conceptName}
+          />
+          <UpdateKSButton
+            conceptId={conceptId}
+            conceptName={conceptName}
             conceptContent={formData}
             disabled={!conceptName}
           />
