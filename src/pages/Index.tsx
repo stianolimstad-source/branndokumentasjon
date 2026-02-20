@@ -43,7 +43,7 @@ const Index = () => {
       icon: FileWarning,
       title: "Fraviksdokumentasjon",
       description: "Generer formelle fraviksanalyser og tiltak",
-      href: "#",
+      href: "/fraviksdokumentasjon",
     },
     {
       icon: BookOpen,
