@@ -40,15 +40,29 @@ const KvalitativAnalyse = () => {
   const [fravikEntries, setFravikEntries] = useState<FravikEntry[]>([emptyFravik()]);
   const [activeFravikIndex, setActiveFravikIndex] = useState(0);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [profileData, setProfileData] = useState<{ full_name?: string; company?: string; title?: string; education?: string } | null>(null);
+  const [projectData, setProjectData] = useState<{ name?: string; address?: string | null } | null>(null);
 
-  // Fetch user logo
+  // Fetch user profile (logo + info)
   useEffect(() => {
     if (user) {
-      supabase.from("profiles").select("logo_url").eq("id", user.id).single().then(({ data }) => {
-        if (data) setLogoUrl((data as any).logo_url || null);
+      supabase.from("profiles").select("logo_url, full_name, company, title, education").eq("id", user.id).single().then(({ data }) => {
+        if (data) {
+          setLogoUrl((data as any).logo_url || null);
+          setProfileData({ full_name: (data as any).full_name, company: (data as any).company, title: (data as any).title, education: (data as any).education });
+        }
       });
     }
   }, [user]);
+
+  // Fetch project info
+  useEffect(() => {
+    if (projectId) {
+      supabase.from("projects").select("name, address").eq("id", projectId).single().then(({ data }) => {
+        if (data) setProjectData({ name: data.name, address: data.address });
+      });
+    }
+  }, [projectId]);
 
   // Project picker dialog state
   const [projects, setProjects] = useState<Project[]>([]);
@@ -339,7 +353,7 @@ const KvalitativAnalyse = () => {
                     <CardTitle>Forhåndsvisning</CardTitle>
                     <CardDescription>Fraviksdokumentasjonen oppdateres i sanntid</CardDescription>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => exportKvalitativWord(fravikEntries, dokumentNavn, logoUrl)}>
+                  <Button variant="outline" size="sm" onClick={() => exportKvalitativWord(fravikEntries, dokumentNavn, logoUrl, projectData, profileData)}>
                     <Download className="h-4 w-4 mr-2" />
                     Last ned Word
                   </Button>
@@ -348,7 +362,7 @@ const KvalitativAnalyse = () => {
               <CardContent className="flex-1 overflow-hidden p-0">
                 <ScrollArea className="h-full max-h-[calc(100vh-280px)]">
                   <div className="px-6 pb-6">
-                    <KvalitativPreview fravikEntries={fravikEntries} logoUrl={logoUrl} />
+                    <KvalitativPreview fravikEntries={fravikEntries} logoUrl={logoUrl} projectData={projectData} profileData={profileData} />
                   </div>
                 </ScrollArea>
               </CardContent>

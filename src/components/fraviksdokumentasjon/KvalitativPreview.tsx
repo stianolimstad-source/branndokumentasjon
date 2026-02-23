@@ -70,7 +70,14 @@ const paramUnits: Record<string, string> = {
   branneffekt_kW: "kW", romareal_m2: "m²",
 };
 
-const KvalitativPreview = ({ fravikEntries, logoUrl }: { fravikEntries: FravikEntry[]; logoUrl?: string | null }) => {
+interface KvalitativPreviewProps {
+  fravikEntries: FravikEntry[];
+  logoUrl?: string | null;
+  projectData?: { name?: string; address?: string | null } | null;
+  profileData?: { full_name?: string; company?: string; title?: string; education?: string } | null;
+}
+
+const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData }: KvalitativPreviewProps) => {
   return (
     <div className="bg-white text-black p-8 rounded-lg shadow-inner font-serif text-sm" style={{ minHeight: '600px' }}>
       {logoUrl && (
@@ -82,6 +89,44 @@ const KvalitativPreview = ({ fravikEntries, logoUrl }: { fravikEntries: FravikEn
         FRAVIKSDOKUMENTASJON
       </h1>
       <p className="text-center text-xs mb-6 text-gray-500">Kvalitativ analyse iht. Byggforsk 321.026 kap. 6</p>
+
+      {/* Sammendrag */}
+      <section className="mb-6">
+        <h2 className="font-bold mb-3">Sammendrag</h2>
+        <table className="w-full border-collapse border border-gray-400 text-xs mb-4">
+          <tbody>
+            <tr>
+              <td className="border border-gray-400 p-2 font-semibold w-1/3 bg-gray-50">Prosjekt</td>
+              <td className="border border-gray-400 p-2">{projectData?.name || "[Prosjektnavn]"}</td>
+            </tr>
+            {projectData?.address && (
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold bg-gray-50">Adresse</td>
+                <td className="border border-gray-400 p-2">{projectData.address}</td>
+              </tr>
+            )}
+            <tr>
+              <td className="border border-gray-400 p-2 font-semibold bg-gray-50">Utarbeidet av</td>
+              <td className="border border-gray-400 p-2">
+                {profileData?.full_name || "[Navn]"}
+                {profileData?.title && `, ${profileData.title}`}
+              </td>
+            </tr>
+            {profileData?.company && (
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold bg-gray-50">Firma</td>
+                <td className="border border-gray-400 p-2">{profileData.company}</td>
+              </tr>
+            )}
+            <tr>
+              <td className="border border-gray-400 p-2 font-semibold bg-gray-50">Antall fravik</td>
+              <td className="border border-gray-400 p-2">{fravikEntries.length}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <hr className="my-6 border-gray-300" />
 
       {/* Innholdsfortegnelse */}
       <section className="mb-6">
