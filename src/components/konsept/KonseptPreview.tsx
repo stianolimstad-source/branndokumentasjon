@@ -4,9 +4,10 @@ import { branncelleTyperListe, getBrannklasse } from "@/lib/fire-concept-constan
 interface KonseptPreviewProps {
   formData: Record<string, any>;
   logoUrl?: string | null;
+  authorInfo?: { name: string; company: string } | null;
 }
 
-const KonseptPreview = ({ formData, logoUrl }: KonseptPreviewProps) => {
+const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) => {
   // Ensure arrays have defaults
   const bygningsdeler = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
   const grunnlagsdokumenter = Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : [];
@@ -15,14 +16,35 @@ const KonseptPreview = ({ formData, logoUrl }: KonseptPreviewProps) => {
 
   return (
     <div className="bg-white text-black p-8 rounded-lg shadow-inner font-serif text-sm" style={{ minHeight: '600px' }}>
-      {logoUrl && (
-        <div className="flex justify-center mb-4">
-          <img src={logoUrl} alt="Firmalogo" className="max-h-16 max-w-[200px] object-contain" />
-        </div>
-      )}
-      <h1 className="text-xl font-bold text-center mb-6 pb-4">
+      {/* Forside */}
+      <div className="flex flex-col items-center justify-center mb-12 pt-8 pb-8 border-b-2 border-gray-300" style={{ minHeight: '400px' }}>
+        {logoUrl && (
+          <div className="mb-8">
+            <img src={logoUrl} alt="Firmalogo" className="max-h-32 max-w-[300px] object-contain" />
+          </div>
+        )}
+        <h1 className="text-3xl font-bold text-center mb-4 tracking-wide">
+          BRANNKONSEPT
+        </h1>
+        {formData.prosjektnavn && (
+          <p className="text-lg text-center text-gray-700 mb-2">{formData.prosjektnavn}</p>
+        )}
+        {formData.adresse && (
+          <p className="text-base text-center text-gray-500 mb-6">{formData.adresse}</p>
+        )}
+        {authorInfo && (authorInfo.name || authorInfo.company) && (
+          <div className="mt-8 text-center text-sm text-gray-600">
+            <p className="font-semibold">Utarbeidet av</p>
+            {authorInfo.name && <p>{authorInfo.name}</p>}
+            {authorInfo.company && <p>{authorInfo.company}</p>}
+          </div>
+        )}
+        <p className="mt-4 text-xs text-gray-400">{new Date().toLocaleDateString("nb-NO", { year: "numeric", month: "long", day: "numeric" })}</p>
+      </div>
+
+      <h2 className="text-xl font-bold text-center mb-6 pb-4">
         BRANNKONSEPT
-      </h1>
+      </h2>
       
       {/* Innholdsfortegnelse */}
       <section className="mb-6">
