@@ -2,39 +2,6 @@ import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Tabl
 import { saveAs } from "file-saver";
 import { FravikEntry } from "@/components/fraviksdokumentasjon/FravikEntryForm";
 
-const hovedomrader = [
-  {
-    id: "A", label: "A – Brannforløp",
-    delomrader: [
-      { id: "a", label: "Antennelse" }, { id: "b", label: "Eksplosjon" },
-      { id: "c", label: "Utvikling av brann" }, { id: "d", label: "Spredning av brann" },
-      { id: "e", label: "Strukturell kollaps" }, { id: "f", label: "Spredning til nabobygning" },
-    ],
-  },
-  {
-    id: "B", label: "B – Rømning og redning",
-    delomrader: [
-      { id: "g", label: "Deteksjon og varsling" }, { id: "h", label: "Reaksjon" },
-      { id: "i", label: "Forflytning til sikkert sted" }, { id: "j", label: "Assistert evakuering" },
-    ],
-  },
-  {
-    id: "C", label: "C – Verdier",
-    delomrader: [
-      { id: "k", label: "Mennesker" }, { id: "l", label: "Dyr" },
-      { id: "m", label: "Økonomiske verdier" }, { id: "n", label: "Kulturhistoriske verdier" },
-      { id: "o", label: "Miljøskader" }, { id: "p", label: "Samfunnsfunksjon" },
-    ],
-  },
-  {
-    id: "D", label: "D – Tilrettelegging og sikkerhet for slokkemannskaper",
-    delomrader: [
-      { id: "q", label: "Innsatstid" }, { id: "r", label: "Tilrettelegging rundt bygningen" },
-      { id: "s", label: "Tilrettelegging i bygningen" }, { id: "t", label: "Annet teknisk utstyr for slokkeinnsats" },
-      { id: "u", label: "Bemanning og kompetanse" },
-    ],
-  },
-];
 
 const borderStyle = {
   top: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
@@ -187,13 +154,6 @@ export async function exportKvalitativWord(fravikEntries: FravikEntry[], dokumen
   fravikEntries.forEach((fravik, i) => {
     const n = i + 1;
 
-    const fraviketLabels = hovedomrader.flatMap(h =>
-      h.delomrader.filter(d => fravik.fraviketOmrader.includes(d.id)).map(d => `${d.id} – ${d.label}`)
-    );
-    const tiltakLabels = hovedomrader.flatMap(h =>
-      h.delomrader.filter(d => fravik.tiltakOmrader.includes(d.id)).map(d => `${d.id} – ${d.label}`)
-    );
-
     // Section header
     elements.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: `${n}. Fravik ${n}`, font: "Calibri" })] }));
 
@@ -246,27 +206,7 @@ export async function exportKvalitativWord(fravikEntries: FravikEntry[], dokumen
 
     // Innvirkningsområder
     elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.6 Innvirkningsområder`, font: "Calibri" })] }));
-
-    elements.push(new Table({
-      width: { size: 100, type: WidthType.PERCENTAGE },
-      rows: [
-        new TableRow({ children: [makeCell("Fravikets innvirkningsområder", true, 50), makeCell("Tiltakets innvirkningsområder", true, 50)] }),
-        new TableRow({ children: [makeCell(fraviketLabels.length > 0 ? fraviketLabels.join("\n") : "[Angis]", false, 50), makeCell(tiltakLabels.length > 0 ? tiltakLabels.join("\n") : "[Angis]", false, 50)] }),
-      ],
-    }));
-
-    if (fravik.fraviketOmrader.length > 0 && fravik.tiltakOmrader.length > 0) {
-      const sammeOmrader = fravik.fraviketOmrader.every(o => fravik.tiltakOmrader.includes(o));
-      elements.push(new Paragraph({
-        spacing: { before: 100, after: 200 },
-        children: [new TextRun({
-          text: sammeOmrader
-            ? "Vurdering: Fravik og kompenserende tiltak virker inn på samme område(r)."
-            : "Vurdering: Fravik og kompenserende tiltak virker inn på ulike områder.",
-          size: 20, font: "Calibri", bold: true,
-        })],
-      }));
-    }
+    elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: (fravik as any).innvirkningBeskrivelse || "[Angis]", size: 22, font: "Calibri" })] }));
 
     // Beregninger
     const harBeregninger = (fravik.beregninger?.length ?? 0) > 0;

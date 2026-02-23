@@ -132,6 +132,7 @@ const KvalitativAnalyse = () => {
           tiltak: c.tiltak || [{ id: crypto.randomUUID(), beskrivelse: "", funksjonalitet: "", palitelighet: "", robusthet: "", vedlikehold: "", andreEffekter: "" }],
           fraviketOmrader: c.fraviketOmrader || [],
           tiltakOmrader: c.tiltakOmrader || [],
+          innvirkningBeskrivelse: c.innvirkningBeskrivelse || "",
           sammenligning: c.sammenligning || "",
           maleparametre: c.maleparametre || "",
           visReferanser: c.visReferanser !== false,
