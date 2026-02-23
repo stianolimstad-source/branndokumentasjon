@@ -217,7 +217,8 @@ export async function exportKvalitativWord(
     const n = i + 1;
 
     // Section header
-    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: `${n}. Fravik ${n}`, font: "Calibri" })] }));
+    const fravikTitle = `${n}. Fravik ${n}${fravik.navn ? ` – ${fravik.navn}` : ""}`;
+    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: fravikTitle, font: "Calibri" })] }));
 
     // Dokumentasjonsbehov
     elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.1 Funksjonskrav i TEK17`, font: "Calibri" })] }));

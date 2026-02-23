@@ -143,7 +143,7 @@ const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData, s
         <div className="space-y-1 text-xs">
           {fravikEntries.map((fravik, i) => (
             <React.Fragment key={i}>
-              <p><span className="font-bold">{i + 1}.</span> Fravik {i + 1}</p>
+              <p><span className="font-bold">{i + 1}.</span> Fravik {i + 1}{fravik.navn ? ` – ${fravik.navn}` : ""}</p>
               <p className="ml-4">{i + 1}.1 Funksjonskrav i TEK17</p>
               <p className="ml-4">{i + 1}.2 Preakseptert ytelse</p>
               <p className="ml-4">{i + 1}.3 Hensikt med ytelsen</p>
@@ -174,7 +174,7 @@ const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData, s
             {i > 0 && <hr className="my-6 border-gray-300" />}
 
             <section className="mb-6">
-              <h2 className="font-bold text-lg mb-4">{n}. Fravik {n}</h2>
+              <h2 className="font-bold text-lg mb-4">{n}. Fravik {n}{fravik.navn ? ` – ${fravik.navn}` : ""}</h2>
 
               <h3 className="font-semibold mb-2">{n}.1 Funksjonskrav i TEK17</h3>
               <p className="ml-4 mb-3">{fravik.funksjonskrav || "[Angis]"}</p>

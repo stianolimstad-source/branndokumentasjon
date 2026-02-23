@@ -20,6 +20,7 @@ export interface KompenserendeTiltak {
 
 export interface FravikEntry {
   id: string;
+  navn: string;
   funksjonskrav: string;
   preakseptertYtelse: string;
   hensiktYtelse: string;
@@ -49,6 +50,7 @@ export const emptyTiltak = (): KompenserendeTiltak => ({
 
 export const emptyFravik = (): FravikEntry => ({
   id: crypto.randomUUID(),
+  navn: "",
   funksjonskrav: "",
   preakseptertYtelse: "",
   hensiktYtelse: "",
@@ -198,6 +200,17 @@ const FravikEntryForm = ({ fravik, index, onChange }: Props) => {
 
   return (
     <div className="space-y-8">
+      {/* Navn på fravik */}
+      <div className="space-y-2">
+        <Label className="text-xs font-medium">Navn på fravik</Label>
+        <input
+          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          placeholder={`f.eks. Avstand mellom bygg A og B`}
+          value={fravik.navn || ""}
+          onChange={(e) => update("navn", e.target.value)}
+        />
+      </div>
+
       {/* Dokumentasjonsbehov */}
       <div className="space-y-4">
         <div className="border-b-2 border-foreground/20 pb-2">
