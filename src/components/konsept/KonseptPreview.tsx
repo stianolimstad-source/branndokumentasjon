@@ -20,7 +20,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
       <div className="flex flex-col items-center justify-center mb-12 pt-8 pb-8 border-b-2 border-gray-300" style={{ minHeight: '400px' }}>
         {logoUrl && (
           <div className="mb-8">
-            <img src={logoUrl} alt="Firmalogo" className="max-h-44 max-w-[400px] object-contain" />
+            <img src={logoUrl} alt="Firmalogo" className="max-h-64 max-w-[600px] object-contain" />
           </div>
         )}
         <h1 className="text-3xl font-bold text-center mb-4 tracking-wide">
