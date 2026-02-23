@@ -1,5 +1,6 @@
 import React from "react";
 import { FravikEntry } from "./FravikEntryForm";
+import { AttachedCalculation } from "./BeregningSection";
 
 const hovedomrader = [
   {
@@ -34,6 +35,73 @@ const hovedomrader = [
     ],
   },
 ];
+
+const SIGMA = 5.67e-8;
+
+function getBeregningsSteg(calc: AttachedCalculation): string[] {
+  if (calc.type === "straling") {
+    const eps = Number(calc.inputs.emissivitet) || 0;
+    const TfC = Number(calc.inputs.flammetemperatur_C) || 0;
+    const TfK = TfC + 273.15;
+    const F12 = Number(calc.inputs.siktfaktor) || 0;
+    const Ef = eps * SIGMA * Math.pow(TfK, 4);
+    const EfKW = Math.round((Ef / 1000) * 100) / 100;
+    const q = Ef * F12;
+    const qKW = Math.round((q / 1000) * 100) / 100;
+    return [
+      `Tf = ${TfC} °C + 273.15 = ${TfK.toFixed(1)} K`,
+      `Ef = ${eps} × σ × ${TfK.toFixed(1)}⁴ = ${EfKW} kW/m²`,
+      `q″rad = ${EfKW} × ${F12} = ${qKW} kW/m²`,
+    ];
+  }
+  if (calc.type === "flammehoyde") {
+    const Q = Number(calc.inputs.branneffekt_kW) || 0;
+    const D = Number(calc.inputs.diameter_m) || 0;
+    const Lf = Math.max(0, 0.235 * Math.pow(Q, 0.4) - 1.02 * D);
+    const LfRound = Math.round(Lf * 100) / 100;
+    const tip = Math.round(LfRound * 1.5 * 100) / 100;
+    return [
+      `Lf = 0.235 × ${Q}^0.4 − 1.02 × ${D} = ${LfRound} m`,
+      `Flammetipp = 1.5 × ${LfRound} = ${tip} m`,
+    ];
+  }
+  if (calc.type === "brannenergi") {
+    try {
+      const mats = JSON.parse(String(calc.inputs.materialer || "[]"));
+      const lines: string[] = [];
+      let sum = 0;
+      mats.forEach((m: { name: string; mjPerKg: number; kg: number }) => {
+        const q = m.mjPerKg * m.kg;
+        sum += q;
+        lines.push(`${m.name}: ${m.kg} kg × ${m.mjPerKg} MJ/kg = ${Math.round(q)} MJ`);
+      });
+      lines.push(`Total: ${Math.round(sum)} MJ`);
+      if (calc.inputs.romareal_m2) {
+        lines.push(`Spesifikk: ${Math.round(sum)} / ${calc.inputs.romareal_m2} = ${Math.round(sum / Number(calc.inputs.romareal_m2))} MJ/m²`);
+      }
+      return lines;
+    } catch { return []; }
+  }
+  return [];
+}
+
+const formelMap: Record<string, string[]> = {
+  straling: ["Ef = ε · σ · Tf⁴", "q″rad = Ef · F₁₂"],
+  flammehoyde: ["Lf = 0.235 · Q̇²/⁵ − 1.02 · D"],
+  brannenergi: ["Q = Σ (mi · Hc,i)", "q = Q / Arom"],
+};
+
+const paramLabels: Record<string, string> = {
+  emissivitet: "Emissivitet (ε)", flammetemperatur_C: "Flammetemperatur", siktfaktor: "Siktfaktor (F₁₂)",
+  hoyde_m: "Høyde åpning", bredde_m: "Bredde åpning", avstand_m: "Avstand",
+  branneffekt_kW: "Branneffekt", diameter_m: "Diameter", romareal_m2: "Romareal",
+};
+
+const paramUnits: Record<string, string> = {
+  flammetemperatur_C: "°C", siktfaktor: "", emissivitet: "",
+  hoyde_m: "m", bredde_m: "m", avstand_m: "m", diameter_m: "m",
+  branneffekt_kW: "kW", romareal_m2: "m²",
+};
 
 const KvalitativPreview = ({ fravikEntries }: { fravikEntries: FravikEntry[] }) => {
   return (
@@ -196,9 +264,20 @@ const KvalitativPreview = ({ fravikEntries }: { fravikEntries: FravikEntry[] }) 
                       flammehoyde: "Flammehøydeberegning (Heskestads korrelasjon)",
                       brannenergi: "Brannenergiberegning",
                     };
+                    const formler = formelMap[calc.type] || [];
+                    const steg = getBeregningsSteg(calc);
                     return (
                       <div key={calc.id} className="ml-4 mb-4">
                         <h4 className="font-semibold mb-1 text-xs">Beregning {ci + 1}: {typeLabels[calc.type] || calc.type}</h4>
+
+                        {/* Formel */}
+                        {formler.length > 0 && (
+                          <div className="bg-gray-50 p-2 rounded mb-2 font-mono text-xs">
+                            {formler.map((f, fi) => <p key={fi}>{f}</p>)}
+                          </div>
+                        )}
+
+                        {/* Inngangsparametre */}
                         <table className="w-full border-collapse border border-gray-400 text-xs mb-2">
                           <thead>
                             <tr className="bg-gray-100">
@@ -209,12 +288,22 @@ const KvalitativPreview = ({ fravikEntries }: { fravikEntries: FravikEntry[] }) 
                           <tbody>
                             {Object.entries(calc.inputs).filter(([k]) => k !== "materialer").map(([key, val]) => (
                               <tr key={key}>
-                                <td className="border border-gray-400 p-2">{key.replace(/_/g, " ")}</td>
-                                <td className="border border-gray-400 p-2">{String(val)}</td>
+                                <td className="border border-gray-400 p-2">{paramLabels[key] || key.replace(/_/g, " ")}</td>
+                                <td className="border border-gray-400 p-2">{val}{paramUnits[key] ? ` ${paramUnits[key]}` : ""}</td>
                               </tr>
                             ))}
                           </tbody>
                         </table>
+
+                        {/* Beregningssteg */}
+                        {steg.length > 0 && (
+                          <div className="bg-gray-50 p-2 rounded mb-2 text-xs font-mono space-y-0.5">
+                            <p className="font-semibold font-sans">Beregning:</p>
+                            {steg.map((s, si) => <p key={si}>{s}</p>)}
+                          </div>
+                        )}
+
+                        {/* Resultater */}
                         <table className="w-full border-collapse border border-gray-400 text-xs mb-2">
                           <thead>
                             <tr className="bg-gray-100">
@@ -225,13 +314,13 @@ const KvalitativPreview = ({ fravikEntries }: { fravikEntries: FravikEntry[] }) 
                           <tbody>
                             {Object.entries(calc.results).map(([key, val]) => (
                               <tr key={key}>
-                                <td className="border border-gray-400 p-2 font-semibold">{key.replace(/_/g, " ")}</td>
-                                <td className="border border-gray-400 p-2 font-semibold">{String(val)}</td>
+                                <td className="border border-gray-400 p-2 font-semibold">{paramLabels[key] || key.replace(/_/g, " ")}</td>
+                                <td className="border border-gray-400 p-2 font-semibold">{val}{paramUnits[key] ? ` ${paramUnits[key]}` : ""}</td>
                               </tr>
                             ))}
                           </tbody>
                         </table>
-                        {calc.kommentar && <p className="text-xs ml-2">{calc.kommentar}</p>}
+                        {calc.kommentar && <p className="text-xs italic ml-2">{calc.kommentar}</p>}
                       </div>
                     );
                   })}
