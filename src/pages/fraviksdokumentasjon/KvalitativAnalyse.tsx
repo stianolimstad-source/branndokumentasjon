@@ -151,6 +151,7 @@ const KvalitativAnalyse = () => {
         // Migrate old format to new
         setFravikEntries([{
           id: crypto.randomUUID(),
+          navn: c.navn || "",
           funksjonskrav: c.funksjonskrav || "",
           preakseptertYtelse: c.preakseptertYtelse || "",
           hensiktYtelse: c.hensiktYtelse || "",
@@ -298,7 +299,7 @@ const KvalitativAnalyse = () => {
                               onClick={() => setActiveFravikIndex(i)}
                               className="rounded-r-none"
                             >
-                              Fravik {i + 1}
+                              Fravik {i + 1}{fravikEntries[i].navn ? ` – ${fravikEntries[i].navn}` : ""}
                             </Button>
                             {fravikEntries.length > 1 && (
                               <AlertDialog>
