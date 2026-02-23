@@ -138,6 +138,7 @@ const KvalitativAnalyse = () => {
           referanser: c.referanser || "",
           konklusjon: c.konklusjon || "",
           begrunnelseKonklusjon: c.begrunnelseKonklusjon || "",
+          beregninger: c.beregninger || [],
         }]);
       }
     }
