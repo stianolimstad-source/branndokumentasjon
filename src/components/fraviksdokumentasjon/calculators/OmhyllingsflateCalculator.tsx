@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { AttachedCalculation } from "../BeregningSection";
 
 interface Props {
-  onResult: (calc: AttachedCalculation) => void;
+  onResult?: (calc: AttachedCalculation) => void;
 }
 
 const OmhyllingsflateCalculator = ({ onResult }: Props) => {
@@ -33,7 +33,7 @@ const OmhyllingsflateCalculator = ({ onResult }: Props) => {
   };
 
   useEffect(() => {
-    if (result) {
+    if (result && onResult) {
       onResult({
         id: crypto.randomUUID(),
         type: "omhyllingsflate",

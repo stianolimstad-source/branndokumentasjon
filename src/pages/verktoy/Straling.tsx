@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Flame, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
-import SolidFlamme from "@/components/verktoy/SolidFlamme";
-import StralingGrenseverdier from "@/components/verktoy/StralingGrenseverdier";
+import StralingCalculator from "@/components/fraviksdokumentasjon/calculators/StralingCalculator";
 
 const Straling = () => {
   return (
@@ -27,9 +26,8 @@ const Straling = () => {
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <SolidFlamme />
-          <StralingGrenseverdier />
+        <div className="max-w-4xl mx-auto">
+          <StralingCalculator />
         </div>
       </div>
     </div>

@@ -45,7 +45,7 @@ const materialBibliotek = [
 ];
 
 interface Props {
-  onResult: (calc: AttachedCalculation) => void;
+  onResult?: (calc: AttachedCalculation) => void;
 }
 
 const BrannenergCalculator = ({ onResult }: Props) => {
@@ -75,7 +75,7 @@ const BrannenergCalculator = ({ onResult }: Props) => {
   const hasResult = entries.some(e => e.mengdeKg > 0);
 
   useEffect(() => {
-    if (hasResult) {
+    if (hasResult && onResult) {
       onResult({
         id: crypto.randomUUID(),
         type: "brannenergi",

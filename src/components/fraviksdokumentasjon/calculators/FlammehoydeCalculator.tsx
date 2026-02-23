@@ -8,7 +8,7 @@ import { AlertTriangle } from "lucide-react";
 import { AttachedCalculation } from "../BeregningSection";
 
 interface Props {
-  onResult: (calc: AttachedCalculation) => void;
+  onResult?: (calc: AttachedCalculation) => void;
 }
 
 const FlammehoydeCalculator = ({ onResult }: Props) => {
@@ -41,7 +41,7 @@ const FlammehoydeCalculator = ({ onResult }: Props) => {
   };
 
   useEffect(() => {
-    if (result) {
+    if (result && onResult) {
       onResult({
         id: crypto.randomUUID(),
         type: "flammehoyde",
