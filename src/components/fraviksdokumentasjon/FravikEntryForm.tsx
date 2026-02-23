@@ -383,7 +383,7 @@ const FravikEntryForm = ({ fravik, index, onChange }: Props) => {
         </div>
       </div>
 
-      {/* Beregninger */}
+      {/* Beregninger – knapp + vedlagte beregninger */}
       <BeregningSection
         beregninger={fravik.beregninger || []}
         onChange={(beregninger) => update("beregninger", beregninger)}

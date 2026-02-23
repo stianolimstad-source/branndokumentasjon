@@ -4,8 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Trash2, Plus, ChevronDown, ChevronUp, Flame, MoveVertical, Zap, Calculator } from "lucide-react";
+import { Trash2, Plus, Flame, MoveVertical, Zap, Calculator } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 export interface AttachedCalculation {
@@ -326,11 +327,13 @@ const BrannengiCalculator = ({ onAdd }: { onAdd: (calc: AttachedCalculation) => 
 
 // --- Main section ---
 const BeregningSection = ({ beregninger, onChange }: Props) => {
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [activeCalc, setActiveCalc] = useState<"straling" | "flammehoyde" | "brannenergi" | null>(null);
 
   const addCalc = (calc: AttachedCalculation) => {
     onChange([...beregninger, calc]);
     setActiveCalc(null);
+    setDialogOpen(false);
   };
 
   const removeCalc = (id: string) => {
@@ -338,12 +341,8 @@ const BeregningSection = ({ beregninger, onChange }: Props) => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="border-b-2 border-foreground/20 pb-2">
-        <Label className="text-base font-extrabold text-foreground">Beregninger</Label>
-      </div>
-
-      {/* Existing attached calculations */}
+    <div className="space-y-2">
+      {/* Attached calculations list */}
       {beregninger.length > 0 && (
         <div className="space-y-2">
           {beregninger.map(calc => {
@@ -386,39 +385,47 @@ const BeregningSection = ({ beregninger, onChange }: Props) => {
         </div>
       )}
 
-      {/* Calculator selector */}
-      {!activeCalc ? (
-        <div className="space-y-2">
-          <p className="text-xs text-muted-foreground">Legg til en beregning fra verktøyene:</p>
-          <div className="flex flex-wrap gap-2">
-            {calculatorTypes.map(ct => (
-              <Button key={ct.type} variant="outline" size="sm" onClick={() => setActiveCalc(ct.type)} className="text-xs">
-                <ct.icon className="h-3.5 w-3.5 mr-1.5" />
-                {ct.label}
-              </Button>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <Card className="border-primary/20">
-          <CardHeader className="py-3 px-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm flex items-center gap-2">
-                {React.createElement(calculatorTypes.find(c => c.type === activeCalc)!.icon, { className: "h-4 w-4" })}
-                {calculatorTypes.find(c => c.type === activeCalc)!.label}
-              </CardTitle>
-              <Button variant="ghost" size="sm" onClick={() => setActiveCalc(null)} className="text-xs h-7">
-                Avbryt
-              </Button>
+      {/* Add calculation button */}
+      <Button variant="outline" size="sm" onClick={() => { setDialogOpen(true); setActiveCalc(null); }} className="text-xs">
+        <Calculator className="h-3.5 w-3.5 mr-1.5" />
+        Legg til beregning
+      </Button>
+
+      {/* Calculator dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Legg til beregning</DialogTitle>
+          </DialogHeader>
+
+          {!activeCalc ? (
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground">Velg beregningsverktøy:</p>
+              <div className="space-y-2">
+                {calculatorTypes.map(ct => (
+                  <button key={ct.type} onClick={() => setActiveCalc(ct.type)}
+                    className="w-full flex items-center gap-3 p-3 rounded-lg border hover:border-primary/50 hover:bg-accent transition-colors text-left">
+                    <ct.icon className="h-5 w-5 text-primary shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium">{ct.label}</p>
+                      <p className="text-xs text-muted-foreground">{ct.desc}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
-          </CardHeader>
-          <CardContent className="px-4 pb-4 pt-0">
-            {activeCalc === "straling" && <StralingCalculator onAdd={addCalc} />}
-            {activeCalc === "flammehoyde" && <FlammehoydeCalculator onAdd={addCalc} />}
-            {activeCalc === "brannenergi" && <BrannengiCalculator onAdd={addCalc} />}
-          </CardContent>
-        </Card>
-      )}
+          ) : (
+            <div>
+              <Button variant="ghost" size="sm" onClick={() => setActiveCalc(null)} className="text-xs mb-3">
+                ← Tilbake
+              </Button>
+              {activeCalc === "straling" && <StralingCalculator onAdd={addCalc} />}
+              {activeCalc === "flammehoyde" && <FlammehoydeCalculator onAdd={addCalc} />}
+              {activeCalc === "brannenergi" && <BrannengiCalculator onAdd={addCalc} />}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
