@@ -6,12 +6,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Trash2, Plus, Flame, MoveVertical, Zap, Calculator } from "lucide-react";
+import { Trash2, Plus, Flame, MoveVertical, Zap, Calculator, Users, Box } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 export interface AttachedCalculation {
   id: string;
-  type: "straling" | "flammehoyde" | "brannenergi";
+  type: "straling" | "flammehoyde" | "brannenergi" | "persontall" | "omhyllingsflate";
   label: string;
   inputs: Record<string, string | number>;
   results: Record<string, string | number>;
@@ -24,6 +25,8 @@ const calculatorTypes = [
   { type: "straling" as const, label: "Strålingsberegning", icon: Flame, desc: "Solid flamme-modell" },
   { type: "flammehoyde" as const, label: "Flammehøyde", icon: MoveVertical, desc: "Heskestads korrelasjon" },
   { type: "brannenergi" as const, label: "Brannenergi", icon: Zap, desc: "Total og spesifikk" },
+  { type: "persontall" as const, label: "Persontallsberegning", icon: Users, desc: "Basert på areal og brukskategori" },
+  { type: "omhyllingsflate" as const, label: "Omhyllingsflate", icon: Box, desc: "Gulv, tak og vegger" },
 ];
 
 interface Props {
@@ -325,10 +328,165 @@ const BrannengiCalculator = ({ onAdd }: { onAdd: (calc: AttachedCalculation) => 
   );
 };
 
+// --- Persontall mini-calculator ---
+const persontallCategories = [
+  { value: "forretning", label: "Forretning/butikk", factor: 3, unit: "m²/person" },
+  { value: "kontor", label: "Kontor", factor: 10, unit: "m²/person" },
+  { value: "skole", label: "Skole/undervisning", factor: 2, unit: "m²/person" },
+  { value: "barnehage", label: "Barnehage", factor: 4, unit: "m²/person" },
+  { value: "forsamling", label: "Forsamlingslokale", factor: 0.6, unit: "m²/person" },
+  { value: "servering", label: "Servering/restaurant", factor: 1.4, unit: "m²/person" },
+  { value: "lager", label: "Lager", factor: 30, unit: "m²/person" },
+  { value: "industri", label: "Industri/verksted", factor: 10, unit: "m²/person" },
+];
+
+const PersontallCalculator = ({ onAdd }: { onAdd: (calc: AttachedCalculation) => void }) => {
+  const [areal, setAreal] = useState("");
+  const [kategori, setKategori] = useState("");
+  const [kommentar, setKommentar] = useState("");
+  const [result, setResult] = useState<{ persontall: number; factor: number; kategoriLabel: string } | null>(null);
+
+  const calculate = () => {
+    const A = parseFloat(areal);
+    const cat = persontallCategories.find(c => c.value === kategori);
+    if (isNaN(A) || A <= 0 || !cat) return;
+    const persontall = Math.ceil(A / cat.factor);
+    setResult({ persontall, factor: cat.factor, kategoriLabel: cat.label });
+  };
+
+  const handleAdd = () => {
+    if (!result) return;
+    const cat = persontallCategories.find(c => c.value === kategori)!;
+    onAdd({
+      id: crypto.randomUUID(),
+      type: "persontall",
+      label: `Persontall: ${result.persontall} personer`,
+      inputs: { areal_m2: parseFloat(areal), kategori: result.kategoriLabel, faktor_m2_per_person: result.factor },
+      results: { persontall: result.persontall },
+      kommentar,
+    });
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <Label className="text-xs">Areal [m²]</Label>
+          <Input type="number" placeholder="f.eks. 500" value={areal} onChange={e => setAreal(e.target.value)} className="h-8 text-xs" />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">Brukskategori</Label>
+          <Select value={kategori} onValueChange={setKategori}>
+            <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Velg kategori" /></SelectTrigger>
+            <SelectContent>
+              {persontallCategories.map(cat => (
+                <SelectItem key={cat.value} value={cat.value}>{cat.label} ({cat.factor} {cat.unit})</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <Button size="sm" onClick={calculate} className="w-full">Beregn persontall</Button>
+      {result && (
+        <div className="space-y-3">
+          <div className="p-2 rounded-md bg-primary/5 border border-primary/20 text-center">
+            <p className="text-xs text-muted-foreground">Dimensjonerende persontall</p>
+            <p className="font-bold text-sm">{result.persontall} personer</p>
+            <p className="text-xs text-muted-foreground">{areal} m² ÷ {result.factor} m²/person</p>
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs">Kommentar (valgfri)</Label>
+            <Textarea value={kommentar} onChange={e => setKommentar(e.target.value)} placeholder="F.eks. persontall for kontoretasje 2..." className="min-h-[50px] text-xs" />
+          </div>
+          <Button size="sm" variant="default" onClick={handleAdd} className="w-full">
+            <Plus className="h-3 w-3 mr-1" /> Legg til i fraviket
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// --- Omhyllingsflate mini-calculator ---
+const OmhyllingsflateCalculator = ({ onAdd }: { onAdd: (calc: AttachedCalculation) => void }) => {
+  const [lengde, setLengde] = useState("");
+  const [bredde, setBredde] = useState("");
+  const [hoyde, setHoyde] = useState("");
+  const [kommentar, setKommentar] = useState("");
+  const [result, setResult] = useState<{ gulvareal: number; takareal: number; veggflate: number; totalOmhylling: number } | null>(null);
+
+  const calculate = () => {
+    const L = parseFloat(lengde), B = parseFloat(bredde), H = parseFloat(hoyde);
+    if ([L, B, H].some(v => isNaN(v) || v <= 0)) return;
+    const gulvareal = Math.round(L * B * 100) / 100;
+    const takareal = Math.round(L * B * 100) / 100;
+    const veggflate = Math.round((2 * (L * H) + 2 * (B * H)) * 100) / 100;
+    const totalOmhylling = Math.round((gulvareal + takareal + veggflate) * 100) / 100;
+    setResult({ gulvareal, takareal, veggflate, totalOmhylling });
+  };
+
+  const handleAdd = () => {
+    if (!result) return;
+    onAdd({
+      id: crypto.randomUUID(),
+      type: "omhyllingsflate",
+      label: `Omhyllingsflate: ${result.totalOmhylling} m²`,
+      inputs: { lengde_m: parseFloat(lengde), bredde_m: parseFloat(bredde), hoyde_m: parseFloat(hoyde) },
+      results: { gulvareal_m2: result.gulvareal, takareal_m2: result.takareal, veggflate_m2: result.veggflate, total_omhylling_m2: result.totalOmhylling },
+      kommentar,
+    });
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-3 gap-3">
+        <div className="space-y-1">
+          <Label className="text-xs">Lengde [m]</Label>
+          <Input type="number" step="0.1" placeholder="f.eks. 10" value={lengde} onChange={e => setLengde(e.target.value)} className="h-8 text-xs" />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">Bredde [m]</Label>
+          <Input type="number" step="0.1" placeholder="f.eks. 8" value={bredde} onChange={e => setBredde(e.target.value)} className="h-8 text-xs" />
+        </div>
+        <div className="space-y-1">
+          <Label className="text-xs">Høyde [m]</Label>
+          <Input type="number" step="0.1" placeholder="f.eks. 3" value={hoyde} onChange={e => setHoyde(e.target.value)} className="h-8 text-xs" />
+        </div>
+      </div>
+      <Button size="sm" onClick={calculate} className="w-full">Beregn omhyllingsflate</Button>
+      {result && (
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="p-2 rounded-md bg-muted border text-center">
+              <p className="text-xs text-muted-foreground">Gulvareal</p>
+              <p className="font-bold text-sm">{result.gulvareal} m²</p>
+            </div>
+            <div className="p-2 rounded-md bg-muted border text-center">
+              <p className="text-xs text-muted-foreground">Veggflate</p>
+              <p className="font-bold text-sm">{result.veggflate} m²</p>
+            </div>
+          </div>
+          <div className="p-2 rounded-md bg-primary/5 border border-primary/20 text-center">
+            <p className="text-xs text-muted-foreground">Total omhylling</p>
+            <p className="font-bold text-sm">{result.totalOmhylling} m²</p>
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs">Kommentar (valgfri)</Label>
+            <Textarea value={kommentar} onChange={e => setKommentar(e.target.value)} placeholder="F.eks. branncelle B2.1..." className="min-h-[50px] text-xs" />
+          </div>
+          <Button size="sm" variant="default" onClick={handleAdd} className="w-full">
+            <Plus className="h-3 w-3 mr-1" /> Legg til i fraviket
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // --- Main section ---
 const BeregningSection = ({ beregninger, onChange }: Props) => {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [activeCalc, setActiveCalc] = useState<"straling" | "flammehoyde" | "brannenergi" | null>(null);
+  const [activeCalc, setActiveCalc] = useState<"straling" | "flammehoyde" | "brannenergi" | "persontall" | "omhyllingsflate" | null>(null);
 
   const addCalc = (calc: AttachedCalculation) => {
     onChange([...beregninger, calc]);
@@ -422,6 +580,8 @@ const BeregningSection = ({ beregninger, onChange }: Props) => {
               {activeCalc === "straling" && <StralingCalculator onAdd={addCalc} />}
               {activeCalc === "flammehoyde" && <FlammehoydeCalculator onAdd={addCalc} />}
               {activeCalc === "brannenergi" && <BrannengiCalculator onAdd={addCalc} />}
+              {activeCalc === "persontall" && <PersontallCalculator onAdd={addCalc} />}
+              {activeCalc === "omhyllingsflate" && <OmhyllingsflateCalculator onAdd={addCalc} />}
             </div>
           )}
         </DialogContent>

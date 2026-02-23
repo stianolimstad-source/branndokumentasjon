@@ -27,6 +27,7 @@ const paramLabels: Record<string, string> = {
   hoyde_m: "Høyde åpning (Hv)",
   bredde_m: "Bredde åpning (Bv)",
   avstand_m: "Avstand (R)",
+  lengde_m: "Lengde",
   branneffekt_kW: "Branneffekt (Q̇)",
   diameter_m: "Diameter (D)",
   romareal_m2: "Romareal",
@@ -36,18 +37,29 @@ const paramLabels: Record<string, string> = {
   flammetipp_m: "Flammetipp (intermittent)",
   total_MJ: "Total brannenergi",
   spesifikk_MJ_m2: "Spesifikk brannenergi",
+  areal_m2: "Areal",
+  kategori: "Brukskategori",
+  faktor_m2_per_person: "Faktor",
+  persontall: "Persontall",
+  gulvareal_m2: "Gulvareal",
+  takareal_m2: "Takareal",
+  veggflate_m2: "Veggflate",
+  total_omhylling_m2: "Total omhylling",
 };
 
 const paramUnits: Record<string, string> = {
   emissivitet: "[-]",
   flammetemperatur_C: "°C",
   siktfaktor: "[-]",
-  hoyde_m: "m", bredde_m: "m", avstand_m: "m", diameter_m: "m",
+  hoyde_m: "m", bredde_m: "m", avstand_m: "m", diameter_m: "m", lengde_m: "m",
   branneffekt_kW: "kW",
   romareal_m2: "m²",
   straling_kW_m2: "kW/m²", Ef_kW_m2: "kW/m²",
   flammehoyde_m: "m", flammetipp_m: "m",
   total_MJ: "MJ", spesifikk_MJ_m2: "MJ/m²",
+  areal_m2: "m²", faktor_m2_per_person: "m²/person",
+  persontall: "personer",
+  gulvareal_m2: "m²", takareal_m2: "m²", veggflate_m2: "m²", total_omhylling_m2: "m²",
 };
 
 function formatParamLabel(key: string): string {
@@ -82,6 +94,19 @@ function getFormelBeskrivelse(calc: CalcRef): string[] {
       "Brannenergiberegning iht. NS-EN 1991-1-2:",
       "  Q = Σ (mi · Hc,i)",
       "  q = Q / Arom",
+    ];
+  }
+  if (calc.type === "persontall") {
+    return [
+      "Persontallsberegning iht. VTEK til TEK17 § 11-12:",
+      "  Persontall = Areal / Faktor",
+    ];
+  }
+  if (calc.type === "omhyllingsflate") {
+    return [
+      "Omhyllingsflateberegning:",
+      "  At = Agulv + Atak + Avegg",
+      "  Avegg = 2·(L·H) + 2·(B·H)",
     ];
   }
   return [];
@@ -132,6 +157,27 @@ function getBeregningsSteg(calc: CalcRef): string[] {
       }
       return lines;
     } catch { return []; }
+  }
+  if (calc.type === "persontall") {
+    const A = Number(calc.inputs.areal_m2) || 0;
+    const factor = Number(calc.inputs.faktor_m2_per_person) || 1;
+    const persontall = Math.ceil(A / factor);
+    return [
+      `  Persontall = ${A} m² ÷ ${factor} m²/person = ${persontall} personer`,
+    ];
+  }
+  if (calc.type === "omhyllingsflate") {
+    const L = Number(calc.inputs.lengde_m) || 0;
+    const B = Number(calc.inputs.bredde_m) || 0;
+    const H = Number(calc.inputs.hoyde_m) || 0;
+    const gulv = Math.round(L * B * 100) / 100;
+    const vegg = Math.round((2 * (L * H) + 2 * (B * H)) * 100) / 100;
+    const total = Math.round((gulv * 2 + vegg) * 100) / 100;
+    return [
+      `  Gulv/tak = ${L} × ${B} = ${gulv} m²`,
+      `  Veggflate = 2×(${L}×${H}) + 2×(${B}×${H}) = ${vegg} m²`,
+      `  Total At = ${gulv} + ${gulv} + ${vegg} = ${total} m²`,
+    ];
   }
   return [];
 }
@@ -283,6 +329,8 @@ export async function exportKvalitativWord(
         straling: "Strålingsberegning (Solid flamme-modell)",
         flammehoyde: "Flammehøydeberegning (Heskestads korrelasjon)",
         brannenergi: "Brannenergiberegning",
+        persontall: "Persontallsberegning",
+        omhyllingsflate: "Omhyllingsflateberegning",
       };
 
       fravik.beregninger!.forEach((calc, ci) => {
