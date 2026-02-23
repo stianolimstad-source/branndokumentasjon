@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 export const ThemeToggle = () => {
   const [dark, setDark] = useState(() => {
     if (typeof window === "undefined") return false;
-    return document.documentElement.classList.contains("dark");
+    const saved = localStorage.getItem("theme");
+    if (saved) return saved === "dark";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches;
   });
 
   useEffect(() => {
@@ -19,11 +21,6 @@ export const ThemeToggle = () => {
     }
   }, [dark]);
 
-  useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    if (saved === "dark") setDark(true);
-    else if (!saved && window.matchMedia("(prefers-color-scheme: dark)").matches) setDark(true);
-  }, []);
 
   return (
     <Button variant="ghost" size="icon" onClick={() => setDark(!dark)} aria-label="Bytt tema">
