@@ -316,17 +316,19 @@ const Index = () => {
         <div className="max-w-6xl mx-auto">
           <h3 className="text-2xl font-bold mb-6">Nyheter og oppdateringer</h3>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card className="shadow-soft">
-              <CardHeader>
-                <CardDescription>Kommer snart</CardDescription>
-                <CardTitle className="text-lg">Branntekniske nyheter</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  Her vil du finne siste nytt om regelverk, produkter og bransjeoppdateringer.
-                </p>
-              </CardContent>
-            </Card>
+            <a href="https://brennaktuelt.no" target="_blank" rel="noopener noreferrer" className="block">
+              <Card className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer group">
+                <CardHeader>
+                  <CardDescription>brennaktuelt.no</CardDescription>
+                  <CardTitle className="text-lg">Branntekniske nyheter</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Siste nytt om regelverk, produkter og bransjeoppdateringer fra Brennaktuelt.
+                  </p>
+                </CardContent>
+              </Card>
+            </a>
             <Card className="shadow-soft">
               <CardHeader>
                 <CardDescription>Kommer snart</CardDescription>
