@@ -3,9 +3,10 @@ import { branncelleTyperListe, getBrannklasse } from "@/lib/fire-concept-constan
 
 interface KonseptPreviewProps {
   formData: Record<string, any>;
+  logoUrl?: string | null;
 }
 
-const KonseptPreview = ({ formData }: KonseptPreviewProps) => {
+const KonseptPreview = ({ formData, logoUrl }: KonseptPreviewProps) => {
   // Ensure arrays have defaults
   const bygningsdeler = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
   const grunnlagsdokumenter = Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : [];
@@ -14,6 +15,11 @@ const KonseptPreview = ({ formData }: KonseptPreviewProps) => {
 
   return (
     <div className="bg-white text-black p-8 rounded-lg shadow-inner font-serif text-sm" style={{ minHeight: '600px' }}>
+      {logoUrl && (
+        <div className="flex justify-center mb-4">
+          <img src={logoUrl} alt="Firmalogo" className="max-h-16 max-w-[200px] object-contain" />
+        </div>
+      )}
       <h1 className="text-xl font-bold text-center mb-6 pb-4">
         BRANNKONSEPT
       </h1>
