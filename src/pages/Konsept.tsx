@@ -330,12 +330,19 @@ const Konsept = () => {
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [newProjectData, setNewProjectData] = useState({ name: "", description: "", address: "" });
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [authorInfo, setAuthorInfo] = useState<{ name: string; company: string } | null>(null);
 
-  // Fetch user logo
+  // Fetch user logo and profile info
   useEffect(() => {
     if (user) {
-      supabase.from("profiles").select("logo_url").eq("id", user.id).single().then(({ data }) => {
-        if (data) setLogoUrl((data as any).logo_url || null);
+      supabase.from("profiles").select("logo_url, full_name, company").eq("id", user.id).single().then(({ data }) => {
+        if (data) {
+          setLogoUrl((data as any).logo_url || null);
+          setAuthorInfo({
+            name: (data as any).full_name || "",
+            company: (data as any).company || "",
+          });
+        }
       });
     }
   }, [user]);
@@ -732,7 +739,7 @@ const Konsept = () => {
     }, 1500);
   };
 
-  const renderPreview = () => <KonseptPreview formData={formData} logoUrl={logoUrl} />;
+  const renderPreview = () => <KonseptPreview formData={formData} logoUrl={logoUrl} authorInfo={authorInfo} />;
 
   const exportToWord = async () => {
     const tableBorders = {
@@ -763,21 +770,77 @@ const Konsept = () => {
       } catch {}
     }
 
-    const headerChildren: Paragraph[] = [];
+    // Build cover page elements
+    const coverPageChildren: Paragraph[] = [];
+    
     if (logoBuffer) {
-      headerChildren.push(new Paragraph({
+      coverPageChildren.push(new Paragraph({
         alignment: AlignmentType.CENTER,
-        children: [new ImageRun({ data: logoBuffer, transformation: { width: 200, height: 60 }, type: "png" })],
-        spacing: { after: 200 },
+        children: [new ImageRun({ data: logoBuffer, transformation: { width: 300, height: 90 }, type: "png" })],
+        spacing: { before: 800, after: 400 },
       }));
     }
+
+    coverPageChildren.push(new Paragraph({
+      text: "BRANNKONSEPT",
+      heading: HeadingLevel.TITLE,
+      alignment: AlignmentType.CENTER,
+      spacing: { before: logoBuffer ? 200 : 1200, after: 200 },
+    }));
+
+    if (formData.prosjektnavn) {
+      coverPageChildren.push(new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [new TextRun({ text: formData.prosjektnavn, size: 28, color: "555555" })],
+        spacing: { after: 100 },
+      }));
+    }
+    if (formData.adresse) {
+      coverPageChildren.push(new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [new TextRun({ text: formData.adresse, size: 24, color: "777777" })],
+        spacing: { after: 400 },
+      }));
+    }
+
+    if (authorInfo && (authorInfo.name || authorInfo.company)) {
+      coverPageChildren.push(new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [new TextRun({ text: "Utarbeidet av", bold: true, size: 22 })],
+        spacing: { before: 400, after: 100 },
+      }));
+      if (authorInfo.name) {
+        coverPageChildren.push(new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [new TextRun({ text: authorInfo.name, size: 22 })],
+          spacing: { after: 50 },
+        }));
+      }
+      if (authorInfo.company) {
+        coverPageChildren.push(new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [new TextRun({ text: authorInfo.company, size: 22 })],
+          spacing: { after: 200 },
+        }));
+      }
+    }
+
+    const dateStr = new Date().toLocaleDateString("nb-NO", { year: "numeric", month: "long", day: "numeric" });
+    coverPageChildren.push(new Paragraph({
+      alignment: AlignmentType.CENTER,
+      children: [new TextRun({ text: dateStr, size: 20, color: "999999" })],
+      spacing: { before: 200 },
+    }));
 
     const doc = new Document({
       sections: [
         {
           properties: {},
+          children: coverPageChildren,
+        },
+        {
+          properties: {},
           children: [
-            ...headerChildren,
             new Paragraph({
               text: "BRANNKONSEPT",
               heading: HeadingLevel.TITLE,
