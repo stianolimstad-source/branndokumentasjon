@@ -15,6 +15,7 @@ const Index = () => {
   const { notifications, unreadCount, markAllRead, deleteNotification } = useNotifications();
   const navigate = useNavigate();
   const [showConceptDialog, setShowConceptDialog] = useState(false);
+  const [showFravikDialog, setShowFravikDialog] = useState(false);
 
   const features = [
     {
@@ -45,7 +46,7 @@ const Index = () => {
       icon: FileWarning,
       title: "Fraviksdokumentasjon",
       description: "Generer formelle fraviksanalyser og tiltak",
-      href: "/fraviksdokumentasjon",
+      href: "fravik-dialog",
     },
     {
       icon: BookOpen,
@@ -192,12 +193,12 @@ const Index = () => {
                 </Card>
               );
             }
-            if (feature.href === "dialog") {
+            if (feature.href === "dialog" || feature.href === "fravik-dialog") {
               return (
                 <Card
                   key={feature.title}
                   className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer group"
-                  onClick={() => setShowConceptDialog(true)}
+                  onClick={() => feature.href === "dialog" ? setShowConceptDialog(true) : setShowFravikDialog(true)}
                 >
                   <CardHeader>
                     <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4 group-hover:bg-primary/20 transition-colors">
@@ -254,6 +255,40 @@ const Index = () => {
               <div className="text-left">
                 <p className="font-medium">Mine prosjekter</p>
                 <p className="text-sm text-muted-foreground font-normal">Se og rediger eksisterende brannkonsepter</p>
+              </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Fraviksdokumentasjon choice dialog */}
+      <Dialog open={showFravikDialog} onOpenChange={setShowFravikDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Fraviksdokumentasjon</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-3 py-4">
+            <Button
+              size="lg"
+              className="justify-start h-auto py-4 px-5"
+              onClick={() => { setShowFravikDialog(false); navigate("/fraviksdokumentasjon?new=true"); }}
+            >
+              <Plus className="h-5 w-5 mr-3" />
+              <div className="text-left">
+                <p className="font-medium">Start ny fraviksdokumentasjon</p>
+                <p className="text-sm text-primary-foreground/70 font-normal">Opprett et nytt fraviksdokument for et prosjekt</p>
+              </div>
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="justify-start h-auto py-4 px-5"
+              onClick={() => { setShowFravikDialog(false); navigate("/mine-prosjekter"); }}
+            >
+              <FolderOpen className="h-5 w-5 mr-3" />
+              <div className="text-left">
+                <p className="font-medium">Mine prosjekter</p>
+                <p className="text-sm text-muted-foreground font-normal">Se og rediger eksisterende fraviksdokumenter</p>
               </div>
             </Button>
           </div>
