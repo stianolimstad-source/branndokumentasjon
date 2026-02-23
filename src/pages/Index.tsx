@@ -130,9 +130,11 @@ const Index = () => {
                       </div>
                     </PopoverContent>
                   </Popover>
-                  <span className="text-sm text-muted-foreground hidden sm:inline">
-                    {user.email}
-                  </span>
+                  <Link to="/min-profil">
+                    <Button variant="outline" size="sm">
+                      Min profil
+                    </Button>
+                  </Link>
                   <Button variant="outline" size="sm" onClick={signOut}>
                     <LogOut className="h-4 w-4 mr-2" />
                     Logg ut
