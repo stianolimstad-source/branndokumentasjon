@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Banknote, LogIn, LogOut, FolderOpen, Plus, Users, Bell, X } from "lucide-react";
+import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Banknote, LogIn, LogOut, FolderOpen, Plus, Users, Bell, X, Menu, User } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useNotifications } from "@/hooks/useNotifications";
@@ -69,25 +70,7 @@ const Index = () => {
             <div className="flex items-center gap-2">
               <ThemeToggle />
               {loading ? null : user ? (
-                <div className="flex items-center gap-3">
-                  <Link to="/mine-prosjekter">
-                    <Button variant="outline" size="sm">
-                      <FolderOpen className="h-4 w-4 mr-2" />
-                      Mine prosjekter
-                    </Button>
-                  </Link>
-                  <Link to="/mine-oppgaver">
-                    <Button variant="outline" size="sm">
-                      <ClipboardCheck className="h-4 w-4 mr-2" />
-                      Mine oppgaver
-                    </Button>
-                  </Link>
-                  <Link to="/mine-kontakter">
-                    <Button variant="outline" size="sm">
-                      <Users className="h-4 w-4 mr-2" />
-                      Mine kontakter og grupper
-                    </Button>
-                  </Link>
+                <div className="flex items-center gap-2">
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button variant="ghost" size="icon" className="relative">
@@ -99,7 +82,7 @@ const Index = () => {
                         )}
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent align="end" className="w-80 p-0">
+                    <PopoverContent align="end" className="w-80 p-0 z-50 bg-popover">
                       <div className="flex items-center justify-between p-3 border-b">
                         <p className="font-semibold text-sm">Varsler</p>
                         {unreadCount > 0 && (
@@ -130,15 +113,38 @@ const Index = () => {
                       </div>
                     </PopoverContent>
                   </Popover>
-                  <Link to="/min-profil">
-                    <Button variant="outline" size="sm">
-                      Min profil
-                    </Button>
-                  </Link>
-                  <Button variant="outline" size="sm" onClick={signOut}>
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Logg ut
-                  </Button>
+
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <Menu className="h-4 w-4 mr-2" />
+                        Meny
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56 z-50 bg-popover">
+                      <DropdownMenuItem onClick={() => navigate("/mine-prosjekter")}>
+                        <FolderOpen className="h-4 w-4 mr-2" />
+                        Mine prosjekter
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate("/mine-oppgaver")}>
+                        <ClipboardCheck className="h-4 w-4 mr-2" />
+                        Mine oppgaver
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate("/mine-kontakter")}>
+                        <Users className="h-4 w-4 mr-2" />
+                        Mine kontakter og grupper
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate("/min-profil")}>
+                        <User className="h-4 w-4 mr-2" />
+                        Min profil
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={signOut}>
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Logg ut
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               ) : (
                 <Link to="/auth">
