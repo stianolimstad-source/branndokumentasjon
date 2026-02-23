@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2, Plus, ChevronDown, ChevronUp, ListPlus } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import BeregningSection, { AttachedCalculation } from "./BeregningSection";
 
 export interface KompenserendeTiltak {
   id: string;
@@ -32,6 +33,7 @@ export interface FravikEntry {
   referanser: string;
   konklusjon: "tilstrekkelig" | "komparativ" | "risikoanalyse" | "";
   begrunnelseKonklusjon: string;
+  beregninger: AttachedCalculation[];
 }
 
 export const emptyTiltak = (): KompenserendeTiltak => ({
@@ -59,6 +61,7 @@ export const emptyFravik = (): FravikEntry => ({
   referanser: "",
   konklusjon: "",
   begrunnelseKonklusjon: "",
+  beregninger: [],
 });
 
 const hovedomrader = [
@@ -379,6 +382,12 @@ const FravikEntryForm = ({ fravik, index, onChange }: Props) => {
           )}
         </div>
       </div>
+
+      {/* Beregninger */}
+      <BeregningSection
+        beregninger={fravik.beregninger || []}
+        onChange={(beregninger) => update("beregninger", beregninger)}
+      />
 
       {/* Konklusjon */}
       <div className="space-y-4">

@@ -47,7 +47,7 @@ const KvalitativPreview = ({ fravikEntries }: { fravikEntries: FravikEntry[] }) 
       <section className="mb-6">
         <h2 className="font-bold mb-3">Innholdsfortegnelse</h2>
         <div className="space-y-1 text-xs">
-          {fravikEntries.map((_, i) => (
+          {fravikEntries.map((fravik, i) => (
             <React.Fragment key={i}>
               <p><span className="font-bold">{i + 1}.</span> Fravik {i + 1}</p>
               <p className="ml-4">{i + 1}.1 Funksjonskrav i TEK17</p>
@@ -56,8 +56,11 @@ const KvalitativPreview = ({ fravikEntries }: { fravikEntries: FravikEntry[] }) 
               <p className="ml-4">{i + 1}.4 Beskrivelse av fraviket</p>
               <p className="ml-4">{i + 1}.5 Kompenserende tiltak</p>
               <p className="ml-4">{i + 1}.6 Innvirkningsområder</p>
-              <p className="ml-4">{i + 1}.7 Kvalitativ analyse</p>
-              <p className="ml-4">{i + 1}.8 Konklusjon</p>
+              {(fravik.beregninger?.length ?? 0) > 0 && (
+                <p className="ml-4">{i + 1}.7 Beregninger</p>
+              )}
+              <p className="ml-4">{i + 1}.{(fravik.beregninger?.length ?? 0) > 0 ? 8 : 7} Kvalitativ analyse</p>
+              <p className="ml-4">{i + 1}.{(fravik.beregninger?.length ?? 0) > 0 ? 9 : 8} Konklusjon</p>
             </React.Fragment>
           ))}
         </div>
@@ -73,7 +76,10 @@ const KvalitativPreview = ({ fravikEntries }: { fravikEntries: FravikEntry[] }) 
           h.delomrader.filter(d => fravik.tiltakOmrader.includes(d.id)).map(d => `${d.id} – ${d.label}`)
         );
         const harTiltak = fravik.tiltak.some(t => t.beskrivelse);
+        const harBeregninger = (fravik.beregninger?.length ?? 0) > 0;
         const n = i + 1;
+        const analyseNum = harBeregninger ? 8 : 7;
+        const konklusjonNum = harBeregninger ? 9 : 8;
 
         return (
           <React.Fragment key={fravik.id}>
@@ -180,8 +186,60 @@ const KvalitativPreview = ({ fravikEntries }: { fravikEntries: FravikEntry[] }) 
                 </div>
               )}
 
+              {/* Beregninger */}
+              {harBeregninger && (
+                <>
+                  <h3 className="font-semibold mb-2">{n}.7 Beregninger</h3>
+                  {fravik.beregninger!.map((calc, ci) => {
+                    const typeLabels: Record<string, string> = {
+                      straling: "Strålingsberegning (Solid flamme-modell)",
+                      flammehoyde: "Flammehøydeberegning (Heskestads korrelasjon)",
+                      brannenergi: "Brannenergiberegning",
+                    };
+                    return (
+                      <div key={calc.id} className="ml-4 mb-4">
+                        <h4 className="font-semibold mb-1 text-xs">Beregning {ci + 1}: {typeLabels[calc.type] || calc.type}</h4>
+                        <table className="w-full border-collapse border border-gray-400 text-xs mb-2">
+                          <thead>
+                            <tr className="bg-gray-100">
+                              <th className="border border-gray-400 p-2 text-left w-1/2">Parameter</th>
+                              <th className="border border-gray-400 p-2 text-left w-1/2">Verdi</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {Object.entries(calc.inputs).filter(([k]) => k !== "materialer").map(([key, val]) => (
+                              <tr key={key}>
+                                <td className="border border-gray-400 p-2">{key.replace(/_/g, " ")}</td>
+                                <td className="border border-gray-400 p-2">{String(val)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                        <table className="w-full border-collapse border border-gray-400 text-xs mb-2">
+                          <thead>
+                            <tr className="bg-gray-100">
+                              <th className="border border-gray-400 p-2 text-left w-1/2">Resultat</th>
+                              <th className="border border-gray-400 p-2 text-left w-1/2">Verdi</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {Object.entries(calc.results).map(([key, val]) => (
+                              <tr key={key}>
+                                <td className="border border-gray-400 p-2 font-semibold">{key.replace(/_/g, " ")}</td>
+                                <td className="border border-gray-400 p-2 font-semibold">{String(val)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                        {calc.kommentar && <p className="text-xs ml-2">{calc.kommentar}</p>}
+                      </div>
+                    );
+                  })}
+                </>
+              )}
+
               {/* Kvalitativ analyse */}
-              <h3 className="font-semibold mb-2">{n}.7 Kvalitativ analyse</h3>
+              <h3 className="font-semibold mb-2">{n}.{analyseNum} Kvalitativ analyse</h3>
               <h4 className="font-semibold mb-1 ml-4 text-xs">Sammenligning</h4>
               <p className="ml-4 mb-3">{fravik.sammenligning || "[Angis]"}</p>
               <h4 className="font-semibold mb-1 ml-4 text-xs">Måleparametre</h4>
@@ -194,7 +252,7 @@ const KvalitativPreview = ({ fravikEntries }: { fravikEntries: FravikEntry[] }) 
               )}
 
               {/* Konklusjon */}
-              <h3 className="font-semibold mb-2">{n}.8 Konklusjon</h3>
+              <h3 className="font-semibold mb-2">{n}.{konklusjonNum} Konklusjon</h3>
               <p className="ml-4 mb-2">
                 {fravik.konklusjon === "tilstrekkelig" && "Den kvalitative analysen vurderes som tilstrekkelig."}
                 {fravik.konklusjon === "komparativ" && "Det er behov for komparativ analyse for å dokumentere likeverdighet."}

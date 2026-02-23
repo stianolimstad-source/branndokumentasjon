@@ -150,8 +150,64 @@ export async function exportKvalitativWord(fravikEntries: FravikEntry[], dokumen
       }));
     }
 
+    // Beregninger
+    const harBeregninger = (fravik.beregninger?.length ?? 0) > 0;
+    let sectionCounter = 7;
+
+    if (harBeregninger) {
+      elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.${sectionCounter} Beregninger`, font: "Calibri" })] }));
+      sectionCounter++;
+
+      const typeLabels: Record<string, string> = {
+        straling: "Strålingsberegning (Solid flamme-modell)",
+        flammehoyde: "Flammehøydeberegning (Heskestads korrelasjon)",
+        brannenergi: "Brannenergiberegning",
+      };
+
+      fravik.beregninger!.forEach((calc, ci) => {
+        elements.push(new Paragraph({
+          spacing: { before: 100 },
+          children: [new TextRun({ text: `Beregning ${ci + 1}: ${typeLabels[calc.type] || calc.type}`, bold: true, size: 22, font: "Calibri" })],
+        }));
+
+        // Inputs table
+        const inputEntries = Object.entries(calc.inputs).filter(([k]) => k !== "materialer");
+        if (inputEntries.length > 0) {
+          elements.push(new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [
+              new TableRow({ children: [makeCell("Parameter", true, 50), makeCell("Verdi", true, 50)] }),
+              ...inputEntries.map(([key, val]) =>
+                new TableRow({ children: [makeCell(key.replace(/_/g, " "), false, 50), makeCell(String(val), false, 50)] })
+              ),
+            ],
+          }));
+        }
+
+        // Results table
+        const resultEntries = Object.entries(calc.results);
+        if (resultEntries.length > 0) {
+          elements.push(new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [
+              new TableRow({ children: [makeCell("Resultat", true, 50), makeCell("Verdi", true, 50)] }),
+              ...resultEntries.map(([key, val]) =>
+                new TableRow({ children: [makeCell(key.replace(/_/g, " "), true, 50), makeCell(String(val), true, 50)] })
+              ),
+            ],
+          }));
+        }
+
+        if (calc.kommentar) {
+          elements.push(new Paragraph({ spacing: { before: 50, after: 200 }, children: [new TextRun({ text: calc.kommentar, size: 20, font: "Calibri", italics: true })] }));
+        } else {
+          elements.push(new Paragraph({ spacing: { after: 200 }, children: [] }));
+        }
+      });
+    }
+
     // Kvalitativ analyse
-    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.7 Kvalitativ analyse`, font: "Calibri" })] }));
+    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.${sectionCounter} Kvalitativ analyse`, font: "Calibri" })] }));
     elements.push(new Paragraph({ children: [new TextRun({ text: "Sammenligning:", bold: true, size: 22, font: "Calibri" })] }));
     elements.push(new Paragraph({ spacing: { after: 100 }, children: [new TextRun({ text: fravik.sammenligning || "[Angis]", size: 22, font: "Calibri" })] }));
     elements.push(new Paragraph({ children: [new TextRun({ text: "Måleparametre:", bold: true, size: 22, font: "Calibri" })] }));
@@ -162,7 +218,7 @@ export async function exportKvalitativWord(fravikEntries: FravikEntry[], dokumen
     }
 
     // Konklusjon
-    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.8 Konklusjon`, font: "Calibri" })] }));
+    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.${sectionCounter + 1} Konklusjon`, font: "Calibri" })] }));
 
     let konklusjonText = "[Konklusjon angis]";
     if (fravik.konklusjon === "tilstrekkelig") konklusjonText = "Den kvalitative analysen vurderes som tilstrekkelig.";
