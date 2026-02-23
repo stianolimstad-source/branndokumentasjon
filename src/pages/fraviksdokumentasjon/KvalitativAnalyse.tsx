@@ -34,6 +34,7 @@ const KvalitativAnalyse = () => {
   const conceptId = searchParams.get("concept");
   const isNew = searchParams.get("new") === "true";
 
+  const [sammendrag, setSammendrag] = useState("");
   const [dokumentNavn, setDokumentNavn] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [savedConceptId, setSavedConceptId] = useState<string | null>(conceptId);
@@ -142,6 +143,7 @@ const KvalitativAnalyse = () => {
     setDokumentNavn(data.name);
     const c = data.content as any;
     if (c) {
+      setSammendrag(c.sammendrag || "");
       // Support both old single-fravik format and new multi-fravik format
       if (c.fravikEntries && Array.isArray(c.fravikEntries)) {
         setFravikEntries(c.fravikEntries);
@@ -177,7 +179,7 @@ const KvalitativAnalyse = () => {
     }
 
     setIsSaving(true);
-    const content = JSON.parse(JSON.stringify({ fravikEntries, type: "kvalitativ" }));
+    const content = JSON.parse(JSON.stringify({ fravikEntries, sammendrag, type: "kvalitativ" }));
 
     if (savedConceptId) {
       const { error } = await supabase.from("fire_concepts").update({ name: dokumentNavn, content, status: "draft" }).eq("id", savedConceptId);
@@ -273,6 +275,18 @@ const KvalitativAnalyse = () => {
                       <Input id="dokument-name" placeholder="f.eks. Fraviksdokumentasjon – Storgata 1" value={dokumentNavn} onChange={(e) => setDokumentNavn(e.target.value)} />
                     </div>
 
+                    {/* Sammendrag */}
+                    <div className="space-y-2">
+                      <Label htmlFor="sammendrag" className="text-sm font-semibold">Sammendrag</Label>
+                      <Textarea
+                        id="sammendrag"
+                        placeholder="Generell informasjon om fraviksdokumentasjonen..."
+                        value={sammendrag}
+                        onChange={(e) => setSammendrag(e.target.value)}
+                        rows={4}
+                      />
+                    </div>
+
                     {/* Fravik tabs */}
                     <div className="space-y-3">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -353,7 +367,7 @@ const KvalitativAnalyse = () => {
                     <CardTitle>Forhåndsvisning</CardTitle>
                     <CardDescription>Fraviksdokumentasjonen oppdateres i sanntid</CardDescription>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => exportKvalitativWord(fravikEntries, dokumentNavn, logoUrl, projectData, profileData)}>
+                  <Button variant="outline" size="sm" onClick={() => exportKvalitativWord(fravikEntries, dokumentNavn, logoUrl, projectData, profileData, sammendrag)}>
                     <Download className="h-4 w-4 mr-2" />
                     Last ned Word
                   </Button>
@@ -362,7 +376,7 @@ const KvalitativAnalyse = () => {
               <CardContent className="flex-1 overflow-hidden p-0">
                 <ScrollArea className="h-full max-h-[calc(100vh-280px)]">
                   <div className="px-6 pb-6">
-                    <KvalitativPreview fravikEntries={fravikEntries} logoUrl={logoUrl} projectData={projectData} profileData={profileData} />
+                    <KvalitativPreview fravikEntries={fravikEntries} logoUrl={logoUrl} projectData={projectData} profileData={profileData} sammendrag={sammendrag} />
                   </div>
                 </ScrollArea>
               </CardContent>
