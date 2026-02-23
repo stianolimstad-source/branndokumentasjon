@@ -763,10 +763,26 @@ const Konsept = () => {
 
     // Fetch logo for header
     let logoBuffer: ArrayBuffer | null = null;
+    let logoDimensions = { width: 300, height: 150 };
     if (logoUrl) {
       try {
         const res = await fetch(logoUrl);
-        if (res.ok) logoBuffer = await res.arrayBuffer();
+        if (res.ok) {
+          logoBuffer = await res.arrayBuffer();
+          // Get natural dimensions to preserve aspect ratio
+          const img = new Image();
+          await new Promise<void>((resolve) => {
+            img.onload = () => {
+              const maxWidth = 400;
+              const ratio = img.naturalWidth / img.naturalHeight;
+              const w = Math.min(img.naturalWidth, maxWidth);
+              logoDimensions = { width: w, height: Math.round(w / ratio) };
+              resolve();
+            };
+            img.onerror = () => resolve();
+            img.src = logoUrl;
+          });
+        }
       } catch {}
     }
 
@@ -776,7 +792,7 @@ const Konsept = () => {
     if (logoBuffer) {
       coverPageChildren.push(new Paragraph({
         alignment: AlignmentType.CENTER,
-        children: [new ImageRun({ data: logoBuffer, transformation: { width: 300, height: 90 }, type: "png" })],
+        children: [new ImageRun({ data: logoBuffer, transformation: logoDimensions, type: "png" })],
         spacing: { before: 800, after: 400 },
       }));
     }
