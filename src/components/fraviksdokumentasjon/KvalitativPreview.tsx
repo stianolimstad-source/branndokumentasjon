@@ -2,39 +2,6 @@ import React from "react";
 import { FravikEntry } from "./FravikEntryForm";
 import { AttachedCalculation } from "./BeregningSection";
 
-const hovedomrader = [
-  {
-    id: "A", label: "A – Brannforløp",
-    delomrader: [
-      { id: "a", label: "Antennelse" }, { id: "b", label: "Eksplosjon" },
-      { id: "c", label: "Utvikling av brann" }, { id: "d", label: "Spredning av brann" },
-      { id: "e", label: "Strukturell kollaps" }, { id: "f", label: "Spredning til nabobygning" },
-    ],
-  },
-  {
-    id: "B", label: "B – Rømning og redning",
-    delomrader: [
-      { id: "g", label: "Deteksjon og varsling" }, { id: "h", label: "Reaksjon" },
-      { id: "i", label: "Forflytning til sikkert sted" }, { id: "j", label: "Assistert evakuering" },
-    ],
-  },
-  {
-    id: "C", label: "C – Verdier",
-    delomrader: [
-      { id: "k", label: "Mennesker" }, { id: "l", label: "Dyr" },
-      { id: "m", label: "Økonomiske verdier" }, { id: "n", label: "Kulturhistoriske verdier" },
-      { id: "o", label: "Miljøskader" }, { id: "p", label: "Samfunnsfunksjon" },
-    ],
-  },
-  {
-    id: "D", label: "D – Tilrettelegging og sikkerhet for slokkemannskaper",
-    delomrader: [
-      { id: "q", label: "Innsatstid" }, { id: "r", label: "Tilrettelegging rundt bygningen" },
-      { id: "s", label: "Tilrettelegging i bygningen" }, { id: "t", label: "Annet teknisk utstyr for slokkeinnsats" },
-      { id: "u", label: "Bemanning og kompetanse" },
-    ],
-  },
-];
 
 const SIGMA = 5.67e-8;
 
@@ -137,12 +104,6 @@ const KvalitativPreview = ({ fravikEntries }: { fravikEntries: FravikEntry[] }) 
       <hr className="my-6 border-gray-300" />
 
       {fravikEntries.map((fravik, i) => {
-        const fraviketOmraderLabels = hovedomrader.flatMap(h =>
-          h.delomrader.filter(d => fravik.fraviketOmrader.includes(d.id)).map(d => `${d.id} – ${d.label}`)
-        );
-        const tiltakOmraderLabels = hovedomrader.flatMap(h =>
-          h.delomrader.filter(d => fravik.tiltakOmrader.includes(d.id)).map(d => `${d.id} – ${d.label}`)
-        );
         const harTiltak = fravik.tiltak.some(t => t.beskrivelse);
         const harBeregninger = (fravik.beregninger?.length ?? 0) > 0;
         const n = i + 1;
@@ -216,43 +177,7 @@ const KvalitativPreview = ({ fravikEntries }: { fravikEntries: FravikEntry[] }) 
 
               {/* Innvirkningsområder */}
               <h3 className="font-semibold mb-2">{n}.6 Fravikets områder for innvirkning</h3>
-              <p className="ml-4 mb-2 text-xs">Vurdering basert på tabell 641 i Byggforsk 321.026.</p>
-              <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="border border-gray-400 p-2 text-left w-1/2">Fravikets innvirkningsområder</th>
-                    <th className="border border-gray-400 p-2 text-left w-1/2">Tiltakets innvirkningsområder</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">
-                      {fraviketOmraderLabels.length > 0 ? (
-                        <ul className="list-disc list-inside space-y-0.5">
-                          {fraviketOmraderLabels.map(l => <li key={l}>{l}</li>)}
-                        </ul>
-                      ) : "[Angis]"}
-                    </td>
-                    <td className="border border-gray-400 p-2 align-top">
-                      {tiltakOmraderLabels.length > 0 ? (
-                        <ul className="list-disc list-inside space-y-0.5">
-                          {tiltakOmraderLabels.map(l => <li key={l}>{l}</li>)}
-                        </ul>
-                      ) : "[Angis]"}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-
-              {fravik.fraviketOmrader.length > 0 && fravik.tiltakOmrader.length > 0 && (
-                <div className="ml-4 text-xs mb-3">
-                  {fravik.fraviketOmrader.every(o => fravik.tiltakOmrader.includes(o)) ? (
-                    <p><strong>Vurdering:</strong> Fravik og kompenserende tiltak virker inn på samme område(r). Kvalitativ analyse er vanligvis tilstrekkelig.</p>
-                  ) : (
-                    <p><strong>Vurdering:</strong> Fravik og kompenserende tiltak virker inn på ulike områder. Det kan være behov for mer omfattende analyse.</p>
-                  )}
-                </div>
-              )}
+              <p className="ml-4 mb-3 whitespace-pre-wrap">{fravik.innvirkningBeskrivelse || "[Angis]"}</p>
 
               {/* Beregninger */}
               {harBeregninger && (

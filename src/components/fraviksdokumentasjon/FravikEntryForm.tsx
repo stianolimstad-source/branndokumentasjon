@@ -27,6 +27,7 @@ export interface FravikEntry {
   tiltak: KompenserendeTiltak[];
   fraviketOmrader: string[];
   tiltakOmrader: string[];
+  innvirkningBeskrivelse: string;
   sammenligning: string;
   maleparametre: string;
   visReferanser: boolean;
@@ -55,6 +56,7 @@ export const emptyFravik = (): FravikEntry => ({
   tiltak: [emptyTiltak()],
   fraviketOmrader: [],
   tiltakOmrader: [],
+  innvirkningBeskrivelse: "",
   sammenligning: "",
   maleparametre: "",
   visReferanser: true,
@@ -316,40 +318,14 @@ const FravikEntryForm = ({ fravik, index, onChange }: Props) => {
         <div className="border-b-2 border-foreground/20 pb-2">
           <Label className="text-base font-extrabold text-foreground">Fravikets områder for innvirkning</Label>
         </div>
-        <p className="text-xs text-muted-foreground">Velg hvilke delområder fraviket og tiltaket virker inn på (tabell 641).</p>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="space-y-3">
-            <h4 className="font-semibold text-xs text-destructive">Fravikets områder</h4>
-            {hovedomrader.map(h => (
-              <div key={h.id} className="space-y-1">
-                <p className="text-xs font-medium">{h.label}</p>
-                <div className="space-y-0.5 pl-2">
-                  {h.delomrader.map(d => (
-                    <div key={d.id} className="flex items-center gap-2">
-                      <Checkbox id={`fravik-${index}-${d.id}`} checked={fravik.fraviketOmrader.includes(d.id)} onCheckedChange={() => toggleOmrade(d.id, "fravik")} />
-                      <Label htmlFor={`fravik-${index}-${d.id}`} className="text-xs font-normal cursor-pointer">{d.label}</Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="space-y-3">
-            <h4 className="font-semibold text-xs text-primary">Tiltakets områder</h4>
-            {hovedomrader.map(h => (
-              <div key={h.id} className="space-y-1">
-                <p className="text-xs font-medium">{h.label}</p>
-                <div className="space-y-0.5 pl-2">
-                  {h.delomrader.map(d => (
-                    <div key={d.id} className="flex items-center gap-2">
-                      <Checkbox id={`tiltak-${index}-${d.id}`} checked={fravik.tiltakOmrader.includes(d.id)} onCheckedChange={() => toggleOmrade(d.id, "tiltak")} />
-                      <Label htmlFor={`tiltak-${index}-${d.id}`} className="text-xs font-normal cursor-pointer">{d.label}</Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="space-y-2">
+          <Label className="text-xs font-medium">Beskrivelse av hvorfor tiltaket påvirker samme område som fraviket</Label>
+          <Textarea
+            placeholder="Beskriv hvorfor det kompenserende tiltaket virker inn på samme område som fraviket, og hvordan tiltaket adresserer de samme risikoforholdene..."
+            value={fravik.innvirkningBeskrivelse || ""}
+            onChange={(e) => update("innvirkningBeskrivelse", e.target.value)}
+            className="min-h-[120px]"
+          />
         </div>
       </div>
 
