@@ -207,7 +207,7 @@ const KSGjennomgang = () => {
     const reviewerId = cpData[0].reviewer_id;
     const { data: profile } = await supabase
       .from("profiles")
-      .select("full_name, email, company")
+      .select("full_name, email, company, logo_url")
       .eq("id", reviewerId)
       .maybeSingle();
 
@@ -235,6 +235,7 @@ const KSGjennomgang = () => {
         company: (profile as any)?.company || "",
       },
       date,
+      logoUrl: (profile as any)?.logo_url || null,
     });
 
     toast({ title: "Lastet ned", description: `${type === "egenkontroll" ? "Egenkontroll" : "Sidemannskontroll"} lastet ned som Word-fil` });
