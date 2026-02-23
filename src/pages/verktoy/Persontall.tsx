@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Flame, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
+import SendTilFravikButton from "@/components/verktoy/SendTilFravikButton";
 
 const categories = [
   { value: "forretning", label: "Forretning/butikk", factor: 3, unit: "m²/person" },
@@ -21,20 +22,27 @@ const categories = [
 const Persontall = () => {
   const [areal, setAreal] = useState("");
   const [kategori, setKategori] = useState("");
-  const [result, setResult] = useState<{
-    persontall: number;
-    factor: number;
-    kategoriLabel: string;
-  } | null>(null);
+  const [result, setResult] = useState<{ persontall: number; factor: number; kategoriLabel: string } | null>(null);
 
   const calculate = () => {
     const A = parseFloat(areal);
     const cat = categories.find((c) => c.value === kategori);
     if (isNaN(A) || A <= 0 || !cat) return;
-
     const persontall = Math.ceil(A / cat.factor);
     setResult({ persontall, factor: cat.factor, kategoriLabel: cat.label });
   };
+
+  const getCalculation = useCallback(() => {
+    if (!result) return null;
+    return {
+      id: crypto.randomUUID(),
+      type: "persontall" as const,
+      label: `Persontall: ${result.persontall} personer`,
+      inputs: { areal_m2: parseFloat(areal), kategori: result.kategoriLabel, faktor_m2_per_person: result.factor },
+      results: { persontall: result.persontall },
+      kommentar: "",
+    };
+  }, [result, areal]);
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
@@ -68,6 +76,8 @@ const Persontall = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              <SendTilFravikButton getCalculation={getCalculation} />
+
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="areal">Areal (m²)</Label>
