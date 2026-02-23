@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Banknote, LogIn, LogOut, FolderOpen, Plus, Users, Bell, X } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useNotifications } from "@/hooks/useNotifications";
@@ -66,6 +67,7 @@ const Index = () => {
               <h1 className="text-xl font-bold">Branndokumentasjon.no</h1>
             </div>
             <div className="flex items-center gap-2">
+              <ThemeToggle />
               {loading ? null : user ? (
                 <div className="flex items-center gap-3">
                   <Link to="/mine-prosjekter">
