@@ -49,6 +49,27 @@ function getBeregningsSteg(calc: AttachedCalculation): string[] {
       return lines;
     } catch { return []; }
   }
+  if (calc.type === "persontall") {
+    const A = Number(calc.inputs.areal_m2) || 0;
+    const factor = Number(calc.inputs.faktor_m2_per_person) || 1;
+    const persontall = Math.ceil(A / factor);
+    return [
+      `Persontall = ${A} m² ÷ ${factor} m²/person = ${persontall} personer`,
+    ];
+  }
+  if (calc.type === "omhyllingsflate") {
+    const L = Number(calc.inputs.lengde_m) || 0;
+    const B = Number(calc.inputs.bredde_m) || 0;
+    const H = Number(calc.inputs.hoyde_m) || 0;
+    const gulv = Math.round(L * B * 100) / 100;
+    const vegg = Math.round((2 * (L * H) + 2 * (B * H)) * 100) / 100;
+    const total = Math.round((gulv * 2 + vegg) * 100) / 100;
+    return [
+      `Gulv/tak = ${L} × ${B} = ${gulv} m²`,
+      `Veggflate = 2×(${L}×${H}) + 2×(${B}×${H}) = ${vegg} m²`,
+      `Total At = ${gulv} + ${gulv} + ${vegg} = ${total} m²`,
+    ];
+  }
   return [];
 }
 
@@ -56,18 +77,26 @@ const formelMap: Record<string, string[]> = {
   straling: ["Ef = ε · σ · Tf⁴", "q″rad = Ef · F₁₂"],
   flammehoyde: ["Lf = 0.235 · Q̇²/⁵ − 1.02 · D"],
   brannenergi: ["Q = Σ (mi · Hc,i)", "q = Q / Arom"],
+  persontall: ["Persontall = Areal / Faktor"],
+  omhyllingsflate: ["At = Agulv + Atak + Avegg", "Avegg = 2·(L·H) + 2·(B·H)"],
 };
 
 const paramLabels: Record<string, string> = {
   emissivitet: "Emissivitet (ε)", flammetemperatur_C: "Flammetemperatur", siktfaktor: "Siktfaktor (F₁₂)",
-  hoyde_m: "Høyde åpning", bredde_m: "Bredde åpning", avstand_m: "Avstand",
+  hoyde_m: "Høyde", bredde_m: "Bredde", avstand_m: "Avstand", lengde_m: "Lengde",
   branneffekt_kW: "Branneffekt", diameter_m: "Diameter", romareal_m2: "Romareal",
+  areal_m2: "Areal", kategori: "Brukskategori", faktor_m2_per_person: "Faktor",
+  persontall: "Persontall",
+  gulvareal_m2: "Gulvareal", takareal_m2: "Takareal", veggflate_m2: "Veggflate", total_omhylling_m2: "Total omhylling",
 };
 
 const paramUnits: Record<string, string> = {
   flammetemperatur_C: "°C", siktfaktor: "", emissivitet: "",
-  hoyde_m: "m", bredde_m: "m", avstand_m: "m", diameter_m: "m",
+  hoyde_m: "m", bredde_m: "m", avstand_m: "m", diameter_m: "m", lengde_m: "m",
   branneffekt_kW: "kW", romareal_m2: "m²",
+  areal_m2: "m²", faktor_m2_per_person: "m²/person",
+  persontall: "personer",
+  gulvareal_m2: "m²", takareal_m2: "m²", veggflate_m2: "m²", total_omhylling_m2: "m²",
 };
 
 interface KvalitativPreviewProps {
@@ -247,6 +276,8 @@ const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData, s
                       straling: "Strålingsberegning (Solid flamme-modell)",
                       flammehoyde: "Flammehøydeberegning (Heskestads korrelasjon)",
                       brannenergi: "Brannenergiberegning",
+                      persontall: "Persontallsberegning",
+                      omhyllingsflate: "Omhyllingsflateberegning",
                     };
                     const formler = formelMap[calc.type] || [];
                     const steg = getBeregningsSteg(calc);
