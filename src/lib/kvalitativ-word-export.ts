@@ -136,25 +136,38 @@ function getBeregningsSteg(calc: CalcRef): string[] {
   return [];
 }
 
-async function fetchLogoBuffer(logoUrl: string | null): Promise<ArrayBuffer | null> {
+async function fetchLogoData(logoUrl: string | null): Promise<{ buffer: ArrayBuffer; width: number; height: number } | null> {
   if (!logoUrl) return null;
   try {
-    const res = await fetch(logoUrl);
-    if (!res.ok) return null;
-    return await res.arrayBuffer();
+    const [res, dims] = await Promise.all([
+      fetch(logoUrl).then(r => r.ok ? r.arrayBuffer() : null),
+      new Promise<{ width: number; height: number }>((resolve) => {
+        const img = new Image();
+        img.onload = () => {
+          const maxWidth = 400;
+          const ratio = img.naturalWidth / img.naturalHeight;
+          const w = Math.min(img.naturalWidth, maxWidth);
+          resolve({ width: w, height: Math.round(w / ratio) });
+        };
+        img.onerror = () => resolve({ width: 200, height: 60 });
+        img.src = logoUrl;
+      }),
+    ]);
+    if (!res) return null;
+    return { buffer: res, ...dims };
   } catch { return null; }
 }
 
 export async function exportKvalitativWord(fravikEntries: FravikEntry[], dokumentNavn: string, logoUrl?: string | null) {
   const elements: (Paragraph | Table)[] = [];
-  const logoBuffer = await fetchLogoBuffer(logoUrl || null);
+  const logoData = await fetchLogoData(logoUrl || null);
 
   // Logo
-  if (logoBuffer) {
+  if (logoData) {
     elements.push(new Paragraph({
       alignment: AlignmentType.CENTER,
       spacing: { after: 200 },
-      children: [new ImageRun({ data: logoBuffer, transformation: { width: 200, height: 60 }, type: "png" })],
+      children: [new ImageRun({ data: logoData.buffer, transformation: { width: logoData.width, height: logoData.height }, type: "png" })],
     }));
   }
 
