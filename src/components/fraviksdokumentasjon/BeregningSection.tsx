@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Trash2, Flame, MoveVertical, Zap, Calculator, Users, Box, ExternalLink } from "lucide-react";
+import { Trash2, Flame, MoveVertical, Zap, Calculator, Users, Box } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import CalculatorDialog, { CalculatorType } from "./CalculatorDialog";
 
 export interface AttachedCalculation {
   id: string;
@@ -14,11 +14,11 @@ export interface AttachedCalculation {
 }
 
 const calculatorTypes = [
-  { type: "straling" as const, label: "Strålingsberegning", icon: Flame, desc: "Solid flamme-modell", href: "/verktoy/straling" },
-  { type: "flammehoyde" as const, label: "Flammehøyde", icon: MoveVertical, desc: "Heskestads korrelasjon", href: "/verktoy/flammehoyde" },
-  { type: "brannenergi" as const, label: "Brannenergi", icon: Zap, desc: "Total og spesifikk", href: "/verktoy/brannenergi" },
-  { type: "persontall" as const, label: "Persontallsberegning", icon: Users, desc: "Basert på areal og brukskategori", href: "/verktoy/persontall" },
-  { type: "omhyllingsflate" as const, label: "Omhyllingsflate", icon: Box, desc: "Gulv, tak og vegger", href: "/verktoy/omhyllingsflate" },
+  { type: "straling" as const, label: "Strålingsberegning", icon: Flame, desc: "Solid flamme-modell" },
+  { type: "flammehoyde" as const, label: "Flammehøyde", icon: MoveVertical, desc: "Heskestads korrelasjon" },
+  { type: "brannenergi" as const, label: "Brannenergi", icon: Zap, desc: "Total og spesifikk" },
+  { type: "persontall" as const, label: "Persontallsberegning", icon: Users, desc: "Basert på areal og brukskategori" },
+  { type: "omhyllingsflate" as const, label: "Omhyllingsflate", icon: Box, desc: "Gulv, tak og vegger" },
 ];
 
 interface Props {
@@ -28,18 +28,14 @@ interface Props {
 }
 
 const BeregningSection = ({ beregninger, onChange, fravikIndex }: Props) => {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [openCalc, setOpenCalc] = useState<CalculatorType | null>(null);
 
   const removeCalc = (id: string) => {
     onChange(beregninger.filter(b => b.id !== id));
   };
 
-  const handleNavigateToTool = (href: string) => {
-    // Save return context to sessionStorage
-    const returnUrl = window.location.pathname + window.location.search;
-    sessionStorage.setItem("fravik-return", JSON.stringify({ returnUrl, fravikIndex }));
-    navigate(href);
+  const handleImport = (calc: AttachedCalculation) => {
+    onChange([...beregninger, calc]);
   };
 
   return (
@@ -87,14 +83,14 @@ const BeregningSection = ({ beregninger, onChange, fravikIndex }: Props) => {
         </div>
       )}
 
-      {/* Import buttons */}
+      {/* Calculator buttons - open as dialog */}
       <div className="space-y-1.5">
-        <p className="text-xs text-muted-foreground">Gå til beregningsverktøyet, utfør beregningen, og send resultatet tilbake hit:</p>
+        <p className="text-xs text-muted-foreground">Åpne et beregningsverktøy og importer resultatet direkte:</p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
           {calculatorTypes.map(ct => (
             <button
               key={ct.type}
-              onClick={() => handleNavigateToTool(ct.href)}
+              onClick={() => setOpenCalc(ct.type)}
               className="flex items-center gap-2 p-2.5 rounded-lg border hover:border-primary/50 hover:bg-accent transition-colors text-left"
             >
               <ct.icon className="h-4 w-4 text-primary shrink-0" />
@@ -102,11 +98,20 @@ const BeregningSection = ({ beregninger, onChange, fravikIndex }: Props) => {
                 <p className="text-xs font-medium">{ct.label}</p>
                 <p className="text-xs text-muted-foreground truncate">{ct.desc}</p>
               </div>
-              <ExternalLink className="h-3 w-3 text-muted-foreground shrink-0" />
             </button>
           ))}
         </div>
       </div>
+
+      {/* Calculator dialog */}
+      {openCalc && (
+        <CalculatorDialog
+          open={!!openCalc}
+          onOpenChange={(open) => { if (!open) setOpenCalc(null); }}
+          type={openCalc}
+          onImport={handleImport}
+        />
+      )}
     </div>
   );
 };

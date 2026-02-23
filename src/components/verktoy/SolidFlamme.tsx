@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
 import StralingResultat from "./StralingResultat";
-import SendTilFravikButton from "./SendTilFravikButton";
 
 const SIGMA = 5.67e-8;
 
@@ -57,25 +56,6 @@ const SolidFlamme = () => {
     setResult({ straling: stralingKW, Ef: EfKW, status });
   };
 
-  const getCalculation = useCallback(() => {
-    if (!result) return null;
-    return {
-      id: crypto.randomUUID(),
-      type: "straling" as const,
-      label: `Stråling: ${result.straling} kW/m²`,
-      inputs: {
-        emissivitet: parseFloat(emissivitet),
-        flammetemperatur_C: parseFloat(flammeTempC),
-        siktfaktor: parseFloat(siktfaktor),
-        ...(hv ? { hoyde_m: parseFloat(hv) } : {}),
-        ...(bv ? { bredde_m: parseFloat(bv) } : {}),
-        ...(r ? { avstand_m: parseFloat(r) } : {}),
-      },
-      results: { straling_kW_m2: result.straling, Ef_kW_m2: result.Ef },
-      kommentar: "",
-    };
-  }, [result, emissivitet, flammeTempC, siktfaktor, hv, bv, r]);
-
   return (
     <Card className="shadow-medium">
       <CardHeader>
@@ -86,8 +66,6 @@ const SolidFlamme = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <SendTilFravikButton getCalculation={getCalculation} />
-
         <div className="bg-muted p-4 rounded-lg text-center">
           <p className="font-mono text-sm md:text-base">
             q″<sub>rad</sub> ≈ E<sub>f</sub> · F<sub>12</sub> &nbsp;&nbsp; der &nbsp;&nbsp; E<sub>f</sub> = ε · σ · T<sub>f</sub>⁴

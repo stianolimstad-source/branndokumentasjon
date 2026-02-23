@@ -1,11 +1,10 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Zap, ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
-import SendTilFravikButton from "@/components/verktoy/SendTilFravikButton";
 
 interface MaterialEntry {
   id: string;
@@ -69,25 +68,6 @@ const Brannenergi = () => {
   const arealNum = parseFloat(romareal);
   const spesifikkBrannenergi = !isNaN(arealNum) && arealNum > 0 ? totalBrannenergi / arealNum : null;
 
-  const getCalculation = useCallback(() => {
-    const hasResult = entries.some(e => e.mengdeKg > 0);
-    if (!hasResult) return null;
-    return {
-      id: crypto.randomUUID(),
-      type: "brannenergi" as const,
-      label: `Brannenergi: ${Math.round(totalBrannenergi)} MJ${spesifikkBrannenergi ? ` (${Math.round(spesifikkBrannenergi)} MJ/m²)` : ""}`,
-      inputs: {
-        materialer: JSON.stringify(entries.filter(e => e.mengdeKg > 0).map(e => ({ name: e.name, mjPerKg: e.brannenergiPerKg, kg: e.mengdeKg }))),
-        ...(romareal ? { romareal_m2: arealNum } : {}),
-      },
-      results: {
-        total_MJ: Math.round(totalBrannenergi),
-        ...(spesifikkBrannenergi ? { spesifikk_MJ_m2: Math.round(spesifikkBrannenergi) } : {}),
-      },
-      kommentar: "",
-    };
-  }, [entries, totalBrannenergi, spesifikkBrannenergi, romareal, arealNum]);
-
   return (
     <div className="min-h-screen bg-gradient-subtle">
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -111,8 +91,6 @@ const Brannenergi = () => {
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-8">
-          <SendTilFravikButton getCalculation={getCalculation} />
-
           {/* Materialbibliotek */}
           <Card className="shadow-medium">
             <CardHeader>
