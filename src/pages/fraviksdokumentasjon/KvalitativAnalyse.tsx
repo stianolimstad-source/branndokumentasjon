@@ -3,8 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FileWarning, Plus, Trash2, Download, Save, ArrowLeft } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { FileWarning, Plus, Trash2, Download, Save, ArrowLeft, Search, LogIn } from "lucide-react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,14 +15,24 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import KvalitativPreview from "@/components/fraviksdokumentasjon/KvalitativPreview";
 import FravikEntryForm, { FravikEntry, emptyFravik } from "@/components/fraviksdokumentasjon/FravikEntryForm";
 import { exportKvalitativWord } from "@/lib/kvalitativ-word-export";
+import PageHeader from "@/components/PageHeader";
+
+interface Project {
+  id: string;
+  name: string;
+  address: string | null;
+  description: string | null;
+  created_at: string;
+}
 
 const KvalitativAnalyse = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const projectId = searchParams.get("project");
   const conceptId = searchParams.get("concept");
+  const isNew = searchParams.get("new") === "true";
 
   const [dokumentNavn, setDokumentNavn] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -28,10 +40,70 @@ const KvalitativAnalyse = () => {
   const [fravikEntries, setFravikEntries] = useState<FravikEntry[]>([emptyFravik()]);
   const [activeFravikIndex, setActiveFravikIndex] = useState(0);
 
+  // Project picker state
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(false);
+  const [projectSearchQuery, setProjectSearchQuery] = useState("");
+  const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [newProjectData, setNewProjectData] = useState({ name: "", description: "", address: "" });
+
   // Load existing concept
   useEffect(() => {
     if (conceptId && user) loadConcept(conceptId);
   }, [conceptId, user]);
+
+  // Load projects when no project is selected
+  useEffect(() => {
+    if (user && !projectId) loadProjects();
+  }, [user, projectId]);
+
+  // Auto-open create dialog when ?new=true
+  useEffect(() => {
+    if (isNew && !projectId) setIsCreateProjectOpen(true);
+  }, [isNew, projectId]);
+
+  const loadProjects = async () => {
+    setLoadingProjects(true);
+    const { data, error } = await supabase
+      .from("projects")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (!error && data) setProjects(data);
+    setLoadingProjects(false);
+  };
+
+  const handleSelectProject = (project: Project) => {
+    setSearchParams({ project: project.id }, { replace: true });
+  };
+
+  const handleCreateProject = async () => {
+    if (!newProjectData.name.trim()) {
+      toast({ title: "Mangler navn", description: "Vennligst skriv inn et prosjektnavn", variant: "destructive" });
+      return;
+    }
+    setIsCreatingProject(true);
+    const { data, error } = await supabase
+      .from("projects")
+      .insert({ name: newProjectData.name, description: newProjectData.description || null, address: newProjectData.address || null, user_id: user!.id })
+      .select()
+      .single();
+    if (error) {
+      toast({ title: "Feil", description: "Kunne ikke opprette prosjekt", variant: "destructive" });
+    } else if (data) {
+      toast({ title: "Prosjekt opprettet", description: `"${data.name}" er opprettet` });
+      setNewProjectData({ name: "", description: "", address: "" });
+      setIsCreateProjectOpen(false);
+      setSearchParams({ project: data.id }, { replace: true });
+    }
+    setIsCreatingProject(false);
+  };
+
+  const filteredProjects = projects.filter(p =>
+    p.name.toLowerCase().includes(projectSearchQuery.toLowerCase()) ||
+    (p.address || "").toLowerCase().includes(projectSearchQuery.toLowerCase()) ||
+    (p.description || "").toLowerCase().includes(projectSearchQuery.toLowerCase())
+  );
 
   const loadConcept = async (id: string) => {
     const { data, error } = await supabase
@@ -111,6 +183,101 @@ const KvalitativAnalyse = () => {
     setFravikEntries(prev => prev.map((f, i) => i === index ? updated : f));
   };
 
+  // Not logged in
+  if (!authLoading && !user) {
+    return (
+      <div className="min-h-screen bg-gradient-subtle">
+        <PageHeader title="Kvalitativ analyse" icon={<FileWarning className="h-6 w-6 text-primary-foreground" />} />
+        <div className="container mx-auto px-4 py-16">
+          <Card className="max-w-md mx-auto shadow-medium">
+            <CardContent className="flex flex-col items-center justify-center py-12">
+              <LogIn className="h-12 w-12 text-muted-foreground mb-4" />
+              <CardTitle className="text-xl mb-2">Logg inn for å fortsette</CardTitle>
+              <CardDescription className="text-center mb-6">Du må være innlogget for å opprette fraviksdokumentasjon.</CardDescription>
+              <Link to="/auth"><Button><LogIn className="h-4 w-4 mr-2" />Logg inn</Button></Link>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // No project selected — show project picker
+  if (!projectId) {
+    return (
+      <div className="min-h-screen bg-gradient-subtle">
+        <PageHeader title="Kvalitativ analyse" subtitle="Velg eller opprett prosjekt" icon={<FileWarning className="h-6 w-6 text-primary-foreground" />} />
+        <main className="container mx-auto px-4 py-12">
+          <div className="max-w-4xl mx-auto space-y-6">
+            <div className="text-center space-y-2">
+              <h2 className="text-2xl font-bold">Velg prosjekt</h2>
+              <p className="text-muted-foreground">Knytt fraviksdokumentasjonen til et prosjekt.</p>
+            </div>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Søk etter prosjekt..." value={projectSearchQuery} onChange={(e) => setProjectSearchQuery(e.target.value)} className="pl-9" />
+              </div>
+              <Button onClick={() => setIsCreateProjectOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" /> Nytt prosjekt
+              </Button>
+            </div>
+            {loadingProjects ? (
+              <p className="text-center text-muted-foreground py-8">Laster prosjekter...</p>
+            ) : filteredProjects.length === 0 ? (
+              <Card className="shadow-soft">
+                <CardContent className="flex flex-col items-center py-12">
+                  <p className="text-muted-foreground mb-4">{projectSearchQuery ? "Ingen prosjekter matcher søket" : "Du har ingen prosjekter ennå"}</p>
+                  <Button onClick={() => setIsCreateProjectOpen(true)}><Plus className="h-4 w-4 mr-2" /> Opprett prosjekt</Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredProjects.map(project => (
+                  <Card key={project.id} className="shadow-soft hover:shadow-medium transition-all cursor-pointer group border-l-4 border-l-transparent hover:border-l-primary" onClick={() => handleSelectProject(project)}>
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-base">{project.name}</CardTitle>
+                      {project.address && <CardDescription className="text-xs">{project.address}</CardDescription>}
+                    </CardHeader>
+                    {project.description && (
+                      <CardContent className="pt-0"><p className="text-xs text-muted-foreground line-clamp-2">{project.description}</p></CardContent>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            )}
+          </div>
+          <Dialog open={isCreateProjectOpen} onOpenChange={setIsCreateProjectOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Opprett nytt prosjekt</DialogTitle>
+                <DialogDescription>Fyll inn informasjon om prosjektet</DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4 py-4">
+                <div className="space-y-2">
+                  <Label htmlFor="new-project-name">Prosjektnavn *</Label>
+                  <Input id="new-project-name" placeholder="f.eks. Nybygg Storgata 1" value={newProjectData.name} onChange={(e) => setNewProjectData({ ...newProjectData, name: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="new-project-address">Adresse</Label>
+                  <Input id="new-project-address" placeholder="f.eks. Storgata 1, 0001 Oslo" value={newProjectData.address} onChange={(e) => setNewProjectData({ ...newProjectData, address: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="new-project-desc">Beskrivelse</Label>
+                  <Textarea id="new-project-desc" placeholder="Kort beskrivelse" value={newProjectData.description} onChange={(e) => setNewProjectData({ ...newProjectData, description: e.target.value })} />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsCreateProjectOpen(false)}>Avbryt</Button>
+                <Button onClick={handleCreateProject} disabled={isCreatingProject}>{isCreatingProject ? "Oppretter..." : "Opprett"}</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
       {/* Header */}
@@ -119,7 +286,7 @@ const KvalitativAnalyse = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="sm" asChild>
-                <Link to={projectId ? `/fraviksdokumentasjon?project=${projectId}` : "/fraviksdokumentasjon"}>
+                <Link to="/mine-prosjekter">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Tilbake
                 </Link>

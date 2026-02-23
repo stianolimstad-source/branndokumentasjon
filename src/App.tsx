@@ -20,7 +20,6 @@ import MineKontakter from "./pages/MineKontakter";
 import MineOppgaver from "./pages/MineOppgaver";
 import GruppeDetalj from "./pages/GruppeDetalj";
 import KSGjennomgang from "./pages/KSGjennomgang";
-import Fraviksdokumentasjon from "./pages/Fraviksdokumentasjon";
 import KvalitativAnalyse from "./pages/fraviksdokumentasjon/KvalitativAnalyse";
 import MinProfil from "./pages/MinProfil";
 import NotFound from "./pages/NotFound";
@@ -51,7 +50,6 @@ const App = () => (
             <Route path="/ks-gjennomgang" element={<KSGjennomgang />} />
             <Route path="/mine-kontakter" element={<MineKontakter />} />
             <Route path="/mine-kontakter/gruppe/:id" element={<GruppeDetalj />} />
-            <Route path="/fraviksdokumentasjon" element={<Fraviksdokumentasjon />} />
             <Route path="/fraviksdokumentasjon/kvalitativ" element={<KvalitativAnalyse />} />
             <Route path="/min-profil" element={<MinProfil />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
