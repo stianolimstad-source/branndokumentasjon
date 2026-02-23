@@ -11,6 +11,7 @@ import {
   HeadingLevel,
   ShadingType,
   Packer,
+  ImageRun,
 } from "docx";
 import { saveAs } from "file-saver";
 
@@ -34,6 +35,7 @@ interface ExportOptions {
   chapters: { title: string; keys: { key: string; label: string }[] }[];
   reviewer: ReviewerInfo;
   date: string;
+  logoUrl?: string | null;
 }
 
 const statusText = (status: string) => {
@@ -58,9 +60,18 @@ const cell = (text: string, width?: number, bold = false): TableCell =>
   });
 
 export const exportKSToWord = async (options: ExportOptions) => {
-  const { conceptName, reviewType, checkpoints, chapters, reviewer, date } = options;
+  const { conceptName, reviewType, checkpoints, chapters, reviewer, date, logoUrl } = options;
 
   const title = reviewType === "egenkontroll" ? "Egenkontroll" : "Sidemannskontroll";
+
+  // Fetch logo
+  let logoBuffer: ArrayBuffer | null = null;
+  if (logoUrl) {
+    try {
+      const res = await fetch(logoUrl);
+      if (res.ok) logoBuffer = await res.arrayBuffer();
+    } catch {}
+  }
 
   // Info table
   const infoTable = new Table({
@@ -118,10 +129,20 @@ export const exportKSToWord = async (options: ExportOptions) => {
   const feilCount = Object.values(checkpoints).filter((c) => c.status === "feil").length;
   const pendingCount = Object.values(checkpoints).filter((c) => c.status !== "ok" && c.status !== "feil").length;
 
+  const headerElements: (Paragraph | Table)[] = [];
+  if (logoBuffer) {
+    headerElements.push(new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 200 },
+      children: [new ImageRun({ data: logoBuffer, transformation: { width: 200, height: 60 }, type: "png" })],
+    }));
+  }
+
   const doc = new Document({
     sections: [
       {
         children: [
+          ...headerElements,
           new Paragraph({
             text: `${title} – ${conceptName}`,
             heading: HeadingLevel.HEADING_1,

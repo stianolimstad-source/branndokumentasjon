@@ -39,6 +39,16 @@ const KvalitativAnalyse = () => {
   const [savedConceptId, setSavedConceptId] = useState<string | null>(conceptId);
   const [fravikEntries, setFravikEntries] = useState<FravikEntry[]>([emptyFravik()]);
   const [activeFravikIndex, setActiveFravikIndex] = useState(0);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+  // Fetch user logo
+  useEffect(() => {
+    if (user) {
+      supabase.from("profiles").select("logo_url").eq("id", user.id).single().then(({ data }) => {
+        if (data) setLogoUrl((data as any).logo_url || null);
+      });
+    }
+  }, [user]);
 
   // Project picker dialog state
   const [projects, setProjects] = useState<Project[]>([]);
@@ -329,7 +339,7 @@ const KvalitativAnalyse = () => {
                     <CardTitle>Forhåndsvisning</CardTitle>
                     <CardDescription>Fraviksdokumentasjonen oppdateres i sanntid</CardDescription>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => exportKvalitativWord(fravikEntries, dokumentNavn)}>
+                  <Button variant="outline" size="sm" onClick={() => exportKvalitativWord(fravikEntries, dokumentNavn, logoUrl)}>
                     <Download className="h-4 w-4 mr-2" />
                     Last ned Word
                   </Button>

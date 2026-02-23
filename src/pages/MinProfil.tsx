@@ -1,22 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Upload, Trash2, Flame } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Flame } from "lucide-react";
 
 const MinProfil = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [profile, setProfile] = useState({
     full_name: "",
     email: "",
@@ -52,9 +54,61 @@ const MinProfil = () => {
         phone: (data as any).phone || "",
         education: (data as any).education || "",
       });
+      setLogoUrl((data as any).logo_url || null);
     } else {
       setProfile((p) => ({ ...p, email: user!.email || "" }));
     }
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Ugyldig fil", description: "Velg en bildefil (PNG, JPG, SVG)", variant: "destructive" });
+      return;
+    }
+
+    setUploading(true);
+    const ext = file.name.split(".").pop();
+    const filePath = `${user.id}/logo.${ext}`;
+
+    // Remove old logo if exists
+    await supabase.storage.from("company-logos").remove([filePath]);
+
+    const { error: uploadError } = await supabase.storage
+      .from("company-logos")
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) {
+      toast({ title: "Feil", description: "Kunne ikke laste opp logo", variant: "destructive" });
+      setUploading(false);
+      return;
+    }
+
+    const { data: urlData } = supabase.storage.from("company-logos").getPublicUrl(filePath);
+    const newUrl = urlData.publicUrl;
+
+    await supabase.from("profiles").update({ logo_url: newUrl } as any).eq("id", user.id);
+    setLogoUrl(newUrl);
+    setUploading(false);
+    toast({ title: "Logo lastet opp", description: "Logoen vil vises i rapporter og dokumenter" });
+  };
+
+  const handleLogoRemove = async () => {
+    if (!user) return;
+    setUploading(true);
+
+    // List and remove all files in user's folder
+    const { data: files } = await supabase.storage.from("company-logos").list(user.id);
+    if (files?.length) {
+      await supabase.storage.from("company-logos").remove(files.map((f) => `${user.id}/${f.name}`));
+    }
+
+    await supabase.from("profiles").update({ logo_url: null } as any).eq("id", user.id);
+    setLogoUrl(null);
+    setUploading(false);
+    toast({ title: "Logo fjernet" });
   };
 
   const handleSave = async () => {
@@ -111,7 +165,45 @@ const MinProfil = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <div className="container mx-auto px-4 py-8 max-w-2xl space-y-6">
+        {/* Logo section */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Firmalogo</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              Logoen vil vises på alle rapporter og dokumenter som genereres.
+            </p>
+            <div className="flex items-center gap-4">
+              {logoUrl ? (
+                <div className="flex items-center gap-4">
+                  <div className="h-20 w-40 border rounded-md flex items-center justify-center bg-white p-2">
+                    <img src={logoUrl} alt="Firmalogo" className="max-h-full max-w-full object-contain" />
+                  </div>
+                  <Button variant="outline" size="sm" onClick={handleLogoRemove} disabled={uploading}>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Fjern
+                  </Button>
+                </div>
+              ) : (
+                <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+                  <Upload className="h-4 w-4 mr-2" />
+                  {uploading ? "Laster opp..." : "Last opp logo"}
+                </Button>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleLogoUpload}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Profile info */}
         <Card>
           <CardHeader>
             <CardTitle>Personlig informasjon</CardTitle>

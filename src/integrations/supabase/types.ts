@@ -241,6 +241,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          logo_url: string | null
           phone: string | null
           title: string | null
           updated_at: string
@@ -252,6 +253,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          logo_url?: string | null
           phone?: string | null
           title?: string | null
           updated_at?: string
@@ -263,6 +265,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          logo_url?: string | null
           phone?: string | null
           title?: string | null
           updated_at?: string

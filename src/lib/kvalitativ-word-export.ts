@@ -1,4 +1,4 @@
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle } from "docx";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, ImageRun } from "docx";
 import { saveAs } from "file-saver";
 import { FravikEntry } from "@/components/fraviksdokumentasjon/FravikEntryForm";
 
@@ -136,8 +136,27 @@ function getBeregningsSteg(calc: CalcRef): string[] {
   return [];
 }
 
-export async function exportKvalitativWord(fravikEntries: FravikEntry[], dokumentNavn: string) {
+async function fetchLogoBuffer(logoUrl: string | null): Promise<ArrayBuffer | null> {
+  if (!logoUrl) return null;
+  try {
+    const res = await fetch(logoUrl);
+    if (!res.ok) return null;
+    return await res.arrayBuffer();
+  } catch { return null; }
+}
+
+export async function exportKvalitativWord(fravikEntries: FravikEntry[], dokumentNavn: string, logoUrl?: string | null) {
   const elements: (Paragraph | Table)[] = [];
+  const logoBuffer = await fetchLogoBuffer(logoUrl || null);
+
+  // Logo
+  if (logoBuffer) {
+    elements.push(new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 200 },
+      children: [new ImageRun({ data: logoBuffer, transformation: { width: 200, height: 60 }, type: "png" })],
+    }));
+  }
 
   // Title
   elements.push(new Paragraph({
