@@ -158,7 +158,13 @@ async function fetchLogoData(logoUrl: string | null): Promise<{ buffer: ArrayBuf
   } catch { return null; }
 }
 
-export async function exportKvalitativWord(fravikEntries: FravikEntry[], dokumentNavn: string, logoUrl?: string | null) {
+export async function exportKvalitativWord(
+  fravikEntries: FravikEntry[],
+  dokumentNavn: string,
+  logoUrl?: string | null,
+  projectData?: { name?: string; address?: string | null } | null,
+  profileData?: { full_name?: string; company?: string; title?: string; education?: string } | null,
+) {
   const elements: (Paragraph | Table)[] = [];
   const logoData = await fetchLogoData(logoUrl || null);
 
@@ -182,6 +188,23 @@ export async function exportKvalitativWord(fravikEntries: FravikEntry[], dokumen
     spacing: { after: 400 },
     children: [new TextRun({ text: "Kvalitativ analyse iht. Byggforsk 321.026 kap. 6", size: 20, font: "Calibri", color: "888888" })],
   }));
+
+  // Sammendrag
+  elements.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Sammendrag", font: "Calibri" })] }));
+  const summaryRows: TableRow[] = [
+    new TableRow({ children: [makeCell("Prosjekt", true, 35), makeCell(projectData?.name || "[Prosjektnavn]", false, 65)] }),
+  ];
+  if (projectData?.address) {
+    summaryRows.push(new TableRow({ children: [makeCell("Adresse", true, 35), makeCell(projectData.address, false, 65)] }));
+  }
+  const authorText = (profileData?.full_name || "[Navn]") + (profileData?.title ? `, ${profileData.title}` : "");
+  summaryRows.push(new TableRow({ children: [makeCell("Utarbeidet av", true, 35), makeCell(authorText, false, 65)] }));
+  if (profileData?.company) {
+    summaryRows.push(new TableRow({ children: [makeCell("Firma", true, 35), makeCell(profileData.company, false, 65)] }));
+  }
+  summaryRows.push(new TableRow({ children: [makeCell("Antall fravik", true, 35), makeCell(String(fravikEntries.length), false, 65)] }));
+  elements.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: summaryRows }));
+  elements.push(new Paragraph({ spacing: { after: 300 }, children: [] }));
 
   fravikEntries.forEach((fravik, i) => {
     const n = i + 1;
