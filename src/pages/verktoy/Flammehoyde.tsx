@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Flame, ArrowLeft, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
-import SendTilFravikButton from "@/components/verktoy/SendTilFravikButton";
 
 const Flammehoyde = () => {
   const [branneffekt, setBranneffekt] = useState("");
@@ -42,18 +41,6 @@ const Flammehoyde = () => {
     setResult({ flammehoyde, flammetipp, rawLf, D: Math.round(D * 100) / 100 });
   };
 
-  const getCalculation = useCallback(() => {
-    if (!result) return null;
-    return {
-      id: crypto.randomUUID(),
-      type: "flammehoyde" as const,
-      label: `Flammehøyde: ${result.flammehoyde} m`,
-      inputs: { branneffekt_kW: parseFloat(branneffekt), diameter_m: result.D },
-      results: { flammehoyde_m: result.flammehoyde, flammetipp_m: result.flammetipp },
-      kommentar: "",
-    };
-  }, [result, branneffekt]);
-
   return (
     <div className="min-h-screen bg-gradient-subtle">
       <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -86,8 +73,6 @@ const Flammehoyde = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <SendTilFravikButton getCalculation={getCalculation} />
-
               <div className="bg-muted p-4 rounded-lg text-center">
                 <p className="font-mono text-sm md:text-base">
                   L<sub>f</sub> = 0.235 · Q̇<sup>2/5</sup> − 1.02 · D

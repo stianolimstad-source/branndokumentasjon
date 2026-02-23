@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -73,21 +73,6 @@ const KvalitativAnalyse = () => {
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [newProjectData, setNewProjectData] = useState({ name: "", description: "", address: "" });
-
-  // Check for imported calculation from tool pages
-  useEffect(() => {
-    const imported = sessionStorage.getItem("fravik-import-calc");
-    if (imported) {
-      sessionStorage.removeItem("fravik-import-calc");
-      try {
-        const { calc, fravikIndex: fi } = JSON.parse(imported);
-        const idx = typeof fi === "number" && fi < fravikEntries.length ? fi : activeFravikIndex;
-        setActiveFravikIndex(idx);
-        setFravikEntries(prev => prev.map((f, i) => i === idx ? { ...f, beregninger: [...(f.beregninger || []), calc] } : f));
-        toast({ title: "Beregning importert", description: calc.label });
-      } catch { /* ignore parse errors */ }
-    }
-  }, []);
 
   // Load existing concept
   useEffect(() => {

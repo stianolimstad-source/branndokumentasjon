@@ -1,11 +1,10 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Flame, ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
-import SendTilFravikButton from "@/components/verktoy/SendTilFravikButton";
 
 const Omhyllingsflate = () => {
   const [lengde, setLengde] = useState("");
@@ -34,18 +33,6 @@ const Omhyllingsflate = () => {
       totalOmhylling: Math.round(totalOmhylling * 100) / 100,
     });
   };
-
-  const getCalculation = useCallback(() => {
-    if (!result) return null;
-    return {
-      id: crypto.randomUUID(),
-      type: "omhyllingsflate" as const,
-      label: `Omhyllingsflate: ${result.totalOmhylling} m²`,
-      inputs: { lengde_m: parseFloat(lengde), bredde_m: parseFloat(bredde), hoyde_m: parseFloat(hoyde) },
-      results: { gulvareal_m2: result.gulvareal, takareal_m2: result.takareal, veggflate_m2: result.veggflate, total_omhylling_m2: result.totalOmhylling },
-      kommentar: "",
-    };
-  }, [result, lengde, bredde, hoyde]);
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
@@ -79,8 +66,6 @@ const Omhyllingsflate = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <SendTilFravikButton getCalculation={getCalculation} />
-
               <div className="grid md:grid-cols-3 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="lengde">Lengde (m)</Label>
