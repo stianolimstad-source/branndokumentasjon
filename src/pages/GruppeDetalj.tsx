@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Shield, User, FolderOpen, Building, FileText, ChevronDown, ChevronRight, UserPlus } from "lucide-react";
+import { Users, Shield, User, FolderOpen, Building, FileText, ChevronDown, ChevronRight, UserPlus, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import PageHeader from "@/components/PageHeader";
@@ -148,7 +148,14 @@ const GruppeDetalj = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <PageHeader title={groupName} subtitle={groupDescription || undefined} />
+      <PageHeader title={groupName} subtitle={groupDescription || undefined} rightContent={
+        <Link to="/mine-kontakter">
+          <Button variant="outline" size="sm">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Tilbake til grupper
+          </Button>
+        </Link>
+      } />
 
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <Tabs defaultValue="medlemmer">
