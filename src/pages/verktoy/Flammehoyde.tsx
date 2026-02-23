@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Flame, ArrowLeft, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
+import SendTilFravikButton from "@/components/verktoy/SendTilFravikButton";
 
 const Flammehoyde = () => {
   const [branneffekt, setBranneffekt] = useState("");
@@ -33,19 +34,25 @@ const Flammehoyde = () => {
   const calculate = () => {
     const Q = parseFloat(branneffekt);
     const D = getD();
-
     if (isNaN(Q) || Q <= 0 || D === null) return;
-
-    // Heskestad correlation: L_f = 0.235 * Q^(2/5) - 1.02 * D
     const Lf = 0.235 * Math.pow(Q, 0.4) - 1.02 * D;
     const rawLf = Math.round(Lf * 100) / 100;
     const flammehoyde = Math.max(0, rawLf);
-
-    // Flame tip (intermittent): approximately 1.5x mean flame height
     const flammetipp = Math.round(flammehoyde * 1.5 * 100) / 100;
-
     setResult({ flammehoyde, flammetipp, rawLf, D: Math.round(D * 100) / 100 });
   };
+
+  const getCalculation = useCallback(() => {
+    if (!result) return null;
+    return {
+      id: crypto.randomUUID(),
+      type: "flammehoyde" as const,
+      label: `Flammehøyde: ${result.flammehoyde} m`,
+      inputs: { branneffekt_kW: parseFloat(branneffekt), diameter_m: result.D },
+      results: { flammehoyde_m: result.flammehoyde, flammetipp_m: result.flammetipp },
+      kommentar: "",
+    };
+  }, [result, branneffekt]);
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
@@ -79,6 +86,8 @@ const Flammehoyde = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
+              <SendTilFravikButton getCalculation={getCalculation} />
+
               <div className="bg-muted p-4 rounded-lg text-center">
                 <p className="font-mono text-sm md:text-base">
                   L<sub>f</sub> = 0.235 · Q̇<sup>2/5</sup> − 1.02 · D
