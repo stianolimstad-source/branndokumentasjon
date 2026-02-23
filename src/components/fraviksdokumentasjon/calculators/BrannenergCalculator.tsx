@@ -89,6 +89,9 @@ const BrannenergCalculator = ({ onResult }: Props) => {
             </div>
           </div>
         ))}
+        <Button variant="outline" size="sm" onClick={() => addEntry("Egendefinert", 0)} className="mt-1">
+          <Plus className="h-3 w-3 mr-1" /> Egendefinert materiale
+        </Button>
       </div>
 
       {/* Calculation */}
