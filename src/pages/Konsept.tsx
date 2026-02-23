@@ -13,7 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle } from "docx";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, ImageRun } from "docx";
 import { saveAs } from "file-saver";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
@@ -329,6 +329,16 @@ const Konsept = () => {
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(searchParams.get("new") === "true");
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [newProjectData, setNewProjectData] = useState({ name: "", description: "", address: "" });
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+
+  // Fetch user logo
+  useEffect(() => {
+    if (user) {
+      supabase.from("profiles").select("logo_url").eq("id", user.id).single().then(({ data }) => {
+        if (data) setLogoUrl((data as any).logo_url || null);
+      });
+    }
+  }, [user]);
 
   const handleCreateProject = async () => {
     if (!newProjectData.name.trim()) {
@@ -744,11 +754,30 @@ const Konsept = () => {
       });
     };
 
+    // Fetch logo for header
+    let logoBuffer: ArrayBuffer | null = null;
+    if (logoUrl) {
+      try {
+        const res = await fetch(logoUrl);
+        if (res.ok) logoBuffer = await res.arrayBuffer();
+      } catch {}
+    }
+
+    const headerChildren: Paragraph[] = [];
+    if (logoBuffer) {
+      headerChildren.push(new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [new ImageRun({ data: logoBuffer, transformation: { width: 200, height: 60 }, type: "png" })],
+        spacing: { after: 200 },
+      }));
+    }
+
     const doc = new Document({
       sections: [
         {
           properties: {},
           children: [
+            ...headerChildren,
             new Paragraph({
               text: "BRANNKONSEPT",
               heading: HeadingLevel.TITLE,
