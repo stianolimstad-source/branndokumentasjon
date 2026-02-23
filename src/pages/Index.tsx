@@ -271,12 +271,34 @@ const Index = () => {
             <Button
               size="lg"
               className="justify-start h-auto py-4 px-5"
-              onClick={() => { setShowFravikDialog(false); navigate("/fraviksdokumentasjon?new=true"); }}
+              onClick={() => { setShowFravikDialog(false); navigate("/fraviksdokumentasjon/kvalitativ?new=true"); }}
             >
               <Plus className="h-5 w-5 mr-3" />
               <div className="text-left">
-                <p className="font-medium">Start ny fraviksdokumentasjon</p>
-                <p className="text-sm text-primary-foreground/70 font-normal">Opprett et nytt fraviksdokument for et prosjekt</p>
+                <p className="font-medium">Kvalitativ analyse</p>
+                <p className="text-sm text-primary-foreground/70 font-normal">Fraviksanalyse basert på faglig skjønn</p>
+              </div>
+            </Button>
+            <Button
+              size="lg"
+              className="justify-start h-auto py-4 px-5 opacity-60 cursor-not-allowed"
+              disabled
+            >
+              <Plus className="h-5 w-5 mr-3" />
+              <div className="text-left">
+                <p className="font-medium">Komparativ analyse</p>
+                <p className="text-sm text-primary-foreground/70 font-normal">Kommer snart</p>
+              </div>
+            </Button>
+            <Button
+              size="lg"
+              className="justify-start h-auto py-4 px-5 opacity-60 cursor-not-allowed"
+              disabled
+            >
+              <Plus className="h-5 w-5 mr-3" />
+              <div className="text-left">
+                <p className="font-medium">Analyse etter NS 3921</p>
+                <p className="text-sm text-primary-foreground/70 font-normal">Kommer snart</p>
               </div>
             </Button>
             <Button
