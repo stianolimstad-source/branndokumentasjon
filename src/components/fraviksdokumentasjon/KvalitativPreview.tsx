@@ -70,9 +70,14 @@ const paramUnits: Record<string, string> = {
   branneffekt_kW: "kW", romareal_m2: "m²",
 };
 
-const KvalitativPreview = ({ fravikEntries }: { fravikEntries: FravikEntry[] }) => {
+const KvalitativPreview = ({ fravikEntries, logoUrl }: { fravikEntries: FravikEntry[]; logoUrl?: string | null }) => {
   return (
     <div className="bg-white text-black p-8 rounded-lg shadow-inner font-serif text-sm" style={{ minHeight: '600px' }}>
+      {logoUrl && (
+        <div className="flex justify-center mb-4">
+          <img src={logoUrl} alt="Firmalogo" className="max-h-24 max-w-[300px] object-contain" />
+        </div>
+      )}
       <h1 className="text-xl font-bold text-center mb-2 pb-2">
         FRAVIKSDOKUMENTASJON
       </h1>
