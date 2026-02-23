@@ -75,9 +75,10 @@ interface KvalitativPreviewProps {
   logoUrl?: string | null;
   projectData?: { name?: string; address?: string | null } | null;
   profileData?: { full_name?: string; company?: string; title?: string; education?: string } | null;
+  sammendrag?: string;
 }
 
-const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData }: KvalitativPreviewProps) => {
+const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData, sammendrag }: KvalitativPreviewProps) => {
   return (
     <div className="bg-white text-black p-8 rounded-lg shadow-inner font-serif text-sm" style={{ minHeight: '600px' }}>
       {logoUrl && (
@@ -90,9 +91,9 @@ const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData }:
       </h1>
       <p className="text-center text-xs mb-6 text-gray-500">Kvalitativ analyse iht. Byggforsk 321.026 kap. 6</p>
 
-      {/* Sammendrag */}
+      {/* Prosjektinfo */}
       <section className="mb-6">
-        <h2 className="font-bold mb-3">Sammendrag</h2>
+        <h2 className="font-bold mb-3">Prosjektinfo</h2>
         <table className="w-full border-collapse border border-gray-400 text-xs mb-4">
           <tbody>
             <tr>
@@ -125,6 +126,14 @@ const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData }:
           </tbody>
         </table>
       </section>
+
+      {/* Sammendrag */}
+      {sammendrag && (
+        <section className="mb-6">
+          <h2 className="font-bold mb-3">Sammendrag</h2>
+          <p className="whitespace-pre-wrap text-xs">{sammendrag}</p>
+        </section>
+      )}
 
       <hr className="my-6 border-gray-300" />
 

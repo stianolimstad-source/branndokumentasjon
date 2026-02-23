@@ -164,6 +164,7 @@ export async function exportKvalitativWord(
   logoUrl?: string | null,
   projectData?: { name?: string; address?: string | null } | null,
   profileData?: { full_name?: string; company?: string; title?: string; education?: string } | null,
+  sammendrag?: string,
 ) {
   const elements: (Paragraph | Table)[] = [];
   const logoData = await fetchLogoData(logoUrl || null);
@@ -189,8 +190,8 @@ export async function exportKvalitativWord(
     children: [new TextRun({ text: "Kvalitativ analyse iht. Byggforsk 321.026 kap. 6", size: 20, font: "Calibri", color: "888888" })],
   }));
 
-  // Sammendrag
-  elements.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Sammendrag", font: "Calibri" })] }));
+  // Prosjektinfo
+  elements.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Prosjektinfo", font: "Calibri" })] }));
   const summaryRows: TableRow[] = [
     new TableRow({ children: [makeCell("Prosjekt", true, 35), makeCell(projectData?.name || "[Prosjektnavn]", false, 65)] }),
   ];
@@ -204,7 +205,13 @@ export async function exportKvalitativWord(
   }
   summaryRows.push(new TableRow({ children: [makeCell("Antall fravik", true, 35), makeCell(String(fravikEntries.length), false, 65)] }));
   elements.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: summaryRows }));
-  elements.push(new Paragraph({ spacing: { after: 300 }, children: [] }));
+  elements.push(new Paragraph({ spacing: { after: 200 }, children: [] }));
+
+  // Sammendrag
+  if (sammendrag) {
+    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Sammendrag", font: "Calibri" })] }));
+    elements.push(new Paragraph({ spacing: { after: 300 }, children: [new TextRun({ text: sammendrag, size: 22, font: "Calibri" })] }));
+  }
 
   fravikEntries.forEach((fravik, i) => {
     const n = i + 1;
