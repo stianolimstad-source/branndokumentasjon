@@ -348,7 +348,7 @@ const KvalitativAnalyse = () => {
               <CardContent className="flex-1 overflow-hidden p-0">
                 <ScrollArea className="h-full max-h-[calc(100vh-280px)]">
                   <div className="px-6 pb-6">
-                    <KvalitativPreview fravikEntries={fravikEntries} />
+                    <KvalitativPreview fravikEntries={fravikEntries} logoUrl={logoUrl} />
                   </div>
                 </ScrollArea>
               </CardContent>
