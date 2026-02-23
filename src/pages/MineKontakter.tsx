@@ -48,6 +48,7 @@ const MineKontakter = () => {
   const [groupMembers, setGroupMembers] = useState<GroupMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [groupSearchQuery, setGroupSearchQuery] = useState("");
   const [selectedGroup, setSelectedGroup] = useState<ContactGroup | null>(null);
 
   // Dialog states
@@ -184,6 +185,14 @@ const MineKontakter = () => {
     navigate(`/mine-kontakter/gruppe/${group.id}`);
   };
 
+  const myGroupIds = new Set(groupMembers.filter((m) => m.user_id === user?.id).map((m) => m.group_id));
+  const myGroups = groups.filter((g) => myGroupIds.has(g.id));
+
+  const filteredGroups = myGroups.filter((g) => {
+    const q = groupSearchQuery.toLowerCase();
+    return g.name.toLowerCase().includes(q) || (g.description || "").toLowerCase().includes(q);
+  });
+
   const filteredContacts = contacts.filter((c) => {
     const q = searchQuery.toLowerCase();
     return c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q);
@@ -214,15 +223,28 @@ const MineKontakter = () => {
               Ny gruppe
             </Button>
           </div>
-          {groups.length === 0 ? (
+
+          <div className="relative mb-4">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Søk i grupper..."
+              value={groupSearchQuery}
+              onChange={(e) => setGroupSearchQuery(e.target.value)}
+              className="pl-10"
+            />
+          </div>
+
+          {filteredGroups.length === 0 ? (
             <Card className="shadow-soft">
               <CardContent className="py-8 text-center text-muted-foreground">
-                Ingen grupper opprettet ennå. Opprett en gruppe for å organisere kontaktene dine.
+                {myGroups.length === 0
+                  ? "Du er ikke medlem av noen grupper ennå. Opprett en gruppe for å komme i gang."
+                  : "Ingen grupper matcher søket."}
               </CardContent>
             </Card>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {groups.map((group) => {
+              {filteredGroups.map((group) => {
                 const memberCount = groupMembers.filter((m) => m.group_id === group.id).length;
                 const myRole = groupMembers.find((m) => m.group_id === group.id && m.user_id === user?.id)?.role;
                 return (
