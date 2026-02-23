@@ -12,7 +12,7 @@ import { AttachedCalculation } from "../BeregningSection";
 const SIGMA = 5.67e-8;
 
 interface Props {
-  onResult: (calc: AttachedCalculation) => void;
+  onResult?: (calc: AttachedCalculation) => void;
 }
 
 const StralingCalculator = ({ onResult }: Props) => {
@@ -56,7 +56,7 @@ const StralingCalculator = ({ onResult }: Props) => {
   };
 
   useEffect(() => {
-    if (result) {
+    if (result && onResult) {
       onResult({
         id: crypto.randomUUID(),
         type: "straling",

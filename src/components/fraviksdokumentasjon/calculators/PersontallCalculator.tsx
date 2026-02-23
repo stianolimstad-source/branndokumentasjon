@@ -18,7 +18,7 @@ const categories = [
 ];
 
 interface Props {
-  onResult: (calc: AttachedCalculation) => void;
+  onResult?: (calc: AttachedCalculation) => void;
 }
 
 const PersontallCalculator = ({ onResult }: Props) => {
@@ -34,7 +34,7 @@ const PersontallCalculator = ({ onResult }: Props) => {
   };
 
   useEffect(() => {
-    if (result) {
+    if (result && onResult) {
       onResult({
         id: crypto.randomUUID(),
         type: "persontall",
