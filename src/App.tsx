@@ -13,7 +13,7 @@ import Flammehoyde from "./pages/verktoy/Flammehoyde";
 import Omhyllingsflate from "./pages/verktoy/Omhyllingsflate";
 import Persontall from "./pages/verktoy/Persontall";
 import Brannenergi from "./pages/verktoy/Brannenergi";
-import Priskalkulator from "./pages/Priskalkulator";
+
 import Auth from "./pages/Auth";
 import MineProsjekter from "./pages/MineProsjekter";
 import MineKontakter from "./pages/MineKontakter";
@@ -43,7 +43,7 @@ const App = () => (
             <Route path="/verktoy/omhyllingsflate" element={<Omhyllingsflate />} />
             <Route path="/verktoy/persontall" element={<Persontall />} />
             <Route path="/verktoy/brannenergi" element={<Brannenergi />} />
-            <Route path="/priskalkulator" element={<Priskalkulator />} />
+            
             <Route path="/auth" element={<Auth />} />
             <Route path="/mine-prosjekter" element={<MineProsjekter />} />
             <Route path="/mine-oppgaver" element={<MineOppgaver />} />

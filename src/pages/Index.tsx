@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Banknote, LogIn, LogOut, FolderOpen, Plus, Users, Bell, X, Menu, User } from "lucide-react";
+import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, LogIn, LogOut, FolderOpen, Plus, Users, Bell, X, Menu, User } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Link, useNavigate } from "react-router-dom";
@@ -29,12 +29,6 @@ const Index = () => {
       title: "Beregningsverktøy",
       description: "Interaktive verktøy for rømning, røyk og brannlast",
       href: "/verktoy",
-    },
-    {
-      icon: Banknote,
-      title: "Priskalkulator",
-      description: "Beregn pris for branntekniske oppdrag",
-      href: "/priskalkulator",
     },
     {
       icon: ClipboardCheck,
