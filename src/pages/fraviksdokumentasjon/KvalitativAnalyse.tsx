@@ -40,10 +40,11 @@ const KvalitativAnalyse = () => {
   const [fravikEntries, setFravikEntries] = useState<FravikEntry[]>([emptyFravik()]);
   const [activeFravikIndex, setActiveFravikIndex] = useState(0);
 
-  // Project picker state
+  // Project picker dialog state
   const [projects, setProjects] = useState<Project[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
   const [projectSearchQuery, setProjectSearchQuery] = useState("");
+  const [showProjectPicker, setShowProjectPicker] = useState(false);
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [newProjectData, setNewProjectData] = useState({ name: "", description: "", address: "" });
@@ -53,15 +54,13 @@ const KvalitativAnalyse = () => {
     if (conceptId && user) loadConcept(conceptId);
   }, [conceptId, user]);
 
-  // Load projects when no project is selected
+  // Show project picker dialog when no project is selected
   useEffect(() => {
-    if (user && !projectId) loadProjects();
-  }, [user, projectId]);
-
-  // Auto-open create dialog when ?new=true
-  useEffect(() => {
-    if (isNew && !projectId) setIsCreateProjectOpen(true);
-  }, [isNew, projectId]);
+    if (user && !projectId && !authLoading) {
+      loadProjects();
+      setShowProjectPicker(true);
+    }
+  }, [user, projectId, authLoading]);
 
   const loadProjects = async () => {
     setLoadingProjects(true);
@@ -74,6 +73,7 @@ const KvalitativAnalyse = () => {
   };
 
   const handleSelectProject = (project: Project) => {
+    setShowProjectPicker(false);
     setSearchParams({ project: project.id }, { replace: true });
   };
 
@@ -94,6 +94,7 @@ const KvalitativAnalyse = () => {
       toast({ title: "Prosjekt opprettet", description: `"${data.name}" er opprettet` });
       setNewProjectData({ name: "", description: "", address: "" });
       setIsCreateProjectOpen(false);
+      setShowProjectPicker(false);
       setSearchParams({ project: data.id }, { replace: true });
     }
     setIsCreatingProject(false);
@@ -202,82 +203,7 @@ const KvalitativAnalyse = () => {
     );
   }
 
-  // No project selected — show project picker
-  if (!projectId) {
-    return (
-      <div className="min-h-screen bg-gradient-subtle">
-        <PageHeader title="Kvalitativ analyse" subtitle="Velg eller opprett prosjekt" icon={<FileWarning className="h-6 w-6 text-primary-foreground" />} />
-        <main className="container mx-auto px-4 py-12">
-          <div className="max-w-4xl mx-auto space-y-6">
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold">Velg prosjekt</h2>
-              <p className="text-muted-foreground">Knytt fraviksdokumentasjonen til et prosjekt.</p>
-            </div>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Søk etter prosjekt..." value={projectSearchQuery} onChange={(e) => setProjectSearchQuery(e.target.value)} className="pl-9" />
-              </div>
-              <Button onClick={() => setIsCreateProjectOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" /> Nytt prosjekt
-              </Button>
-            </div>
-            {loadingProjects ? (
-              <p className="text-center text-muted-foreground py-8">Laster prosjekter...</p>
-            ) : filteredProjects.length === 0 ? (
-              <Card className="shadow-soft">
-                <CardContent className="flex flex-col items-center py-12">
-                  <p className="text-muted-foreground mb-4">{projectSearchQuery ? "Ingen prosjekter matcher søket" : "Du har ingen prosjekter ennå"}</p>
-                  <Button onClick={() => setIsCreateProjectOpen(true)}><Plus className="h-4 w-4 mr-2" /> Opprett prosjekt</Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredProjects.map(project => (
-                  <Card key={project.id} className="shadow-soft hover:shadow-medium transition-all cursor-pointer group border-l-4 border-l-transparent hover:border-l-primary" onClick={() => handleSelectProject(project)}>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-base">{project.name}</CardTitle>
-                      {project.address && <CardDescription className="text-xs">{project.address}</CardDescription>}
-                    </CardHeader>
-                    {project.description && (
-                      <CardContent className="pt-0"><p className="text-xs text-muted-foreground line-clamp-2">{project.description}</p></CardContent>
-                    )}
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
-          <Dialog open={isCreateProjectOpen} onOpenChange={setIsCreateProjectOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Opprett nytt prosjekt</DialogTitle>
-                <DialogDescription>Fyll inn informasjon om prosjektet</DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="new-project-name">Prosjektnavn *</Label>
-                  <Input id="new-project-name" placeholder="f.eks. Nybygg Storgata 1" value={newProjectData.name} onChange={(e) => setNewProjectData({ ...newProjectData, name: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="new-project-address">Adresse</Label>
-                  <Input id="new-project-address" placeholder="f.eks. Storgata 1, 0001 Oslo" value={newProjectData.address} onChange={(e) => setNewProjectData({ ...newProjectData, address: e.target.value })} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="new-project-desc">Beskrivelse</Label>
-                  <Textarea id="new-project-desc" placeholder="Kort beskrivelse" value={newProjectData.description} onChange={(e) => setNewProjectData({ ...newProjectData, description: e.target.value })} />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setIsCreateProjectOpen(false)}>Avbryt</Button>
-                <Button onClick={handleCreateProject} disabled={isCreatingProject}>{isCreatingProject ? "Oppretter..." : "Opprett"}</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </main>
-      </div>
-    );
-  }
-
+  // Always render the main form — project picker is a dialog
   return (
     <div className="min-h-screen bg-gradient-subtle">
       {/* Header */}
@@ -419,6 +345,74 @@ const KvalitativAnalyse = () => {
           </div>
         </div>
       </div>
+
+      {/* Project picker dialog */}
+      <Dialog open={showProjectPicker} onOpenChange={(open) => { if (!open && !projectId) navigate("/"); else setShowProjectPicker(open); }}>
+        <DialogContent className="sm:max-w-lg max-h-[80vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Velg prosjekt</DialogTitle>
+            <DialogDescription>Knytt fraviksdokumentasjonen til et prosjekt</DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-2 mt-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Søk etter prosjekt..." value={projectSearchQuery} onChange={(e) => setProjectSearchQuery(e.target.value)} className="pl-9" />
+            </div>
+            <Button size="sm" onClick={() => setIsCreateProjectOpen(true)}>
+              <Plus className="h-4 w-4 mr-1" /> Nytt
+            </Button>
+          </div>
+          <ScrollArea className="flex-1 max-h-[50vh] mt-3">
+            {loadingProjects ? (
+              <p className="text-center text-muted-foreground py-8">Laster prosjekter...</p>
+            ) : filteredProjects.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground mb-4">{projectSearchQuery ? "Ingen prosjekter matcher søket" : "Du har ingen prosjekter ennå"}</p>
+                <Button onClick={() => setIsCreateProjectOpen(true)}><Plus className="h-4 w-4 mr-2" /> Opprett prosjekt</Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {filteredProjects.map(project => (
+                  <Card key={project.id} className="shadow-soft hover:shadow-medium transition-all cursor-pointer group border-l-4 border-l-transparent hover:border-l-primary" onClick={() => handleSelectProject(project)}>
+                    <CardHeader className="py-3 px-4">
+                      <CardTitle className="text-sm">{project.name}</CardTitle>
+                      {project.address && <CardDescription className="text-xs">{project.address}</CardDescription>}
+                    </CardHeader>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create project dialog */}
+      <Dialog open={isCreateProjectOpen} onOpenChange={setIsCreateProjectOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Opprett nytt prosjekt</DialogTitle>
+            <DialogDescription>Fyll inn informasjon om prosjektet</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="new-project-name">Prosjektnavn *</Label>
+              <Input id="new-project-name" placeholder="f.eks. Nybygg Storgata 1" value={newProjectData.name} onChange={(e) => setNewProjectData({ ...newProjectData, name: e.target.value })} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-project-address">Adresse</Label>
+              <Input id="new-project-address" placeholder="f.eks. Storgata 1, 0001 Oslo" value={newProjectData.address} onChange={(e) => setNewProjectData({ ...newProjectData, address: e.target.value })} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-project-desc">Beskrivelse</Label>
+              <Textarea id="new-project-desc" placeholder="Kort beskrivelse" value={newProjectData.description} onChange={(e) => setNewProjectData({ ...newProjectData, description: e.target.value })} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsCreateProjectOpen(false)}>Avbryt</Button>
+            <Button onClick={handleCreateProject} disabled={isCreatingProject}>{isCreatingProject ? "Oppretter..." : "Opprett"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
