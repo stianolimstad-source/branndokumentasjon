@@ -357,8 +357,25 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="border-t mt-16">
-        <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
-          <p>Branndokumentasjon.no - Regelverksforankret dokumentasjon for brannsikkerhet</p>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+            <div className="text-center md:text-left space-y-1">
+              <p className="font-medium text-foreground">Olimstad Brannrådgivning AS</p>
+              <p>Utviklet av Stian Olimstad</p>
+            </div>
+            <div className="flex flex-col items-center md:items-end gap-1">
+              <a href="mailto:stianolimstad@gmail.com" className="hover:text-foreground transition-colors">
+                stianolimstad@gmail.com
+              </a>
+              <a href="tel:+4790701285" className="hover:text-foreground transition-colors">
+                907 01 285
+              </a>
+              <a href="https://www.linkedin.com/in/stian-olimstad-86863121a/" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+                LinkedIn
+              </a>
+            </div>
+          </div>
+          <p className="text-center text-xs text-muted-foreground mt-4">Branndokumentasjon.no – Regelverksforankret dokumentasjon for brannsikkerhet</p>
         </div>
       </footer>
     </div>
