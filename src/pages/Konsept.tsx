@@ -732,7 +732,7 @@ const Konsept = () => {
     }, 1500);
   };
 
-  const renderPreview = () => <KonseptPreview formData={formData} />;
+  const renderPreview = () => <KonseptPreview formData={formData} logoUrl={logoUrl} />;
 
   const exportToWord = async () => {
     const tableBorders = {
