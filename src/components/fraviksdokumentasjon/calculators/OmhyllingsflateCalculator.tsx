@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -46,46 +46,68 @@ const OmhyllingsflateCalculator = ({ onResult }: Props) => {
   }, [result]);
 
   return (
-    <div className="space-y-6">
-      <div className="grid md:grid-cols-3 gap-6">
-        <div className="space-y-2">
-          <Label>Lengde (m)</Label>
-          <Input type="number" step="0.1" placeholder="f.eks. 10" value={lengde} onChange={(e) => setLengde(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label>Bredde (m)</Label>
-          <Input type="number" step="0.1" placeholder="f.eks. 8" value={bredde} onChange={(e) => setBredde(e.target.value)} />
-        </div>
-        <div className="space-y-2">
-          <Label>Høyde (m)</Label>
-          <Input type="number" step="0.1" placeholder="f.eks. 3" value={hoyde} onChange={(e) => setHoyde(e.target.value)} />
-        </div>
-      </div>
-
-      <Button onClick={calculate} className="w-full">Beregn omhyllingsflate</Button>
-
-      {result && (
-        <div className="space-y-4 pt-4 border-t">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card>
-              <CardHeader className="pb-2"><CardTitle className="text-sm">Gulvareal</CardTitle></CardHeader>
-              <CardContent><p className="text-xl font-bold">{result.gulvareal} m²</p></CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2"><CardTitle className="text-sm">Takareal</CardTitle></CardHeader>
-              <CardContent><p className="text-xl font-bold">{result.takareal} m²</p></CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="pb-2"><CardTitle className="text-sm">Veggflate</CardTitle></CardHeader>
-              <CardContent><p className="text-xl font-bold">{result.veggflate} m²</p></CardContent>
-            </Card>
-            <Card className="border-primary/30 bg-primary/5">
-              <CardHeader className="pb-2"><CardTitle className="text-sm">Total omhylling</CardTitle></CardHeader>
-              <CardContent><p className="text-xl font-bold">{result.totalOmhylling} m²</p></CardContent>
-            </Card>
+    <div className="space-y-8">
+      <Card className="shadow-medium">
+        <CardHeader>
+          <CardTitle>Omhyllingsflateberegning</CardTitle>
+          <CardDescription>
+            Beregn total omhyllingsflate for en branncelle (gulv, tak og vegger).
+            Brukes blant annet ved vurdering av brannenergi per omhyllingsflate.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <Label htmlFor="lengde-dlg">Lengde (m)</Label>
+              <Input id="lengde-dlg" type="number" step="0.1" placeholder="f.eks. 10" value={lengde} onChange={(e) => setLengde(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="bredde-dlg">Bredde (m)</Label>
+              <Input id="bredde-dlg" type="number" step="0.1" placeholder="f.eks. 8" value={bredde} onChange={(e) => setBredde(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="hoyde-dlg">Høyde (m)</Label>
+              <Input id="hoyde-dlg" type="number" step="0.1" placeholder="f.eks. 3" value={hoyde} onChange={(e) => setHoyde(e.target.value)} />
+            </div>
           </div>
-        </div>
-      )}
+
+          <Button onClick={calculate} className="w-full">Beregn omhyllingsflate</Button>
+
+          {result && (
+            <div className="space-y-4 pt-4 border-t">
+              <h3 className="font-semibold">Resultater:</h3>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <Card>
+                  <CardHeader className="pb-2"><CardTitle className="text-sm">Gulvareal</CardTitle></CardHeader>
+                  <CardContent><p className="text-xl font-bold">{result.gulvareal} m²</p></CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="pb-2"><CardTitle className="text-sm">Takareal</CardTitle></CardHeader>
+                  <CardContent><p className="text-xl font-bold">{result.takareal} m²</p></CardContent>
+                </Card>
+                <Card>
+                  <CardHeader className="pb-2"><CardTitle className="text-sm">Veggflate</CardTitle></CardHeader>
+                  <CardContent><p className="text-xl font-bold">{result.veggflate} m²</p></CardContent>
+                </Card>
+                <Card className="border-primary/30 bg-primary/5">
+                  <CardHeader className="pb-2"><CardTitle className="text-sm">Total omhylling</CardTitle></CardHeader>
+                  <CardContent><p className="text-xl font-bold">{result.totalOmhylling} m²</p></CardContent>
+                </Card>
+              </div>
+
+              <div className="bg-muted p-4 rounded-lg text-sm space-y-2">
+                <p className="font-semibold">Grunnlag:</p>
+                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                  <li>A<sub>t</sub> = gulv + tak + vegger</li>
+                  <li>Forutsetter rektangulær branncelle uten åpninger</li>
+                  <li>Brukes for beregning av brannenergi per omhyllingsflate (MJ/m²)</li>
+                  <li>Ref. TEK17 § 11-3 og NS-EN 1991-1-2</li>
+                </ul>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
