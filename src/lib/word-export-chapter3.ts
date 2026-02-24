@@ -153,22 +153,27 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   rows.push(sectionHeaderRow("3.2   §11-5 Sikkerhet ved eksplosjon"));
   rows.push(columnHeaderRow());
   
-  let eksplosjonTekst = "[Vurdering av eksplosjonsfare]";
   if (formData.eksplosjonRelevant === "ikke_relevant") {
-    eksplosjonTekst = "RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket.";
+    rows.push(contentRow("Eksplosjonsfare", "RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket.", "RIBr"));
   } else if (formData.eksplosjonRelevant === "relevant") {
-    const ytelser = [
+    const lines: string[] = [];
+    if (formData.eksplosjonBeskrivelse) {
+      lines.push(formData.eksplosjonBeskrivelse, "");
+    }
+    lines.push(
+      "Preaksepterte ytelser (jf. VTEK § 11-5):",
       "1. Rom hvor det kan forekomme fare for eksplosjon, må utgjøre en egen branncelle.",
       "2. Rom hvor det kan forekomme fare for eksplosjon, må ha minst én trykkavlastningsflate for å sikre mot skader på personer og byggverket forøvrig.",
       "3. Avlastet trykk må ledes bort i sikker retning.",
       "4. Trykkavlastningsflater må ikke plasseres i takflater og lignende med mindre det dokumenteres at snølast ikke er til hinder for avlastningsflatens funksjon.",
       "5. Bærende og branncellebegrensende bygningsdeler må om nødvendig forsterkes for å opprettholde rømningsveiers funksjon og forhindre spredning av brann til andre brannceller.",
-    ];
-    eksplosjonTekst = (formData.eksplosjonBeskrivelse ? formData.eksplosjonBeskrivelse + "\n\n" : "") +
-      "Preaksepterte ytelser (jf. VTEK § 11-5):\n" + ytelser.join("\n") +
-      "\n\nFarlige stoffer skal håndteres og lagres i henhold til relevante standarder, herunder forskrift om håndtering av farlig stoff og forskrift om elektriske forsyningsanlegg.";
+      "",
+      "Farlige stoffer skal håndteres og lagres i henhold til relevante standarder, herunder forskrift om håndtering av farlig stoff og forskrift om elektriske forsyningsanlegg.",
+    );
+    rows.push(contentRowMultiLine("Eksplosjonsfare", lines, "RIBr"));
+  } else {
+    rows.push(contentRow("Eksplosjonsfare", "[Vurdering av eksplosjonsfare]", "RIBr"));
   }
-  rows.push(contentRow("Eksplosjonsfare", eksplosjonTekst, "RIBr"));
   if (formData.eksplosjonKommentar) {
     rows.push(contentRow("Kommentar", formData.eksplosjonKommentar, "-"));
   }
