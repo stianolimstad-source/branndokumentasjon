@@ -395,6 +395,8 @@ const Konsept = () => {
   };
 
   const [formData, setFormData] = useState({
+    // Sammendrag
+    sammendrag: "",
     // 1. Innledning
     oppdragsgiver: "",
     prosjektnavn: "",
@@ -854,6 +856,15 @@ const Konsept = () => {
           properties: {},
           children: coverPageChildren,
         },
+        // Sammendrag (egen side)
+        ...(formData.sammendrag ? [{
+          properties: {},
+          children: [
+            new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Sammendrag", font: "Calibri" })] }),
+            new Paragraph({ spacing: { after: 300 }, children: [new TextRun({ text: formData.sammendrag, size: 22, font: "Calibri" })] }),
+          ],
+        }] : []),
+        // Innholdsfortegnelse (egen side)
         {
           properties: {},
           children: [
@@ -1595,6 +1606,26 @@ const Konsept = () => {
                         />
                       </div>
               <Accordion type="multiple" defaultValue={["kap1"]} className="w-full">
+                {/* Sammendrag */}
+                <AccordionItem value="sammendrag" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
+                  <AccordionTrigger className="text-lg font-bold bg-blue-50 hover:bg-blue-100 px-4 py-3 text-blue-800">
+                    <span className="flex items-center gap-3">
+                      <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">S</span>
+                      Sammendrag
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
+                    <div className="space-y-2">
+                      <Label className="text-xs font-medium mb-1 block">Sammendrag av brannkonseptet</Label>
+                      <Textarea
+                        placeholder="Kort sammendrag av brannkonseptet, inkludert hovedforutsetninger og konklusjoner..."
+                        value={formData.sammendrag}
+                        onChange={(e) => setFormData({...formData, sammendrag: e.target.value})}
+                        className="min-h-[120px]"
+                      />
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
                 {/* Kapittel 1: Innledning */}
                 <AccordionItem value="kap1" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
                   <AccordionTrigger className="text-lg font-bold bg-blue-50 hover:bg-blue-100 px-4 py-3 text-blue-800">
