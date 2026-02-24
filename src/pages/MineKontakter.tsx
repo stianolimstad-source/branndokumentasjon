@@ -255,27 +255,31 @@ const MineKontakter = () => {
                 return (
                   <Card key={group.id} className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer" onClick={() => openGroupDetail(group)}>
                     <CardHeader className="pb-2">
-                      {group.logo_url && (
-                        <div className="h-32 w-full flex items-center justify-center mb-2">
-                          <img src={group.logo_url} alt={`${group.name} logo`} className="max-h-full max-w-full object-contain" />
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between">
+                            <CardTitle className="text-lg">{group.name}</CardTitle>
+                            {myRole === "admin" && (
+                              <div className="flex gap-1">
+                                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); openEditGroup(group); }}>
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={(e) => { e.stopPropagation(); deleteGroup(group.id); }}>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                          {group.description && (
+                            <CardDescription>{group.description}</CardDescription>
+                          )}
                         </div>
-                      )}
-                      <div className="flex items-start justify-between">
-                        <CardTitle className="text-lg">{group.name}</CardTitle>
-                        {myRole === "admin" && (
-                          <div className="flex gap-1">
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); openEditGroup(group); }}>
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={(e) => { e.stopPropagation(); deleteGroup(group.id); }}>
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                        {group.logo_url && (
+                          <div className="h-16 w-24 shrink-0 flex items-center justify-center">
+                            <img src={group.logo_url} alt={`${group.name} logo`} className="max-h-full max-w-full object-contain" />
                           </div>
                         )}
                       </div>
-                      {group.description && (
-                        <CardDescription>{group.description}</CardDescription>
-                      )}
                     </CardHeader>
                     <CardContent className="flex items-center justify-between">
                       <div className="flex gap-2">
