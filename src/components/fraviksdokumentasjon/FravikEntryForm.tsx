@@ -417,10 +417,6 @@ const FravikEntryForm = ({ fravik, index, onChange }: Props) => {
             className="min-h-[80px]"
           />
         )}
-        <div className="space-y-2">
-          <Label className="text-xs font-medium">Begrunnelse</Label>
-          <Textarea placeholder="Begrunn konklusjonen..." value={fravik.begrunnelseKonklusjon} onChange={(e) => update("begrunnelseKonklusjon", e.target.value)} className="min-h-[80px]" />
-        </div>
       </div>
     </div>
   );
