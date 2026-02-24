@@ -217,6 +217,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
             <thead>
               <tr className="bg-gray-100">
                 <th className="border border-gray-400 p-2 text-left">Dokument</th>
+                <th className="border border-gray-400 p-2 text-left">Utarbeidet av / firma</th>
                 <th className="border border-gray-400 p-2 text-left">Dato</th>
               </tr>
             </thead>
@@ -224,6 +225,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               {grunnlagsdokumenter.map((doc: any, index: number) => (
                 <tr key={index}>
                   <td className="border border-gray-400 p-2">{doc.navn || "-"}</td>
+                  <td className="border border-gray-400 p-2">{doc.utarbeidetAv || "-"}</td>
                   <td className="border border-gray-400 p-2">{doc.dato || "-"}</td>
                 </tr>
               ))}
