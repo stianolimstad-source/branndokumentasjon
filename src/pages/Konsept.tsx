@@ -1432,27 +1432,16 @@ const Konsept = () => {
     }
     return (
       <div className="min-h-screen bg-gradient-subtle">
-        <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Tilbake
-                </Button>
-                <div className="flex items-center gap-2">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
-                    <Flame className="h-6 w-6 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <h1 className="text-xl font-bold">{conceptName || "Brannkonsept"}</h1>
-                    <p className="text-xs text-muted-foreground">Kvalitetssikring (KS) – Lesevisning</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div className="container mx-auto px-4 py-4 border-b flex items-center gap-4">
+          <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Tilbake
+          </Button>
+          <div>
+            <h1 className="text-xl font-bold">{conceptName || "Brannkonsept"}</h1>
+            <p className="text-xs text-muted-foreground">Kvalitetssikring (KS) – Lesevisning</p>
           </div>
-        </header>
+        </div>
         <div className="container mx-auto px-4 py-8 max-w-4xl">
           <Card className="shadow-medium">
             <CardContent className="p-0">
@@ -1470,24 +1459,15 @@ const Konsept = () => {
   if (!authLoading && !user) {
     return (
       <div className="min-h-screen bg-gradient-subtle">
-        <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/mine-prosjekter">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Tilbake
-                </Link>
-              </Button>
-              <div className="flex items-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
-                  <Flame className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <h1 className="text-xl font-bold">Generer Brannkonsept</h1>
-              </div>
-            </div>
-          </div>
-        </header>
+        <div className="container mx-auto px-4 py-4 border-b flex items-center gap-4">
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/mine-prosjekter">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Tilbake
+            </Link>
+          </Button>
+          <h1 className="text-xl font-bold">Generer Brannkonsept</h1>
+        </div>
         <div className="container mx-auto px-4 py-16">
           <Card className="max-w-md mx-auto shadow-medium">
             <CardContent className="flex flex-col items-center justify-center py-12">
@@ -1511,40 +1491,30 @@ const Konsept = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/mine-prosjekter">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Tilbake
-                </Link>
-              </Button>
-              <div className="flex items-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
-                  <Flame className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <h1 className="text-xl font-bold">Generer Brannkonsept</h1>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              {selectedProjectId && conceptName && (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleSave}
-                  disabled={isSaving}
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  {isSaving ? "Lagrer..." : "Lagre"}
-                </Button>
-              )}
-            </div>
-          </div>
+      <div className="container mx-auto px-4 py-4 border-b flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/mine-prosjekter">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Tilbake
+            </Link>
+          </Button>
+          <h1 className="text-xl font-bold">Generer Brannkonsept</h1>
         </div>
-      </header>
+        <div className="flex items-center gap-2">
+          {selectedProjectId && conceptName && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleSave}
+              disabled={isSaving}
+            >
+              <Save className="h-4 w-4 mr-2" />
+              {isSaving ? "Lagrer..." : "Lagre"}
+            </Button>
+          )}
+        </div>
+      </div>
 
       <div className="w-full px-4 py-6">
         <div className="max-w-[1800px] mx-auto">
