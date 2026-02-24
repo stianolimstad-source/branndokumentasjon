@@ -14,10 +14,14 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
   const branncelleTyper = Array.isArray(formData.branncelleTyper) ? formData.branncelleTyper : [];
   const baereevneUnntak = Array.isArray(formData.baereevneUnntak) ? formData.baereevneUnntak : [];
 
+  const pageStyle = "bg-white text-black p-10 rounded-lg shadow-md font-serif text-sm border border-gray-200 mx-auto";
+  const pageWidth = { maxWidth: '210mm', minHeight: '297mm' };
+
   return (
-    <div className="bg-white text-black p-8 rounded-lg shadow-inner font-serif text-sm" style={{ minHeight: '600px' }}>
+    <div className="space-y-8 py-4">
       {/* Forside */}
-      <div className="flex flex-col items-center justify-center mb-12 pt-8 pb-8 border-b-2 border-gray-300" style={{ minHeight: '400px' }}>
+      <div className={pageStyle} style={pageWidth}>
+        <div className="flex flex-col items-center justify-center pt-8 pb-8" style={{ minHeight: '260mm' }}>
         {logoUrl && (
           <div className="mb-8">
             <img src={logoUrl} alt="Firmalogo" className="max-h-64 max-w-[600px] object-contain" />
@@ -40,11 +44,14 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
           </div>
         )}
         <p className="mt-4 text-xs text-gray-400">{new Date().toLocaleDateString("nb-NO", { year: "numeric", month: "long", day: "numeric" })}</p>
+        </div>
       </div>
 
-      <h2 className="text-xl font-bold text-center mb-6 pb-4">
-        BRANNKONSEPT
-      </h2>
+      {/* Innholdsfortegnelse - egen side */}
+      <div className={pageStyle} style={pageWidth}>
+        <h2 className="text-xl font-bold text-center mb-6 pb-4">
+          BRANNKONSEPT
+        </h2>
       
       {/* Innholdsfortegnelse */}
       <section className="mb-6">
@@ -81,9 +88,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
           <p><span className="font-bold">6.</span> Litteraturhenvisninger</p>
         </div>
       </section>
+      </div>
 
-      <hr className="my-6 border-gray-300" />
-
+      {/* Kapittel 1-2 - egen side */}
+      <div className={pageStyle} style={pageWidth}>
       {/* 1. Innledning */}
       <section className="mb-6">
         <h2 className="font-bold mb-3">1. Innledning</h2>
@@ -297,7 +305,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
         <h3 className="font-semibold mb-2">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</h3>
         <p className="ml-4 mb-3">[Eventuelle tilleggskrav beskrives]</p>
       </section>
+      </div>
 
+      {/* Kapittel 3 - egen side */}
+      <div className={pageStyle} style={pageWidth}>
       {/* 3. Branntekniske ytelseskrav */}
       <section className="mb-6">
         <h2 className="font-bold mb-3">3. Beskrivelse av branntekniske ytelseskrav</h2>
@@ -965,7 +976,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
           </tbody>
         </table>
       </section>
+      </div>
 
+      {/* Kapittel 4-6 - egen side */}
+      <div className={pageStyle} style={pageWidth}>
       {/* 4. Utførelses- og driftsfasen */}
       <section className="mb-6">
         <h2 className="font-bold mb-3">4. Utførelses- og driftsfasen</h2>
@@ -996,7 +1010,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
           <h2 className="font-bold mb-3">Fravik og kompenserende tiltak</h2>
           <p className="ml-4">{formData.fravik}</p>
         </section>
-      )}
+        )}
+      </div>
     </div>
   );
 };
