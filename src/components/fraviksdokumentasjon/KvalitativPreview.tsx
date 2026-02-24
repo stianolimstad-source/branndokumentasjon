@@ -358,22 +358,17 @@ const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData, s
               {/* Konklusjon */}
               <h3 className="font-semibold mb-2">{n}.{konklusjonNum} Konklusjon</h3>
               <p className="ml-4 mb-2">
-                {fravik.konklusjon === "tilstrekkelig" && (() => {
+                {fravik.konklusjon === "tilstrekkelig" ? (() => {
                   const refs = fravik.funksjonskrav
                     ? fravik.funksjonskrav.split("\n").filter(Boolean)
                     : [];
                   return refs.length > 0
                     ? `Funksjonskravene i ${refs.join(", ")} er vurdert som tilfredsstillende.`
                     : "Funksjonskravene er vurdert som tilfredsstillende.";
-                })()}
-                {fravik.konklusjon === "egendefinert" && (fravik.konklusjonFritekst || "[Konklusjon angis]")}
-                {!fravik.konklusjon && "[Konklusjon angis]"}
+                })() : (!fravik.konklusjonFritekst && "[Konklusjon angis]")}
               </p>
-              {fravik.begrunnelseKonklusjon && (
-                <>
-                  <h4 className="font-semibold mb-1 ml-4 text-xs">Begrunnelse</h4>
-                  <p className="ml-4 mb-3">{fravik.begrunnelseKonklusjon}</p>
-                </>
+              {fravik.konklusjonFritekst && (
+                <p className="ml-4 mb-3">{fravik.konklusjonFritekst}</p>
               )}
             </section>
           </React.Fragment>
