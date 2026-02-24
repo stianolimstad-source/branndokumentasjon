@@ -476,7 +476,8 @@ const Konsept = () => {
     spesifikkBrannenergi: "", // For brannvegg: "inntil400", "400-600", "600-800"
     brannspredning: "",
     brannspredningKommentar: "",
-    brannseksjonBrannenergi: "", // "over400", "50-400", "under50"
+    brannseksjonBrannenergi: "", // "over400", "50-400", "under50" - brukes for arealgrenser (VTEK tabell 1)
+    seksjoneringsvegBrannenergi: "", // "under400", "400-600", "600-800" - brukes for brannmotstand (VTEK tabell 2)
     brannseksjonTiltak: "", // "normalt", "brannalarm", "sprinkler", "roykventilasjon"
     innvendigHjorne: "nei" as "ja" | "nei",
     innvendigHjorneAlternativ: "alt1" as "alt1" | "alt2", // alt1 = 8m, alt2 = 5m+5m
@@ -2852,16 +2853,16 @@ const Konsept = () => {
                         <div>
                           <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi for seksjoneringsveggen (MJ/m²)</Label>
                           <Select 
-                            value={formData.brannseksjonBrannenergi} 
-                            onValueChange={(value) => setFormData({...formData, brannseksjonBrannenergi: value})}
+                            value={formData.seksjoneringsvegBrannenergi} 
+                            onValueChange={(value) => setFormData({...formData, seksjoneringsvegBrannenergi: value})}
                           >
                             <SelectTrigger>
                               <SelectValue placeholder="Velg brannenergi..." />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="over400">Over 400 MJ/m²</SelectItem>
-                              <SelectItem value="50-400">50–400 MJ/m²</SelectItem>
-                              <SelectItem value="under50">Under 50 MJ/m²</SelectItem>
+                              <SelectItem value="under400">Under 400 MJ/m²</SelectItem>
+                              <SelectItem value="400-600">400–600 MJ/m²</SelectItem>
+                              <SelectItem value="600-800">600–800 MJ/m²</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
