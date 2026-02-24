@@ -1,25 +1,32 @@
-import { Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle } from "docx";
+import { Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, ShadingType } from "docx";
 import { branncelleTyperListe, getBrannklasse } from "./fire-concept-constants";
 
 const tableBorders = {
-  top: { style: BorderStyle.SINGLE, size: 1, color: "666666" },
-  bottom: { style: BorderStyle.SINGLE, size: 1, color: "666666" },
-  left: { style: BorderStyle.SINGLE, size: 1, color: "666666" },
-  right: { style: BorderStyle.SINGLE, size: 1, color: "666666" },
+  top: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
+  bottom: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
+  left: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
+  right: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
 };
 
-function cell(text: string, bold = false, width?: number): TableCell {
+// Shading matching preview: bg-blue-100 = #DBEAFE, bg-blue-50 = #EFF6FF, bg-gray-100 = #F3F4F6
+const sectionShading = { type: ShadingType.SOLID, color: "DBEAFE", fill: "DBEAFE" };
+const subSectionShading = { type: ShadingType.SOLID, color: "EFF6FF", fill: "EFF6FF" };
+const headerShading = { type: ShadingType.SOLID, color: "F3F4F6", fill: "F3F4F6" };
+
+function cell(text: string, bold = false, width?: number, shading?: typeof sectionShading): TableCell {
   return new TableCell({
     borders: tableBorders,
     width: width ? { size: width, type: WidthType.PERCENTAGE } : undefined,
+    shading,
     children: [new Paragraph({ children: [new TextRun({ text, bold, size: 20 })] })],
   });
 }
 
-function multiLineCell(lines: string[], width?: number): TableCell {
+function multiLineCell(lines: string[], width?: number, shading?: typeof sectionShading): TableCell {
   return new TableCell({
     borders: tableBorders,
     width: width ? { size: width, type: WidthType.PERCENTAGE } : undefined,
+    shading,
     children: lines.map(line => new Paragraph({ children: [new TextRun({ text: line, size: 20 })] })),
   });
 }
@@ -30,6 +37,7 @@ function sectionHeaderRow(title: string): TableRow {
       new TableCell({
         columnSpan: 3,
         borders: tableBorders,
+        shading: sectionShading,
         children: [new Paragraph({ children: [new TextRun({ text: title, bold: true, size: 20 })] })],
       }),
     ],
@@ -39,9 +47,9 @@ function sectionHeaderRow(title: string): TableRow {
 function columnHeaderRow(): TableRow {
   return new TableRow({
     children: [
-      cell("Forhold", true, 25),
-      cell("Løsning", true),
-      cell("Ansvar", true, 10),
+      cell("Forhold", true, 25, headerShading),
+      cell("Løsning", true, undefined, headerShading),
+      cell("Ansvar", true, 10, headerShading),
     ],
   });
 }
@@ -52,6 +60,7 @@ function subSectionHeaderRow(title: string): TableRow {
       new TableCell({
         columnSpan: 3,
         borders: tableBorders,
+        shading: subSectionShading,
         children: [new Paragraph({ children: [new TextRun({ text: title, bold: true, size: 20 })] })],
       }),
     ],
