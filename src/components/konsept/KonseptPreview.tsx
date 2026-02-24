@@ -17,7 +17,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
   const pageStyle = "bg-white text-black p-10 rounded-lg shadow-md text-sm border border-gray-200 mx-auto relative";
   const pageWidth = { maxWidth: '210mm', minHeight: '297mm', paddingBottom: '40px', fontFamily: 'Verdana, Geneva, sans-serif' };
   const hasSammendrag = !!formData.sammendrag;
-  const totalPages = hasSammendrag ? 6 : 5;
+  const totalPages = hasSammendrag ? 8 : 7;
 
   const PageFooter = ({ pageNum }: { pageNum: number }) => (
     <div className="absolute bottom-4 left-0 right-0 flex justify-center">
@@ -729,6 +729,16 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               </tr>
             )}
 
+          </tbody>
+        </table>
+      </section>
+      <PageFooter pageNum={hasSammendrag ? 5 : 4} />
+      </div>
+      <div className={pageStyle} style={pageWidth}>
+      <section className="mb-6">
+        <h2 className="font-bold mb-3">3. Beskrivelse av branntekniske ytelseskrav (forts.)</h2>
+        <table className="w-full border-collapse border border-gray-400 text-xs">
+          <tbody>
             {/* 3.5 §11-8 Brannceller */}
             <tr className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.5 &nbsp;&nbsp; §11-8 Brannceller</td>
@@ -953,6 +963,16 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               </tr>
             )}
 
+          </tbody>
+        </table>
+      </section>
+      <PageFooter pageNum={hasSammendrag ? 6 : 5} />
+      </div>
+      <div className={pageStyle} style={pageWidth}>
+      <section className="mb-6">
+        <h2 className="font-bold mb-3">3. Beskrivelse av branntekniske ytelseskrav (forts.)</h2>
+        <table className="w-full border-collapse border border-gray-400 text-xs">
+          <tbody>
             {/* 3.8 §11-11 Generelle krav om rømning */}
             <tr className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.8 &nbsp;&nbsp; §11-11 Generelle krav om rømning og redning</td>
@@ -1149,7 +1169,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
           </tbody>
         </table>
       </section>
-      <PageFooter pageNum={hasSammendrag ? 5 : 4} />
+      <PageFooter pageNum={hasSammendrag ? 7 : 6} />
       </div>
       <div className={pageStyle} style={pageWidth}>
       {/* 4. Utførelses- og driftsfasen */}
