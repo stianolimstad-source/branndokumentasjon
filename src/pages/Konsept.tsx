@@ -1060,11 +1060,15 @@ const Konsept = () => {
               text: "• VTEK17 - Veiledning til teknisk forskrift",
               spacing: { after: 100 },
             }),
-
+          ],
+        },
+        {
+          properties: {},
+          children: [
             // 2. Grunnlag og forutsetninger
             new Paragraph({
               children: [new TextRun({ text: "2. Grunnlag og forutsetninger for brannteknisk prosjektering", bold: true, size: 28 })],
-              spacing: { before: 400, after: 200 },
+              spacing: { before: 200, after: 200 },
             }),
             new Paragraph({
               children: [new TextRun({ text: "2.1 Grunnlagsdokumenter", bold: true, size: 24 })],
@@ -1102,11 +1106,20 @@ const Konsept = () => {
               children: [new TextRun({ text: "2.2 Beskrivelse av bygning og branntekniske forutsetninger", bold: true, size: 24 })],
               spacing: { before: 200, after: 100 },
             }),
-            // Tabell 2.2 - Håndter flere risikoklasser
-            ...(formData.harFlereRisikoklasser && formData.bygningsdeler.length > 0 ? [
+            // Bygningsinfo-tabell
+            new Table({
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              rows: [
+                new TableRow({ children: [createTableCell("Bygningstype", true, 33), createTableCell(formData.bygningstype || "[Angis]")] }),
+                new TableRow({ children: [createTableCell("Bruttoareal", true, 33), createTableCell(`${formData.areal || "[Angis]"} m²`)] }),
+                new TableRow({ children: [createTableCell("Antall etasjer", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
+              ],
+            }),
+            // Risikoklasse / Brannklasse
+            ...(formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0 ? [
               new Paragraph({
-                children: [new TextRun({ text: "Bygget inneholder flere bygningsdeler med ulike risikoklasser:", italics: true })],
-                spacing: { after: 100 },
+                children: [new TextRun({ text: "Bygget inneholder flere bygningsdeler med ulike risikoklasser:", italics: true, size: 20 })],
+                spacing: { before: 100, after: 100 },
               }),
               new Table({
                 width: { size: 100, type: WidthType.PERCENTAGE },
@@ -1136,23 +1149,40 @@ const Konsept = () => {
                   }),
                 ],
               }),
-            ] : [
               new Table({
                 width: { size: 100, type: WidthType.PERCENTAGE },
                 rows: [
                   new TableRow({
                     children: [
-                      createTableCell("Risikoklasse", true, 33),
-                      createTableCell(formData.risikoklasse || "[Angis]"),
+                      createTableCell("Tiltaksklasse", true, 33),
+                      createTableCell(
+                        (formData.tiltaksklasse || "[Angis]") +
+                        (formData.tiltaksklasseBegrunnelse ? `\nBegrunnelse: ${formData.tiltaksklasseBegrunnelse}` : "")
+                      ),
                     ],
                   }),
+                ],
+              }),
+            ] : [
+              new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
+                  new TableRow({ children: [createTableCell("Risikoklasse", true, 33), createTableCell(formData.risikoklasse || "[Angis]")] }),
                   new TableRow({
                     children: [
                       createTableCell("Brannklasse", true, 33),
                       createTableCell(
                         (formData.brannklasse || "[Angis]") +
-                        // Ikke inkluder unntak for RK5 (forsamlingslokale/salgslokale) i dokumentet
                         (formData.brannklasseUnntak && !formData.brannklasseUnntak.includes("preakseptert ytelse nr. 4") ? `\n\n${formData.brannklasseUnntak}` : "")
+                      ),
+                    ],
+                  }),
+                  new TableRow({
+                    children: [
+                      createTableCell("Tiltaksklasse", true, 33),
+                      createTableCell(
+                        (formData.tiltaksklasse || "[Angis]") +
+                        (formData.tiltaksklasseBegrunnelse ? `\nBegrunnelse: ${formData.tiltaksklasseBegrunnelse}` : "")
                       ),
                     ],
                   }),
@@ -1167,7 +1197,6 @@ const Konsept = () => {
               text: formData.tilleggskrav || "[Eventuelle tilleggskrav beskrives]",
               spacing: { after: 100 },
             }),
-
           ],
         },
         {
