@@ -469,6 +469,7 @@ const Konsept = () => {
     baereevne: "",
     baereevneUnntak: [] as string[],
     baereevneKommentar: "",
+    balkongRelevant: false,
     eksplosjonRelevant: "", // "relevant" eller "ikke_relevant"
     eksplosjonBeskrivelse: "", // Beskrivelse av rom og type eksplosjonsfare
     eksplosjon: "",
@@ -2497,7 +2498,17 @@ const Konsept = () => {
                             ))}
                           </div>
                         </div>
-                      )}
+                       )}
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="balkongRelevant"
+                          checked={formData.balkongRelevant}
+                          onCheckedChange={(checked) => setFormData({...formData, balkongRelevant: checked as boolean})}
+                        />
+                        <Label htmlFor="balkongRelevant" className="text-xs cursor-pointer">
+                          Balkonger, utkragede bygningsdeler og lignende er relevant for tiltaket
+                        </Label>
+                      </div>
                       <div>
                         <Button
                           type="button"
