@@ -418,6 +418,7 @@ const Konsept = () => {
     proRibr: "",
     kprRibr: "",
     tiltaksklasse: "",
+    tiltaksklasseBegrunnelse: "",
     avgrensning: "",
     // 2. Grunnlag og forutsetninger
     grunnlagsdokumenter: [] as Array<{navn: string, utarbeidetAv: string, dato: string}>,
@@ -590,13 +591,17 @@ const Konsept = () => {
   }, [formData.brannklasse, formData.risikoklasse, formData.etasjer]);
 
 
-  // Automatisk tiltaksklasse – skip i view-modus
+  // Beregn automatisk tiltaksklasse for visning
+  const autoTiltaksklasse = (() => {
+    const effBkl = beregnetBrannklasseResult.brannklasse || formData.brannklasse;
+    return getTiltaksklasse(effBkl, formData.risikoklasse, formData.prosjekteringsmetode);
+  })();
+
+  // Automatisk tiltaksklasse – skip i view-modus, kun sett hvis bruker ikke har endret
   useEffect(() => {
     if (isViewMode) return;
-    const effBkl = beregnetBrannklasseResult.brannklasse || formData.brannklasse;
-    const nyTiltaksklasse = getTiltaksklasse(effBkl, formData.risikoklasse, formData.prosjekteringsmetode);
-    console.log('[TK]', { effBkl, rk: formData.risikoklasse, metode: formData.prosjekteringsmetode, resultat: nyTiltaksklasse });
-    if (nyTiltaksklasse && nyTiltaksklasse !== formData.tiltaksklasse) {
+    const nyTiltaksklasse = autoTiltaksklasse;
+    if (nyTiltaksklasse && !formData.tiltaksklasse) {
       setFormData(prev => ({ ...prev, tiltaksklasse: nyTiltaksklasse }));
     }
   }, [formData.brannklasse, formData.risikoklasse, formData.prosjekteringsmetode, beregnetBrannklasseResult.brannklasse]);
@@ -2587,7 +2592,7 @@ const Konsept = () => {
                       <Label className="text-xs text-muted-foreground">Tiltaksklasse</Label>
                       <Select 
                         value={formData.tiltaksklasse}
-                        onValueChange={(value) => setFormData({...formData, tiltaksklasse: value})}
+                        onValueChange={(value) => setFormData({...formData, tiltaksklasse: value, tiltaksklasseBegrunnelse: value === autoTiltaksklasse ? "" : formData.tiltaksklasseBegrunnelse})}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Velg tiltaksklasse" />
@@ -2598,7 +2603,21 @@ const Konsept = () => {
                           <SelectItem value="Tiltaksklasse 3">Tiltaksklasse 3</SelectItem>
                         </SelectContent>
                       </Select>
-                      {formData.tiltaksklasse === "Tiltaksklasse 3" && (formData.prosjekteringsmetode === "analyse" || formData.prosjekteringsmetode === "blanding") && (
+                      {autoTiltaksklasse && formData.tiltaksklasse && formData.tiltaksklasse !== autoTiltaksklasse && (
+                        <div className="space-y-1">
+                          <p className="text-xs text-amber-600">
+                            Automatisk beregnet: {autoTiltaksklasse}. Du har valgt en annen tiltaksklasse.
+                          </p>
+                          <Label className="text-xs">Begrunnelse for endring</Label>
+                          <Textarea
+                            className="min-h-[60px]"
+                            placeholder="Beskriv kort hvorfor tiltaksklassen er endret..."
+                            value={formData.tiltaksklasseBegrunnelse || ""}
+                            onChange={(e) => setFormData({...formData, tiltaksklasseBegrunnelse: e.target.value})}
+                          />
+                        </div>
+                      )}
+                      {formData.tiltaksklasse === "Tiltaksklasse 3" && (formData.prosjekteringsmetode === "analyse" || formData.prosjekteringsmetode === "blanding") && formData.tiltaksklasse === autoTiltaksklasse && (
                         <p className="text-xs text-amber-600 mt-1">
                           Tiltaksklasse 3 er satt fordi prosjekteringsmetode er {formData.prosjekteringsmetode === "analyse" ? "analyse" : "blandingsløsning"}.
                         </p>
