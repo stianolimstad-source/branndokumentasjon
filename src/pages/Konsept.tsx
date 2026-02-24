@@ -446,6 +446,8 @@ const Konsept = () => {
     brannspredningKommentar: "",
     brannseksjonBrannenergi: "", // "over400", "50-400", "under50"
     brannseksjonTiltak: "", // "normalt", "brannalarm", "sprinkler", "roykventilasjon"
+    innvendigHjorne: "nei" as "ja" | "nei",
+    innvendigHjorneAlternativ: "alt1" as "alt1" | "alt2", // alt1 = 8m, alt2 = 5m+5m
     brannseksjoner: "",
     brannseksjonerKommentar: "",
     brannceller: "",
@@ -1220,7 +1222,14 @@ const Konsept = () => {
                 new TableRow({
                   children: [
                     createTableCell("3.4 § 11-7 Brannseksjoner", true, 30),
-                    createTableCell(formData.brannseksjoner || "[Seksjonering beskrives]"),
+                    createTableCell(
+                      (formData.brannseksjoner || "[Seksjonering beskrives]") +
+                      (formData.innvendigHjorne === "ja"
+                        ? "\n\n" + (formData.innvendigHjorneAlternativ === "alt1"
+                          ? "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal seksjoneringsveggen forlenges minimum 8,0 meter forbi innvendig hjørne (jf. VTEK § 11-7, figur 1a, alternativ 1)."
+                          : "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal seksjoneringsveggen forlenges minimum 5,0 meter på hver side av innvendig hjørne (jf. VTEK § 11-7, figur 1a, alternativ 2).")
+                        : "")
+                    ),
                   ],
                 }),
                 new TableRow({
@@ -2878,6 +2887,47 @@ const Konsept = () => {
                         })()
                       )}
                       
+                      {/* Innvendig hjørne */}
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Label className="text-xs font-medium">Brannseksjoneringsveggen plasseres i innvendig hjørne?</Label>
+                          <Select
+                            value={formData.innvendigHjorne}
+                            onValueChange={(value: "ja" | "nei") => setFormData({...formData, innvendigHjorne: value})}
+                          >
+                            <SelectTrigger className="w-24 h-8">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="nei">Nei</SelectItem>
+                              <SelectItem value="ja">Ja</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {formData.innvendigHjorne === "ja" && (
+                          <div className="p-3 bg-muted rounded-md space-y-2">
+                            <Label className="text-xs font-medium block">Utforming for å hindre brannsmitte i innvendig hjørne:</Label>
+                            <RadioGroup
+                              value={formData.innvendigHjorneAlternativ}
+                              onValueChange={(value: "alt1" | "alt2") => setFormData({...formData, innvendigHjorneAlternativ: value})}
+                            >
+                              <div className="flex items-start space-x-2">
+                                <RadioGroupItem value="alt1" id="hjorne-alt1" />
+                                <Label htmlFor="hjorne-alt1" className="text-xs leading-snug cursor-pointer">
+                                  Alternativ 1: Seksjoneringsveggen forlenges minimum 8,0 meter forbi innvendig hjørne
+                                </Label>
+                              </div>
+                              <div className="flex items-start space-x-2">
+                                <RadioGroupItem value="alt2" id="hjorne-alt2" />
+                                <Label htmlFor="hjorne-alt2" className="text-xs leading-snug cursor-pointer">
+                                  Alternativ 2: Seksjoneringsveggen forlenges minimum 5,0 meter på hver side av innvendig hjørne
+                                </Label>
+                              </div>
+                            </RadioGroup>
+                          </div>
+                        )}
+                      </div>
+
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('brannseksjoner-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="brannseksjoner-kommentar" className={formData.brannseksjonerKommentar ? "" : "hidden"}>
