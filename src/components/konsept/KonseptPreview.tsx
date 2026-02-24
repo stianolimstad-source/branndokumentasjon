@@ -47,6 +47,14 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
         </div>
       </div>
 
+      {/* Sammendrag - egen side */}
+      {formData.sammendrag && (
+        <div className={pageStyle} style={pageWidth}>
+          <h2 className="font-bold mb-3">Sammendrag</h2>
+          <p className="whitespace-pre-wrap text-xs">{formData.sammendrag}</p>
+        </div>
+      )}
+
       {/* Innholdsfortegnelse - egen side */}
       <div className={pageStyle} style={pageWidth}>
         <h2 className="text-xl font-bold text-center mb-6 pb-4">
