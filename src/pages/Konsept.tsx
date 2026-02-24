@@ -21,6 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 import SendToKSDialog from "@/components/konsept/SendToKSDialog";
 import UpdateKSButton from "@/components/konsept/UpdateKSButton";
 import KonseptPreview from "@/components/konsept/KonseptPreview";
+import { UploadConceptDialog } from "@/components/konsept/UploadConceptDialog";
 
 // Mapping av bygningstype til risikoklasse basert på TEK17
 const bygningsTypeRisikoklasseMap: Record<string, string> = {
@@ -1605,6 +1606,41 @@ const Konsept = () => {
                           onChange={(e) => setConceptName(e.target.value)}
                         />
                       </div>
+
+                      {/* Upload existing concept */}
+                      {!conceptId && (
+                        <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg border border-dashed">
+                          <UploadConceptDialog onDataExtracted={(extracted) => {
+                            setFormData(prev => {
+                              const updated = { ...prev };
+                              // Map extracted fields to formData
+                              if (extracted.oppdragsgiver) updated.oppdragsgiver = extracted.oppdragsgiver;
+                              if (extracted.prosjektnavn) updated.prosjektnavn = extracted.prosjektnavn;
+                              if (extracted.adresse) updated.adresse = extracted.adresse;
+                              if (extracted.gnr) updated.gnr = extracted.gnr;
+                              if (extracted.bnr) updated.bnr = extracted.bnr;
+                              if (extracted.kommune) updated.kommune = extracted.kommune;
+                              if (extracted.tiltakstype) updated.tiltakstype = extracted.tiltakstype;
+                              if (extracted.tiltaksbeskrivelse) updated.tiltaksbeskrivelse = extracted.tiltaksbeskrivelse;
+                              if (extracted.bygningstype) updated.bygningstype = extracted.bygningstype;
+                              if (extracted.areal) updated.areal = extracted.areal;
+                              if (extracted.etasjer) updated.etasjer = extracted.etasjer;
+                              if (extracted.tiltakshaver) updated.tiltakshaver = extracted.tiltakshaver;
+                              if (extracted.ansvarligSoker) updated.ansvarligSoker = extracted.ansvarligSoker;
+                              if (extracted.risikoklasse) updated.risikoklasse = extracted.risikoklasse;
+                              if (extracted.prosjekteringsmetode && ["preakseptert", "analyse", "blanding"].includes(extracted.prosjekteringsmetode)) {
+                                updated.prosjekteringsmetode = extracted.prosjekteringsmetode as "preakseptert" | "analyse" | "blanding";
+                              }
+                              if (extracted.avgrensning) updated.avgrensning = extracted.avgrensning;
+                              if (extracted.tilleggskrav) updated.tilleggskrav = extracted.tilleggskrav;
+                              if (extracted.bygningshoyde) updated.bygningshoyde = extracted.bygningshoyde;
+                              if (extracted.sammendrag) updated.sammendrag = extracted.sammendrag;
+                              return updated;
+                            });
+                          }} />
+                          <span className="text-xs text-muted-foreground">Har du et eksisterende konsept eller forprosjekt? Last det opp for å fylle ut automatisk.</span>
+                        </div>
+                      )}
               <Accordion type="multiple" defaultValue={["kap1"]} className="w-full">
                 {/* Sammendrag */}
                 <AccordionItem value="sammendrag" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
