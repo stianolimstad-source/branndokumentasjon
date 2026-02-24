@@ -797,17 +797,19 @@ const Konsept = () => {
   const exportToWord = async () => {
     const tableBorders = {
       top: { style: BorderStyle.SINGLE, size: 1, color: "666666" },
-      bottom: { style: BorderStyle.SINGLE, size: 1, color: "666666" },
-      left: { style: BorderStyle.SINGLE, size: 1, color: "666666" },
-      right: { style: BorderStyle.SINGLE, size: 1, color: "666666" },
+      bottom: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
+      left: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
+      right: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
     };
 
     const createTableCell = (text: string, bold: boolean = false, width?: number) => {
       return new TableCell({
         borders: tableBorders,
         width: width ? { size: width, type: WidthType.PERCENTAGE } : undefined,
+        margins: { top: 40, bottom: 40, left: 80, right: 80 },
         children: [
           new Paragraph({
+            spacing: { before: 40, after: 40 },
             children: [new TextRun({ text, bold, size: 20 })],
           }),
         ],
@@ -982,37 +984,33 @@ const Konsept = () => {
               children: [new TextRun({ text: "1.1 Informasjon om tiltaket", bold: true, size: 24 })],
               spacing: { before: 200, after: 100 },
             }),
-            // Tabell 1.1
+            // Tabell 1.1 - matching preview
             new Table({
               width: { size: 100, type: WidthType.PERCENTAGE },
               rows: [
-                new TableRow({
-                  children: [
-                    createTableCell("Bygningstype", true, 33),
-                    createTableCell(formData.bygningstype || "[Angis]"),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    createTableCell("Bruttoareal", true, 33),
-                    createTableCell(`${formData.areal || "[Angis]"} m²`),
-                  ],
-                }),
-                new TableRow({
-                  children: [
-                    createTableCell("Antall etasjer", true, 33),
-                    createTableCell(formData.etasjer || "[Angis]"),
-                  ],
-                }),
+                new TableRow({ children: [createTableCell("Oppdragsgiver", true, 33), createTableCell(formData.oppdragsgiver || "[Angis]")] }),
+                new TableRow({ children: [createTableCell("Prosjektnavn", true, 33), createTableCell(formData.prosjektnavn || "[Angis]")] }),
+                new TableRow({ children: [createTableCell("Adresse", true, 33), createTableCell(formData.adresse || "[Angis]")] }),
+                new TableRow({ children: [createTableCell("Gnr/Bnr", true, 33), createTableCell(formData.gnr || formData.bnr ? `${formData.gnr || "—"}/${formData.bnr || "—"}` : "[Angis]")] }),
+                new TableRow({ children: [createTableCell("Kommune", true, 33), createTableCell(formData.kommune || "[Angis]")] }),
+                new TableRow({ children: [createTableCell("Type tiltak", true, 33), createTableCell(formData.tiltakstype || "[Angis]")] }),
+                new TableRow({ children: [createTableCell("Beskrivelse av tiltaket", true, 33), createTableCell(formData.tiltaksbeskrivelse || "[Angis]")] }),
+                new TableRow({ children: [createTableCell("Særskilt brannobjekt", true, 33), createTableCell(formData.saerskiltBrannobjekt || "[Angis]")] }),
               ],
             }),
             new Paragraph({
               children: [new TextRun({ text: "1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)", bold: true, size: 24 })],
               spacing: { before: 200, after: 100 },
             }),
-            new Paragraph({
-              text: "[Ansvarsrett og tiltaksklasse angis her]",
-              spacing: { after: 100 },
+            new Table({
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              rows: [
+                new TableRow({ children: [createTableCell("Tiltakshaver", true, 33), createTableCell(formData.tiltakshaver || "[Angis]")] }),
+                new TableRow({ children: [createTableCell("Ansvarlig søker (SØK)", true, 33), createTableCell(formData.ansvarligSoker || "[Angis]")] }),
+                new TableRow({ children: [createTableCell("Kunde", true, 33), createTableCell(formData.kunde || "[Angis]")] }),
+                new TableRow({ children: [createTableCell("PRO RiBr", true, 33), createTableCell(formData.proRibr || "[Angis]")] }),
+                new TableRow({ children: [createTableCell("KPR RiBr", true, 33), createTableCell(formData.kprRibr || "[Angis]")] }),
+              ],
             }),
             new Paragraph({
               children: [new TextRun({ text: "1.3 Prosjekteringsmetode", bold: true, size: 24 })],
@@ -1028,7 +1026,7 @@ const Konsept = () => {
             }),
             ...((formData.prosjekteringsmetode === "analyse" || formData.prosjekteringsmetode === "blanding") ? [
               new Paragraph({
-                children: [new TextRun({ text: "Beskrivelse av fravik:", bold: true })],
+                children: [new TextRun({ text: "Beskrivelse av fravik:", bold: true, size: 20 })],
                 spacing: { after: 50 },
               }),
               new Paragraph({
@@ -1037,7 +1035,7 @@ const Konsept = () => {
               }),
               ...(formData.tiltaksklasse === "Tiltaksklasse 1" ? [
                 new Paragraph({
-                  children: [new TextRun({ text: "Merk: Prosjektet er i tiltaksklasse 1. Fravik fra preaksepterte ytelser krever normalt høyere tiltaksklasse.", bold: true, italics: true })],
+                  children: [new TextRun({ text: "Merk: Prosjektet er i tiltaksklasse 1. Fravik fra preaksepterte ytelser krever normalt høyere tiltaksklasse.", bold: true, italics: true, size: 20 })],
                   spacing: { after: 100 },
                 }),
               ] : []),
@@ -1052,10 +1050,6 @@ const Konsept = () => {
             }),
             new Paragraph({
               children: [new TextRun({ text: "1.5 Gjeldende regelverk", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: "1.4 Gjeldende regelverk", bold: true, size: 24 })],
               spacing: { before: 200, after: 100 },
             }),
             new Paragraph({
