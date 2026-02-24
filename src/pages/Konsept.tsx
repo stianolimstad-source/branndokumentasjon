@@ -2737,7 +2737,7 @@ const Konsept = () => {
                               value={formData.eksplosjonBeskrivelse}
                               onChange={(e) => setFormData({...formData, eksplosjonBeskrivelse: e.target.value})}
                               placeholder="Beskriv rommet og typen eksplosjonsfare..."
-                              className="bg-white"
+                              className=""
                             />
                           </div>
                           <div>
