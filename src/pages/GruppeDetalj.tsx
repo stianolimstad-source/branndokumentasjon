@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Shield, User, FolderOpen, Building, FileText, ChevronDown, ChevronRight, UserPlus, ArrowLeft } from "lucide-react";
+import { Users, Shield, User, FolderOpen, Building, FileText, ChevronDown, ChevronRight, UserPlus, ArrowLeft, Upload, Trash2, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
@@ -45,12 +45,16 @@ const GruppeDetalj = () => {
 
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState<string | null>(null);
+  const [groupLogoUrl, setGroupLogoUrl] = useState<string | null>(null);
+  const [profileLogoUrl, setProfileLogoUrl] = useState<string | null>(null);
   const [members, setMembers] = useState<GroupMember[]>([]);
   const [memberProfiles, setMemberProfiles] = useState<Record<string, MemberProfile>>({});
   const [sharedProjects, setSharedProjects] = useState<SharedProject[]>([]);
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [showAddMember, setShowAddMember] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isAdmin = members.some((m) => m.user_id === user?.id && m.role === "admin");
 
@@ -78,6 +82,17 @@ const GruppeDetalj = () => {
     if (groupRes.data) {
       setGroupName(groupRes.data.name);
       setGroupDescription(groupRes.data.description);
+      setGroupLogoUrl((groupRes.data as any).logo_url || null);
+    }
+
+    // Fetch user's own profile logo
+    if (user) {
+      const { data: profileData } = await supabase
+        .from("profiles")
+        .select("logo_url")
+        .eq("id", user.id)
+        .single();
+      setProfileLogoUrl((profileData as any)?.logo_url || null);
     }
 
     if (membersRes.data) {
@@ -138,6 +153,50 @@ const GruppeDetalj = () => {
     setLoading(false);
   };
 
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user || !id) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Velg en bildefil (PNG, JPG, SVG)");
+      return;
+    }
+    setUploading(true);
+    const ext = file.name.split(".").pop();
+    const filePath = `groups/${id}/logo.${ext}`;
+    await supabase.storage.from("company-logos").remove([filePath]);
+    const { error: uploadError } = await supabase.storage.from("company-logos").upload(filePath, file, { upsert: true });
+    if (uploadError) {
+      toast.error("Kunne ikke laste opp logo");
+      setUploading(false);
+      return;
+    }
+    const { data: urlData } = supabase.storage.from("company-logos").getPublicUrl(filePath);
+    await supabase.from("contact_groups").update({ logo_url: urlData.publicUrl } as any).eq("id", id);
+    setGroupLogoUrl(urlData.publicUrl);
+    setUploading(false);
+    toast.success("Logo lastet opp");
+  };
+
+  const handleUseProfileLogo = async () => {
+    if (!profileLogoUrl || !id) return;
+    await supabase.from("contact_groups").update({ logo_url: profileLogoUrl } as any).eq("id", id);
+    setGroupLogoUrl(profileLogoUrl);
+    toast.success("Profillogo brukt for gruppen");
+  };
+
+  const handleRemoveLogo = async () => {
+    if (!id) return;
+    setUploading(true);
+    const { data: files } = await supabase.storage.from("company-logos").list(`groups/${id}`);
+    if (files?.length) {
+      await supabase.storage.from("company-logos").remove(files.map((f) => `groups/${id}/${f.name}`));
+    }
+    await supabase.from("contact_groups").update({ logo_url: null } as any).eq("id", id);
+    setGroupLogoUrl(null);
+    setUploading(false);
+    toast.success("Logo fjernet");
+  };
+
   if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -158,6 +217,18 @@ const GruppeDetalj = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8 max-w-3xl">
+        <div className="flex items-center gap-4 mb-6">
+          {groupLogoUrl && (
+            <div className="h-14 w-14 rounded-lg border bg-white flex items-center justify-center p-1 shrink-0">
+              <img src={groupLogoUrl} alt="Gruppelogo" className="max-h-full max-w-full object-contain" />
+            </div>
+          )}
+          <div>
+            <h2 className="text-3xl font-bold">{groupName}</h2>
+            {groupDescription && <p className="text-muted-foreground mt-1">{groupDescription}</p>}
+          </div>
+        </div>
+
         <Tabs defaultValue="medlemmer">
           <TabsList className="mb-6">
             <TabsTrigger value="medlemmer" className="flex items-center gap-2">
@@ -166,8 +237,14 @@ const GruppeDetalj = () => {
             </TabsTrigger>
             <TabsTrigger value="delt" className="flex items-center gap-2">
               <FolderOpen className="h-4 w-4" />
-              Delte prosjekter og dokumenter
+              Delte prosjekter
             </TabsTrigger>
+            {isAdmin && (
+              <TabsTrigger value="innstillinger" className="flex items-center gap-2">
+                <ImageIcon className="h-4 w-4" />
+                Logo
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="medlemmer">
@@ -339,6 +416,52 @@ const GruppeDetalj = () => {
               </div>
             )}
           </TabsContent>
+
+          {isAdmin && (
+            <TabsContent value="innstillinger">
+              <Card className="shadow-soft">
+                <CardContent className="py-6 space-y-4">
+                  <h3 className="font-semibold">Gruppelogo</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Logoen vises på gruppesiden og kan brukes i dokumenter.
+                  </p>
+
+                  {groupLogoUrl ? (
+                    <div className="flex items-center gap-4">
+                      <div className="h-20 w-40 border rounded-md flex items-center justify-center bg-white p-2">
+                        <img src={groupLogoUrl} alt="Gruppelogo" className="max-h-full max-w-full object-contain" />
+                      </div>
+                      <Button variant="outline" size="sm" onClick={handleRemoveLogo} disabled={uploading}>
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Fjern
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      <Button variant="outline" onClick={() => fileInputRef.current?.click()} disabled={uploading}>
+                        <Upload className="h-4 w-4 mr-2" />
+                        {uploading ? "Laster opp..." : "Last opp logo"}
+                      </Button>
+                      {profileLogoUrl && (
+                        <Button variant="outline" onClick={handleUseProfileLogo}>
+                          <User className="h-4 w-4 mr-2" />
+                          Bruk logo fra min profil
+                        </Button>
+                      )}
+                    </div>
+                  )}
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleLogoUpload}
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          )}
         </Tabs>
       </div>
 
