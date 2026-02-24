@@ -439,6 +439,7 @@ const Konsept = () => {
     eksplosjonRelevant: "", // "relevant" eller "ikke_relevant"
     eksplosjon: "",
     bygningshoyde: "", // Høyde på bygget i meter
+    avstandNabobygg: "", // Avstand til nabobygg i meter
     spesifikkBrannenergi: "", // For brannvegg: "inntil400", "400-600", "600-800"
     brannspredning: "",
     brannspredningKommentar: "",
@@ -2767,10 +2768,21 @@ const Konsept = () => {
                           placeholder="Angi høyde i meter..."
                         />
                       </div>
+
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Avstand til nabobygg (meter)</Label>
+                        <Input 
+                          type="number"
+                          step="0.1"
+                          value={formData.avstandNabobygg}
+                          onChange={(e) => setFormData({...formData, avstandNabobygg: e.target.value})}
+                          placeholder="Angi avstand i meter..."
+                        />
+                      </div>
                       
-                      {parseFloat(formData.bygningshoyde) > 9 && (
+                      {parseFloat(formData.bygningshoyde) > 9 && parseFloat(formData.avstandNabobygg || "0") < 8 && (
                         <div className="p-3 bg-orange-50 border border-orange-200 rounded-md">
-                          <p className="text-sm font-medium text-orange-800 mb-2">Bygning over 9 meter - krav til brannvegg</p>
+                          <p className="text-sm font-medium text-orange-800 mb-2">Bygning over 9 meter med avstand under 8 m - krav til brannvegg</p>
                           <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
                           <Select 
                             value={formData.spesifikkBrannenergi} 
@@ -2788,6 +2800,12 @@ const Konsept = () => {
                         </div>
                       )}
                       
+                      {parseFloat(formData.bygningshoyde) > 9 && parseFloat(formData.avstandNabobygg || "0") >= 8 && (
+                        <div className="p-3 bg-green-50 border border-green-200 rounded-md">
+                          <p className="text-sm font-medium text-green-800">Avstand til nabobygg er 8 meter eller mer – krav til brannvegg gjelder ikke. Branncellevegg benyttes.</p>
+                        </div>
+                      )}
+
                       {parseFloat(formData.bygningshoyde) > 0 && parseFloat(formData.bygningshoyde) <= 9 && (
                         <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
                           <p className="text-sm font-medium text-blue-800">Bygning under eller lik 9 meter - krav til branncellevegg</p>
