@@ -532,12 +532,17 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               <td className="border border-gray-400 p-2">{formData.bygningshoyde ? `${formData.bygningshoyde} meter` : "[Ikke angitt]"}</td>
               <td className="border border-gray-400 p-2 align-top">-</td>
             </tr>
-            {parseFloat(formData.bygningshoyde) > 9 ? (
+            <tr>
+              <td className="border border-gray-400 p-2 align-top">Avstand til nabobygg</td>
+              <td className="border border-gray-400 p-2">{formData.avstandNabobygg ? `${formData.avstandNabobygg} meter` : "[Ikke angitt]"}</td>
+              <td className="border border-gray-400 p-2 align-top">-</td>
+            </tr>
+            {parseFloat(formData.bygningshoyde) > 9 && parseFloat(formData.avstandNabobygg || "0") < 8 ? (
               <>
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Krav til brannvegg</td>
                   <td className="border border-gray-400 p-2">
-                    Brannvegg (bygning over 9 meter)
+                    Brannvegg (bygning over 9 meter, avstand til nabobygg under 8 meter)
                     {formData.spesifikkBrannenergi && (
                       <div className="mt-2">
                         <p className="font-semibold">Brannmotstand basert på spesifikk brannenergi:</p>
@@ -568,7 +573,15 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                   <td className="border border-gray-400 p-2 align-top">RIB</td>
                 </tr>
               </>
-            ) : parseFloat(formData.bygningshoyde) > 0 ? (
+            ) : (parseFloat(formData.bygningshoyde) > 9 && parseFloat(formData.avstandNabobygg || "0") >= 8) ? (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Krav til skillevegg</td>
+                <td className="border border-gray-400 p-2">
+                  Avstand til nabobygg er 8 meter eller mer. Krav til brannvegg gjelder ikke. Branncellebegrensende bygningsdel benyttes i stedet.
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIB</td>
+              </tr>
+            ) : parseFloat(formData.bygningshoyde) > 0 && parseFloat(formData.bygningshoyde) <= 9 ? (
               <>
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Krav til skillevegg</td>
