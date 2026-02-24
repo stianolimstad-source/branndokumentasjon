@@ -899,11 +899,15 @@ const Konsept = () => {
             new Paragraph({ text: "    4.2 Driftsfasen", spacing: { after: 50 } }),
             new Paragraph({ children: [new TextRun({ text: "5. Revisjonshistorikk", bold: true, size: 22 })], spacing: { after: 50 } }),
             new Paragraph({ children: [new TextRun({ text: "6. Litteraturhenvisninger", bold: true, size: 22 })], spacing: { after: 200 } }),
-            
+          ],
+        },
+        {
+          properties: {},
+          children: [
             // 1. Innledning
             new Paragraph({
               children: [new TextRun({ text: "1. Innledning", bold: true, size: 28 })],
-              spacing: { before: 400, after: 200 },
+              spacing: { before: 200, after: 200 },
             }),
             new Paragraph({
               children: [new TextRun({ text: "1.1 Informasjon om tiltaket", bold: true, size: 24 })],
