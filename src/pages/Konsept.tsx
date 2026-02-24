@@ -1149,7 +1149,7 @@ const Konsept = () => {
               spacing: { before: 200, after: 100 },
             }),
             new Paragraph({
-              text: "[Eventuelle tilleggskrav beskrives]",
+              text: formData.tilleggskrav || "[Eventuelle tilleggskrav beskrives]",
               spacing: { after: 100 },
             }),
 
@@ -2628,6 +2628,7 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Eventuelle tilleggskrav fra tiltakshaver, myndigheter eller bruker</Label>
                         <Textarea 
+                          value={formData.tilleggskrav || ""}
                           onChange={(e) => setFormData({...formData, tilleggskrav: e.target.value})}
                         />
                       </div>

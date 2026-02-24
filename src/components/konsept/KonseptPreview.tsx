@@ -334,7 +334,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
         )}
 
         <h3 className="font-semibold mb-2">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</h3>
-        <p className="ml-4 mb-3">[Eventuelle tilleggskrav beskrives]</p>
+        <p className="ml-4 mb-3 whitespace-pre-wrap">{formData.tilleggskrav || "[Eventuelle tilleggskrav beskrives]"}</p>
       </section>
       <PageFooter pageNum={hasSammendrag ? 4 : 3} />
       </div>
