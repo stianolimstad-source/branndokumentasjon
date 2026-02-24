@@ -656,7 +656,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               return (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Generelt</td>
-                  <td className="border border-gray-400 p-2">Byggverk må oppdeles i seksjoner minst som angitt i tabell 1.</td>
+                  <td className="border border-gray-400 p-2">Byggverk skal deles opp i brannseksjoner for å sikre liv og helse der rømning og redning kan ta lang tid, hindre urimelig store økonomiske eller materielle tap, og bidra til at en brann, med påregnelig slokkeinnsats, begrenses til den brannseksjonen der den startet.</td>
                   <td className="border border-gray-400 p-2 align-top">RIBr</td>
                 </tr>
               );
