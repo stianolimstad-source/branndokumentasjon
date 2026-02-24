@@ -470,7 +470,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                   return (
                     <tr>
                       <td className="border border-gray-400 p-2">Generelt</td>
-                      <td className="border border-gray-400 p-2">{genereltTekst}</td>
+                      <td className="border border-gray-400 p-2">
+                        <p>{genereltTekst}</p>
+                        {formData.balkongRelevant && (
+                          <p className="mt-2">Balkonger, utkragede bygningsdeler og lignende må ha forsvarlig innfesting for å hindre nedfall som kan skade rednings- og slokkemannskapene og deres materiell under førsteinnsatsen. Tyngre bygningsdeler, som for eksempel balkonger, må forankres i byggverkets hovedbæresystem.</p>
+                        )}
+                      </td>
                       <td className="border border-gray-400 p-2">RIB</td>
                     </tr>
                   );
