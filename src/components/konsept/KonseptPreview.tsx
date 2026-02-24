@@ -218,7 +218,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               <tr className="bg-gray-100">
                 <th className="border border-gray-400 p-2 text-left">Dokument</th>
                 <th className="border border-gray-400 p-2 text-left">Utarbeidet av / firma</th>
-                <th className="border border-gray-400 p-2 text-left">Dato</th>
+                <th className="border border-gray-400 p-2 text-left">Datert</th>
               </tr>
             </thead>
             <tbody>
