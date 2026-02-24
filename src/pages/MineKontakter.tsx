@@ -19,6 +19,7 @@ interface ContactGroup {
   description: string | null;
   user_id: string;
   created_at: string;
+  logo_url: string | null;
 }
 
 interface Contact {
@@ -83,7 +84,7 @@ const MineKontakter = () => {
       supabase.from("contacts").select("*").order("name"),
       supabase.from("group_members").select("*"),
     ]);
-    if (groupsRes.data) setGroups(groupsRes.data);
+    if (groupsRes.data) setGroups(groupsRes.data as unknown as ContactGroup[]);
     if (contactsRes.data) setContacts(contactsRes.data);
     if (membersRes.data) setGroupMembers(membersRes.data);
     setLoading(false);
@@ -254,6 +255,11 @@ const MineKontakter = () => {
                 return (
                   <Card key={group.id} className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer" onClick={() => openGroupDetail(group)}>
                     <CardHeader className="pb-2">
+                      {group.logo_url && (
+                        <div className="h-16 w-full flex items-center justify-center mb-2">
+                          <img src={group.logo_url} alt={`${group.name} logo`} className="max-h-full max-w-full object-contain" />
+                        </div>
+                      )}
                       <div className="flex items-start justify-between">
                         <CardTitle className="text-lg">{group.name}</CardTitle>
                         {myRole === "admin" && (
