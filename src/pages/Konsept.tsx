@@ -1256,23 +1256,71 @@ const Konsept = () => {
                   children: [
                     createTableCell("3.4 § 11-7 Brannseksjoner", true, 30),
                     createTableCell(
-                      (formData.brannseksjoner || "[Seksjonering beskrives]") +
-                      (isSeksjoneringRequired(formData.areal, formData.brannseksjonBrannenergi, formData.brannseksjonTiltak || "normalt")
-                        ? "\n\nBrannseksjonering er påkrevd da bruttoarealet (" + formData.areal + " m²) overskrider tillatt areal uten seksjonering.\n\nPreaksepterte ytelser for seksjoneringsveggen (VTEK § 11-7):\n" +
-                          seksjoneringPreaksepterteYtelser.map((y, i) => (i + 1) + ". " + y).join("\n")
-                        : "") +
-                      (formData.innvendigHjorne === "ja"
-                        ? "\n\n" + (formData.innvendigHjorneAlternativ === "alt1"
-                          ? "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal seksjoneringsveggen forlenges minimum 8,0 meter forbi innvendig hjørne (jf. VTEK § 11-7, figur 1a, alternativ 1)."
-                          : "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal seksjoneringsveggen forlenges minimum 5,0 meter på hver side av innvendig hjørne (jf. VTEK § 11-7, figur 1a, alternativ 2).")
-                        : "")
+                      (() => {
+                        const erPakrevd = isSeksjoneringRequired(formData.areal, formData.brannseksjonBrannenergi, formData.brannseksjonTiltak || "normalt");
+                        const arealNum = parseFloat(formData.areal) || 0;
+                        
+                        // Beregn maks areal for "ikke krav"-tekst
+                        const grenser: Record<string, Record<string, number>> = {
+                          "over400": { normalt: 800, brannalarm: 1200, sprinkler: 5000, roykventilasjon: 0 },
+                          "50-400": { normalt: 1200, brannalarm: 1800, sprinkler: 10000, roykventilasjon: 4000 },
+                          "under50": { normalt: 1800, brannalarm: 2700, sprinkler: Infinity, roykventilasjon: 10000 },
+                        };
+                        const g = formData.brannseksjonBrannenergi ? grenser[formData.brannseksjonBrannenergi] : null;
+                        const tiltak = formData.brannseksjonTiltak || "normalt";
+                        const maksAreal = g ? (g[tiltak] ?? g.normalt) : null;
+                        
+                        if (g && maksAreal !== null && !erPakrevd) {
+                          return `Generelt:\nBruttoarealet (${arealNum} m²) er innenfor tillatt areal uten brannseksjonering (${maksAreal === Infinity ? "ubegrenset" : maksAreal + " m²"}). Det er derfor ikke krav til brannseksjonering for dette byggverket.`;
+                        }
+                        
+                        // Brannmotstand basert på brannklasse og brannenergi (VTEK tabell 2)
+                        const brannmotstandTabell: Record<string, Record<string, string>> = {
+                          "BKL1": { "under400": "REI 90-M A2-s1,d0 [A 90]", "400-600": "REI 120-M A2-s1,d0 [A 120]", "600-800": "REI 180-M A2-s1,d0 [A 180]" },
+                          "BKL2": { "under400": "REI 120-M A2-s1,d0 [A 120]", "400-600": "REI 180-M A2-s1,d0 [A 180]", "600-800": "REI 240-M A2-s1,d0 [A 240]" },
+                          "BKL3": { "under400": "REI 120-M A2-s1,d0 [A 120]", "400-600": "REI 180-M A2-s1,d0 [A 180]", "600-800": "REI 240-M A2-s1,d0 [A 240]" },
+                        };
+                        const brannmotstand = brannmotstandTabell[formData.brannklasse]?.[formData.seksjoneringsvegBrannenergi] || "[Brannklasse og/eller brannenergi ikke angitt]";
+                        
+                        let tekst = "Generelt:\nByggverk skal deles opp i brannseksjoner for å sikre liv og helse der rømning og redning kan ta lang tid, hindre urimelig store økonomiske eller materielle tap, og bidra til at en brann, med påregnelig slokkeinnsats, begrenses til den brannseksjonen der den startet.";
+                        
+                        if (formData.brannseksjoner) {
+                          tekst += "\n\nBeskrivelse:\n" + formData.brannseksjoner;
+                        }
+                        
+                        if (erPakrevd) {
+                          tekst += "\n\nSeksjoneringsveggen:\nBrannseksjonering er påkrevd da bruttoarealet (" + formData.areal + " m²) overskrider tillatt areal uten seksjonering. Seksjoneringsveggen skal oppfylle følgende preaksepterte ytelser:\n\n" +
+                            "• Takkonstruksjonen må ikke være kontinuerlig over seksjoneringsveggen på en slik måte at en kollaps på den ene siden medfører reduksjon av konstruksjonens bæreevne og brannmotstand på den andre siden.\n" +
+                            "• Konstruksjoner som ligger inntil seksjoneringsveggen må kunne bevege seg fritt ved temperaturendringer, uten at veggens branntekniske egenskaper reduseres.\n" +
+                            "• Seksjoneringsveggens avslutning mot tak og fasade må være utformet og utført for å hindre brannspredning mellom ulike seksjoner.\n" +
+                            "• Der seksjoner ligger inntil hverandre i et innvendig hjørne, må det treffes særskilte tiltak for å hindre brannspredning, jf. figur 1a og 1b.\n" +
+                            "• Seksjoneringsveggen må ha brannmotstand minst " + brannmotstand + " (jf. VTEK § 11-7, tabell 2).\n" +
+                            "• Seksjoneringsveggen må i sin helhet bestå av materialer som tilfredsstiller klasse A2-s1,d0 [ubrennbare] og må kunne motstå mekanisk påkjenning.\n" +
+                            "• Dersom mekanisk motstandsevne (M) ikke er dokumentert ved prøvning, må seksjoneringsveggen utføres i tunge materialer som mur, betong eller lignende.\n" +
+                            "• Seksjoneringsveggen må føres minimum 0,5 meter over høyeste tilstøtende tak, med mindre taket har brannmotstand minst EI 60 A2-s1,d0 [A 60].\n" +
+                            "• Seksjoneringsveggen må være slik utført at den blir stående selv om byggverket på den ene eller andre siden raser sammen.";
+                          
+                          if (formData.innvendigHjorne === "ja") {
+                            tekst += "\n• " + (formData.innvendigHjorneAlternativ === "alt1"
+                              ? "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal seksjoneringsveggen forlenges minimum 8,0 meter forbi innvendig hjørne (jf. VTEK § 11-7, figur 1a, alternativ 1)."
+                              : "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal seksjoneringsveggen forlenges minimum 5,0 meter på hver side av innvendig hjørne (jf. VTEK § 11-7, figur 1a, alternativ 2).");
+                          }
+                        }
+                        
+                        return tekst;
+                      })()
                     ),
                   ],
                 }),
                 new TableRow({
                   children: [
                     createTableCell("3.5 § 11-8 Brannceller", true, 30),
-                    createTableCell(formData.branncellerKommentar || "[Branncelleinndeling beskrives]"),
+                    createTableCell(
+                      "Generelt:\nByggverk skal deles opp i brannceller på en hensiktsmessig måte. Områder med ulik risiko for liv og helse eller ulik fare for at brann oppstår, skal være egne brannceller med mindre andre tiltak gir likeverdig sikkerhet.\n\nBrannceller skal være utført slik at de forhindrer spredning av brann og branngasser til andre brannceller i den tiden som er nødvendig for rømning og redning." +
+                      (formData.brannklasse ? "\n\nBranncellebegrensende bygningsdel - generelt: " + 
+                        (formData.brannklasse === "BKL1" ? "EI 30 [B 30]" : formData.brannklasse === "BKL2" ? "EI 60 [B 60]" : "EI 60 A2-s1,d0 [A 60]") : "") +
+                      (formData.branncellerKommentar ? "\n\n" + formData.branncellerKommentar : "")
+                    ),
                   ],
                 }),
                 new TableRow({
