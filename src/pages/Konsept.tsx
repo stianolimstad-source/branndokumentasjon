@@ -2103,7 +2103,7 @@ const Konsept = () => {
                               <div>
                                 <Label className="text-xs">Utarbeidet av / firma</Label>
                                 <Input 
-                                  placeholder="F.eks. Rambøll AS"
+                                  placeholder={authorInfo?.company ? `F.eks. ${authorInfo.company}` : "Firma / person"}
                                   value={doc.utarbeidetAv || ""}
                                   onChange={(e) => {
                                     const updated = [...(Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : [])];
