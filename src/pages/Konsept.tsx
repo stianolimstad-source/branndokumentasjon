@@ -1034,7 +1034,7 @@ const Konsept = () => {
                     children: [
                       createTableCell("Dokument", true, 50),
                       createTableCell("Utarbeidet av / firma", true, 30),
-                      createTableCell("Dato", true, 20),
+                      createTableCell("Datert", true, 20),
                     ],
                   }),
                   ...formData.grunnlagsdokumenter.map((doc) =>
@@ -2113,7 +2113,7 @@ const Konsept = () => {
                                 />
                               </div>
                               <div>
-                                <Label className="text-xs">Dato</Label>
+                                <Label className="text-xs">Datert</Label>
                                 <Input 
                                   type="date"
                                   value={doc.dato}
