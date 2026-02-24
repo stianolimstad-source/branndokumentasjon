@@ -18,7 +18,8 @@ function cell(text: string, bold = false, width?: number, shading?: typeof secti
     borders: tableBorders,
     width: width ? { size: width, type: WidthType.PERCENTAGE } : undefined,
     shading,
-    children: [new Paragraph({ children: [new TextRun({ text, bold, size: 20 })] })],
+    margins: { top: 40, bottom: 40, left: 80, right: 80 },
+    children: [new Paragraph({ spacing: { before: 40, after: 40 }, children: [new TextRun({ text, bold, size: 20 })] })],
   });
 }
 
@@ -27,7 +28,11 @@ function multiLineCell(lines: string[], width?: number, shading?: typeof section
     borders: tableBorders,
     width: width ? { size: width, type: WidthType.PERCENTAGE } : undefined,
     shading,
-    children: lines.map(line => new Paragraph({ children: [new TextRun({ text: line, size: 20 })] })),
+    margins: { top: 40, bottom: 40, left: 80, right: 80 },
+    children: lines.map((line, i) => new Paragraph({
+      spacing: { before: i === 0 ? 40 : 20, after: i === lines.length - 1 ? 40 : 20 },
+      children: [new TextRun({ text: line, size: 20 })],
+    })),
   });
 }
 
@@ -38,7 +43,8 @@ function sectionHeaderRow(title: string): TableRow {
         columnSpan: 3,
         borders: tableBorders,
         shading: sectionShading,
-        children: [new Paragraph({ spacing: { before: 80, after: 80 }, children: [new TextRun({ text: title, bold: true, size: 20 })] })],
+        margins: { top: 40, bottom: 40, left: 80, right: 80 },
+        children: [new Paragraph({ spacing: { before: 60, after: 60 }, children: [new TextRun({ text: title, bold: true, size: 20 })] })],
       }),
     ],
   });
@@ -61,7 +67,8 @@ function subSectionHeaderRow(title: string): TableRow {
         columnSpan: 3,
         borders: tableBorders,
         shading: subSectionShading,
-        children: [new Paragraph({ children: [new TextRun({ text: title, bold: true, size: 20 })] })],
+        margins: { top: 40, bottom: 40, left: 80, right: 80 },
+        children: [new Paragraph({ spacing: { before: 40, after: 40 }, children: [new TextRun({ text: title, bold: true, size: 20 })] })],
       }),
     ],
   });
