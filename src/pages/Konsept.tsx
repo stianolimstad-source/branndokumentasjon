@@ -437,6 +437,7 @@ const Konsept = () => {
     baereevneUnntak: [] as string[],
     baereevneKommentar: "",
     eksplosjonRelevant: "", // "relevant" eller "ikke_relevant"
+    eksplosjonBeskrivelse: "", // Beskrivelse av rom og type eksplosjonsfare
     eksplosjon: "",
     bygningshoyde: "", // Høyde på bygget i meter
     avstandNabobygg: "", // Avstand til nabobygg i meter
@@ -2729,15 +2730,31 @@ const Konsept = () => {
                         </div>
                       )}
                       {formData.eksplosjonRelevant === "relevant" && (
-                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-                          <Label className="text-xs font-medium mb-2 block text-blue-700">Preaksepterte ytelser (jf. VTEK § 11-5)</Label>
-                          <ol className="text-xs text-blue-700 space-y-2 list-decimal list-inside">
-                            <li>Rom hvor det kan forekomme fare for eksplosjon, må utgjøre en egen branncelle.</li>
-                            <li>Rom hvor det kan forekomme fare for eksplosjon, må ha minst én trykkavlastningsflate for å sikre mot skader på personer og byggverket forøvrig.</li>
-                            <li>Avlastet trykk må ledes bort i sikker retning.</li>
-                            <li>Trykkavlastningsflater må ikke plasseres i takflater og lignende med mindre det dokumenteres at snølast ikke er til hinder for avlastningsflatens funksjon.</li>
-                            <li>Bærende og branncellebegrensende bygningsdeler må om nødvendig forsterkes for å opprettholde rømningsveiers funksjon og forhindre spredning av brann til andre brannceller.</li>
-                          </ol>
+                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md space-y-3">
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block text-blue-700">Beskrivelse av rom og type eksplosjonsfare</Label>
+                            <Textarea 
+                              value={formData.eksplosjonBeskrivelse}
+                              onChange={(e) => setFormData({...formData, eksplosjonBeskrivelse: e.target.value})}
+                              placeholder="Beskriv rommet og typen eksplosjonsfare..."
+                              className="bg-white"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs font-medium mb-2 block text-blue-700">Preaksepterte ytelser (jf. VTEK § 11-5)</Label>
+                            <ol className="text-xs text-blue-700 space-y-2 list-decimal list-inside">
+                              <li>Rom hvor det kan forekomme fare for eksplosjon, må utgjøre en egen branncelle.</li>
+                              <li>Rom hvor det kan forekomme fare for eksplosjon, må ha minst én trykkavlastningsflate for å sikre mot skader på personer og byggverket forøvrig.</li>
+                              <li>Avlastet trykk må ledes bort i sikker retning.</li>
+                              <li>Trykkavlastningsflater må ikke plasseres i takflater og lignende med mindre det dokumenteres at snølast ikke er til hinder for avlastningsflatens funksjon.</li>
+                              <li>Bærende og branncellebegrensende bygningsdeler må om nødvendig forsterkes for å opprettholde rømningsveiers funksjon og forhindre spredning av brann til andre brannceller.</li>
+                            </ol>
+                          </div>
+                          <p className="text-xs text-blue-700">
+                            Farlige stoffer skal håndteres og lagres i henhold til relevante standarder, herunder{' '}
+                            <span className="font-semibold">forskrift om håndtering av farlig stoff</span> og{' '}
+                            <span className="font-semibold">forskrift om elektriske forsyningsanlegg</span>.
+                          </p>
                         </div>
                       )}
                       <div>
