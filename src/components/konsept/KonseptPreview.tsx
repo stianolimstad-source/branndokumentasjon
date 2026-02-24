@@ -658,10 +658,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               if (arealNum <= maksAreal && maksAreal !== 0) return null;
               return (
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Preaksepterte ytelser for seksjoneringsveggen (VTEK § 11-7)</td>
+                  <td className="border border-gray-400 p-2 align-top">Seksjoneringsveggen</td>
                   <td className="border border-gray-400 p-2">
                     <p className="mb-1">Brannseksjonering er påkrevd da bruttoarealet ({arealNum} m²) overskrider tillatt areal uten seksjonering. Seksjoneringsveggen skal oppfylle følgende preaksepterte ytelser:</p>
-                    <ol className="list-decimal list-inside space-y-1 text-sm">
+                    <ul className="list-disc list-inside space-y-1 text-sm">
                       <li>Takkonstruksjonen må ikke være kontinuerlig over seksjoneringsveggen på en slik måte at en kollaps på den ene siden medfører reduksjon av konstruksjonens bæreevne og brannmotstand på den andre siden.</li>
                       <li>Konstruksjoner som ligger inntil seksjoneringsveggen må kunne bevege seg fritt ved temperaturendringer, uten at veggens branntekniske egenskaper reduseres.</li>
                       <li>Seksjoneringsveggens avslutning mot tak og fasade må være utformet og utført for å hindre brannspredning mellom ulike seksjoner. Størst sikkerhet mot brannspredning oppnås ved å føre seksjoneringsveggen over takflaten og utenfor vegglivet, tilsvarende som for brannvegger, jf. § 11-6.</li>
@@ -672,7 +672,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                       <li>Seksjoneringsveggen må føres minimum 0,5 meter over høyeste tilstøtende tak, med mindre taket har brannmotstand minst EI 60 A2-s1,d0 [A 60].</li>
                       <li>Seksjoneringsveggen må være slik utført at den blir stående selv om byggverket på den ene eller andre siden raser sammen.</li>
                       <li>Seksjonering ved innvendig hjørne må utføres slik at seksjoneringsveggen føres minimum 8,0 meter fram og forbi hjørnet, eller minimum 5,0 meter forbi innvendig hjørne i begge fasadene.</li>
-                    </ol>
+                    </ul>
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIBr / ARK</td>
                 </tr>
