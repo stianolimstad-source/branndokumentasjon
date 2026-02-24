@@ -118,9 +118,12 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
       const bk = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
       return parseInt(bk?.replace("BKL", "") || "1");
     }));
+    const balkongTekst = formData.balkongRelevant
+      ? "\n\nBalkonger, utkragede bygningsdeler og lignende må ha forsvarlig innfesting for å hindre nedfall som kan skade rednings- og slokkemannskapene og deres materiell under førsteinnsatsen. Tyngre bygningsdeler, som for eksempel balkonger, må forankres i byggverkets hovedbæresystem."
+      : "";
     const genereltTekst = maxBkl >= 3
-      ? "Det bærende hovedsystemet i byggverk i brannklasse 3 og 4 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet gjennom et fullstendig brannforløp, slik dette kan modelleres.\n\nBalkonger og utkragede bygningsdeler o.l. må ha forsvarlig innfesting for å hindre nedfall som kan skade rednings- og slokkemannskapene og deres materiell under førsteinnsatsen."
-      : "Bæresystemet i byggverk i brannklasse 1 og 2 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet i minimum den tiden som er nødvendig for å rømme og redde personer og husdyr i og på byggverket.\n\nBalkonger og utkragede bygningsdeler o.l. må ha forsvarlig innfesting for å hindre nedfall som kan skade rednings- og slokkemannskapene og deres materiell under førsteinnsatsen.";
+      ? "Det bærende hovedsystemet i byggverk i brannklasse 3 og 4 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet gjennom et fullstendig brannforløp, slik dette kan modelleres." + balkongTekst
+      : "Bæresystemet i byggverk i brannklasse 1 og 2 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet i minimum den tiden som er nødvendig for å rømme og redde personer og husdyr i og på byggverket." + balkongTekst;
     rows.push(contentRow("Generelt", genereltTekst, "RIB"));
     rows.push(subSectionHeaderRow("Krav per bygningsdel:"));
     
@@ -145,9 +148,12 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   } else {
     // Add brannklasse-dependent Generelt row
     const bklNum = parseInt(formData.brannklasse?.replace("BKL", "") || "1");
+    const balkongTekst = formData.balkongRelevant
+      ? "\n\nBalkonger, utkragede bygningsdeler og lignende må ha forsvarlig innfesting for å hindre nedfall som kan skade rednings- og slokkemannskapene og deres materiell under førsteinnsatsen. Tyngre bygningsdeler, som for eksempel balkonger, må forankres i byggverkets hovedbæresystem."
+      : "";
     const genereltTekst = bklNum >= 3
-      ? "Det bærende hovedsystemet i byggverk i brannklasse 3 og 4 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet gjennom et fullstendig brannforløp, slik dette kan modelleres."
-      : "Bæresystemet i byggverk i brannklasse 1 og 2 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet i minimum den tiden som er nødvendig for å rømme og redde personer og husdyr i og på byggverket.";
+      ? "Det bærende hovedsystemet i byggverk i brannklasse 3 og 4 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet gjennom et fullstendig brannforløp, slik dette kan modelleres." + balkongTekst
+      : "Bæresystemet i byggverk i brannklasse 1 og 2 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet i minimum den tiden som er nødvendig for å rømme og redde personer og husdyr i og på byggverket." + balkongTekst;
     rows.push(contentRow("Generelt", genereltTekst, "RIB"));
 
     const lines = (formData.baereevne || "").split("\n").filter((l: string) => l.trim());
