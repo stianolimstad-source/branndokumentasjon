@@ -4085,18 +4085,16 @@ const Konsept = () => {
           </ScrollArea>
         </CardContent>
         <div className="flex-shrink-0 border-t bg-background p-4 flex flex-col gap-2">
-          <div className="flex gap-2">
-            <Button 
-              className="flex-1" 
-              size="lg"
-              variant="outline"
-              onClick={handleSave}
-              disabled={isSaving || !conceptName}
-            >
-              <Save className="h-4 w-4 mr-2" />
-              {isSaving ? "Lagrer..." : "Lagre endringer"}
-            </Button>
-          </div>
+          <Button 
+            className="w-full" 
+            size="lg"
+            variant="outline"
+            onClick={handleSave}
+            disabled={isSaving || !conceptName}
+          >
+            <Save className="h-4 w-4 mr-2" />
+            {isSaving ? "Lagrer..." : "Lagre endringer"}
+          </Button>
           <SendToKSDialog
             conceptName={conceptName}
             projectId={selectedProjectId}

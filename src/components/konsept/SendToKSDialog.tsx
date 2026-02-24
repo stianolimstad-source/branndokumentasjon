@@ -146,7 +146,7 @@ const SendToKSDialog = ({ conceptName, projectId, conceptId, conceptContent, dis
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="secondary" size="lg" className="flex-1" disabled={disabled}>
+        <Button variant="secondary" size="lg" className="w-full" disabled={disabled}>
           <Send className="h-4 w-4 mr-2" />
           Send til KS
         </Button>
