@@ -14,8 +14,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
   const branncelleTyper = Array.isArray(formData.branncelleTyper) ? formData.branncelleTyper : [];
   const baereevneUnntak = Array.isArray(formData.baereevneUnntak) ? formData.baereevneUnntak : [];
 
-  const pageStyle = "bg-white text-black p-10 rounded-lg shadow-md font-serif text-sm border border-gray-200 mx-auto relative";
-  const pageWidth = { maxWidth: '210mm', minHeight: '297mm', paddingBottom: '40px' };
+  const pageStyle = "bg-white text-black p-10 rounded-lg shadow-md text-sm border border-gray-200 mx-auto relative";
+  const pageWidth = { maxWidth: '210mm', minHeight: '297mm', paddingBottom: '40px', fontFamily: 'Verdana, Geneva, sans-serif' };
   const hasSammendrag = !!formData.sammendrag;
   const totalPages = hasSammendrag ? 6 : 5;
 
