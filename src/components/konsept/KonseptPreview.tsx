@@ -628,11 +628,39 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               <th className="border border-gray-400 p-2 text-left">Løsning</th>
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
-            <tr>
-              <td className="border border-gray-400 p-2 align-top">Generelt krav</td>
-              <td className="border border-gray-400 p-2">Byggverk må oppdeles i seksjoner minst som angitt i tabell 1.</td>
-              <td className="border border-gray-400 p-2 align-top">RIBr</td>
-            </tr>
+            {(() => {
+              const arealNum = parseFloat(formData.areal) || 0;
+              const brannenergi = formData.brannseksjonBrannenergi;
+              const tiltak = formData.brannseksjonTiltak || "normalt";
+              const grenser: Record<string, { normalt: number; brannalarm: number; sprinkler: number; roykventilasjon: number }> = {
+                "over400": { normalt: 800, brannalarm: 1200, sprinkler: 5000, roykventilasjon: 0 },
+                "50-400": { normalt: 1200, brannalarm: 1800, sprinkler: 10000, roykventilasjon: 4000 },
+                "under50": { normalt: 1800, brannalarm: 2700, sprinkler: Infinity, roykventilasjon: 10000 },
+              };
+              const g = brannenergi ? grenser[brannenergi] : null;
+              const maksAreal = g ? (g[tiltak as keyof typeof g] ?? g.normalt) : null;
+              const erPakrevd = g && maksAreal !== null && maksAreal !== Infinity && arealNum > maksAreal;
+
+              if (g && maksAreal !== null && !erPakrevd) {
+                return (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Generelt</td>
+                    <td className="border border-gray-400 p-2">
+                      Bruttoarealet ({arealNum} m²) er innenfor tillatt areal uten brannseksjonering ({maksAreal === Infinity ? "ubegrenset" : `${maksAreal} m²`}). Det er derfor ikke krav til brannseksjonering for dette byggverket.
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                );
+              }
+
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Generelt</td>
+                  <td className="border border-gray-400 p-2">Byggverk må oppdeles i seksjoner minst som angitt i tabell 1.</td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                </tr>
+              );
+            })()}
             {formData.brannseksjoner && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
