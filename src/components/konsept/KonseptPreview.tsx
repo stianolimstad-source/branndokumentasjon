@@ -432,13 +432,57 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 )}
               </>
             ) : (
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold align-top" style={{width: '25%'}}>3.1 § 11-4 Bæreevne og stabilitet</td>
-                <td className="border border-gray-400 p-2 whitespace-pre-wrap" colSpan={2}>
-                  {formData.baereevne || `Bærende konstruksjoner skal dimensjoneres for å opprettholde stabilitet under brann i henhold til brannklasse ${formData.brannklasse || "[angis]"}.`}
-                  {formData.baereevneKommentar && <><br/><br/><span className="italic">Kommentar: {formData.baereevneKommentar}</span></>}
-                </td>
-              </tr>
+              <>
+                <tr className="bg-blue-100">
+                  <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
+                    3.1 &nbsp;&nbsp; §11-4 Bæreevne og stabilitet
+                  </td>
+                </tr>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                  <th className="border border-gray-400 p-2 text-left">Løsning</th>
+                  <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
+                </tr>
+                {(() => {
+                  // Parse baereevne text into rows
+                  const lines = (formData.baereevne || "").split("\n").filter((l: string) => l.trim());
+                  const labels = [
+                    "Bærende hovedsystem",
+                    "Sekundære, bærende bygningsdeler",
+                    "Trappeløp",
+                    "Bærende bygningsdeler under øverste kjeller",
+                    "Utvendig trappeløp",
+                  ];
+                  if (lines.length >= 2) {
+                    return lines.map((line: string, idx: number) => {
+                      const parts = line.split(":");
+                      const label = parts[0]?.trim() || `Krav ${idx + 1}`;
+                      const value = parts.slice(1).join(":").trim() || "-";
+                      return (
+                        <tr key={idx}>
+                          <td className="border border-gray-400 p-2">{label}</td>
+                          <td className="border border-gray-400 p-2 font-medium">{value}</td>
+                          <td className="border border-gray-400 p-2">RIB</td>
+                        </tr>
+                      );
+                    });
+                  }
+                  return (
+                    <tr>
+                      <td className="border border-gray-400 p-2">Generelt</td>
+                      <td className="border border-gray-400 p-2">{formData.baereevne || "[Angis]"}</td>
+                      <td className="border border-gray-400 p-2">RIB</td>
+                    </tr>
+                  );
+                })()}
+                {formData.baereevneKommentar && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 italic text-sm" colSpan={3}>
+                      Kommentar: {formData.baereevneKommentar}
+                    </td>
+                  </tr>
+                )}
+              </>
             )}
 
             {/* 3.2 §11-5 Sikkerhet ved eksplosjon */}
