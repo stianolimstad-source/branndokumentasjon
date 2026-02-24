@@ -2820,6 +2820,23 @@ const Konsept = () => {
                         <Label className="text-base font-extrabold text-foreground">3.4 § 11-7 Brannseksjoner</Label>
                       </div>
                       
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
+                        <Select 
+                          value={formData.brannseksjonBrannenergi} 
+                          onValueChange={(value) => setFormData({...formData, brannseksjonBrannenergi: value})}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Velg brannenergi..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="over400">Over 400 MJ/m²</SelectItem>
+                            <SelectItem value="50-400">50–400 MJ/m²</SelectItem>
+                            <SelectItem value="under50">Under 50 MJ/m²</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
                       {/* Automatisk beregning basert på areal fra kap 2 */}
                       {formData.areal && formData.brannseksjonBrannenergi && (
                         <div className="p-3 bg-blue-50 border border-blue-200 rounded-md space-y-2">
