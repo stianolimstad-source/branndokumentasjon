@@ -1042,7 +1042,7 @@ const Konsept = () => {
                       children: [
                         createTableCell(doc.navn || "-", false, 50),
                         createTableCell(doc.utarbeidetAv || "-", false, 30),
-                        createTableCell(doc.dato || "-", false, 20),
+                        createTableCell(doc.dato ? doc.dato.split('-').reverse().join('.') : "-", false, 20),
                       ],
                     })
                   ),

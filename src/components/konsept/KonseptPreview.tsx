@@ -226,7 +226,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 <tr key={index}>
                   <td className="border border-gray-400 p-2">{doc.navn || "-"}</td>
                   <td className="border border-gray-400 p-2">{doc.utarbeidetAv || "-"}</td>
-                  <td className="border border-gray-400 p-2">{doc.dato || "-"}</td>
+                  <td className="border border-gray-400 p-2">{doc.dato ? doc.dato.split('-').reverse().join('.') : "-"}</td>
                 </tr>
               ))}
             </tbody>
