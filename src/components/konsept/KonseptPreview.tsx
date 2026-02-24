@@ -293,10 +293,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                     )}
                   </td>
                 </tr>
-                <tr>
-                  <td className="border border-gray-400 p-2 font-semibold w-1/3">Bæresystem</td>
-                  <td className="border border-gray-400 p-2">{formData.baeresystem || "[Angis]"}</td>
-                </tr>
               </tbody>
             </table>
           </>
@@ -324,10 +320,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                     <p className="text-xs italic mt-1">Begrunnelse: {formData.tiltaksklasseBegrunnelse}</p>
                   )}
                 </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold">Bæresystem</td>
-                <td className="border border-gray-400 p-2">{formData.baeresystem || "[Angis]"}</td>
               </tr>
             </tbody>
           </table>

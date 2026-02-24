@@ -1104,17 +1104,6 @@ const Konsept = () => {
                   }),
                 ],
               }),
-              new Table({
-                width: { size: 100, type: WidthType.PERCENTAGE },
-                rows: [
-                  new TableRow({
-                    children: [
-                      createTableCell("Bæresystem", true, 33),
-                      createTableCell(formData.baeresystem || "[Angis]"),
-                    ],
-                  }),
-                ],
-              }),
             ] : [
               new Table({
                 width: { size: 100, type: WidthType.PERCENTAGE },
@@ -1133,12 +1122,6 @@ const Konsept = () => {
                         // Ikke inkluder unntak for RK5 (forsamlingslokale/salgslokale) i dokumentet
                         (formData.brannklasseUnntak && !formData.brannklasseUnntak.includes("preakseptert ytelse nr. 4") ? `\n\n${formData.brannklasseUnntak}` : "")
                       ),
-                    ],
-                  }),
-                  new TableRow({
-                    children: [
-                      createTableCell("Bæresystem", true, 33),
-                      createTableCell(formData.baeresystem || "[Angis]"),
                     ],
                   }),
                 ],
