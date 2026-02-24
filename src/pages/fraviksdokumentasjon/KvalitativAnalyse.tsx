@@ -15,7 +15,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import KvalitativPreview from "@/components/fraviksdokumentasjon/KvalitativPreview";
 import FravikEntryForm, { FravikEntry, emptyFravik } from "@/components/fraviksdokumentasjon/FravikEntryForm";
 import { exportKvalitativWord } from "@/lib/kvalitativ-word-export";
-import PageHeader from "@/components/PageHeader";
+
 
 interface Project {
   id: string;
@@ -218,7 +218,7 @@ const KvalitativAnalyse = () => {
   if (!authLoading && !user) {
     return (
       <div className="min-h-screen bg-gradient-subtle">
-        <PageHeader title="Kvalitativ analyse" />
+        
         <div className="container mx-auto px-4 py-16">
           <Card className="max-w-md mx-auto shadow-medium">
             <CardContent className="flex flex-col items-center justify-center py-12">

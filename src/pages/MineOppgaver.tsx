@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import PageHeader from "@/components/PageHeader";
+
 import { CheckCircle, Clock, AlertCircle, User, Trash2 } from "lucide-react";
 import {
   AlertDialog,
@@ -138,7 +138,7 @@ const MineOppgaver = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <PageHeader title="Mine oppgaver" />
+      
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Filter tabs */}
         <div className="flex gap-2 mb-6">

@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import ShareProjectDialog from "@/components/prosjekt/ShareProjectDialog";
 import { Link, useNavigate } from "react-router-dom";
-import PageHeader from "@/components/PageHeader";
+
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -301,7 +301,7 @@ const MineProsjekter = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <PageHeader title="Mine prosjekter" />
+      
 
       {/* Main Content */}
       <section className="container mx-auto px-4 py-12">

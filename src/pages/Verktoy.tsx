@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Flame, MoveVertical, Box, Users, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
-import PageHeader from "@/components/PageHeader";
+
 
 const tools = [
   {
@@ -39,7 +39,7 @@ const tools = [
 const Verktoy = () => {
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <PageHeader title="Beregningsverktøy" />
+      
 
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-6">

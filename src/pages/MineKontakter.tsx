@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Plus, Users, UserPlus, Trash2, Pencil, Search, ChevronRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import PageHeader from "@/components/PageHeader";
+
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -208,7 +208,7 @@ const MineKontakter = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <PageHeader title="Mine kontakter" />
+      
 
       <div className="container mx-auto px-4 py-8 max-w-5xl space-y-8">
         {/* Groups section */}
