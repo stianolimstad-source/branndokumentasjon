@@ -140,6 +140,10 @@ const MineOppgaver = () => {
     <div className="min-h-screen bg-gradient-subtle">
       
       <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <div className="mb-6">
+          <h2 className="text-3xl font-bold">Mine oppgaver</h2>
+          <p className="text-muted-foreground mt-1">Oversikt over tildelte og opprettede oppgaver</p>
+        </div>
         {/* Filter tabs */}
         <div className="flex gap-2 mb-6">
           <Button

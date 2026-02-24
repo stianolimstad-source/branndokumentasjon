@@ -141,6 +141,10 @@ const MinProfil = () => {
   return (
     <div className="min-h-screen bg-gradient-subtle">
       <div className="container mx-auto px-4 py-8 max-w-2xl space-y-6">
+        <div className="mb-2">
+          <h2 className="text-3xl font-bold">Min profil</h2>
+          <p className="text-muted-foreground mt-1">Administrer din profilinformasjon og firmalogo</p>
+        </div>
         {/* Logo section */}
         <Card>
           <CardHeader>

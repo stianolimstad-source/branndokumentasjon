@@ -211,6 +211,10 @@ const MineKontakter = () => {
       
 
       <div className="container mx-auto px-4 py-8 max-w-5xl space-y-8">
+        <div className="mb-2">
+          <h2 className="text-3xl font-bold">Mine kontakter</h2>
+          <p className="text-muted-foreground mt-1">Administrer kontakter og grupper</p>
+        </div>
         {/* Groups section */}
         <section>
           <div className="flex items-center justify-between mb-4">
