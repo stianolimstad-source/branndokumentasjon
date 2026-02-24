@@ -109,7 +109,7 @@ interface KvalitativPreviewProps {
 
 const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData, sammendrag }: KvalitativPreviewProps) => {
   return (
-    <div className="bg-white text-black p-8 rounded-lg shadow-inner font-serif text-sm" style={{ minHeight: '600px' }}>
+    <div className="bg-white text-black p-8 rounded-lg shadow-inner text-sm" style={{ minHeight: '600px', fontFamily: 'Verdana, Geneva, sans-serif' }}>
       {logoUrl && (
         <div className="flex justify-center mb-4">
           <img src={logoUrl} alt="Firmalogo" className="max-h-24 max-w-[300px] object-contain" />

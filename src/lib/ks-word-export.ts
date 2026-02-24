@@ -139,6 +139,13 @@ export const exportKSToWord = async (options: ExportOptions) => {
   }
 
   const doc = new Document({
+    styles: {
+      default: {
+        document: {
+          run: { font: "Verdana", size: 20 },
+        },
+      },
+    },
     sections: [
       {
         children: [

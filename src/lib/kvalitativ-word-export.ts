@@ -14,7 +14,7 @@ function makeCell(text: string, bold = false, width?: number): TableCell {
   return new TableCell({
     borders: borderStyle,
     width: width ? { size: width, type: WidthType.PERCENTAGE } : undefined,
-    children: [new Paragraph({ children: [new TextRun({ text, bold, size: 20, font: "Calibri" })] })],
+    children: [new Paragraph({ children: [new TextRun({ text, bold, size: 20 })] })],
   });
 }
 
@@ -228,16 +228,16 @@ export async function exportKvalitativWord(
   elements.push(new Paragraph({
     alignment: AlignmentType.CENTER,
     spacing: { after: 100 },
-    children: [new TextRun({ text: "FRAVIKSDOKUMENTASJON", bold: true, size: 32, font: "Calibri" })],
+    children: [new TextRun({ text: "FRAVIKSDOKUMENTASJON", bold: true, size: 32 })],
   }));
   elements.push(new Paragraph({
     alignment: AlignmentType.CENTER,
     spacing: { after: 400 },
-    children: [new TextRun({ text: "Kvalitativ analyse iht. Byggforsk 321.026 kap. 6", size: 20, font: "Calibri", color: "888888" })],
+    children: [new TextRun({ text: "Kvalitativ analyse iht. Byggforsk 321.026 kap. 6", size: 20, color: "888888" })],
   }));
 
   // Prosjektinfo
-  elements.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Prosjektinfo", font: "Calibri" })] }));
+  elements.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Prosjektinfo" })] }));
   const summaryRows: TableRow[] = [
     new TableRow({ children: [makeCell("Prosjekt", true, 35), makeCell(projectData?.name || "[Prosjektnavn]", false, 65)] }),
   ];
@@ -255,8 +255,8 @@ export async function exportKvalitativWord(
 
   // Sammendrag
   if (sammendrag) {
-    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Sammendrag", font: "Calibri" })] }));
-    elements.push(new Paragraph({ spacing: { after: 300 }, children: [new TextRun({ text: sammendrag, size: 22, font: "Calibri" })] }));
+    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Sammendrag" })] }));
+    elements.push(new Paragraph({ spacing: { after: 300 }, children: [new TextRun({ text: sammendrag, size: 22 })] }));
   }
 
   fravikEntries.forEach((fravik, i) => {
@@ -264,30 +264,30 @@ export async function exportKvalitativWord(
 
     // Section header
     const fravikTitle = `${n}. Fravik ${n}${fravik.navn ? ` – ${fravik.navn}` : ""}`;
-    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: fravikTitle, font: "Calibri" })] }));
+    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: fravikTitle })] }));
 
     // Dokumentasjonsbehov
-    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.1 Funksjonskrav i TEK17`, font: "Calibri" })] }));
-    elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: fravik.funksjonskrav || "[Angis]", size: 22, font: "Calibri" })] }));
+    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.1 Funksjonskrav i TEK17` })] }));
+    elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: fravik.funksjonskrav || "[Angis]", size: 22 })] }));
 
-    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.2 Preakseptert ytelse`, font: "Calibri" })] }));
-    elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: fravik.preakseptertYtelse || "[Angis]", size: 22, font: "Calibri" })] }));
+    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.2 Preakseptert ytelse` })] }));
+    elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: fravik.preakseptertYtelse || "[Angis]", size: 22 })] }));
 
-    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.3 Hensikt med ytelsen`, font: "Calibri" })] }));
-    elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: fravik.hensiktYtelse || "[Angis]", size: 22, font: "Calibri" })] }));
+    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.3 Hensikt med ytelsen` })] }));
+    elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: fravik.hensiktYtelse || "[Angis]", size: 22 })] }));
 
-    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.4 Beskrivelse av fraviket`, font: "Calibri" })] }));
-    elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: fravik.fravikBeskrivelse || "[Angis]", size: 22, font: "Calibri" })] }));
+    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.4 Beskrivelse av fraviket` })] }));
+    elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: fravik.fravikBeskrivelse || "[Angis]", size: 22 })] }));
 
     // Kompenserende tiltak
-    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.5 Kompenserende tiltak`, font: "Calibri" })] }));
+    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.5 Kompenserende tiltak` })] }));
 
     const tiltakMedBeskrivelse = fravik.tiltak.filter(t => t.beskrivelse);
     if (tiltakMedBeskrivelse.length > 0) {
       tiltakMedBeskrivelse.forEach((t, ti) => {
         elements.push(new Paragraph({
           spacing: { before: 100 },
-          children: [new TextRun({ text: `Tiltak ${ti + 1}: ${t.beskrivelse}`, bold: true, size: 22, font: "Calibri" })],
+          children: [new TextRun({ text: `Tiltak ${ti + 1}: ${t.beskrivelse}`, bold: true, size: 22 })],
         }));
 
         const rows: TableRow[] = [];
@@ -310,19 +310,19 @@ export async function exportKvalitativWord(
         }
       });
     } else {
-      elements.push(new Paragraph({ children: [new TextRun({ text: "[Kompenserende tiltak angis]", size: 22, font: "Calibri" })] }));
+      elements.push(new Paragraph({ children: [new TextRun({ text: "[Kompenserende tiltak angis]", size: 22 })] }));
     }
 
     // Innvirkningsområder
-    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.6 Innvirkningsområder`, font: "Calibri" })] }));
-    elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: (fravik as any).innvirkningBeskrivelse || "[Angis]", size: 22, font: "Calibri" })] }));
+    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.6 Innvirkningsområder` })] }));
+    elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: (fravik as any).innvirkningBeskrivelse || "[Angis]", size: 22 })] }));
 
     // Beregninger
     const harBeregninger = (fravik.beregninger?.length ?? 0) > 0;
     let sectionCounter = 7;
 
     if (harBeregninger) {
-      elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.${sectionCounter} Beregninger`, font: "Calibri" })] }));
+      elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.${sectionCounter} Beregninger` })] }));
       sectionCounter++;
 
       const typeLabels: Record<string, string> = {
@@ -336,22 +336,22 @@ export async function exportKvalitativWord(
       fravik.beregninger!.forEach((calc, ci) => {
         elements.push(new Paragraph({
           spacing: { before: 100 },
-          children: [new TextRun({ text: `Beregning ${ci + 1}: ${typeLabels[calc.type] || calc.type}`, bold: true, size: 22, font: "Calibri" })],
+          children: [new TextRun({ text: `Beregning ${ci + 1}: ${typeLabels[calc.type] || calc.type}`, bold: true, size: 22 })],
         }));
 
         // Formula description
         const formelLines = getFormelBeskrivelse(calc);
         if (formelLines.length > 0) {
-          elements.push(new Paragraph({ spacing: { before: 50 }, children: [new TextRun({ text: "Beregningsmetode:", bold: true, size: 20, font: "Calibri" })] }));
+          elements.push(new Paragraph({ spacing: { before: 50 }, children: [new TextRun({ text: "Beregningsmetode:", bold: true, size: 20 })] }));
           formelLines.forEach(line => {
-            elements.push(new Paragraph({ children: [new TextRun({ text: line, size: 20, font: "Calibri" })] }));
+            elements.push(new Paragraph({ children: [new TextRun({ text: line, size: 20 })] }));
           });
         }
 
         // Inputs table
         const inputEntries = Object.entries(calc.inputs).filter(([k]) => k !== "materialer");
         if (inputEntries.length > 0) {
-          elements.push(new Paragraph({ spacing: { before: 50 }, children: [new TextRun({ text: "Inngangsparametre:", bold: true, size: 20, font: "Calibri" })] }));
+          elements.push(new Paragraph({ spacing: { before: 50 }, children: [new TextRun({ text: "Inngangsparametre:", bold: true, size: 20 })] }));
           elements.push(new Table({
             width: { size: 100, type: WidthType.PERCENTAGE },
             rows: [
@@ -366,16 +366,16 @@ export async function exportKvalitativWord(
         // Calculation steps
         const stegLines = getBeregningsSteg(calc);
         if (stegLines.length > 0) {
-          elements.push(new Paragraph({ spacing: { before: 50 }, children: [new TextRun({ text: "Beregning:", bold: true, size: 20, font: "Calibri" })] }));
+          elements.push(new Paragraph({ spacing: { before: 50 }, children: [new TextRun({ text: "Beregning:", bold: true, size: 20 })] }));
           stegLines.forEach(line => {
-            elements.push(new Paragraph({ children: [new TextRun({ text: line, size: 20, font: "Calibri" })] }));
+            elements.push(new Paragraph({ children: [new TextRun({ text: line, size: 20 })] }));
           });
         }
 
         // Results table
         const resultEntries = Object.entries(calc.results);
         if (resultEntries.length > 0) {
-          elements.push(new Paragraph({ spacing: { before: 50 }, children: [new TextRun({ text: "Resultater:", bold: true, size: 20, font: "Calibri" })] }));
+          elements.push(new Paragraph({ spacing: { before: 50 }, children: [new TextRun({ text: "Resultater:", bold: true, size: 20 })] }));
           elements.push(new Table({
             width: { size: 100, type: WidthType.PERCENTAGE },
             rows: [
@@ -388,7 +388,7 @@ export async function exportKvalitativWord(
         }
 
         if (calc.kommentar) {
-          elements.push(new Paragraph({ spacing: { before: 50, after: 200 }, children: [new TextRun({ text: `Kommentar: ${calc.kommentar}`, size: 20, font: "Calibri", italics: true })] }));
+          elements.push(new Paragraph({ spacing: { before: 50, after: 200 }, children: [new TextRun({ text: `Kommentar: ${calc.kommentar}`, size: 20, italics: true })] }));
         } else {
           elements.push(new Paragraph({ spacing: { after: 200 }, children: [] }));
         }
@@ -396,18 +396,18 @@ export async function exportKvalitativWord(
     }
 
     // Kvalitativ analyse
-    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.${sectionCounter} Kvalitativ analyse`, font: "Calibri" })] }));
-    elements.push(new Paragraph({ children: [new TextRun({ text: "Sammenligning:", bold: true, size: 22, font: "Calibri" })] }));
-    elements.push(new Paragraph({ spacing: { after: 100 }, children: [new TextRun({ text: fravik.sammenligning || "[Angis]", size: 22, font: "Calibri" })] }));
-    elements.push(new Paragraph({ children: [new TextRun({ text: "Måleparametre:", bold: true, size: 22, font: "Calibri" })] }));
-    elements.push(new Paragraph({ spacing: { after: 100 }, children: [new TextRun({ text: fravik.maleparametre || "[Angis]", size: 22, font: "Calibri" })] }));
+    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.${sectionCounter} Kvalitativ analyse` })] }));
+    elements.push(new Paragraph({ children: [new TextRun({ text: "Sammenligning:", bold: true, size: 22 })] }));
+    elements.push(new Paragraph({ spacing: { after: 100 }, children: [new TextRun({ text: fravik.sammenligning || "[Angis]", size: 22 })] }));
+    elements.push(new Paragraph({ children: [new TextRun({ text: "Måleparametre:", bold: true, size: 22 })] }));
+    elements.push(new Paragraph({ spacing: { after: 100 }, children: [new TextRun({ text: fravik.maleparametre || "[Angis]", size: 22 })] }));
     if (fravik.visReferanser !== false) {
-      elements.push(new Paragraph({ children: [new TextRun({ text: "Referanser:", bold: true, size: 22, font: "Calibri" })] }));
-      elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: fravik.referanser || "[Angis]", size: 22, font: "Calibri" })] }));
+      elements.push(new Paragraph({ children: [new TextRun({ text: "Referanser:", bold: true, size: 22 })] }));
+      elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: fravik.referanser || "[Angis]", size: 22 })] }));
     }
 
     // Konklusjon
-    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.${sectionCounter + 1} Konklusjon`, font: "Calibri" })] }));
+    elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.${sectionCounter + 1} Konklusjon` })] }));
 
     let konklusjonText = "[Konklusjon angis]";
     if (fravik.konklusjon === "tilstrekkelig") {
@@ -420,15 +420,24 @@ export async function exportKvalitativWord(
     }
     if (fravik.konklusjon === "egendefinert") konklusjonText = fravik.konklusjonFritekst || "[Konklusjon angis]";
 
-    elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: konklusjonText, size: 22, font: "Calibri" })] }));
+    elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: konklusjonText, size: 22 })] }));
 
     if (fravik.begrunnelseKonklusjon) {
-      elements.push(new Paragraph({ children: [new TextRun({ text: "Begrunnelse:", bold: true, size: 22, font: "Calibri" })] }));
-      elements.push(new Paragraph({ spacing: { after: 300 }, children: [new TextRun({ text: fravik.begrunnelseKonklusjon, size: 22, font: "Calibri" })] }));
+      elements.push(new Paragraph({ children: [new TextRun({ text: "Begrunnelse:", bold: true, size: 22 })] }));
+      elements.push(new Paragraph({ spacing: { after: 300 }, children: [new TextRun({ text: fravik.begrunnelseKonklusjon, size: 22 })] }));
     }
   });
 
-  const doc = new Document({ sections: [{ children: elements }] });
+  const doc = new Document({
+    styles: {
+      default: {
+        document: {
+          run: { font: "Verdana", size: 20 },
+        },
+      },
+    },
+    sections: [{ children: elements }],
+  });
   const blob = await Packer.toBlob(doc);
   saveAs(blob, `${dokumentNavn || "Fraviksdokumentasjon"}.docx`);
 }
