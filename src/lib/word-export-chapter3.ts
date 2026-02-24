@@ -38,7 +38,7 @@ function sectionHeaderRow(title: string): TableRow {
         columnSpan: 3,
         borders: tableBorders,
         shading: sectionShading,
-        children: [new Paragraph({ children: [new TextRun({ text: title, bold: true, size: 20 })] })],
+        children: [new Paragraph({ spacing: { before: 80, after: 80 }, children: [new TextRun({ text: title, bold: true, size: 20 })] })],
       }),
     ],
   });
