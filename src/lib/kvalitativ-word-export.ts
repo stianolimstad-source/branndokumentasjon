@@ -410,9 +410,20 @@ export async function exportKvalitativWord(
     elements.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [new TextRun({ text: `${n}.${sectionCounter + 1} Konklusjon`, font: "Calibri" })] }));
 
     let konklusjonText = "[Konklusjon angis]";
-    if (fravik.konklusjon === "tilstrekkelig") konklusjonText = "Den kvalitative analysen vurderes som tilstrekkelig.";
+    if (fravik.konklusjon === "tilstrekkelig") {
+      const refs = fravik.funksjonskrav
+        ? fravik.funksjonskrav.split("\n").filter(Boolean).map((l: string) => {
+            const m = l.match(/§\s*[\d-]+/);
+            return m ? m[0] : null;
+          }).filter(Boolean).join(", ")
+        : "";
+      konklusjonText = refs
+        ? `Funksjonskravene i ${refs} er vurdert som tilfredsstillende.`
+        : "Funksjonskravene er vurdert som tilfredsstillende.";
+    }
     if (fravik.konklusjon === "komparativ") konklusjonText = "Det er behov for komparativ analyse.";
     if (fravik.konklusjon === "risikoanalyse") konklusjonText = "Det er behov for risikoanalyse etter NS 3901.";
+    if (fravik.konklusjon === "egendefinert") konklusjonText = fravik.konklusjonFritekst || "[Egendefinert konklusjon angis]";
 
     elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: konklusjonText, size: 22, font: "Calibri" })] }));
 
