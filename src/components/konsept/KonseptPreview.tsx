@@ -354,13 +354,26 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                   <th className="border border-gray-400 p-2 text-left">Løsning</th>
                   <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
                 </tr>
-                <tr>
-                  <td className="border border-gray-400 p-2">Generelt</td>
-                  <td className="border border-gray-400 p-2">
-                    Balkonger og utkragede bygningsdeler o.l. må ha forsvarlig innfesting for å hindre nedfall som kan skade rednings- og slokkemannskapene og deres materiell under førsteinnsatsen.
-                  </td>
-                  <td className="border border-gray-400 p-2">RIB</td>
-                </tr>
+                {(() => {
+                  // Determine highest brannklasse among bygningsdeler
+                  const maxBkl = Math.max(...bygningsdeler.map((del: any) => {
+                    const bk = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+                    return parseInt(bk?.replace("BKL", "") || "1");
+                  }));
+                  const genereltTekst = maxBkl >= 3
+                    ? "Det bærende hovedsystemet i byggverk i brannklasse 3 og 4 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet gjennom et fullstendig brannforløp, slik dette kan modelleres."
+                    : "Bæresystemet i byggverk i brannklasse 1 og 2 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet i minimum den tiden som er nødvendig for å rømme og redde personer og husdyr i og på byggverket.";
+                  return (
+                    <tr>
+                      <td className="border border-gray-400 p-2">Generelt</td>
+                      <td className="border border-gray-400 p-2">
+                        <p className="mb-2">{genereltTekst}</p>
+                        <p>Balkonger og utkragede bygningsdeler o.l. må ha forsvarlig innfesting for å hindre nedfall som kan skade rednings- og slokkemannskapene og deres materiell under førsteinnsatsen.</p>
+                      </td>
+                      <td className="border border-gray-400 p-2">RIB</td>
+                    </tr>
+                  );
+                })()}
                 {bygningsdeler.map((del: any, index: number) => {
                   const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
                   const bklNum = delBrannklasse?.replace("BKL", "") || "1";
@@ -471,12 +484,23 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                       );
                     });
                   }
+                  const bklNum = parseInt(formData.brannklasse?.replace("BKL", "") || "1");
+                  const genereltTekst = bklNum >= 3
+                    ? "Det bærende hovedsystemet i byggverk i brannklasse 3 og 4 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet gjennom et fullstendig brannforløp, slik dette kan modelleres."
+                    : "Bæresystemet i byggverk i brannklasse 1 og 2 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet i minimum den tiden som er nødvendig for å rømme og redde personer og husdyr i og på byggverket.";
                   return (
-                    <tr>
-                      <td className="border border-gray-400 p-2">Generelt</td>
-                      <td className="border border-gray-400 p-2">{formData.baereevne || "[Angis]"}</td>
-                      <td className="border border-gray-400 p-2">RIB</td>
-                    </tr>
+                    <>
+                      <tr>
+                        <td className="border border-gray-400 p-2">Generelt</td>
+                        <td className="border border-gray-400 p-2">{genereltTekst}</td>
+                        <td className="border border-gray-400 p-2">RIB</td>
+                      </tr>
+                      <tr>
+                        <td className="border border-gray-400 p-2">Generelt</td>
+                        <td className="border border-gray-400 p-2">{formData.baereevne || "[Angis]"}</td>
+                        <td className="border border-gray-400 p-2">RIB</td>
+                      </tr>
+                    </>
                   );
                 })()}
                 {formData.baereevneKommentar && (

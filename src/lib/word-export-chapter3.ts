@@ -113,12 +113,15 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   rows.push(columnHeaderRow());
 
   if (formData.harFlereRisikoklasser && bygningsdeler.length > 0) {
-    // Generelt row
-    rows.push(contentRow(
-      "Generelt",
-      "Balkonger og utkragede bygningsdeler o.l. må ha forsvarlig innfesting for å hindre nedfall som kan skade rednings- og slokkemannskapene og deres materiell under førsteinnsatsen.",
-      "RIB"
-    ));
+    // Determine highest brannklasse among bygningsdeler
+    const maxBkl = Math.max(...bygningsdeler.map((del: any) => {
+      const bk = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+      return parseInt(bk?.replace("BKL", "") || "1");
+    }));
+    const genereltTekst = maxBkl >= 3
+      ? "Det bærende hovedsystemet i byggverk i brannklasse 3 og 4 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet gjennom et fullstendig brannforløp, slik dette kan modelleres.\n\nBalkonger og utkragede bygningsdeler o.l. må ha forsvarlig innfesting for å hindre nedfall som kan skade rednings- og slokkemannskapene og deres materiell under førsteinnsatsen."
+      : "Bæresystemet i byggverk i brannklasse 1 og 2 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet i minimum den tiden som er nødvendig for å rømme og redde personer og husdyr i og på byggverket.\n\nBalkonger og utkragede bygningsdeler o.l. må ha forsvarlig innfesting for å hindre nedfall som kan skade rednings- og slokkemannskapene og deres materiell under førsteinnsatsen.";
+    rows.push(contentRow("Generelt", genereltTekst, "RIB"));
     rows.push(subSectionHeaderRow("Krav per bygningsdel:"));
     
     bygningsdeler.forEach((del: any, index: number) => {
@@ -140,6 +143,13 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
       rows.push(contentRow("Plan under øverste kjeller", delKrav.kjeller, "RIB"));
     });
   } else {
+    // Add brannklasse-dependent Generelt row
+    const bklNum = parseInt(formData.brannklasse?.replace("BKL", "") || "1");
+    const genereltTekst = bklNum >= 3
+      ? "Det bærende hovedsystemet i byggverk i brannklasse 3 og 4 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet gjennom et fullstendig brannforløp, slik dette kan modelleres."
+      : "Bæresystemet i byggverk i brannklasse 1 og 2 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet i minimum den tiden som er nødvendig for å rømme og redde personer og husdyr i og på byggverket.";
+    rows.push(contentRow("Generelt", genereltTekst, "RIB"));
+
     const lines = (formData.baereevne || "").split("\n").filter((l: string) => l.trim());
     if (lines.length >= 2) {
       lines.forEach((line: string) => {
@@ -148,8 +158,8 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
         const value = parts.slice(1).join(":").trim() || "-";
         rows.push(contentRow(label, value, "RIB"));
       });
-    } else {
-      rows.push(contentRow("Generelt", formData.baereevne || "[Angis]", "RIB"));
+    } else if (formData.baereevne) {
+      rows.push(contentRow("Generelt", formData.baereevne, "RIB"));
     }
   }
   if (formData.baereevneKommentar) {
