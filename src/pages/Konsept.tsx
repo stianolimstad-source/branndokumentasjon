@@ -13,7 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, ImageRun } from "docx";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, ImageRun, ShadingType } from "docx";
 import { saveAs } from "file-saver";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
@@ -337,7 +337,7 @@ const getTiltaksklasse = (brannklasse: string, risikoklasse: string, prosjekteri
 
   // Alt annet = Tiltaksklasse 3
   return "Tiltaksklasse 3";
-};
+    };
 
 
 const Konsept = () => {
@@ -796,7 +796,7 @@ const Konsept = () => {
 
   const exportToWord = async () => {
     const tableBorders = {
-      top: { style: BorderStyle.SINGLE, size: 1, color: "666666" },
+      top: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
       bottom: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
       left: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
       right: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
@@ -807,6 +807,21 @@ const Konsept = () => {
         borders: tableBorders,
         width: width ? { size: width, type: WidthType.PERCENTAGE } : undefined,
         margins: { top: 40, bottom: 40, left: 80, right: 80 },
+        children: [
+          new Paragraph({
+            spacing: { before: 40, after: 40 },
+            children: [new TextRun({ text, bold, size: 20 })],
+          }),
+        ],
+      });
+    };
+
+    const createTableCellShaded = (text: string, bold: boolean = false, width?: number) => {
+      return new TableCell({
+        borders: tableBorders,
+        width: width ? { size: width, type: WidthType.PERCENTAGE } : undefined,
+        margins: { top: 40, bottom: 40, left: 80, right: 80 },
+        shading: { type: ShadingType.SOLID, color: "F3F4F6", fill: "F3F4F6" },
         children: [
           new Paragraph({
             spacing: { before: 40, after: 40 },
@@ -1080,16 +1095,16 @@ const Konsept = () => {
                 rows: [
                   new TableRow({
                     children: [
-                      createTableCell("Dokument", true, 50),
-                      createTableCell("Utarbeidet av / firma", true, 30),
-                      createTableCell("Datert", true, 20),
+                      createTableCellShaded("Dokument", true, 40),
+                      createTableCellShaded("Utarbeidet av / firma", true, 40),
+                      createTableCellShaded("Datert", true, 20),
                     ],
                   }),
                   ...formData.grunnlagsdokumenter.map((doc) =>
                     new TableRow({
                       children: [
-                        createTableCell(doc.navn || "-", false, 50),
-                        createTableCell(doc.utarbeidetAv || "-", false, 30),
+                        createTableCell(doc.navn || "-", false, 40),
+                        createTableCell(doc.utarbeidetAv || "-", false, 40),
                         createTableCell(doc.dato ? doc.dato.split('-').reverse().join('.') : "-", false, 20),
                       ],
                     })
@@ -1164,13 +1179,19 @@ const Konsept = () => {
                 ],
               }),
             ] : [
-              // Én samlet tabell med alt
+              // Tabell 1: Bygningsinfo
               new Table({
                 width: { size: 100, type: WidthType.PERCENTAGE },
                 rows: [
                   new TableRow({ children: [createTableCell("Bygningstype", true, 33), createTableCell(formData.bygningstype || "[Angis]")] }),
                   new TableRow({ children: [createTableCell("Bruttoareal", true, 33), createTableCell(`${formData.areal || "[Angis]"} m²`)] }),
                   new TableRow({ children: [createTableCell("Antall etasjer", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
+                ],
+              }),
+              // Tabell 2: Klassifisering (med litt mellomrom)
+              new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
                   new TableRow({ children: [createTableCell("Risikoklasse", true, 33), createTableCell(formData.risikoklasse || "[Angis]")] }),
                   new TableRow({
                     children: [
