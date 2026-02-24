@@ -1106,17 +1106,17 @@ const Konsept = () => {
               children: [new TextRun({ text: "2.2 Beskrivelse av bygning og branntekniske forutsetninger", bold: true, size: 24 })],
               spacing: { before: 200, after: 100 },
             }),
-            // Bygningsinfo-tabell
-            new Table({
-              width: { size: 100, type: WidthType.PERCENTAGE },
-              rows: [
-                new TableRow({ children: [createTableCell("Bygningstype", true, 33), createTableCell(formData.bygningstype || "[Angis]")] }),
-                new TableRow({ children: [createTableCell("Bruttoareal", true, 33), createTableCell(`${formData.areal || "[Angis]"} m²`)] }),
-                new TableRow({ children: [createTableCell("Antall etasjer", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
-              ],
-            }),
-            // Risikoklasse / Brannklasse
+            // Bygnings- og klassifiseringstabell
             ...(formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0 ? [
+              // Første tabell: Bygningstype, Areal, Etasjer
+              new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
+                  new TableRow({ children: [createTableCell("Bygningstype", true, 33), createTableCell(formData.bygningstype || "[Angis]")] }),
+                  new TableRow({ children: [createTableCell("Bruttoareal", true, 33), createTableCell(`${formData.areal || "[Angis]"} m²`)] }),
+                  new TableRow({ children: [createTableCell("Antall etasjer", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
+                ],
+              }),
               new Paragraph({
                 children: [new TextRun({ text: "Bygget inneholder flere bygningsdeler med ulike risikoklasser:", italics: true, size: 20 })],
                 spacing: { before: 100, after: 100 },
@@ -1164,9 +1164,13 @@ const Konsept = () => {
                 ],
               }),
             ] : [
+              // Én samlet tabell med alt
               new Table({
                 width: { size: 100, type: WidthType.PERCENTAGE },
                 rows: [
+                  new TableRow({ children: [createTableCell("Bygningstype", true, 33), createTableCell(formData.bygningstype || "[Angis]")] }),
+                  new TableRow({ children: [createTableCell("Bruttoareal", true, 33), createTableCell(`${formData.areal || "[Angis]"} m²`)] }),
+                  new TableRow({ children: [createTableCell("Antall etasjer", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
                   new TableRow({ children: [createTableCell("Risikoklasse", true, 33), createTableCell(formData.risikoklasse || "[Angis]")] }),
                   new TableRow({
                     children: [
