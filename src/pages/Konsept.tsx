@@ -1179,7 +1179,7 @@ const Konsept = () => {
                           }),
                           ...(formData.tiltaksklasseBegrunnelse ? [
                             new Paragraph({
-                              children: [new TextRun({ text: formData.tiltaksklasseBegrunnelse, italics: true, size: 20 })],
+                              children: [new TextRun({ text: `Begrunnelse: ${formData.tiltaksklasseBegrunnelse}`, italics: true, size: 20 })],
                             }),
                           ] : []),
                         ],
@@ -1224,7 +1224,7 @@ const Konsept = () => {
                           }),
                           ...(formData.tiltaksklasseBegrunnelse ? [
                             new Paragraph({
-                              children: [new TextRun({ text: formData.tiltaksklasseBegrunnelse, italics: true, size: 20 })],
+                              children: [new TextRun({ text: `Begrunnelse: ${formData.tiltaksklasseBegrunnelse}`, italics: true, size: 20 })],
                             }),
                           ] : []),
                         ],
