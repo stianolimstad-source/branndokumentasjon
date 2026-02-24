@@ -17,7 +17,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
   const pageStyle = "bg-white text-black p-10 rounded-lg shadow-md text-sm border border-gray-200 mx-auto relative";
   const pageWidth = { maxWidth: '210mm', minHeight: '297mm', paddingBottom: '40px', fontFamily: 'Verdana, Geneva, sans-serif' };
   const hasSammendrag = !!formData.sammendrag;
-  const totalPages = hasSammendrag ? 8 : 7;
+  const totalPages = hasSammendrag ? 9 : 8;
 
   const PageFooter = ({ pageNum }: { pageNum: number }) => (
     <div className="absolute bottom-4 left-0 right-0 flex justify-center">
@@ -206,7 +206,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
           <li>VTEK17 - Veiledning til teknisk forskrift</li>
         </ul>
       </section>
+      <PageFooter pageNum={hasSammendrag ? 4 : 3} />
+      </div>
 
+      {/* Kapittel 2 - egen side */}
+      <div className={pageStyle} style={pageWidth}>
       {/* 2. Grunnlag og forutsetninger */}
       <section className="mb-6">
         <h2 className="font-bold mb-3">2. Grunnlag og forutsetninger for brannteknisk prosjektering</h2>
@@ -328,7 +332,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
         <h3 className="font-semibold mb-2">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</h3>
         <p className="ml-4 mb-3 whitespace-pre-wrap">{formData.tilleggskrav || "[Eventuelle tilleggskrav beskrives]"}</p>
       </section>
-      <PageFooter pageNum={hasSammendrag ? 4 : 3} />
+      <PageFooter pageNum={hasSammendrag ? 5 : 4} />
       </div>
       <div className={pageStyle} style={pageWidth}>
       {/* 3. Branntekniske ytelseskrav */}
@@ -732,7 +736,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
           </tbody>
         </table>
       </section>
-      <PageFooter pageNum={hasSammendrag ? 5 : 4} />
+      <PageFooter pageNum={hasSammendrag ? 6 : 5} />
       </div>
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
@@ -966,7 +970,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
           </tbody>
         </table>
       </section>
-      <PageFooter pageNum={hasSammendrag ? 6 : 5} />
+      <PageFooter pageNum={hasSammendrag ? 7 : 6} />
       </div>
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
@@ -1169,7 +1173,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
           </tbody>
         </table>
       </section>
-      <PageFooter pageNum={hasSammendrag ? 7 : 6} />
+      <PageFooter pageNum={hasSammendrag ? 8 : 7} />
       </div>
       <div className={pageStyle} style={pageWidth}>
       {/* 4. Utførelses- og driftsfasen */}
