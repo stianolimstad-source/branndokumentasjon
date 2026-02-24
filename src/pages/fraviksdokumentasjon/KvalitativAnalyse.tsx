@@ -165,6 +165,7 @@ const KvalitativAnalyse = () => {
           visReferanser: c.visReferanser !== false,
           referanser: c.referanser || "",
           konklusjon: c.konklusjon || "",
+          konklusjonFritekst: c.konklusjonFritekst || "",
           begrunnelseKonklusjon: c.begrunnelseKonklusjon || "",
           beregninger: c.beregninger || [],
         }]);

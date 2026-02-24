@@ -358,9 +358,20 @@ const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData, s
               {/* Konklusjon */}
               <h3 className="font-semibold mb-2">{n}.{konklusjonNum} Konklusjon</h3>
               <p className="ml-4 mb-2">
-                {fravik.konklusjon === "tilstrekkelig" && "Den kvalitative analysen vurderes som tilstrekkelig."}
+                {fravik.konklusjon === "tilstrekkelig" && (() => {
+                  const refs = fravik.funksjonskrav
+                    ? fravik.funksjonskrav.split("\n").filter(Boolean).map(l => {
+                        const m = l.match(/§\s*[\d-]+/);
+                        return m ? m[0] : null;
+                      }).filter(Boolean).join(", ")
+                    : "";
+                  return refs
+                    ? `Funksjonskravene i ${refs} er vurdert som tilfredsstillende.`
+                    : "Funksjonskravene er vurdert som tilfredsstillende.";
+                })()}
                 {fravik.konklusjon === "komparativ" && "Det er behov for komparativ analyse for å dokumentere likeverdighet."}
                 {fravik.konklusjon === "risikoanalyse" && "Det er behov for risikoanalyse etter NS 3901."}
+                {fravik.konklusjon === "egendefinert" && (fravik.konklusjonFritekst || "[Egendefinert konklusjon angis]")}
                 {!fravik.konklusjon && "[Konklusjon angis]"}
               </p>
               {fravik.begrunnelseKonklusjon && (
