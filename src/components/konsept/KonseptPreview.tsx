@@ -14,8 +14,16 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
   const branncelleTyper = Array.isArray(formData.branncelleTyper) ? formData.branncelleTyper : [];
   const baereevneUnntak = Array.isArray(formData.baereevneUnntak) ? formData.baereevneUnntak : [];
 
-  const pageStyle = "bg-white text-black p-10 rounded-lg shadow-md font-serif text-sm border border-gray-200 mx-auto";
-  const pageWidth = { maxWidth: '210mm', minHeight: '297mm' };
+  const pageStyle = "bg-white text-black p-10 rounded-lg shadow-md font-serif text-sm border border-gray-200 mx-auto relative";
+  const pageWidth = { maxWidth: '210mm', minHeight: '297mm', paddingBottom: '40px' };
+  const hasSammendrag = !!formData.sammendrag;
+  const totalPages = hasSammendrag ? 6 : 5;
+
+  const PageFooter = ({ pageNum }: { pageNum: number }) => (
+    <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+      <span className="text-xs text-gray-400">Side {pageNum} av {totalPages}</span>
+    </div>
+  );
 
   return (
     <div className="space-y-8 py-4">
@@ -45,13 +53,15 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
         )}
         <p className="mt-4 text-xs text-gray-400">{new Date().toLocaleDateString("nb-NO", { year: "numeric", month: "long", day: "numeric" })}</p>
         </div>
+        <PageFooter pageNum={1} />
       </div>
 
       {/* Sammendrag - egen side */}
-      {formData.sammendrag && (
+      {hasSammendrag && (
         <div className={pageStyle} style={pageWidth}>
           <h2 className="font-bold mb-3">Sammendrag</h2>
           <p className="whitespace-pre-wrap text-xs">{formData.sammendrag}</p>
+          <PageFooter pageNum={2} />
         </div>
       )}
 
@@ -96,6 +106,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
           <p><span className="font-bold">6.</span> Litteraturhenvisninger</p>
         </div>
       </section>
+      <PageFooter pageNum={hasSammendrag ? 3 : 2} />
       </div>
 
       {/* Kapittel 1-2 - egen side */}
@@ -313,9 +324,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
         <h3 className="font-semibold mb-2">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</h3>
         <p className="ml-4 mb-3">[Eventuelle tilleggskrav beskrives]</p>
       </section>
+      <PageFooter pageNum={hasSammendrag ? 4 : 3} />
       </div>
-
-      {/* Kapittel 3 - egen side */}
       <div className={pageStyle} style={pageWidth}>
       {/* 3. Branntekniske ytelseskrav */}
       <section className="mb-6">
@@ -984,9 +994,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
           </tbody>
         </table>
       </section>
+      <PageFooter pageNum={hasSammendrag ? 5 : 4} />
       </div>
-
-      {/* Kapittel 4-6 - egen side */}
       <div className={pageStyle} style={pageWidth}>
       {/* 4. Utførelses- og driftsfasen */}
       <section className="mb-6">
@@ -1019,6 +1028,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
           <p className="ml-4">{formData.fravik}</p>
         </section>
         )}
+      <PageFooter pageNum={totalPages} />
       </div>
     </div>
   );
