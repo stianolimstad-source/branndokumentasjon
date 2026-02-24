@@ -1634,7 +1634,7 @@ const Konsept = () => {
                               if (extracted.avgrensning) updated.avgrensning = extracted.avgrensning;
                               if (extracted.tilleggskrav) updated.tilleggskrav = extracted.tilleggskrav;
                               if (extracted.bygningshoyde) updated.bygningshoyde = extracted.bygningshoyde;
-                              if (extracted.sammendrag) updated.sammendrag = extracted.sammendrag;
+                              // Sammendrag genereres manuelt, ikke fra opplastet dokument
                               return updated;
                             });
                           }} />
