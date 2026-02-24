@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, Shield, User, FolderOpen, Building, FileText, ChevronDown, ChevronRight, UserPlus, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import PageHeader from "@/components/PageHeader";
+
 import AddMemberDialog from "@/components/gruppe/AddMemberDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -148,14 +148,14 @@ const GruppeDetalj = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <PageHeader title={groupName} subtitle={groupDescription || undefined} rightContent={
+      <div className="container mx-auto px-4 py-3">
         <Link to="/mine-kontakter">
-          <Button variant="outline" size="sm">
+          <Button variant="ghost" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Tilbake til grupper
           </Button>
         </Link>
-      } />
+      </div>
 
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <Tabs defaultValue="medlemmer">
