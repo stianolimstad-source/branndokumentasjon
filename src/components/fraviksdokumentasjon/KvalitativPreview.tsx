@@ -366,9 +366,7 @@ const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData, s
                     ? `Funksjonskravene i ${refs.join(", ")} er vurdert som tilfredsstillende.`
                     : "Funksjonskravene er vurdert som tilfredsstillende.";
                 })()}
-                {fravik.konklusjon === "komparativ" && "Det er behov for komparativ analyse for å dokumentere likeverdighet."}
-                {fravik.konklusjon === "risikoanalyse" && "Det er behov for risikoanalyse etter NS 3901."}
-                {fravik.konklusjon === "egendefinert" && (fravik.konklusjonFritekst || "[Egendefinert konklusjon angis]")}
+                {fravik.konklusjon === "egendefinert" && (fravik.konklusjonFritekst || "[Konklusjon angis]")}
                 {!fravik.konklusjon && "[Konklusjon angis]"}
               </p>
               {fravik.begrunnelseKonklusjon && (

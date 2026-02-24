@@ -418,9 +418,7 @@ export async function exportKvalitativWord(
         ? `Funksjonskravene i ${refs.join(", ")} er vurdert som tilfredsstillende.`
         : "Funksjonskravene er vurdert som tilfredsstillende.";
     }
-    if (fravik.konklusjon === "komparativ") konklusjonText = "Det er behov for komparativ analyse.";
-    if (fravik.konklusjon === "risikoanalyse") konklusjonText = "Det er behov for risikoanalyse etter NS 3901.";
-    if (fravik.konklusjon === "egendefinert") konklusjonText = fravik.konklusjonFritekst || "[Egendefinert konklusjon angis]";
+    if (fravik.konklusjon === "egendefinert") konklusjonText = fravik.konklusjonFritekst || "[Konklusjon angis]";
 
     elements.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: konklusjonText, size: 22, font: "Calibri" })] }));
 
