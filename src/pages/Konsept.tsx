@@ -1171,14 +1171,17 @@ const Konsept = () => {
                     children: [
                       createTableCell("Tiltaksklasse", true, 33),
                       new TableCell({
+                        borders: tableBorders,
                         width: { size: 67, type: WidthType.PERCENTAGE },
+                        margins: { top: 40, bottom: 40, left: 80, right: 80 },
                         children: [
                           new Paragraph({
+                            spacing: { before: 40, after: formData.tiltaksklasseBegrunnelse ? 40 : 40 },
                             children: [new TextRun({ text: formData.tiltaksklasse || "[Angis]", size: 20 })],
-                            spacing: { after: formData.tiltaksklasseBegrunnelse ? 40 : 0 },
                           }),
                           ...(formData.tiltaksklasseBegrunnelse ? [
                             new Paragraph({
+                              spacing: { before: 0, after: 40 },
                               children: [new TextRun({ text: `Begrunnelse: ${formData.tiltaksklasseBegrunnelse}`, italics: true, size: 20 })],
                             }),
                           ] : []),
@@ -1210,14 +1213,17 @@ const Konsept = () => {
                     children: [
                       createTableCell("Tiltaksklasse", true, 33),
                       new TableCell({
+                        borders: tableBorders,
                         width: { size: 67, type: WidthType.PERCENTAGE },
+                        margins: { top: 40, bottom: 40, left: 80, right: 80 },
                         children: [
                           new Paragraph({
+                            spacing: { before: 40, after: formData.tiltaksklasseBegrunnelse ? 40 : 40 },
                             children: [new TextRun({ text: formData.tiltaksklasse || "[Angis]", size: 20 })],
-                            spacing: { after: formData.tiltaksklasseBegrunnelse ? 40 : 0 },
                           }),
                           ...(formData.tiltaksklasseBegrunnelse ? [
                             new Paragraph({
+                              spacing: { before: 0, after: 40 },
                               children: [new TextRun({ text: `Begrunnelse: ${formData.tiltaksklasseBegrunnelse}`, italics: true, size: 20 })],
                             }),
                           ] : []),
