@@ -4086,9 +4086,8 @@ const Konsept = () => {
         </CardContent>
         <div className="flex-shrink-0 border-t bg-background p-4 flex flex-col gap-2">
           <Button 
-            className="w-full" 
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white" 
             size="lg"
-            variant="outline"
             onClick={handleSave}
             disabled={isSaving || !conceptName}
           >
