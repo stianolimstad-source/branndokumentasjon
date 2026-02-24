@@ -413,7 +413,7 @@ const FravikEntryForm = ({ fravik, index, onChange }: Props) => {
           <Textarea
             placeholder="Skriv din egen konklusjon..."
             value={fravik.konklusjonFritekst || ""}
-            onChange={(e) => { update("konklusjonFritekst", e.target.value); update("konklusjon", "egendefinert"); }}
+            onChange={(e) => onChange({ ...fravik, konklusjonFritekst: e.target.value, konklusjon: "egendefinert" })}
             className="min-h-[80px]"
           />
         )}
