@@ -282,7 +282,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 })}
               </tbody>
             </table>
-            <table className="w-full border-collapse border border-gray-400 text-xs mb-3 mt-2">
+            <table className="w-full border-collapse text-xs mb-3 mt-2">
               <tbody>
                 <tr>
                   <td className="border border-gray-400 p-2 font-semibold w-1/3">Tiltaksklasse</td>
