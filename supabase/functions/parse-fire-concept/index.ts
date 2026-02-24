@@ -52,8 +52,7 @@ Returner BARE et JSON-objekt (ingen markdown, ingen forklaring) med følgende fe
   "prosjekteringsmetode": "",
   "avgrensning": "",
   "tilleggskrav": "",
-  "bygningshoyde": "",
-  "sammendrag": ""
+  "bygningshoyde": ""
 }
 
 For bygningstype: bruk en av disse verdiene hvis mulig: Bolig, Kontor, Skole, Barnehage, Sykehus og sykehjem, Overnattingssted og hotell, Forsamlingslokale, Salgslokale, Industri, Lager, Parkeringshus og garasje med to eller flere etasjer eller plan, Barnehjem.
@@ -64,7 +63,7 @@ For prosjekteringsmetode: bruk "preakseptert", "analyse" eller "blanding".
 For etasjer: kun tall (f.eks. "3").
 For areal: kun tall i m² (f.eks. "500").
 
-Hvis dokumentet inneholder et sammendrag, inkluder det. Ellers generer et kort sammendrag basert på informasjonen du finner.`;
+Ikke inkluder sammendrag - dette genereres separat.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

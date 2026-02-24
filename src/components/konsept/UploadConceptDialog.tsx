@@ -25,7 +25,7 @@ interface ExtractedData {
   avgrensning?: string;
   tilleggskrav?: string;
   bygningshoyde?: string;
-  sammendrag?: string;
+  
 }
 
 interface UploadConceptDialogProps {
