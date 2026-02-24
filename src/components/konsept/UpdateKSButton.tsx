@@ -95,7 +95,7 @@ const UpdateKSButton = ({ conceptId, conceptName, conceptContent, disabled }: Up
     <Button
       variant="outline"
       size="lg"
-      className="flex-1 w-full"
+      className="w-full"
       onClick={handleUpdate}
       disabled={disabled || updating}
     >
