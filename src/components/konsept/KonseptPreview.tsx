@@ -738,6 +738,15 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               <th className="border border-gray-400 p-2 text-left">Løsning</th>
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
+            <tr>
+              <td className="border border-gray-400 p-2 align-top">Generelt</td>
+              <td className="border border-gray-400 p-2">
+                Byggverk skal deles opp i brannceller på en hensiktsmessig måte. Områder med ulik risiko for liv og helse eller ulik fare for at brann oppstår, skal være egne brannceller med mindre andre tiltak gir likeverdig sikkerhet.
+                <br /><br />
+                Brannceller skal være utført slik at de forhindrer spredning av brann og branngasser til andre brannceller i den tiden som er nødvendig for rømning og redning.
+              </td>
+              <td className="border border-gray-400 p-2 align-top">RIBr</td>
+            </tr>
             {formData.brannklasse && (
               <>
                 <tr>
