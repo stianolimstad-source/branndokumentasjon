@@ -360,13 +360,10 @@ const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData, s
               <p className="ml-4 mb-2">
                 {fravik.konklusjon === "tilstrekkelig" && (() => {
                   const refs = fravik.funksjonskrav
-                    ? fravik.funksjonskrav.split("\n").filter(Boolean).map(l => {
-                        const m = l.match(/§\s*[\d-]+/);
-                        return m ? m[0] : null;
-                      }).filter(Boolean).join(", ")
-                    : "";
-                  return refs
-                    ? `Funksjonskravene i ${refs} er vurdert som tilfredsstillende.`
+                    ? fravik.funksjonskrav.split("\n").filter(Boolean)
+                    : [];
+                  return refs.length > 0
+                    ? `Funksjonskravene i ${refs.join(", ")} er vurdert som tilfredsstillende.`
                     : "Funksjonskravene er vurdert som tilfredsstillende.";
                 })()}
                 {fravik.konklusjon === "komparativ" && "Det er behov for komparativ analyse for å dokumentere likeverdighet."}

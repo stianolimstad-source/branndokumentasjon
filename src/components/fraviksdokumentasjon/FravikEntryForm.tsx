@@ -388,15 +388,11 @@ const FravikEntryForm = ({ fravik, index, onChange }: Props) => {
         </div>
         <div className="space-y-2">
           {(() => {
-            // Extract paragraph numbers from funksjonskrav
             const paragrafRefs = fravik.funksjonskrav
-              ? fravik.funksjonskrav.split("\n").filter(Boolean).map(l => {
-                  const match = l.match(/§\s*[\d-]+/);
-                  return match ? match[0] : null;
-                }).filter(Boolean).join(", ")
-              : "";
-            const tilstrekkeligLabel = paragrafRefs
-              ? `Funksjonskravene i ${paragrafRefs} er vurdert som tilfredsstillende.`
+              ? fravik.funksjonskrav.split("\n").filter(Boolean)
+              : [];
+            const tilstrekkeligLabel = paragrafRefs.length > 0
+              ? `Funksjonskravene i ${paragrafRefs.join(", ")} er vurdert som tilfredsstillende.`
               : "Funksjonskravene er vurdert som tilfredsstillende.";
 
             return [

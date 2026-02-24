@@ -412,13 +412,10 @@ export async function exportKvalitativWord(
     let konklusjonText = "[Konklusjon angis]";
     if (fravik.konklusjon === "tilstrekkelig") {
       const refs = fravik.funksjonskrav
-        ? fravik.funksjonskrav.split("\n").filter(Boolean).map((l: string) => {
-            const m = l.match(/§\s*[\d-]+/);
-            return m ? m[0] : null;
-          }).filter(Boolean).join(", ")
-        : "";
-      konklusjonText = refs
-        ? `Funksjonskravene i ${refs} er vurdert som tilfredsstillende.`
+        ? fravik.funksjonskrav.split("\n").filter(Boolean)
+        : [];
+      konklusjonText = refs.length > 0
+        ? `Funksjonskravene i ${refs.join(", ")} er vurdert som tilfredsstillende.`
         : "Funksjonskravene er vurdert som tilfredsstillende.";
     }
     if (fravik.konklusjon === "komparativ") konklusjonText = "Det er behov for komparativ analyse.";
