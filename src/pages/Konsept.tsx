@@ -859,6 +859,13 @@ const Konsept = () => {
     }));
 
     const doc = new Document({
+      styles: {
+        default: {
+          document: {
+            run: { font: "Verdana", size: 20 },
+          },
+        },
+      },
       sections: [
         {
           properties: {},
@@ -868,8 +875,8 @@ const Konsept = () => {
         ...(formData.sammendrag ? [{
           properties: {},
           children: [
-            new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Sammendrag", font: "Calibri" })] }),
-            new Paragraph({ spacing: { after: 300 }, children: [new TextRun({ text: formData.sammendrag, size: 22, font: "Calibri" })] }),
+            new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Sammendrag" })] }),
+            new Paragraph({ spacing: { after: 300 }, children: [new TextRun({ text: formData.sammendrag, size: 22 })] }),
           ],
         }] : []),
         // Innholdsfortegnelse (egen side)
