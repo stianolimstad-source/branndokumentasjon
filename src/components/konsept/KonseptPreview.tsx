@@ -461,15 +461,20 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                   <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
                 </tr>
                 {(() => {
-                  // Parse baereevne text into rows
+                  const bklNum = parseInt(formData.brannklasse?.replace("BKL", "") || "1");
+                  const genereltTekst = bklNum >= 3
+                    ? "Det bærende hovedsystemet i byggverk i brannklasse 3 og 4 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet gjennom et fullstendig brannforløp, slik dette kan modelleres."
+                    : "Bæresystemet i byggverk i brannklasse 1 og 2 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet i minimum den tiden som er nødvendig for å rømme og redde personer og husdyr i og på byggverket.";
+                  return (
+                    <tr>
+                      <td className="border border-gray-400 p-2">Generelt</td>
+                      <td className="border border-gray-400 p-2">{genereltTekst}</td>
+                      <td className="border border-gray-400 p-2">RIB</td>
+                    </tr>
+                  );
+                })()}
+                {(() => {
                   const lines = (formData.baereevne || "").split("\n").filter((l: string) => l.trim());
-                  const labels = [
-                    "Bærende hovedsystem",
-                    "Sekundære, bærende bygningsdeler",
-                    "Trappeløp",
-                    "Bærende bygningsdeler under øverste kjeller",
-                    "Utvendig trappeløp",
-                  ];
                   if (lines.length >= 2) {
                     return lines.map((line: string, idx: number) => {
                       const parts = line.split(":");
@@ -484,24 +489,16 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                       );
                     });
                   }
-                  const bklNum = parseInt(formData.brannklasse?.replace("BKL", "") || "1");
-                  const genereltTekst = bklNum >= 3
-                    ? "Det bærende hovedsystemet i byggverk i brannklasse 3 og 4 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet gjennom et fullstendig brannforløp, slik dette kan modelleres."
-                    : "Bæresystemet i byggverk i brannklasse 1 og 2 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet i minimum den tiden som er nødvendig for å rømme og redde personer og husdyr i og på byggverket.";
-                  return (
-                    <>
+                  if (formData.baereevne) {
+                    return (
                       <tr>
                         <td className="border border-gray-400 p-2">Generelt</td>
-                        <td className="border border-gray-400 p-2">{genereltTekst}</td>
+                        <td className="border border-gray-400 p-2">{formData.baereevne}</td>
                         <td className="border border-gray-400 p-2">RIB</td>
                       </tr>
-                      <tr>
-                        <td className="border border-gray-400 p-2">Generelt</td>
-                        <td className="border border-gray-400 p-2">{formData.baereevne || "[Angis]"}</td>
-                        <td className="border border-gray-400 p-2">RIB</td>
-                      </tr>
-                    </>
-                  );
+                    );
+                  }
+                  return null;
                 })()}
                 {formData.baereevneKommentar && (
                   <tr>
