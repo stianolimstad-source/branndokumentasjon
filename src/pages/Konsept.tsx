@@ -420,7 +420,7 @@ const Konsept = () => {
     tiltaksklasse: "",
     avgrensning: "",
     // 2. Grunnlag og forutsetninger
-    grunnlagsdokumenter: [] as Array<{navn: string, dato: string}>,
+    grunnlagsdokumenter: [] as Array<{navn: string, utarbeidetAv: string, dato: string}>,
     harFlereRisikoklasser: false, // Nytt felt for å aktivere flere risikoklasser
     bekreftetUliktEtasjeantall: false, // Bekreftelse på at ulikt etasjeantall er korrekt
     bygningsdeler: [] as Bygningsdel[], // Array med bygningsdeler med egne risikoklasser
@@ -632,8 +632,15 @@ const Konsept = () => {
                 .split(/\r?\n/)
                 .map((l: string) => l.trim())
                 .filter(Boolean)
-                .map((navn: string) => ({ navn, dato: "" }))
+                .map((navn: string) => ({ navn, utarbeidetAv: "", dato: "" }))
             : [];
+        } else {
+          // Ensure existing array items have utarbeidetAv field
+          loadedContent.grunnlagsdokumenter = legacyDocs.map((doc: any) => ({
+            navn: doc.navn || "",
+            utarbeidetAv: doc.utarbeidetAv || "",
+            dato: doc.dato || "",
+          }));
         }
         setFormData({ ...formData, ...loadedContent });
       }
@@ -1019,10 +1026,34 @@ const Konsept = () => {
               children: [new TextRun({ text: "2.1 Grunnlagsdokumenter", bold: true, size: 24 })],
               spacing: { before: 200, after: 100 },
             }),
-            new Paragraph({
-              text: "[Liste over tegninger og dokumenter]",
-              spacing: { after: 100 },
-            }),
+            ...(Array.isArray(formData.grunnlagsdokumenter) && formData.grunnlagsdokumenter.length > 0 ? [
+              new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
+                  new TableRow({
+                    children: [
+                      createTableCell("Dokument", true, 50),
+                      createTableCell("Utarbeidet av / firma", true, 30),
+                      createTableCell("Dato", true, 20),
+                    ],
+                  }),
+                  ...formData.grunnlagsdokumenter.map((doc) =>
+                    new TableRow({
+                      children: [
+                        createTableCell(doc.navn || "-", false, 50),
+                        createTableCell(doc.utarbeidetAv || "-", false, 30),
+                        createTableCell(doc.dato || "-", false, 20),
+                      ],
+                    })
+                  ),
+                ],
+              }),
+            ] : [
+              new Paragraph({
+                text: "[Liste over tegninger og dokumenter]",
+                spacing: { after: 100 },
+              }),
+            ]),
             new Paragraph({
               children: [new TextRun({ text: "2.2 Beskrivelse av bygning og branntekniske forutsetninger", bold: true, size: 24 })],
               spacing: { before: 200, after: 100 },
@@ -2041,32 +2072,14 @@ const Konsept = () => {
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.2 Grunnlagsdokumenter</Label>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {(Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : []).map((doc, index) => (
-                          <div key={index} className="grid grid-cols-[1fr_auto_auto] gap-2 items-center">
-                            <Input 
-                              placeholder="Dokumentnavn"
-                              value={doc.navn}
-                              onChange={(e) => {
-                                const updated = [...(Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : [])];
-                                updated[index] = {...updated[index], navn: e.target.value};
-                                setFormData({...formData, grunnlagsdokumenter: updated});
-                              }}
-                            />
-                            <Input 
-                              type="date"
-                              className="w-36"
-                              value={doc.dato}
-                              onChange={(e) => {
-                                const updated = [...(Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : [])];
-                                updated[index] = {...updated[index], dato: e.target.value};
-                                setFormData({...formData, grunnlagsdokumenter: updated});
-                              }}
-                            />
+                          <div key={index} className="border rounded-md p-3 space-y-2 relative">
                             <Button
                               type="button"
                               variant="ghost"
                               size="icon"
+                              className="absolute top-1 right-1 h-6 w-6"
                               onClick={() => {
                                 const updated = (Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : []).filter((_, i) => i !== index);
                                 setFormData({...formData, grunnlagsdokumenter: updated});
@@ -2074,6 +2087,44 @@ const Konsept = () => {
                             >
                               <X className="h-4 w-4" />
                             </Button>
+                            <div>
+                              <Label className="text-xs">Navn på dokument</Label>
+                              <Input 
+                                placeholder="F.eks. Brannteknisk notat"
+                                value={doc.navn}
+                                onChange={(e) => {
+                                  const updated = [...(Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : [])];
+                                  updated[index] = {...updated[index], navn: e.target.value};
+                                  setFormData({...formData, grunnlagsdokumenter: updated});
+                                }}
+                              />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <Label className="text-xs">Utarbeidet av / firma</Label>
+                                <Input 
+                                  placeholder="F.eks. Rambøll AS"
+                                  value={doc.utarbeidetAv || ""}
+                                  onChange={(e) => {
+                                    const updated = [...(Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : [])];
+                                    updated[index] = {...updated[index], utarbeidetAv: e.target.value};
+                                    setFormData({...formData, grunnlagsdokumenter: updated});
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-xs">Dato</Label>
+                                <Input 
+                                  type="date"
+                                  value={doc.dato}
+                                  onChange={(e) => {
+                                    const updated = [...(Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : [])];
+                                    updated[index] = {...updated[index], dato: e.target.value};
+                                    setFormData({...formData, grunnlagsdokumenter: updated});
+                                  }}
+                                />
+                              </div>
+                            </div>
                           </div>
                         ))}
                         <Button
@@ -2083,7 +2134,7 @@ const Konsept = () => {
                           onClick={() => {
                             setFormData({
                               ...formData, 
-                              grunnlagsdokumenter: [...(Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : []), {navn: "", dato: ""}]
+                              grunnlagsdokumenter: [...(Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : []), {navn: "", utarbeidetAv: "", dato: ""}]
                             });
                           }}
                         >
