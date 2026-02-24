@@ -2907,17 +2907,6 @@ const Konsept = () => {
                         })()
                       )}
                       
-                      {/* Preaksepterte ytelser for seksjoneringsveggen - vises automatisk når seksjonering er påkrevd */}
-                      {isSeksjoneringRequired(formData.areal, formData.brannseksjonBrannenergi, formData.brannseksjonTiltak || "normalt") && (
-                        <div className="p-3 bg-amber-50 border border-amber-300 rounded-md space-y-2">
-                          <p className="text-sm font-bold text-amber-900">🔶 Brannseksjonering er påkrevd – preaksepterte ytelser for seksjoneringsveggen (VTEK § 11-7):</p>
-                          <ol className="list-decimal list-inside space-y-1 text-xs text-amber-800">
-                            {seksjoneringPreaksepterteYtelser.map((ytelse, i) => (
-                              <li key={i}>{ytelse}</li>
-                            ))}
-                          </ol>
-                        </div>
-                      )}
                       
                       {/* Innvendig hjørne */}
                       <div className="space-y-2">
