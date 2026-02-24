@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { FileWarning, Plus, Trash2, Download, Save, ArrowLeft, Search, LogIn } from "lucide-react";
+import { Plus, Trash2, Download, Save, ArrowLeft, Search, LogIn } from "lucide-react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -218,7 +218,7 @@ const KvalitativAnalyse = () => {
   if (!authLoading && !user) {
     return (
       <div className="min-h-screen bg-gradient-subtle">
-        <PageHeader title="Kvalitativ analyse" icon={<FileWarning className="h-6 w-6 text-primary-foreground" />} />
+        <PageHeader title="Kvalitativ analyse" />
         <div className="container mx-auto px-4 py-16">
           <Card className="max-w-md mx-auto shadow-medium">
             <CardContent className="flex flex-col items-center justify-center py-12">
@@ -236,27 +236,14 @@ const KvalitativAnalyse = () => {
   // Always render the main form — project picker is a dialog
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/mine-prosjekter">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Tilbake
-                </Link>
-              </Button>
-              <div className="flex items-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
-                  <FileWarning className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <h1 className="text-xl font-bold">Kvalitativ analyse</h1>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      <div className="container mx-auto px-4 py-3">
+        <Button variant="ghost" size="sm" asChild>
+          <Link to="/mine-prosjekter">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Tilbake
+          </Link>
+        </Button>
+      </div>
 
       <div className="w-full px-4 py-6">
         <div className="max-w-[1800px] mx-auto">

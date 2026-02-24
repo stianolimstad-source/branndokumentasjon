@@ -11,7 +11,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Flame, CheckCircle, XCircle, Clock, MessageSquare, Save, Loader2, Eye, Download } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle, Clock, MessageSquare, Save, Loader2, Eye, Download } from "lucide-react";
 import KonseptVisning from "@/components/ks/KonseptVisning";
 import { exportKSToWord } from "@/lib/ks-word-export";
 
@@ -275,48 +275,39 @@ const KSGjennomgang = () => {
 
   if (authLoading || !user) return null;
 
-  const renderHeader = () => (
-    <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/mine-oppgaver")}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Tilbake
-            </Button>
-            <div className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
-                <Flame className="h-6 w-6 text-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold">Kvalitetssikring (KS)</h1>
-                <p className="text-xs text-muted-foreground">{conceptName}</p>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 text-sm">
-            <div className="flex items-center gap-1.5">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <span>{okCount}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <XCircle className="h-4 w-4 text-destructive" />
-              <span>{feilCount}</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <span>{pendingCount}</span>
-            </div>
-          </div>
+  const renderStatusBar = () => (
+    <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="sm" onClick={() => navigate("/mine-oppgaver")}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Tilbake
+        </Button>
+        <div>
+          <h2 className="text-lg font-bold">Kvalitetssikring (KS)</h2>
+          <p className="text-xs text-muted-foreground">{conceptName}</p>
         </div>
       </div>
-    </header>
+      <div className="flex items-center gap-3 text-sm">
+        <div className="flex items-center gap-1.5">
+          <CheckCircle className="h-4 w-4 text-green-600" />
+          <span>{okCount}</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <XCircle className="h-4 w-4 text-destructive" />
+          <span>{feilCount}</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <Clock className="h-4 w-4 text-muted-foreground" />
+          <span>{pendingCount}</span>
+        </div>
+      </div>
+    </div>
   );
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-subtle">
-        {renderHeader()}
+        {renderStatusBar()}
         <div className="flex items-center justify-center py-24">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           <p className="text-muted-foreground ml-2">Laster brannkonsept…</p>
@@ -328,7 +319,7 @@ const KSGjennomgang = () => {
   if (!conceptData) {
     return (
       <div className="min-h-screen bg-gradient-subtle">
-        {renderHeader()}
+        {renderStatusBar()}
         <div className="flex flex-col items-center justify-center py-24 gap-4">
           <p className="text-muted-foreground">Kunne ikke finne brannkonseptet.</p>
           <Button variant="outline" onClick={() => navigate("/mine-oppgaver")}>
@@ -341,7 +332,7 @@ const KSGjennomgang = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      {renderHeader()}
+      {renderStatusBar()}
 
       <div className="w-full px-4 py-6">
         <div className="max-w-[1400px] mx-auto">
