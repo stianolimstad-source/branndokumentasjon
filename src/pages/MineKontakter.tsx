@@ -256,7 +256,7 @@ const MineKontakter = () => {
                   <Card key={group.id} className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer" onClick={() => openGroupDetail(group)}>
                     <CardHeader className="pb-2">
                       {group.logo_url && (
-                        <div className="h-16 w-full flex items-center justify-center mb-2">
+                        <div className="h-32 w-full flex items-center justify-center mb-2">
                           <img src={group.logo_url} alt={`${group.name} logo`} className="max-h-full max-w-full object-contain" />
                         </div>
                       )}
