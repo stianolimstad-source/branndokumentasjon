@@ -4096,14 +4096,6 @@ const Konsept = () => {
               <Save className="h-4 w-4 mr-2" />
               {isSaving ? "Lagrer..." : "Lagre endringer"}
             </Button>
-            <Button 
-              className="flex-1" 
-              size="lg"
-              onClick={handleGenerate}
-              disabled={isGenerating || !conceptName}
-            >
-              {isGenerating ? "Genererer..." : "Generer brannkonsept"}
-            </Button>
           </div>
           <SendToKSDialog
             conceptName={conceptName}
