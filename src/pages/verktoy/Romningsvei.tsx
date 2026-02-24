@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Flame, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Romningsvei = () => {
@@ -32,26 +32,13 @@ const Romningsvei = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/verktoy">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Alle verktøy
-              </Link>
-            </Button>
-            <div className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
-                <Flame className="h-6 w-6 text-primary-foreground" />
-              </div>
-              <h1 className="text-xl font-bold">Rømningsveibredde</h1>
-            </div>
-          </div>
-        </div>
-      </header>
-
       <div className="container mx-auto px-4 py-8">
+        <Button variant="ghost" size="sm" asChild className="mb-4">
+          <Link to="/verktoy">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Alle verktøy
+          </Link>
+        </Button>
         <div className="max-w-4xl mx-auto space-y-8">
           <Card className="shadow-medium">
             <CardHeader>
