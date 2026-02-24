@@ -1617,12 +1617,61 @@ const Konsept = () => {
                   <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
                     <div className="space-y-2">
                       <Label className="text-xs font-medium mb-1 block">Sammendrag av brannkonseptet</Label>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="mb-2"
+                        onClick={() => {
+                          const firma = authorInfo?.company || "[firma]";
+                          const oppdragsgiver = formData.oppdragsgiver || "[oppdragsgiver]";
+                          const prosjekt = formData.prosjektnavn || "[prosjektnavn]";
+                          const bygningstype = formData.bygningstype || "[bygningstype]";
+                          const etasjer = formData.etasjer || "[antall]";
+                          const rk = formData.harFlereRisikoklasser
+                            ? formData.bygningsdeler.map(d => d.risikoklasse).filter(Boolean).join(", ")
+                            : formData.risikoklasse || "[risikoklasse]";
+                          const bkl = formData.harFlereRisikoklasser
+                            ? formData.bygningsdeler.map(d => d.brannklasse || getBrannklasse(d.risikoklasse, d.etasjer, d.harTerrengTilgang, d.areal).brannklasse).filter(Boolean).join(", ")
+                            : formData.brannklasse || "[brannklasse]";
+
+                          const aktiveTiltak: string[] = [];
+                          if (formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b || formData.tilretteleggingLedd1c) aktiveTiltak.push("automatisk slokkeanlegg");
+                          if (formData.tilretteleggingLedd2a) aktiveTiltak.push("brannalarmanlegg");
+                          if (formData.brannalarmTalevarsling) aktiveTiltak.push("talevarsling");
+                          if (formData.tilretteleggingLedd3) aktiveTiltak.push("ledesystem");
+
+                          const metode = formData.prosjekteringsmetode === "preakseptert"
+                            ? "Prosjekteringen er basert på preaksepterte ytelser i henhold til VTEK17."
+                            : formData.prosjekteringsmetode === "analyse"
+                              ? "Prosjekteringen er basert på analyse (fraviksprosjektering)."
+                              : "Prosjekteringen er basert på en kombinasjon av preaksepterte ytelser og analyse.";
+
+                          let tekst = `${firma} er engasjert av ${oppdragsgiver} for brannteknisk prosjektering av ${prosjekt}. `;
+                          tekst += `Bygget er et ${bygningstype.toLowerCase()} med ${etasjer} tellende etasje${etasjer === "1" ? "" : "r"}. `;
+                          tekst += `Bygget er plassert i risikoklasse ${rk} og brannklasse ${bkl}. `;
+                          tekst += metode;
+
+                          if (aktiveTiltak.length > 0) {
+                            tekst += `\n\nFølgende aktive branntekniske tiltak er forutsatt: ${aktiveTiltak.join(", ")}.`;
+                          }
+
+                          if (formData.prosjekteringsmetode === "analyse" || formData.prosjekteringsmetode === "blanding") {
+                            tekst += `\n\nDet er gjort fravik fra preaksepterte ytelser. Se egen fraviksdokumentasjon for nærmere beskrivelse.`;
+                          }
+
+                          setFormData({ ...formData, sammendrag: tekst });
+                        }}
+                      >
+                        Generer sammendrag automatisk
+                      </Button>
                       <Textarea
                         placeholder="Kort sammendrag av brannkonseptet, inkludert hovedforutsetninger og konklusjoner..."
                         value={formData.sammendrag}
                         onChange={(e) => setFormData({...formData, sammendrag: e.target.value})}
                         className="min-h-[120px]"
                       />
+                      <p className="text-xs text-muted-foreground">Klikk «Generer sammendrag automatisk» for å fylle ut basert på inndata, deretter rediger etter behov.</p>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
