@@ -283,7 +283,7 @@ const MineKontakter = () => {
                         </CardContent>
                       </div>
                       {group.logo_url && (
-                        <div className="h-24 w-32 shrink-0 flex items-center justify-center p-4 mr-4">
+                        <div className="h-32 w-48 shrink-0 flex items-center justify-center p-4 mr-4">
                           <img src={group.logo_url} alt={`${group.name} logo`} className="max-h-full max-w-full object-contain" />
                         </div>
                       )}
