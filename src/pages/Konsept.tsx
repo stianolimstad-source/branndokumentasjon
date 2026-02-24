@@ -1098,10 +1098,15 @@ const Konsept = () => {
               spacing: { after: 100 },
             }),
 
+          ],
+        },
+        {
+          properties: {},
+          children: [
             // 3. Branntekniske ytelseskrav
             new Paragraph({
               children: [new TextRun({ text: "3. Beskrivelse av branntekniske ytelseskrav", bold: true, size: 28 })],
-              spacing: { before: 400, after: 200 },
+              spacing: { before: 200, after: 200 },
             }),
             // Tabell 3
             new Table({
