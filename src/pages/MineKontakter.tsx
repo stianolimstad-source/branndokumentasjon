@@ -248,15 +248,15 @@ const MineKontakter = () => {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid gap-4">
               {filteredGroups.map((group) => {
                 const memberCount = groupMembers.filter((m) => m.group_id === group.id).length;
                 const myRole = groupMembers.find((m) => m.group_id === group.id && m.user_id === user?.id)?.role;
                 return (
                   <Card key={group.id} className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer" onClick={() => openGroupDetail(group)}>
-                    <CardHeader className="pb-2">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
+                    <div className="flex items-center">
+                      <div className="flex-1 min-w-0">
+                        <CardHeader className="pb-2">
                           <div className="flex items-start justify-between">
                             <CardTitle className="text-lg">{group.name}</CardTitle>
                             {myRole === "admin" && (
@@ -273,21 +273,21 @@ const MineKontakter = () => {
                           {group.description && (
                             <CardDescription>{group.description}</CardDescription>
                           )}
-                        </div>
-                        {group.logo_url && (
-                          <div className="h-16 w-24 shrink-0 flex items-center justify-center">
-                            <img src={group.logo_url} alt={`${group.name} logo`} className="max-h-full max-w-full object-contain" />
+                        </CardHeader>
+                        <CardContent className="flex items-center justify-between pt-0">
+                          <div className="flex gap-2">
+                            <Badge variant="secondary">{memberCount} {memberCount === 1 ? "medlem" : "medlemmer"}</Badge>
+                            {myRole === "admin" && <Badge>Admin</Badge>}
                           </div>
-                        )}
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        </CardContent>
                       </div>
-                    </CardHeader>
-                    <CardContent className="flex items-center justify-between">
-                      <div className="flex gap-2">
-                        <Badge variant="secondary">{memberCount} {memberCount === 1 ? "medlem" : "medlemmer"}</Badge>
-                        {myRole === "admin" && <Badge>Admin</Badge>}
-                      </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                    </CardContent>
+                      {group.logo_url && (
+                        <div className="h-24 w-32 shrink-0 flex items-center justify-center p-4 mr-4">
+                          <img src={group.logo_url} alt={`${group.name} logo`} className="max-h-full max-w-full object-contain" />
+                        </div>
+                      )}
+                    </div>
                   </Card>
                 );
               })}
