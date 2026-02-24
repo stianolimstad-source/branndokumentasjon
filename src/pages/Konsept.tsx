@@ -1189,19 +1189,13 @@ const Konsept = () => {
                 ],
               }),
             ] : [
-              // Tabell 1: Bygningsinfo
+              // Én samlet tabell for bygningsinfo + klassifisering
               new Table({
                 width: { size: 100, type: WidthType.PERCENTAGE },
                 rows: [
                   new TableRow({ children: [createTableCell("Bygningstype", true, 33), createTableCell(formData.bygningstype || "[Angis]")] }),
                   new TableRow({ children: [createTableCell("Bruttoareal", true, 33), createTableCell(`${formData.areal || "[Angis]"} m²`)] }),
                   new TableRow({ children: [createTableCell("Antall etasjer", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
-                ],
-              }),
-              // Tabell 2: Klassifisering (med litt mellomrom)
-              new Table({
-                width: { size: 100, type: WidthType.PERCENTAGE },
-                rows: [
                   new TableRow({ children: [createTableCell("Risikoklasse", true, 33), createTableCell(formData.risikoklasse || "[Angis]")] }),
                   new TableRow({
                     children: [
