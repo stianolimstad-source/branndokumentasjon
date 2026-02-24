@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import AppHeader from "@/components/AppHeader";
 import Index from "./pages/Index";
 import Konsept from "./pages/Konsept";
 import Verktoy from "./pages/Verktoy";
@@ -33,6 +34,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <AppHeader />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/konsept" element={<Konsept />} />
