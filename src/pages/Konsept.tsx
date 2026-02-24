@@ -2821,51 +2821,6 @@ const Konsept = () => {
                       </div>
                       
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
-                        <Select 
-                          value={formData.brannseksjonBrannenergi} 
-                          onValueChange={(value) => setFormData({...formData, brannseksjonBrannenergi: value})}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Velg brannenergi..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="over400">Over 400 MJ/m²</SelectItem>
-                            <SelectItem value="50-400">50–400 MJ/m²</SelectItem>
-                            <SelectItem value="under50">Under 50 MJ/m²</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {/* Automatisk beregning basert på areal fra kap 2 */}
-                      {formData.areal && formData.brannseksjonBrannenergi && (
-                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md space-y-2">
-                          <p className="text-sm font-medium text-blue-800">Automatisk vurdering basert på areal ({formData.areal} m²) og brannenergi:</p>
-                          {(() => {
-                            const arealNum = parseFloat(formData.areal) || 0;
-                            const g = seksjoneringsGrenser[formData.brannseksjonBrannenergi];
-                            if (!g) return null;
-                            
-                            const anbefalinger: string[] = [];
-                            
-                            if (arealNum <= g.normalt) {
-                              anbefalinger.push("✅ Ingen tiltak nødvendig (maks " + g.normalt + " m²)");
-                            } else if (arealNum <= g.brannalarm) {
-                              anbefalinger.push("⚠️ Brannalarmanlegg anbefales (maks " + g.brannalarm + " m²)");
-                            } else if (formData.brannseksjonBrannenergi !== "over400" && g.roykventilasjon > 0 && arealNum <= g.roykventilasjon) {
-                              anbefalinger.push("⚠️ Røykventilasjon eller sprinkler nødvendig");
-                            } else if (arealNum <= g.sprinkler) {
-                              anbefalinger.push("🔴 Sprinkleranlegg nødvendig (maks " + (g.sprinkler === Infinity ? "ubegrenset" : g.sprinkler + " m²") + ")");
-                            } else {
-                              anbefalinger.push("🔴 Arealet overskrider tillatte grenser - seksjonering nødvendig");
-                            }
-                            
-                            return anbefalinger.map((a, i) => <p key={i} className="text-sm text-blue-700">{a}</p>);
-                          })()}
-                        </div>
-                      )}
-                      
-                      <div>
                         <Label className="text-xs font-medium mb-1 block">Tiltak</Label>
                         <Select 
                           value={formData.brannseksjonTiltak} 
@@ -2882,6 +2837,35 @@ const Konsept = () => {
                           </SelectContent>
                         </Select>
                       </div>
+
+                      {/* Brannenergi vises kun når seksjonering kan være påkrevd (areal overstiger laveste grense for valgt tiltak) */}
+                      {formData.brannseksjonTiltak && (() => {
+                        const arealNum = parseFloat(formData.areal) || 0;
+                        const tiltak = formData.brannseksjonTiltak as "normalt" | "brannalarm" | "sprinkler" | "roykventilasjon";
+                        const laveste = Math.min(
+                          seksjoneringsGrenser["over400"]?.[tiltak] ?? Infinity,
+                          seksjoneringsGrenser["50-400"]?.[tiltak] ?? Infinity,
+                          seksjoneringsGrenser["under50"]?.[tiltak] ?? Infinity,
+                        );
+                        return arealNum > laveste;
+                      })() && (
+                        <div>
+                          <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi for seksjoneringsveggen (MJ/m²)</Label>
+                          <Select 
+                            value={formData.brannseksjonBrannenergi} 
+                            onValueChange={(value) => setFormData({...formData, brannseksjonBrannenergi: value})}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Velg brannenergi..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="over400">Over 400 MJ/m²</SelectItem>
+                              <SelectItem value="50-400">50–400 MJ/m²</SelectItem>
+                              <SelectItem value="under50">Under 50 MJ/m²</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
                       
                       {formData.brannseksjonBrannenergi === "over400" && formData.brannseksjonTiltak === "roykventilasjon" && (
                         <div className="p-2 bg-red-50 border border-red-200 rounded-md">
