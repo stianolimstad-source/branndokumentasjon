@@ -503,6 +503,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                   "RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket."
                 ) : formData.eksplosjonRelevant === "relevant" ? (
                   <div className="space-y-2">
+                    {formData.eksplosjonBeskrivelse && (
+                      <p>{formData.eksplosjonBeskrivelse}</p>
+                    )}
                     <p className="font-semibold">Preaksepterte ytelser (jf. VTEK § 11-5):</p>
                     <ol className="list-decimal list-inside space-y-1">
                       <li>Rom hvor det kan forekomme fare for eksplosjon, må utgjøre en egen branncelle.</li>
@@ -511,6 +514,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                       <li>Trykkavlastningsflater må ikke plasseres i takflater med mindre snølast ikke hindrer funksjon.</li>
                       <li>Bærende og branncellebegrensende bygningsdeler må forsterkes ved behov.</li>
                     </ol>
+                    <p className="mt-2">Farlige stoffer skal håndteres og lagres i henhold til relevante standarder, herunder forskrift om håndtering av farlig stoff og forskrift om elektriske forsyningsanlegg.</p>
                   </div>
                 ) : "[Vurdering av eksplosjonsfare]"}
                 {formData.eksplosjonKommentar && <><br/><br/><span className="italic">Kommentar: {formData.eksplosjonKommentar}</span></>}
