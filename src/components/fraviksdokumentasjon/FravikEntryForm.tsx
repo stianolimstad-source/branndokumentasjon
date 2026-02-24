@@ -384,9 +384,10 @@ const FravikEntryForm = ({ fravik, index, onChange }: Props) => {
       {/* Konklusjon */}
       <div className="space-y-4">
         <div className="border-b-2 border-foreground/20 pb-2">
-          <Label className="text-base font-extrabold text-foreground">Konklusjon – behov for videre analyse</Label>
+          <Label className="text-base font-extrabold text-foreground">Konklusjon</Label>
         </div>
         <div className="space-y-2">
+          <Label className="text-xs font-medium">Bruk ferdig tekst eller egendefinert i tekstboks</Label>
           {(() => {
             const paragrafRefs = fravik.funksjonskrav
               ? fravik.funksjonskrav.split("\n").filter(Boolean)
@@ -395,30 +396,26 @@ const FravikEntryForm = ({ fravik, index, onChange }: Props) => {
               ? `Funksjonskravene i ${paragrafRefs.join(", ")} er vurdert som tilfredsstillende.`
               : "Funksjonskravene er vurdert som tilfredsstillende.";
 
-            return [
-              { value: "tilstrekkelig" as const, label: tilstrekkeligLabel, desc: "Automatisk tekst basert på valgte funksjonskrav." },
-              { value: "komparativ" as const, label: "Behov for komparativ analyse", desc: "Tiltak virker inn på andre områder enn fraviket." },
-              { value: "risikoanalyse" as const, label: "Behov for risikoanalyse etter NS 3901", desc: "Fraviket er komplekst eller tiltak har lavere robusthet/pålitelighet." },
-              { value: "egendefinert" as const, label: "Egendefinert konklusjon", desc: "Skriv din egen konklusjonstekst." },
-            ].map(opt => (
+            return (
               <div
-                key={opt.value}
-                onClick={() => update("konklusjon", opt.value)}
+                onClick={() => update("konklusjon", fravik.konklusjon === "tilstrekkelig" ? "egendefinert" : "tilstrekkelig")}
                 className={`p-3 rounded-lg border-2 cursor-pointer transition-colors ${
-                  fravik.konklusjon === opt.value ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                  fravik.konklusjon === "tilstrekkelig" ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
                 }`}
               >
-                <p className="font-medium text-xs">{opt.label}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{opt.desc}</p>
+                <p className="font-medium text-xs">{tilstrekkeligLabel}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">Klikk for å bruke denne teksten</p>
               </div>
-            ));
+            );
           })()}
         </div>
-        {fravik.konklusjon === "egendefinert" && (
-          <div className="space-y-2">
-            <Label className="text-xs font-medium">Konklusjonstekst</Label>
-            <Textarea placeholder="Skriv konklusjonen..." value={fravik.konklusjonFritekst || ""} onChange={(e) => update("konklusjonFritekst", e.target.value)} className="min-h-[80px]" />
-          </div>
+        {fravik.konklusjon !== "tilstrekkelig" && (
+          <Textarea
+            placeholder="Skriv din egen konklusjon..."
+            value={fravik.konklusjonFritekst || ""}
+            onChange={(e) => { update("konklusjonFritekst", e.target.value); update("konklusjon", "egendefinert"); }}
+            className="min-h-[80px]"
+          />
         )}
         <div className="space-y-2">
           <Label className="text-xs font-medium">Begrunnelse</Label>
