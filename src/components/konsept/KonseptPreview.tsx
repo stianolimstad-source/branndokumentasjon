@@ -528,13 +528,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
             <tr>
-              <td className="border border-gray-400 p-2 align-top">Bygningshøyde</td>
-              <td className="border border-gray-400 p-2">{formData.bygningshoyde ? `${formData.bygningshoyde} meter` : "[Ikke angitt]"}</td>
+              <td className="border border-gray-400 p-2 align-top">Avstand til nabobygg</td>
+              <td className="border border-gray-400 p-2">{formData.avstandNabobygg ? `${formData.avstandNabobygg} meter` : "[Ikke angitt]"}</td>
               <td className="border border-gray-400 p-2 align-top">-</td>
             </tr>
             <tr>
-              <td className="border border-gray-400 p-2 align-top">Avstand til nabobygg</td>
-              <td className="border border-gray-400 p-2">{formData.avstandNabobygg ? `${formData.avstandNabobygg} meter` : "[Ikke angitt]"}</td>
+              <td className="border border-gray-400 p-2 align-top">Bygningshøyde</td>
+              <td className="border border-gray-400 p-2">{formData.bygningshoyde ? `${formData.bygningshoyde} meter` : "[Ikke angitt]"}</td>
               <td className="border border-gray-400 p-2 align-top">-</td>
             </tr>
             {parseFloat(formData.bygningshoyde) > 9 && parseFloat(formData.avstandNabobygg || "0") < 8 ? (

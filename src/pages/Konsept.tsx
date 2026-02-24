@@ -2759,17 +2759,6 @@ const Konsept = () => {
                         <Label className="text-base font-extrabold text-foreground">3.3 § 11-6 Tiltak mot brannspredning</Label>
                       </div>
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Bygningshøyde (meter)</Label>
-                        <Input 
-                          type="number"
-                          step="0.1"
-                          value={formData.bygningshoyde}
-                          onChange={(e) => setFormData({...formData, bygningshoyde: e.target.value})}
-                          placeholder="Angi høyde i meter..."
-                        />
-                      </div>
-
-                      <div>
                         <Label className="text-xs font-medium mb-1 block">Avstand til nabobygg (meter)</Label>
                         <Input 
                           type="number"
@@ -2777,6 +2766,17 @@ const Konsept = () => {
                           value={formData.avstandNabobygg}
                           onChange={(e) => setFormData({...formData, avstandNabobygg: e.target.value})}
                           placeholder="Angi avstand i meter..."
+                        />
+                      </div>
+
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Bygningshøyde (meter)</Label>
+                        <Input 
+                          type="number"
+                          step="0.1"
+                          value={formData.bygningshoyde}
+                          onChange={(e) => setFormData({...formData, bygningshoyde: e.target.value})}
+                          placeholder="Angi høyde i meter..."
                         />
                       </div>
                       
