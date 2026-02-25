@@ -462,6 +462,24 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     rows.push(contentRow("Interntrapp", formData.interntrappBeskrivelse, "ARK"));
   }
 
+  // Røykkontroll
+  if (formData.roykKontrollKrav && formData.roykKontrollKrav.length > 0) {
+    const roykKravMap: Record<string, string> = {
+      royk_romningsvei: "Trapperom som er rømningsvei i byggverk med flere enn to etasjer, må røykventileres.",
+      royk_luke_vindu: "I byggverk med inntil 8 etasjer med trapperom Tr 1 eller Tr 2, jf. § 11-13 Tabell 2, er det tilstrekkelig med luke eller vindu med fri åpning minimum 1,0 m² øverst i trapperommet.",
+      royk_manuell_bryter: "Luke eller vindu skal kunne åpnes manuelt med bryter fra inngangsplanet.",
+      royk_mekanisk_ventilasjon: "Mellomliggende rom knyttet til Tr 2 må ha mekanisk balansert ventilasjon.",
+      royk_tr3_trykksetting: "I byggverk med mer enn 8 etasjer med trapperom Tr 3, jf. § 11-13 Tabell 2, må det mellomliggende rommet være åpent mot det fri, eller trapperommet må trykksettes og det mellomliggende rommet må ha trykkavlastning (røykventilasjon).",
+      royk_overbygde_garder: "Overbygde gårder og gater må ha røykventilasjon for å hindre røykspredning mellom ulike brannceller som ligger ut mot den overbygde gården.",
+    };
+    const lines = formData.roykKontrollKrav
+      .map((id: string, idx: number) => roykKravMap[id] ? `${idx + 1}. ${roykKravMap[id]}` : null)
+      .filter(Boolean) as string[];
+    if (lines.length > 0) {
+      rows.push(contentRowMultiLine("Røykkontroll", lines, "ARK/RIV"));
+    }
+  }
+
   if (formData.branncellerKommentar) {
     rows.push(contentRow("Kommentar", formData.branncellerKommentar, "-"));
   }

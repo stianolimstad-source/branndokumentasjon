@@ -496,6 +496,7 @@ const Konsept = () => {
     heissjaktkrav: [] as string[],
     trapperomKrav: [] as string[],
     interntrappBeskrivelse: "",
+    roykKontrollKrav: [] as string[],
     materialer: "",
     materialerKommentar: "",
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
@@ -3062,6 +3063,34 @@ const Konsept = () => {
                             </>
                           );
                         })()}
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-2 block">Røykkontroll</Label>
+                        <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                          {[
+                            { id: "royk_romningsvei", label: "1. Trapperom som er rømningsvei i byggverk med flere enn to etasjer, må røykventileres." },
+                            { id: "royk_luke_vindu", label: "2. I byggverk med inntil 8 etasjer med trapperom Tr 1 eller Tr 2, jf. § 11-13 Tabell 2, er det tilstrekkelig med luke eller vindu med fri åpning minimum 1,0 m² øverst i trapperommet." },
+                            { id: "royk_manuell_bryter", label: "3. Luke eller vindu skal kunne åpnes manuelt med bryter fra inngangsplanet." },
+                            { id: "royk_mekanisk_ventilasjon", label: "4. Mellomliggende rom knyttet til Tr 2 må ha mekanisk balansert ventilasjon." },
+                            { id: "royk_tr3_trykksetting", label: "5. I byggverk med mer enn 8 etasjer med trapperom Tr 3, jf. § 11-13 Tabell 2, må det mellomliggende rommet være åpent mot det fri, eller trapperommet må trykksettes og det mellomliggende rommet må ha trykkavlastning (røykventilasjon)." },
+                            { id: "royk_overbygde_garder", label: "6. Overbygde gårder og gater må ha røykventilasjon for å hindre røykspredning mellom ulike brannceller som ligger ut mot den overbygde gården." },
+                          ].map((krav) => (
+                            <div key={krav.id} className="flex items-start space-x-2">
+                              <Checkbox
+                                id={`royk-${krav.id}`}
+                                checked={formData.roykKontrollKrav.includes(krav.id)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    setFormData({...formData, roykKontrollKrav: [...formData.roykKontrollKrav, krav.id]});
+                                  } else {
+                                    setFormData({...formData, roykKontrollKrav: formData.roykKontrollKrav.filter((k: string) => k !== krav.id)});
+                                  }
+                                }}
+                              />
+                              <label htmlFor={`royk-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('brannceller-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
