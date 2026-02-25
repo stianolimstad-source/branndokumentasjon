@@ -1126,15 +1126,43 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               const activeKrav = (formData.vinduBrannspredningKrav || [])
                 .map((id: string, idx: number) => ({ id, text: vvKravMap[id], num: idx + 1 }))
                 .filter((k: { text: string }) => k.text);
-              if (activeKrav.length === 0) return null;
+              
+              // Calculate distance-based requirement
+              const avstand = parseFloat(formData.horisontaltAvstand || "");
+              const plassering = formData.horisontaltPlassering || "";
+              let avstandKrav = "";
+              if (!isNaN(avstand) && plassering) {
+                const bklNum = formData.harFlereRisikoklasser
+                  ? (() => {
+                      const nums = (formData.bygningsdeler || []).map((d: any) => parseInt((d.brannklasse || "").replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n));
+                      return nums.length > 0 ? Math.max(...nums) : 0;
+                    })()
+                  : parseInt((formData.brannklasse || "").replace(/\D/g, ''), 10) || 0;
+                const erBKL1 = bklNum === 1;
+                const plasseringTekst = plassering === "parallelle" ? "Vinduer i motstående parallelle yttervegger" : "Vinduer i innvendige hjørner";
+                const bklTekst = erBKL1 ? "BKL 1" : "BKL 2 og 3";
+                if (plassering === "parallelle") {
+                  if (avstand < 3.0) avstandKrav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
+                  else if (avstand < 6.0) avstandKrav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
+                  else avstandKrav = "Uspesifisert";
+                } else {
+                  if (avstand < 2.0) avstandKrav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
+                  else if (avstand < 4.0) avstandKrav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
+                  else avstandKrav = "Uspesifisert";
+                }
+                avstandKrav = `${plasseringTekst} i ${bklTekst}: Avstand L = ${formData.horisontaltAvstand} m. Nødvendig brannmotstand: ${avstandKrav}.`;
+              }
+
+              if (activeKrav.length === 0 && !avstandKrav) return null;
               return (
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Brannspredning via vinduer</td>
+                  <td className="border border-gray-400 p-2 align-top">Horisontal brannspredning</td>
                   <td className="border border-gray-400 p-2">
                     <div className="space-y-1">
                       {activeKrav.map((k: { id: string; text: string; num: number }) => (
                         <div key={k.id}>{k.num}. {k.text}</div>
                       ))}
+                      {avstandKrav && <div className={activeKrav.length > 0 ? "mt-2 font-medium" : ""}>{avstandKrav}</div>}
                     </div>
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
