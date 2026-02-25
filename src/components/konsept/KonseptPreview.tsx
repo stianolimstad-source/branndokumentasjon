@@ -1237,20 +1237,18 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               const result = getBrensellagringKrav(formData.brenselType as BrenselType, parseInt(formData.brenselMengde));
               if (result.feilmelding || result.krav.length === 0) return null;
               return (
-                <>
-                  <tr className="bg-blue-50">
-                    <td className="border border-gray-400 p-2 font-semibold" colSpan={3}>
-                      Rom for lagring av flytende brensel ({result.romType})
-                    </td>
-                  </tr>
-                  {result.krav.map((k, i) => (
-                    <tr key={`brensel-${i}`}>
-                      <td className="border border-gray-400 p-2 align-top">{k.kategori}</td>
-                      <td className="border border-gray-400 p-2">{k.tekst}</td>
-                      <td className="border border-gray-400 p-2 align-top">{k.ansvar}</td>
-                    </tr>
-                  ))}
-                </>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Rom for lagring av flytende brensel</td>
+                  <td className="border border-gray-400 p-2">
+                    <div className="space-y-1">
+                      <div className="font-medium text-xs mb-1">Romtype: {result.romType}</div>
+                      {result.krav.map((k, i) => (
+                        <div key={i}>{k.kategori}: {k.tekst}</div>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
               );
             })()}
             {formData.branncellerKommentar && (
