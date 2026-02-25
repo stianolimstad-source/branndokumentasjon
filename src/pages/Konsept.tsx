@@ -3349,6 +3349,17 @@ const Konsept = () => {
                           </div>
                           {formData.branncellerFlerePlanRelevant && (
                             <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
+                              {(() => {
+                                const rkList = formData.harFlereRisikoklasser
+                                  ? (formData.bygningsdeler || []).map((d: any) => parseInt((d.risikoklasse || "").replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n))
+                                  : [parseInt((formData.risikoklasse || "").replace(/\D/g, ''), 10)].filter((n) => !isNaN(n));
+                                const harUgyldigRK = rkList.some((rk: number) => rk === 3 || rk === 6);
+                                return harUgyldigRK ? (
+                                  <div className="bg-destructive/10 border border-destructive/30 rounded p-2 text-xs text-destructive font-medium">
+                                    ⚠ Obs: Preakseptert ytelse for brannceller over flere plan gjelder kun risikoklasse 1, 2, 4 og 5. Prosjektet inneholder risikoklasse {rkList.filter((rk: number) => rk === 3 || rk === 6).map((rk: number) => `RK ${rk}`).join(" og ")}, som ikke dekkes av denne ytelsen.
+                                  </div>
+                                ) : null;
+                              })()}
                               <p className="text-xs text-muted-foreground italic">Brannceller i risikoklasse 1, 2, 4 og 5 kan ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte, dersom følgende ytelser er oppfylt:</p>
                               {[
                                 { id: "fp_sprinkler", label: "1. Det må installeres automatisk sprinkleranlegg når samlet bruttoareal for plan som har åpen forbindelse er over 800 m², jf. også § 11-12 første ledd." },
