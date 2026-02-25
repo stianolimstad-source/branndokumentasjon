@@ -485,6 +485,8 @@ const Konsept = () => {
     brannseksjonTiltak: "", // "normalt", "brannalarm", "sprinkler", "roykventilasjon"
     innvendigHjorne: "nei" as "ja" | "nei",
     innvendigHjorneAlternativ: "alt1" as "alt1" | "alt2", // alt1 = 8m, alt2 = 5m+5m
+    seksjonDorRelevant: false,
+    seksjonVinduRelevant: false,
     brannseksjoner: "",
     brannseksjonerKommentar: "",
     brannceller: "",
@@ -2840,6 +2842,61 @@ const Konsept = () => {
                             </RadioGroup>
                           </div>
                         )}
+                      </div>
+
+                      {/* Dører og vinduer i seksjoneringsveggen */}
+                      <div>
+                        <Label className="text-xs font-medium mb-2 block">Dører og vinduer i seksjoneringsvegg</Label>
+                        <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                          <div className="flex items-center gap-2">
+                            <Checkbox
+                              id="seksjonDorRelevant"
+                              checked={formData.seksjonDorRelevant}
+                              onCheckedChange={(checked) => setFormData({...formData, seksjonDorRelevant: !!checked})}
+                            />
+                            <label htmlFor="seksjonDorRelevant" className="text-xs cursor-pointer font-medium">Dører i seksjoneringsvegg er relevant</label>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Checkbox
+                              id="seksjonVinduRelevant"
+                              checked={formData.seksjonVinduRelevant}
+                              onCheckedChange={(checked) => setFormData({...formData, seksjonVinduRelevant: !!checked})}
+                            />
+                            <label htmlFor="seksjonVinduRelevant" className="text-xs cursor-pointer font-medium">Vinduer i seksjoneringsvegg er relevant</label>
+                          </div>
+                          {(formData.seksjonDorRelevant || formData.seksjonVinduRelevant) && (
+                            <div className="space-y-1 bg-muted/50 p-2 rounded text-xs">
+                              <p className="font-semibold text-xs">Preaksepterte ytelser:</p>
+                              {formData.seksjonDorRelevant && formData.seksjonVinduRelevant && (
+                                <div>1. Vinduer og dører må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.</div>
+                              )}
+                              {formData.seksjonDorRelevant && formData.seksjonVinduRelevant && (
+                                <div>2. Vinduer og dører må ha tilsvarende brannmotstand som veggen.</div>
+                              )}
+                              {formData.seksjonDorRelevant && !formData.seksjonVinduRelevant && (
+                                <>
+                                  <div>1. Dører må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.</div>
+                                  <div>2. Dører må ha tilsvarende brannmotstand som veggen.</div>
+                                </>
+                              )}
+                              {!formData.seksjonDorRelevant && formData.seksjonVinduRelevant && (
+                                <>
+                                  <div>1. Vinduer må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.</div>
+                                  <div>2. Vinduer må ha tilsvarende brannmotstand som veggen.</div>
+                                </>
+                              )}
+                              {formData.seksjonDorRelevant && (
+                                <>
+                                  <div>{formData.seksjonVinduRelevant ? "3" : "3"}. Dør som er klassifisert etter NS 3919:1997 [A 120 osv.] må ha anslag, terskel og tettelister på alle sider for å oppnå tilstrekkelig røyktetthet. Dette gjelder ikke dører og luker som er testet og oppfyller kriteriene for Sₐ-klassifisering etter NS-EN 1634-3:2004 (inklusiv rettelsesblad AC:2006).</div>
+                                  <div>{formData.seksjonVinduRelevant ? "4" : "4"}. Dører må være lukket i en brukssituasjon eller ha automatikk som lukker døren ved deteksjon av røyk.</div>
+                                </>
+                              )}
+                              {formData.seksjonVinduRelevant && (
+                                <div>{formData.seksjonDorRelevant ? "5" : "3"}. Vinduer må ikke kunne åpnes i vanlig brukstilstand.</div>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
 
                       <div>

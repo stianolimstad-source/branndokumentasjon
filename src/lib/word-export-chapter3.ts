@@ -303,6 +303,33 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
       rows.push(contentRowMultiLine("Seksjoneringsveggen", ytelser, "RIBr / ARK"));
     }
   }
+  // Dører og vinduer i seksjoneringsvegg
+  if (formData.seksjonDorRelevant || formData.seksjonVinduRelevant) {
+    const lines: string[] = [];
+    const dorOgVindu = formData.seksjonDorRelevant && formData.seksjonVinduRelevant;
+    const kunDor = formData.seksjonDorRelevant && !formData.seksjonVinduRelevant;
+    const kunVindu = !formData.seksjonDorRelevant && formData.seksjonVinduRelevant;
+    let nr = 1;
+    if (dorOgVindu) {
+      lines.push(`${nr++}. Vinduer og dører må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.`);
+      lines.push(`${nr++}. Vinduer og dører må ha tilsvarende brannmotstand som veggen.`);
+    } else if (kunDor) {
+      lines.push(`${nr++}. Dører må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.`);
+      lines.push(`${nr++}. Dører må ha tilsvarende brannmotstand som veggen.`);
+    } else if (kunVindu) {
+      lines.push(`${nr++}. Vinduer må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.`);
+      lines.push(`${nr++}. Vinduer må ha tilsvarende brannmotstand som veggen.`);
+    }
+    if (formData.seksjonDorRelevant) {
+      lines.push(`${nr++}. Dør som er klassifisert etter NS 3919:1997 [A 120 osv.] må ha anslag, terskel og tettelister på alle sider for å oppnå tilstrekkelig røyktetthet. Dette gjelder ikke dører og luker som er testet og oppfyller kriteriene for Sₐ-klassifisering etter NS-EN 1634-3:2004 (inklusiv rettelsesblad AC:2006).`);
+      lines.push(`${nr++}. Dører må være lukket i en brukssituasjon eller ha automatikk som lukker døren ved deteksjon av røyk.`);
+    }
+    if (formData.seksjonVinduRelevant) {
+      lines.push(`${nr++}. Vinduer må ikke kunne åpnes i vanlig brukstilstand.`);
+    }
+    rows.push(contentRowMultiLine("Dører og vinduer i seksjoneringsvegg", lines, "ARK"));
+  }
+
   if (formData.brannseksjonerKommentar) {
     rows.push(contentRow("Kommentar", formData.brannseksjonerKommentar, "-"));
   }
