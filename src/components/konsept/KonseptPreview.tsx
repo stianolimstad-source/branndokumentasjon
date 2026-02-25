@@ -1139,24 +1139,28 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               const bklTekst = erBKL1 ? "BKL 1" : "BKL 2 og 3";
               const avstandKravList: string[] = [];
               if (plasseringer.includes("parallelle")) {
-                const avstand = parseFloat(formData.horisontaltAvstandParallelle || "");
-                if (!isNaN(avstand)) {
-                  let krav = "";
-                  if (avstand < 3.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
-                  else if (avstand < 6.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
-                  else krav = "Uspesifisert";
-                  avstandKravList.push(`Vinduer i motstående parallelle yttervegger i ${bklTekst}: Avstand L = ${formData.horisontaltAvstandParallelle} m. Nødvendig brannmotstand: ${krav}.`);
-                }
+                (formData.horisontaltParallelleVinduer || []).forEach((v: { avstand: string }, i: number) => {
+                  const avstand = parseFloat(v.avstand);
+                  if (!isNaN(avstand)) {
+                    let krav = "";
+                    if (avstand < 3.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
+                    else if (avstand < 6.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
+                    else krav = "Uspesifisert";
+                    avstandKravList.push(`Motstående parallelle yttervegger – vindu ${i + 1} i ${bklTekst}: Avstand L = ${v.avstand} m. Nødvendig brannmotstand: ${krav}.`);
+                  }
+                });
               }
               if (plasseringer.includes("hjorne")) {
-                const avstand = parseFloat(formData.horisontaltAvstandHjorne || "");
-                if (!isNaN(avstand)) {
-                  let krav = "";
-                  if (avstand < 2.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
-                  else if (avstand < 4.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
-                  else krav = "Uspesifisert";
-                  avstandKravList.push(`Vinduer i innvendige hjørner i ${bklTekst}: Avstand L = ${formData.horisontaltAvstandHjorne} m. Nødvendig brannmotstand: ${krav}.`);
-                }
+                (formData.horisontaltHjorneVinduer || []).forEach((v: { avstand: string }, i: number) => {
+                  const avstand = parseFloat(v.avstand);
+                  if (!isNaN(avstand)) {
+                    let krav = "";
+                    if (avstand < 2.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
+                    else if (avstand < 4.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
+                    else krav = "Uspesifisert";
+                    avstandKravList.push(`Innvendige hjørner – vindu ${i + 1} i ${bklTekst}: Avstand L = ${v.avstand} m. Nødvendig brannmotstand: ${krav}.`);
+                  }
+                });
               }
 
               if (activeKrav.length === 0 && avstandKravList.length === 0) return null;
