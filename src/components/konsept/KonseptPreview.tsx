@@ -1288,7 +1288,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               );
             })()}
             {/* Husdyrrom */}
-            {formData.husdyrromRelevant && formData.husdyrromAreal && (
+            {formData.branncelleTyper?.includes("husdyrrom") && formData.husdyrromAreal && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Husdyrrom</td>
                 <td className="border border-gray-400 p-2">

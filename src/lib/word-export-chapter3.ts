@@ -634,7 +634,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
 
 
   // Husdyrrom
-  if (formData.husdyrromRelevant && formData.husdyrromAreal) {
+  if (formData.branncelleTyper?.includes("husdyrrom") && formData.husdyrromAreal) {
     const tekst = formData.husdyrromAreal === "under_300"
       ? "Husdyrrom med bruttoareal mindre enn 300 m² må være avgrenset fra resten av byggverket med bygningsdeler med brannmotstand minst EI 30 [B 30]."
       : "Husdyrrom med bruttoareal større enn 300 m² må være avgrenset fra resten av byggverket med bygningsdeler med brannmotstand minst EI 60 [B 60].";
