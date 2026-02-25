@@ -1114,6 +1114,31 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 </tr>
               );
             })()}
+            {/* Brannceller over flere plan */}
+            {formData.branncellerFlerePlanRelevant && (() => {
+              const fpKravMap: Record<string, string> = {
+                fp_sprinkler: "Det må installeres automatisk sprinkleranlegg når samlet bruttoareal for plan som har åpen forbindelse er over 800 m², jf. også § 11-12 første ledd.",
+                fp_romningsvei: "Det må være tilrettelagte rømningsveier fra hvert enkelt plan, jf. også § 11-13 fjerde ledd.",
+              };
+              const activeKrav = (formData.branncellerFlerePlanKrav || [])
+                .map((id: string, idx: number) => ({ id, text: fpKravMap[id], num: idx + 1 }))
+                .filter((k: { text: string }) => k.text);
+              if (activeKrav.length === 0) return null;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Brannceller over flere plan</td>
+                  <td className="border border-gray-400 p-2">
+                    <div className="space-y-1">
+                      <div>Brannceller i risikoklasse 1, 2, 4 og 5 kan ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte, dersom følgende ytelser er oppfylt:</div>
+                      {activeKrav.map((k: { id: string; text: string; num: number }) => (
+                        <div key={k.id} className="pl-4">{k.num}. {k.text}</div>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                </tr>
+              );
+            })()}
             {/* Brannspredning via vinduer */}
             {formData.vinduBrannspredningRelevant && (() => {
               const vvKravMap: Record<string, string> = {
