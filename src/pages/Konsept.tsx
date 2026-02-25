@@ -2924,24 +2924,56 @@ const Konsept = () => {
                         <Label className="text-xs font-medium mb-2 block">Relevante branncelle-typer (preaksepterte ytelser)</Label>
                         <div className="max-h-64 overflow-y-auto border rounded-md p-2 space-y-2 bg-muted/30">
                           {branncelleTyperListe.map((type) => (
-                            <div key={type.id} className="flex items-start space-x-2">
-                              <Checkbox
-                                id={`branncelle-${type.id}`}
-                                checked={formData.branncelleTyper.includes(type.id)}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    setFormData({...formData, branncelleTyper: [...formData.branncelleTyper, type.id]});
-                                  } else {
-                                    setFormData({...formData, branncelleTyper: formData.branncelleTyper.filter(t => t !== type.id)});
-                                  }
-                                }}
-                              />
-                              <label 
-                                htmlFor={`branncelle-${type.id}`} 
-                                className="text-xs leading-tight cursor-pointer"
-                              >
-                                {type.label}
-                              </label>
+                            <div key={type.id}>
+                              <div className="flex items-start space-x-2">
+                                <Checkbox
+                                  id={`branncelle-${type.id}`}
+                                  checked={formData.branncelleTyper.includes(type.id)}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      setFormData({...formData, branncelleTyper: [...formData.branncelleTyper, type.id]});
+                                    } else {
+                                      setFormData({...formData, branncelleTyper: formData.branncelleTyper.filter(t => t !== type.id), ...(type.id === "husdyrrom" ? { husdyrromAreal: "" } : {})});
+                                    }
+                                  }}
+                                />
+                                <label 
+                                  htmlFor={`branncelle-${type.id}`} 
+                                  className="text-xs leading-tight cursor-pointer"
+                                >
+                                  {type.label}
+                                </label>
+                              </div>
+                              {type.id === "husdyrrom" && formData.branncelleTyper.includes("husdyrrom") && (
+                                <div className="ml-6 mt-1 mb-1 pl-3 border-l-2 border-primary/20 space-y-2">
+                                  <Label className="text-xs font-medium mb-1 block">Bruttoareal husdyrrom</Label>
+                                  <div className="flex gap-4">
+                                    {[
+                                      { value: "under_300", label: "< 300 m²" },
+                                      { value: "over_300", label: "≥ 300 m²" },
+                                    ].map((opt) => (
+                                      <div key={opt.value} className="flex items-center gap-1.5">
+                                        <input
+                                          type="radio"
+                                          id={`husdyrrom-areal-${opt.value}`}
+                                          name="husdyrromAreal"
+                                          checked={formData.husdyrromAreal === opt.value}
+                                          onChange={() => setFormData({...formData, husdyrromAreal: opt.value as any})}
+                                          className="w-3 h-3"
+                                        />
+                                        <label htmlFor={`husdyrrom-areal-${opt.value}`} className="text-xs cursor-pointer">{opt.label}</label>
+                                      </div>
+                                    ))}
+                                  </div>
+                                  {formData.husdyrromAreal && (
+                                    <div className="text-xs bg-muted/50 p-2 rounded">
+                                      {formData.husdyrromAreal === "under_300"
+                                        ? "Husdyrrom med bruttoareal mindre enn 300 m² må være avgrenset fra resten av byggverket med bygningsdeler med brannmotstand minst EI 30 [B 30]."
+                                        : "Husdyrrom med bruttoareal større enn 300 m² må være avgrenset fra resten av byggverket med bygningsdeler med brannmotstand minst EI 60 [B 60]."}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>
@@ -3637,55 +3669,6 @@ const Konsept = () => {
                         </div>
                       </div>
 
-                      {/* Husdyrrom */}
-                      <div>
-                        <Label className="text-xs font-medium mb-2 block">Husdyrrom</Label>
-                        <div className="border rounded-md p-2 space-y-3 bg-muted/30">
-                          <div className="flex items-center gap-2">
-                            <Checkbox
-                              id="husdyrromRelevant"
-                              checked={formData.husdyrromRelevant}
-                              onCheckedChange={(checked) => setFormData({...formData, husdyrromRelevant: !!checked, husdyrromAreal: ""})}
-                            />
-                            <label htmlFor="husdyrromRelevant" className="text-xs cursor-pointer font-medium">Husdyrrom er relevant</label>
-                          </div>
-                          {formData.husdyrromRelevant && (
-                            <div className="pl-4 space-y-3 border-l-2 border-primary/20 ml-2">
-                              <div>
-                                <Label className="text-xs font-medium mb-1 block">Bruttoareal husdyrrom</Label>
-                                <div className="flex gap-4">
-                                  {[
-                                    { value: "under_300", label: "< 300 m²" },
-                                    { value: "over_300", label: "≥ 300 m²" },
-                                  ].map((opt) => (
-                                    <div key={opt.value} className="flex items-center gap-1.5">
-                                      <input
-                                        type="radio"
-                                        id={`husdyrrom-areal-${opt.value}`}
-                                        name="husdyrromAreal"
-                                        checked={formData.husdyrromAreal === opt.value}
-                                        onChange={() => setFormData({...formData, husdyrromAreal: opt.value as any})}
-                                        className="w-3 h-3"
-                                      />
-                                      <label htmlFor={`husdyrrom-areal-${opt.value}`} className="text-xs cursor-pointer">{opt.label}</label>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-                              {formData.husdyrromAreal && (
-                                <div className="space-y-1 bg-muted/50 p-2 rounded text-xs">
-                                  <p className="font-semibold text-xs">Preaksepterte ytelser:</p>
-                                  {formData.husdyrromAreal === "under_300" ? (
-                                    <div>Husdyrrom med bruttoareal mindre enn 300 m² må være avgrenset fra resten av byggverket med bygningsdeler med brannmotstand minst EI 30 [B 30].</div>
-                                  ) : (
-                                    <div>Husdyrrom med bruttoareal større enn 300 m² må være avgrenset fra resten av byggverket med bygningsdeler med brannmotstand minst EI 60 [B 60].</div>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </div>
 
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('brannceller-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
