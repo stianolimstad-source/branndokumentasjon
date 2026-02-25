@@ -35,7 +35,7 @@ export function getGarasjeKrav(
     if (areal === "under_50") {
       krav.push({ kategori: "Mellomrom", tekst: "I bolig med garasje med bruttoareal mindre enn 50 m² kan mellomliggende rom være vaskerom, bod og lignende.", ansvar: "ARK" });
     } else if (areal === "50_400") {
-      krav.push({ kategori: "Mellomrom", tekst: "For garasje med bruttoareal over 50 m² til og med 400 m² må mellomliggende rom utføres som egen branncelle.", ansvar: "ARK" });
+      krav.push({ kategori: "Mellomrom", tekst: "For garasje med bruttoareal over 50 m² til og med 400 m² må mellomliggende rom utføres som egen branncelle med brannmotstand minst EI 60 [B 60].", ansvar: "ARK" });
     } else if (areal === "over_400") {
       krav.push({ kategori: "Mellomrom", tekst: "For garasje over 400 m² må mellomliggende rom utføres som brannsluse.", ansvar: "ARK" });
     }
