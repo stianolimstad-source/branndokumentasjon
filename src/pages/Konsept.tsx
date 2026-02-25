@@ -495,6 +495,7 @@ const Konsept = () => {
     vinduskravRelevant: false,
     heissjaktkrav: [] as string[],
     trapperomKrav: [] as string[],
+    interntrappBeskrivelse: "",
     materialer: "",
     materialerKommentar: "",
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
@@ -3046,6 +3047,17 @@ const Konsept = () => {
                                     <label htmlFor={`tr-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
                                   </div>
                                 ))}
+                              </div>
+                              <div className="mt-3 border-t pt-3">
+                                <Label className="text-xs font-medium mb-1 block">Interntrapp (ikke del av rømningsvei)</Label>
+                                <p className="text-xs text-muted-foreground mb-1">Beskriv eventuelle interntrapper som kun benyttes internt og ikke trenger å følge Tr-klassen.</p>
+                                <Textarea
+                                  value={formData.interntrappBeskrivelse}
+                                  onChange={(e) => setFormData({...formData, interntrappBeskrivelse: e.target.value})}
+                                  placeholder="F.eks. Interntrapp mellom 1. og 2. etasje i kontorlandskap benyttes kun som internkommunikasjon og er ikke del av rømningsvei. Trappen trenger ikke følge Tr-klassifisering."
+                                  className="text-xs"
+                                  rows={3}
+                                />
                               </div>
                             </>
                           );
