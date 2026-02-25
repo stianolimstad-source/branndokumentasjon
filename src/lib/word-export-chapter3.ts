@@ -597,10 +597,11 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.brensellagringRelevant && formData.brenselType && formData.brenselMengde) {
     const result = getBrensellagringKrav(formData.brenselType as BrenselType, parseInt(formData.brenselMengde));
     if (result.krav.length > 0) {
-      rows.push(subSectionHeaderRow(`Rom for lagring av flytende brensel (${result.romType})`));
-      result.krav.forEach((k) => {
-        rows.push(contentRow(k.kategori, k.tekst, k.ansvar));
-      });
+      const lines = [
+        `Romtype: ${result.romType}`,
+        ...result.krav.map(k => `${k.kategori}: ${k.tekst}`)
+      ];
+      rows.push(contentRowMultiLine("Rom for lagring av flytende brensel", lines, "ARK"));
     }
   }
 
