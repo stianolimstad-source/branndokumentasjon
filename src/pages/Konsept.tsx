@@ -3161,7 +3161,7 @@ const Konsept = () => {
                                 setFormData({...formData, vinduBrannspredningRelevant: !!checked, vinduBrannspredningKrav: !!checked ? formData.vinduBrannspredningKrav : []})
                               }
                             />
-                            <label htmlFor="vinduBrannspredningRelevant" className="text-xs cursor-pointer font-medium">Brannspredning via vinduer er relevant</label>
+                            <label htmlFor="vinduBrannspredningRelevant" className="text-xs cursor-pointer font-medium">Horisontal brannspredning er relevant</label>
                           </div>
                           {formData.vinduBrannspredningRelevant && (
                             <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
