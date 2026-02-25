@@ -520,30 +520,35 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
       .map((id: string, idx: number) => vvKravMap[id] ? `${idx + 1}. ${vvKravMap[id]}` : null)
       .filter(Boolean) as string[];
     
-    // Add distance-based requirement
-    const avstand = parseFloat(formData.horisontaltAvstand || "");
-    const plassering = formData.horisontaltPlassering || "";
-    if (!isNaN(avstand) && plassering) {
-      const bklNum = formData.harFlereRisikoklasser
-        ? (() => {
-            const nums = (formData.bygningsdeler || []).map((d: any) => parseInt((d.brannklasse || "").replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n));
-            return nums.length > 0 ? Math.max(...nums) : 0;
-          })()
-        : parseInt((formData.brannklasse || "").replace(/\D/g, ''), 10) || 0;
-      const erBKL1 = bklNum === 1;
-      const plasseringTekst = plassering === "parallelle" ? "Vinduer i motstående parallelle yttervegger" : "Vinduer i innvendige hjørner";
-      const bklTekst = erBKL1 ? "BKL 1" : "BKL 2 og 3";
-      let krav = "";
-      if (plassering === "parallelle") {
+    // Add distance-based requirements for each placement type
+    const plasseringer = formData.horisontaltPlasseringer || [];
+    const bklNum = formData.harFlereRisikoklasser
+      ? (() => {
+          const nums = (formData.bygningsdeler || []).map((d: any) => parseInt((d.brannklasse || "").replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n));
+          return nums.length > 0 ? Math.max(...nums) : 0;
+        })()
+      : parseInt((formData.brannklasse || "").replace(/\D/g, ''), 10) || 0;
+    const erBKL1 = bklNum === 1;
+    const bklTekst = erBKL1 ? "BKL 1" : "BKL 2 og 3";
+    if (plasseringer.includes("parallelle")) {
+      const avstand = parseFloat(formData.horisontaltAvstandParallelle || "");
+      if (!isNaN(avstand)) {
+        let krav = "";
         if (avstand < 3.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
         else if (avstand < 6.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
         else krav = "Uspesifisert";
-      } else {
+        lines.push(`Vinduer i motstående parallelle yttervegger i ${bklTekst}: Avstand L = ${formData.horisontaltAvstandParallelle} m. Nødvendig brannmotstand: ${krav}.`);
+      }
+    }
+    if (plasseringer.includes("hjorne")) {
+      const avstand = parseFloat(formData.horisontaltAvstandHjorne || "");
+      if (!isNaN(avstand)) {
+        let krav = "";
         if (avstand < 2.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
         else if (avstand < 4.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
         else krav = "Uspesifisert";
+        lines.push(`Vinduer i innvendige hjørner i ${bklTekst}: Avstand L = ${formData.horisontaltAvstandHjorne} m. Nødvendig brannmotstand: ${krav}.`);
       }
-      lines.push(`${plasseringTekst} i ${bklTekst}: Avstand L = ${formData.horisontaltAvstand} m. Nødvendig brannmotstand: ${krav}.`);
     }
     
     if (lines.length > 0) {
