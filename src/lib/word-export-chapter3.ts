@@ -175,7 +175,8 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   // ===== 3.2 Sikkerhet ved eksplosjon =====
   rows.push(sectionHeaderRow("3.2   §11-5 Sikkerhet ved eksplosjon"));
   rows.push(columnHeaderRow());
-  
+  rows.push(contentRow("Generelt", "Byggverk der den forutsatte bruken kan medføre fare for eksplosjon, skal prosjekteres og utføres med avlastningsflater slik at personsikkerheten og bæreevnen opprettholdes på et tilfredsstillende nivå.", "RIBr"));
+
   if (formData.eksplosjonRelevant === "ikke_relevant") {
     rows.push(contentRow("Eksplosjonsfare", "RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket.", "RIBr"));
   } else if (formData.eksplosjonRelevant === "relevant") {
