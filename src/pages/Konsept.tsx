@@ -497,6 +497,8 @@ const Konsept = () => {
     trapperomKrav: [] as string[],
     interntrappBeskrivelse: "",
     roykKontrollKrav: [] as string[],
+    vertikalBrannspredningRelevant: false,
+    vertikalBrannspredningKrav: [] as string[],
     materialer: "",
     materialerKommentar: "",
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
@@ -3090,6 +3092,60 @@ const Konsept = () => {
                               <label htmlFor={`royk-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
                             </div>
                           ))}
+                        </div>
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-2 block">Vertikal brannspredning</Label>
+                        <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                          <div className="flex items-center gap-2">
+                            <Checkbox
+                              id="vertikalBrannspredningRelevant"
+                              checked={formData.vertikalBrannspredningRelevant}
+                              onCheckedChange={(checked) => 
+                                setFormData({...formData, vertikalBrannspredningRelevant: !!checked, vertikalBrannspredningKrav: !!checked ? formData.vertikalBrannspredningKrav : []})
+                              }
+                            />
+                            <label htmlFor="vertikalBrannspredningRelevant" className="text-xs cursor-pointer font-medium">Vertikal brannspredning er relevant</label>
+                          </div>
+                          {formData.vertikalBrannspredningRelevant && (
+                            <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
+                              {[
+                                { id: "vb_kjolesone", label: "1. Kjølesone (vertikal avstand) mellom vinduer er minst lik høyden til underliggende vindu og utført med brannmotstand minst E 30." },
+                                { id: "vb_fasade_e30", label: "2. Annenhver etasje er utført med fasade minst E 30." },
+                                { id: "vb_inntrukne", label: "3. Inntrukne fasadepartier er på minimum 1,2 meter, eller utkragede bygningsdeler med samme brannmotstand som etasjeskiller er minimum 1,2 meter ut fra fasadelivet." },
+                                { id: "vb_sprinkler", label: "4. Byggverket har automatisk sprinkleranlegg." },
+                              ].map((krav) => (
+                                <div key={krav.id} className="flex items-start gap-2">
+                                  <Checkbox
+                                    id={`vb-${krav.id}`}
+                                    checked={formData.vertikalBrannspredningKrav.includes(krav.id)}
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        setFormData({...formData, vertikalBrannspredningKrav: [...formData.vertikalBrannspredningKrav, krav.id]});
+                                      } else {
+                                        setFormData({...formData, vertikalBrannspredningKrav: formData.vertikalBrannspredningKrav.filter((k: string) => k !== krav.id)});
+                                      }
+                                    }}
+                                  />
+                                  <label htmlFor={`vb-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                                </div>
+                              ))}
+                              <div className="flex items-start gap-2 mt-2 pt-2 border-t border-muted">
+                                <Checkbox
+                                  id="vb_takfot"
+                                  checked={formData.vertikalBrannspredningKrav.includes("vb_takfot")}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      setFormData({...formData, vertikalBrannspredningKrav: [...formData.vertikalBrannspredningKrav, "vb_takfot"]});
+                                    } else {
+                                      setFormData({...formData, vertikalBrannspredningKrav: formData.vertikalBrannspredningKrav.filter((k: string) => k !== "vb_takfot")});
+                                    }
+                                  }}
+                                />
+                                <label htmlFor="vb_takfot" className="text-xs leading-tight cursor-pointer">Med mindre byggverket har automatisk sprinkleranlegg, må takfoten – i hele lengden – utføres som branncellebegrensende konstruksjon for brannpåvirkning nedenfra.</label>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div>

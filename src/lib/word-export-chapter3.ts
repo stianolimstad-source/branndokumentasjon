@@ -480,6 +480,33 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     }
   }
 
+  // Vertikal brannspredning
+  if (formData.vertikalBrannspredningRelevant) {
+    const vbKravMap: Record<string, string> = {
+      vb_kjolesone: "Kjølesone (vertikal avstand) mellom vinduer er minst lik høyden til underliggende vindu og utført med brannmotstand minst E 30.",
+      vb_fasade_e30: "Annenhver etasje er utført med fasade minst E 30.",
+      vb_inntrukne: "Inntrukne fasadepartier er på minimum 1,2 meter, eller utkragede bygningsdeler med samme brannmotstand som etasjeskiller er minimum 1,2 meter ut fra fasadelivet.",
+      vb_sprinkler: "Byggverket har automatisk sprinkleranlegg.",
+      vb_takfot: "Med mindre byggverket har automatisk sprinkleranlegg, må takfoten – i hele lengden – utføres som branncellebegrensende konstruksjon for brannpåvirkning nedenfra.",
+    };
+    const mainItems = (formData.vertikalBrannspredningKrav || [])
+      .filter((id: string) => id !== "vb_takfot")
+      .map((id: string, idx: number) => vbKravMap[id] ? `${idx + 1}. ${vbKravMap[id]}` : null)
+      .filter(Boolean) as string[];
+    const hasTakfot = (formData.vertikalBrannspredningKrav || []).includes("vb_takfot");
+    const lines: string[] = [];
+    if (mainItems.length > 0) {
+      lines.push("Sannsynligheten for brannspredning mellom brannceller i ulike plan, må reduseres på en av følgende måter:");
+      lines.push(...mainItems);
+    }
+    if (hasTakfot) {
+      lines.push(vbKravMap.vb_takfot);
+    }
+    if (lines.length > 0) {
+      rows.push(contentRowMultiLine("Vertikal brannspredning", lines, "ARK"));
+    }
+  }
+
   if (formData.branncellerKommentar) {
     rows.push(contentRow("Kommentar", formData.branncellerKommentar, "-"));
   }

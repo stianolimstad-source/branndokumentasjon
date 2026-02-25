@@ -1074,6 +1074,46 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 </tr>
               );
             })()}
+            {/* Vertikal brannspredning */}
+            {formData.vertikalBrannspredningRelevant && (() => {
+              const vbKravMap: Record<string, string> = {
+                vb_kjolesone: "Kjølesone (vertikal avstand) mellom vinduer er minst lik høyden til underliggende vindu og utført med brannmotstand minst E 30.",
+                vb_fasade_e30: "Annenhver etasje er utført med fasade minst E 30.",
+                vb_inntrukne: "Inntrukne fasadepartier er på minimum 1,2 meter, eller utkragede bygningsdeler med samme brannmotstand som etasjeskiller er minimum 1,2 meter ut fra fasadelivet.",
+                vb_sprinkler: "Byggverket har automatisk sprinkleranlegg.",
+                vb_takfot: "Med mindre byggverket har automatisk sprinkleranlegg, må takfoten – i hele lengden – utføres som branncellebegrensende konstruksjon for brannpåvirkning nedenfra.",
+              };
+              const selectedKrav = (formData.vertikalBrannspredningKrav || [])
+                .map((id: string) => vbKravMap[id])
+                .filter(Boolean);
+              // Split into main items (1-4) and takfot (item 2)
+              const mainItems = (formData.vertikalBrannspredningKrav || [])
+                .filter((id: string) => id !== "vb_takfot")
+                .map((id: string) => vbKravMap[id])
+                .filter(Boolean);
+              const hasTakfot = (formData.vertikalBrannspredningKrav || []).includes("vb_takfot");
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Vertikal brannspredning</td>
+                  <td className="border border-gray-400 p-2">
+                    <div className="space-y-1">
+                      {mainItems.length > 0 && (
+                        <>
+                          <div>Sannsynligheten for brannspredning mellom brannceller i ulike plan, må reduseres på en av følgende måter:</div>
+                          {mainItems.map((text: string, idx: number) => (
+                            <div key={idx} className="pl-4">{idx + 1}. {text}</div>
+                          ))}
+                        </>
+                      )}
+                      {hasTakfot && (
+                        <div className={mainItems.length > 0 ? "mt-2" : ""}>{vbKravMap.vb_takfot}</div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              );
+            })()}
             {formData.branncellerKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
