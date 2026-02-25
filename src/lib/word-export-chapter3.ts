@@ -213,17 +213,18 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   const avstand = parseFloat(formData.avstandNabobygg || "0");
 
   if (hoyde > 9 && avstand < 8) {
-    let brannveggTekst = "Brannvegg (bygning over 9 meter, avstand til nabobygg under 8 meter)";
+    const lines: string[] = [];
+    lines.push("Brannvegg (bygning over 9 meter, avstand til nabobygg under 8 meter).");
     if (formData.spesifikkBrannenergi) {
       const energiMap: Record<string, string> = {
         "inntil400": "Inntil 400 MJ/m² → REI 120-M A2-s1,d0 [A 120]",
         "400-600": "400-600 MJ/m² → REI 180-M A2-s1,d0 [A 180]",
         "600-800": "600-800 MJ/m² → REI 240-M A2-s1,d0 [A 240]",
       };
-      brannveggTekst += "\n\nBrannmotstand basert på spesifikk brannenergi:\n" + (energiMap[formData.spesifikkBrannenergi] || "");
+      lines.push("", "Brannmotstand basert på spesifikk brannenergi:", energiMap[formData.spesifikkBrannenergi] || "");
     }
-    rows.push(contentRow("Krav til brannvegg", brannveggTekst, "RIB"));
-    rows.push(contentRowMultiLine("Preaksepterte ytelser", [
+    lines.push(
+      "",
       "1. Takkonstruksjonen må ikke være kontinuerlig over brannveggen.",
       "2. Konstruksjoner inntil brannveggen må kunne bevege seg fritt ved temperaturendringer.",
       "3. Brannveggens avslutning mot tak og fasade må hindre brannspredning.",
@@ -232,7 +233,8 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
       "6. Uten dokumentert mekanisk motstandsevne (M): tunge materialer som mur/betong.",
       "7. Brannveggen må føres min. 0,5 m over høyeste tilstøtende tak.",
       "8. Brannveggen må bli stående selv om byggverket på én side raser sammen.",
-    ], "RIB"));
+    );
+    rows.push(contentRowMultiLine("Krav til brannvegg", lines, "RIB"));
   } else if (hoyde > 9 && avstand >= 8) {
     rows.push(contentRow("Krav til skillevegg", "Avstand til nabobygg er 8 meter eller mer. Krav til brannvegg gjelder ikke. Branncellebegrensende bygningsdel benyttes i stedet.", "RIB"));
   } else if (hoyde > 0 && hoyde <= 9) {
