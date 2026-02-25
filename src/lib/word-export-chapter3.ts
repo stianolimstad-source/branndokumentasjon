@@ -507,6 +507,21 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     }
   }
 
+  // Brannceller over flere plan
+  if (formData.branncellerFlerePlanRelevant && formData.branncellerFlerePlanKrav && formData.branncellerFlerePlanKrav.length > 0) {
+    const fpKravMap: Record<string, string> = {
+      fp_sprinkler: "Det må installeres automatisk sprinkleranlegg når samlet bruttoareal for plan som har åpen forbindelse er over 800 m², jf. også § 11-12 første ledd.",
+      fp_romningsvei: "Det må være tilrettelagte rømningsveier fra hvert enkelt plan, jf. også § 11-13 fjerde ledd.",
+    };
+    const lines = [
+      "Brannceller i risikoklasse 1, 2, 4 og 5 kan ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte, dersom følgende ytelser er oppfylt:",
+      ...formData.branncellerFlerePlanKrav
+        .map((id: string, idx: number) => fpKravMap[id] ? `${idx + 1}. ${fpKravMap[id]}` : null)
+        .filter(Boolean) as string[]
+    ];
+    rows.push(contentRowMultiLine("Brannceller over flere plan", lines, "RIBr"));
+  }
+
   // Horisontal brannspredning
   if (formData.vinduBrannspredningRelevant && formData.vinduBrannspredningKrav && formData.vinduBrannspredningKrav.length > 0) {
     const vvKravMap: Record<string, string> = {
