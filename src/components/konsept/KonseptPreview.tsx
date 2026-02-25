@@ -761,6 +761,42 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 </tr>
               );
             })()}
+            {/* Dører og vinduer i seksjoneringsvegg */}
+            {(formData.seksjonDorRelevant || formData.seksjonVinduRelevant) && (() => {
+              const lines: string[] = [];
+              const dorOgVindu = formData.seksjonDorRelevant && formData.seksjonVinduRelevant;
+              const kunDor = formData.seksjonDorRelevant && !formData.seksjonVinduRelevant;
+              const kunVindu = !formData.seksjonDorRelevant && formData.seksjonVinduRelevant;
+              let nr = 1;
+              if (dorOgVindu) {
+                lines.push(`${nr++}. Vinduer og dører må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.`);
+                lines.push(`${nr++}. Vinduer og dører må ha tilsvarende brannmotstand som veggen.`);
+              } else if (kunDor) {
+                lines.push(`${nr++}. Dører må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.`);
+                lines.push(`${nr++}. Dører må ha tilsvarende brannmotstand som veggen.`);
+              } else if (kunVindu) {
+                lines.push(`${nr++}. Vinduer må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.`);
+                lines.push(`${nr++}. Vinduer må ha tilsvarende brannmotstand som veggen.`);
+              }
+              if (formData.seksjonDorRelevant) {
+                lines.push(`${nr++}. Dør som er klassifisert etter NS 3919:1997 [A 120 osv.] må ha anslag, terskel og tettelister på alle sider for å oppnå tilstrekkelig røyktetthet. Dette gjelder ikke dører og luker som er testet og oppfyller kriteriene for Sₐ-klassifisering etter NS-EN 1634-3:2004 (inklusiv rettelsesblad AC:2006).`);
+                lines.push(`${nr++}. Dører må være lukket i en brukssituasjon eller ha automatikk som lukker døren ved deteksjon av røyk.`);
+              }
+              if (formData.seksjonVinduRelevant) {
+                lines.push(`${nr++}. Vinduer må ikke kunne åpnes i vanlig brukstilstand.`);
+              }
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Dører og vinduer i seksjoneringsvegg</td>
+                  <td className="border border-gray-400 p-2">
+                    <div className="space-y-1">
+                      {lines.map((l, i) => <div key={i}>{l}</div>)}
+                    </div>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              );
+            })()}
             {formData.brannseksjonerKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
