@@ -2800,82 +2800,6 @@ const Konsept = () => {
                           );
                         })()
                       )}
-                      {/* Rom for lagring av brensel */}
-                      <div>
-                        <Label className="text-xs font-medium mb-2 block">Rom for lagring av flytende brensel</Label>
-                        <div className="border rounded-md p-2 space-y-3 bg-muted/30">
-                          <div className="flex items-center gap-2">
-                            <Checkbox
-                              id="brensellagringRelevant"
-                              checked={formData.brensellagringRelevant}
-                              onCheckedChange={(checked) => 
-                                setFormData({...formData, brensellagringRelevant: !!checked, brenselType: "", brenselMengde: ""})
-                              }
-                            />
-                            <label htmlFor="brensellagringRelevant" className="text-xs cursor-pointer font-medium">Lagring av flytende brensel er relevant</label>
-                          </div>
-                          {formData.brensellagringRelevant && (
-                            <div className="pl-4 space-y-3 border-l-2 border-primary/20 ml-2">
-                              {/* Brenseltype */}
-                              <div>
-                                <Label className="text-xs font-medium mb-1 block">Type brensel</Label>
-                                <div className="flex gap-4 flex-wrap">
-                                  {[
-                                    { value: "fyringsparafin", label: "Fyringsparafin" },
-                                    { value: "lett_fyringsolje", label: "Lett fyringsolje" },
-                                    { value: "begge", label: "Fyringsparafin + Lett fyringsolje" },
-                                  ].map((opt) => (
-                                    <div key={opt.value} className="flex items-center gap-1.5">
-                                      <input
-                                        type="radio"
-                                        id={`brensel-type-${opt.value}`}
-                                        name="brenselType"
-                                        checked={formData.brenselType === opt.value}
-                                        onChange={() => setFormData({...formData, brenselType: opt.value as any})}
-                                        className="w-3 h-3"
-                                      />
-                                      <label htmlFor={`brensel-type-${opt.value}`} className="text-xs cursor-pointer">{opt.label}</label>
-                                    </div>
-                                  ))}
-                                </div>
-                              </div>
-
-                              {/* Mengde */}
-                              {formData.brenselType && (
-                                <div>
-                                  <Label className="text-xs font-medium mb-1 block">Mengde (liter)</Label>
-                                  <Input
-                                    type="number"
-                                    value={formData.brenselMengde}
-                                    onChange={(e) => setFormData({...formData, brenselMengde: e.target.value})}
-                                    placeholder="Oppgi antall liter..."
-                                    className="w-40 h-7 text-xs"
-                                  />
-                                </div>
-                              )}
-
-                              {/* Auto-genererte krav */}
-                              {formData.brenselType && formData.brenselMengde && (() => {
-                                const result = getBrensellagringKrav(formData.brenselType as BrenselType, parseInt(formData.brenselMengde));
-                                if (result.feilmelding) {
-                                  return <p className="text-xs text-destructive font-medium">{result.feilmelding}</p>;
-                                }
-                                if (result.krav.length === 0) return null;
-                                return (
-                                  <div className="space-y-1 bg-muted/50 p-2 rounded text-xs">
-                                    <p className="font-semibold text-xs">Romtype: {result.romType}</p>
-                                    {result.krav.map((k, i) => (
-                                      <div key={i} className="text-xs">
-                                        <span className="font-medium">{k.kategori}:</span> {k.tekst}
-                                      </div>
-                                    ))}
-                                  </div>
-                                );
-                              })()}
-                            </div>
-                          )}
-                        </div>
-                      </div>
 
                       {/* Innvendig hjørne */}
                       <div className="space-y-2">
@@ -3566,6 +3490,83 @@ const Konsept = () => {
                                     <Label className="text-xs font-semibold block">Automatisk bestemte krav:</Label>
                                     {krav.map((k, i) => (
                                       <div key={i} className="text-xs leading-tight">
+                                        <span className="font-medium">{k.kategori}:</span> {k.tekst}
+                                      </div>
+                                    ))}
+                                  </div>
+                                );
+                              })()}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Rom for lagring av brensel */}
+                      <div>
+                        <Label className="text-xs font-medium mb-2 block">Rom for lagring av flytende brensel</Label>
+                        <div className="border rounded-md p-2 space-y-3 bg-muted/30">
+                          <div className="flex items-center gap-2">
+                            <Checkbox
+                              id="brensellagringRelevant"
+                              checked={formData.brensellagringRelevant}
+                              onCheckedChange={(checked) => 
+                                setFormData({...formData, brensellagringRelevant: !!checked, brenselType: "", brenselMengde: ""})
+                              }
+                            />
+                            <label htmlFor="brensellagringRelevant" className="text-xs cursor-pointer font-medium">Lagring av flytende brensel er relevant</label>
+                          </div>
+                          {formData.brensellagringRelevant && (
+                            <div className="pl-4 space-y-3 border-l-2 border-primary/20 ml-2">
+                              {/* Brenseltype */}
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Type brensel</Label>
+                                <div className="flex gap-4 flex-wrap">
+                                  {[
+                                    { value: "fyringsparafin", label: "Fyringsparafin" },
+                                    { value: "lett_fyringsolje", label: "Lett fyringsolje" },
+                                    { value: "begge", label: "Fyringsparafin + Lett fyringsolje" },
+                                  ].map((opt) => (
+                                    <div key={opt.value} className="flex items-center gap-1.5">
+                                      <input
+                                        type="radio"
+                                        id={`brensel-type-${opt.value}`}
+                                        name="brenselType"
+                                        checked={formData.brenselType === opt.value}
+                                        onChange={() => setFormData({...formData, brenselType: opt.value as any})}
+                                        className="w-3 h-3"
+                                      />
+                                      <label htmlFor={`brensel-type-${opt.value}`} className="text-xs cursor-pointer">{opt.label}</label>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Mengde */}
+                              {formData.brenselType && (
+                                <div>
+                                  <Label className="text-xs font-medium mb-1 block">Mengde (liter)</Label>
+                                  <Input
+                                    type="number"
+                                    value={formData.brenselMengde}
+                                    onChange={(e) => setFormData({...formData, brenselMengde: e.target.value})}
+                                    placeholder="Oppgi antall liter..."
+                                    className="w-40 h-7 text-xs"
+                                  />
+                                </div>
+                              )}
+
+                              {/* Auto-genererte krav */}
+                              {formData.brenselType && formData.brenselMengde && (() => {
+                                const result = getBrensellagringKrav(formData.brenselType as BrenselType, parseInt(formData.brenselMengde));
+                                if (result.feilmelding) {
+                                  return <p className="text-xs text-destructive font-medium">{result.feilmelding}</p>;
+                                }
+                                if (result.krav.length === 0) return null;
+                                return (
+                                  <div className="space-y-1 bg-muted/50 p-2 rounded text-xs">
+                                    <p className="font-semibold text-xs">Romtype: {result.romType}</p>
+                                    {result.krav.map((k, i) => (
+                                      <div key={i} className="text-xs">
                                         <span className="font-medium">{k.kategori}:</span> {k.tekst}
                                       </div>
                                     ))}
