@@ -592,6 +592,24 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     }
   }
 
+  // Rom som forbinder garasje
+  if (formData.mellomromRelevant && formData.mellomromKrav && formData.mellomromKrav.length > 0) {
+    const mrKravMap: Record<string, string> = {
+      mr_eksos_royk: "For å hindre spredning av eksos og røyk må det være et mellomliggende rom mellom garasje og rømningsvei, og mellom garasje og oppholdsrom (boligrom, husdyrrom og lignende).",
+      mr_servicerom: "Når det tas betryggende forholdsregler mot spredning av brann og inntrengning av gasser til tilliggende rom, er det ikke nødvendig med mellomliggende rom mellom garasje og tilknyttede servicerom, garasje for utrykningskjøretøy eller lastehall som undertiden benyttes om garasje.",
+      mr_50m2_vaskerom: "I bolig med garasje med bruttoareal mindre enn 50 m² kan mellomliggende rom være vaskerom, bod og lignende.",
+      mr_50_400m2_branncelle: "For garasje med bruttoareal over 50 m² til og med 400 m² må mellomliggende rom utføres som egen branncelle.",
+      mr_over_400m2_brannsluse: "For garasje over 400 m² må mellomliggende rom utføres som brannsluse.",
+      mr_ventilasjon: "Mellomliggende rom eller garasje må være ventilert slik at brann- og røykgasser fra garasjen ikke kommer inn i andre rom i byggverket.",
+    };
+    const lines = formData.mellomromKrav
+      .map((id: string, idx: number) => mrKravMap[id] ? `${idx + 1}. ${mrKravMap[id]}` : null)
+      .filter(Boolean) as string[];
+    if (lines.length > 0) {
+      rows.push(contentRowMultiLine("Rom som forbinder garasje", lines, "ARK / RIV"));
+    }
+  }
+
   if (formData.branncellerKommentar) {
     rows.push(contentRow("Kommentar", formData.branncellerKommentar, "-"));
   }

@@ -1232,6 +1232,34 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 </tr>
               );
             })()}
+            {/* Rom som forbinder garasje */}
+            {formData.mellomromRelevant && (() => {
+              const mrKravMap: Record<string, string> = {
+                mr_eksos_royk: "For å hindre spredning av eksos og røyk må det være et mellomliggende rom mellom garasje og rømningsvei, og mellom garasje og oppholdsrom (boligrom, husdyrrom og lignende).",
+                mr_servicerom: "Når det tas betryggende forholdsregler mot spredning av brann og inntrengning av gasser til tilliggende rom, er det ikke nødvendig med mellomliggende rom mellom garasje og tilknyttede servicerom, garasje for utrykningskjøretøy eller lastehall som undertiden benyttes om garasje.",
+                mr_50m2_vaskerom: "I bolig med garasje med bruttoareal mindre enn 50 m² kan mellomliggende rom være vaskerom, bod og lignende.",
+                mr_50_400m2_branncelle: "For garasje med bruttoareal over 50 m² til og med 400 m² må mellomliggende rom utføres som egen branncelle.",
+                mr_over_400m2_brannsluse: "For garasje over 400 m² må mellomliggende rom utføres som brannsluse.",
+                mr_ventilasjon: "Mellomliggende rom eller garasje må være ventilert slik at brann- og røykgasser fra garasjen ikke kommer inn i andre rom i byggverket.",
+              };
+              const activeKrav = (formData.mellomromKrav || [])
+                .map((id: string, idx: number) => ({ id, text: mrKravMap[id], num: idx + 1 }))
+                .filter((k: { text: string }) => k.text);
+              if (activeKrav.length === 0) return null;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Rom som forbinder garasje</td>
+                  <td className="border border-gray-400 p-2">
+                    <div className="space-y-1">
+                      {activeKrav.map((k: { id: string; text: string; num: number }) => (
+                        <div key={k.id}>{k.num}. {k.text}</div>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK / RIV</td>
+                </tr>
+              );
+            })()}
             {formData.branncellerKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
