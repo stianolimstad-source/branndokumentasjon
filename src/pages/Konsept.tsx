@@ -508,6 +508,8 @@ const Konsept = () => {
     branncellerFlerePlanKrav: [] as string[],
     garasjeRelevant: false,
     garasjeKrav: [] as string[],
+    mellomromRelevant: false,
+    mellomromKrav: [] as string[],
     materialer: "",
     materialerKommentar: "",
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
@@ -3426,6 +3428,51 @@ const Konsept = () => {
                           )}
                         </div>
                       </div>
+
+                      {/* Rom som forbinder garasje og rom for annet formål */}
+                      <div>
+                        <Label className="text-xs font-medium mb-2 block">Rom som forbinder garasje og rom for annet formål</Label>
+                        <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                          <div className="flex items-center gap-2">
+                            <Checkbox
+                              id="mellomromRelevant"
+                              checked={formData.mellomromRelevant}
+                              onCheckedChange={(checked) => 
+                                setFormData({...formData, mellomromRelevant: !!checked, mellomromKrav: !!checked ? formData.mellomromKrav : []})
+                              }
+                            />
+                            <label htmlFor="mellomromRelevant" className="text-xs cursor-pointer font-medium">Rom som forbinder garasje er relevant</label>
+                          </div>
+                          {formData.mellomromRelevant && (
+                            <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
+                              {[
+                                { id: "mr_eksos_royk", label: "1. For å hindre spredning av eksos og røyk må det være et mellomliggende rom mellom garasje og rømningsvei, og mellom garasje og oppholdsrom (boligrom, husdyrrom og lignende)." },
+                                { id: "mr_servicerom", label: "2. Når det tas betryggende forholdsregler mot spredning av brann og inntrengning av gasser til tilliggende rom, er det ikke nødvendig med mellomliggende rom mellom garasje og tilknyttede servicerom, garasje for utrykningskjøretøy eller lastehall som undertiden benyttes om garasje." },
+                                { id: "mr_50m2_vaskerom", label: "3. I bolig med garasje med bruttoareal mindre enn 50 m² kan mellomliggende rom være vaskerom, bod og lignende." },
+                                { id: "mr_50_400m2_branncelle", label: "4. For garasje med bruttoareal over 50 m² til og med 400 m² må mellomliggende rom utføres som egen branncelle." },
+                                { id: "mr_over_400m2_brannsluse", label: "5. For garasje over 400 m² må mellomliggende rom utføres som brannsluse." },
+                                { id: "mr_ventilasjon", label: "6. Mellomliggende rom eller garasje må være ventilert slik at brann- og røykgasser fra garasjen ikke kommer inn i andre rom i byggverket." },
+                              ].map((krav) => (
+                                <div key={krav.id} className="flex items-start gap-2">
+                                  <Checkbox
+                                    id={`mr-${krav.id}`}
+                                    checked={formData.mellomromKrav.includes(krav.id)}
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        setFormData({...formData, mellomromKrav: [...formData.mellomromKrav, krav.id]});
+                                      } else {
+                                        setFormData({...formData, mellomromKrav: formData.mellomromKrav.filter((k: string) => k !== krav.id)});
+                                      }
+                                    }}
+                                  />
+                                  <label htmlFor={`mr-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('brannceller-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="brannceller-kommentar" className={formData.branncellerKommentar ? "" : "hidden"}>
