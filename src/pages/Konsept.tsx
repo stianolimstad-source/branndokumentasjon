@@ -502,8 +502,8 @@ const Konsept = () => {
     vinduBrannspredningRelevant: false,
     vinduBrannspredningKrav: [] as string[],
     horisontaltPlasseringer: [] as string[],
-    horisontaltAvstandParallelle: "",
-    horisontaltAvstandHjorne: "",
+    horisontaltParallelleVinduer: [] as { avstand: string }[],
+    horisontaltHjorneVinduer: [] as { avstand: string }[],
     materialer: "",
     materialerKommentar: "",
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
@@ -3204,37 +3204,59 @@ const Konsept = () => {
                                           const arr = checked
                                             ? [...formData.horisontaltPlasseringer, "parallelle"]
                                             : formData.horisontaltPlasseringer.filter((p: string) => p !== "parallelle");
-                                          setFormData({...formData, horisontaltPlasseringer: arr, horisontaltAvstandParallelle: checked ? formData.horisontaltAvstandParallelle : ""});
+                                          setFormData({...formData, horisontaltPlasseringer: arr, horisontaltParallelleVinduer: checked ? (formData.horisontaltParallelleVinduer.length > 0 ? formData.horisontaltParallelleVinduer : [{ avstand: "" }]) : []});
                                         }}
                                       />
                                       <label htmlFor="plassering-parallelle" className="text-xs cursor-pointer font-medium">Motstående parallelle yttervegger</label>
                                     </div>
                                     {formData.horisontaltPlasseringer.includes("parallelle") && (
-                                      <div className="pl-6 space-y-1">
-                                        <Label className="text-xs">Avstand L (meter)</Label>
-                                        <Input
-                                          type="number" step="0.1" min="0" placeholder="f.eks. 3.5"
-                                          value={formData.horisontaltAvstandParallelle}
-                                          onChange={(e) => setFormData({...formData, horisontaltAvstandParallelle: e.target.value})}
-                                          className="h-7 text-xs w-32"
-                                        />
-                                        {(() => {
-                                          const avstand = parseFloat(formData.horisontaltAvstandParallelle);
-                                          if (isNaN(avstand)) return null;
+                                      <div className="pl-6 space-y-2">
+                                        {formData.horisontaltParallelleVinduer.map((vindu: { avstand: string }, idx: number) => {
+                                          const avstand = parseFloat(vindu.avstand);
                                           const bklNum = formData.harFlereRisikoklasser
                                             ? (() => { const nums = (formData.bygningsdeler || []).map((d: any) => parseInt((d.brannklasse || "").replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n)); return nums.length > 0 ? Math.max(...nums) : 0; })()
                                             : parseInt((formData.brannklasse || "").replace(/\D/g, ''), 10) || 0;
                                           const erBKL1 = bklNum === 1;
                                           let krav = "";
-                                          if (avstand < 3.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
-                                          else if (avstand < 6.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
-                                          else krav = "Uspesifisert";
+                                          if (!isNaN(avstand)) {
+                                            if (avstand < 3.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
+                                            else if (avstand < 6.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
+                                            else krav = "Uspesifisert";
+                                          }
                                           return (
-                                            <div className="bg-accent/50 rounded p-2 text-xs mt-1">
-                                              <span className="font-medium">Krav:</span> L = {formData.horisontaltAvstandParallelle} m → <span className="font-semibold">{krav}</span>
+                                            <div key={idx} className="flex items-start gap-2">
+                                              <div className="space-y-1 flex-1">
+                                                <div className="flex items-center gap-2">
+                                                  <Label className="text-xs whitespace-nowrap">Vindu {idx + 1} – L (m):</Label>
+                                                  <Input
+                                                    type="number" step="0.1" min="0" placeholder="f.eks. 3.5"
+                                                    value={vindu.avstand}
+                                                    onChange={(e) => {
+                                                      const updated = [...formData.horisontaltParallelleVinduer];
+                                                      updated[idx] = { avstand: e.target.value };
+                                                      setFormData({...formData, horisontaltParallelleVinduer: updated});
+                                                    }}
+                                                    className="h-7 text-xs w-28"
+                                                  />
+                                                  {formData.horisontaltParallelleVinduer.length > 1 && (
+                                                    <Button type="button" variant="ghost" size="sm" className="h-7 w-7 p-0 text-destructive" onClick={() => {
+                                                      const updated = formData.horisontaltParallelleVinduer.filter((_: any, i: number) => i !== idx);
+                                                      setFormData({...formData, horisontaltParallelleVinduer: updated});
+                                                    }}>×</Button>
+                                                  )}
+                                                </div>
+                                                {krav && (
+                                                  <div className="bg-accent/50 rounded p-1.5 text-xs">
+                                                    → <span className="font-semibold">{krav}</span>
+                                                  </div>
+                                                )}
+                                              </div>
                                             </div>
                                           );
-                                        })()}
+                                        })}
+                                        <Button type="button" variant="outline" size="sm" className="h-6 text-xs" onClick={() => setFormData({...formData, horisontaltParallelleVinduer: [...formData.horisontaltParallelleVinduer, { avstand: "" }]})}>
+                                          + Legg til vindu
+                                        </Button>
                                       </div>
                                     )}
                                   </div>
@@ -3248,37 +3270,59 @@ const Konsept = () => {
                                           const arr = checked
                                             ? [...formData.horisontaltPlasseringer, "hjorne"]
                                             : formData.horisontaltPlasseringer.filter((p: string) => p !== "hjorne");
-                                          setFormData({...formData, horisontaltPlasseringer: arr, horisontaltAvstandHjorne: checked ? formData.horisontaltAvstandHjorne : ""});
+                                          setFormData({...formData, horisontaltPlasseringer: arr, horisontaltHjorneVinduer: checked ? (formData.horisontaltHjorneVinduer.length > 0 ? formData.horisontaltHjorneVinduer : [{ avstand: "" }]) : []});
                                         }}
                                       />
                                       <label htmlFor="plassering-hjorne" className="text-xs cursor-pointer font-medium">Vinduer i innvendige hjørner</label>
                                     </div>
                                     {formData.horisontaltPlasseringer.includes("hjorne") && (
-                                      <div className="pl-6 space-y-1">
-                                        <Label className="text-xs">Avstand L (meter)</Label>
-                                        <Input
-                                          type="number" step="0.1" min="0" placeholder="f.eks. 2.5"
-                                          value={formData.horisontaltAvstandHjorne}
-                                          onChange={(e) => setFormData({...formData, horisontaltAvstandHjorne: e.target.value})}
-                                          className="h-7 text-xs w-32"
-                                        />
-                                        {(() => {
-                                          const avstand = parseFloat(formData.horisontaltAvstandHjorne);
-                                          if (isNaN(avstand)) return null;
+                                      <div className="pl-6 space-y-2">
+                                        {formData.horisontaltHjorneVinduer.map((vindu: { avstand: string }, idx: number) => {
+                                          const avstand = parseFloat(vindu.avstand);
                                           const bklNum = formData.harFlereRisikoklasser
                                             ? (() => { const nums = (formData.bygningsdeler || []).map((d: any) => parseInt((d.brannklasse || "").replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n)); return nums.length > 0 ? Math.max(...nums) : 0; })()
                                             : parseInt((formData.brannklasse || "").replace(/\D/g, ''), 10) || 0;
                                           const erBKL1 = bklNum === 1;
                                           let krav = "";
-                                          if (avstand < 2.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
-                                          else if (avstand < 4.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
-                                          else krav = "Uspesifisert";
+                                          if (!isNaN(avstand)) {
+                                            if (avstand < 2.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
+                                            else if (avstand < 4.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
+                                            else krav = "Uspesifisert";
+                                          }
                                           return (
-                                            <div className="bg-accent/50 rounded p-2 text-xs mt-1">
-                                              <span className="font-medium">Krav:</span> L = {formData.horisontaltAvstandHjorne} m → <span className="font-semibold">{krav}</span>
+                                            <div key={idx} className="flex items-start gap-2">
+                                              <div className="space-y-1 flex-1">
+                                                <div className="flex items-center gap-2">
+                                                  <Label className="text-xs whitespace-nowrap">Vindu {idx + 1} – L (m):</Label>
+                                                  <Input
+                                                    type="number" step="0.1" min="0" placeholder="f.eks. 2.5"
+                                                    value={vindu.avstand}
+                                                    onChange={(e) => {
+                                                      const updated = [...formData.horisontaltHjorneVinduer];
+                                                      updated[idx] = { avstand: e.target.value };
+                                                      setFormData({...formData, horisontaltHjorneVinduer: updated});
+                                                    }}
+                                                    className="h-7 text-xs w-28"
+                                                  />
+                                                  {formData.horisontaltHjorneVinduer.length > 1 && (
+                                                    <Button type="button" variant="ghost" size="sm" className="h-7 w-7 p-0 text-destructive" onClick={() => {
+                                                      const updated = formData.horisontaltHjorneVinduer.filter((_: any, i: number) => i !== idx);
+                                                      setFormData({...formData, horisontaltHjorneVinduer: updated});
+                                                    }}>×</Button>
+                                                  )}
+                                                </div>
+                                                {krav && (
+                                                  <div className="bg-accent/50 rounded p-1.5 text-xs">
+                                                    → <span className="font-semibold">{krav}</span>
+                                                  </div>
+                                                )}
+                                              </div>
                                             </div>
                                           );
-                                        })()}
+                                        })}
+                                        <Button type="button" variant="outline" size="sm" className="h-6 text-xs" onClick={() => setFormData({...formData, horisontaltHjorneVinduer: [...formData.horisontaltHjorneVinduer, { avstand: "" }]})}>
+                                          + Legg til vindu
+                                        </Button>
                                       </div>
                                     )}
                                   </div>
