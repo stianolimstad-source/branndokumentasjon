@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -507,13 +508,9 @@ const Konsept = () => {
     branncellerFlerePlanRelevant: false,
     branncellerFlerePlanKrav: [] as string[],
     garasjeRelevant: false,
-    garasjeKrav: [] as string[],
-    garasjeByggverkRelevant: false,
-    garasjeByggverkKrav: [] as string[],
-    mellomromRelevant: false,
-    mellomromKrav: [] as string[],
-    brannsluseRelevant: false,
-    brannsluseKrav: [] as string[],
+    garasjePlassering: "" as "" | "i_tiltaket" | "utenfor_tiltaket",
+    garasjeAreal: "" as "" | "under_50" | "50_400" | "over_400",
+    garasjeBruksenhet: "" as "" | "samme" | "annen",
     materialer: "",
     materialerKommentar: "",
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
@@ -3393,170 +3390,109 @@ const Konsept = () => {
                         </div>
                       </div>
                       <div>
-                        <Label className="text-xs font-medium mb-2 block">Brannskille mellom garasje og annet byggverk</Label>
-                        <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                        <Label className="text-xs font-medium mb-2 block">Garasje</Label>
+                        <div className="border rounded-md p-2 space-y-3 bg-muted/30">
                           <div className="flex items-center gap-2">
                             <Checkbox
                               id="garasjeRelevant"
                               checked={formData.garasjeRelevant}
                               onCheckedChange={(checked) => 
-                                setFormData({...formData, garasjeRelevant: !!checked, garasjeKrav: !!checked ? formData.garasjeKrav : []})
+                                setFormData({...formData, garasjeRelevant: !!checked, garasjePlassering: "", garasjeAreal: "", garasjeBruksenhet: ""})
                               }
                             />
-                            <label htmlFor="garasjeRelevant" className="text-xs cursor-pointer font-medium">Brannskille mellom garasje og annet byggverk er relevant</label>
+                            <label htmlFor="garasjeRelevant" className="text-xs cursor-pointer font-medium">Garasje er relevant for tiltaket</label>
                           </div>
                           {formData.garasjeRelevant && (
-                            <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
-                              {[
-                                { id: "ga_50m2_samme", label: "1. Garasje med bruttoareal til og med 50 m² kan bygges uten brannskille mot annet byggverk i samme bruksenhet, for eksempel inntil en enebolig." },
-                                { id: "ga_50m2_annen", label: "2. Garasje med bruttoareal til og med 50 m² må ha avstand minimum 2,0 meter til byggverk i annen bruksenhet, eller byggverkene må være skilt med bygningsdeler med brannmotstand minst EI 30 [B 30], jf. § 11-6 annet ledd." },
-                                { id: "ga_50_400m2", label: "3. Garasje med bruttoareal over 50 m² til og med 400 m² må ha avstand minimum 8 meter til andre byggverk eller byggverkene må være skilt med bygningsdeler med brannmotstand minst EI 60 [B 60]." },
-                                { id: "ga_over_400m2", label: "4. Garasjer med større bruttoareal enn 400 m² må ha avstand minimum 8 meter til andre byggverk eller byggverkene må være skilt med bygningsdeler med brannmotstand minst EI 90 A2-s1,d0 [A 90]." },
-                              ].map((krav) => (
-                                <div key={krav.id} className="flex items-start gap-2">
-                                  <Checkbox
-                                    id={`ga-${krav.id}`}
-                                    checked={formData.garasjeKrav.includes(krav.id)}
-                                    onCheckedChange={(checked) => {
-                                      if (checked) {
-                                        setFormData({...formData, garasjeKrav: [...formData.garasjeKrav, krav.id]});
-                                      } else {
-                                        setFormData({...formData, garasjeKrav: formData.garasjeKrav.filter((k: string) => k !== krav.id)});
-                                      }
-                                    }}
-                                  />
-                                  <label htmlFor={`ga-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                            <div className="pl-4 space-y-3 border-l-2 border-primary/20 ml-2">
+                              {/* Plassering */}
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Plassering</Label>
+                                <div className="flex gap-4">
+                                  {[
+                                    { value: "i_tiltaket", label: "I tiltaket (integrert)" },
+                                    { value: "utenfor_tiltaket", label: "Utenfor tiltaket (frittstående/tilbygg)" },
+                                  ].map((opt) => (
+                                    <div key={opt.value} className="flex items-center gap-1.5">
+                                      <input
+                                        type="radio"
+                                        id={`garasje-plassering-${opt.value}`}
+                                        name="garasjePlassering"
+                                        checked={formData.garasjePlassering === opt.value}
+                                        onChange={() => setFormData({...formData, garasjePlassering: opt.value as any, garasjeBruksenhet: ""})}
+                                        className="w-3 h-3"
+                                      />
+                                      <label htmlFor={`garasje-plassering-${opt.value}`} className="text-xs cursor-pointer">{opt.label}</label>
+                                    </div>
+                                  ))}
                                 </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                              </div>
 
-                      {/* Garasje i byggverk for annet formål */}
-                      <div>
-                        <Label className="text-xs font-medium mb-2 block">Garasje i byggverk for annet formål</Label>
-                        <div className="border rounded-md p-2 space-y-2 bg-muted/30">
-                          <div className="flex items-center gap-2">
-                            <Checkbox
-                              id="garasjeByggverkRelevant"
-                              checked={formData.garasjeByggverkRelevant}
-                              onCheckedChange={(checked) => 
-                                setFormData({...formData, garasjeByggverkRelevant: !!checked, garasjeByggverkKrav: !!checked ? formData.garasjeByggverkKrav : []})
-                              }
-                            />
-                            <label htmlFor="garasjeByggverkRelevant" className="text-xs cursor-pointer font-medium">Garasje i byggverk for annet formål er relevant</label>
-                          </div>
-                          {formData.garasjeByggverkRelevant && (
-                            <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
-                              {[
-                                { id: "gb_50m2_samme", label: "1. Garasje med bruttoareal til og med 50 m² i samme bruksenhet, for eksempel garasje i enebolig, må være skilt fra resten av byggverket med bygningsdeler som er så tette at eksos ikke trenger gjennom. En yttervegg med utvendig vindsperre og innvendig dampsperre gir tilstrekkelig tetthet mot en godt ventilert garasje." },
-                                { id: "gb_50m2_annen", label: "2. Andre garasjer med bruttoareal til og med 50 m² må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 30 [B 30]." },
-                                { id: "gb_50_400m2", label: "3. Garasje med bruttoareal over 50 m² til og med 400 m², må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 60 [B 60]." },
-                                { id: "gb_over_400m2", label: "4. Garasjer med større bruttoareal enn 400 m² må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 90 A2-s1,d0 [A 90]." },
-                              ].map((krav) => (
-                                <div key={krav.id} className="flex items-start gap-2">
-                                  <Checkbox
-                                    id={`gb-${krav.id}`}
-                                    checked={formData.garasjeByggverkKrav.includes(krav.id)}
-                                    onCheckedChange={(checked) => {
-                                      if (checked) {
-                                        setFormData({...formData, garasjeByggverkKrav: [...formData.garasjeByggverkKrav, krav.id]});
-                                      } else {
-                                        setFormData({...formData, garasjeByggverkKrav: formData.garasjeByggverkKrav.filter((k: string) => k !== krav.id)});
-                                      }
-                                    }}
-                                  />
-                                  <label htmlFor={`gb-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                              {/* Areal */}
+                              {formData.garasjePlassering && (
+                                <div>
+                                  <Label className="text-xs font-medium mb-1 block">Bruttoareal garasje</Label>
+                                  <div className="flex gap-4">
+                                    {[
+                                      { value: "under_50", label: "≤ 50 m²" },
+                                      { value: "50_400", label: "50–400 m²" },
+                                      { value: "over_400", label: "> 400 m²" },
+                                    ].map((opt) => (
+                                      <div key={opt.value} className="flex items-center gap-1.5">
+                                        <input
+                                          type="radio"
+                                          id={`garasje-areal-${opt.value}`}
+                                          name="garasjeAreal"
+                                          checked={formData.garasjeAreal === opt.value}
+                                          onChange={() => setFormData({...formData, garasjeAreal: opt.value as any, garasjeBruksenhet: ""})}
+                                          className="w-3 h-3"
+                                        />
+                                        <label htmlFor={`garasje-areal-${opt.value}`} className="text-xs cursor-pointer">{opt.label}</label>
+                                      </div>
+                                    ))}
+                                  </div>
                                 </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                              )}
 
-                      {/* Rom som forbinder garasje og rom for annet formål */}
-                      <div>
-                        <Label className="text-xs font-medium mb-2 block">Rom som forbinder garasje og rom for annet formål</Label>
-                        <div className="border rounded-md p-2 space-y-2 bg-muted/30">
-                          <div className="flex items-center gap-2">
-                            <Checkbox
-                              id="mellomromRelevant"
-                              checked={formData.mellomromRelevant}
-                              onCheckedChange={(checked) => 
-                                setFormData({...formData, mellomromRelevant: !!checked, mellomromKrav: !!checked ? formData.mellomromKrav : []})
-                              }
-                            />
-                            <label htmlFor="mellomromRelevant" className="text-xs cursor-pointer font-medium">Rom som forbinder garasje er relevant</label>
-                          </div>
-                          {formData.mellomromRelevant && (
-                            <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
-                              {[
-                                { id: "mr_eksos_royk", label: "1. For å hindre spredning av eksos og røyk må det være et mellomliggende rom mellom garasje og rømningsvei, og mellom garasje og oppholdsrom (boligrom, husdyrrom og lignende)." },
-                                { id: "mr_servicerom", label: "2. Når det tas betryggende forholdsregler mot spredning av brann og inntrengning av gasser til tilliggende rom, er det ikke nødvendig med mellomliggende rom mellom garasje og tilknyttede servicerom, garasje for utrykningskjøretøy eller lastehall som undertiden benyttes om garasje." },
-                                { id: "mr_50m2_vaskerom", label: "3. I bolig med garasje med bruttoareal mindre enn 50 m² kan mellomliggende rom være vaskerom, bod og lignende." },
-                                { id: "mr_50_400m2_branncelle", label: "4. For garasje med bruttoareal over 50 m² til og med 400 m² må mellomliggende rom utføres som egen branncelle." },
-                                { id: "mr_over_400m2_brannsluse", label: "5. For garasje over 400 m² må mellomliggende rom utføres som brannsluse." },
-                                { id: "mr_ventilasjon", label: "6. Mellomliggende rom eller garasje må være ventilert slik at brann- og røykgasser fra garasjen ikke kommer inn i andre rom i byggverket." },
-                              ].map((krav) => (
-                                <div key={krav.id} className="flex items-start gap-2">
-                                  <Checkbox
-                                    id={`mr-${krav.id}`}
-                                    checked={formData.mellomromKrav.includes(krav.id)}
-                                    onCheckedChange={(checked) => {
-                                      if (checked) {
-                                        setFormData({...formData, mellomromKrav: [...formData.mellomromKrav, krav.id]});
-                                      } else {
-                                        setFormData({...formData, mellomromKrav: formData.mellomromKrav.filter((k: string) => k !== krav.id)});
-                                      }
-                                    }}
-                                  />
-                                  <label htmlFor={`mr-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                              {/* Bruksenhet - kun for ≤50 m² */}
+                              {formData.garasjeAreal === "under_50" && (
+                                <div>
+                                  <Label className="text-xs font-medium mb-1 block">Bruksenhet</Label>
+                                  <div className="flex gap-4">
+                                    {[
+                                      { value: "samme", label: "Samme bruksenhet" },
+                                      { value: "annen", label: "Annen bruksenhet" },
+                                    ].map((opt) => (
+                                      <div key={opt.value} className="flex items-center gap-1.5">
+                                        <input
+                                          type="radio"
+                                          id={`garasje-bruksenhet-${opt.value}`}
+                                          name="garasjeBruksenhet"
+                                          checked={formData.garasjeBruksenhet === opt.value}
+                                          onChange={() => setFormData({...formData, garasjeBruksenhet: opt.value as any})}
+                                          className="w-3 h-3"
+                                        />
+                                        <label htmlFor={`garasje-bruksenhet-${opt.value}`} className="text-xs cursor-pointer">{opt.label}</label>
+                                      </div>
+                                    ))}
+                                  </div>
                                 </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                              )}
 
-                      {/* Brannsluse */}
-                      <div>
-                        <Label className="text-xs font-medium mb-2 block">Brannsluse</Label>
-                        <div className="border rounded-md p-2 space-y-2 bg-muted/30">
-                          <div className="flex items-center gap-2">
-                            <Checkbox
-                              id="brannsluseRelevant"
-                              checked={formData.brannsluseRelevant}
-                              onCheckedChange={(checked) => 
-                                setFormData({...formData, brannsluseRelevant: !!checked, brannsluseKrav: !!checked ? formData.brannsluseKrav : []})
-                              }
-                            />
-                            <label htmlFor="brannsluseRelevant" className="text-xs cursor-pointer font-medium">Brannsluse er relevant</label>
-                          </div>
-                          {formData.brannsluseRelevant && (
-                            <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
-                              {[
-                                { id: "bs_forbindelse", label: "1. Rom som utgjør forbindelse mellom brannceller hvor det stilles særskilt strenge krav til sikkerhet mot spredning av brann, må utføres som brannsluse." },
-                                { id: "bs_skilt", label: "2. Brannslusen skal være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 60 A2-s1,d0 [A 60]." },
-                                { id: "bs_dorer", label: "3. Dører til brannslusen må ha brannmotstand EI₂ 60-CSₐ [B 60 S]." },
-                                { id: "bs_storrelse", label: "4. Brannslusen skal ha tilstrekkelig størrelse og være slik utført at den kan passeres uten at mer enn en dør eller luke må åpnes av gangen." },
-                                { id: "bs_ventilasjon", label: "5. Ventilasjon av brannsluser skal ikke foregå gjennom åpninger til de rommene som betjenes av slusen." },
-                              ].map((krav) => (
-                                <div key={krav.id} className="flex items-start gap-2">
-                                  <Checkbox
-                                    id={`bs-${krav.id}`}
-                                    checked={formData.brannsluseKrav.includes(krav.id)}
-                                    onCheckedChange={(checked) => {
-                                      if (checked) {
-                                        setFormData({...formData, brannsluseKrav: [...formData.brannsluseKrav, krav.id]});
-                                      } else {
-                                        setFormData({...formData, brannsluseKrav: formData.brannsluseKrav.filter((k: string) => k !== krav.id)});
-                                      }
-                                    }}
-                                  />
-                                  <label htmlFor={`bs-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
-                                </div>
-                              ))}
+                              {/* Auto-genererte krav */}
+                              {formData.garasjeAreal && (formData.garasjeAreal !== "under_50" || formData.garasjeBruksenhet) && (() => {
+                                const krav = getGarasjeKrav(formData.garasjePlassering, formData.garasjeAreal, formData.garasjeBruksenhet);
+                                if (krav.length === 0) return null;
+                                return (
+                                  <div className="mt-2 p-2 bg-muted/50 rounded border space-y-2">
+                                    <Label className="text-xs font-semibold block">Automatisk bestemte krav:</Label>
+                                    {krav.map((k, i) => (
+                                      <div key={i} className="text-xs leading-tight">
+                                        <span className="font-medium">{k.kategori}:</span> {k.tekst}
+                                      </div>
+                                    ))}
+                                  </div>
+                                );
+                              })()}
                             </div>
                           )}
                         </div>
