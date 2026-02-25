@@ -507,7 +507,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     }
   }
 
-  // Brannspredning via vinduer
+  // Horisontal brannspredning
   if (formData.vinduBrannspredningRelevant && formData.vinduBrannspredningKrav && formData.vinduBrannspredningKrav.length > 0) {
     const vvKravMap: Record<string, string> = {
       vv_branncellebegrensende: "Branncellebegrensende konstruksjoner i et byggverk, eller mellom to lave byggverk, må utføres slik at det blir liten sannsynlighet for brannspredning via vinduer som ligger med liten innbyrdes avstand i innvendig hjørne, eller mellom vinduer i motstående fasader.",
@@ -519,8 +519,35 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     const lines = formData.vinduBrannspredningKrav
       .map((id: string, idx: number) => vvKravMap[id] ? `${idx + 1}. ${vvKravMap[id]}` : null)
       .filter(Boolean) as string[];
+    
+    // Add distance-based requirement
+    const avstand = parseFloat(formData.horisontaltAvstand || "");
+    const plassering = formData.horisontaltPlassering || "";
+    if (!isNaN(avstand) && plassering) {
+      const bklNum = formData.harFlereRisikoklasser
+        ? (() => {
+            const nums = (formData.bygningsdeler || []).map((d: any) => parseInt((d.brannklasse || "").replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n));
+            return nums.length > 0 ? Math.max(...nums) : 0;
+          })()
+        : parseInt((formData.brannklasse || "").replace(/\D/g, ''), 10) || 0;
+      const erBKL1 = bklNum === 1;
+      const plasseringTekst = plassering === "parallelle" ? "Vinduer i motstående parallelle yttervegger" : "Vinduer i innvendige hjørner";
+      const bklTekst = erBKL1 ? "BKL 1" : "BKL 2 og 3";
+      let krav = "";
+      if (plassering === "parallelle") {
+        if (avstand < 3.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
+        else if (avstand < 6.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
+        else krav = "Uspesifisert";
+      } else {
+        if (avstand < 2.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
+        else if (avstand < 4.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
+        else krav = "Uspesifisert";
+      }
+      lines.push(`${plasseringTekst} i ${bklTekst}: Avstand L = ${formData.horisontaltAvstand} m. Nødvendig brannmotstand: ${krav}.`);
+    }
+    
     if (lines.length > 0) {
-      rows.push(contentRowMultiLine("Brannspredning via vinduer", lines, "ARK"));
+      rows.push(contentRowMultiLine("Horisontal brannspredning", lines, "ARK"));
     }
   }
 

@@ -501,6 +501,8 @@ const Konsept = () => {
     vertikalBrannspredningKrav: [] as string[],
     vinduBrannspredningRelevant: false,
     vinduBrannspredningKrav: [] as string[],
+    horisontaltPlassering: "" as "" | "parallelle" | "hjorne",
+    horisontaltAvstand: "",
     materialer: "",
     materialerKommentar: "",
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
@@ -3164,7 +3166,7 @@ const Konsept = () => {
                             <label htmlFor="vinduBrannspredningRelevant" className="text-xs cursor-pointer font-medium">Horisontal brannspredning er relevant</label>
                           </div>
                           {formData.vinduBrannspredningRelevant && (
-                            <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
+                            <div className="pl-4 space-y-3 border-l-2 border-primary/20 ml-2">
                               {[
                                 { id: "vv_branncellebegrensende", label: "1. Branncellebegrensende konstruksjoner i et byggverk, eller mellom to lave byggverk, må utføres slik at det blir liten sannsynlighet for brannspredning via vinduer som ligger med liten innbyrdes avstand i innvendig hjørne, eller mellom vinduer i motstående fasader." },
                                 { id: "vv_brannmotstand_vegg", label: "2. Vinduer må ha samme brannmotstand som veggen de står i, med unntak som gitt i tabell 3. For motstående parallelle yttervegger gjelder tabell 3 bare når vindusarealet ikke utgjør mer enn 1/3 av veggarealet." },
@@ -3187,6 +3189,79 @@ const Konsept = () => {
                                   <label htmlFor={`vv-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
                                 </div>
                               ))}
+
+                              <div className="border-t pt-2 mt-2 space-y-2">
+                                <Label className="text-xs font-medium">Innbyrdes plassering av vinduer</Label>
+                                <div className="flex gap-4">
+                                  <div className="flex items-center gap-1.5">
+                                    <input
+                                      type="radio"
+                                      id="plassering-parallelle"
+                                      name="horisontaltPlassering"
+                                      value="parallelle"
+                                      checked={formData.horisontaltPlassering === "parallelle"}
+                                      onChange={() => setFormData({...formData, horisontaltPlassering: "parallelle"})}
+                                      className="h-3.5 w-3.5"
+                                    />
+                                    <label htmlFor="plassering-parallelle" className="text-xs cursor-pointer">Motstående parallelle yttervegger</label>
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <input
+                                      type="radio"
+                                      id="plassering-hjorne"
+                                      name="horisontaltPlassering"
+                                      value="hjorne"
+                                      checked={formData.horisontaltPlassering === "hjorne"}
+                                      onChange={() => setFormData({...formData, horisontaltPlassering: "hjorne"})}
+                                      className="h-3.5 w-3.5"
+                                    />
+                                    <label htmlFor="plassering-hjorne" className="text-xs cursor-pointer">Vinduer i innvendige hjørner</label>
+                                  </div>
+                                </div>
+                                {formData.horisontaltPlassering && (
+                                  <div className="space-y-1">
+                                    <Label className="text-xs font-medium">Avstand L mellom vinduer [glassflater] (meter)</Label>
+                                    <Input
+                                      type="number"
+                                      step="0.1"
+                                      min="0"
+                                      placeholder="f.eks. 3.5"
+                                      value={formData.horisontaltAvstand}
+                                      onChange={(e) => setFormData({...formData, horisontaltAvstand: e.target.value})}
+                                      className="h-7 text-xs w-32"
+                                    />
+                                    {(() => {
+                                      const avstand = parseFloat(formData.horisontaltAvstand);
+                                      if (isNaN(avstand) || !formData.horisontaltPlassering) return null;
+                                      const bklStr = formData.harFlereRisikoklasser
+                                        ? (() => {
+                                            const klasser = formData.bygningsdeler?.map((d: any) => d.brannklasse).filter(Boolean) || [];
+                                            const nums = klasser.map((b: string) => parseInt(b.replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n));
+                                            return nums.length > 0 ? Math.max(...nums) : 0;
+                                          })()
+                                        : parseInt((formData.brannklasse || "").replace(/\D/g, ''), 10) || 0;
+                                      const erBKL1 = bklStr === 1;
+                                      let krav = "";
+                                      if (formData.horisontaltPlassering === "parallelle") {
+                                        if (avstand < 3.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
+                                        else if (avstand < 6.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
+                                        else krav = "Uspesifisert";
+                                      } else {
+                                        if (avstand < 2.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
+                                        else if (avstand < 4.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
+                                        else krav = "Uspesifisert";
+                                      }
+                                      const plasseringTekst = formData.horisontaltPlassering === "parallelle" 
+                                        ? "motstående parallelle yttervegger" : "vinduer i innvendige hjørner";
+                                      return (
+                                        <div className="bg-accent/50 rounded p-2 text-xs mt-1">
+                                          <span className="font-medium">Krav (VTEK tabell 3):</span> {plasseringTekst}, L = {formData.horisontaltAvstand} m → <span className="font-semibold">{krav}</span>
+                                        </div>
+                                      );
+                                    })()}
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           )}
                         </div>
