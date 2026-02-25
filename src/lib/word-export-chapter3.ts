@@ -576,6 +576,22 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     rows.push(contentRowMultiLine("Brannceller over flere plan", lines, "RIBr"));
   }
 
+  // Garasje
+  if (formData.garasjeRelevant && formData.garasjeKrav && formData.garasjeKrav.length > 0) {
+    const gaKravMap: Record<string, string> = {
+      ga_50m2_samme: "Garasje med bruttoareal til og med 50 m² kan bygges uten brannskille mot annet byggverk i samme bruksenhet, for eksempel inntil en enebolig.",
+      ga_50m2_annen: "Garasje med bruttoareal til og med 50 m² må ha avstand minimum 2,0 meter til byggverk i annen bruksenhet, eller byggverkene må være skilt med bygningsdeler med brannmotstand minst EI 30 [B 30], jf. § 11-6 annet ledd.",
+      ga_50_400m2: "Garasje med bruttoareal over 50 m² til og med 400 m² må ha avstand minimum 8 meter til andre byggverk eller byggverkene må være skilt med bygningsdeler med brannmotstand minst EI 60 [B 60].",
+      ga_over_400m2: "Garasjer med større bruttoareal enn 400 m² må ha avstand minimum 8 meter til andre byggverk eller byggverkene må være skilt med bygningsdeler med brannmotstand minst EI 90 A2-s1,d0 [A 90].",
+    };
+    const lines = formData.garasjeKrav
+      .map((id: string, idx: number) => gaKravMap[id] ? `${idx + 1}. ${gaKravMap[id]}` : null)
+      .filter(Boolean) as string[];
+    if (lines.length > 0) {
+      rows.push(contentRowMultiLine("Brannskille garasje", lines, "ARK"));
+    }
+  }
+
   if (formData.branncellerKommentar) {
     rows.push(contentRow("Kommentar", formData.branncellerKommentar, "-"));
   }

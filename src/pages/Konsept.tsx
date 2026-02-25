@@ -506,6 +506,8 @@ const Konsept = () => {
     horisontaltHjorneVinduer: [] as { avstand: string }[],
     branncellerFlerePlanRelevant: false,
     branncellerFlerePlanKrav: [] as string[],
+    garasjeRelevant: false,
+    garasjeKrav: [] as string[],
     materialer: "",
     materialerKommentar: "",
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
@@ -3378,6 +3380,46 @@ const Konsept = () => {
                                     }}
                                   />
                                   <label htmlFor={`fp-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-2 block">Brannskille mellom garasje og annet byggverk</Label>
+                        <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                          <div className="flex items-center gap-2">
+                            <Checkbox
+                              id="garasjeRelevant"
+                              checked={formData.garasjeRelevant}
+                              onCheckedChange={(checked) => 
+                                setFormData({...formData, garasjeRelevant: !!checked, garasjeKrav: !!checked ? formData.garasjeKrav : []})
+                              }
+                            />
+                            <label htmlFor="garasjeRelevant" className="text-xs cursor-pointer font-medium">Garasje i tiltaket er relevant</label>
+                          </div>
+                          {formData.garasjeRelevant && (
+                            <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
+                              {[
+                                { id: "ga_50m2_samme", label: "1. Garasje med bruttoareal til og med 50 m² kan bygges uten brannskille mot annet byggverk i samme bruksenhet, for eksempel inntil en enebolig." },
+                                { id: "ga_50m2_annen", label: "2. Garasje med bruttoareal til og med 50 m² må ha avstand minimum 2,0 meter til byggverk i annen bruksenhet, eller byggverkene må være skilt med bygningsdeler med brannmotstand minst EI 30 [B 30], jf. § 11-6 annet ledd." },
+                                { id: "ga_50_400m2", label: "3. Garasje med bruttoareal over 50 m² til og med 400 m² må ha avstand minimum 8 meter til andre byggverk eller byggverkene må være skilt med bygningsdeler med brannmotstand minst EI 60 [B 60]." },
+                                { id: "ga_over_400m2", label: "4. Garasjer med større bruttoareal enn 400 m² må ha avstand minimum 8 meter til andre byggverk eller byggverkene må være skilt med bygningsdeler med brannmotstand minst EI 90 A2-s1,d0 [A 90]." },
+                              ].map((krav) => (
+                                <div key={krav.id} className="flex items-start gap-2">
+                                  <Checkbox
+                                    id={`ga-${krav.id}`}
+                                    checked={formData.garasjeKrav.includes(krav.id)}
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        setFormData({...formData, garasjeKrav: [...formData.garasjeKrav, krav.id]});
+                                      } else {
+                                        setFormData({...formData, garasjeKrav: formData.garasjeKrav.filter((k: string) => k !== krav.id)});
+                                      }
+                                    }}
+                                  />
+                                  <label htmlFor={`ga-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
                                 </div>
                               ))}
                             </div>
