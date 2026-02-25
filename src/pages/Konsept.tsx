@@ -510,6 +510,8 @@ const Konsept = () => {
     garasjeKrav: [] as string[],
     mellomromRelevant: false,
     mellomromKrav: [] as string[],
+    brannsluseRelevant: false,
+    brannsluseKrav: [] as string[],
     materialer: "",
     materialerKommentar: "",
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
@@ -3466,6 +3468,49 @@ const Konsept = () => {
                                     }}
                                   />
                                   <label htmlFor={`mr-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Brannsluse */}
+                      <div>
+                        <Label className="text-xs font-medium mb-2 block">Brannsluse</Label>
+                        <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                          <div className="flex items-center gap-2">
+                            <Checkbox
+                              id="brannsluseRelevant"
+                              checked={formData.brannsluseRelevant}
+                              onCheckedChange={(checked) => 
+                                setFormData({...formData, brannsluseRelevant: !!checked, brannsluseKrav: !!checked ? formData.brannsluseKrav : []})
+                              }
+                            />
+                            <label htmlFor="brannsluseRelevant" className="text-xs cursor-pointer font-medium">Brannsluse er relevant</label>
+                          </div>
+                          {formData.brannsluseRelevant && (
+                            <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
+                              {[
+                                { id: "bs_forbindelse", label: "1. Rom som utgjør forbindelse mellom brannceller hvor det stilles særskilt strenge krav til sikkerhet mot spredning av brann, må utføres som brannsluse." },
+                                { id: "bs_skilt", label: "2. Brannslusen skal være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 60 A2-s1,d0 [A 60]." },
+                                { id: "bs_dorer", label: "3. Dører til brannslusen må ha brannmotstand EI₂ 60-CSₐ [B 60 S]." },
+                                { id: "bs_storrelse", label: "4. Brannslusen skal ha tilstrekkelig størrelse og være slik utført at den kan passeres uten at mer enn en dør eller luke må åpnes av gangen." },
+                                { id: "bs_ventilasjon", label: "5. Ventilasjon av brannsluser skal ikke foregå gjennom åpninger til de rommene som betjenes av slusen." },
+                              ].map((krav) => (
+                                <div key={krav.id} className="flex items-start gap-2">
+                                  <Checkbox
+                                    id={`bs-${krav.id}`}
+                                    checked={formData.brannsluseKrav.includes(krav.id)}
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        setFormData({...formData, brannsluseKrav: [...formData.brannsluseKrav, krav.id]});
+                                      } else {
+                                        setFormData({...formData, brannsluseKrav: formData.brannsluseKrav.filter((k: string) => k !== krav.id)});
+                                      }
+                                    }}
+                                  />
+                                  <label htmlFor={`bs-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
                                 </div>
                               ))}
                             </div>
