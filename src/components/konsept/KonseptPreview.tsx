@@ -573,7 +573,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
             <tr>
               <td className="border border-gray-400 p-2 align-top">Generelt</td>
               <td className="border border-gray-400 p-2">
-                (1) Brannspredning mellom byggverk skal forebygges slik at a) sikkerheten for personer og husdyr ivaretas, og b) brann ikke kan føre til urimelige store økonomiske tap eller samfunnsmessige konsekvenser.
+                Brannspredning mellom byggverk skal forebygges slik at sikkerheten for personer og husdyr ivaretas, og at brann ikke kan føre til urimelige store økonomiske tap eller samfunnsmessige konsekvenser.
               </td>
               <td className="border border-gray-400 p-2 align-top">RIBr</td>
             </tr>
