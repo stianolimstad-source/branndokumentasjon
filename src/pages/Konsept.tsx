@@ -2946,6 +2946,8 @@ const Konsept = () => {
                           ))}
                         </div>
                         </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Vinduskrav relevant?</Label>
                         <div className="flex items-center space-x-2 p-2 bg-muted rounded">
                           <Checkbox 
                             id="vinduskravRelevant"
@@ -2956,6 +2958,7 @@ const Konsept = () => {
                             Vindu med brannmotstand er relevant
                           </Label>
                         </div>
+                      </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('brannceller-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="brannceller-kommentar" className={formData.branncellerKommentar ? "" : "hidden"}>
