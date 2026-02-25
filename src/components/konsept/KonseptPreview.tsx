@@ -1287,6 +1287,18 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 </tr>
               );
             })()}
+            {/* Husdyrrom */}
+            {formData.husdyrromRelevant && formData.husdyrromAreal && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Husdyrrom</td>
+                <td className="border border-gray-400 p-2">
+                  {formData.husdyrromAreal === "under_300"
+                    ? "Husdyrrom med bruttoareal mindre enn 300 m² må være avgrenset fra resten av byggverket med bygningsdeler med brannmotstand minst EI 30 [B 30]."
+                    : "Husdyrrom med bruttoareal større enn 300 m² må være avgrenset fra resten av byggverket med bygningsdeler med brannmotstand minst EI 60 [B 60]."}
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
             {formData.branncellerKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
