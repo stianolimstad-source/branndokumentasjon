@@ -424,6 +424,39 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     }
   }
 
+  // Trapperom
+  if (formData.trapperomKrav && formData.trapperomKrav.length > 0) {
+    const rk = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
+    const floors = parseInt(formData.etasjer || '0', 10);
+    const trapperomTypeMap: Record<number, { lav: string; hoy: string }> = {
+      1: { lav: "Tr 1", hoy: "Tr 3" },
+      2: { lav: "Tr 1", hoy: "Tr 3" },
+      3: { lav: "Tr 2", hoy: "Tr 3" },
+      4: { lav: "Tr 1", hoy: "Tr 3" },
+      5: { lav: "Tr 2", hoy: "Tr 3" },
+      6: { lav: "Tr 2", hoy: "Tr 3" },
+    };
+    const trType = rk >= 1 && rk <= 6 && floors > 0
+      ? (floors <= 8 ? trapperomTypeMap[rk].lav : trapperomTypeMap[rk].hoy)
+      : null;
+    const trapperomKravMap: Record<string, string> = {
+      tr_forbinder_brannceller: "Trapperom som forbinder ulike brannceller, må utføres som egen branncelle selv om trapperommet ikke er en del av en rømningsvei.",
+      tr_romningsvei_videre: "Dersom trapperommet ikke leder direkte til det fri eller sikkert sted, må rømningsveien videre utføres som trapperom med hensyn til omsluttende konstruksjoner, mellomliggende rom, dører mv.",
+      tr_mellomliggende_rom: "Mellomliggende rom må ha tilstrekkelig størrelse, og må kunne passeres ved å åpne bare én dør om gangen.",
+      tr1_dor_bruksenhet: "Trapperom Tr 1 kan ha dør direkte fra trapperom til bruksenhet, for eksempel leilighet eller kontor. Vegger må ha brannmotstand som angitt i tabell 1. Dører må ha brannmotstand som angitt i tabell 2, jf. figur 2.",
+      tr2_eget_rom: "Trapperom Tr 2 må ha et rom utført som egen branncelle mellom trapperommet og branncellen det skal rømmes fra. Vegger må ha brannmotstand som angitt i tabell 1. Dører må ha brannmotstand som angitt i tabell 2, jf. figur 3. Trapperom Tr 2 kan gå til kjeller når det er brannsluse mellom de øvrige branncellene i kjelleren og trapperommet.",
+      tr3_mellomliggende: "Trapperom Tr 3 må ha et mellomliggende rom utført som egen branncelle mellom trapperommet og bruksenheten det skal rømmes fra. Vegger må ha brannmotstand som angitt i tabell 1. Dører må ha brannmotstand som angitt i tabell 2, jf. figur 4. Trapperom Tr 3 kan ikke ha forbindelse til kjeller. Hensikten er å hindre at personer rømmer ned til kjelleren, og å hindre blokkering av trapperommet ved brann i kjeller.",
+      tr_roykspredning: "Det må treffes tiltak for å begrense eller hindre røykspredning til trapperom Tr 2 og Tr 3 i samsvar med preaksepterte ytelser under G. Røykkontroll.",
+    };
+    const lines = formData.trapperomKrav
+      .map((id: string, idx: number) => trapperomKravMap[id] ? `${idx + 1}. ${trapperomKravMap[id]}` : null)
+      .filter(Boolean) as string[];
+    if (lines.length > 0) {
+      const forhold = trType ? `Krav til trapperom (${trType})` : "Krav til trapperom";
+      rows.push(contentRowMultiLine(forhold, lines, "ARK/RIBr"));
+    }
+  }
+
   if (formData.branncellerKommentar) {
     rows.push(contentRow("Kommentar", formData.branncellerKommentar, "-"));
   }

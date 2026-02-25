@@ -997,6 +997,48 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 </tr>
               );
             })()}
+            {/* Trapperom */}
+            {formData.trapperomKrav && formData.trapperomKrav.length > 0 && (() => {
+              const rk = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
+              const floors = parseInt(formData.etasjer || '0', 10);
+              const trapperomTypeMap: Record<number, { lav: string; hoy: string }> = {
+                1: { lav: "Tr 1", hoy: "Tr 3" },
+                2: { lav: "Tr 1", hoy: "Tr 3" },
+                3: { lav: "Tr 2", hoy: "Tr 3" },
+                4: { lav: "Tr 1", hoy: "Tr 3" },
+                5: { lav: "Tr 2", hoy: "Tr 3" },
+                6: { lav: "Tr 2", hoy: "Tr 3" },
+              };
+              const trType = rk >= 1 && rk <= 6 && floors > 0
+                ? (floors <= 8 ? trapperomTypeMap[rk].lav : trapperomTypeMap[rk].hoy)
+                : null;
+              const trapperomKravMap: Record<string, string> = {
+                tr_forbinder_brannceller: "Trapperom som forbinder ulike brannceller, må utføres som egen branncelle selv om trapperommet ikke er en del av en rømningsvei.",
+                tr_romningsvei_videre: "Dersom trapperommet ikke leder direkte til det fri eller sikkert sted, må rømningsveien videre utføres som trapperom med hensyn til omsluttende konstruksjoner, mellomliggende rom, dører mv.",
+                tr_mellomliggende_rom: "Mellomliggende rom må ha tilstrekkelig størrelse, og må kunne passeres ved å åpne bare én dør om gangen.",
+                tr1_dor_bruksenhet: "Trapperom Tr 1 kan ha dør direkte fra trapperom til bruksenhet, for eksempel leilighet eller kontor. Vegger må ha brannmotstand som angitt i tabell 1. Dører må ha brannmotstand som angitt i tabell 2, jf. figur 2.",
+                tr2_eget_rom: "Trapperom Tr 2 må ha et rom utført som egen branncelle mellom trapperommet og branncellen det skal rømmes fra. Vegger må ha brannmotstand som angitt i tabell 1. Dører må ha brannmotstand som angitt i tabell 2, jf. figur 3. Trapperom Tr 2 kan gå til kjeller når det er brannsluse mellom de øvrige branncellene i kjelleren og trapperommet.",
+                tr3_mellomliggende: "Trapperom Tr 3 må ha et mellomliggende rom utført som egen branncelle mellom trapperommet og bruksenheten det skal rømmes fra. Vegger må ha brannmotstand som angitt i tabell 1. Dører må ha brannmotstand som angitt i tabell 2, jf. figur 4. Trapperom Tr 3 kan ikke ha forbindelse til kjeller. Hensikten er å hindre at personer rømmer ned til kjelleren, og å hindre blokkering av trapperommet ved brann i kjeller.",
+                tr_roykspredning: "Det må treffes tiltak for å begrense eller hindre røykspredning til trapperom Tr 2 og Tr 3 i samsvar med preaksepterte ytelser under G. Røykkontroll.",
+              };
+              const activeKrav = formData.trapperomKrav
+                .map((id: string, idx: number) => ({ id, text: trapperomKravMap[id], num: idx + 1 }))
+                .filter((k: { text: string }) => k.text);
+              if (activeKrav.length === 0) return null;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Krav til trapperom{trType && ` (${trType})`}</td>
+                  <td className="border border-gray-400 p-2">
+                    <div className="space-y-1">
+                      {activeKrav.map((k: { id: string; text: string; num: number }) => (
+                        <div key={k.id}>{k.num}. {k.text}</div>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                </tr>
+              );
+            })()}
             {formData.branncellerKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>

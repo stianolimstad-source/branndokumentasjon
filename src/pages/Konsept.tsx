@@ -494,6 +494,7 @@ const Konsept = () => {
     dorPlasseringer: [] as string[],
     vinduskravRelevant: false,
     heissjaktkrav: [] as string[],
+    trapperomKrav: [] as string[],
     materialer: "",
     materialerKommentar: "",
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
@@ -2986,6 +2987,69 @@ const Konsept = () => {
                             </div>
                           ))}
                         </div>
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-2 block">Krav til trapperom</Label>
+                        {(() => {
+                          // Auto-determine trapperom type
+                          const rk = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
+                          const floors = parseInt(formData.etasjer || '0', 10);
+                          const trapperomTypeMap: Record<number, { lav: string; hoy: string }> = {
+                            1: { lav: "Tr 1", hoy: "Tr 3" },
+                            2: { lav: "Tr 1", hoy: "Tr 3" },
+                            3: { lav: "Tr 2", hoy: "Tr 3" },
+                            4: { lav: "Tr 1", hoy: "Tr 3" },
+                            5: { lav: "Tr 2", hoy: "Tr 3" },
+                            6: { lav: "Tr 2", hoy: "Tr 3" },
+                          };
+                          const trType = rk >= 1 && rk <= 6 && floors > 0
+                            ? (floors <= 8 ? trapperomTypeMap[rk].lav : trapperomTypeMap[rk].hoy)
+                            : null;
+                          
+                          const trapperomKravListe = [
+                            { id: "tr_forbinder_brannceller", label: "1. Trapperom som forbinder ulike brannceller, må utføres som egen branncelle selv om trapperommet ikke er en del av en rømningsvei." },
+                            { id: "tr_romningsvei_videre", label: "2. Dersom trapperommet ikke leder direkte til det fri eller sikkert sted, må rømningsveien videre utføres som trapperom med hensyn til omsluttende konstruksjoner, mellomliggende rom, dører mv." },
+                            { id: "tr_mellomliggende_rom", label: "3. Mellomliggende rom må ha tilstrekkelig størrelse, og må kunne passeres ved å åpne bare én dør om gangen." },
+                            { id: "tr1_dor_bruksenhet", label: "4. Trapperom Tr 1 kan ha dør direkte fra trapperom til bruksenhet, for eksempel leilighet eller kontor. Vegger må ha brannmotstand som angitt i tabell 1. Dører må ha brannmotstand som angitt i tabell 2, jf. figur 2." },
+                            { id: "tr2_eget_rom", label: "5. Trapperom Tr 2 må ha et rom utført som egen branncelle mellom trapperommet og branncellen det skal rømmes fra. Vegger må ha brannmotstand som angitt i tabell 1. Dører må ha brannmotstand som angitt i tabell 2, jf. figur 3. Trapperom Tr 2 kan gå til kjeller når det er brannsluse mellom de øvrige branncellene i kjelleren og trapperommet." },
+                            { id: "tr3_mellomliggende", label: "6. Trapperom Tr 3 må ha et mellomliggende rom utført som egen branncelle mellom trapperommet og bruksenheten det skal rømmes fra. Vegger må ha brannmotstand som angitt i tabell 1. Dører må ha brannmotstand som angitt i tabell 2, jf. figur 4. Trapperom Tr 3 kan ikke ha forbindelse til kjeller. Hensikten er å hindre at personer rømmer ned til kjelleren, og å hindre blokkering av trapperommet ved brann i kjeller." },
+                            { id: "tr_roykspredning", label: "7. Det må treffes tiltak for å begrense eller hindre røykspredning til trapperom Tr 2 og Tr 3 i samsvar med preaksepterte ytelser under G. Røykkontroll." },
+                          ];
+
+                          return (
+                            <>
+                              {trType ? (
+                                <div className="mb-2 p-2 bg-accent/50 rounded text-xs">
+                                  <span className="font-medium">Automatisk bestemt trapperomtype:</span>{" "}
+                                  <span className="font-bold">{trType}</span>
+                                  <span className="text-muted-foreground ml-1">(RK{rk}, {floors} etasje{floors > 1 ? "r" : ""})</span>
+                                </div>
+                              ) : (
+                                <div className="mb-2 p-2 bg-muted rounded text-xs text-muted-foreground">
+                                  Angi risikoklasse og antall etasjer for å bestemme trapperomtype.
+                                </div>
+                              )}
+                              <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                                {trapperomKravListe.map((krav) => (
+                                  <div key={krav.id} className="flex items-start space-x-2">
+                                    <Checkbox
+                                      id={`tr-${krav.id}`}
+                                      checked={formData.trapperomKrav.includes(krav.id)}
+                                      onCheckedChange={(checked) => {
+                                        if (checked) {
+                                          setFormData({...formData, trapperomKrav: [...formData.trapperomKrav, krav.id]});
+                                        } else {
+                                          setFormData({...formData, trapperomKrav: formData.trapperomKrav.filter((k: string) => k !== krav.id)});
+                                        }
+                                      }}
+                                    />
+                                    <label htmlFor={`tr-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                                  </div>
+                                ))}
+                              </div>
+                            </>
+                          );
+                        })()}
                       </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('brannceller-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
