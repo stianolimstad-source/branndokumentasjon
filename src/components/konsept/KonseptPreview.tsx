@@ -1,6 +1,7 @@
 import React from "react";
 import { branncelleTyperListe, getBrannklasse } from "@/lib/fire-concept-constants";
 import { getGarasjeKrav } from "@/lib/garasje-krav";
+import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
 
 interface KonseptPreviewProps {
   formData: Record<string, any>;
@@ -1230,6 +1231,27 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                   <td className="border border-gray-400 p-2 align-top">{items[0].ansvar}</td>
                 </tr>
               ));
+            })()}
+            {/* Brensellagring - automatisk genererte krav */}
+            {formData.brensellagringRelevant && formData.brenselType && formData.brenselMengde && (() => {
+              const result = getBrensellagringKrav(formData.brenselType as BrenselType, parseInt(formData.brenselMengde));
+              if (result.feilmelding || result.krav.length === 0) return null;
+              return (
+                <>
+                  <tr className="bg-blue-50">
+                    <td className="border border-gray-400 p-2 font-semibold" colSpan={3}>
+                      Rom for lagring av flytende brensel ({result.romType})
+                    </td>
+                  </tr>
+                  {result.krav.map((k, i) => (
+                    <tr key={`brensel-${i}`}>
+                      <td className="border border-gray-400 p-2 align-top">{k.kategori}</td>
+                      <td className="border border-gray-400 p-2">{k.tekst}</td>
+                      <td className="border border-gray-400 p-2 align-top">{k.ansvar}</td>
+                    </tr>
+                  ))}
+                </>
+              );
             })()}
             {formData.branncellerKommentar && (
               <tr>

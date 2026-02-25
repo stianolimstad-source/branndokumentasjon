@@ -1,6 +1,7 @@
 import { Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, ShadingType } from "docx";
 import { branncelleTyperListe, getBrannklasse } from "./fire-concept-constants";
 import { getGarasjeKrav } from "./garasje-krav";
+import { getBrensellagringKrav, BrenselType } from "./brensellagring-krav";
 
 const tableBorders = {
   top: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
@@ -591,6 +592,18 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
       rows.push(contentRowMultiLine(kategori, lines, items[0].ansvar));
     });
   }
+
+  // Brensellagring
+  if (formData.brensellagringRelevant && formData.brenselType && formData.brenselMengde) {
+    const result = getBrensellagringKrav(formData.brenselType as BrenselType, parseInt(formData.brenselMengde));
+    if (result.krav.length > 0) {
+      rows.push(subSectionHeaderRow(`Rom for lagring av flytende brensel (${result.romType})`));
+      result.krav.forEach((k) => {
+        rows.push(contentRow(k.kategori, k.tekst, k.ansvar));
+      });
+    }
+  }
+
 
   if (formData.branncellerKommentar) {
     rows.push(contentRow("Kommentar", formData.branncellerKommentar, "-"));
