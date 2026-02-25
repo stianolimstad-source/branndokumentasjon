@@ -1039,6 +1039,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 </tr>
               );
             })()}
+            {formData.interntrappBeskrivelse && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Interntrapp</td>
+                <td className="border border-gray-400 p-2 whitespace-pre-wrap">{formData.interntrappBeskrivelse}</td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
             {formData.branncellerKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>

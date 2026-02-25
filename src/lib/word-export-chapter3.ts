@@ -457,6 +457,11 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     }
   }
 
+  // Interntrapp
+  if (formData.interntrappBeskrivelse) {
+    rows.push(contentRow("Interntrapp", formData.interntrappBeskrivelse, "ARK"));
+  }
+
   if (formData.branncellerKommentar) {
     rows.push(contentRow("Kommentar", formData.branncellerKommentar, "-"));
   }
