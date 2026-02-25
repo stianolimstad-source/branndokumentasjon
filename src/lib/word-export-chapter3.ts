@@ -323,6 +323,47 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     const kravVerdi = branncelleKrav[formData.brannklasse] || "[Angis]";
     rows.push(contentRow("Branncellebegrensende bygningsdel - generelt", kravVerdi, "ARK/RIBr"));
     rows.push(contentRow("Bygningsdel som omslutter trapperom, heissjakt og installasjonssjakter over flere plan", kravVerdi, "ARK/RIBr"));
+
+    // Heismaskinrom
+    if (formData.heismaskinromRelevant === "ja") {
+      const heisKrav: Record<string, string> = {
+        "BKL1": "EI 60 [B 60]",
+        "BKL2": "EI 60 [B 60]",
+        "BKL3": "EI 60 A2-s1,d0 [A 60]",
+      };
+      rows.push(contentRow("Heismaskinrom", heisKrav[formData.brannklasse] || "[Angis]", "ARK/RIBr"));
+    }
+
+    // Fyrrom
+    if (formData.fyrromRelevant === "ja") {
+      const fyrromFast: Record<string, string> = {
+        "BKL1": "EI 60 [B 60]",
+        "BKL2": "EI 60 [B 60]",
+        "BKL3": "EI 60 A2-s1,d0 [A 60]",
+      };
+      const fyrromUnder50 = "K₂ 10 A2-s1,d0 [K1-A] – kun ytelse for kledning/overflate";
+      const fyrrom50_100: Record<string, string> = {
+        "BKL1": "EI 30 [B 30]",
+        "BKL2": "EI 60 [B 60]",
+        "BKL3": "EI 60 A2-s1,d0 [A 60]",
+      };
+      const fyrromOver100 = "EI 60 A2-s1,d0 [A 60]";
+
+      if (formData.fyrromKw === "fast") {
+        rows.push(contentRow("Fyrrom for sentralvarmeanlegg eller varmluftsaggregat for fast brensel", fyrromFast[formData.brannklasse] || "[Angis]", "ARK/RIBr"));
+      } else if (formData.fyrromKw === "under50") {
+        rows.push(contentRow("Fyrrom – flytende/gassformig brensel, P < 50 kW", fyrromUnder50, "ARK/RIBr"));
+      } else if (formData.fyrromKw === "50-100") {
+        rows.push(contentRow("Fyrrom – flytende/gassformig brensel, 50 kW ≤ P ≤ 100 kW", fyrrom50_100[formData.brannklasse] || "[Angis]", "ARK/RIBr"));
+      } else if (formData.fyrromKw === "over100") {
+        rows.push(contentRow("Fyrrom – flytende/gassformig brensel, P > 100 kW", fyrromOver100, "ARK/RIBr"));
+      } else if (formData.fyrromKw === "ukjent") {
+        rows.push(contentRow("Fyrrom for sentralvarmeanlegg eller varmluftsaggregat for fast brensel", fyrromFast[formData.brannklasse] || "[Angis]", "ARK/RIBr"));
+        rows.push(contentRow("Fyrrom – flytende/gassformig brensel, P < 50 kW", "K₂ 10 A2-s1,d0 [K1-A]", "ARK/RIBr"));
+        rows.push(contentRow("Fyrrom – flytende/gassformig brensel, 50 kW ≤ P ≤ 100 kW", fyrrom50_100[formData.brannklasse] || "[Angis]", "ARK/RIBr"));
+        rows.push(contentRow("Fyrrom – flytende/gassformig brensel, P > 100 kW", fyrromOver100, "ARK/RIBr"));
+      }
+    }
   }
 
   if (branncelleTyper.length > 0) {
