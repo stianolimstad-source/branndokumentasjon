@@ -376,7 +376,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     rows.push(contentRowMultiLine("Følgende rom/lokaler skal være egne brannceller", typeLabels, "ARK/RIBr"));
   }
 
-  // Dører i branncellebegrensende konstruksjoner
+  // Dørkrav
   if (formData.dorPlasseringer && formData.dorPlasseringer.length > 0 && formData.brannklasse) {
     const isBKL1 = formData.brannklasse === "BKL1";
     const dorKravMap: Record<string, { label: string; bkl1: string; bkl23: string }> = {
@@ -392,11 +392,13 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
       .filter(Boolean)
       .filter((d: { bkl1: string; bkl23: string }) => isBKL1 ? d.bkl1 : d.bkl23);
     if (activeDoors.length > 0) {
-      rows.push(subSectionHeaderRow("Dører i branncellebegrensende konstruksjoner"));
-      activeDoors.forEach((d: { label: string; bkl1: string; bkl23: string }) => {
-        const krav = isBKL1 ? d.bkl1 : d.bkl23;
-        if (krav) rows.push(contentRow(d.label, krav, "ARK"));
-      });
+      const lines = activeDoors
+        .map((d: { label: string; bkl1: string; bkl23: string }) => {
+          const krav = isBKL1 ? d.bkl1 : d.bkl23;
+          return krav ? `${d.label}: ${krav}` : null;
+        })
+        .filter(Boolean) as string[];
+      rows.push(contentRowMultiLine("Dørkrav", lines, "ARK"));
     }
   }
 
