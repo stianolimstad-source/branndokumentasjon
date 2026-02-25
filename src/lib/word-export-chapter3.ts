@@ -592,6 +592,22 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     }
   }
 
+  // Garasje i byggverk for annet formål
+  if (formData.garasjeByggverkRelevant && formData.garasjeByggverkKrav && formData.garasjeByggverkKrav.length > 0) {
+    const gbKravMap: Record<string, string> = {
+      gb_50m2_samme: "Garasje med bruttoareal til og med 50 m² i samme bruksenhet, for eksempel garasje i enebolig, må være skilt fra resten av byggverket med bygningsdeler som er så tette at eksos ikke trenger gjennom. En yttervegg med utvendig vindsperre og innvendig dampsperre gir tilstrekkelig tetthet mot en godt ventilert garasje.",
+      gb_50m2_annen: "Andre garasjer med bruttoareal til og med 50 m² må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 30 [B 30].",
+      gb_50_400m2: "Garasje med bruttoareal over 50 m² til og med 400 m², må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 60 [B 60].",
+      gb_over_400m2: "Garasjer med større bruttoareal enn 400 m² må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 90 A2-s1,d0 [A 90].",
+    };
+    const lines = formData.garasjeByggverkKrav
+      .map((id: string, idx: number) => gbKravMap[id] ? `${idx + 1}. ${gbKravMap[id]}` : null)
+      .filter(Boolean) as string[];
+    if (lines.length > 0) {
+      rows.push(contentRowMultiLine("Garasje i byggverk", lines, "ARK"));
+    }
+  }
+
   // Rom som forbinder garasje
   if (formData.mellomromRelevant && formData.mellomromKrav && formData.mellomromKrav.length > 0) {
     const mrKravMap: Record<string, string> = {
