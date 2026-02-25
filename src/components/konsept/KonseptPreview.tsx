@@ -1,5 +1,6 @@
 import React from "react";
 import { branncelleTyperListe, getBrannklasse } from "@/lib/fire-concept-constants";
+import { getGarasjeKrav } from "@/lib/garasje-krav";
 
 interface KonseptPreviewProps {
   formData: Record<string, any>;
@@ -1206,112 +1207,29 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 </tr>
               );
             })()}
-            {/* Garasje */}
-            {formData.garasjeRelevant && (() => {
-              const gaKravMap: Record<string, string> = {
-                ga_50m2_samme: "Garasje med bruttoareal til og med 50 m² kan bygges uten brannskille mot annet byggverk i samme bruksenhet, for eksempel inntil en enebolig.",
-                ga_50m2_annen: "Garasje med bruttoareal til og med 50 m² må ha avstand minimum 2,0 meter til byggverk i annen bruksenhet, eller byggverkene må være skilt med bygningsdeler med brannmotstand minst EI 30 [B 30], jf. § 11-6 annet ledd.",
-                ga_50_400m2: "Garasje med bruttoareal over 50 m² til og med 400 m² må ha avstand minimum 8 meter til andre byggverk eller byggverkene må være skilt med bygningsdeler med brannmotstand minst EI 60 [B 60].",
-                ga_over_400m2: "Garasjer med større bruttoareal enn 400 m² må ha avstand minimum 8 meter til andre byggverk eller byggverkene må være skilt med bygningsdeler med brannmotstand minst EI 90 A2-s1,d0 [A 90].",
-              };
-              const activeKrav = (formData.garasjeKrav || [])
-                .map((id: string, idx: number) => ({ id, text: gaKravMap[id], num: idx + 1 }))
-                .filter((k: { text: string }) => k.text);
-              if (activeKrav.length === 0) return null;
-              return (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Brannskille garasje</td>
+            {/* Garasje - automatisk genererte krav */}
+            {formData.garasjeRelevant && formData.garasjePlassering && formData.garasjeAreal && 
+             (formData.garasjeAreal !== "under_50" || formData.garasjeBruksenhet) && (() => {
+              const krav = getGarasjeKrav(formData.garasjePlassering, formData.garasjeAreal, formData.garasjeBruksenhet);
+              // Group by kategori
+              const grouped: Record<string, { tekst: string; ansvar: string }[]> = {};
+              krav.forEach(k => {
+                if (!grouped[k.kategori]) grouped[k.kategori] = [];
+                grouped[k.kategori].push({ tekst: k.tekst, ansvar: k.ansvar });
+              });
+              return Object.entries(grouped).map(([kategori, items]) => (
+                <tr key={kategori}>
+                  <td className="border border-gray-400 p-2 align-top">{kategori}</td>
                   <td className="border border-gray-400 p-2">
                     <div className="space-y-1">
-                      {activeKrav.map((k: { id: string; text: string; num: number }) => (
-                        <div key={k.id}>{k.num}. {k.text}</div>
+                      {items.map((item, i) => (
+                        <div key={i}>{items.length > 1 ? `${i + 1}. ` : ""}{item.tekst}</div>
                       ))}
                     </div>
                   </td>
-                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  <td className="border border-gray-400 p-2 align-top">{items[0].ansvar}</td>
                 </tr>
-              );
-            })()}
-            {/* Garasje i byggverk for annet formål */}
-            {formData.garasjeByggverkRelevant && (() => {
-              const gbKravMap: Record<string, string> = {
-                gb_50m2_samme: "Garasje med bruttoareal til og med 50 m² i samme bruksenhet, for eksempel garasje i enebolig, må være skilt fra resten av byggverket med bygningsdeler som er så tette at eksos ikke trenger gjennom. En yttervegg med utvendig vindsperre og innvendig dampsperre gir tilstrekkelig tetthet mot en godt ventilert garasje.",
-                gb_50m2_annen: "Andre garasjer med bruttoareal til og med 50 m² må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 30 [B 30].",
-                gb_50_400m2: "Garasje med bruttoareal over 50 m² til og med 400 m², må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 60 [B 60].",
-                gb_over_400m2: "Garasjer med større bruttoareal enn 400 m² må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 90 A2-s1,d0 [A 90].",
-              };
-              const activeKrav = (formData.garasjeByggverkKrav || [])
-                .map((id: string, idx: number) => ({ id, text: gbKravMap[id], num: idx + 1 }))
-                .filter((k: { text: string }) => k.text);
-              if (activeKrav.length === 0) return null;
-              return (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Garasje i byggverk</td>
-                  <td className="border border-gray-400 p-2">
-                    <div className="space-y-1">
-                      {activeKrav.map((k: { id: string; text: string; num: number }) => (
-                        <div key={k.id}>{k.num}. {k.text}</div>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                </tr>
-              );
-            })()}
-            {/* Rom som forbinder garasje */}
-            {formData.mellomromRelevant && (() => {
-              const mrKravMap: Record<string, string> = {
-                mr_eksos_royk: "For å hindre spredning av eksos og røyk må det være et mellomliggende rom mellom garasje og rømningsvei, og mellom garasje og oppholdsrom (boligrom, husdyrrom og lignende).",
-                mr_servicerom: "Når det tas betryggende forholdsregler mot spredning av brann og inntrengning av gasser til tilliggende rom, er det ikke nødvendig med mellomliggende rom mellom garasje og tilknyttede servicerom, garasje for utrykningskjøretøy eller lastehall som undertiden benyttes om garasje.",
-                mr_50m2_vaskerom: "I bolig med garasje med bruttoareal mindre enn 50 m² kan mellomliggende rom være vaskerom, bod og lignende.",
-                mr_50_400m2_branncelle: "For garasje med bruttoareal over 50 m² til og med 400 m² må mellomliggende rom utføres som egen branncelle.",
-                mr_over_400m2_brannsluse: "For garasje over 400 m² må mellomliggende rom utføres som brannsluse.",
-                mr_ventilasjon: "Mellomliggende rom eller garasje må være ventilert slik at brann- og røykgasser fra garasjen ikke kommer inn i andre rom i byggverket.",
-              };
-              const activeKrav = (formData.mellomromKrav || [])
-                .map((id: string, idx: number) => ({ id, text: mrKravMap[id], num: idx + 1 }))
-                .filter((k: { text: string }) => k.text);
-              if (activeKrav.length === 0) return null;
-              return (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Rom som forbinder garasje</td>
-                  <td className="border border-gray-400 p-2">
-                    <div className="space-y-1">
-                      {activeKrav.map((k: { id: string; text: string; num: number }) => (
-                        <div key={k.id}>{k.num}. {k.text}</div>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">ARK / RIV</td>
-                </tr>
-              );
-            })()}
-            {/* Brannsluse */}
-            {formData.brannsluseRelevant && (() => {
-              const bsKravMap: Record<string, string> = {
-                bs_forbindelse: "Rom som utgjør forbindelse mellom brannceller hvor det stilles særskilt strenge krav til sikkerhet mot spredning av brann, må utføres som brannsluse.",
-                bs_skilt: "Brannslusen skal være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 60 A2-s1,d0 [A 60].",
-                bs_dorer: "Dører til brannslusen må ha brannmotstand EI₂ 60-CSₐ [B 60 S].",
-                bs_storrelse: "Brannslusen skal ha tilstrekkelig størrelse og være slik utført at den kan passeres uten at mer enn en dør eller luke må åpnes av gangen.",
-                bs_ventilasjon: "Ventilasjon av brannsluser skal ikke foregå gjennom åpninger til de rommene som betjenes av slusen.",
-              };
-              const activeKrav = (formData.brannsluseKrav || [])
-                .map((id: string, idx: number) => ({ id, text: bsKravMap[id], num: idx + 1 }))
-                .filter((k: { text: string }) => k.text);
-              if (activeKrav.length === 0) return null;
-              return (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Brannsluse</td>
-                  <td className="border border-gray-400 p-2">
-                    <div className="space-y-1">
-                      {activeKrav.map((k: { id: string; text: string; num: number }) => (
-                        <div key={k.id}>{k.num}. {k.text}</div>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">ARK / RIBr</td>
-                </tr>
-              );
+              ));
             })()}
             {formData.branncellerKommentar && (
               <tr>
