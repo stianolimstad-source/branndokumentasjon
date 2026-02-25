@@ -588,41 +588,33 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               <td className="border border-gray-400 p-2 align-top">-</td>
             </tr>
             {parseFloat(formData.bygningshoyde) > 9 && parseFloat(formData.avstandNabobygg || "0") < 8 ? (
-              <>
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Krav til brannvegg</td>
-                  <td className="border border-gray-400 p-2">
-                    Brannvegg (bygning over 9 meter, avstand til nabobygg under 8 meter)
-                    {formData.spesifikkBrannenergi && (
-                      <div className="mt-2">
-                        <p className="font-semibold">Brannmotstand basert på spesifikk brannenergi:</p>
-                        <p className="mt-1">
-                          {formData.spesifikkBrannenergi === "inntil400" && "Inntil 400 MJ/m² → REI 120-M A2-s1,d0 [A 120]"}
-                          {formData.spesifikkBrannenergi === "400-600" && "400-600 MJ/m² → REI 180-M A2-s1,d0 [A 180]"}
-                          {formData.spesifikkBrannenergi === "600-800" && "600-800 MJ/m² → REI 240-M A2-s1,d0 [A 240]"}
-                        </p>
-                      </div>
-                    )}
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">RIB</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Preaksepterte ytelser</td>
-                  <td className="border border-gray-400 p-2">
-                    <ol className="list-decimal list-inside space-y-1">
-                      <li>Takkonstruksjonen må ikke være kontinuerlig over brannveggen.</li>
-                      <li>Konstruksjoner inntil brannveggen må kunne bevege seg fritt ved temperaturendringer.</li>
-                      <li>Brannveggens avslutning mot tak og fasade må hindre brannspredning.</li>
-                      <li>Brannveggen må ha brannmotstand minst som angitt i tabell 1.</li>
-                      <li>Brannveggen må bestå av materialer i klasse A2-s1,d0 [ubrennbare].</li>
-                      <li>Uten dokumentert mekanisk motstandsevne (M): tunge materialer som mur/betong.</li>
-                      <li>Brannveggen må føres min. 0,5 m over høyeste tilstøtende tak.</li>
-                      <li>Brannveggen må bli stående selv om byggverket på én side raser sammen.</li>
-                    </ol>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">RIB</td>
-                </tr>
-              </>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Krav til brannvegg</td>
+                <td className="border border-gray-400 p-2">
+                  <p>Brannvegg (bygning over 9 meter, avstand til nabobygg under 8 meter).</p>
+                  {formData.spesifikkBrannenergi && (
+                    <div className="mt-2">
+                      <p className="font-semibold">Brannmotstand basert på spesifikk brannenergi:</p>
+                      <p className="mt-1">
+                        {formData.spesifikkBrannenergi === "inntil400" && "Inntil 400 MJ/m² → REI 120-M A2-s1,d0 [A 120]"}
+                        {formData.spesifikkBrannenergi === "400-600" && "400-600 MJ/m² → REI 180-M A2-s1,d0 [A 180]"}
+                        {formData.spesifikkBrannenergi === "600-800" && "600-800 MJ/m² → REI 240-M A2-s1,d0 [A 240]"}
+                      </p>
+                    </div>
+                  )}
+                  <ol className="list-decimal list-inside space-y-1 mt-2">
+                    <li>Takkonstruksjonen må ikke være kontinuerlig over brannveggen.</li>
+                    <li>Konstruksjoner inntil brannveggen må kunne bevege seg fritt ved temperaturendringer.</li>
+                    <li>Brannveggens avslutning mot tak og fasade må hindre brannspredning.</li>
+                    <li>Brannveggen må ha brannmotstand minst som angitt i tabell 1.</li>
+                    <li>Brannveggen må bestå av materialer i klasse A2-s1,d0 [ubrennbare].</li>
+                    <li>Uten dokumentert mekanisk motstandsevne (M): tunge materialer som mur/betong.</li>
+                    <li>Brannveggen må føres min. 0,5 m over høyeste tilstøtende tak.</li>
+                    <li>Brannveggen må bli stående selv om byggverket på én side raser sammen.</li>
+                  </ol>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIB</td>
+              </tr>
             ) : (parseFloat(formData.bygningshoyde) > 9 && parseFloat(formData.avstandNabobygg || "0") >= 8) ? (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Krav til skillevegg</td>
