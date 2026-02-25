@@ -529,6 +529,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
             <tr>
+              <td className="border border-gray-400 p-2 align-top">Generelt</td>
+              <td className="border border-gray-400 p-2">
+                Byggverk der den forutsatte bruken kan medføre fare for eksplosjon, skal prosjekteres og utføres med avlastningsflater slik at personsikkerheten og bæreevnen opprettholdes på et tilfredsstillende nivå.
+              </td>
+              <td className="border border-gray-400 p-2 align-top">RIBr</td>
+            </tr>
+            <tr>
               <td className="border border-gray-400 p-2 align-top">Eksplosjonsfare</td>
               <td className="border border-gray-400 p-2">
                 {formData.eksplosjonRelevant === "ikke_relevant" ? (
