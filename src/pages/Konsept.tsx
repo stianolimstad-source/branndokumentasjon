@@ -3401,7 +3401,7 @@ const Konsept = () => {
                                 setFormData({...formData, garasjeRelevant: !!checked, garasjeKrav: !!checked ? formData.garasjeKrav : []})
                               }
                             />
-                            <label htmlFor="garasjeRelevant" className="text-xs cursor-pointer font-medium">Garasje i tiltaket er relevant</label>
+                            <label htmlFor="garasjeRelevant" className="text-xs cursor-pointer font-medium"><label htmlFor="garasjeRelevant" className="text-xs cursor-pointer font-medium">Brannskille mellom garasje og annet byggverk er relevant</label></label>
                           </div>
                           {formData.garasjeRelevant && (
                             <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
