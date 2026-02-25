@@ -501,8 +501,9 @@ const Konsept = () => {
     vertikalBrannspredningKrav: [] as string[],
     vinduBrannspredningRelevant: false,
     vinduBrannspredningKrav: [] as string[],
-    horisontaltPlassering: "" as "" | "parallelle" | "hjorne",
-    horisontaltAvstand: "",
+    horisontaltPlasseringer: [] as string[],
+    horisontaltAvstandParallelle: "",
+    horisontaltAvstandHjorne: "",
     materialer: "",
     materialerKommentar: "",
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
@@ -3192,75 +3193,96 @@ const Konsept = () => {
 
                               <div className="border-t pt-2 mt-2 space-y-2">
                                 <Label className="text-xs font-medium">Innbyrdes plassering av vinduer</Label>
-                                <div className="flex gap-4">
-                                  <div className="flex items-center gap-1.5">
-                                    <input
-                                      type="radio"
-                                      id="plassering-parallelle"
-                                      name="horisontaltPlassering"
-                                      value="parallelle"
-                                      checked={formData.horisontaltPlassering === "parallelle"}
-                                      onChange={() => setFormData({...formData, horisontaltPlassering: "parallelle"})}
-                                      className="h-3.5 w-3.5"
-                                    />
-                                    <label htmlFor="plassering-parallelle" className="text-xs cursor-pointer">Motstående parallelle yttervegger</label>
+                                <div className="space-y-3">
+                                  {/* Parallelle yttervegger */}
+                                  <div className="space-y-1">
+                                    <div className="flex items-center gap-1.5">
+                                      <Checkbox
+                                        id="plassering-parallelle"
+                                        checked={formData.horisontaltPlasseringer.includes("parallelle")}
+                                        onCheckedChange={(checked) => {
+                                          const arr = checked
+                                            ? [...formData.horisontaltPlasseringer, "parallelle"]
+                                            : formData.horisontaltPlasseringer.filter((p: string) => p !== "parallelle");
+                                          setFormData({...formData, horisontaltPlasseringer: arr, horisontaltAvstandParallelle: checked ? formData.horisontaltAvstandParallelle : ""});
+                                        }}
+                                      />
+                                      <label htmlFor="plassering-parallelle" className="text-xs cursor-pointer font-medium">Motstående parallelle yttervegger</label>
+                                    </div>
+                                    {formData.horisontaltPlasseringer.includes("parallelle") && (
+                                      <div className="pl-6 space-y-1">
+                                        <Label className="text-xs">Avstand L (meter)</Label>
+                                        <Input
+                                          type="number" step="0.1" min="0" placeholder="f.eks. 3.5"
+                                          value={formData.horisontaltAvstandParallelle}
+                                          onChange={(e) => setFormData({...formData, horisontaltAvstandParallelle: e.target.value})}
+                                          className="h-7 text-xs w-32"
+                                        />
+                                        {(() => {
+                                          const avstand = parseFloat(formData.horisontaltAvstandParallelle);
+                                          if (isNaN(avstand)) return null;
+                                          const bklNum = formData.harFlereRisikoklasser
+                                            ? (() => { const nums = (formData.bygningsdeler || []).map((d: any) => parseInt((d.brannklasse || "").replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n)); return nums.length > 0 ? Math.max(...nums) : 0; })()
+                                            : parseInt((formData.brannklasse || "").replace(/\D/g, ''), 10) || 0;
+                                          const erBKL1 = bklNum === 1;
+                                          let krav = "";
+                                          if (avstand < 3.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
+                                          else if (avstand < 6.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
+                                          else krav = "Uspesifisert";
+                                          return (
+                                            <div className="bg-accent/50 rounded p-2 text-xs mt-1">
+                                              <span className="font-medium">Krav:</span> L = {formData.horisontaltAvstandParallelle} m → <span className="font-semibold">{krav}</span>
+                                            </div>
+                                          );
+                                        })()}
+                                      </div>
+                                    )}
                                   </div>
-                                  <div className="flex items-center gap-1.5">
-                                    <input
-                                      type="radio"
-                                      id="plassering-hjorne"
-                                      name="horisontaltPlassering"
-                                      value="hjorne"
-                                      checked={formData.horisontaltPlassering === "hjorne"}
-                                      onChange={() => setFormData({...formData, horisontaltPlassering: "hjorne"})}
-                                      className="h-3.5 w-3.5"
-                                    />
-                                    <label htmlFor="plassering-hjorne" className="text-xs cursor-pointer">Vinduer i innvendige hjørner</label>
+                                  {/* Innvendige hjørner */}
+                                  <div className="space-y-1">
+                                    <div className="flex items-center gap-1.5">
+                                      <Checkbox
+                                        id="plassering-hjorne"
+                                        checked={formData.horisontaltPlasseringer.includes("hjorne")}
+                                        onCheckedChange={(checked) => {
+                                          const arr = checked
+                                            ? [...formData.horisontaltPlasseringer, "hjorne"]
+                                            : formData.horisontaltPlasseringer.filter((p: string) => p !== "hjorne");
+                                          setFormData({...formData, horisontaltPlasseringer: arr, horisontaltAvstandHjorne: checked ? formData.horisontaltAvstandHjorne : ""});
+                                        }}
+                                      />
+                                      <label htmlFor="plassering-hjorne" className="text-xs cursor-pointer font-medium">Vinduer i innvendige hjørner</label>
+                                    </div>
+                                    {formData.horisontaltPlasseringer.includes("hjorne") && (
+                                      <div className="pl-6 space-y-1">
+                                        <Label className="text-xs">Avstand L (meter)</Label>
+                                        <Input
+                                          type="number" step="0.1" min="0" placeholder="f.eks. 2.5"
+                                          value={formData.horisontaltAvstandHjorne}
+                                          onChange={(e) => setFormData({...formData, horisontaltAvstandHjorne: e.target.value})}
+                                          className="h-7 text-xs w-32"
+                                        />
+                                        {(() => {
+                                          const avstand = parseFloat(formData.horisontaltAvstandHjorne);
+                                          if (isNaN(avstand)) return null;
+                                          const bklNum = formData.harFlereRisikoklasser
+                                            ? (() => { const nums = (formData.bygningsdeler || []).map((d: any) => parseInt((d.brannklasse || "").replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n)); return nums.length > 0 ? Math.max(...nums) : 0; })()
+                                            : parseInt((formData.brannklasse || "").replace(/\D/g, ''), 10) || 0;
+                                          const erBKL1 = bklNum === 1;
+                                          let krav = "";
+                                          if (avstand < 2.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
+                                          else if (avstand < 4.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
+                                          else krav = "Uspesifisert";
+                                          return (
+                                            <div className="bg-accent/50 rounded p-2 text-xs mt-1">
+                                              <span className="font-medium">Krav:</span> L = {formData.horisontaltAvstandHjorne} m → <span className="font-semibold">{krav}</span>
+                                            </div>
+                                          );
+                                        })()}
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
-                                {formData.horisontaltPlassering && (
-                                  <div className="space-y-1">
-                                    <Label className="text-xs font-medium">Avstand L mellom vinduer [glassflater] (meter)</Label>
-                                    <Input
-                                      type="number"
-                                      step="0.1"
-                                      min="0"
-                                      placeholder="f.eks. 3.5"
-                                      value={formData.horisontaltAvstand}
-                                      onChange={(e) => setFormData({...formData, horisontaltAvstand: e.target.value})}
-                                      className="h-7 text-xs w-32"
-                                    />
-                                    {(() => {
-                                      const avstand = parseFloat(formData.horisontaltAvstand);
-                                      if (isNaN(avstand) || !formData.horisontaltPlassering) return null;
-                                      const bklStr = formData.harFlereRisikoklasser
-                                        ? (() => {
-                                            const klasser = formData.bygningsdeler?.map((d: any) => d.brannklasse).filter(Boolean) || [];
-                                            const nums = klasser.map((b: string) => parseInt(b.replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n));
-                                            return nums.length > 0 ? Math.max(...nums) : 0;
-                                          })()
-                                        : parseInt((formData.brannklasse || "").replace(/\D/g, ''), 10) || 0;
-                                      const erBKL1 = bklStr === 1;
-                                      let krav = "";
-                                      if (formData.horisontaltPlassering === "parallelle") {
-                                        if (avstand < 3.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
-                                        else if (avstand < 6.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
-                                        else krav = "Uspesifisert";
-                                      } else {
-                                        if (avstand < 2.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
-                                        else if (avstand < 4.0) krav = erBKL1 ? "Ett vindu E 30 [F 30] eller begge EI 15" : "Ett vindu E 60 [F 60] eller begge E 30 [F 30]";
-                                        else krav = "Uspesifisert";
-                                      }
-                                      const plasseringTekst = formData.horisontaltPlassering === "parallelle" 
-                                        ? "motstående parallelle yttervegger" : "vinduer i innvendige hjørner";
-                                      return (
-                                        <div className="bg-accent/50 rounded p-2 text-xs mt-1">
-                                          <span className="font-medium">Krav (VTEK tabell 3):</span> {plasseringTekst}, L = {formData.horisontaltAvstand} m → <span className="font-semibold">{krav}</span>
-                                        </div>
-                                      );
-                                    })()}
-                                  </div>
-                                )}
                               </div>
                             </div>
                           )}
