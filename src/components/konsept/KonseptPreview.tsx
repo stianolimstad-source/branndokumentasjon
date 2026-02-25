@@ -950,13 +950,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Dørkrav</td>
                   <td className="border border-gray-400 p-2">
-                    <ul className="list-disc pl-4 space-y-1">
+                    <div className="space-y-1">
                       {activeDoors.map((d: { label: string; bkl1: string; bkl23: string }, idx: number) => {
                         const krav = isBKL1 ? d.bkl1 : d.bkl23;
                         if (!krav) return null;
-                        return <li key={idx}>{d.label}: <span className="font-semibold">{krav}</span></li>;
+                        return <div key={idx}>{d.label}: <span className="font-semibold">{krav}</span></div>;
                       })}
-                    </ul>
+                    </div>
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
