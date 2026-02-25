@@ -1260,6 +1260,33 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 </tr>
               );
             })()}
+            {/* Brannsluse */}
+            {formData.brannsluseRelevant && (() => {
+              const bsKravMap: Record<string, string> = {
+                bs_forbindelse: "Rom som utgjør forbindelse mellom brannceller hvor det stilles særskilt strenge krav til sikkerhet mot spredning av brann, må utføres som brannsluse.",
+                bs_skilt: "Brannslusen skal være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 60 A2-s1,d0 [A 60].",
+                bs_dorer: "Dører til brannslusen må ha brannmotstand EI₂ 60-CSₐ [B 60 S].",
+                bs_storrelse: "Brannslusen skal ha tilstrekkelig størrelse og være slik utført at den kan passeres uten at mer enn en dør eller luke må åpnes av gangen.",
+                bs_ventilasjon: "Ventilasjon av brannsluser skal ikke foregå gjennom åpninger til de rommene som betjenes av slusen.",
+              };
+              const activeKrav = (formData.brannsluseKrav || [])
+                .map((id: string, idx: number) => ({ id, text: bsKravMap[id], num: idx + 1 }))
+                .filter((k: { text: string }) => k.text);
+              if (activeKrav.length === 0) return null;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Brannsluse</td>
+                  <td className="border border-gray-400 p-2">
+                    <div className="space-y-1">
+                      {activeKrav.map((k: { id: string; text: string; num: number }) => (
+                        <div key={k.id}>{k.num}. {k.text}</div>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK / RIBr</td>
+                </tr>
+              );
+            })()}
             {formData.branncellerKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
