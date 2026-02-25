@@ -817,6 +817,105 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 </tr>
               </>
             )}
+            {formData.heismaskinromRelevant === "ja" && formData.brannklasse && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Heismaskinrom</td>
+                <td className="border border-gray-400 p-2 font-semibold">
+                  {formData.brannklasse === "BKL1" && "EI 60 [B 60]"}
+                  {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
+                  {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+              </tr>
+            )}
+            {formData.fyrromRelevant === "ja" && formData.brannklasse && (
+              <>
+                {formData.fyrromKw === "fast" && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Fyrrom for sentralvarmeanlegg eller varmluftsaggregat for fast brensel</td>
+                    <td className="border border-gray-400 p-2 font-semibold">
+                      {formData.brannklasse === "BKL1" && "EI 60 [B 60]"}
+                      {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
+                      {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                )}
+                {formData.fyrromKw === "under50" && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, P &lt; 50 kW</td>
+                    <td className="border border-gray-400 p-2 font-semibold">
+                      {formData.brannklasse === "BKL1" && "K₂ 10 A2-s1,d0 [K1-A] – kun ytelse for kledning/overflate"}
+                      {formData.brannklasse === "BKL2" && "K₂ 10 A2-s1,d0 [K1-A] – kun ytelse for kledning/overflate"}
+                      {formData.brannklasse === "BKL3" && "K₂ 10 A2-s1,d0 [K1-A] – kun ytelse for kledning/overflate"}
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                )}
+                {formData.fyrromKw === "50-100" && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, 50 kW ≤ P ≤ 100 kW</td>
+                    <td className="border border-gray-400 p-2 font-semibold">
+                      {formData.brannklasse === "BKL1" && "EI 30 [B 30]"}
+                      {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
+                      {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                )}
+                {formData.fyrromKw === "over100" && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, P &gt; 100 kW</td>
+                    <td className="border border-gray-400 p-2 font-semibold">
+                      {formData.brannklasse === "BKL1" && "EI 60 A2-s1,d0 [A 60]"}
+                      {formData.brannklasse === "BKL2" && "EI 60 A2-s1,d0 [A 60]"}
+                      {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                )}
+                {formData.fyrromKw === "ukjent" && (
+                  <>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Fyrrom for sentralvarmeanlegg eller varmluftsaggregat for fast brensel</td>
+                      <td className="border border-gray-400 p-2 font-semibold">
+                        {formData.brannklasse === "BKL1" && "EI 60 [B 60]"}
+                        {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
+                        {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, P &lt; 50 kW</td>
+                      <td className="border border-gray-400 p-2 font-semibold">
+                        {formData.brannklasse === "BKL1" && "K₂ 10 A2-s1,d0 [K1-A]"}
+                        {formData.brannklasse === "BKL2" && "K₂ 10 A2-s1,d0 [K1-A]"}
+                        {formData.brannklasse === "BKL3" && "K₂ 10 A2-s1,d0 [K1-A]"}
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, 50 kW ≤ P ≤ 100 kW</td>
+                      <td className="border border-gray-400 p-2 font-semibold">
+                        {formData.brannklasse === "BKL1" && "EI 30 [B 30]"}
+                        {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
+                        {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, P &gt; 100 kW</td>
+                      <td className="border border-gray-400 p-2 font-semibold">
+                        {formData.brannklasse === "BKL1" && "EI 60 A2-s1,d0 [A 60]"}
+                        {formData.brannklasse === "BKL2" && "EI 60 A2-s1,d0 [A 60]"}
+                        {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                    </tr>
+                  </>
+                )}
+              </>
+            )}
             {branncelleTyper.length > 0 && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Følgende rom/lokaler skal være egne brannceller</td>
