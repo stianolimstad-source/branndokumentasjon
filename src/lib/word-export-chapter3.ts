@@ -403,7 +403,9 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   }
 
   // Vinduskrav
-  rows.push(contentRow("Vinduskrav", "Vindu med brannmotstand må ikke kunne åpnes i vanlig brukstilstand.", "ARK"));
+  if (formData.vinduskravRelevant) {
+    rows.push(contentRow("Vinduskrav", "Vindu med brannmotstand må ikke kunne åpnes i vanlig brukstilstand.", "ARK"));
+  }
 
   if (formData.branncellerKommentar) {
     rows.push(contentRow("Kommentar", formData.branncellerKommentar, "-"));

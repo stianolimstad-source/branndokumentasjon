@@ -492,6 +492,7 @@ const Konsept = () => {
     heismaskinromRelevant: "ja" as "ja" | "nei",
     branncelleTyper: [] as string[],
     dorPlasseringer: [] as string[],
+    vinduskravRelevant: false,
     materialer: "",
     materialerKommentar: "",
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
@@ -2944,7 +2945,17 @@ const Konsept = () => {
                             </div>
                           ))}
                         </div>
-                      </div>
+                        </div>
+                        <div className="flex items-center space-x-2 p-2 bg-muted rounded">
+                          <Checkbox 
+                            id="vinduskravRelevant"
+                            checked={formData.vinduskravRelevant}
+                            onCheckedChange={(checked) => setFormData({...formData, vinduskravRelevant: checked as boolean})}
+                          />
+                          <Label htmlFor="vinduskravRelevant" className="text-sm cursor-pointer">
+                            Vindu med brannmotstand er relevant
+                          </Label>
+                        </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('brannceller-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="brannceller-kommentar" className={formData.branncellerKommentar ? "" : "hidden"}>

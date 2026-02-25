@@ -963,11 +963,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               );
             })()}
             {/* Vinduskrav */}
-            <tr>
-              <td className="border border-gray-400 p-2 align-top">Vinduskrav</td>
-              <td className="border border-gray-400 p-2">Vindu med brannmotstand må ikke kunne åpnes i vanlig brukstilstand.</td>
-              <td className="border border-gray-400 p-2 align-top">ARK</td>
-            </tr>
+            {formData.vinduskravRelevant && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Vinduskrav</td>
+                <td className="border border-gray-400 p-2">Vindu med brannmotstand må ikke kunne åpnes i vanlig brukstilstand.</td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
             {formData.branncellerKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
