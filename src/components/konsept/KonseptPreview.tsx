@@ -571,6 +571,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
             <tr>
+              <td className="border border-gray-400 p-2 align-top">Generelt</td>
+              <td className="border border-gray-400 p-2">
+                (1) Brannspredning mellom byggverk skal forebygges slik at a) sikkerheten for personer og husdyr ivaretas, og b) brann ikke kan føre til urimelige store økonomiske tap eller samfunnsmessige konsekvenser.
+              </td>
+              <td className="border border-gray-400 p-2 align-top">RIBr</td>
+            </tr>
+            <tr>
               <td className="border border-gray-400 p-2 align-top">Avstand til nabobygg</td>
               <td className="border border-gray-400 p-2">{formData.avstandNabobygg ? `${formData.avstandNabobygg} meter` : "[Ikke angitt]"}</td>
               <td className="border border-gray-400 p-2 align-top">-</td>
