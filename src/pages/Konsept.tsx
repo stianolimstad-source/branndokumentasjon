@@ -3156,45 +3156,6 @@ const Konsept = () => {
                         </div>
                       </div>
                       <div>
-                        <Label className="text-xs font-medium mb-2 block">Brannceller over flere plan</Label>
-                        <div className="border rounded-md p-2 space-y-2 bg-muted/30">
-                          <div className="flex items-center gap-2">
-                            <Checkbox
-                              id="branncellerFlerePlanRelevant"
-                              checked={formData.branncellerFlerePlanRelevant}
-                              onCheckedChange={(checked) => 
-                                setFormData({...formData, branncellerFlerePlanRelevant: !!checked, branncellerFlerePlanKrav: !!checked ? formData.branncellerFlerePlanKrav : []})
-                              }
-                            />
-                            <label htmlFor="branncellerFlerePlanRelevant" className="text-xs cursor-pointer font-medium">Brannceller over flere plan er relevant</label>
-                          </div>
-                          {formData.branncellerFlerePlanRelevant && (
-                            <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
-                              <p className="text-xs text-muted-foreground italic">Brannceller i risikoklasse 1, 2, 4 og 5 kan ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte, dersom følgende ytelser er oppfylt:</p>
-                              {[
-                                { id: "fp_sprinkler", label: "1. Det må installeres automatisk sprinkleranlegg når samlet bruttoareal for plan som har åpen forbindelse er over 800 m², jf. også § 11-12 første ledd." },
-                                { id: "fp_romningsvei", label: "2. Det må være tilrettelagte rømningsveier fra hvert enkelt plan, jf. også § 11-13 fjerde ledd." },
-                              ].map((krav) => (
-                                <div key={krav.id} className="flex items-start gap-2">
-                                  <Checkbox
-                                    id={`fp-${krav.id}`}
-                                    checked={formData.branncellerFlerePlanKrav.includes(krav.id)}
-                                    onCheckedChange={(checked) => {
-                                      if (checked) {
-                                        setFormData({...formData, branncellerFlerePlanKrav: [...formData.branncellerFlerePlanKrav, krav.id]});
-                                      } else {
-                                        setFormData({...formData, branncellerFlerePlanKrav: formData.branncellerFlerePlanKrav.filter((k: string) => k !== krav.id)});
-                                      }
-                                    }}
-                                  />
-                                  <label htmlFor={`fp-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div>
                         <Label className="text-xs font-medium mb-2 block">Brannspredning via vinduer</Label>
                         <div className="border rounded-md p-2 space-y-2 bg-muted/30">
                           <div className="flex items-center gap-2">
@@ -3369,6 +3330,45 @@ const Konsept = () => {
                                   </div>
                                 </div>
                               </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-2 block">Brannceller over flere plan</Label>
+                        <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                          <div className="flex items-center gap-2">
+                            <Checkbox
+                              id="branncellerFlerePlanRelevant"
+                              checked={formData.branncellerFlerePlanRelevant}
+                              onCheckedChange={(checked) => 
+                                setFormData({...formData, branncellerFlerePlanRelevant: !!checked, branncellerFlerePlanKrav: !!checked ? formData.branncellerFlerePlanKrav : []})
+                              }
+                            />
+                            <label htmlFor="branncellerFlerePlanRelevant" className="text-xs cursor-pointer font-medium">Brannceller over flere plan er relevant</label>
+                          </div>
+                          {formData.branncellerFlerePlanRelevant && (
+                            <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
+                              <p className="text-xs text-muted-foreground italic">Brannceller i risikoklasse 1, 2, 4 og 5 kan ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte, dersom følgende ytelser er oppfylt:</p>
+                              {[
+                                { id: "fp_sprinkler", label: "1. Det må installeres automatisk sprinkleranlegg når samlet bruttoareal for plan som har åpen forbindelse er over 800 m², jf. også § 11-12 første ledd." },
+                                { id: "fp_romningsvei", label: "2. Det må være tilrettelagte rømningsveier fra hvert enkelt plan, jf. også § 11-13 fjerde ledd." },
+                              ].map((krav) => (
+                                <div key={krav.id} className="flex items-start gap-2">
+                                  <Checkbox
+                                    id={`fp-${krav.id}`}
+                                    checked={formData.branncellerFlerePlanKrav.includes(krav.id)}
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        setFormData({...formData, branncellerFlerePlanKrav: [...formData.branncellerFlerePlanKrav, krav.id]});
+                                      } else {
+                                        setFormData({...formData, branncellerFlerePlanKrav: formData.branncellerFlerePlanKrav.filter((k: string) => k !== krav.id)});
+                                      }
+                                    }}
+                                  />
+                                  <label htmlFor={`fp-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                                </div>
+                              ))}
                             </div>
                           )}
                         </div>
