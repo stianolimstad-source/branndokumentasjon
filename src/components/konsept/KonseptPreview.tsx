@@ -1232,6 +1232,32 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 </tr>
               );
             })()}
+            {/* Garasje i byggverk for annet formål */}
+            {formData.garasjeByggverkRelevant && (() => {
+              const gbKravMap: Record<string, string> = {
+                gb_50m2_samme: "Garasje med bruttoareal til og med 50 m² i samme bruksenhet, for eksempel garasje i enebolig, må være skilt fra resten av byggverket med bygningsdeler som er så tette at eksos ikke trenger gjennom. En yttervegg med utvendig vindsperre og innvendig dampsperre gir tilstrekkelig tetthet mot en godt ventilert garasje.",
+                gb_50m2_annen: "Andre garasjer med bruttoareal til og med 50 m² må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 30 [B 30].",
+                gb_50_400m2: "Garasje med bruttoareal over 50 m² til og med 400 m², må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 60 [B 60].",
+                gb_over_400m2: "Garasjer med større bruttoareal enn 400 m² må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 90 A2-s1,d0 [A 90].",
+              };
+              const activeKrav = (formData.garasjeByggverkKrav || [])
+                .map((id: string, idx: number) => ({ id, text: gbKravMap[id], num: idx + 1 }))
+                .filter((k: { text: string }) => k.text);
+              if (activeKrav.length === 0) return null;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Garasje i byggverk</td>
+                  <td className="border border-gray-400 p-2">
+                    <div className="space-y-1">
+                      {activeKrav.map((k: { id: string; text: string; num: number }) => (
+                        <div key={k.id}>{k.num}. {k.text}</div>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              );
+            })()}
             {/* Rom som forbinder garasje */}
             {formData.mellomromRelevant && (() => {
               const mrKravMap: Record<string, string> = {

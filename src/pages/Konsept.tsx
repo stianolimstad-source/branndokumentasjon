@@ -508,6 +508,8 @@ const Konsept = () => {
     branncellerFlerePlanKrav: [] as string[],
     garasjeRelevant: false,
     garasjeKrav: [] as string[],
+    garasjeByggverkRelevant: false,
+    garasjeByggverkKrav: [] as string[],
     mellomromRelevant: false,
     mellomromKrav: [] as string[],
     brannsluseRelevant: false,
@@ -3401,7 +3403,7 @@ const Konsept = () => {
                                 setFormData({...formData, garasjeRelevant: !!checked, garasjeKrav: !!checked ? formData.garasjeKrav : []})
                               }
                             />
-                            <label htmlFor="garasjeRelevant" className="text-xs cursor-pointer font-medium"><label htmlFor="garasjeRelevant" className="text-xs cursor-pointer font-medium">Brannskille mellom garasje og annet byggverk er relevant</label></label>
+                            <label htmlFor="garasjeRelevant" className="text-xs cursor-pointer font-medium">Brannskille mellom garasje og annet byggverk er relevant</label>
                           </div>
                           {formData.garasjeRelevant && (
                             <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
@@ -3424,6 +3426,48 @@ const Konsept = () => {
                                     }}
                                   />
                                   <label htmlFor={`ga-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Garasje i byggverk for annet formål */}
+                      <div>
+                        <Label className="text-xs font-medium mb-2 block">Garasje i byggverk for annet formål</Label>
+                        <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                          <div className="flex items-center gap-2">
+                            <Checkbox
+                              id="garasjeByggverkRelevant"
+                              checked={formData.garasjeByggverkRelevant}
+                              onCheckedChange={(checked) => 
+                                setFormData({...formData, garasjeByggverkRelevant: !!checked, garasjeByggverkKrav: !!checked ? formData.garasjeByggverkKrav : []})
+                              }
+                            />
+                            <label htmlFor="garasjeByggverkRelevant" className="text-xs cursor-pointer font-medium">Garasje i byggverk for annet formål er relevant</label>
+                          </div>
+                          {formData.garasjeByggverkRelevant && (
+                            <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
+                              {[
+                                { id: "gb_50m2_samme", label: "1. Garasje med bruttoareal til og med 50 m² i samme bruksenhet, for eksempel garasje i enebolig, må være skilt fra resten av byggverket med bygningsdeler som er så tette at eksos ikke trenger gjennom. En yttervegg med utvendig vindsperre og innvendig dampsperre gir tilstrekkelig tetthet mot en godt ventilert garasje." },
+                                { id: "gb_50m2_annen", label: "2. Andre garasjer med bruttoareal til og med 50 m² må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 30 [B 30]." },
+                                { id: "gb_50_400m2", label: "3. Garasje med bruttoareal over 50 m² til og med 400 m², må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 60 [B 60]." },
+                                { id: "gb_over_400m2", label: "4. Garasjer med større bruttoareal enn 400 m² må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 90 A2-s1,d0 [A 90]." },
+                              ].map((krav) => (
+                                <div key={krav.id} className="flex items-start gap-2">
+                                  <Checkbox
+                                    id={`gb-${krav.id}`}
+                                    checked={formData.garasjeByggverkKrav.includes(krav.id)}
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        setFormData({...formData, garasjeByggverkKrav: [...formData.garasjeByggverkKrav, krav.id]});
+                                      } else {
+                                        setFormData({...formData, garasjeByggverkKrav: formData.garasjeByggverkKrav.filter((k: string) => k !== krav.id)});
+                                      }
+                                    }}
+                                  />
+                                  <label htmlFor={`gb-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
                                 </div>
                               ))}
                             </div>
