@@ -205,7 +205,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   // ===== 3.3 Brannspredning mellom byggverk =====
   rows.push(sectionHeaderRow("3.3   §11-6 Brannspredning mellom byggverk"));
   rows.push(columnHeaderRow());
-  rows.push(contentRow("Generelt", "(1) Brannspredning mellom byggverk skal forebygges slik at a) sikkerheten for personer og husdyr ivaretas, og b) brann ikke kan føre til urimelige store økonomiske tap eller samfunnsmessige konsekvenser.", "RIBr"));
+  rows.push(contentRow("Generelt", "Brannspredning mellom byggverk skal forebygges slik at sikkerheten for personer og husdyr ivaretas, og at brann ikke kan føre til urimelige store økonomiske tap eller samfunnsmessige konsekvenser.", "RIBr"));
   rows.push(contentRow("Avstand til nabobygg", formData.avstandNabobygg ? `${formData.avstandNabobygg} meter` : "[Ikke angitt]", "-"));
   rows.push(contentRow("Bygningshøyde", formData.bygningshoyde ? `${formData.bygningshoyde} meter` : "[Ikke angitt]", "-"));
 
