@@ -3409,8 +3409,8 @@ const Konsept = () => {
                                 <Label className="text-xs font-medium mb-1 block">Plassering</Label>
                                 <div className="flex gap-4">
                                   {[
-                                    { value: "i_tiltaket", label: "I tiltaket (integrert)" },
-                                    { value: "utenfor_tiltaket", label: "Utenfor tiltaket (frittstående/tilbygg)" },
+                                    { value: "i_tiltaket", label: "Integrert i byggverket" },
+                                    { value: "utenfor_tiltaket", label: "Frittstående bygg" },
                                   ].map((opt) => (
                                     <div key={opt.value} className="flex items-center gap-1.5">
                                       <input
