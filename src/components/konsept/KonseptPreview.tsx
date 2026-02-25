@@ -1311,6 +1311,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
             <tr className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.6 &nbsp;&nbsp; §11-9 Materialer og produkters egenskaper ved brann</td>
             </tr>
+            <tr>
+              <td className="border border-gray-400 p-2" colSpan={3}>
+                <p className="text-sm">Byggverk skal prosjekteres og utføres slik at det er liten sannsynlighet for at brann skal oppstå, utvikle og spre seg. Det skal tas hensyn til byggverkets bruk og den nødvendige tiden for rømning og redning.</p>
+              </td>
+            </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
               <th className="border border-gray-400 p-2 text-left">Løsning</th>
