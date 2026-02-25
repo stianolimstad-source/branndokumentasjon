@@ -3480,7 +3480,7 @@ const Konsept = () => {
 
                               {/* Auto-genererte krav */}
                               {formData.garasjeAreal && (formData.garasjeAreal !== "under_50" || formData.garasjeBruksenhet) && (() => {
-                                const krav = getGarasjeKrav(formData.garasjePlassering, formData.garasjeAreal, formData.garasjeBruksenhet);
+                                const krav = getGarasjeKrav(formData.garasjePlassering, formData.garasjeAreal, formData.garasjeBruksenhet, formData.brannklasse || "");
                                 if (krav.length === 0) return null;
                                 return (
                                   <div className="mt-2 p-2 bg-muted/50 rounded border space-y-2">
