@@ -970,6 +970,33 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
             )}
+            {/* Heissjakt */}
+            {formData.heissjaktkrav && formData.heissjaktkrav.length > 0 && (() => {
+              const heisKravMap: Record<string, string> = {
+                heis_roykventileres_8: "I byggverk med inntil 8 etasjer må heissjakten røykventileres, eller det må etableres luftsluse (mellomliggende rom) utført som egen, ventilert branncelle, mellom heissjakten og tilstøtende rom.",
+                heis_roykventileres_over8: "Heissjakt i byggverk med mer enn 8 etasjer må røykventileres og i tillegg utføres med luftsluse som beskrevet i nr. 1.",
+                heis_dor_brannmotstand: "Dør må ha samme brannmotstand som veggen den står i, med unntak som gitt i nr. 4 og 5.",
+                heis_dor_ei60: "I heissjakt med brannmotstand EI 60 kan det benyttes heisdør minst E 90 [F 90]. Heisdør kan utføres uten klasse Sₐ.",
+                heis_dor_luftsluse: "Brannmotstand for dør fra tilstøtende rom til luftsluse som beskrevet i nr. 1 og 2 må være minst EI 30-Sₐ.",
+              };
+              const activeKrav = formData.heissjaktkrav
+                .map((id: string, idx: number) => ({ id, text: heisKravMap[id], num: idx + 1 }))
+                .filter((k: { text: string }) => k.text);
+              if (activeKrav.length === 0) return null;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Krav til heissjakt</td>
+                  <td className="border border-gray-400 p-2">
+                    <div className="space-y-1">
+                      {activeKrav.map((k: { id: string; text: string; num: number }) => (
+                        <div key={k.id}>{k.num}. {k.text}</div>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                </tr>
+              );
+            })()}
             {formData.branncellerKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
