@@ -580,7 +580,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   // Garasje - automatisk genererte krav
   if (formData.garasjeRelevant && formData.garasjePlassering && formData.garasjeAreal &&
       (formData.garasjeAreal !== "under_50" || formData.garasjeBruksenhet)) {
-    const krav = getGarasjeKrav(formData.garasjePlassering, formData.garasjeAreal, formData.garasjeBruksenhet);
+    const krav = getGarasjeKrav(formData.garasjePlassering, formData.garasjeAreal, formData.garasjeBruksenhet, formData.brannklasse || "");
     const grouped: Record<string, { tekst: string; ansvar: string }[]> = {};
     krav.forEach((k: { kategori: string; tekst: string; ansvar: string }) => {
       if (!grouped[k.kategori]) grouped[k.kategori] = [];

@@ -1210,7 +1210,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
             {/* Garasje - automatisk genererte krav */}
             {formData.garasjeRelevant && formData.garasjePlassering && formData.garasjeAreal && 
              (formData.garasjeAreal !== "under_50" || formData.garasjeBruksenhet) && (() => {
-              const krav = getGarasjeKrav(formData.garasjePlassering, formData.garasjeAreal, formData.garasjeBruksenhet);
+              const krav = getGarasjeKrav(formData.garasjePlassering, formData.garasjeAreal, formData.garasjeBruksenhet, formData.brannklasse || "");
               // Group by kategori
               const grouped: Record<string, { tekst: string; ansvar: string }[]> = {};
               krav.forEach(k => {

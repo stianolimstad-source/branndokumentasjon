@@ -1,19 +1,30 @@
 export type GarasjeKravItem = { kategori: string; tekst: string; ansvar: string };
 
+function getBranncelleMotstand(brannklasse: string): string {
+  const krav: Record<string, string> = {
+    "BKL1": "EI 30 [B 30]",
+    "BKL2": "EI 60 [B 60]",
+    "BKL3": "EI 60 A2-s1,d0 [A 60]",
+  };
+  return krav[brannklasse] || "[Angis]";
+}
+
 export function getGarasjeKrav(
   plassering: string,
   areal: string,
-  bruksenhet: string
+  bruksenhet: string,
+  brannklasse: string = ""
 ): GarasjeKravItem[] {
   const krav: GarasjeKravItem[] = [];
+  const motstand = getBranncelleMotstand(brannklasse);
 
   if (plassering === "utenfor_tiltaket") {
     if (areal === "under_50" && bruksenhet === "samme") {
       krav.push({ kategori: "Brannskille", tekst: "Garasje med bruttoareal til og med 50 m² kan bygges uten brannskille mot annet byggverk i samme bruksenhet, for eksempel inntil en enebolig.", ansvar: "ARK" });
     } else if (areal === "under_50" && bruksenhet === "annen") {
-      krav.push({ kategori: "Brannskille", tekst: "Garasje med bruttoareal til og med 50 m² må ha avstand minimum 2,0 meter til byggverk i annen bruksenhet, eller byggverkene må være skilt med bygningsdeler med brannmotstand minst EI 30 [B 30], jf. § 11-6 annet ledd.", ansvar: "ARK" });
+      krav.push({ kategori: "Brannskille", tekst: `Garasje med bruttoareal til og med 50 m² må ha avstand minimum 2,0 meter til byggverk i annen bruksenhet, eller byggverkene må være skilt med bygningsdeler med brannmotstand minst ${motstand}, jf. § 11-6 annet ledd.`, ansvar: "ARK" });
     } else if (areal === "50_400") {
-      krav.push({ kategori: "Brannskille", tekst: "Garasje med bruttoareal over 50 m² til og med 400 m² må ha avstand minimum 8 meter til andre byggverk eller byggverkene må være skilt med bygningsdeler med brannmotstand minst EI 60 [B 60].", ansvar: "ARK" });
+      krav.push({ kategori: "Brannskille", tekst: `Garasje med bruttoareal over 50 m² til og med 400 m² må ha avstand minimum 8 meter til andre byggverk eller byggverkene må være skilt med bygningsdeler med brannmotstand minst ${motstand}.`, ansvar: "ARK" });
     } else if (areal === "over_400") {
       krav.push({ kategori: "Brannskille", tekst: "Garasjer med større bruttoareal enn 400 m² må ha avstand minimum 8 meter til andre byggverk eller byggverkene må være skilt med bygningsdeler med brannmotstand minst EI 90 A2-s1,d0 [A 90].", ansvar: "ARK" });
     }
@@ -22,9 +33,9 @@ export function getGarasjeKrav(
     if (areal === "under_50" && bruksenhet === "samme") {
       krav.push({ kategori: "Brannskille", tekst: "Garasje med bruttoareal til og med 50 m² i samme bruksenhet, for eksempel garasje i enebolig, må være skilt fra resten av byggverket med bygningsdeler som er så tette at eksos ikke trenger gjennom. En yttervegg med utvendig vindsperre og innvendig dampsperre gir tilstrekkelig tetthet mot en godt ventilert garasje.", ansvar: "ARK" });
     } else if (areal === "under_50" && bruksenhet === "annen") {
-      krav.push({ kategori: "Brannskille", tekst: "Andre garasjer med bruttoareal til og med 50 m² må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 30 [B 30].", ansvar: "ARK" });
+      krav.push({ kategori: "Brannskille", tekst: `Andre garasjer med bruttoareal til og med 50 m² må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst ${motstand}.`, ansvar: "ARK" });
     } else if (areal === "50_400") {
-      krav.push({ kategori: "Brannskille", tekst: "Garasje med bruttoareal over 50 m² til og med 400 m², må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 60 [B 60].", ansvar: "ARK" });
+      krav.push({ kategori: "Brannskille", tekst: `Garasje med bruttoareal over 50 m² til og med 400 m², må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst ${motstand}.`, ansvar: "ARK" });
     } else if (areal === "over_400") {
       krav.push({ kategori: "Brannskille", tekst: "Garasjer med større bruttoareal enn 400 m² må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 90 A2-s1,d0 [A 90].", ansvar: "ARK" });
     }
@@ -35,7 +46,7 @@ export function getGarasjeKrav(
     if (areal === "under_50") {
       krav.push({ kategori: "Mellomrom", tekst: "I bolig med garasje med bruttoareal mindre enn 50 m² kan mellomliggende rom være vaskerom, bod og lignende.", ansvar: "ARK" });
     } else if (areal === "50_400") {
-      krav.push({ kategori: "Mellomrom", tekst: "For garasje med bruttoareal over 50 m² til og med 400 m² må mellomliggende rom utføres som egen branncelle med brannmotstand minst EI 60 [B 60].", ansvar: "ARK" });
+      krav.push({ kategori: "Mellomrom", tekst: `For garasje med bruttoareal over 50 m² til og med 400 m² må mellomliggende rom utføres som egen branncelle med brannmotstand minst ${motstand}.`, ansvar: "ARK" });
     } else if (areal === "over_400") {
       krav.push({ kategori: "Mellomrom", tekst: "For garasje over 400 m² må mellomliggende rom utføres som brannsluse.", ansvar: "ARK" });
     }
