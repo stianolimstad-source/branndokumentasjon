@@ -517,6 +517,8 @@ const Konsept = () => {
     brensellagringRelevant: false,
     brenselType: "" as "" | "fyringsparafin" | "lett_fyringsolje" | "begge",
     brenselMengde: "" as string,
+    husdyrromRelevant: false,
+    husdyrromAreal: "" as "" | "under_300" | "over_300",
     materialer: "",
     materialerKommentar: "",
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
@@ -3630,6 +3632,56 @@ const Konsept = () => {
                                   </div>
                                 );
                               })()}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Husdyrrom */}
+                      <div>
+                        <Label className="text-xs font-medium mb-2 block">Husdyrrom</Label>
+                        <div className="border rounded-md p-2 space-y-3 bg-muted/30">
+                          <div className="flex items-center gap-2">
+                            <Checkbox
+                              id="husdyrromRelevant"
+                              checked={formData.husdyrromRelevant}
+                              onCheckedChange={(checked) => setFormData({...formData, husdyrromRelevant: !!checked, husdyrromAreal: ""})}
+                            />
+                            <label htmlFor="husdyrromRelevant" className="text-xs cursor-pointer font-medium">Husdyrrom er relevant</label>
+                          </div>
+                          {formData.husdyrromRelevant && (
+                            <div className="pl-4 space-y-3 border-l-2 border-primary/20 ml-2">
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Bruttoareal husdyrrom</Label>
+                                <div className="flex gap-4">
+                                  {[
+                                    { value: "under_300", label: "< 300 m²" },
+                                    { value: "over_300", label: "≥ 300 m²" },
+                                  ].map((opt) => (
+                                    <div key={opt.value} className="flex items-center gap-1.5">
+                                      <input
+                                        type="radio"
+                                        id={`husdyrrom-areal-${opt.value}`}
+                                        name="husdyrromAreal"
+                                        checked={formData.husdyrromAreal === opt.value}
+                                        onChange={() => setFormData({...formData, husdyrromAreal: opt.value as any})}
+                                        className="w-3 h-3"
+                                      />
+                                      <label htmlFor={`husdyrrom-areal-${opt.value}`} className="text-xs cursor-pointer">{opt.label}</label>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                              {formData.husdyrromAreal && (
+                                <div className="space-y-1 bg-muted/50 p-2 rounded text-xs">
+                                  <p className="font-semibold text-xs">Preaksepterte ytelser:</p>
+                                  {formData.husdyrromAreal === "under_300" ? (
+                                    <div>Husdyrrom med bruttoareal mindre enn 300 m² må være avgrenset fra resten av byggverket med bygningsdeler med brannmotstand minst EI 30 [B 30].</div>
+                                  ) : (
+                                    <div>Husdyrrom med bruttoareal større enn 300 m² må være avgrenset fra resten av byggverket med bygningsdeler med brannmotstand minst EI 60 [B 60].</div>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
