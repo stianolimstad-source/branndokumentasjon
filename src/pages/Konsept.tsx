@@ -491,6 +491,7 @@ const Konsept = () => {
     fyrromKw: "" as "" | "fast" | "under50" | "50-100" | "over100" | "ukjent",
     heismaskinromRelevant: "ja" as "ja" | "nei",
     branncelleTyper: [] as string[],
+    dorPlasseringer: [] as string[],
     materialer: "",
     materialerKommentar: "",
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
@@ -2916,6 +2917,34 @@ const Konsept = () => {
                           </Select>
                         </div>
                       )}
+                      <div>
+                        <Label className="text-xs font-medium mb-2 block">Dører i branncellebegrensende konstruksjoner</Label>
+                        <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                          {[
+                            { id: "branncelle_trapperom_tr1", label: "Branncelle – trapperom Tr 1" },
+                            { id: "korridor_trapperom_tr2", label: "Korridor – trapperom Tr 2" },
+                            { id: "mellomliggende_trapperom_tr3", label: "Mellomliggende rom – trapperom Tr 3" },
+                            { id: "garasje_brannsluse", label: "Garasje – brannsluse" },
+                            { id: "branncelle_korridor", label: "Branncelle – korridor" },
+                            { id: "korridor_det_fri_tr3", label: "Korridor – det fri (i kombinasjon med trapperom Tr 3)" },
+                          ].map((dp) => (
+                            <div key={dp.id} className="flex items-start space-x-2">
+                              <Checkbox
+                                id={`dor-${dp.id}`}
+                                checked={formData.dorPlasseringer.includes(dp.id)}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    setFormData({...formData, dorPlasseringer: [...formData.dorPlasseringer, dp.id]});
+                                  } else {
+                                    setFormData({...formData, dorPlasseringer: formData.dorPlasseringer.filter(d => d !== dp.id)});
+                                  }
+                                }}
+                              />
+                              <label htmlFor={`dor-${dp.id}`} className="text-xs leading-tight cursor-pointer">{dp.label}</label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('brannceller-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="brannceller-kommentar" className={formData.branncellerKommentar ? "" : "hidden"}>

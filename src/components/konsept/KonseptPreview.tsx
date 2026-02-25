@@ -930,6 +930,42 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
               </tr>
             )}
+            {/* Dører i branncellebegrensende konstruksjoner */}
+            {formData.dorPlasseringer && formData.dorPlasseringer.length > 0 && formData.brannklasse && (() => {
+              const bkl = formData.brannklasse;
+              const isBKL1 = bkl === "BKL1";
+              const dorKravMap: Record<string, { label: string; bkl1: string; bkl23: string }> = {
+                branncelle_trapperom_tr1: { label: "Branncelle – trapperom Tr 1", bkl1: "EI₂ 30-CSₐ [B 30 S]", bkl23: "EI₂ 30-CSₐ [B 30 S]" },
+                korridor_trapperom_tr2: { label: "Korridor – trapperom Tr 2", bkl1: "E 30-CSₐ [F 30 S]", bkl23: "E 30-CSₐ [F 30 S]" },
+                mellomliggende_trapperom_tr3: { label: "Mellomliggende rom – trapperom Tr 3", bkl1: "", bkl23: "EI₂ 60-CSₐ [B 60 S]" },
+                garasje_brannsluse: { label: "Garasje – brannsluse", bkl1: "EI₂ 60-CSₐ [B 60 S]", bkl23: "EI₂ 60-CSₐ [B 60 S]" },
+                branncelle_korridor: { label: "Branncelle – korridor", bkl1: "EI₂ 30-Sₐ [B 30]", bkl23: "EI₂ 30-Sₐ [B 30]" },
+                korridor_det_fri_tr3: { label: "Korridor – det fri (i kombinasjon med trapperom Tr 3)", bkl1: "", bkl23: "EI₂ 30-Sₐ [B 30]" },
+              };
+              const activeDoors = formData.dorPlasseringer
+                .map((id: string) => dorKravMap[id])
+                .filter(Boolean)
+                .filter((d: { bkl1: string; bkl23: string }) => isBKL1 ? d.bkl1 : d.bkl23);
+              if (activeDoors.length === 0) return null;
+              return (
+                <>
+                  <tr className="bg-blue-50">
+                    <td className="border border-gray-400 p-2 font-semibold" colSpan={3}>Dører i branncellebegrensende konstruksjoner</td>
+                  </tr>
+                  {activeDoors.map((d: { label: string; bkl1: string; bkl23: string }, idx: number) => {
+                    const krav = isBKL1 ? d.bkl1 : d.bkl23;
+                    if (!krav) return null;
+                    return (
+                      <tr key={idx}>
+                        <td className="border border-gray-400 p-2 align-top">{d.label}</td>
+                        <td className="border border-gray-400 p-2 font-semibold">{krav}</td>
+                        <td className="border border-gray-400 p-2 align-top">ARK</td>
+                      </tr>
+                    );
+                  })}
+                </>
+              );
+            })()}
             {formData.branncellerKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
