@@ -507,6 +507,23 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     }
   }
 
+  // Brannspredning via vinduer
+  if (formData.vinduBrannspredningRelevant && formData.vinduBrannspredningKrav && formData.vinduBrannspredningKrav.length > 0) {
+    const vvKravMap: Record<string, string> = {
+      vv_branncellebegrensende: "Branncellebegrensende konstruksjoner i et byggverk, eller mellom to lave byggverk, må utføres slik at det blir liten sannsynlighet for brannspredning via vinduer som ligger med liten innbyrdes avstand i innvendig hjørne, eller mellom vinduer i motstående fasader.",
+      vv_brannmotstand_vegg: "Vinduer må ha samme brannmotstand som veggen de står i, med unntak som gitt i tabell 3. For motstående parallelle yttervegger gjelder tabell 3 bare når vindusarealet ikke utgjør mer enn 1/3 av veggarealet.",
+      vv_sprinkler_unntak: "Hvis byggverket eller byggverkene har automatisk sprinkleranlegg kan det benyttes vinduer uten spesifisert brannmotstand, med unntak for vinduer mot rømningsvei.",
+      vv_sprinkler_romningsvei: "Hvis byggverket eller byggverkene har automatisk sprinkleranlegg kan vindu mot utvendig rømningsvei ha brannmotstand EW 30 i brannklasse 1 og EW 60 i brannklasse 2 og 3.",
+      vv_enkeltvinduer: "Enkeltvinduer i mindre rom i bolighus (for eksempel i vaskerom, bad og soverom) opp til 0,20 m² glassflate, kan være uten spesifisert brannmotstand når avstanden til uklassifisert bygningsdel er minimum 5 meter.",
+    };
+    const lines = formData.vinduBrannspredningKrav
+      .map((id: string, idx: number) => vvKravMap[id] ? `${idx + 1}. ${vvKravMap[id]}` : null)
+      .filter(Boolean) as string[];
+    if (lines.length > 0) {
+      rows.push(contentRowMultiLine("Brannspredning via vinduer", lines, "ARK"));
+    }
+  }
+
   if (formData.branncellerKommentar) {
     rows.push(contentRow("Kommentar", formData.branncellerKommentar, "-"));
   }
