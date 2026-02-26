@@ -1556,7 +1556,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
             </tr>
             {formData.ventilasjonRelevant && (
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top"><td className="border border-gray-400 p-2 align-top">Ventilasjonsanlegg</td></td>
+                  <td className="border border-gray-400 p-2 align-top">Ventilasjonsanlegg</td>
                   <td className="border border-gray-400 p-2">
                     <p className="font-medium mb-1">Preaksepterte ytelser</p>
                     <ol className="list-decimal ml-4 space-y-2">
@@ -1572,7 +1572,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
             )}
             {formData.vannAvlopRelevant && (
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top"><td className="border border-gray-400 p-2 align-top">Vann- og avløpsrør</td></td>
+                  <td className="border border-gray-400 p-2 align-top">Vann- og avløpsrør</td>
                   <td className="border border-gray-400 p-2">
                     <p className="font-medium mb-1">Preaksepterte ytelser</p>
                     <ol className="list-decimal ml-4 space-y-2">
@@ -1586,7 +1586,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
             )}
             {formData.rorIsolasjonRelevant && (
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top"><td className="border border-gray-400 p-2 align-top">Rør- og kanalisolasjon</td></td>
+                  <td className="border border-gray-400 p-2 align-top">Rør- og kanalisolasjon</td>
                   <td className="border border-gray-400 p-2">
                     <p className="font-medium mb-1">Preaksepterte ytelser</p>
                     <ol className="list-decimal ml-4 space-y-2">
@@ -1607,7 +1607,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
             )}
             {formData.elektriskRelevant && (
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top"><td className="border border-gray-400 p-2 align-top">Elektriske installasjoner</td></td>
+                  <td className="border border-gray-400 p-2 align-top">Elektriske installasjoner</td>
                   <td className="border border-gray-400 p-2">
                     <p className="font-medium mb-1">Preaksepterte ytelser</p>
                     <ol className="list-decimal ml-4 space-y-2">
