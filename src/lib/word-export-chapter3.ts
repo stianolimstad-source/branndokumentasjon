@@ -697,25 +697,6 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   rows.push(contentRow("Overflater på vegger og i himling/tak", "B-s1,d0 [In 1]", "ARK"));
   rows.push(contentRow("Overflater på gulv", "Dfl-s1 [G]", "ARK"));
 
-  // Nedforet himling i rømningsvei
-  const himlingNotes: string[] = [];
-  if (formData.himlingNote1) himlingNotes.push("1. Himlingen må tilfredsstille klasse A2-s1,d0 [In 1 på begrenset brennbart underlag] og ha et opphengsystem med dokumentert brannmotstand minst 10 minutter for den aktuelle eksponering, eller himlingen må bestå av kledning som tilfredsstiller klasse K₂10 A2-s1,d0 [K1-A].");
-  if (formData.himlingNote2) himlingNotes.push("2. Overflater og kledninger i hulrom over himlingen må ha minst like gode branntekniske egenskaper som overflatene og kledningene i rømningsveien for øvrig.");
-  if (himlingNotes.length > 0) {
-    rows.push(new TableRow({
-      children: [
-        new TableCell({
-          columnSpan: 3,
-          children: [
-            new Paragraph({ children: [new TextRun({ text: "Nedforet himling i rømningsvei", bold: true, size: 20 })], spacing: { after: 60 } }),
-            ...himlingNotes.map(note => new Paragraph({ children: [new TextRun({ text: note, size: 20 })], spacing: { after: 40 } })),
-          ],
-          borders: tableBorders,
-        }),
-      ],
-    }));
-  }
-
   // Sub-section: Utvendige overflater
   rows.push(subSectionHeaderRow("Utvendige overflater"));
   rows.push(contentRow("Overflater på ytterkledning", formData.brannklasse === "BKL1" ? "D-s3,d0 [Ut 2]" : "B-s3,d0 [Ut 1]", "ARK"));
@@ -746,6 +727,25 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     "3. For småhus kan taktekning være uklassifisert der avstanden mellom de enkelte byggverk er minst 8 m.",
     "4. Ett-sjikts tak av duk og folie må tilfredsstille klasse B-s3,d0 (Ut1).",
   ], "ARK"));
+
+  // Nedforet himling i rømningsvei
+  const himlingNotes: string[] = [];
+  if (formData.himlingNote1) himlingNotes.push("1. Himlingen må tilfredsstille klasse A2-s1,d0 [In 1 på begrenset brennbart underlag] og ha et opphengsystem med dokumentert brannmotstand minst 10 minutter for den aktuelle eksponering, eller himlingen må bestå av kledning som tilfredsstiller klasse K₂10 A2-s1,d0 [K1-A].");
+  if (formData.himlingNote2) himlingNotes.push("2. Overflater og kledninger i hulrom over himlingen må ha minst like gode branntekniske egenskaper som overflatene og kledningene i rømningsveien for øvrig.");
+  if (himlingNotes.length > 0) {
+    rows.push(new TableRow({
+      children: [
+        new TableCell({
+          columnSpan: 3,
+          children: [
+            new Paragraph({ children: [new TextRun({ text: "Nedforet himling i rømningsvei", bold: true, size: 20 })], spacing: { after: 60 } }),
+            ...himlingNotes.map(note => new Paragraph({ children: [new TextRun({ text: note, size: 20 })], spacing: { after: 40 } })),
+          ],
+          borders: tableBorders,
+        }),
+      ],
+    }));
+  }
 
   // Sub-section: Isolasjon
   rows.push(subSectionHeaderRow("Isolasjon"));
