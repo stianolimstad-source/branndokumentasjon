@@ -829,11 +829,11 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     if (formData.ventKrav9) {
       ventLines.push("5. Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.");
     }
-    rows.push(contentRowMultiLine("A. Ventilasjonsanlegg", ventLines, "RIV"));
+    rows.push(contentRowMultiLine("Ventilasjonsanlegg", ventLines, "RIV"));
   }
 
   if (formData.vannAvlopRelevant) {
-    rows.push(contentRowMultiLine("B. Vann- og avløpsrør", [
+    rows.push(contentRowMultiLine("Vann- og avløpsrør", [
       "Preaksepterte ytelser:",
       "1. Rørgjennomføringer i brannskillende konstruksjoner må ha dokumentert brannmotstand.",
       "2. Plastrør med ytre diameter til og med 32 mm kan føres gjennom murte eller støpte konstruksjoner.",
@@ -842,7 +842,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   }
 
   if (formData.rorIsolasjonRelevant) {
-    rows.push(contentRowMultiLine("C. Rør- og kanalisolasjon", [
+    rows.push(contentRowMultiLine("Rør- og kanalisolasjon", [
       "Preaksepterte ytelser:",
       "1. Dersom den samlede eksponerte overflaten av isolasjonen på rør og kanaler utgjør mer enn 20 prosent av tilgrensende vegg- eller himlingsflate, må isolasjonen tilfredsstille klasse A2L-s1,d0 [ubrennbar eller begrenset brennbar] eller ha minst samme klasse som de tilgrensende overflatene.",
       "2. Dersom den samlede eksponerte overflaten av isolasjonen utgjør mindre enn 20 prosent av tilgrensende vegg- eller himlingsflate, gjelder følgende:",
@@ -856,7 +856,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   }
 
   if (formData.elektriskRelevant) {
-    rows.push(contentRowMultiLine("D. Elektriske installasjoner", [
+    rows.push(contentRowMultiLine("Elektriske installasjoner", [
       "Preaksepterte ytelser:",
       "1. Kabler må ikke legges over nedforet himling eller i hulrom i rømningsvei med mindre brannenergien er mindre enn ca. 50 MJ/løpemeter.",
       "2. Kabler som utgjør liten brannenergi kan føres ubeskyttet gjennom rømningsvei.",
