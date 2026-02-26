@@ -1417,30 +1417,22 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
             {(formData.himlingNote1 || formData.himlingNote2) && (
-              <>
-                <tr className="bg-gray-100">
-                  <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Nedforet himling i rømningsvei</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Nedforet himling i rømningsvei</td>
-                  <td className="border border-gray-400 p-2">
-                    <ol className="list-decimal list-inside space-y-1 text-sm">
-                      {formData.himlingNote1 && (
-                        <li>Himlingen må tilfredsstille klasse A2-s1,d0 [In 1 på begrenset brennbart underlag] og ha et opphengsystem med dokumentert brannmotstand minst 10 minutter for den aktuelle eksponering, eller himlingen må bestå av kledning som tilfredsstiller klasse K<sub>2</sub>10 A2-s1,d0 [K1-A].</li>
-                      )}
-                      {formData.himlingNote2 && (
-                        <li>Overflater og kledninger i hulrom over himlingen må ha minst like gode branntekniske egenskaper som overflatene og kledningene i rømningsveien for øvrig.</li>
-                      )}
-                    </ol>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                </tr>
-              </>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Nedforet himling i rømningsvei</td>
+                <td className="border border-gray-400 p-2">
+                  <ol className="list-decimal list-inside space-y-1 text-sm">
+                    {formData.himlingNote1 && (
+                      <li>Himlingen må tilfredsstille klasse A2-s1,d0 [In 1 på begrenset brennbart underlag] og ha et opphengsystem med dokumentert brannmotstand minst 10 minutter for den aktuelle eksponering, eller himlingen må bestå av kledning som tilfredsstiller klasse K<sub>2</sub>10 A2-s1,d0 [K1-A].</li>
+                    )}
+                    {formData.himlingNote2 && (
+                      <li>Overflater og kledninger i hulrom over himlingen må ha minst like gode branntekniske egenskaper som overflatene og kledningene i rømningsveien for øvrig.</li>
+                    )}
+                  </ol>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
             )}
             {/* Isolasjon */}
-            <tr className="bg-gray-100">
-              <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Isolasjon</td>
-            </tr>
             <tr>
               <td className="border border-gray-400 p-2 align-top">Isolasjon</td>
               <td className="border border-gray-400 p-2">

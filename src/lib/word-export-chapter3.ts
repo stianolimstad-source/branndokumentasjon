@@ -748,12 +748,10 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.himlingNote1) himlingNotes.push("1. Himlingen må tilfredsstille klasse A2-s1,d0 [In 1 på begrenset brennbart underlag] og ha et opphengsystem med dokumentert brannmotstand minst 10 minutter for den aktuelle eksponering, eller himlingen må bestå av kledning som tilfredsstiller klasse K₂10 A2-s1,d0 [K1-A].");
   if (formData.himlingNote2) himlingNotes.push("2. Overflater og kledninger i hulrom over himlingen må ha minst like gode branntekniske egenskaper som overflatene og kledningene i rømningsveien for øvrig.");
   if (himlingNotes.length > 0) {
-    rows.push(graySubSectionHeaderRow("Nedforet himling i rømningsvei"));
     rows.push(contentRowMultiLine("Nedforet himling i rømningsvei", himlingNotes, "ARK"));
   }
 
   // Sub-section: Isolasjon
-  rows.push(graySubSectionHeaderRow("Isolasjon"));
   const isolasjonLines = [
     "Isolasjonsmaterialer kan bidra til brannspredning og røykutvikling i et byggverk.",
     "",
