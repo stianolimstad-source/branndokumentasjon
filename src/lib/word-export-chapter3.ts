@@ -841,6 +841,20 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     ], "RIV"));
   }
 
+  if (formData.rorIsolasjonRelevant) {
+    rows.push(contentRowMultiLine("C. Rør- og kanalisolasjon", [
+      "Preaksepterte ytelser:",
+      "1. Dersom den samlede eksponerte overflaten av isolasjonen på rør og kanaler utgjør mer enn 20 prosent av tilgrensende vegg- eller himlingsflate, må isolasjonen tilfredsstille klasse A2L-s1,d0 [ubrennbar eller begrenset brennbar] eller ha minst samme klasse som de tilgrensende overflatene.",
+      "2. Dersom den samlede eksponerte overflaten av isolasjonen utgjør mindre enn 20 prosent av tilgrensende vegg- eller himlingsflate, gjelder følgende:",
+      "   1. Isolasjon på rør og kanaler i rømningsveier må minst tilfredsstille klasse BL-s1,d0 [PI]. Unntak gjelder isolasjon på enkeltstående rør eller kanal med ytre diameter til og med 200 mm som minst må tilfredsstille klasse CL-s3,d0 [PII].",
+      "   2. Isolasjon på rør og kanaler som er lagt i sjakt, i hulrom og bak nedforet himling med branncellebegrensende funksjon, må minst tilfredsstille klasse CL-s3,d0 [PII].",
+      "   3. Øvrig isolasjon på rør og kanaler i byggverk i risikoklasse 3, 5 og 6, og i byggverk i brannklasse 2 og 3 må minst tilfredsstille klasse CL-s3,d0 [PII].",
+      "   4. Øvrig isolasjon på rør og kanaler i byggverk i risikoklasse 1, 2 og 4 i brannklasse 1 må minst tilfredsstille klasse DL-s3,d0 [PIII].",
+      "",
+      "Den flaten der rør eller kanal er innfestet, regnes som tilgrensede vegg- eller himlingsflate. For vertikale rør og kanaler er det veggflaten som skal legges til grunn.",
+    ], "RIV"));
+  }
+
   if (formData.elektriskRelevant) {
     rows.push(contentRowMultiLine("D. Elektriske installasjoner", [
       "Preaksepterte ytelser:",
