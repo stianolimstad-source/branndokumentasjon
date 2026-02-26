@@ -1349,18 +1349,35 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
             <tr className="bg-gray-100">
               <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Overflater i brannceller som ikke er rømningsvei</td>
             </tr>
-            <tr>
-              <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak i branncelle inntil 200 m²</td>
-              <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">D-s2,d0 [In 2]</span></td>
-              <td className="border border-gray-400 p-2 align-top">ARK</td>
-            </tr>
-            <tr>
-              <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak i branncelle over 200 m²</td>
-              <td className="border border-gray-400 p-2">
-                <span className="text-red-600 font-medium">{formData.brannklasse === "BKL1" ? "D-s2,d0 [In 2]" : "B-s1,d0 [In 1]"}</span>
-              </td>
-              <td className="border border-gray-400 p-2 align-top">ARK</td>
-            </tr>
+            {formData.risikoklasse === "RK6" ? (
+              <>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak, og i sjakter og hulrom</td>
+                  <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">B-s1,d0 [In 1]</span></td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Overflater på gulv</td>
+                  <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">D<sub>fl</sub>-s1 [G]</span></td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              </>
+            ) : (
+              <>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak i branncelle inntil 200 m²</td>
+                  <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">D-s2,d0 [In 2]</span></td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak i branncelle over 200 m²</td>
+                  <td className="border border-gray-400 p-2">
+                    <span className="text-red-600 font-medium">{formData.brannklasse === "BKL1" ? "D-s2,d0 [In 2]" : "B-s1,d0 [In 1]"}</span>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              </>
+            )}
             <tr className="bg-gray-100">
               <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Overflater i brannceller som er rømningsvei</td>
             </tr>
@@ -1374,8 +1391,16 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">D<sub>fl</sub>-s1 [G]</span></td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
+            {/* Utvendige overflater section is unchanged - preaksepterte ytelser apply for all RK */}
             <tr className="bg-gray-100">
               <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Utvendige overflater</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-400 p-2 align-top">Overflater på ytterkledning</td>
+              <td className="border border-gray-400 p-2">
+                <span className="text-red-600 font-medium">{formData.brannklasse === "BKL1" ? "D-s3,d0 [Ut 2]" : "B-s3,d0 [Ut 1]"}</span>
+              </td>
+              <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
             <tr>
               <td className="border border-gray-400 p-2 align-top">Utvendige overflater</td>
@@ -1398,18 +1423,40 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
             <tr className="bg-gray-100">
               <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Kledninger</td>
             </tr>
-            <tr>
-              <td className="border border-gray-400 p-2 align-top">Kledning i branncelle inntil 200 m²</td>
-              <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">K<sub>2</sub>10 D-s2,d0 [K2]</span></td>
-              <td className="border border-gray-400 p-2 align-top">ARK</td>
-            </tr>
-            <tr>
-              <td className="border border-gray-400 p-2 align-top">Kledning i branncelle som er rømningsvei</td>
-              <td className="border border-gray-400 p-2">
-                <span className="text-red-600 font-medium">{formData.brannklasse === "BKL1" ? "K₂10 B-s1,d0 [K1]" : "K₂10 A2-s1,d0 [K1-A]"}</span>
-              </td>
-              <td className="border border-gray-400 p-2 align-top">ARK</td>
-            </tr>
+            {formData.risikoklasse === "RK6" ? (
+              <>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Kledning i brannceller</td>
+                  <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">K<sub>2</sub>10 B-s1,d0 [K1]</span></td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Kledninger i branncelle som er rømningsvei</td>
+                  <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">K<sub>2</sub>10 A2-s1,d0 [K1-A]</span></td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Kledning i sjakter og hulrom</td>
+                  <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">K<sub>2</sub>10 A2-s1,d0 [K1-A]</span></td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              </>
+            ) : (
+              <>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Kledning i branncelle inntil 200 m²</td>
+                  <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">K<sub>2</sub>10 D-s2,d0 [K2]</span></td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Kledning i branncelle som er rømningsvei</td>
+                  <td className="border border-gray-400 p-2">
+                    <span className="text-red-600 font-medium">{formData.brannklasse === "BKL1" ? "K₂10 B-s1,d0 [K1]" : "K₂10 A2-s1,d0 [K1-A]"}</span>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              </>
+            )}
             <tr className="bg-gray-100">
               <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Taktekning</td>
             </tr>

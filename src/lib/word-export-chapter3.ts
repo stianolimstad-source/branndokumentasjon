@@ -698,14 +698,20 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   }
   
   // Sub-section: Overflater i brannceller som ikke er rømningsvei
+  const isRK6 = formData.risikoklasse === "RK6";
   rows.push(graySubSectionHeaderRow("Overflater i brannceller som ikke er rømningsvei"));
-  rows.push(contentRow("Overflater på vegger og i himling/tak i branncelle inntil 200 m²", "D-s2,d0 [In 2]", "ARK"));
-  rows.push(contentRow(
-    "Overflater på vegger og i himling/tak i branncelle over 200 m²",
-    formData.brannklasse === "BKL1" ? "D-s2,d0 [In 2]" : "B-s1,d0 [In 1]",
-    "ARK"
-  ));
-  rows.push(contentRow("Overflater i sjakter og hulrom", "B-s1,d0 [In 1]", "ARK"));
+  if (isRK6) {
+    rows.push(contentRow("Overflater på vegger og i himling/tak, og i sjakter og hulrom", "B-s1,d0 [In 1]", "ARK"));
+    rows.push(contentRow("Overflater på gulv", "Dfl-s1 [G]", "ARK"));
+  } else {
+    rows.push(contentRow("Overflater på vegger og i himling/tak i branncelle inntil 200 m²", "D-s2,d0 [In 2]", "ARK"));
+    rows.push(contentRow(
+      "Overflater på vegger og i himling/tak i branncelle over 200 m²",
+      formData.brannklasse === "BKL1" ? "D-s2,d0 [In 2]" : "B-s1,d0 [In 1]",
+      "ARK"
+    ));
+    rows.push(contentRow("Overflater i sjakter og hulrom", "B-s1,d0 [In 1]", "ARK"));
+  }
 
   // Sub-section: Overflater i brannceller som er rømningsvei
   rows.push(graySubSectionHeaderRow("Overflater i brannceller som er rømningsvei"));
@@ -714,6 +720,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
 
   // Sub-section: Utvendige overflater
   rows.push(graySubSectionHeaderRow("Utvendige overflater"));
+  rows.push(contentRow("Overflater på ytterkledning", formData.brannklasse === "BKL1" ? "D-s3,d0 [Ut 2]" : "B-s3,d0 [Ut 1]", "ARK"));
   const utvOverflaterLines = [
     "Preaksepterte ytelser:",
     "1. Utvendige overflater er tilfredsstillende når det benyttes produkter med egenskaper som angitt i tabell 1A og 1B, med unntak gitt i nr. 2 til 4.",
@@ -727,17 +734,23 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
 
   // Sub-section: Kledninger
   rows.push(graySubSectionHeaderRow("Kledninger"));
-  rows.push(contentRow("Kledning i branncelle inntil 200 m²", "K₂10 D-s2,d0 [K2]", "ARK"));
-  rows.push(contentRow(
-    "Kledning i branncelle over 200 m²",
-    formData.brannklasse === "BKL1" ? "K₂10 D-s2,d0 [K2]" : "K₂10 B-s1,d0 [K1]",
-    "ARK"
-  ));
-  rows.push(contentRow(
-    "Kledning i branncelle som er rømningsvei",
-    formData.brannklasse === "BKL1" ? "K₂10 B-s1,d0 [K1]" : "K₂10 A2-s1,d0 [K1-A]",
-    "ARK"
-  ));
+  if (isRK6) {
+    rows.push(contentRow("Kledning i brannceller", "K₂10 B-s1,d0 [K1]", "ARK"));
+    rows.push(contentRow("Kledninger i branncelle som er rømningsvei", "K₂10 A2-s1,d0 [K1-A]", "ARK"));
+    rows.push(contentRow("Kledning i sjakter og hulrom", "K₂10 A2-s1,d0 [K1-A]", "ARK"));
+  } else {
+    rows.push(contentRow("Kledning i branncelle inntil 200 m²", "K₂10 D-s2,d0 [K2]", "ARK"));
+    rows.push(contentRow(
+      "Kledning i branncelle over 200 m²",
+      formData.brannklasse === "BKL1" ? "K₂10 D-s2,d0 [K2]" : "K₂10 B-s1,d0 [K1]",
+      "ARK"
+    ));
+    rows.push(contentRow(
+      "Kledning i branncelle som er rømningsvei",
+      formData.brannklasse === "BKL1" ? "K₂10 B-s1,d0 [K1]" : "K₂10 A2-s1,d0 [K1-A]",
+      "ARK"
+    ));
+  }
 
   // Sub-section: Taktekning
   rows.push(graySubSectionHeaderRow("Taktekning"));
