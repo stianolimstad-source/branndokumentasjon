@@ -521,6 +521,10 @@ const Konsept = () => {
     husdyrromAreal: "" as "" | "under_300" | "over_300",
     materialer: "",
     materialerKommentar: "",
+    matNote1: true, // Overflater og kledninger tabell 1A/1B
+    matNote2: true, // Hulrom som innvendig overflate
+    matNote3: false, // Rom med brannfarlig virksomhet
+    matNote4: true, // Minst D-s2,d0 ved analyse
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
     isolasjonBrennbar: "ikke_relevant" as "relevant" | "ikke_relevant",
     installasjoner: "",
@@ -3690,6 +3694,51 @@ const Konsept = () => {
                       </div>
                       <p className="text-xs text-muted-foreground">Krav til overflater og kledninger genereres automatisk basert på brannklasse ({formData.brannklasse || "ikke angitt"}).</p>
                       
+                      {/* Innvendige overflater og kledninger - noter */}
+                      <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                        <Label className="text-xs font-medium">Innvendige overflater og kledninger – velg relevante bestemmelser</Label>
+                        <div className="flex items-start gap-2">
+                          <Checkbox
+                            id="matNote1"
+                            checked={formData.matNote1}
+                            onCheckedChange={(checked) => setFormData({...formData, matNote1: !!checked})}
+                          />
+                          <label htmlFor="matNote1" className="text-xs cursor-pointer leading-relaxed">
+                            Overflater og kledninger er tilfredsstillende når det benyttes produkter med egenskaper som angitt i tabell 1A og 1B, med unntak gitt i nr. 3 og 4.
+                          </label>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <Checkbox
+                            id="matNote2"
+                            checked={formData.matNote2}
+                            onCheckedChange={(checked) => setFormData({...formData, matNote2: !!checked})}
+                          />
+                          <label htmlFor="matNote2" className="text-xs cursor-pointer leading-relaxed">
+                            Overflater i hulrom betraktes på samme måte som innvendig overflate og må ha minst like gode branntekniske egenskaper.
+                          </label>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <Checkbox
+                            id="matNote3"
+                            checked={formData.matNote3}
+                            onCheckedChange={(checked) => setFormData({...formData, matNote3: !!checked})}
+                          />
+                          <label htmlFor="matNote3" className="text-xs cursor-pointer leading-relaxed">
+                            Rom med brannfarlig virksomhet må ha kledning som tilfredsstiller klasse K₂10 A2-s1,d0 [K1-A]. Eksempel på rom med brannfarlig virksomhet er rom hvor det oppbevares fyrverkeri, brannfarlig væske kategori 1 og 2, eller rom hvor det utføres varme arbeider som sveising, sliping samt rom hvor det arbeides med åpen varme.
+                          </label>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <Checkbox
+                            id="matNote4"
+                            checked={formData.matNote4}
+                            onCheckedChange={(checked) => setFormData({...formData, matNote4: !!checked})}
+                          />
+                          <label htmlFor="matNote4" className="text-xs cursor-pointer leading-relaxed">
+                            Selv om sikkerhet ved brann dokumenteres ved analyse, må innvendige overflater på vegger og i himlinger ha minst klasse D-s2,d0 [In 2]. Lavere ytelse kan gi uakseptabelt bidrag til brannutviklingen.
+                          </label>
+                        </div>
+                      </div>
+
                       {/* Isolasjon-valg */}
                       <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
                         <Label className="text-xs font-medium">Isolasjon</Label>
