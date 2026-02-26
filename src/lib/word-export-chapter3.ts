@@ -76,6 +76,20 @@ function subSectionHeaderRow(title: string): TableRow {
   });
 }
 
+function graySubSectionHeaderRow(title: string): TableRow {
+  return new TableRow({
+    children: [
+      new TableCell({
+        columnSpan: 3,
+        borders: tableBorders,
+        shading: headerShading,
+        margins: { top: 40, bottom: 40, left: 80, right: 80 },
+        children: [new Paragraph({ spacing: { before: 40, after: 40 }, children: [new TextRun({ text: title, bold: true, size: 20 })] })],
+      }),
+    ],
+  });
+}
+
 function contentRow(forhold: string, losning: string, ansvar: string): TableRow {
   return new TableRow({
     children: [cell(forhold, false, 25), cell(losning), cell(ansvar, false, 10)],
@@ -684,7 +698,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   }
   
   // Sub-section: Overflater i brannceller som ikke er rømningsvei
-  rows.push(subSectionHeaderRow("Overflater i brannceller som ikke er rømningsvei"));
+  rows.push(graySubSectionHeaderRow("Overflater i brannceller som ikke er rømningsvei"));
   rows.push(contentRow("Overflater på vegger og i himling/tak i branncelle inntil 200 m²", "D-s2,d0 [In 2]", "ARK"));
   rows.push(contentRow(
     "Overflater på vegger og i himling/tak i branncelle over 200 m²",
@@ -694,17 +708,17 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   rows.push(contentRow("Overflater i sjakter og hulrom", "B-s1,d0 [In 1]", "ARK"));
 
   // Sub-section: Overflater i brannceller som er rømningsvei
-  rows.push(subSectionHeaderRow("Overflater i brannceller som er rømningsvei"));
+  rows.push(graySubSectionHeaderRow("Overflater i brannceller som er rømningsvei"));
   rows.push(contentRow("Overflater på vegger og i himling/tak", "B-s1,d0 [In 1]", "ARK"));
   rows.push(contentRow("Overflater på gulv", "Dfl-s1 [G]", "ARK"));
 
   // Sub-section: Utvendige overflater
-  rows.push(subSectionHeaderRow("Utvendige overflater"));
+  rows.push(graySubSectionHeaderRow("Utvendige overflater"));
   rows.push(contentRow("Overflater på ytterkledning", formData.brannklasse === "BKL1" ? "D-s3,d0 [Ut 2]" : "B-s3,d0 [Ut 1]", "ARK"));
   rows.push(contentRow("Overflater i hulrom i ytterveggkonstruksjoner", "Som utvendig overflate", "ARK"));
 
   // Sub-section: Kledninger
-  rows.push(subSectionHeaderRow("Kledninger"));
+  rows.push(graySubSectionHeaderRow("Kledninger"));
   rows.push(contentRow("Kledning i branncelle inntil 200 m²", "K₂10 D-s2,d0 [K2]", "ARK"));
   rows.push(contentRow(
     "Kledning i branncelle over 200 m²",
@@ -718,7 +732,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   ));
 
   // Sub-section: Taktekning
-  rows.push(subSectionHeaderRow("Taktekning"));
+  rows.push(graySubSectionHeaderRow("Taktekning"));
   rows.push(contentRowMultiLine("Taktekning", [
     "Taktekning kan bidra til brannspredning i et byggverk og mellom ulike byggverk.",
     "",
