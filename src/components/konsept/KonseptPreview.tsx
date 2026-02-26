@@ -1555,12 +1555,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
             {formData.ventilasjonRelevant && (
-              <>
-                <tr className="bg-blue-100">
-                  <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>A. Ventilasjonsanlegg</td>
-                </tr>
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Ventilasjonsanlegg</td>
+                  <td className="border border-gray-400 p-2 align-top">A. Ventilasjonsanlegg</td>
                   <td className="border border-gray-400 p-2">
                     <p className="font-medium mb-1">Preaksepterte ytelser</p>
                     <ol className="list-decimal ml-4 space-y-2">
@@ -1573,15 +1569,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIV</td>
                 </tr>
-              </>
             )}
             {formData.vannAvlopRelevant && (
-              <>
-                <tr className="bg-blue-100">
-                  <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>B. Vann- og avløpsrør</td>
-                </tr>
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Rørgjennomføringer</td>
+                  <td className="border border-gray-400 p-2 align-top">B. Vann- og avløpsrør</td>
                   <td className="border border-gray-400 p-2">
                     <p className="font-medium mb-1">Preaksepterte ytelser</p>
                     <ol className="list-decimal ml-4 space-y-2">
@@ -1592,15 +1583,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIV</td>
                 </tr>
-              </>
             )}
             {formData.elektriskRelevant && (
-              <>
-                <tr className="bg-blue-100">
-                  <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>D. Elektriske installasjoner</td>
-                </tr>
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Elektriske installasjoner</td>
+                  <td className="border border-gray-400 p-2 align-top">D. Elektriske installasjoner</td>
                   <td className="border border-gray-400 p-2">
                     <p className="font-medium mb-1">Preaksepterte ytelser</p>
                     <ol className="list-decimal ml-4 space-y-2">
@@ -1610,7 +1596,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIE</td>
                 </tr>
-              </>
             )}
             {formData.installasjonerKommentar && (
               <tr>

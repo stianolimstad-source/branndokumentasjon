@@ -819,7 +819,6 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   rows.push(columnHeaderRow());
 
   if (formData.ventilasjonRelevant) {
-    rows.push(subSectionHeaderRow("A. Ventilasjonsanlegg"));
     const ventLines = [
       "Preaksepterte ytelser:",
       "1. Ventilasjonskanal som føres gjennom en brannskillende bygningsdel, må utføres slik at bygningsdelens brannmotstand blir opprettholdt.",
@@ -830,12 +829,11 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     if (formData.ventKrav9) {
       ventLines.push("5. Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.");
     }
-    rows.push(contentRowMultiLine("Ventilasjonsanlegg", ventLines, "RIV"));
+    rows.push(contentRowMultiLine("A. Ventilasjonsanlegg", ventLines, "RIV"));
   }
 
   if (formData.vannAvlopRelevant) {
-    rows.push(subSectionHeaderRow("B. Vann- og avløpsrør"));
-    rows.push(contentRowMultiLine("Rørgjennomføringer", [
+    rows.push(contentRowMultiLine("B. Vann- og avløpsrør", [
       "Preaksepterte ytelser:",
       "1. Rørgjennomføringer i brannskillende konstruksjoner må ha dokumentert brannmotstand.",
       "2. Plastrør med ytre diameter til og med 32 mm kan føres gjennom murte eller støpte konstruksjoner.",
@@ -844,8 +842,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   }
 
   if (formData.elektriskRelevant) {
-    rows.push(subSectionHeaderRow("D. Elektriske installasjoner"));
-    rows.push(contentRowMultiLine("Elektriske installasjoner", [
+    rows.push(contentRowMultiLine("D. Elektriske installasjoner", [
       "Preaksepterte ytelser:",
       "1. Kabler må ikke legges over nedforet himling eller i hulrom i rømningsvei med mindre brannenergien er mindre enn ca. 50 MJ/løpemeter.",
       "2. Kabler som utgjør liten brannenergi kan føres ubeskyttet gjennom rømningsvei.",
