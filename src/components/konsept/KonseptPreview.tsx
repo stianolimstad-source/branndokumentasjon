@@ -1328,7 +1328,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Innvendige overflater og kledninger</td>
                 <td className="border border-gray-400 p-2">
-                  <ol className="list-decimal ml-4 space-y-1 text-sm">
+                  <ol className="list-disc ml-4 space-y-1 text-sm">
                     {formData.matNote1 && (
                       <li>Overflater og kledninger er tilfredsstillende når det benyttes produkter med egenskaper som angitt i tabell 1A og 1B, med unntak gitt i nr. 3 og 4.</li>
                     )}
