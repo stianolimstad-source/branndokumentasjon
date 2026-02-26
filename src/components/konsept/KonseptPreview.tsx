@@ -1311,16 +1311,23 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
             <tr className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.6 &nbsp;&nbsp; §11-9 Materialer og produkters egenskaper ved brann</td>
             </tr>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+              <th className="border border-gray-400 p-2 text-left">Løsning</th>
+              <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
+            </tr>
             <tr>
-              <td className="border border-gray-400 p-2" colSpan={3}>
+              <td className="border border-gray-400 p-2 align-top">Generelt</td>
+              <td className="border border-gray-400 p-2">
                 <p className="text-sm">Byggverk skal prosjekteres og utføres slik at det er liten sannsynlighet for at brann skal oppstå, utvikle og spre seg. Det skal tas hensyn til byggverkets bruk og den nødvendige tiden for rømning og redning.</p>
               </td>
+              <td className="border border-gray-400 p-2 align-top">RIBr</td>
             </tr>
             {/* Innvendige overflater og kledninger – noter */}
             {(formData.matNote1 || formData.matNote2 || formData.matNote3 || formData.matNote4) && (
               <tr>
-                <td className="border border-gray-400 p-2" colSpan={3}>
-                  <p className="font-semibold text-sm mb-1">Innvendige overflater og kledninger</p>
+                <td className="border border-gray-400 p-2 align-top">Innvendige overflater og kledninger</td>
+                <td className="border border-gray-400 p-2">
                   <ol className="list-decimal ml-4 space-y-1 text-sm">
                     {formData.matNote1 && (
                       <li>Overflater og kledninger er tilfredsstillende når det benyttes produkter med egenskaper som angitt i tabell 1A og 1B, med unntak gitt i nr. 3 og 4.</li>
@@ -1336,13 +1343,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                     )}
                   </ol>
                 </td>
+                <td className="border border-gray-400 p-2 align-top">RIBr</td>
               </tr>
             )}
-            <tr className="bg-gray-100">
-              <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
-              <th className="border border-gray-400 p-2 text-left">Løsning</th>
-              <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
-            </tr>
             <tr className="bg-blue-100">
               <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Overflater i brannceller som ikke er rømningsvei</td>
             </tr>
