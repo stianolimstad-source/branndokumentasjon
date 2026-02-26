@@ -858,8 +858,12 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.elektriskRelevant) {
     rows.push(contentRowMultiLine("Elektriske installasjoner", [
       "Preaksepterte ytelser:",
-      "1. Kabler må ikke legges over nedforet himling eller i hulrom i rømningsvei med mindre brannenergien er mindre enn ca. 50 MJ/løpemeter.",
-      "2. Kabler som utgjør liten brannenergi kan føres ubeskyttet gjennom rømningsvei.",
+      "1. Kabler må ikke legges over nedforet himling eller i hulrom i rømningsvei med mindre ett av følgende punkter er oppfylt:",
+      "   1. kablene representerer liten brannenergi, det vil si mindre enn ca. 50 MJ/løpemeter hulrom",
+      "   2. kablene er ført i egen sjakt med sjaktvegger som har brannmotstand tilsvarende branncellebegrensende bygningsdel",
+      "   3. himlingen har brannmotstand tilsvarende branncellebegrensende bygningsdel",
+      "   4. hulrommet er sprinklet.",
+      "2. Kabler som utgjør liten brannenergi, det vil si mindre enn ca. 50 MJ/løpemeter korridor eller hulrom, kan føres ubeskyttet gjennom rømningsvei. Dette er et spesifikt unntak som gjelder kabler, og kan ikke brukes som begrunnelse for andre fravik fra preaksepterte ytelser.",
     ], "RIE"));
   }
 

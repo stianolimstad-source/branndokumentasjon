@@ -1611,8 +1611,15 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                   <td className="border border-gray-400 p-2">
                     <p className="font-medium mb-1">Preaksepterte ytelser</p>
                     <ol className="list-decimal ml-4 space-y-2">
-                      <li>Kabler må ikke legges over nedforet himling eller i hulrom i rømningsvei med mindre brannenergien er mindre enn ca. <span className="text-red-600 font-medium">50 MJ/løpemeter</span>.</li>
-                      <li>Kabler som utgjør liten brannenergi kan føres ubeskyttet gjennom rømningsvei.</li>
+                      <li>Kabler må ikke legges over nedforet himling eller i hulrom i rømningsvei med mindre ett av følgende punkter er oppfylt:
+                        <ol className="list-decimal ml-4 mt-1 space-y-1">
+                          <li>kablene representerer liten brannenergi, det vil si mindre enn ca. <span className="text-red-600 font-medium">50 MJ/løpemeter</span> hulrom</li>
+                          <li>kablene er ført i egen sjakt med sjaktvegger som har brannmotstand tilsvarende branncellebegrensende bygningsdel</li>
+                          <li>himlingen har brannmotstand tilsvarende branncellebegrensende bygningsdel</li>
+                          <li>hulrommet er sprinklet.</li>
+                        </ol>
+                      </li>
+                      <li>Kabler som utgjør liten brannenergi, det vil si mindre enn ca. <span className="text-red-600 font-medium">50 MJ/løpemeter</span> korridor eller hulrom, kan føres ubeskyttet gjennom rømningsvei. Dette er et spesifikt unntak som gjelder kabler, og kan ikke brukes som begrunnelse for andre fravik fra preaksepterte ytelser.</li>
                     </ol>
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIE</td>
