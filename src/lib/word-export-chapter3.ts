@@ -647,18 +647,12 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
 
   // ===== 3.6 Materialer og produkters egenskaper ved brann =====
   rows.push(sectionHeaderRow("3.6   §11-9 Materialer og produkters egenskaper ved brann"));
-  rows.push(new TableRow({
-    children: [
-      new TableCell({
-        columnSpan: 3,
-        children: [new Paragraph({
-          children: [new TextRun({ text: "Byggverk skal prosjekteres og utføres slik at det er liten sannsynlighet for at brann skal oppstå, utvikle og spre seg. Det skal tas hensyn til byggverkets bruk og den nødvendige tiden for rømning og redning.", size: 20 })],
-          spacing: { after: 100 },
-        })],
-        borders: tableBorders,
-      }),
-    ],
-  }));
+  rows.push(columnHeaderRow());
+  rows.push(contentRow(
+    "Generelt",
+    "Byggverk skal prosjekteres og utføres slik at det er liten sannsynlighet for at brann skal oppstå, utvikle og spre seg. Det skal tas hensyn til byggverkets bruk og den nødvendige tiden for rømning og redning.",
+    "RIBr"
+  ));
   // Innvendige overflater og kledninger – noter
   const matNotes: string[] = [];
   if (formData.matNote1) matNotes.push("1. Overflater og kledninger er tilfredsstillende når det benyttes produkter med egenskaper som angitt i tabell 1A og 1B, med unntak gitt i nr. 3 og 4.");
@@ -669,18 +663,25 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
     rows.push(new TableRow({
       children: [
         new TableCell({
-          columnSpan: 3,
-          children: [
-            new Paragraph({ children: [new TextRun({ text: "Innvendige overflater og kledninger", bold: true, size: 20 })], spacing: { after: 60 } }),
-            ...matNotes.map(note => new Paragraph({ children: [new TextRun({ text: note, size: 20 })], spacing: { after: 40 } })),
-          ],
+          width: { size: 25, type: WidthType.PERCENTAGE },
+          children: [new Paragraph({ children: [new TextRun({ text: "Innvendige overflater og kledninger", size: 20 })], spacing: { after: 40 } })],
           borders: tableBorders,
+          margins: { top: 40, bottom: 40, left: 80, right: 80 },
+        }),
+        new TableCell({
+          children: matNotes.map(note => new Paragraph({ children: [new TextRun({ text: note, size: 20 })], spacing: { after: 40 } })),
+          borders: tableBorders,
+          margins: { top: 40, bottom: 40, left: 80, right: 80 },
+        }),
+        new TableCell({
+          width: { size: 10, type: WidthType.PERCENTAGE },
+          children: [new Paragraph({ children: [new TextRun({ text: "RIBr", size: 20 })], spacing: { after: 40 } })],
+          borders: tableBorders,
+          margins: { top: 40, bottom: 40, left: 80, right: 80 },
         }),
       ],
     }));
   }
-
-  rows.push(columnHeaderRow());
   
   // Sub-section: Overflater i brannceller som ikke er rømningsvei
   rows.push(subSectionHeaderRow("Overflater i brannceller som ikke er rømningsvei"));
