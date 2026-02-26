@@ -1346,7 +1346,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 <td className="border border-gray-400 p-2 align-top">RIBr</td>
               </tr>
             )}
-            <tr className="bg-blue-100">
+            <tr className="bg-gray-100">
               <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Overflater i brannceller som ikke er rømningsvei</td>
             </tr>
             <tr>
@@ -1361,7 +1361,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               </td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
-            <tr className="bg-blue-100">
+            <tr className="bg-gray-100">
               <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Overflater i brannceller som er rømningsvei</td>
             </tr>
             <tr>
@@ -1374,7 +1374,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">D<sub>fl</sub>-s1 [G]</span></td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
-            <tr className="bg-blue-100">
+            <tr className="bg-gray-100">
               <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Utvendige overflater</td>
             </tr>
             <tr>
@@ -1384,7 +1384,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               </td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
-            <tr className="bg-blue-100">
+            <tr className="bg-gray-100">
               <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Kledninger</td>
             </tr>
             <tr>
@@ -1399,7 +1399,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               </td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
-            <tr className="bg-blue-100">
+            <tr className="bg-gray-100">
               <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Taktekning</td>
             </tr>
             <tr>
