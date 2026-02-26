@@ -1378,9 +1378,20 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Utvendige overflater</td>
             </tr>
             <tr>
-              <td className="border border-gray-400 p-2 align-top">Overflater på ytterkledning</td>
+              <td className="border border-gray-400 p-2 align-top">Utvendige overflater</td>
               <td className="border border-gray-400 p-2">
-                <span className="text-red-600 font-medium">{formData.brannklasse === "BKL1" ? "D-s3,d0 [Ut 2]" : "B-s3,d0 [Ut 1]"}</span>
+                <p className="font-medium mb-1">Preaksepterte ytelser</p>
+                <ol className="list-decimal list-inside space-y-2 text-sm">
+                  <li>Utvendige overflater er tilfredsstillende når det benyttes produkter med egenskaper som angitt i tabell 1A og 1B, med unntak gitt i nr. 2 til 4.</li>
+                  <li>Yttervegg i byggverk i brannklasse 2 og 3 kan ha utvendig overflate som tilfredsstiller klasse <span className="text-red-600 font-medium">D-s3,d0 [Ut 2]</span>, når enten
+                    <ol className="list-decimal ml-6 mt-1 space-y-1">
+                      <li>ytterveggen er utformet slik at den hindrer brannspredning i fasaden, eller</li>
+                      <li>byggverket er i risikoklasse 1, 2 og 4 og har inntil fire etasjer, og det er liten fare for brannspredning til og fra nabobyggverk.</li>
+                    </ol>
+                  </li>
+                  <li>Overflater i hulrom i ytterveggkonstruksjoner betraktes på samme måte som utvendig overflate og må ha minst like gode branntekniske egenskaper.</li>
+                  <li>Byggverk i brannklasse 1 og boliger inntil 3 etasjer kan ha uklassifiserte overflater i hulrom.</li>
+                </ol>
               </td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
