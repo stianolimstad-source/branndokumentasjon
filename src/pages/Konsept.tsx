@@ -525,8 +525,8 @@ const Konsept = () => {
     matNote2: true, // Hulrom som innvendig overflate
     matNote3: false, // Rom med brannfarlig virksomhet
     matNote4: true, // Minst D-s2,d0 ved analyse
-    himlingNote1: false, // Himling A2-s1,d0 eller opphengsystem
-    himlingNote2: false, // Overflater over himling som rømningsvei
+    himlingNote1: true, // Himling A2-s1,d0 eller opphengsystem
+    himlingNote2: true, // Overflater over himling som rømningsvei
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
     isolasjonBrennbar: "ikke_relevant" as "relevant" | "ikke_relevant",
     installasjoner: "",
