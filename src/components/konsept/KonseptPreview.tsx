@@ -1316,6 +1316,28 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
                 <p className="text-sm">Byggverk skal prosjekteres og utføres slik at det er liten sannsynlighet for at brann skal oppstå, utvikle og spre seg. Det skal tas hensyn til byggverkets bruk og den nødvendige tiden for rømning og redning.</p>
               </td>
             </tr>
+            {/* Innvendige overflater og kledninger – noter */}
+            {(formData.matNote1 || formData.matNote2 || formData.matNote3 || formData.matNote4) && (
+              <tr>
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  <p className="font-semibold text-sm mb-1">Innvendige overflater og kledninger</p>
+                  <ol className="list-decimal ml-4 space-y-1 text-sm">
+                    {formData.matNote1 && (
+                      <li>Overflater og kledninger er tilfredsstillende når det benyttes produkter med egenskaper som angitt i tabell 1A og 1B, med unntak gitt i nr. 3 og 4.</li>
+                    )}
+                    {formData.matNote2 && (
+                      <li>Overflater i hulrom betraktes på samme måte som innvendig overflate og må ha minst like gode branntekniske egenskaper.</li>
+                    )}
+                    {formData.matNote3 && (
+                      <li>Rom med brannfarlig virksomhet må ha kledning som tilfredsstiller klasse K<sub>2</sub>10 A2-s1,d0 [K1-A]. Eksempel på rom med brannfarlig virksomhet er rom hvor det oppbevares fyrverkeri, brannfarlig væske kategori 1 og 2, eller rom hvor det utføres varme arbeider som sveising, sliping samt rom hvor det arbeides med åpen varme.</li>
+                    )}
+                    {formData.matNote4 && (
+                      <li>Selv om sikkerhet ved brann dokumenteres ved analyse, må innvendige overflater på vegger og i himlinger ha minst klasse D-s2,d0 [In 2]. Lavere ytelse kan gi uakseptabelt bidrag til brannutviklingen. Dette kan utgjøre en fare for personsikkerheten. En meget rask brannutvikling kan også medføre at automatiske slokkeanlegg ikke har den effekten som er forutsatt.</li>
+                    )}
+                  </ol>
+                </td>
+              </tr>
+            )}
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
               <th className="border border-gray-400 p-2 text-left">Løsning</th>

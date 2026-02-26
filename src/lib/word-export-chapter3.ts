@@ -659,6 +659,27 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
       }),
     ],
   }));
+  // Innvendige overflater og kledninger – noter
+  const matNotes: string[] = [];
+  if (formData.matNote1) matNotes.push("1. Overflater og kledninger er tilfredsstillende når det benyttes produkter med egenskaper som angitt i tabell 1A og 1B, med unntak gitt i nr. 3 og 4.");
+  if (formData.matNote2) matNotes.push("2. Overflater i hulrom betraktes på samme måte som innvendig overflate og må ha minst like gode branntekniske egenskaper.");
+  if (formData.matNote3) matNotes.push("3. Rom med brannfarlig virksomhet må ha kledning som tilfredsstiller klasse K₂10 A2-s1,d0 [K1-A]. Eksempel på rom med brannfarlig virksomhet er rom hvor det oppbevares fyrverkeri, brannfarlig væske kategori 1 og 2, eller rom hvor det utføres varme arbeider som sveising, sliping samt rom hvor det arbeides med åpen varme.");
+  if (formData.matNote4) matNotes.push("4. Selv om sikkerhet ved brann dokumenteres ved analyse, må innvendige overflater på vegger og i himlinger ha minst klasse D-s2,d0 [In 2]. Lavere ytelse kan gi uakseptabelt bidrag til brannutviklingen. Dette kan utgjøre en fare for personsikkerheten. En meget rask brannutvikling kan også medføre at automatiske slokkeanlegg ikke har den effekten som er forutsatt.");
+  if (matNotes.length > 0) {
+    rows.push(new TableRow({
+      children: [
+        new TableCell({
+          columnSpan: 3,
+          children: [
+            new Paragraph({ children: [new TextRun({ text: "Innvendige overflater og kledninger", bold: true, size: 20 })], spacing: { after: 60 } }),
+            ...matNotes.map(note => new Paragraph({ children: [new TextRun({ text: note, size: 20 })], spacing: { after: 40 } })),
+          ],
+          borders: tableBorders,
+        }),
+      ],
+    }));
+  }
+
   rows.push(columnHeaderRow());
   
   // Sub-section: Overflater i brannceller som ikke er rømningsvei
