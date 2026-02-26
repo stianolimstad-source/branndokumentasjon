@@ -1371,6 +1371,21 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
               <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">D<sub>fl</sub>-s1 [G]</span></td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
+            {(formData.himlingNote1 || formData.himlingNote2) && (
+              <tr>
+                <td className="border border-gray-400 p-2" colSpan={3}>
+                  <p className="font-semibold text-sm mb-1">Nedforet himling i rømningsvei</p>
+                  <ol className="list-decimal ml-4 space-y-1 text-sm">
+                    {formData.himlingNote1 && (
+                      <li>Himlingen må tilfredsstille klasse A2-s1,d0 [In 1 på begrenset brennbart underlag] og ha et opphengsystem med dokumentert brannmotstand minst 10 minutter for den aktuelle eksponering, eller himlingen må bestå av kledning som tilfredsstiller klasse K<sub>2</sub>10 A2-s1,d0 [K1-A].</li>
+                    )}
+                    {formData.himlingNote2 && (
+                      <li>Overflater og kledninger i hulrom over himlingen må ha minst like gode branntekniske egenskaper som overflatene og kledningene i rømningsveien for øvrig.</li>
+                    )}
+                  </ol>
+                </td>
+              </tr>
+            )}
             <tr className="bg-blue-100">
               <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Utvendige overflater</td>
             </tr>

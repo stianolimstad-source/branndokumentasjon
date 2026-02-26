@@ -525,6 +525,8 @@ const Konsept = () => {
     matNote2: true, // Hulrom som innvendig overflate
     matNote3: false, // Rom med brannfarlig virksomhet
     matNote4: true, // Minst D-s2,d0 ved analyse
+    himlingNote1: false, // Himling A2-s1,d0 eller opphengsystem
+    himlingNote2: false, // Overflater over himling som rømningsvei
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
     isolasjonBrennbar: "ikke_relevant" as "relevant" | "ikke_relevant",
     installasjoner: "",
@@ -3735,6 +3737,31 @@ const Konsept = () => {
                           />
                           <label htmlFor="matNote4" className="text-xs cursor-pointer leading-relaxed">
                             Selv om sikkerhet ved brann dokumenteres ved analyse, må innvendige overflater på vegger og i himlinger ha minst klasse D-s2,d0 [In 2]. Lavere ytelse kan gi uakseptabelt bidrag til brannutviklingen.
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Nedforet himling i rømningsvei */}
+                      <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                        <Label className="text-xs font-medium">Nedforet himling i rømningsvei</Label>
+                        <div className="flex items-start gap-2">
+                          <Checkbox
+                            id="himlingNote1"
+                            checked={formData.himlingNote1}
+                            onCheckedChange={(checked) => setFormData({...formData, himlingNote1: !!checked})}
+                          />
+                          <label htmlFor="himlingNote1" className="text-xs cursor-pointer leading-relaxed">
+                            Himlingen må tilfredsstille klasse A2-s1,d0 [In 1 på begrenset brennbart underlag] og ha et opphengsystem med dokumentert brannmotstand minst 10 minutter for den aktuelle eksponering, eller himlingen må bestå av kledning som tilfredsstiller klasse K₂10 A2-s1,d0 [K1-A].
+                          </label>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <Checkbox
+                            id="himlingNote2"
+                            checked={formData.himlingNote2}
+                            onCheckedChange={(checked) => setFormData({...formData, himlingNote2: !!checked})}
+                          />
+                          <label htmlFor="himlingNote2" className="text-xs cursor-pointer leading-relaxed">
+                            Overflater og kledninger i hulrom over himlingen må ha minst like gode branntekniske egenskaper som overflatene og kledningene i rømningsveien for øvrig.
                           </label>
                         </div>
                       </div>
