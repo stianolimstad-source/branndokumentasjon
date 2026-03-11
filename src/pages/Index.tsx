@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Plus, FolderOpen } from "lucide-react";
+import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Plus, FolderOpen, ShieldCheck } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -36,6 +36,12 @@ const Index = () => {
       title: "Fraviksdokumentasjon",
       description: "Generer formelle fraviksanalyser og tiltak",
       href: "fravik-dialog",
+    },
+    {
+      icon: ShieldCheck,
+      title: "Sikkerhetsrutiner",
+      description: "Rutiner og maler for kvalitetssikring ved prosjektering",
+      href: "/sikkerhetsrutiner",
     },
     {
       icon: BookOpen,
