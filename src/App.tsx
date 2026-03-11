@@ -23,6 +23,7 @@ import GruppeDetalj from "./pages/GruppeDetalj";
 import KSGjennomgang from "./pages/KSGjennomgang";
 import KvalitativAnalyse from "./pages/fraviksdokumentasjon/KvalitativAnalyse";
 import MinProfil from "./pages/MinProfil";
+import Sikkerhetsrutiner from "./pages/Sikkerhetsrutiner";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
