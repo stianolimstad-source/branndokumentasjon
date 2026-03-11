@@ -55,6 +55,7 @@ const App = () => (
             <Route path="/mine-kontakter/gruppe/:id" element={<GruppeDetalj />} />
             <Route path="/fraviksdokumentasjon/kvalitativ" element={<KvalitativAnalyse />} />
             <Route path="/min-profil" element={<MinProfil />} />
+            <Route path="/sikkerhetsrutiner" element={<Sikkerhetsrutiner />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

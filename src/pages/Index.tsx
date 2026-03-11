@@ -38,6 +38,12 @@ const Index = () => {
       href: "fravik-dialog",
     },
     {
+      icon: ShieldCheck,
+      title: "Sikkerhetsrutiner",
+      description: "Rutiner og maler for kvalitetssikring ved prosjektering",
+      href: "/sikkerhetsrutiner",
+    },
+    {
       icon: BookOpen,
       title: "Eksempelkatalog",
       description: "Bibliotek med løsninger og konstruksjoner",
