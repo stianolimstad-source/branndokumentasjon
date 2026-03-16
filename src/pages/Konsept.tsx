@@ -355,6 +355,7 @@ const Konsept = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [generatedConcept, setGeneratedConcept] = useState<string | null>(null);
+  const [documentType, setDocumentType] = useState<"brannkonsept" | "tilstandsvurdering">("brannkonsept");
   
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     searchParams.get('project')
