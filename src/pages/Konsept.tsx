@@ -629,6 +629,8 @@ const Konsept = () => {
     fravikBeskrivelse: "",
     // Fravik
     fravik: "",
+    // Tilstandsvurdering per seksjon (kap 3)
+    tilstandsvurderinger: {} as Record<string, TilstandData>,
   });
 
   // Load existing concept if conceptId is provided
