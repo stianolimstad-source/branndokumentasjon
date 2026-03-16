@@ -50,28 +50,18 @@ const TilstandBlock = ({ data, sectionLabel }: { data: TilstandData; sectionLabe
 
 const TilstandTableRow = ({ data, sectionLabel }: { data: TilstandData; sectionLabel: string }) => {
   if (!data || (!data.grad && !data.beskrivelse && (!data.bilder || data.bilder.length === 0))) return null;
-  const gradInfo = gradColors[data.grad];
+  const gradLabel = { god: "God", akseptabel: "Akseptabel", mangelfull: "Mangelfull", kritisk: "Kritisk" }[data.grad] || "";
   return (
     <tr>
-      <td className="border border-gray-400 p-2" colSpan={3} style={{ background: "#fffbeb" }}>
-        <div style={{ border: "2px dashed #f59e0b", borderRadius: 8, padding: 12 }}>
-          <p style={{ fontSize: 10, fontWeight: 700, color: "#92400e", textTransform: "uppercase", marginBottom: 6 }}>
-            Tilstandsvurdering – {sectionLabel}
-          </p>
-          {gradInfo && (
-            <span style={{ fontSize: 10, fontWeight: 600, background: gradInfo.bg, color: gradInfo.text, padding: "2px 8px", borderRadius: 12, display: "inline-block", marginBottom: 6 }}>
-              {gradInfo.label}
-            </span>
-          )}
-          {data.beskrivelse && <p style={{ fontSize: 10, whiteSpace: "pre-wrap", marginTop: 4 }}>{data.beskrivelse}</p>}
-          {data.bilder && data.bilder.length > 0 && (
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
-              {data.bilder.map((url, i) => (
-                <img key={i} src={url} alt={`Tilstand ${i + 1}`} style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 4, border: "1px solid #e5e7eb" }} />
-              ))}
-            </div>
-          )}
-        </div>
+      <td className="border border-gray-400 p-2" colSpan={3} style={{ background: "#FEF3C7" }}>
+        <p style={{ fontSize: 10, fontWeight: 700, color: "#92400E", textTransform: "uppercase", marginBottom: 4 }}>
+          TILSTANDSVURDERING – {sectionLabel}
+        </p>
+        {gradLabel && <p style={{ fontSize: 10, marginBottom: 2 }}>Tilstandsgrad: {gradLabel}</p>}
+        {data.beskrivelse && <p style={{ fontSize: 10, whiteSpace: "pre-wrap" }}>Beskrivelse: {data.beskrivelse}</p>}
+        {data.bilder && data.bilder.length > 0 && (
+          <p style={{ fontSize: 10, marginTop: 4 }}>({data.bilder.length} bilde(r) vedlagt)</p>
+        )}
       </td>
     </tr>
   );
