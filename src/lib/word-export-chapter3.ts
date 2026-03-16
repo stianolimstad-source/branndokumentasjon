@@ -208,7 +208,7 @@ const isSeksjoneringRequired = (areal: string, brannenergi: string, tiltak: stri
   return arealNum > maksAreal && maksAreal !== Infinity;
 };
 
-export function buildChapter3Table(formData: Record<string, any>): Table {
+export async function buildChapter3Table(formData: Record<string, any>): Promise<Table> {
   const rows: TableRow[] = [];
   const bygningsdeler = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
   const branncelleTyper = Array.isArray(formData.branncelleTyper) ? formData.branncelleTyper : [];
