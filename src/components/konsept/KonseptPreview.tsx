@@ -231,7 +231,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <p><span className="font-bold">6.</span> Litteraturhenvisninger</p>
         </div>
       </section>
-      <PageFooter pageNum={hasSammendrag ? 3 : 2} />
+      <PageFooter pageNum={2 + extraPages} />
       </div>
 
       {/* Kapittel 1-2 - egen side */}
