@@ -110,23 +110,74 @@ const tilstandGradLabels: Record<string, string> = {
   tgiu: "TG IU – Ikke undersøkt",
 };
 
-function tilstandRow(formData: Record<string, any>, sectionKey: string, sectionLabel: string): TableRow[] {
+async function fetchImageAsBuffer(url: string): Promise<ArrayBuffer | null> {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    return await response.arrayBuffer();
+  } catch {
+    return null;
+  }
+}
+
+async function tilstandRow(formData: Record<string, any>, sectionKey: string, sectionLabel: string): Promise<TableRow[]> {
   const tilstandData = formData.tilstandsvurderinger?.[sectionKey];
   if (!tilstandData || (!tilstandData.grad && !tilstandData.beskrivelse)) return [];
   
   const gradLabel = tilstandGradLabels[tilstandData.grad] || "";
-  const lines: string[] = [];
-  if (gradLabel) lines.push(`Tilstandsgrad: ${gradLabel}`);
-  if (tilstandData.beskrivelse) lines.push(`Beskrivelse: ${tilstandData.beskrivelse}`);
+  const tilstandShading = { type: ShadingType.SOLID, color: "FEF3C7", fill: "FEF3C7" };
+
+  const children: Paragraph[] = [];
+  
+  children.push(new Paragraph({
+    spacing: { before: 40, after: 40 },
+    children: [new TextRun({ text: `TILSTANDSVURDERING – ${sectionLabel}`, bold: true, size: 18, color: "92400E" })],
+  }));
+
+  if (gradLabel) {
+    children.push(new Paragraph({
+      spacing: { before: 20, after: 20 },
+      children: [new TextRun({ text: `Tilstandsgrad: ${gradLabel}`, size: 18 })],
+    }));
+  }
+
+  if (tilstandData.beskrivelse) {
+    children.push(new Paragraph({
+      spacing: { before: 20, after: 20 },
+      children: [new TextRun({ text: `Beskrivelse: ${tilstandData.beskrivelse}`, size: 18 })],
+    }));
+  }
+
+  // Embed images
   if (tilstandData.bilder?.length > 0) {
     const bilder = tilstandData.bilder.map((b: any) => typeof b === "string" ? { url: b, beskrivelse: "" } : b);
-    bilder.forEach((bilde: any, i: number) => {
-      lines.push(`Bilde ${i + 1}${bilde.beskrivelse ? `: ${bilde.beskrivelse}` : ""}`);
-    });
+    
+    for (let i = 0; i < bilder.length; i++) {
+      const bilde = bilder[i];
+      const imageBuffer = await fetchImageAsBuffer(bilde.url);
+      
+      if (imageBuffer) {
+        children.push(new Paragraph({
+          spacing: { before: 80, after: 40 },
+          children: [
+            new ImageRun({
+              data: imageBuffer,
+              transformation: { width: 200, height: 150 },
+              type: "jpg",
+            }),
+          ],
+        }));
+      }
+
+      if (bilde.beskrivelse) {
+        children.push(new Paragraph({
+          spacing: { before: 20, after: 20 },
+          children: [new TextRun({ text: `Bilde ${i + 1}: ${bilde.beskrivelse}`, size: 16, italics: true })],
+        }));
+      }
+    }
   }
-  
-  const tilstandShading = { type: ShadingType.SOLID, color: "FEF3C7", fill: "FEF3C7" };
-  
+
   return [new TableRow({
     children: [
       new TableCell({
@@ -134,16 +185,7 @@ function tilstandRow(formData: Record<string, any>, sectionKey: string, sectionL
         borders: tableBorders,
         shading: tilstandShading,
         margins: { top: 40, bottom: 40, left: 80, right: 80 },
-        children: [
-          new Paragraph({
-            spacing: { before: 40, after: 40 },
-            children: [new TextRun({ text: `TILSTANDSVURDERING – ${sectionLabel}`, bold: true, size: 18, color: "92400E" })],
-          }),
-          ...lines.map(line => new Paragraph({
-            spacing: { before: 20, after: 20 },
-            children: [new TextRun({ text: line, size: 18 })],
-          })),
-        ],
+        children,
       }),
     ],
   })];
