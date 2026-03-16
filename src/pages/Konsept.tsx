@@ -1807,6 +1807,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {documentType !== "tilstandsvurdering" && (
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">1.2 Ansvarsoppgave (SAK 10)</Label>
                       <div className="space-y-3">
@@ -1851,6 +1852,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    )}
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">1.3 Prosjekteringsmetode</Label>
                       <RadioGroup
