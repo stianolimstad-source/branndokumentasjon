@@ -1008,6 +1008,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.manuellSlokkingKommentar) {
     rows.push(contentRow("Kommentar", formData.manuellSlokkingKommentar, "-"));
   }
+  rows.push(...tilstandRow(formData, "3_13", "3.13 Manuell slokking"));
 
   // ===== 3.14 Tilrettelegging for slokkemannskap =====
   rows.push(sectionHeaderRow("3.14   §11-17 Tilrettelegging for slokkemannskap"));
