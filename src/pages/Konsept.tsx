@@ -2648,6 +2648,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {renderTilstandPanel("3_1")}
                     <div className="space-y-3">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.2 § 11-5 Sikkerhet ved eksplosjon</Label>
