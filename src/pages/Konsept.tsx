@@ -790,13 +790,17 @@ const Konsept = () => {
       if (error) {
         toast({
           title: "Feil",
-          description: "Kunne ikke oppdatere brannkonseptet",
+          description: documentType === "tilstandsvurdering" 
+            ? "Kunne ikke oppdatere tilstandsvurderingen" 
+            : "Kunne ikke oppdatere brannkonseptet",
           variant: "destructive",
         });
       } else {
         toast({
           title: "Lagret",
-          description: "Brannkonseptet er oppdatert",
+          description: documentType === "tilstandsvurdering" 
+            ? "Tilstandsvurderingen er oppdatert" 
+            : "Brannkonseptet er oppdatert",
         });
       }
     } else {
