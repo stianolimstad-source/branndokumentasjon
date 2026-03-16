@@ -1546,6 +1546,28 @@ const Konsept = () => {
                           <span className="text-xs text-muted-foreground">Har du et eksisterende konsept eller forprosjekt? Last det opp for å fylle ut automatisk.</span>
                         </div>
                       )}
+
+              {/* Document type toggle */}
+              <div className="flex items-center gap-2 mb-4 p-3 rounded-lg border bg-muted/30">
+                <Label className="text-sm font-semibold mr-2">Dokumenttype:</Label>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={documentType === "brannkonsept" ? "default" : "outline"}
+                  onClick={() => setDocumentType("brannkonsept")}
+                >
+                  Brannkonsept
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={documentType === "tilstandsvurdering" ? "default" : "outline"}
+                  onClick={() => setDocumentType("tilstandsvurdering")}
+                >
+                  Tilstandsvurdering
+                </Button>
+              </div>
+
               <Accordion type="multiple" defaultValue={["kap1"]} className="w-full">
                 {/* Sammendrag */}
                 <AccordionItem value="sammendrag" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
