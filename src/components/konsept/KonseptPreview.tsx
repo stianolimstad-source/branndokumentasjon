@@ -219,39 +219,65 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <section className="mb-6">
         <h2 className="font-bold mb-3">Innholdsfortegnelse</h2>
         <div className="space-y-1 text-xs">
-          <p><span className="font-bold">1.</span> Innledning</p>
-          <p className="ml-4">1.1 Informasjon om tiltaket</p>
-          <p className="ml-4">1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)</p>
-          <p className="ml-4">1.3 Prosjekteringsmetode</p>
-          <p className="ml-4">1.4 Avgrensning av tiltak</p>
-          <p className="ml-4">1.5 Gjeldende regelverk</p>
-          <p><span className="font-bold">2.</span> Grunnlag og forutsetninger for brannteknisk prosjektering</p>
-          <p className="ml-4">2.1 Grunnlagsdokumenter</p>
-          <p className="ml-4">2.2 Beskrivelse av bygning og branntekniske forutsetninger</p>
-          <p className="ml-4">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</p>
-          <p><span className="font-bold">3.</span> Beskrivelse av branntekniske ytelseskrav</p>
-          <p className="ml-4">3.1 § 11-4 Bæreevne og stabilitet</p>
-          <p className="ml-4">3.2 § 11-5 Sikkerhet ved eksplosjon</p>
-          <p className="ml-4">3.3 § 11-6 Tiltak mot brannspredning mellom byggverk</p>
-          <p className="ml-4">3.4 § 11-7 Brannseksjoner</p>
-          <p className="ml-4">3.5 § 11-8 Brannceller</p>
-          <p className="ml-4">3.6 § 11-9 Materialer og produkters egenskaper ved brann</p>
-          <p className="ml-4">3.7 § 11-10 Tekniske installasjoner</p>
-          <p className="ml-4">3.8 § 11-11 Generelle krav om rømning og redning</p>
-          <p className="ml-4">3.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider</p>
-          <p className="ml-4">3.10 § 11-13 Utgang fra branncelle</p>
-          <p className="ml-4">3.11 § 11-14 Rømningsvei</p>
-          <p className="ml-4">3.12 § 11-16 Tilrettelegging for manuell slokking</p>
-          <p className="ml-4">3.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap</p>
-          {documentType !== "tilstandsvurdering" && (
+          {isTilstand ? (
             <>
+              <p><span className="font-bold">1.</span> Innledning</p>
+              <p className="ml-4">1.1 Informasjon om tiltaket</p>
+              <p className="ml-4">1.2 Avgrensning av vurderingen</p>
+              <p className="ml-4">1.3 Bygningsinformasjon</p>
+              <p className="ml-4">1.4 Grunnlagsdokumenter</p>
+              <p className="ml-4">1.5 Branntekniske forutsetninger</p>
+              <p className="ml-4">1.6 Tilleggskrav</p>
+              <p><span className="font-bold">2.</span> Brannteknisk tilstandsvurdering</p>
+              <p className="ml-4">2.1 § 11-4 Bæreevne og stabilitet</p>
+              <p className="ml-4">2.2 § 11-5 Sikkerhet ved eksplosjon</p>
+              <p className="ml-4">2.3 § 11-6 Tiltak mot brannspredning mellom byggverk</p>
+              <p className="ml-4">2.4 § 11-7 Brannseksjoner</p>
+              <p className="ml-4">2.5 § 11-8 Brannceller</p>
+              <p className="ml-4">2.6 § 11-9 Materialer og produkters egenskaper ved brann</p>
+              <p className="ml-4">2.7 § 11-10 Tekniske installasjoner</p>
+              <p className="ml-4">2.8 § 11-11 Generelle krav om rømning og redning</p>
+              <p className="ml-4">2.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider</p>
+              <p className="ml-4">2.10 § 11-13 Utgang fra branncelle</p>
+              <p className="ml-4">2.11 § 11-14 Rømningsvei</p>
+              <p className="ml-4">2.12 § 11-16 Tilrettelegging for manuell slokking</p>
+              <p className="ml-4">2.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap</p>
+              <p><span className="font-bold">3.</span> Revisjonshistorikk</p>
+              <p><span className="font-bold">4.</span> Litteraturhenvisninger</p>
+            </>
+          ) : (
+            <>
+              <p><span className="font-bold">1.</span> Innledning</p>
+              <p className="ml-4">1.1 Informasjon om tiltaket</p>
+              <p className="ml-4">1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)</p>
+              <p className="ml-4">1.3 Prosjekteringsmetode</p>
+              <p className="ml-4">1.4 Avgrensning av tiltak</p>
+              <p className="ml-4">1.5 Gjeldende regelverk</p>
+              <p><span className="font-bold">2.</span> Grunnlag og forutsetninger for brannteknisk prosjektering</p>
+              <p className="ml-4">2.1 Grunnlagsdokumenter</p>
+              <p className="ml-4">2.2 Beskrivelse av bygning og branntekniske forutsetninger</p>
+              <p className="ml-4">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</p>
+              <p><span className="font-bold">3.</span> Beskrivelse av branntekniske ytelseskrav</p>
+              <p className="ml-4">3.1 § 11-4 Bæreevne og stabilitet</p>
+              <p className="ml-4">3.2 § 11-5 Sikkerhet ved eksplosjon</p>
+              <p className="ml-4">3.3 § 11-6 Tiltak mot brannspredning mellom byggverk</p>
+              <p className="ml-4">3.4 § 11-7 Brannseksjoner</p>
+              <p className="ml-4">3.5 § 11-8 Brannceller</p>
+              <p className="ml-4">3.6 § 11-9 Materialer og produkters egenskaper ved brann</p>
+              <p className="ml-4">3.7 § 11-10 Tekniske installasjoner</p>
+              <p className="ml-4">3.8 § 11-11 Generelle krav om rømning og redning</p>
+              <p className="ml-4">3.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider</p>
+              <p className="ml-4">3.10 § 11-13 Utgang fra branncelle</p>
+              <p className="ml-4">3.11 § 11-14 Rømningsvei</p>
+              <p className="ml-4">3.12 § 11-16 Tilrettelegging for manuell slokking</p>
+              <p className="ml-4">3.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap</p>
               <p><span className="font-bold">4.</span> Utførelses- og driftsfasen</p>
               <p className="ml-4">4.1 Utførelsesfasen</p>
               <p className="ml-4">4.2 Driftsfasen</p>
+              <p><span className="font-bold">5.</span> Revisjonshistorikk</p>
+              <p><span className="font-bold">6.</span> Litteraturhenvisninger</p>
             </>
           )}
-          <p><span className="font-bold">{documentType === "tilstandsvurdering" ? "4" : "5"}.</span> Revisjonshistorikk</p>
-          <p><span className="font-bold">{documentType === "tilstandsvurdering" ? "5" : "6"}.</span> Litteraturhenvisninger</p>
         </div>
       </section>
       <PageFooter pageNum={2 + extraPages} />
