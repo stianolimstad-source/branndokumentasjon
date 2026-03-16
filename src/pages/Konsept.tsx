@@ -797,7 +797,7 @@ const Konsept = () => {
           project_id: selectedProjectId,
           user_id: user.id,
           name: conceptName,
-          content: JSON.parse(JSON.stringify(formData)),
+          content: JSON.parse(JSON.stringify({ ...formData, documentType })),
           status: 'draft',
         })
         .select()
