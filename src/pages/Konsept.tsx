@@ -1900,6 +1900,19 @@ const Konsept = () => {
                       )}
                     </div>
                     )}
+                    {documentType === "tilstandsvurdering" ? (
+                    <div className="space-y-2">
+                      <Label className="text-xs text-muted-foreground">1.2 Avgrensning av vurderingen</Label>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Beskriv avgrensning av vurderingen</Label>
+                        <Textarea 
+                          value={formData.avgrensning}
+                          onChange={(e) => setFormData({...formData, avgrensning: e.target.value})}
+                          placeholder="Beskriv hva som inngår i tilstandsvurderingen og eventuelle begrensninger..."
+                        />
+                      </div>
+                    </div>
+                    ) : (
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">1.4 Avgrensning av tiltak</Label>
                       <div>
@@ -1910,6 +1923,7 @@ const Konsept = () => {
                         />
                       </div>
                     </div>
+                    )}
                   </AccordionContent>
                 </AccordionItem>
 
