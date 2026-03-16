@@ -452,7 +452,8 @@ const MineProsjekter = () => {
                   <CardContent>
                     {(() => {
                       const allConcepts = conceptsByProject[project.id] || [];
-                      const brannkonsepter = allConcepts.filter(c => !c.contentType);
+                      const brannkonsepter = allConcepts.filter(c => !c.contentType || c.contentType === "brannkonsept");
+                      const tilstandsvurderinger = allConcepts.filter(c => c.contentType === "tilstandsvurdering");
                       const fraviksdokumenter = allConcepts.filter(c => c.contentType === "kvalitativ" || c.contentType === "komparativ" || c.contentType === "risikoanalyse");
 
                       return (
