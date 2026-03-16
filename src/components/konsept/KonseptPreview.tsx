@@ -77,7 +77,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   const pageStyle = "bg-white text-black p-10 rounded-lg shadow-md text-sm border border-gray-200 mx-auto relative";
   const pageWidth = { maxWidth: '210mm', minHeight: '297mm', paddingBottom: '40px', fontFamily: 'Verdana, Geneva, sans-serif' };
   const hasSammendrag = !!formData.sammendrag;
-  const totalPages = hasSammendrag ? 9 : 8;
+  const isTilstand = documentType === "tilstandsvurdering";
+  const extraPages = (hasSammendrag ? 1 : 0) + (isTilstand ? 1 : 0);
+  const totalPages = 8 + extraPages;
 
   const PageFooter = ({ pageNum }: { pageNum: number }) => (
     <div className="absolute bottom-4 left-0 right-0 flex justify-center">
