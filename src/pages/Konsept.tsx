@@ -1354,7 +1354,7 @@ const Konsept = () => {
                 spacing: { before: 200, after: 100 },
               }),
               new Paragraph({
-                text: formData.forutsetninger || "[Branntekniske forutsetninger beskrives]",
+                text: formData.tiltaksbeskrivelse || "[Branntekniske forutsetninger beskrives]",
                 spacing: { after: 100 },
               }),
               new Paragraph({
