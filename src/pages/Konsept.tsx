@@ -1551,7 +1551,7 @@ const Konsept = () => {
                     <div className="space-y-6">
                       {/* Konseptnavn */}
                       <div className="space-y-2">
-                        <Label htmlFor="concept-name" className="text-sm font-semibold">Navn på brannkonseptet *</Label>
+                        <Label htmlFor="concept-name" className="text-sm font-semibold">{documentType === "tilstandsvurdering" ? "Navn på tilstandsvurderingen" : "Navn på brannkonseptet"} *</Label>
                         <Input
                           id="concept-name"
                           placeholder="f.eks. Brannkonsept rev. A"
