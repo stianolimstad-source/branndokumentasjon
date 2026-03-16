@@ -2572,6 +2572,7 @@ const Konsept = () => {
                         )}
                       </div>
                     </div>
+                    {documentType !== "tilstandsvurdering" && (
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">Tiltaksklasse</Label>
                       <Select 
@@ -2607,6 +2608,7 @@ const Konsept = () => {
                         </p>
                       )}
                     </div>
+                    )}
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.4 Tilleggskrav</Label>
                       <div>
