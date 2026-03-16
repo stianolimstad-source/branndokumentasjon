@@ -1517,7 +1517,7 @@ const Konsept = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="create-concept-name">Navn på brannkonseptet *</Label>
+                  <Label htmlFor="create-concept-name">{documentType === "tilstandsvurdering" ? "Navn på tilstandsvurderingen" : "Navn på brannkonseptet"} *</Label>
                   <Input
                     id="create-concept-name"
                     placeholder="f.eks. Brannkonsept rev. A"
