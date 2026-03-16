@@ -28,6 +28,7 @@ interface Project {
 
 const KvalitativAnalyse = () => {
   const { user, loading: authLoading } = useAuth();
+  const canDownload = useCanDownload();
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();

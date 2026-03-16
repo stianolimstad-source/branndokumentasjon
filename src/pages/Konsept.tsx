@@ -346,6 +346,7 @@ const getTiltaksklasse = (brannklasse: string, risikoklasse: string, prosjekteri
 const Konsept = () => {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
+  const canDownload = useCanDownload();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const isViewMode = searchParams.get('view') === 'true';

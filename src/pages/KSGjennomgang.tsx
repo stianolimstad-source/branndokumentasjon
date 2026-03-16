@@ -51,6 +51,7 @@ interface Checkpoint {
 
 const KSGjennomgang = () => {
   const { user, loading: authLoading } = useAuth();
+  const canDownload = useCanDownload();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
