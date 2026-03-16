@@ -1462,9 +1462,9 @@ const Konsept = () => {
             }),
             ] : []),
 
-            // 5. Revisjonshistorikk
+            // Revisjonshistorikk
             new Paragraph({
-              children: [new TextRun({ text: "5. Revisjonshistorikk", bold: true, size: 28 })],
+              children: [new TextRun({ text: `${documentType === "tilstandsvurdering" ? "4" : "5"}. Revisjonshistorikk`, bold: true, size: 28 })],
               spacing: { before: 400, after: 200 },
             }),
             new Paragraph({
@@ -1472,9 +1472,9 @@ const Konsept = () => {
               spacing: { after: 100 },
             }),
 
-            // 6. Litteraturhenvisninger
+            // Litteraturhenvisninger
             new Paragraph({
-              children: [new TextRun({ text: "6. Litteraturhenvisninger", bold: true, size: 28 })],
+              children: [new TextRun({ text: `${documentType === "tilstandsvurdering" ? "5" : "6"}. Litteraturhenvisninger`, bold: true, size: 28 })],
               spacing: { before: 400, after: 200 },
             }),
             new Paragraph({
@@ -1487,8 +1487,14 @@ const Konsept = () => {
             }),
             new Paragraph({
               text: "• NS 3901 - Krav til risikovurdering av brann i byggverk",
-              spacing: { after: 100 },
+              spacing: { after: 50 },
             }),
+            ...(documentType === "tilstandsvurdering" ? [
+              new Paragraph({
+                text: "• NS 3424 - Tilstandsanalyse av byggverk",
+                spacing: { after: 100 },
+              }),
+            ] : []),
 
             // Fravik (if any)
             ...(formData.fravik ? [
