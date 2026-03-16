@@ -129,15 +129,26 @@ const TilstandsvurderingPanel = ({ sectionKey, sectionLabel, data, onChange }: T
             </div>
           ))}
         </div>
-        <label>
-          <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} disabled={uploading} />
-          <Button type="button" variant="outline" size="sm" className="cursor-pointer" asChild disabled={uploading}>
-            <span>
-              {uploading ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <ImagePlus className="h-3 w-3 mr-1" />}
-              {uploading ? "Laster opp..." : "Legg til bilde"}
-            </span>
-          </Button>
-        </label>
+        <div className="flex gap-2">
+          <label>
+            <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handleImageUpload} disabled={uploading} />
+            <Button type="button" variant="outline" size="sm" className="cursor-pointer" asChild disabled={uploading}>
+              <span>
+                {uploading ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <ImagePlus className="h-3 w-3 mr-1" />}
+                {uploading ? "Laster opp..." : "Ta bilde"}
+              </span>
+            </Button>
+          </label>
+          <label>
+            <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} disabled={uploading} />
+            <Button type="button" variant="outline" size="sm" className="cursor-pointer" asChild disabled={uploading}>
+              <span>
+                {uploading ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <ImagePlus className="h-3 w-3 mr-1" />}
+                {uploading ? "Laster opp..." : "Velg fra galleri"}
+              </span>
+            </Button>
+          </label>
+        </div>
       </div>
     </div>
   );
