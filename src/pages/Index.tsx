@@ -30,7 +30,7 @@ const Index = () => {
       icon: ClipboardCheck,
       title: "Tilstandsvurdering",
       description: "Lag rapporter og risikoanalyser med bilder",
-      href: "#",
+      href: "tilstand-dialog",
     },
     {
       icon: FileWarning,
