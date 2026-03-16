@@ -119,7 +119,7 @@ function tilstandRow(formData: Record<string, any>, sectionKey: string, sectionL
   if (tilstandData.beskrivelse) lines.push(`Beskrivelse: ${tilstandData.beskrivelse}`);
   if (tilstandData.bilder?.length > 0) lines.push(`(${tilstandData.bilder.length} bilde(r) vedlagt)`);
   
-  const tilstandShading = { type: ShadingType.SOLID as const, color: "FEF3C7", fill: "FEF3C7" };
+  const tilstandShading = { type: ShadingType.SOLID, color: "FEF3C7", fill: "FEF3C7" };
   
   return [new TableRow({
     children: [
