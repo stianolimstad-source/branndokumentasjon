@@ -1436,7 +1436,7 @@ const Konsept = () => {
               spacing: { before: 200, after: 200 },
             }),
             // Tabell 3 - 3-column structure matching preview
-            buildChapter3Table(formData),
+            await buildChapter3Table(formData),
 
             // 4. Utførelses- og driftsfasen
             new Paragraph({

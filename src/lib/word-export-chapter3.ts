@@ -1,4 +1,4 @@
-import { Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, ShadingType } from "docx";
+import { Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, ShadingType, ImageRun } from "docx";
 import { branncelleTyperListe, getBrannklasse } from "./fire-concept-constants";
 import { getGarasjeKrav } from "./garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "./brensellagring-krav";
@@ -110,23 +110,74 @@ const tilstandGradLabels: Record<string, string> = {
   tgiu: "TG IU – Ikke undersøkt",
 };
 
-function tilstandRow(formData: Record<string, any>, sectionKey: string, sectionLabel: string): TableRow[] {
+async function fetchImageAsBuffer(url: string): Promise<ArrayBuffer | null> {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return null;
+    return await response.arrayBuffer();
+  } catch {
+    return null;
+  }
+}
+
+async function tilstandRow(formData: Record<string, any>, sectionKey: string, sectionLabel: string): Promise<TableRow[]> {
   const tilstandData = formData.tilstandsvurderinger?.[sectionKey];
   if (!tilstandData || (!tilstandData.grad && !tilstandData.beskrivelse)) return [];
   
   const gradLabel = tilstandGradLabels[tilstandData.grad] || "";
-  const lines: string[] = [];
-  if (gradLabel) lines.push(`Tilstandsgrad: ${gradLabel}`);
-  if (tilstandData.beskrivelse) lines.push(`Beskrivelse: ${tilstandData.beskrivelse}`);
+  const tilstandShading = { type: ShadingType.SOLID, color: "FEF3C7", fill: "FEF3C7" };
+
+  const children: Paragraph[] = [];
+  
+  children.push(new Paragraph({
+    spacing: { before: 40, after: 40 },
+    children: [new TextRun({ text: `TILSTANDSVURDERING – ${sectionLabel}`, bold: true, size: 18, color: "92400E" })],
+  }));
+
+  if (gradLabel) {
+    children.push(new Paragraph({
+      spacing: { before: 20, after: 20 },
+      children: [new TextRun({ text: `Tilstandsgrad: ${gradLabel}`, size: 18 })],
+    }));
+  }
+
+  if (tilstandData.beskrivelse) {
+    children.push(new Paragraph({
+      spacing: { before: 20, after: 20 },
+      children: [new TextRun({ text: `Beskrivelse: ${tilstandData.beskrivelse}`, size: 18 })],
+    }));
+  }
+
+  // Embed images
   if (tilstandData.bilder?.length > 0) {
     const bilder = tilstandData.bilder.map((b: any) => typeof b === "string" ? { url: b, beskrivelse: "" } : b);
-    bilder.forEach((bilde: any, i: number) => {
-      lines.push(`Bilde ${i + 1}${bilde.beskrivelse ? `: ${bilde.beskrivelse}` : ""}`);
-    });
+    
+    for (let i = 0; i < bilder.length; i++) {
+      const bilde = bilder[i];
+      const imageBuffer = await fetchImageAsBuffer(bilde.url);
+      
+      if (imageBuffer) {
+        children.push(new Paragraph({
+          spacing: { before: 80, after: 40 },
+          children: [
+            new ImageRun({
+              data: imageBuffer,
+              transformation: { width: 200, height: 150 },
+              type: "jpg",
+            }),
+          ],
+        }));
+      }
+
+      if (bilde.beskrivelse) {
+        children.push(new Paragraph({
+          spacing: { before: 20, after: 20 },
+          children: [new TextRun({ text: `Bilde ${i + 1}: ${bilde.beskrivelse}`, size: 16, italics: true })],
+        }));
+      }
+    }
   }
-  
-  const tilstandShading = { type: ShadingType.SOLID, color: "FEF3C7", fill: "FEF3C7" };
-  
+
   return [new TableRow({
     children: [
       new TableCell({
@@ -134,16 +185,7 @@ function tilstandRow(formData: Record<string, any>, sectionKey: string, sectionL
         borders: tableBorders,
         shading: tilstandShading,
         margins: { top: 40, bottom: 40, left: 80, right: 80 },
-        children: [
-          new Paragraph({
-            spacing: { before: 40, after: 40 },
-            children: [new TextRun({ text: `TILSTANDSVURDERING – ${sectionLabel}`, bold: true, size: 18, color: "92400E" })],
-          }),
-          ...lines.map(line => new Paragraph({
-            spacing: { before: 20, after: 20 },
-            children: [new TextRun({ text: line, size: 18 })],
-          })),
-        ],
+        children,
       }),
     ],
   })];
@@ -166,7 +208,7 @@ const isSeksjoneringRequired = (areal: string, brannenergi: string, tiltak: stri
   return arealNum > maksAreal && maksAreal !== Infinity;
 };
 
-export function buildChapter3Table(formData: Record<string, any>): Table {
+export async function buildChapter3Table(formData: Record<string, any>): Promise<Table> {
   const rows: TableRow[] = [];
   const bygningsdeler = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
   const branncelleTyper = Array.isArray(formData.branncelleTyper) ? formData.branncelleTyper : [];
@@ -234,7 +276,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.baereevneKommentar) {
     rows.push(contentRow("Kommentar", formData.baereevneKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_1", "3.1 Bæreevne og stabilitet"));
+  rows.push(...await tilstandRow(formData, "3_1", "3.1 Bæreevne og stabilitet"));
 
   // ===== 3.2 Sikkerhet ved eksplosjon =====
   rows.push(sectionHeaderRow("3.2   §11-5 Sikkerhet ved eksplosjon"));
@@ -265,7 +307,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.eksplosjonKommentar) {
     rows.push(contentRow("Kommentar", formData.eksplosjonKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_2", "3.2 Sikkerhet ved eksplosjon"));
+  rows.push(...await tilstandRow(formData, "3_2", "3.2 Sikkerhet ved eksplosjon"));
 
   // ===== 3.3 Brannspredning mellom byggverk =====
   rows.push(sectionHeaderRow("3.3   §11-6 Brannspredning mellom byggverk"));
@@ -313,7 +355,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.brannspredningKommentar) {
     rows.push(contentRow("Kommentar", formData.brannspredningKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_3", "3.3 Brannspredning mellom byggverk"));
+  rows.push(...await tilstandRow(formData, "3_3", "3.3 Brannspredning mellom byggverk"));
 
   // ===== 3.4 Brannseksjoner =====
   rows.push(sectionHeaderRow("3.4   §11-7 Brannseksjoner"));
@@ -397,7 +439,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.brannseksjonerKommentar) {
     rows.push(contentRow("Kommentar", formData.brannseksjonerKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_4", "3.4 Brannseksjoner"));
+  rows.push(...await tilstandRow(formData, "3_4", "3.4 Brannseksjoner"));
 
   // ===== 3.5 Brannceller =====
   rows.push(sectionHeaderRow("3.5   §11-8 Brannceller"));
@@ -709,7 +751,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.branncellerKommentar) {
     rows.push(contentRow("Kommentar", formData.branncellerKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_5", "3.5 Brannceller"));
+  rows.push(...await tilstandRow(formData, "3_5", "3.5 Brannceller"));
 
   // ===== 3.6 Materialer og produkters egenskaper ved brann =====
   rows.push(sectionHeaderRow("3.6   §11-9 Materialer og produkters egenskaper ved brann"));
@@ -865,7 +907,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.materialerKommentar) {
     rows.push(contentRow("Kommentar", formData.materialerKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_6", "3.6 Materialer og produkter"));
+  rows.push(...await tilstandRow(formData, "3_6", "3.6 Materialer og produkter"));
 
   // ===== 3.7 Tekniske installasjoner =====
   rows.push(sectionHeaderRow("3.7   §11-10 Tekniske installasjoner"));
@@ -927,7 +969,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.installasjonerKommentar) {
     rows.push(contentRow("Kommentar", formData.installasjonerKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_7", "3.7 Tekniske installasjoner"));
+  rows.push(...await tilstandRow(formData, "3_7", "3.7 Tekniske installasjoner"));
 
   // ===== 3.8 Generelle krav om rømning og redning =====
   rows.push(sectionHeaderRow("3.8   §11-11 Generelle krav om rømning og redning"));
@@ -944,7 +986,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.romningSikkerhetKommentar) {
     rows.push(contentRow("Kommentar", formData.romningSikkerhetKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_8", "3.8 Rømning og redning"));
+  rows.push(...await tilstandRow(formData, "3_8", "3.8 Rømning og redning"));
 
   // ===== 3.9 Tilrettelegging for rømning og redning =====
   rows.push(sectionHeaderRow("3.9   §11-12 Tilrettelegging for rømning og redning"));
@@ -966,7 +1008,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.tilretteleggingKommentar) {
     rows.push(contentRow("Kommentar", formData.tilretteleggingKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_9", "3.9 Tilrettelegging for rømning"));
+  rows.push(...await tilstandRow(formData, "3_9", "3.9 Tilrettelegging for rømning"));
 
   // ===== 3.10 Utgang fra branncelle =====
   rows.push(sectionHeaderRow("3.10   §11-13 Utgang fra branncelle"));
@@ -982,7 +1024,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.utgangBranncelleKommentar) {
     rows.push(contentRow("Kommentar", formData.utgangBranncelleKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_10", "3.10 Utgang fra branncelle"));
+  rows.push(...await tilstandRow(formData, "3_10", "3.10 Utgang fra branncelle"));
 
   // ===== 3.11 Rømningsvei =====
   rows.push(sectionHeaderRow("3.11   §11-14 Rømningsvei"));
@@ -998,7 +1040,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.romningsveiKommentar) {
     rows.push(contentRow("Kommentar", formData.romningsveiKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_11", "3.11 Rømningsvei"));
+  rows.push(...await tilstandRow(formData, "3_11", "3.11 Rømningsvei"));
 
   // ===== 3.13 Manuell slokking =====
   rows.push(sectionHeaderRow("3.13   §11-16 Tilrettelegging for manuell slokking"));
@@ -1014,7 +1056,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.manuellSlokkingKommentar) {
     rows.push(contentRow("Kommentar", formData.manuellSlokkingKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_13", "3.13 Manuell slokking"));
+  rows.push(...await tilstandRow(formData, "3_13", "3.13 Manuell slokking"));
 
   // ===== 3.14 Tilrettelegging for slokkemannskap =====
   rows.push(sectionHeaderRow("3.14   §11-17 Tilrettelegging for slokkemannskap"));
@@ -1030,7 +1072,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.redningsmannskapKommentar) {
     rows.push(contentRow("Kommentar", formData.redningsmannskapKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_14", "3.14 Slokkemannskap"));
+  rows.push(...await tilstandRow(formData, "3_14", "3.14 Slokkemannskap"));
 
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
