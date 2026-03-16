@@ -1900,6 +1900,19 @@ const Konsept = () => {
                       )}
                     </div>
                     )}
+                    {documentType === "tilstandsvurdering" ? (
+                    <div className="space-y-2">
+                      <Label className="text-xs text-muted-foreground">1.2 Avgrensning av vurderingen</Label>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Beskriv avgrensning av vurderingen</Label>
+                        <Textarea 
+                          value={formData.avgrensning}
+                          onChange={(e) => setFormData({...formData, avgrensning: e.target.value})}
+                          placeholder="Beskriv hva som inngår i tilstandsvurderingen og eventuelle begrensninger..."
+                        />
+                      </div>
+                    </div>
+                    ) : (
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">1.4 Avgrensning av tiltak</Label>
                       <div>
@@ -1910,6 +1923,7 @@ const Konsept = () => {
                         />
                       </div>
                     </div>
+                    )}
                   </AccordionContent>
                 </AccordionItem>
 
@@ -1923,7 +1937,7 @@ const Konsept = () => {
                   </AccordionTrigger>
                   <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">2.1 Bygningsinformasjon</Label>
+                      <Label className="text-xs text-muted-foreground">{documentType === "tilstandsvurdering" ? "1.3" : "2.1"} Bygningsinformasjon</Label>
                       <div className="space-y-3">
                         <div>
                           <Label className="text-xs font-medium mb-1 block">Bygningstype</Label>
@@ -2039,7 +2053,7 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">2.2 Grunnlagsdokumenter</Label>
+                      <Label className="text-xs text-muted-foreground">{documentType === "tilstandsvurdering" ? "1.4" : "2.2"} Grunnlagsdokumenter</Label>
                       <div className="space-y-3">
                         {(Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : []).map((doc, index) => (
                           <div key={index} className="border rounded-md p-3 space-y-2 relative">
@@ -2111,7 +2125,7 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">2.3 Branntekniske forutsetninger</Label>
+                      <Label className="text-xs text-muted-foreground">{documentType === "tilstandsvurdering" ? "1.5" : "2.3"} Branntekniske forutsetninger</Label>
                       <div className="space-y-3">
                         {/* Toggle for flere risikoklasser */}
                         <div className="flex items-center gap-2 p-3 bg-muted/30 border rounded-md">
