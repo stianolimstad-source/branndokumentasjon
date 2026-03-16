@@ -228,6 +228,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.baereevneKommentar) {
     rows.push(contentRow("Kommentar", formData.baereevneKommentar, "-"));
   }
+  rows.push(...tilstandRow(formData, "3_1", "3.1 Bæreevne og stabilitet"));
 
   // ===== 3.2 Sikkerhet ved eksplosjon =====
   rows.push(sectionHeaderRow("3.2   §11-5 Sikkerhet ved eksplosjon"));
