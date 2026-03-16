@@ -193,7 +193,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       {/* Innholdsfortegnelse - egen side */}
       <div className={pageStyle} style={pageWidth}>
         <h2 className="text-xl font-bold text-center mb-6 pb-4">
-          BRANNKONSEPT
+          {isTilstand ? "TILSTANDSVURDERING" : "BRANNKONSEPT"}
         </h2>
       
       {/* Innholdsfortegnelse */}
