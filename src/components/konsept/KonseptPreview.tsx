@@ -1904,6 +1904,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
             )}
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_14"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_14"]} sectionLabel="3.14 Slokkemannskap" />
+            )}
           </tbody>
         </table>
       </section>
