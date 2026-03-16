@@ -186,7 +186,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
             </tbody>
           </table>
-          <PageFooter pageNum={hasSammendrag ? 3 : 2} />
+          <PageFooter pageNum={2 + extraPages} />
         </div>
       )}
 
