@@ -1008,7 +1008,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.tilretteleggingKommentar) {
     rows.push(contentRow("Kommentar", formData.tilretteleggingKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_9", "3.9 Tilrettelegging for rømning"));
+  rows.push(...await tilstandRow(formData, "3_9", "3.9 Tilrettelegging for rømning"));
 
   // ===== 3.10 Utgang fra branncelle =====
   rows.push(sectionHeaderRow("3.10   §11-13 Utgang fra branncelle"));
