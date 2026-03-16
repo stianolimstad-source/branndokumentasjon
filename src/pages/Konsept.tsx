@@ -820,14 +820,18 @@ const Konsept = () => {
       if (error) {
         toast({
           title: "Feil",
-          description: "Kunne ikke lagre brannkonseptet",
+          description: documentType === "tilstandsvurdering" 
+            ? "Kunne ikke lagre tilstandsvurderingen" 
+            : "Kunne ikke lagre brannkonseptet",
           variant: "destructive",
         });
       } else if (data) {
         setConceptId(data.id);
         toast({
           title: "Lagret",
-          description: "Brannkonseptet er lagret",
+          description: documentType === "tilstandsvurdering" 
+            ? "Tilstandsvurderingen er lagret" 
+            : "Brannkonseptet er lagret",
         });
         // Update URL with concept id
         navigate(`/konsept?project=${selectedProjectId}&concept=${data.id}`, { replace: true });
