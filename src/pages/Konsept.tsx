@@ -977,7 +977,7 @@ const Konsept = () => {
     }
 
     coverPageChildren.push(new Paragraph({
-      text: "BRANNKONSEPT",
+      text: documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT",
       heading: HeadingLevel.TITLE,
       alignment: AlignmentType.CENTER,
       spacing: { before: logoBuffer ? 200 : 1200, after: 200 },
