@@ -1138,36 +1138,62 @@ const Konsept = () => {
               children: [new TextRun({ text: "Innholdsfortegnelse", bold: true, size: 28 })],
               spacing: { before: 200, after: 200 },
             }),
-            new Paragraph({ children: [new TextRun({ text: "1. Innledning", bold: true, size: 22 })], spacing: { after: 50 } }),
-            new Paragraph({ text: "    1.1 Informasjon om tiltaket", spacing: { after: 30 } }),
-            new Paragraph({ text: "    1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)", spacing: { after: 30 } }),
-            new Paragraph({ text: "    1.3 Prosjekteringsmetode", spacing: { after: 30 } }),
-            new Paragraph({ text: "    1.4 Avgrensning av tiltak", spacing: { after: 30 } }),
-            new Paragraph({ text: "    1.5 Gjeldende regelverk", spacing: { after: 50 } }),
-            new Paragraph({ children: [new TextRun({ text: "2. Grunnlag og forutsetninger for brannteknisk prosjektering", bold: true, size: 22 })], spacing: { after: 50 } }),
-            new Paragraph({ text: "    2.1 Grunnlagsdokumenter", spacing: { after: 30 } }),
-            new Paragraph({ text: "    2.2 Beskrivelse av bygning og branntekniske forutsetninger", spacing: { after: 30 } }),
-            new Paragraph({ text: "    2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker", spacing: { after: 50 } }),
-            new Paragraph({ children: [new TextRun({ text: "3. Beskrivelse av branntekniske ytelseskrav", bold: true, size: 22 })], spacing: { after: 50 } }),
-            new Paragraph({ text: "    3.1 § 11-4 Bæreevne og stabilitet", spacing: { after: 30 } }),
-            new Paragraph({ text: "    3.2 § 11-5 Sikkerhet ved eksplosjon", spacing: { after: 30 } }),
-            new Paragraph({ text: "    3.3 § 11-6 Tiltak mot brannspredning mellom byggverk", spacing: { after: 30 } }),
-            new Paragraph({ text: "    3.4 § 11-7 Brannseksjoner", spacing: { after: 30 } }),
-            new Paragraph({ text: "    3.5 § 11-8 Brannceller", spacing: { after: 30 } }),
-            new Paragraph({ text: "    3.6 § 11-9 Materialer og produkters egenskaper ved brann", spacing: { after: 30 } }),
-            new Paragraph({ text: "    3.7 § 11-10 Tekniske installasjoner", spacing: { after: 30 } }),
-            new Paragraph({ text: "    3.8 § 11-11 Generelle krav om rømning og redning", spacing: { after: 30 } }),
-            new Paragraph({ text: "    3.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider", spacing: { after: 30 } }),
-            new Paragraph({ text: "    3.10 § 11-13 Utgang fra branncelle", spacing: { after: 30 } }),
-            new Paragraph({ text: "    3.11 § 11-14 Rømningsvei", spacing: { after: 30 } }),
-            new Paragraph({ text: "    3.12 § 11-15 Tilrettelegging for redning av husdyr", spacing: { after: 30 } }),
-            new Paragraph({ text: "    3.13 § 11-16 Tilrettelegging for manuell slokking", spacing: { after: 30 } }),
-            new Paragraph({ text: "    3.14 § 11-17 Tilrettelegging for rednings- og slokkemannskap", spacing: { after: 50 } }),
-            new Paragraph({ children: [new TextRun({ text: "4. Utførelses- og driftsfasen", bold: true, size: 22 })], spacing: { after: 50 } }),
-            new Paragraph({ text: "    4.1 Utførelsesfasen", spacing: { after: 30 } }),
-            new Paragraph({ text: "    4.2 Driftsfasen", spacing: { after: 50 } }),
-            new Paragraph({ children: [new TextRun({ text: "5. Revisjonshistorikk", bold: true, size: 22 })], spacing: { after: 50 } }),
-            new Paragraph({ children: [new TextRun({ text: "6. Litteraturhenvisninger", bold: true, size: 22 })], spacing: { after: 200 } }),
+            ...(documentType === "tilstandsvurdering" ? [
+              new Paragraph({ children: [new TextRun({ text: "1. Innledning", bold: true, size: 22 })], spacing: { after: 50 } }),
+              new Paragraph({ text: "    1.1 Informasjon om tiltaket", spacing: { after: 30 } }),
+              new Paragraph({ text: "    1.2 Avgrensning av vurderingen", spacing: { after: 30 } }),
+              new Paragraph({ text: "    1.3 Bygningsinformasjon", spacing: { after: 30 } }),
+              new Paragraph({ text: "    1.4 Grunnlagsdokumenter", spacing: { after: 30 } }),
+              new Paragraph({ text: "    1.5 Branntekniske forutsetninger", spacing: { after: 30 } }),
+              new Paragraph({ text: "    1.6 Tilleggskrav", spacing: { after: 50 } }),
+              new Paragraph({ children: [new TextRun({ text: "2. Brannteknisk tilstandsvurdering", bold: true, size: 22 })], spacing: { after: 50 } }),
+              new Paragraph({ text: "    2.1 § 11-4 Bæreevne og stabilitet", spacing: { after: 30 } }),
+              new Paragraph({ text: "    2.2 § 11-5 Sikkerhet ved eksplosjon", spacing: { after: 30 } }),
+              new Paragraph({ text: "    2.3 § 11-6 Tiltak mot brannspredning mellom byggverk", spacing: { after: 30 } }),
+              new Paragraph({ text: "    2.4 § 11-7 Brannseksjoner", spacing: { after: 30 } }),
+              new Paragraph({ text: "    2.5 § 11-8 Brannceller", spacing: { after: 30 } }),
+              new Paragraph({ text: "    2.6 § 11-9 Materialer og produkters egenskaper ved brann", spacing: { after: 30 } }),
+              new Paragraph({ text: "    2.7 § 11-10 Tekniske installasjoner", spacing: { after: 30 } }),
+              new Paragraph({ text: "    2.8 § 11-11 Generelle krav om rømning og redning", spacing: { after: 30 } }),
+              new Paragraph({ text: "    2.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider", spacing: { after: 30 } }),
+              new Paragraph({ text: "    2.10 § 11-13 Utgang fra branncelle", spacing: { after: 30 } }),
+              new Paragraph({ text: "    2.11 § 11-14 Rømningsvei", spacing: { after: 30 } }),
+              new Paragraph({ text: "    2.12 § 11-16 Tilrettelegging for manuell slokking", spacing: { after: 30 } }),
+              new Paragraph({ text: "    2.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap", spacing: { after: 50 } }),
+              new Paragraph({ children: [new TextRun({ text: "3. Revisjonshistorikk", bold: true, size: 22 })], spacing: { after: 50 } }),
+              new Paragraph({ children: [new TextRun({ text: "4. Litteraturhenvisninger", bold: true, size: 22 })], spacing: { after: 200 } }),
+            ] : [
+              new Paragraph({ children: [new TextRun({ text: "1. Innledning", bold: true, size: 22 })], spacing: { after: 50 } }),
+              new Paragraph({ text: "    1.1 Informasjon om tiltaket", spacing: { after: 30 } }),
+              new Paragraph({ text: "    1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)", spacing: { after: 30 } }),
+              new Paragraph({ text: "    1.3 Prosjekteringsmetode", spacing: { after: 30 } }),
+              new Paragraph({ text: "    1.4 Avgrensning av tiltak", spacing: { after: 30 } }),
+              new Paragraph({ text: "    1.5 Gjeldende regelverk", spacing: { after: 50 } }),
+              new Paragraph({ children: [new TextRun({ text: "2. Grunnlag og forutsetninger for brannteknisk prosjektering", bold: true, size: 22 })], spacing: { after: 50 } }),
+              new Paragraph({ text: "    2.1 Grunnlagsdokumenter", spacing: { after: 30 } }),
+              new Paragraph({ text: "    2.2 Beskrivelse av bygning og branntekniske forutsetninger", spacing: { after: 30 } }),
+              new Paragraph({ text: "    2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker", spacing: { after: 50 } }),
+              new Paragraph({ children: [new TextRun({ text: "3. Beskrivelse av branntekniske ytelseskrav", bold: true, size: 22 })], spacing: { after: 50 } }),
+              new Paragraph({ text: "    3.1 § 11-4 Bæreevne og stabilitet", spacing: { after: 30 } }),
+              new Paragraph({ text: "    3.2 § 11-5 Sikkerhet ved eksplosjon", spacing: { after: 30 } }),
+              new Paragraph({ text: "    3.3 § 11-6 Tiltak mot brannspredning mellom byggverk", spacing: { after: 30 } }),
+              new Paragraph({ text: "    3.4 § 11-7 Brannseksjoner", spacing: { after: 30 } }),
+              new Paragraph({ text: "    3.5 § 11-8 Brannceller", spacing: { after: 30 } }),
+              new Paragraph({ text: "    3.6 § 11-9 Materialer og produkters egenskaper ved brann", spacing: { after: 30 } }),
+              new Paragraph({ text: "    3.7 § 11-10 Tekniske installasjoner", spacing: { after: 30 } }),
+              new Paragraph({ text: "    3.8 § 11-11 Generelle krav om rømning og redning", spacing: { after: 30 } }),
+              new Paragraph({ text: "    3.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider", spacing: { after: 30 } }),
+              new Paragraph({ text: "    3.10 § 11-13 Utgang fra branncelle", spacing: { after: 30 } }),
+              new Paragraph({ text: "    3.11 § 11-14 Rømningsvei", spacing: { after: 30 } }),
+              new Paragraph({ text: "    3.12 § 11-15 Tilrettelegging for redning av husdyr", spacing: { after: 30 } }),
+              new Paragraph({ text: "    3.13 § 11-16 Tilrettelegging for manuell slokking", spacing: { after: 30 } }),
+              new Paragraph({ text: "    3.14 § 11-17 Tilrettelegging for rednings- og slokkemannskap", spacing: { after: 50 } }),
+              new Paragraph({ children: [new TextRun({ text: "4. Utførelses- og driftsfasen", bold: true, size: 22 })], spacing: { after: 50 } }),
+              new Paragraph({ text: "    4.1 Utførelsesfasen", spacing: { after: 30 } }),
+              new Paragraph({ text: "    4.2 Driftsfasen", spacing: { after: 50 } }),
+              new Paragraph({ children: [new TextRun({ text: "5. Revisjonshistorikk", bold: true, size: 22 })], spacing: { after: 50 } }),
+              new Paragraph({ children: [new TextRun({ text: "6. Litteraturhenvisninger", bold: true, size: 22 })], spacing: { after: 200 } }),
+            ]),
           ],
         },
         {
@@ -1191,191 +1217,99 @@ const Konsept = () => {
                 new TableRow({ children: [createTableCell("Adresse", true, 33), createTableCell(formData.adresse || "[Angis]")] }),
                 new TableRow({ children: [createTableCell("Gnr/Bnr", true, 33), createTableCell(formData.gnr || formData.bnr ? `${formData.gnr || "—"}/${formData.bnr || "—"}` : "[Angis]")] }),
                 new TableRow({ children: [createTableCell("Kommune", true, 33), createTableCell(formData.kommune || "[Angis]")] }),
-                new TableRow({ children: [createTableCell("Type tiltak", true, 33), createTableCell(formData.tiltakstype || "[Angis]")] }),
+                ...(documentType !== "tilstandsvurdering" ? [
+                  new TableRow({ children: [createTableCell("Type tiltak", true, 33), createTableCell(formData.tiltakstype || "[Angis]")] }),
+                ] : [
+                  new TableRow({ children: [createTableCell("Kunde", true, 33), createTableCell(formData.kunde || "[Angis]")] }),
+                ]),
                 new TableRow({ children: [createTableCell("Beskrivelse av tiltaket", true, 33), createTableCell(formData.tiltaksbeskrivelse || "[Angis]")] }),
                 new TableRow({ children: [createTableCell("Særskilt brannobjekt", true, 33), createTableCell(formData.saerskiltBrannobjekt || "[Angis]")] }),
               ],
             }),
-            new Paragraph({
-              children: [new TextRun({ text: "1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Table({
-              width: { size: 100, type: WidthType.PERCENTAGE },
-              rows: [
-                new TableRow({ children: [createTableCell("Tiltakshaver", true, 33), createTableCell(formData.tiltakshaver || "[Angis]")] }),
-                new TableRow({ children: [createTableCell("Ansvarlig søker (SØK)", true, 33), createTableCell(formData.ansvarligSoker || "[Angis]")] }),
-                new TableRow({ children: [createTableCell("Kunde", true, 33), createTableCell(formData.kunde || "[Angis]")] }),
-                new TableRow({ children: [createTableCell("PRO RiBr", true, 33), createTableCell(formData.proRibr || "[Angis]")] }),
-                new TableRow({ children: [createTableCell("KPR RiBr", true, 33), createTableCell(formData.kprRibr || "[Angis]")] }),
-              ],
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: "1.3 Prosjekteringsmetode", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              text: formData.prosjekteringsmetode === "preakseptert" 
-                ? "Prosjekteringen er basert på preaksepterte ytelser i henhold til VTEK17."
-                : formData.prosjekteringsmetode === "analyse"
-                ? "Prosjekteringen er basert på analyse (fraviksprosjektering)."
-                : "Prosjekteringen er basert på en blandingsløsning med preaksepterte ytelser og analyse.",
-              spacing: { after: 100 },
-            }),
-            ...((formData.prosjekteringsmetode === "analyse" || formData.prosjekteringsmetode === "blanding") ? [
+            ...(documentType !== "tilstandsvurdering" ? [
+              // Brannkonsept: 1.2 SAK10, 1.3 Prosjekteringsmetode, 1.4 Avgrensning, 1.5 Regelverk
               new Paragraph({
-                children: [new TextRun({ text: "Beskrivelse av fravik:", bold: true, size: 20 })],
-                spacing: { after: 50 },
+                children: [new TextRun({ text: "1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
+                  new TableRow({ children: [createTableCell("Tiltakshaver", true, 33), createTableCell(formData.tiltakshaver || "[Angis]")] }),
+                  new TableRow({ children: [createTableCell("Ansvarlig søker (SØK)", true, 33), createTableCell(formData.ansvarligSoker || "[Angis]")] }),
+                  new TableRow({ children: [createTableCell("Kunde", true, 33), createTableCell(formData.kunde || "[Angis]")] }),
+                  new TableRow({ children: [createTableCell("PRO RiBr", true, 33), createTableCell(formData.proRibr || "[Angis]")] }),
+                  new TableRow({ children: [createTableCell("KPR RiBr", true, 33), createTableCell(formData.kprRibr || "[Angis]")] }),
+                ],
               }),
               new Paragraph({
-                text: formData.fravikBeskrivelse || "[Fraviksbeskrivelse angis]",
+                children: [new TextRun({ text: "1.3 Prosjekteringsmetode", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              new Paragraph({
+                text: formData.prosjekteringsmetode === "preakseptert" 
+                  ? "Prosjekteringen er basert på preaksepterte ytelser i henhold til VTEK17."
+                  : formData.prosjekteringsmetode === "analyse"
+                  ? "Prosjekteringen er basert på analyse (fraviksprosjektering)."
+                  : "Prosjekteringen er basert på en blandingsløsning med preaksepterte ytelser og analyse.",
                 spacing: { after: 100 },
               }),
-              ...(formData.tiltaksklasse === "Tiltaksklasse 1" ? [
+              ...((formData.prosjekteringsmetode === "analyse" || formData.prosjekteringsmetode === "blanding") ? [
                 new Paragraph({
-                  children: [new TextRun({ text: "Merk: Prosjektet er i tiltaksklasse 1. Fravik fra preaksepterte ytelser krever normalt høyere tiltaksklasse.", bold: true, italics: true, size: 20 })],
+                  children: [new TextRun({ text: "Beskrivelse av fravik:", bold: true, size: 20 })],
+                  spacing: { after: 50 },
+                }),
+                new Paragraph({
+                  text: formData.fravikBeskrivelse || "[Fraviksbeskrivelse angis]",
                   spacing: { after: 100 },
                 }),
+                ...(formData.tiltaksklasse === "Tiltaksklasse 1" ? [
+                  new Paragraph({
+                    children: [new TextRun({ text: "Merk: Prosjektet er i tiltaksklasse 1. Fravik fra preaksepterte ytelser krever normalt høyere tiltaksklasse.", bold: true, italics: true, size: 20 })],
+                    spacing: { after: 100 },
+                  }),
+                ] : []),
               ] : []),
-            ] : []),
-            new Paragraph({
-              children: [new TextRun({ text: "1.4 Avgrensning av tiltak", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              text: formData.avgrensning || "[Avgrensning beskrives]",
-              spacing: { after: 100 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: "1.5 Gjeldende regelverk", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              text: "• TEK17 - Forskrift om tekniske krav til byggverk",
-              spacing: { after: 50 },
-            }),
-            new Paragraph({
-              text: "• VTEK17 - Veiledning til teknisk forskrift",
-              spacing: { after: 100 },
-            }),
+              new Paragraph({
+                children: [new TextRun({ text: "1.4 Avgrensning av tiltak", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              new Paragraph({
+                text: formData.avgrensning || "[Avgrensning beskrives]",
+                spacing: { after: 100 },
+              }),
+              new Paragraph({
+                children: [new TextRun({ text: "1.5 Gjeldende regelverk", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              new Paragraph({ text: "• TEK17 - Forskrift om tekniske krav til byggverk", spacing: { after: 50 } }),
+              new Paragraph({ text: "• VTEK17 - Veiledning til teknisk forskrift", spacing: { after: 100 } }),
+            ] : [
+              // Tilstandsvurdering: 1.2 Avgrensning
+              new Paragraph({
+                children: [new TextRun({ text: "1.2 Avgrensning av vurderingen", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              new Paragraph({
+                text: formData.avgrensning || "[Avgrensning beskrives]",
+                spacing: { after: 100 },
+              }),
+            ]),
           ],
         },
         {
           properties: {},
           children: [
-            // 2. Grunnlag og forutsetninger
-            new Paragraph({
-              children: [new TextRun({ text: "2. Grunnlag og forutsetninger for brannteknisk prosjektering", bold: true, size: 28 })],
-              spacing: { before: 200, after: 200 },
-            }),
-            new Paragraph({
-              children: [new TextRun({ text: "2.1 Grunnlagsdokumenter", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            ...(Array.isArray(formData.grunnlagsdokumenter) && formData.grunnlagsdokumenter.length > 0 ? [
-              new Table({
-                width: { size: 100, type: WidthType.PERCENTAGE },
-                rows: [
-                  new TableRow({
-                    children: [
-                      createTableCellShaded("Dokument", true, 40),
-                      createTableCellShaded("Utarbeidet av / firma", true, 40),
-                      createTableCellShaded("Datert", true, 20),
-                    ],
-                  }),
-                  ...formData.grunnlagsdokumenter.map((doc) =>
-                    new TableRow({
-                      children: [
-                        createTableCell(doc.navn || "-", false, 40),
-                        createTableCell(doc.utarbeidetAv || "-", false, 40),
-                        createTableCell(doc.dato ? doc.dato.split('-').reverse().join('.') : "-", false, 20),
-                      ],
-                    })
-                  ),
-                ],
-              }),
-            ] : [
+            ...(documentType === "tilstandsvurdering" ? [
+              // Tilstandsvurdering: 1.3 Bygningsinfo, 1.4 Grunnlagsdokumenter, 1.5 Forutsetninger, 1.6 Tilleggskrav
               new Paragraph({
-                text: "[Liste over tegninger og dokumenter]",
-                spacing: { after: 100 },
-              }),
-            ]),
-            new Paragraph({
-              children: [new TextRun({ text: "2.2 Beskrivelse av bygning og branntekniske forutsetninger", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            // Bygnings- og klassifiseringstabell
-            ...(formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0 ? [
-              // Første tabell: Bygningstype, Areal, Etasjer
-              new Table({
-                width: { size: 100, type: WidthType.PERCENTAGE },
-                rows: [
-                  new TableRow({ children: [createTableCell("Bygningstype", true, 33), createTableCell(formData.bygningstype || "[Angis]")] }),
-                  new TableRow({ children: [createTableCell("Bruttoareal", true, 33), createTableCell(`${formData.areal || "[Angis]"} m²`)] }),
-                  new TableRow({ children: [createTableCell("Antall etasjer", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
-                ],
+                children: [new TextRun({ text: "1. Innledning (forts.)", bold: true, size: 28 })],
+                spacing: { before: 200, after: 200 },
               }),
               new Paragraph({
-                children: [new TextRun({ text: "Bygget inneholder flere bygningsdeler med ulike risikoklasser:", italics: true, size: 20 })],
-                spacing: { before: 100, after: 100 },
+                children: [new TextRun({ text: "1.3 Bygningsinformasjon", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
               }),
-              new Table({
-                width: { size: 100, type: WidthType.PERCENTAGE },
-                rows: [
-                  new TableRow({
-                    children: [
-                      createTableCell("Bygningsdel", true, 20),
-                      createTableCell("Bygningstype", true, 25),
-                      createTableCell("Areal", true, 12),
-                      createTableCell("Etasjer", true, 10),
-                      createTableCell("Risikoklasse", true, 15),
-                      createTableCell("Brannklasse", true, 18),
-                    ],
-                  }),
-                  ...formData.bygningsdeler.map((del, index) => {
-                    const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
-                    return new TableRow({
-                      children: [
-                        createTableCell(del.navn || `Del ${index + 1}`, false, 20),
-                        createTableCell(del.bygningstype || "-", false, 25),
-                        createTableCell(del.areal ? `${del.areal} m²` : "-", false, 12),
-                        createTableCell(del.etasjer || "-", false, 10),
-                        createTableCell(del.risikoklasse || "-", false, 15),
-                        createTableCell(delBrannklasse || "-", false, 18),
-                      ],
-                    });
-                  }),
-                ],
-              }),
-              new Table({
-                width: { size: 100, type: WidthType.PERCENTAGE },
-                rows: [
-                  new TableRow({
-                    children: [
-                      createTableCell("Tiltaksklasse", true, 33),
-                      new TableCell({
-                        borders: tableBorders,
-                        width: { size: 67, type: WidthType.PERCENTAGE },
-                        margins: { top: 40, bottom: 40, left: 80, right: 80 },
-                        children: [
-                          new Paragraph({
-                            spacing: { before: 40, after: formData.tiltaksklasseBegrunnelse ? 40 : 40 },
-                            children: [new TextRun({ text: formData.tiltaksklasse || "[Angis]", size: 20 })],
-                          }),
-                          ...(formData.tiltaksklasseBegrunnelse ? [
-                            new Paragraph({
-                              spacing: { before: 0, after: 40 },
-                              children: [new TextRun({ text: `Begrunnelse: ${formData.tiltaksklasseBegrunnelse}`, italics: true, size: 20 })],
-                            }),
-                          ] : []),
-                        ],
-                      }),
-                    ],
-                  }),
-                ],
-              }),
-            ] : [
-              // Én samlet tabell for bygningsinfo + klassifisering
               new Table({
                 width: { size: 100, type: WidthType.PERCENTAGE },
                 rows: [
@@ -1383,48 +1317,212 @@ const Konsept = () => {
                   new TableRow({ children: [createTableCell("Bruttoareal", true, 33), createTableCell(`${formData.areal || "[Angis]"} m²`)] }),
                   new TableRow({ children: [createTableCell("Antall etasjer", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
                   new TableRow({ children: [createTableCell("Risikoklasse", true, 33), createTableCell(formData.risikoklasse || "[Angis]")] }),
-                  new TableRow({
-                    children: [
-                      createTableCell("Brannklasse", true, 33),
-                      createTableCell(
-                        (formData.brannklasse || "[Angis]") +
-                        (formData.brannklasseUnntak && !formData.brannklasseUnntak.includes("preakseptert ytelse nr. 4") ? `\n\n${formData.brannklasseUnntak}` : "")
-                      ),
-                    ],
-                  }),
-                  new TableRow({
-                    children: [
-                      createTableCell("Tiltaksklasse", true, 33),
-                      new TableCell({
-                        borders: tableBorders,
-                        width: { size: 67, type: WidthType.PERCENTAGE },
-                        margins: { top: 40, bottom: 40, left: 80, right: 80 },
-                        children: [
-                          new Paragraph({
-                            spacing: { before: 40, after: formData.tiltaksklasseBegrunnelse ? 40 : 40 },
-                            children: [new TextRun({ text: formData.tiltaksklasse || "[Angis]", size: 20 })],
-                          }),
-                          ...(formData.tiltaksklasseBegrunnelse ? [
-                            new Paragraph({
-                              spacing: { before: 0, after: 40 },
-                              children: [new TextRun({ text: `Begrunnelse: ${formData.tiltaksklasseBegrunnelse}`, italics: true, size: 20 })],
-                            }),
-                          ] : []),
-                        ],
-                      }),
-                    ],
-                  }),
+                  new TableRow({ children: [createTableCell("Brannklasse", true, 33), createTableCell(formData.brannklasse || "[Angis]")] }),
                 ],
               }),
+              new Paragraph({
+                children: [new TextRun({ text: "1.4 Grunnlagsdokumenter", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              ...(Array.isArray(formData.grunnlagsdokumenter) && formData.grunnlagsdokumenter.length > 0 ? [
+                new Table({
+                  width: { size: 100, type: WidthType.PERCENTAGE },
+                  rows: [
+                    new TableRow({
+                      children: [
+                        createTableCellShaded("Dokument", true, 40),
+                        createTableCellShaded("Utarbeidet av / firma", true, 40),
+                        createTableCellShaded("Datert", true, 20),
+                      ],
+                    }),
+                    ...formData.grunnlagsdokumenter.map((doc) =>
+                      new TableRow({
+                        children: [
+                          createTableCell(doc.navn || "-", false, 40),
+                          createTableCell(doc.utarbeidetAv || "-", false, 40),
+                          createTableCell(doc.dato ? doc.dato.split('-').reverse().join('.') : "-", false, 20),
+                        ],
+                      })
+                    ),
+                  ],
+                }),
+              ] : [
+                new Paragraph({ text: "[Liste over tegninger og dokumenter]", spacing: { after: 100 } }),
+              ]),
+              new Paragraph({
+                children: [new TextRun({ text: "1.5 Branntekniske forutsetninger", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              new Paragraph({
+                text: formData.tiltaksbeskrivelse || "[Branntekniske forutsetninger beskrives]",
+                spacing: { after: 100 },
+              }),
+              new Paragraph({
+                children: [new TextRun({ text: "1.6 Tilleggskrav", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              new Paragraph({
+                text: formData.tilleggskrav || "[Eventuelle tilleggskrav beskrives]",
+                spacing: { after: 100 },
+              }),
+            ] : [
+              // Brannkonsept: chapter 2
+              new Paragraph({
+                children: [new TextRun({ text: "2. Grunnlag og forutsetninger for brannteknisk prosjektering", bold: true, size: 28 })],
+                spacing: { before: 200, after: 200 },
+              }),
+              new Paragraph({
+                children: [new TextRun({ text: "2.1 Grunnlagsdokumenter", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              ...(Array.isArray(formData.grunnlagsdokumenter) && formData.grunnlagsdokumenter.length > 0 ? [
+                new Table({
+                  width: { size: 100, type: WidthType.PERCENTAGE },
+                  rows: [
+                    new TableRow({
+                      children: [
+                        createTableCellShaded("Dokument", true, 40),
+                        createTableCellShaded("Utarbeidet av / firma", true, 40),
+                        createTableCellShaded("Datert", true, 20),
+                      ],
+                    }),
+                    ...formData.grunnlagsdokumenter.map((doc) =>
+                      new TableRow({
+                        children: [
+                          createTableCell(doc.navn || "-", false, 40),
+                          createTableCell(doc.utarbeidetAv || "-", false, 40),
+                          createTableCell(doc.dato ? doc.dato.split('-').reverse().join('.') : "-", false, 20),
+                        ],
+                      })
+                    ),
+                  ],
+                }),
+              ] : [
+                new Paragraph({ text: "[Liste over tegninger og dokumenter]", spacing: { after: 100 } }),
+              ]),
+              new Paragraph({
+                children: [new TextRun({ text: "2.2 Beskrivelse av bygning og branntekniske forutsetninger", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              ...(formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0 ? [
+                new Table({
+                  width: { size: 100, type: WidthType.PERCENTAGE },
+                  rows: [
+                    new TableRow({ children: [createTableCell("Bygningstype", true, 33), createTableCell(formData.bygningstype || "[Angis]")] }),
+                    new TableRow({ children: [createTableCell("Bruttoareal", true, 33), createTableCell(`${formData.areal || "[Angis]"} m²`)] }),
+                    new TableRow({ children: [createTableCell("Antall etasjer", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
+                  ],
+                }),
+                new Paragraph({
+                  children: [new TextRun({ text: "Bygget inneholder flere bygningsdeler med ulike risikoklasser:", italics: true, size: 20 })],
+                  spacing: { before: 100, after: 100 },
+                }),
+                new Table({
+                  width: { size: 100, type: WidthType.PERCENTAGE },
+                  rows: [
+                    new TableRow({
+                      children: [
+                        createTableCell("Bygningsdel", true, 20),
+                        createTableCell("Bygningstype", true, 25),
+                        createTableCell("Areal", true, 12),
+                        createTableCell("Etasjer", true, 10),
+                        createTableCell("Risikoklasse", true, 15),
+                        createTableCell("Brannklasse", true, 18),
+                      ],
+                    }),
+                    ...formData.bygningsdeler.map((del, index) => {
+                      const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+                      return new TableRow({
+                        children: [
+                          createTableCell(del.navn || `Del ${index + 1}`, false, 20),
+                          createTableCell(del.bygningstype || "-", false, 25),
+                          createTableCell(del.areal ? `${del.areal} m²` : "-", false, 12),
+                          createTableCell(del.etasjer || "-", false, 10),
+                          createTableCell(del.risikoklasse || "-", false, 15),
+                          createTableCell(delBrannklasse || "-", false, 18),
+                        ],
+                      });
+                    }),
+                  ],
+                }),
+                new Table({
+                  width: { size: 100, type: WidthType.PERCENTAGE },
+                  rows: [
+                    new TableRow({
+                      children: [
+                        createTableCell("Tiltaksklasse", true, 33),
+                        new TableCell({
+                          borders: tableBorders,
+                          width: { size: 67, type: WidthType.PERCENTAGE },
+                          margins: { top: 40, bottom: 40, left: 80, right: 80 },
+                          children: [
+                            new Paragraph({
+                              spacing: { before: 40, after: 40 },
+                              children: [new TextRun({ text: formData.tiltaksklasse || "[Angis]", size: 20 })],
+                            }),
+                            ...(formData.tiltaksklasseBegrunnelse ? [
+                              new Paragraph({
+                                spacing: { before: 0, after: 40 },
+                                children: [new TextRun({ text: `Begrunnelse: ${formData.tiltaksklasseBegrunnelse}`, italics: true, size: 20 })],
+                              }),
+                            ] : []),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ] : [
+                new Table({
+                  width: { size: 100, type: WidthType.PERCENTAGE },
+                  rows: [
+                    new TableRow({ children: [createTableCell("Bygningstype", true, 33), createTableCell(formData.bygningstype || "[Angis]")] }),
+                    new TableRow({ children: [createTableCell("Bruttoareal", true, 33), createTableCell(`${formData.areal || "[Angis]"} m²`)] }),
+                    new TableRow({ children: [createTableCell("Antall etasjer", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
+                    new TableRow({ children: [createTableCell("Risikoklasse", true, 33), createTableCell(formData.risikoklasse || "[Angis]")] }),
+                    new TableRow({
+                      children: [
+                        createTableCell("Brannklasse", true, 33),
+                        createTableCell(
+                          (formData.brannklasse || "[Angis]") +
+                          (formData.brannklasseUnntak && !formData.brannklasseUnntak.includes("preakseptert ytelse nr. 4") ? `\n\n${formData.brannklasseUnntak}` : "")
+                        ),
+                      ],
+                    }),
+                    new TableRow({
+                      children: [
+                        createTableCell("Tiltaksklasse", true, 33),
+                        new TableCell({
+                          borders: tableBorders,
+                          width: { size: 67, type: WidthType.PERCENTAGE },
+                          margins: { top: 40, bottom: 40, left: 80, right: 80 },
+                          children: [
+                            new Paragraph({
+                              spacing: { before: 40, after: 40 },
+                              children: [new TextRun({ text: formData.tiltaksklasse || "[Angis]", size: 20 })],
+                            }),
+                            ...(formData.tiltaksklasseBegrunnelse ? [
+                              new Paragraph({
+                                spacing: { before: 0, after: 40 },
+                                children: [new TextRun({ text: `Begrunnelse: ${formData.tiltaksklasseBegrunnelse}`, italics: true, size: 20 })],
+                              }),
+                            ] : []),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ]),
+              new Paragraph({
+                children: [new TextRun({ text: "2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              new Paragraph({
+                text: formData.tilleggskrav || "[Eventuelle tilleggskrav beskrives]",
+                spacing: { after: 100 },
+              }),
             ]),
-            new Paragraph({
-              children: [new TextRun({ text: "2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker", bold: true, size: 24 })],
-              spacing: { before: 200, after: 100 },
-            }),
-            new Paragraph({
-              text: formData.tilleggskrav || "[Eventuelle tilleggskrav beskrives]",
-              spacing: { after: 100 },
-            }),
           ],
         },
         {
@@ -1432,7 +1530,7 @@ const Konsept = () => {
           children: [
             // 3. Branntekniske ytelseskrav
             new Paragraph({
-              children: [new TextRun({ text: "3. Beskrivelse av branntekniske ytelseskrav", bold: true, size: 28 })],
+              children: [new TextRun({ text: documentType === "tilstandsvurdering" ? "2. Brannteknisk tilstandsvurdering" : "3. Beskrivelse av branntekniske ytelseskrav", bold: true, size: 28 })],
               spacing: { before: 200, after: 200 },
             }),
             // Tabell 3 - 3-column structure matching preview

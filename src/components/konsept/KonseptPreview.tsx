@@ -98,7 +98,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   const hasSammendrag = !!formData.sammendrag;
   const isTilstand = documentType === "tilstandsvurdering";
   const extraPages = (hasSammendrag ? 1 : 0) + (isTilstand ? 1 : 0);
-  const totalPages = 8 + extraPages;
+  const totalPages = isTilstand ? 7 + extraPages : 8 + extraPages;
+  // Section prefix for chapter 3 (brannkonsept) → chapter 2 (tilstandsvurdering)
+  const sp = isTilstand ? "2" : "3";
 
   const PageFooter = ({ pageNum }: { pageNum: number }) => (
     <div className="absolute bottom-4 left-0 right-0 flex justify-center">
@@ -219,45 +221,71 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <section className="mb-6">
         <h2 className="font-bold mb-3">Innholdsfortegnelse</h2>
         <div className="space-y-1 text-xs">
-          <p><span className="font-bold">1.</span> Innledning</p>
-          <p className="ml-4">1.1 Informasjon om tiltaket</p>
-          <p className="ml-4">1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)</p>
-          <p className="ml-4">1.3 Prosjekteringsmetode</p>
-          <p className="ml-4">1.4 Avgrensning av tiltak</p>
-          <p className="ml-4">1.5 Gjeldende regelverk</p>
-          <p><span className="font-bold">2.</span> Grunnlag og forutsetninger for brannteknisk prosjektering</p>
-          <p className="ml-4">2.1 Grunnlagsdokumenter</p>
-          <p className="ml-4">2.2 Beskrivelse av bygning og branntekniske forutsetninger</p>
-          <p className="ml-4">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</p>
-          <p><span className="font-bold">3.</span> Beskrivelse av branntekniske ytelseskrav</p>
-          <p className="ml-4">3.1 § 11-4 Bæreevne og stabilitet</p>
-          <p className="ml-4">3.2 § 11-5 Sikkerhet ved eksplosjon</p>
-          <p className="ml-4">3.3 § 11-6 Tiltak mot brannspredning mellom byggverk</p>
-          <p className="ml-4">3.4 § 11-7 Brannseksjoner</p>
-          <p className="ml-4">3.5 § 11-8 Brannceller</p>
-          <p className="ml-4">3.6 § 11-9 Materialer og produkters egenskaper ved brann</p>
-          <p className="ml-4">3.7 § 11-10 Tekniske installasjoner</p>
-          <p className="ml-4">3.8 § 11-11 Generelle krav om rømning og redning</p>
-          <p className="ml-4">3.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider</p>
-          <p className="ml-4">3.10 § 11-13 Utgang fra branncelle</p>
-          <p className="ml-4">3.11 § 11-14 Rømningsvei</p>
-          <p className="ml-4">3.12 § 11-16 Tilrettelegging for manuell slokking</p>
-          <p className="ml-4">3.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap</p>
-          {documentType !== "tilstandsvurdering" && (
+          {isTilstand ? (
             <>
+              <p><span className="font-bold">1.</span> Innledning</p>
+              <p className="ml-4">1.1 Informasjon om tiltaket</p>
+              <p className="ml-4">1.2 Avgrensning av vurderingen</p>
+              <p className="ml-4">1.3 Bygningsinformasjon</p>
+              <p className="ml-4">1.4 Grunnlagsdokumenter</p>
+              <p className="ml-4">1.5 Branntekniske forutsetninger</p>
+              <p className="ml-4">1.6 Tilleggskrav</p>
+              <p><span className="font-bold">2.</span> Brannteknisk tilstandsvurdering</p>
+              <p className="ml-4">2.1 § 11-4 Bæreevne og stabilitet</p>
+              <p className="ml-4">2.2 § 11-5 Sikkerhet ved eksplosjon</p>
+              <p className="ml-4">2.3 § 11-6 Tiltak mot brannspredning mellom byggverk</p>
+              <p className="ml-4">2.4 § 11-7 Brannseksjoner</p>
+              <p className="ml-4">2.5 § 11-8 Brannceller</p>
+              <p className="ml-4">2.6 § 11-9 Materialer og produkters egenskaper ved brann</p>
+              <p className="ml-4">2.7 § 11-10 Tekniske installasjoner</p>
+              <p className="ml-4">2.8 § 11-11 Generelle krav om rømning og redning</p>
+              <p className="ml-4">2.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider</p>
+              <p className="ml-4">2.10 § 11-13 Utgang fra branncelle</p>
+              <p className="ml-4">2.11 § 11-14 Rømningsvei</p>
+              <p className="ml-4">2.12 § 11-16 Tilrettelegging for manuell slokking</p>
+              <p className="ml-4">2.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap</p>
+              <p><span className="font-bold">3.</span> Revisjonshistorikk</p>
+              <p><span className="font-bold">4.</span> Litteraturhenvisninger</p>
+            </>
+          ) : (
+            <>
+              <p><span className="font-bold">1.</span> Innledning</p>
+              <p className="ml-4">1.1 Informasjon om tiltaket</p>
+              <p className="ml-4">1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)</p>
+              <p className="ml-4">1.3 Prosjekteringsmetode</p>
+              <p className="ml-4">1.4 Avgrensning av tiltak</p>
+              <p className="ml-4">1.5 Gjeldende regelverk</p>
+              <p><span className="font-bold">2.</span> Grunnlag og forutsetninger for brannteknisk prosjektering</p>
+              <p className="ml-4">2.1 Grunnlagsdokumenter</p>
+              <p className="ml-4">2.2 Beskrivelse av bygning og branntekniske forutsetninger</p>
+              <p className="ml-4">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</p>
+              <p><span className="font-bold">3.</span> Beskrivelse av branntekniske ytelseskrav</p>
+              <p className="ml-4">3.1 § 11-4 Bæreevne og stabilitet</p>
+              <p className="ml-4">3.2 § 11-5 Sikkerhet ved eksplosjon</p>
+              <p className="ml-4">3.3 § 11-6 Tiltak mot brannspredning mellom byggverk</p>
+              <p className="ml-4">3.4 § 11-7 Brannseksjoner</p>
+              <p className="ml-4">3.5 § 11-8 Brannceller</p>
+              <p className="ml-4">3.6 § 11-9 Materialer og produkters egenskaper ved brann</p>
+              <p className="ml-4">3.7 § 11-10 Tekniske installasjoner</p>
+              <p className="ml-4">3.8 § 11-11 Generelle krav om rømning og redning</p>
+              <p className="ml-4">3.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider</p>
+              <p className="ml-4">3.10 § 11-13 Utgang fra branncelle</p>
+              <p className="ml-4">3.11 § 11-14 Rømningsvei</p>
+              <p className="ml-4">3.12 § 11-16 Tilrettelegging for manuell slokking</p>
+              <p className="ml-4">3.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap</p>
               <p><span className="font-bold">4.</span> Utførelses- og driftsfasen</p>
               <p className="ml-4">4.1 Utførelsesfasen</p>
               <p className="ml-4">4.2 Driftsfasen</p>
+              <p><span className="font-bold">5.</span> Revisjonshistorikk</p>
+              <p><span className="font-bold">6.</span> Litteraturhenvisninger</p>
             </>
           )}
-          <p><span className="font-bold">{documentType === "tilstandsvurdering" ? "4" : "5"}.</span> Revisjonshistorikk</p>
-          <p><span className="font-bold">{documentType === "tilstandsvurdering" ? "5" : "6"}.</span> Litteraturhenvisninger</p>
         </div>
       </section>
       <PageFooter pageNum={2 + extraPages} />
       </div>
 
-      {/* Kapittel 1-2 - egen side */}
+      {/* Kapittel 1 - egen side */}
       <div className={pageStyle} style={pageWidth}>
       {/* 1. Innledning */}
       <section className="mb-6">
@@ -286,10 +314,18 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <td className="border border-gray-400 p-2 font-semibold">Kommune</td>
               <td className="border border-gray-400 p-2">{formData.kommune || "[Angis]"}</td>
             </tr>
+            {!isTilstand && (
             <tr>
               <td className="border border-gray-400 p-2 font-semibold">Type tiltak</td>
               <td className="border border-gray-400 p-2">{formData.tiltakstype || "[Angis]"}</td>
             </tr>
+            )}
+            {isTilstand && (
+            <tr>
+              <td className="border border-gray-400 p-2 font-semibold">Kunde</td>
+              <td className="border border-gray-400 p-2">{formData.kunde || "[Angis]"}</td>
+            </tr>
+            )}
             <tr>
               <td className="border border-gray-400 p-2 font-semibold">Beskrivelse av tiltaket</td>
               <td className="border border-gray-400 p-2">{formData.tiltaksbeskrivelse || "[Angis]"}</td>
@@ -301,6 +337,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </tbody>
         </table>
 
+        {!isTilstand && (
+        <>
         <h3 className="font-semibold mb-2">1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)</h3>
         <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
           <tbody>
@@ -353,92 +391,193 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <li>TEK17 - Forskrift om tekniske krav til byggverk</li>
           <li>VTEK17 - Veiledning til teknisk forskrift</li>
         </ul>
+        </>
+        )}
+
+        {isTilstand && (
+        <>
+        <h3 className="font-semibold mb-2">1.2 Avgrensning av vurderingen</h3>
+        <p className="ml-4 mb-3">{formData.avgrensning || "[Avgrensning beskrives]"}</p>
+        </>
+        )}
       </section>
       <PageFooter pageNum={3 + extraPages} />
       </div>
 
-      {/* Kapittel 2 - egen side */}
+      {/* Kapittel 2 / Kap 1 forts. - egen side */}
       <div className={pageStyle} style={pageWidth}>
-      {/* 2. Grunnlag og forutsetninger */}
       <section className="mb-6">
-        <h2 className="font-bold mb-3">2. Grunnlag og forutsetninger for brannteknisk prosjektering</h2>
+        {isTilstand ? (
+          <h2 className="font-bold mb-3">1. Innledning (forts.)</h2>
+        ) : (
+          <h2 className="font-bold mb-3">2. Grunnlag og forutsetninger for brannteknisk prosjektering</h2>
+        )}
         
-        <h3 className="font-semibold mb-2">2.1 Grunnlagsdokumenter</h3>
-        {grunnlagsdokumenter.length > 0 ? (
+        <h3 className="font-semibold mb-2">{isTilstand ? "1.3 Bygningsinformasjon" : "2.1 Grunnlagsdokumenter"}</h3>
+        {isTilstand ? (
+          <>
+          {/* For tilstandsvurdering: bygningsinfo først */}
           <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="border border-gray-400 p-2 text-left">Dokument</th>
-                <th className="border border-gray-400 p-2 text-left">Utarbeidet av / firma</th>
-                <th className="border border-gray-400 p-2 text-left">Datert</th>
-              </tr>
-            </thead>
             <tbody>
-              {grunnlagsdokumenter.map((doc: any, index: number) => (
-                <tr key={index}>
-                  <td className="border border-gray-400 p-2">{doc.navn || "-"}</td>
-                  <td className="border border-gray-400 p-2">{doc.utarbeidetAv || "-"}</td>
-                  <td className="border border-gray-400 p-2">{doc.dato ? doc.dato.split('-').reverse().join('.') : "-"}</td>
-                </tr>
-              ))}
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold w-1/3">Bygningstype</td>
+                <td className="border border-gray-400 p-2">{formData.bygningstype || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Bruttoareal</td>
+                <td className="border border-gray-400 p-2">{formData.areal || "[Angis]"} m²</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Antall etasjer</td>
+                <td className="border border-gray-400 p-2">{formData.etasjer || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Risikoklasse</td>
+                <td className="border border-gray-400 p-2">{formData.risikoklasse || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Brannklasse</td>
+                <td className="border border-gray-400 p-2">{formData.brannklasse || "[Angis]"}</td>
+              </tr>
             </tbody>
           </table>
-        ) : (
-          <p className="ml-4 mb-3">[Liste over tegninger og dokumenter]</p>
-        )}
 
-        <h3 className="font-semibold mb-2">2.2 Beskrivelse av bygning og branntekniske forutsetninger</h3>
-        <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
-          <tbody>
-            <tr>
-              <td className="border border-gray-400 p-2 font-semibold w-1/3">Bygningstype</td>
-              <td className="border border-gray-400 p-2">{formData.bygningstype || "[Angis]"}</td>
-            </tr>
-            <tr>
-              <td className="border border-gray-400 p-2 font-semibold">Bruttoareal</td>
-              <td className="border border-gray-400 p-2">{formData.areal || "[Angis]"} m²</td>
-            </tr>
-            <tr>
-              <td className="border border-gray-400 p-2 font-semibold">Antall etasjer</td>
-              <td className="border border-gray-400 p-2">{formData.etasjer || "[Angis]"}</td>
-            </tr>
-          </tbody>
-        </table>
-        {formData.harFlereRisikoklasser && bygningsdeler.length > 0 ? (
-          <>
-            <p className="ml-4 mb-2 text-xs italic">Bygget inneholder flere bygningsdeler med ulike risikoklasser:</p>
+          <h3 className="font-semibold mb-2">1.4 Grunnlagsdokumenter</h3>
+          {grunnlagsdokumenter.length > 0 ? (
             <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
               <thead>
                 <tr className="bg-gray-100">
-                  <th className="border border-gray-400 p-2 text-left">Bygningsdel</th>
-                  <th className="border border-gray-400 p-2 text-left">Bygningstype</th>
-                  <th className="border border-gray-400 p-2 text-left">Areal</th>
-                  <th className="border border-gray-400 p-2 text-left">Etasjer</th>
-                  <th className="border border-gray-400 p-2 text-left">Risikoklasse</th>
-                  <th className="border border-gray-400 p-2 text-left">Brannklasse</th>
+                  <th className="border border-gray-400 p-2 text-left">Dokument</th>
+                  <th className="border border-gray-400 p-2 text-left">Utarbeidet av / firma</th>
+                  <th className="border border-gray-400 p-2 text-left">Datert</th>
                 </tr>
               </thead>
               <tbody>
-                {bygningsdeler.map((del: any, index: number) => {
-                  const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
-                  return (
-                    <tr key={del.id || index}>
-                      <td className="border border-gray-400 p-2">{del.navn || `Del ${index + 1}`}</td>
-                      <td className="border border-gray-400 p-2">{del.bygningstype || "-"}</td>
-                      <td className="border border-gray-400 p-2">{del.areal ? `${del.areal} m²` : "-"}</td>
-                      <td className="border border-gray-400 p-2">{del.etasjer || "-"}</td>
-                      <td className="border border-gray-400 p-2">{del.risikoklasse || "-"}</td>
-                      <td className="border border-gray-400 p-2">{delBrannklasse || "-"}</td>
-                    </tr>
-                  );
-                })}
+                {grunnlagsdokumenter.map((doc: any, index: number) => (
+                  <tr key={index}>
+                    <td className="border border-gray-400 p-2">{doc.navn || "-"}</td>
+                    <td className="border border-gray-400 p-2">{doc.utarbeidetAv || "-"}</td>
+                    <td className="border border-gray-400 p-2">{doc.dato ? doc.dato.split('-').reverse().join('.') : "-"}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
-            <table className="w-full border-collapse text-xs mb-3 mt-2">
+          ) : (
+            <p className="ml-4 mb-3">[Liste over tegninger og dokumenter]</p>
+          )}
+
+          <h3 className="font-semibold mb-2">1.5 Branntekniske forutsetninger</h3>
+          <p className="ml-4 mb-3">{formData.tiltaksbeskrivelse || "[Branntekniske forutsetninger beskrives]"}</p>
+
+          <h3 className="font-semibold mb-2">1.6 Tilleggskrav</h3>
+          <p className="ml-4 mb-3 whitespace-pre-wrap">{formData.tilleggskrav || "[Eventuelle tilleggskrav beskrives]"}</p>
+          </>
+        ) : (
+          <>
+          {/* For brannkonsept: original kap 2 structure */}
+          {grunnlagsdokumenter.length > 0 ? (
+            <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-400 p-2 text-left">Dokument</th>
+                  <th className="border border-gray-400 p-2 text-left">Utarbeidet av / firma</th>
+                  <th className="border border-gray-400 p-2 text-left">Datert</th>
+                </tr>
+              </thead>
+              <tbody>
+                {grunnlagsdokumenter.map((doc: any, index: number) => (
+                  <tr key={index}>
+                    <td className="border border-gray-400 p-2">{doc.navn || "-"}</td>
+                    <td className="border border-gray-400 p-2">{doc.utarbeidetAv || "-"}</td>
+                    <td className="border border-gray-400 p-2">{doc.dato ? doc.dato.split('-').reverse().join('.') : "-"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="ml-4 mb-3">[Liste over tegninger og dokumenter]</p>
+          )}
+
+          <h3 className="font-semibold mb-2">2.2 Beskrivelse av bygning og branntekniske forutsetninger</h3>
+          <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+            <tbody>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold w-1/3">Bygningstype</td>
+                <td className="border border-gray-400 p-2">{formData.bygningstype || "[Angis]"}</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Bruttoareal</td>
+                <td className="border border-gray-400 p-2">{formData.areal || "[Angis]"} m²</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Antall etasjer</td>
+                <td className="border border-gray-400 p-2">{formData.etasjer || "[Angis]"}</td>
+              </tr>
+            </tbody>
+          </table>
+          {formData.harFlereRisikoklasser && bygningsdeler.length > 0 ? (
+            <>
+              <p className="ml-4 mb-2 text-xs italic">Bygget inneholder flere bygningsdeler med ulike risikoklasser:</p>
+              <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-400 p-2 text-left">Bygningsdel</th>
+                    <th className="border border-gray-400 p-2 text-left">Bygningstype</th>
+                    <th className="border border-gray-400 p-2 text-left">Areal</th>
+                    <th className="border border-gray-400 p-2 text-left">Etasjer</th>
+                    <th className="border border-gray-400 p-2 text-left">Risikoklasse</th>
+                    <th className="border border-gray-400 p-2 text-left">Brannklasse</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bygningsdeler.map((del: any, index: number) => {
+                    const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+                    return (
+                      <tr key={del.id || index}>
+                        <td className="border border-gray-400 p-2">{del.navn || `Del ${index + 1}`}</td>
+                        <td className="border border-gray-400 p-2">{del.bygningstype || "-"}</td>
+                        <td className="border border-gray-400 p-2">{del.areal ? `${del.areal} m²` : "-"}</td>
+                        <td className="border border-gray-400 p-2">{del.etasjer || "-"}</td>
+                        <td className="border border-gray-400 p-2">{del.risikoklasse || "-"}</td>
+                        <td className="border border-gray-400 p-2">{delBrannklasse || "-"}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              <table className="w-full border-collapse text-xs mb-3 mt-2">
+                <tbody>
+                  <tr>
+                    <td className="border border-gray-400 p-2 font-semibold w-1/3">Tiltaksklasse</td>
+                    <td className="border border-gray-400 p-2" colSpan={5}>
+                      {formData.tiltaksklasse || "[Angis]"}
+                      {formData.tiltaksklasseBegrunnelse && (
+                        <p className="text-xs italic mt-1">Begrunnelse: {formData.tiltaksklasseBegrunnelse}</p>
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </>
+          ) : (
+            <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
               <tbody>
                 <tr>
-                  <td className="border border-gray-400 p-2 font-semibold w-1/3">Tiltaksklasse</td>
-                  <td className="border border-gray-400 p-2" colSpan={5}>
+                  <td className="border border-gray-400 p-2 font-semibold w-1/3">Risikoklasse</td>
+                  <td className="border border-gray-400 p-2">{formData.risikoklasse || "[Angis]"}</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 font-semibold">Brannklasse</td>
+                  <td className="border border-gray-400 p-2">
+                    {formData.brannklasse || "[Angis]"}
+                    {formData.brannklasseUnntak && (
+                      <span className="block text-blue-600 text-xs mt-1 italic">{formData.brannklasseUnntak}</span>
+                    )}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 font-semibold">Tiltaksklasse</td>
+                  <td className="border border-gray-400 p-2">
                     {formData.tiltaksklasse || "[Angis]"}
                     {formData.tiltaksklasseBegrunnelse && (
                       <p className="text-xs italic mt-1">Begrunnelse: {formData.tiltaksklasseBegrunnelse}</p>
@@ -447,45 +586,19 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </tr>
               </tbody>
             </table>
-          </>
-        ) : (
-          <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
-            <tbody>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold w-1/3">Risikoklasse</td>
-                <td className="border border-gray-400 p-2">{formData.risikoklasse || "[Angis]"}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold">Brannklasse</td>
-                <td className="border border-gray-400 p-2">
-                  {formData.brannklasse || "[Angis]"}
-                  {formData.brannklasseUnntak && (
-                    <span className="block text-blue-600 text-xs mt-1 italic">{formData.brannklasseUnntak}</span>
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold">Tiltaksklasse</td>
-                <td className="border border-gray-400 p-2">
-                  {formData.tiltaksklasse || "[Angis]"}
-                  {formData.tiltaksklasseBegrunnelse && (
-                    <p className="text-xs italic mt-1">Begrunnelse: {formData.tiltaksklasseBegrunnelse}</p>
-                  )}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        )}
+          )}
 
-        <h3 className="font-semibold mb-2">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</h3>
-        <p className="ml-4 mb-3 whitespace-pre-wrap">{formData.tilleggskrav || "[Eventuelle tilleggskrav beskrives]"}</p>
+          <h3 className="font-semibold mb-2">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</h3>
+          <p className="ml-4 mb-3 whitespace-pre-wrap">{formData.tilleggskrav || "[Eventuelle tilleggskrav beskrives]"}</p>
+          </>
+        )}
       </section>
       <PageFooter pageNum={4 + extraPages} />
       </div>
       <div className={pageStyle} style={pageWidth}>
-      {/* 3. Branntekniske ytelseskrav */}
+      {/* Branntekniske ytelseskrav */}
       <section className="mb-6">
-        <h2 className="font-bold mb-3">3. Beskrivelse av branntekniske ytelseskrav</h2>
+        <h2 className="font-bold mb-3">{isTilstand ? "2" : "3"}. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"}</h2>
         
         <table className="w-full border-collapse border border-gray-400 text-xs">
           <tbody>
@@ -494,7 +607,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <>
                 <tr className="bg-blue-100">
                   <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
-                    3.1 &nbsp;&nbsp; §11-4 Bæreevne og stabilitet
+                    {sp}.1 &nbsp;&nbsp; §11-4 Bæreevne og stabilitet
                   </td>
                 </tr>
                 <tr className="bg-gray-100">
@@ -602,7 +715,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <>
                 <tr className="bg-blue-100">
                   <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
-                    3.1 &nbsp;&nbsp; §11-4 Bæreevne og stabilitet
+                    {sp}.1 &nbsp;&nbsp; §11-4 Bæreevne og stabilitet
                   </td>
                 </tr>
                 <tr className="bg-gray-100">
@@ -671,7 +784,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* 3.2 §11-5 Sikkerhet ved eksplosjon */}
             <tr className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
-                3.2 &nbsp;&nbsp; §11-5 Sikkerhet ved eksplosjon
+                {sp}.2 &nbsp;&nbsp; §11-5 Sikkerhet ved eksplosjon
               </td>
             </tr>
             <tr className="bg-gray-100">
@@ -717,7 +830,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {/* 3.3 §11-6 Brannspredning mellom byggverk */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.3 &nbsp;&nbsp; §11-6 Brannspredning mellom byggverk</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.3 &nbsp;&nbsp; §11-6 Brannspredning mellom byggverk</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
@@ -816,7 +929,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {/* 3.4 §11-7 Brannseksjoner */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.4 &nbsp;&nbsp; §11-7 Brannseksjoner</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.4 &nbsp;&nbsp; §11-7 Brannseksjoner</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
@@ -970,12 +1083,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
-        <h2 className="font-bold mb-3">3. Beskrivelse av branntekniske ytelseskrav (forts.)</h2>
+        <h2 className="font-bold mb-3">{sp}. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} (forts.)</h2>
         <table className="w-full border-collapse border border-gray-400 text-xs">
           <tbody>
             {/* 3.5 §11-8 Brannceller */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.5 &nbsp;&nbsp; §11-8 Brannceller</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.5 &nbsp;&nbsp; §11-8 Brannceller</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
@@ -1470,7 +1583,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {/* 3.6 §11-9 Materialer og produkter */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.6 &nbsp;&nbsp; §11-9 Materialer og produkters egenskaper ved brann</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.6 &nbsp;&nbsp; §11-9 Materialer og produkters egenskaper ved brann</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
@@ -1711,7 +1824,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {/* 3.7 §11-10 Tekniske installasjoner */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.7 &nbsp;&nbsp; §11-10 Tekniske installasjoner</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.7 &nbsp;&nbsp; §11-10 Tekniske installasjoner</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
@@ -1807,12 +1920,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
-        <h2 className="font-bold mb-3">3. Beskrivelse av branntekniske ytelseskrav (forts.)</h2>
+        <h2 className="font-bold mb-3">{sp}. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} (forts.)</h2>
         <table className="w-full border-collapse border border-gray-400 text-xs">
           <tbody>
             {/* 3.8 §11-11 Generelle krav om rømning */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.8 &nbsp;&nbsp; §11-11 Generelle krav om rømning og redning</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.8 &nbsp;&nbsp; §11-11 Generelle krav om rømning og redning</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
@@ -1847,7 +1960,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {/* 3.9 §11-12 Tilrettelegging for rømning */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.9 &nbsp;&nbsp; §11-12 Tilrettelegging for rømning og redning</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.9 &nbsp;&nbsp; §11-12 Tilrettelegging for rømning og redning</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
@@ -1886,7 +1999,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {/* 3.10 §11-13 Utgang fra branncelle */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.10 &nbsp;&nbsp; §11-13 Utgang fra branncelle</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.10 &nbsp;&nbsp; §11-13 Utgang fra branncelle</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
@@ -1920,7 +2033,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {/* 3.11 §11-14 Rømningsvei */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.11 &nbsp;&nbsp; §11-14 Rømningsvei</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.11 &nbsp;&nbsp; §11-14 Rømningsvei</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
@@ -1954,7 +2067,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {/* 3.13 §11-16 Manuell slokking */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.13 &nbsp;&nbsp; §11-16 Tilrettelegging for manuell slokking</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.12 &nbsp;&nbsp; §11-16 Tilrettelegging for manuell slokking</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
@@ -1986,7 +2099,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {/* 3.14 §11-17 Tilrettelegging for slokkemannskap */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.14 &nbsp;&nbsp; §11-17 Tilrettelegging for slokkemannskap</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.13 &nbsp;&nbsp; §11-17 Tilrettelegging for slokkemannskap</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
