@@ -3,11 +3,19 @@ import { branncelleTyperListe, getBrannklasse } from "@/lib/fire-concept-constan
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
 
+interface TilstandBilde {
+  url: string;
+  beskrivelse: string;
+}
+
 interface TilstandData {
   grad: string;
   beskrivelse: string;
-  bilder: string[];
+  bilder: (TilstandBilde | string)[];
 }
+
+const normalizeBilder = (bilder: any[]): TilstandBilde[] =>
+  (bilder || []).map((b: any) => typeof b === "string" ? { url: b, beskrivelse: "" } : b);
 
 interface KonseptPreviewProps {
   formData: Record<string, any>;
