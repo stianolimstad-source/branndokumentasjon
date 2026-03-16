@@ -1438,7 +1438,8 @@ const Konsept = () => {
             // Tabell 3 - 3-column structure matching preview
             await buildChapter3Table(formData),
 
-            // 4. Utførelses- og driftsfasen
+            // 4. Utførelses- og driftsfasen (kun for brannkonsept)
+            ...(documentType !== "tilstandsvurdering" ? [
             new Paragraph({
               children: [new TextRun({ text: "4. Utførelses- og driftsfasen", bold: true, size: 28 })],
               spacing: { before: 400, after: 200 },
@@ -1459,6 +1460,7 @@ const Konsept = () => {
               text: formData.drift || "[Krav til drift og vedlikehold beskrives]",
               spacing: { after: 100 },
             }),
+            ] : []),
 
             // 5. Revisjonshistorikk
             new Paragraph({

@@ -2030,6 +2030,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
 
 
+      {documentType !== "tilstandsvurdering" && (
       <div className={pageStyle} style={pageWidth}>
       {/* 4. Utførelses- og driftsfasen */}
       <section className="mb-6">
