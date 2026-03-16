@@ -1024,6 +1024,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.redningsmannskapKommentar) {
     rows.push(contentRow("Kommentar", formData.redningsmannskapKommentar, "-"));
   }
+  rows.push(...tilstandRow(formData, "3_14", "3.14 Slokkemannskap"));
 
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
