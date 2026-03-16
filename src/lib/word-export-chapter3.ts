@@ -175,15 +175,21 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
     
     for (let i = 0; i < bilder.length; i++) {
       const bilde = bilder[i];
-      const imageBuffer = await fetchImageAsBuffer(bilde.url);
+      const imageResult = await fetchImageAsBuffer(bilde.url);
       
-      if (imageBuffer) {
+      if (imageResult) {
+        // Scale to max 450px wide, preserving aspect ratio
+        const maxW = 450;
+        const scale = Math.min(maxW / imageResult.width, 1);
+        const w = Math.round(imageResult.width * scale);
+        const h = Math.round(imageResult.height * scale);
+
         children.push(new Paragraph({
           spacing: { before: 80, after: 20 },
           children: [
             new ImageRun({
-              data: imageBuffer,
-              transformation: { width: 450, height: 338 },
+              data: imageResult.buffer,
+              transformation: { width: w, height: h },
               type: "jpg",
             }),
           ],
