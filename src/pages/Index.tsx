@@ -10,6 +10,7 @@ const Index = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [showConceptDialog, setShowConceptDialog] = useState(false);
+  const [showTilstandDialog, setShowTilstandDialog] = useState(false);
   const [showFravikDialog, setShowFravikDialog] = useState(false);
 
   const features = [
