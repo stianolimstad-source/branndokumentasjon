@@ -3,11 +3,19 @@ import { branncelleTyperListe, getBrannklasse } from "@/lib/fire-concept-constan
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
 
+interface TilstandBilde {
+  url: string;
+  beskrivelse: string;
+}
+
 interface TilstandData {
   grad: string;
   beskrivelse: string;
-  bilder: string[];
+  bilder: (TilstandBilde | string)[];
 }
+
+const normalizeBilder = (bilder: any[]): TilstandBilde[] =>
+  (bilder || []).map((b: any) => typeof b === "string" ? { url: b, beskrivelse: "" } : b);
 
 interface KonseptPreviewProps {
   formData: Record<string, any>;
@@ -39,9 +47,12 @@ const TilstandBlock = ({ data, sectionLabel }: { data: TilstandData; sectionLabe
       )}
       {data.beskrivelse && <p style={{ fontSize: 10, whiteSpace: "pre-wrap", marginTop: 4 }}>{data.beskrivelse}</p>}
       {data.bilder && data.bilder.length > 0 && (
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
-          {data.bilder.map((url, i) => (
-            <img key={i} src={url} alt={`Tilstand ${i + 1}`} style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 4, border: "1px solid #e5e7eb" }} />
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
+          {normalizeBilder(data.bilder).map((bilde, i) => (
+            <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+              <img src={bilde.url} alt={bilde.beskrivelse || `Tilstand ${i + 1}`} style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 4, border: "1px solid #e5e7eb" }} />
+              {bilde.beskrivelse && <p style={{ fontSize: 9, fontStyle: "italic", margin: 0 }}>{bilde.beskrivelse}</p>}
+            </div>
           ))}
         </div>
       )}
@@ -61,7 +72,13 @@ const TilstandTableRow = ({ data, sectionLabel }: { data: TilstandData; sectionL
         {gradLabel && <p style={{ fontSize: 10, marginBottom: 2 }}>Tilstandsgrad: {gradLabel}</p>}
         {data.beskrivelse && <p style={{ fontSize: 10, whiteSpace: "pre-wrap" }}>Beskrivelse: {data.beskrivelse}</p>}
         {data.bilder && data.bilder.length > 0 && (
-          <p style={{ fontSize: 10, marginTop: 4 }}>({data.bilder.length} bilde(r) vedlagt)</p>
+          <div style={{ marginTop: 4 }}>
+            {normalizeBilder(data.bilder).map((bilde, i) => (
+              <p key={i} style={{ fontSize: 10, margin: "2px 0" }}>
+                Bilde {i + 1}{bilde.beskrivelse ? `: ${bilde.beskrivelse}` : ""}
+              </p>
+            ))}
+          </div>
         )}
       </td>
     </tr>

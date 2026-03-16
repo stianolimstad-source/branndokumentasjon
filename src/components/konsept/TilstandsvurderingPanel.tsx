@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { ImagePlus, X, Loader2 } from "lucide-react";
@@ -9,10 +10,15 @@ import { useAuth } from "@/hooks/useAuth";
 
 export type TilstandGrad = "tg0" | "tg1" | "tg2" | "tg3" | "tgiu" | "";
 
+export interface TilstandBilde {
+  url: string;
+  beskrivelse: string;
+}
+
 export interface TilstandData {
   grad: TilstandGrad;
   beskrivelse: string;
-  bilder: string[]; // URLs
+  bilder: TilstandBilde[];
 }
 
 export const emptyTilstand = (): TilstandData => ({
@@ -40,12 +46,17 @@ const TilstandsvurderingPanel = ({ sectionKey, sectionLabel, data, onChange }: T
   const { user } = useAuth();
   const [uploading, setUploading] = useState(false);
 
+  // Normalize legacy data: if bilder contains plain strings, convert them
+  const normalizedBilder: TilstandBilde[] = (data.bilder || []).map((b: any) =>
+    typeof b === "string" ? { url: b, beskrivelse: "" } : b
+  );
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || !user) return;
 
     setUploading(true);
-    const newUrls: string[] = [];
+    const newImages: TilstandBilde[] = [];
 
     for (const file of Array.from(files)) {
       const ext = file.name.split(".").pop();
@@ -59,19 +70,24 @@ const TilstandsvurderingPanel = ({ sectionKey, sectionLabel, data, onChange }: T
         const { data: urlData } = supabase.storage
           .from("tilstandsvurdering-images")
           .getPublicUrl(path);
-        newUrls.push(urlData.publicUrl);
+        newImages.push({ url: urlData.publicUrl, beskrivelse: "" });
       }
     }
 
-    if (newUrls.length > 0) {
-      onChange({ ...data, bilder: [...data.bilder, ...newUrls] });
+    if (newImages.length > 0) {
+      onChange({ ...data, bilder: [...normalizedBilder, ...newImages] });
     }
     setUploading(false);
     e.target.value = "";
   };
 
   const removeImage = (index: number) => {
-    onChange({ ...data, bilder: data.bilder.filter((_, i) => i !== index) });
+    onChange({ ...data, bilder: normalizedBilder.filter((_, i) => i !== index) });
+  };
+
+  const updateImageBeskrivelse = (index: number, beskrivelse: string) => {
+    const updated = normalizedBilder.map((b, i) => i === index ? { ...b, beskrivelse } : b);
+    onChange({ ...data, bilder: updated });
   };
 
   return (
@@ -116,17 +132,28 @@ const TilstandsvurderingPanel = ({ sectionKey, sectionLabel, data, onChange }: T
 
       <div>
         <Label className="text-xs font-medium mb-1 block">Bilder</Label>
-        <div className="flex flex-wrap gap-2 mb-2">
-          {data.bilder.map((url, i) => (
-            <div key={i} className="relative group">
-              <img src={url} alt={`Tilstand ${i + 1}`} className="w-20 h-20 object-cover rounded border" />
-              <button
-                type="button"
-                onClick={() => removeImage(i)}
-                className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                <X className="h-3 w-3" />
-              </button>
+        <div className="space-y-3 mb-2">
+          {normalizedBilder.map((bilde, i) => (
+            <div key={i} className="flex gap-3 items-start p-2 rounded-md border bg-background">
+              <div className="relative group shrink-0">
+                <img src={bilde.url} alt={`Tilstand ${i + 1}`} className="w-20 h-20 object-cover rounded border" />
+                <button
+                  type="button"
+                  onClick={() => removeImage(i)}
+                  className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+              <div className="flex-1 min-w-0">
+                <Label className="text-xs font-medium mb-1 block">Bildebeskrivelse</Label>
+                <Input
+                  value={bilde.beskrivelse}
+                  onChange={(e) => updateImageBeskrivelse(i, e.target.value)}
+                  placeholder="Beskriv hva bildet viser..."
+                  className="text-xs"
+                />
+              </div>
             </div>
           ))}
         </div>
