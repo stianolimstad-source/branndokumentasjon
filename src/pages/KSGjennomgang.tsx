@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, CheckCircle, XCircle, Clock, MessageSquare, Save, Loader2, Eye, Download } from "lucide-react";
 import KonseptVisning from "@/components/ks/KonseptVisning";
 import { exportKSToWord } from "@/lib/ks-word-export";
+import { useCanDownload } from "@/hooks/useCanDownload";
 
 const sections = [
   { key: "kap1_1", label: "1.1 Informasjon om tiltaket" },
