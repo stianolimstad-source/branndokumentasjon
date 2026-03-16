@@ -110,11 +110,32 @@ const tilstandGradLabels: Record<string, string> = {
   tgiu: "TG IU – Ikke undersøkt",
 };
 
-async function fetchImageAsBuffer(url: string): Promise<ArrayBuffer | null> {
+async function fetchImageAsBuffer(url: string): Promise<{ buffer: ArrayBuffer; width: number; height: number } | null> {
   try {
-    const response = await fetch(url);
-    if (!response.ok) return null;
-    return await response.arrayBuffer();
+    // Load image into an HTMLImageElement – the browser automatically
+    // applies EXIF orientation when drawing to canvas, which fixes
+    // rotated photos taken on mobile devices.
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const el = new Image();
+      el.crossOrigin = "anonymous";
+      el.onload = () => resolve(el);
+      el.onerror = reject;
+      el.src = url;
+    });
+
+    const canvas = document.createElement("canvas");
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+    ctx.drawImage(img, 0, 0);
+
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob((b) => resolve(b), "image/jpeg", 0.9)
+    );
+    if (!blob) return null;
+    const buffer = await blob.arrayBuffer();
+    return { buffer, width: img.naturalWidth, height: img.naturalHeight };
   } catch {
     return null;
   }
