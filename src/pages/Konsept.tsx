@@ -4978,9 +4978,9 @@ const Konsept = () => {
                 <CardHeader className="flex-shrink-0">
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle>Generert konsept</CardTitle>
+                      <CardTitle>{documentType === "tilstandsvurdering" ? "Tilstandsvurdering" : "Generert konsept"}</CardTitle>
                       <CardDescription>
-                        Forhåndsvisning av brannkonseptet
+                        Forhåndsvisning av {documentType === "tilstandsvurdering" ? "tilstandsvurderingen" : "brannkonseptet"}
                       </CardDescription>
                     </div>
                     {generatedConcept && canDownload && (
