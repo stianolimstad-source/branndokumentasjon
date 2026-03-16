@@ -4714,6 +4714,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {renderTilstandPanel("3_11")}
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.12 § 11-15 Tilrettelegging for redning av husdyr</Label>
