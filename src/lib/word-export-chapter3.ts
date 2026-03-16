@@ -1072,7 +1072,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.redningsmannskapKommentar) {
     rows.push(contentRow("Kommentar", formData.redningsmannskapKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_14", "3.14 Slokkemannskap"));
+  rows.push(...await tilstandRow(formData, "3_14", "3.14 Slokkemannskap"));
 
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
