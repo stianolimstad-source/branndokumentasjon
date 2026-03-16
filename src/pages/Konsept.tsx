@@ -4892,7 +4892,7 @@ const Konsept = () => {
                         Forhåndsvisning av brannkonseptet
                       </CardDescription>
                     </div>
-                    {generatedConcept && (
+                    {generatedConcept && canDownload && (
                       <Button variant="outline" size="sm" onClick={exportToWord}>
                         <Download className="h-4 w-4 mr-2" />
                         Last ned Word

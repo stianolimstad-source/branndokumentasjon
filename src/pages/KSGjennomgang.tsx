@@ -477,10 +477,12 @@ const KSGjennomgang = () => {
                     {taskData?.status === "completed" ? "KS er fullført" : "KS ferdig"}
                   </Button>
                 )}
-                <Button variant="outline" size="sm" className="w-full" onClick={() => downloadChecklist(reviewType)}>
-                  <Download className="h-4 w-4 mr-2" />
-                  {reviewType === "egenkontroll" ? "Last ned egenkontroll" : "Last ned sidemannskontroll"}
-                </Button>
+                {canDownload && (
+                  <Button variant="outline" size="sm" className="w-full" onClick={() => downloadChecklist(reviewType)}>
+                    <Download className="h-4 w-4 mr-2" />
+                    {reviewType === "egenkontroll" ? "Last ned egenkontroll" : "Last ned sidemannskontroll"}
+                  </Button>
+                )}
               </div>
             </Card>
           </div>

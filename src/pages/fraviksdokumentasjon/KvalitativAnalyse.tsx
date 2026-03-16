@@ -357,10 +357,12 @@ const KvalitativAnalyse = () => {
                     <CardTitle>Forhåndsvisning</CardTitle>
                     <CardDescription>Fraviksdokumentasjonen oppdateres i sanntid</CardDescription>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => exportKvalitativWord(fravikEntries, dokumentNavn, logoUrl, projectData, profileData, sammendrag)}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Last ned Word
-                  </Button>
+                  {canDownload && (
+                    <Button variant="outline" size="sm" onClick={() => exportKvalitativWord(fravikEntries, dokumentNavn, logoUrl, projectData, profileData, sammendrag)}>
+                      <Download className="h-4 w-4 mr-2" />
+                      Last ned Word
+                    </Button>
+                  )}
                 </div>
               </CardHeader>
               <CardContent className="flex-1 overflow-hidden p-0">
