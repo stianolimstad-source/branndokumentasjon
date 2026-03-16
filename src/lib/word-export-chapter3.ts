@@ -1,4 +1,4 @@
-import { Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, ShadingType } from "docx";
+import { Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, ShadingType, ImageRun } from "docx";
 import { branncelleTyperListe, getBrannklasse } from "./fire-concept-constants";
 import { getGarasjeKrav } from "./garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "./brensellagring-krav";
