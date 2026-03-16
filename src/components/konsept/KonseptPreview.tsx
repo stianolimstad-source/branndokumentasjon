@@ -3,13 +3,52 @@ import { branncelleTyperListe, getBrannklasse } from "@/lib/fire-concept-constan
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
 
+interface TilstandData {
+  grad: string;
+  beskrivelse: string;
+  bilder: string[];
+}
+
 interface KonseptPreviewProps {
   formData: Record<string, any>;
   logoUrl?: string | null;
   authorInfo?: { name: string; company: string } | null;
+  documentType?: "brannkonsept" | "tilstandsvurdering";
 }
 
-const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) => {
+const gradColors: Record<string, { bg: string; text: string; label: string }> = {
+  god: { bg: "#dcfce7", text: "#166534", label: "God" },
+  akseptabel: { bg: "#fef9c3", text: "#854d0e", label: "Akseptabel" },
+  mangelfull: { bg: "#ffedd5", text: "#9a3412", label: "Mangelfull" },
+  kritisk: { bg: "#fecaca", text: "#991b1b", label: "Kritisk" },
+};
+
+const TilstandBlock = ({ data, sectionLabel }: { data: TilstandData; sectionLabel: string }) => {
+  if (!data || (!data.grad && !data.beskrivelse && (!data.bilder || data.bilder.length === 0))) return null;
+  const gradInfo = gradColors[data.grad];
+  return (
+    <div style={{ border: "2px dashed #f59e0b", borderRadius: 8, padding: 12, marginTop: 8, background: "#fffbeb" }}>
+      <p style={{ fontSize: 10, fontWeight: 700, color: "#92400e", textTransform: "uppercase", marginBottom: 6 }}>
+        Tilstandsvurdering – {sectionLabel}
+      </p>
+      {gradInfo && (
+        <span style={{ fontSize: 10, fontWeight: 600, background: gradInfo.bg, color: gradInfo.text, padding: "2px 8px", borderRadius: 12, display: "inline-block", marginBottom: 6 }}>
+          {gradInfo.label}
+        </span>
+      )}
+      {data.beskrivelse && <p style={{ fontSize: 10, whiteSpace: "pre-wrap", marginTop: 4 }}>{data.beskrivelse}</p>}
+      {data.bilder && data.bilder.length > 0 && (
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+          {data.bilder.map((url, i) => (
+            <img key={i} src={url} alt={`Tilstand ${i + 1}`} style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 4, border: "1px solid #e5e7eb" }} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannkonsept" }: KonseptPreviewProps) => {
   // Ensure arrays have defaults
   const bygningsdeler = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
   const grunnlagsdokumenter = Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : [];
