@@ -1753,6 +1753,7 @@ const Konsept = () => {
                             />
                           </div>
                         </div>
+                        {documentType !== "tilstandsvurdering" && (
                         <div>
                           <Label className="text-xs font-medium mb-1 block">Type tiltak</Label>
                           <Select 
@@ -1771,6 +1772,17 @@ const Konsept = () => {
                             </SelectContent>
                           </Select>
                         </div>
+                        )}
+                        {documentType === "tilstandsvurdering" && (
+                        <div>
+                          <Label className="text-xs font-medium mb-1 block">Kunde</Label>
+                          <Input 
+                            value={formData.kunde}
+                            onChange={(e) => setFormData({...formData, kunde: e.target.value})}
+                            placeholder="Navn på kunde/oppdragsgiver"
+                          />
+                        </div>
+                        )}
                         <div>
                           <Label className="text-xs font-medium mb-1 block">Beskrivelse av tiltaket</Label>
                           <Textarea 
@@ -1795,6 +1807,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {documentType !== "tilstandsvurdering" && (
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">1.2 Ansvarsoppgave (SAK 10)</Label>
                       <div className="space-y-3">
@@ -1839,6 +1852,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    )}
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">1.3 Prosjekteringsmetode</Label>
                       <RadioGroup
