@@ -1040,7 +1040,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.romningsveiKommentar) {
     rows.push(contentRow("Kommentar", formData.romningsveiKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_11", "3.11 Rømningsvei"));
+  rows.push(...await tilstandRow(formData, "3_11", "3.11 Rømningsvei"));
 
   // ===== 3.13 Manuell slokking =====
   rows.push(sectionHeaderRow("3.13   §11-16 Tilrettelegging for manuell slokking"));
