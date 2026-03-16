@@ -283,7 +283,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <PageFooter pageNum={2 + extraPages} />
       </div>
 
-      {/* Kapittel 1-2 - egen side */}
+      {/* Kapittel 1 - egen side */}
       <div className={pageStyle} style={pageWidth}>
       {/* 1. Innledning */}
       <section className="mb-6">
@@ -312,10 +312,18 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <td className="border border-gray-400 p-2 font-semibold">Kommune</td>
               <td className="border border-gray-400 p-2">{formData.kommune || "[Angis]"}</td>
             </tr>
+            {!isTilstand && (
             <tr>
               <td className="border border-gray-400 p-2 font-semibold">Type tiltak</td>
               <td className="border border-gray-400 p-2">{formData.tiltakstype || "[Angis]"}</td>
             </tr>
+            )}
+            {isTilstand && (
+            <tr>
+              <td className="border border-gray-400 p-2 font-semibold">Kunde</td>
+              <td className="border border-gray-400 p-2">{formData.kunde || "[Angis]"}</td>
+            </tr>
+            )}
             <tr>
               <td className="border border-gray-400 p-2 font-semibold">Beskrivelse av tiltaket</td>
               <td className="border border-gray-400 p-2">{formData.tiltaksbeskrivelse || "[Angis]"}</td>
@@ -327,6 +335,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </tbody>
         </table>
 
+        {!isTilstand && (
+        <>
         <h3 className="font-semibold mb-2">1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)</h3>
         <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
           <tbody>
@@ -379,6 +389,15 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <li>TEK17 - Forskrift om tekniske krav til byggverk</li>
           <li>VTEK17 - Veiledning til teknisk forskrift</li>
         </ul>
+        </>
+        )}
+
+        {isTilstand && (
+        <>
+        <h3 className="font-semibold mb-2">1.2 Avgrensning av vurderingen</h3>
+        <p className="ml-4 mb-3">{formData.avgrensning || "[Avgrensning beskrives]"}</p>
+        </>
+        )}
       </section>
       <PageFooter pageNum={3 + extraPages} />
       </div>
