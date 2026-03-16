@@ -586,6 +586,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 )}
               </>
             )}
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_1"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_1"]} sectionLabel="3.1 Bæreevne og stabilitet" />
+            )}
 
             {/* 3.2 §11-5 Sikkerhet ved eksplosjon */}
             <tr className="bg-blue-100">
