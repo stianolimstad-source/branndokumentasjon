@@ -1753,6 +1753,7 @@ const Konsept = () => {
                             />
                           </div>
                         </div>
+                        {documentType !== "tilstandsvurdering" && (
                         <div>
                           <Label className="text-xs font-medium mb-1 block">Type tiltak</Label>
                           <Select 
@@ -1771,6 +1772,17 @@ const Konsept = () => {
                             </SelectContent>
                           </Select>
                         </div>
+                        )}
+                        {documentType === "tilstandsvurdering" && (
+                        <div>
+                          <Label className="text-xs font-medium mb-1 block">Kunde</Label>
+                          <Input 
+                            value={formData.kunde}
+                            onChange={(e) => setFormData({...formData, kunde: e.target.value})}
+                            placeholder="Navn på kunde/oppdragsgiver"
+                          />
+                        </div>
+                        )}
                         <div>
                           <Label className="text-xs font-medium mb-1 block">Beskrivelse av tiltaket</Label>
                           <Textarea 
