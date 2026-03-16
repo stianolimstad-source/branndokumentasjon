@@ -548,6 +548,77 @@ const MineProsjekter = () => {
                             </div>
                           )}
 
+                          {/* Tilstandsvurderinger */}
+                          <div className="flex items-center justify-between mt-4">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <ClipboardCheck className="h-4 w-4" />
+                              <span>
+                                {tilstandsvurderinger.length} tilstandsvurdering
+                                {tilstandsvurderinger.length !== 1 ? "er" : ""}
+                              </span>
+                            </div>
+                            <Link to={`/konsept?project=${project.id}&type=tilstandsvurdering`}>
+                              <Button size="sm" variant="outline">
+                                <Plus className="h-4 w-4 mr-2" />
+                                Ny tilstandsvurdering
+                              </Button>
+                            </Link>
+                          </div>
+
+                          {tilstandsvurderinger.length > 0 && (
+                            <div className="mt-2 space-y-2">
+                              {tilstandsvurderinger.map((tv) => (
+                                <div
+                                  key={tv.id}
+                                  className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                                >
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <ClipboardCheck className="h-4 w-4 text-amber-600" />
+                                    <span className="text-sm font-medium">{tv.name}</span>
+                                    <span className={`text-xs px-2 py-0.5 rounded ${
+                                      tv.status === 'draft' 
+                                        ? 'bg-yellow-100 text-yellow-800' 
+                                        : 'bg-green-100 text-green-800'
+                                    }`}>
+                                      {tv.status === 'draft' ? 'Utkast' : 'Ferdig'}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <Link to={`/konsept?project=${project.id}&concept=${tv.id}&type=tilstandsvurdering`}>
+                                      <Button variant="ghost" size="sm">
+                                        Åpne
+                                      </Button>
+                                    </Link>
+                                    <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                                          <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>Slette tilstandsvurdering?</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            Er du sikker på at du vil slette "{tv.name}"? Denne handlingen kan ikke angres.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                                          <AlertDialogAction
+                                            onClick={() => handleDeleteConcept(tv.id, tv.name)}
+                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                          >
+                                            Slett
+                                          </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
                           {/* Fraviksdokumenter */}
                           <div className="flex items-center justify-between mt-4">
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
