@@ -77,7 +77,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </div>
         )}
         <h1 className="text-3xl font-bold text-center mb-4 tracking-wide">
-          BRANNKONSEPT
+          {documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT"}
         </h1>
         {formData.prosjektnavn && (
           <p className="text-lg text-center text-gray-700 mb-2">{formData.prosjektnavn}</p>
