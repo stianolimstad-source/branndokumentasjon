@@ -243,9 +243,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <p className="ml-4">3.11 § 11-14 Rømningsvei</p>
           <p className="ml-4">3.12 § 11-16 Tilrettelegging for manuell slokking</p>
           <p className="ml-4">3.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap</p>
-          <p><span className="font-bold">4.</span> Utførelses- og driftsfasen</p>
-          <p className="ml-4">4.1 Utførelsesfasen</p>
-          <p className="ml-4">4.2 Driftsfasen</p>
+          {documentType !== "tilstandsvurdering" && (
+            <>
+              <p><span className="font-bold">4.</span> Utførelses- og driftsfasen</p>
+              <p className="ml-4">4.1 Utførelsesfasen</p>
+              <p className="ml-4">4.2 Driftsfasen</p>
+            </>
+          )}
           <p><span className="font-bold">5.</span> Revisjonshistorikk</p>
           <p><span className="font-bold">6.</span> Litteraturhenvisninger</p>
         </div>
