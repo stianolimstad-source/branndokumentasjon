@@ -1083,7 +1083,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
-        <h2 className="font-bold mb-3">3. Beskrivelse av branntekniske ytelseskrav (forts.)</h2>
+        <h2 className="font-bold mb-3">{sp}. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} (forts.)</h2>
         <table className="w-full border-collapse border border-gray-400 text-xs">
           <tbody>
             {/* 3.5 §11-8 Brannceller */}
