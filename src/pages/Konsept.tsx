@@ -793,7 +793,7 @@ const Konsept = () => {
           project_id: selectedProjectId,
           user_id: user.id,
           name: conceptName,
-          content: formData,
+          content: JSON.parse(JSON.stringify(formData)),
           status: 'draft',
         })
         .select()
