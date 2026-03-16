@@ -118,7 +118,12 @@ function tilstandRow(formData: Record<string, any>, sectionKey: string, sectionL
   const lines: string[] = [];
   if (gradLabel) lines.push(`Tilstandsgrad: ${gradLabel}`);
   if (tilstandData.beskrivelse) lines.push(`Beskrivelse: ${tilstandData.beskrivelse}`);
-  if (tilstandData.bilder?.length > 0) lines.push(`(${tilstandData.bilder.length} bilde(r) vedlagt)`);
+  if (tilstandData.bilder?.length > 0) {
+    const bilder = tilstandData.bilder.map((b: any) => typeof b === "string" ? { url: b, beskrivelse: "" } : b);
+    bilder.forEach((bilde: any, i: number) => {
+      lines.push(`Bilde ${i + 1}${bilde.beskrivelse ? `: ${bilde.beskrivelse}` : ""}`);
+    });
+  }
   
   const tilstandShading = { type: ShadingType.SOLID, color: "FEF3C7", fill: "FEF3C7" };
   

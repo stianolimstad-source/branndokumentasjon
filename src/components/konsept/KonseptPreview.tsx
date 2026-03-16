@@ -72,7 +72,13 @@ const TilstandTableRow = ({ data, sectionLabel }: { data: TilstandData; sectionL
         {gradLabel && <p style={{ fontSize: 10, marginBottom: 2 }}>Tilstandsgrad: {gradLabel}</p>}
         {data.beskrivelse && <p style={{ fontSize: 10, whiteSpace: "pre-wrap" }}>Beskrivelse: {data.beskrivelse}</p>}
         {data.bilder && data.bilder.length > 0 && (
-          <p style={{ fontSize: 10, marginTop: 4 }}>({data.bilder.length} bilde(r) vedlagt)</p>
+          <div style={{ marginTop: 4 }}>
+            {normalizeBilder(data.bilder).map((bilde, i) => (
+              <p key={i} style={{ fontSize: 10, margin: "2px 0" }}>
+                Bilde {i + 1}{bilde.beskrivelse ? `: ${bilde.beskrivelse}` : ""}
+              </p>
+            ))}
+          </div>
         )}
       </td>
     </tr>
