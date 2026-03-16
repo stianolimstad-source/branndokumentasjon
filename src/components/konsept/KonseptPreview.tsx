@@ -250,8 +250,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p className="ml-4">4.2 Driftsfasen</p>
             </>
           )}
-          <p><span className="font-bold">5.</span> Revisjonshistorikk</p>
-          <p><span className="font-bold">6.</span> Litteraturhenvisninger</p>
+          <p><span className="font-bold">{documentType === "tilstandsvurdering" ? "4" : "5"}.</span> Revisjonshistorikk</p>
+          <p><span className="font-bold">{documentType === "tilstandsvurdering" ? "5" : "6"}.</span> Litteraturhenvisninger</p>
         </div>
       </section>
       <PageFooter pageNum={2 + extraPages} />
