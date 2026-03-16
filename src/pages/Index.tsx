@@ -98,7 +98,7 @@ const Index = () => {
                 <Card
                   key={feature.title}
                   className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer group"
-                  onClick={() => feature.href === "dialog" ? setShowConceptDialog(true) : setShowFravikDialog(true)}
+                  onClick={handleClick}
                 >
                   <CardHeader>
                     <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4 group-hover:bg-primary/20 transition-colors">
