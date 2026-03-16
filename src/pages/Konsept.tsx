@@ -707,7 +707,7 @@ const Konsept = () => {
       setConceptName(data.name);
       setSelectedProjectId(data.project_id);
       if (data.content && typeof data.content === 'object') {
-        const loadedContent = data.content as typeof formData;
+        const loadedContent = data.content as any;
         // Konverter gammel streng-format til ny array-format for grunnlagsdokumenter
         const legacyDocs = (loadedContent as any).grunnlagsdokumenter;
         if (!Array.isArray(legacyDocs)) {
