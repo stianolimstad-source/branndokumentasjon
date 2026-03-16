@@ -7,7 +7,7 @@ import { ImagePlus, X, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
-export type TilstandGrad = "god" | "akseptabel" | "mangelfull" | "kritisk" | "";
+export type TilstandGrad = "tg0" | "tg1" | "tg2" | "tg3" | "tgiu" | "";
 
 export interface TilstandData {
   grad: TilstandGrad;
@@ -22,10 +22,11 @@ export const emptyTilstand = (): TilstandData => ({
 });
 
 const gradLabels: Record<string, { label: string; color: string }> = {
-  god: { label: "God", color: "bg-green-100 text-green-800 border-green-300" },
-  akseptabel: { label: "Akseptabel", color: "bg-yellow-100 text-yellow-800 border-yellow-300" },
-  mangelfull: { label: "Mangelfull", color: "bg-orange-100 text-orange-800 border-orange-300" },
-  kritisk: { label: "Kritisk", color: "bg-red-100 text-red-800 border-red-300" },
+  tg0: { label: "TG 0 – Ingen avvik", color: "bg-green-100 text-green-800 border-green-300" },
+  tg1: { label: "TG 1 – Mindre avvik", color: "bg-yellow-100 text-yellow-800 border-yellow-300" },
+  tg2: { label: "TG 2 – Vesentlige avvik", color: "bg-orange-100 text-orange-800 border-orange-300" },
+  tg3: { label: "TG 3 – Store avvik", color: "bg-red-100 text-red-800 border-red-300" },
+  tgiu: { label: "TG IU – Ikke undersøkt", color: "bg-gray-100 text-gray-800 border-gray-300" },
 };
 
 interface TilstandsvurderingPanelProps {

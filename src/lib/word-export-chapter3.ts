@@ -103,10 +103,11 @@ function contentRowMultiLine(forhold: string, losningLines: string[], ansvar: st
 }
 
 const tilstandGradLabels: Record<string, string> = {
-  god: "God",
-  akseptabel: "Akseptabel",
-  mangelfull: "Mangelfull",
-  kritisk: "Kritisk",
+  tg0: "TG 0 – Ingen avvik",
+  tg1: "TG 1 – Mindre avvik",
+  tg2: "TG 2 – Vesentlige avvik",
+  tg3: "TG 3 – Store avvik",
+  tgiu: "TG IU – Ikke undersøkt",
 };
 
 function tilstandRow(formData: Record<string, any>, sectionKey: string, sectionLabel: string): TableRow[] {

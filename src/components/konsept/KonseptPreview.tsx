@@ -51,7 +51,7 @@ const TilstandBlock = ({ data, sectionLabel }: { data: TilstandData; sectionLabe
 
 const TilstandTableRow = ({ data, sectionLabel }: { data: TilstandData; sectionLabel: string }) => {
   if (!data || (!data.grad && !data.beskrivelse && (!data.bilder || data.bilder.length === 0))) return null;
-  const gradLabel = { god: "God", akseptabel: "Akseptabel", mangelfull: "Mangelfull", kritisk: "Kritisk" }[data.grad] || "";
+  const gradLabel = { tg0: "TG 0", tg1: "TG 1", tg2: "TG 2", tg3: "TG 3", tgiu: "TG IU" }[data.grad] || "";
   return (
     <tr>
       <td className="border border-gray-400 p-2" colSpan={3} style={{ background: "#FEF3C7" }}>
