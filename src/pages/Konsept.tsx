@@ -26,6 +26,7 @@ import UpdateKSButton from "@/components/konsept/UpdateKSButton";
 import KonseptPreview from "@/components/konsept/KonseptPreview";
 import { UploadConceptDialog } from "@/components/konsept/UploadConceptDialog";
 import { buildChapter3Table } from "@/lib/word-export-chapter3";
+import TilstandsvurderingPanel, { TilstandData, emptyTilstand } from "@/components/konsept/TilstandsvurderingPanel";
 
 // Mapping av bygningstype til risikoklasse basert på TEK17
 const bygningsTypeRisikoklasseMap: Record<string, string> = {
