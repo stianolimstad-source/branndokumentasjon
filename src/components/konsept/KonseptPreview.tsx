@@ -3,13 +3,52 @@ import { branncelleTyperListe, getBrannklasse } from "@/lib/fire-concept-constan
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
 
+interface TilstandData {
+  grad: string;
+  beskrivelse: string;
+  bilder: string[];
+}
+
 interface KonseptPreviewProps {
   formData: Record<string, any>;
   logoUrl?: string | null;
   authorInfo?: { name: string; company: string } | null;
+  documentType?: "brannkonsept" | "tilstandsvurdering";
 }
 
-const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) => {
+const gradColors: Record<string, { bg: string; text: string; label: string }> = {
+  god: { bg: "#dcfce7", text: "#166534", label: "God" },
+  akseptabel: { bg: "#fef9c3", text: "#854d0e", label: "Akseptabel" },
+  mangelfull: { bg: "#ffedd5", text: "#9a3412", label: "Mangelfull" },
+  kritisk: { bg: "#fecaca", text: "#991b1b", label: "Kritisk" },
+};
+
+const TilstandBlock = ({ data, sectionLabel }: { data: TilstandData; sectionLabel: string }) => {
+  if (!data || (!data.grad && !data.beskrivelse && (!data.bilder || data.bilder.length === 0))) return null;
+  const gradInfo = gradColors[data.grad];
+  return (
+    <div style={{ border: "2px dashed #f59e0b", borderRadius: 8, padding: 12, marginTop: 8, background: "#fffbeb" }}>
+      <p style={{ fontSize: 10, fontWeight: 700, color: "#92400e", textTransform: "uppercase", marginBottom: 6 }}>
+        Tilstandsvurdering – {sectionLabel}
+      </p>
+      {gradInfo && (
+        <span style={{ fontSize: 10, fontWeight: 600, background: gradInfo.bg, color: gradInfo.text, padding: "2px 8px", borderRadius: 12, display: "inline-block", marginBottom: 6 }}>
+          {gradInfo.label}
+        </span>
+      )}
+      {data.beskrivelse && <p style={{ fontSize: 10, whiteSpace: "pre-wrap", marginTop: 4 }}>{data.beskrivelse}</p>}
+      {data.bilder && data.bilder.length > 0 && (
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+          {data.bilder.map((url, i) => (
+            <img key={i} src={url} alt={`Tilstand ${i + 1}`} style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 4, border: "1px solid #e5e7eb" }} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannkonsept" }: KonseptPreviewProps) => {
   // Ensure arrays have defaults
   const bygningsdeler = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
   const grunnlagsdokumenter = Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : [];
@@ -38,7 +77,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
           </div>
         )}
         <h1 className="text-3xl font-bold text-center mb-4 tracking-wide">
-          BRANNKONSEPT
+          {documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT"}
         </h1>
         {formData.prosjektnavn && (
           <p className="text-lg text-center text-gray-700 mb-2">{formData.prosjektnavn}</p>
@@ -1841,6 +1880,43 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo }: KonseptPreviewProps) 
       </section>
       <PageFooter pageNum={hasSammendrag ? 8 : 7} />
       </div>
+
+      {/* Tilstandsvurdering page - only shown in tilstandsvurdering mode */}
+      {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger && (() => {
+        const sections = [
+          { key: "3_1", label: "3.1 Bæreevne og stabilitet" },
+          { key: "3_2", label: "3.2 Sikkerhet ved eksplosjon" },
+          { key: "3_3", label: "3.3 Brannspredning mellom byggverk" },
+          { key: "3_4", label: "3.4 Brannseksjoner" },
+          { key: "3_5", label: "3.5 Brannceller" },
+          { key: "3_6", label: "3.6 Materialer" },
+          { key: "3_7", label: "3.7 Tekniske installasjoner" },
+          { key: "3_8", label: "3.8 Rømning og redning" },
+          { key: "3_9", label: "3.9 Tilrettelegging for rømning" },
+          { key: "3_10", label: "3.10 Utgang fra branncelle" },
+          { key: "3_11", label: "3.11 Rømningsvei" },
+          { key: "3_12", label: "3.12 Redning av husdyr" },
+          { key: "3_13", label: "3.13 Manuell slokking" },
+          { key: "3_14", label: "3.14 Slokkemannskap" },
+        ];
+        const filledSections = sections.filter(s => {
+          const d = formData.tilstandsvurderinger[s.key];
+          return d && (d.grad || d.beskrivelse || (d.bilder && d.bilder.length > 0));
+        });
+        if (filledSections.length === 0) return null;
+        return (
+          <div className={pageStyle} style={pageWidth}>
+            <h2 className="font-bold mb-4 text-lg">Tilstandsvurderinger</h2>
+            <div className="space-y-4">
+              {filledSections.map(s => (
+                <TilstandBlock key={s.key} data={formData.tilstandsvurderinger[s.key]} sectionLabel={s.label} />
+              ))}
+            </div>
+            <PageFooter pageNum={hasSammendrag ? 9 : 8} />
+          </div>
+        );
+      })()}
+
       <div className={pageStyle} style={pageWidth}>
       {/* 4. Utførelses- og driftsfasen */}
       <section className="mb-6">

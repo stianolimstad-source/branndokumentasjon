@@ -26,6 +26,7 @@ import UpdateKSButton from "@/components/konsept/UpdateKSButton";
 import KonseptPreview from "@/components/konsept/KonseptPreview";
 import { UploadConceptDialog } from "@/components/konsept/UploadConceptDialog";
 import { buildChapter3Table } from "@/lib/word-export-chapter3";
+import TilstandsvurderingPanel, { TilstandData, emptyTilstand } from "@/components/konsept/TilstandsvurderingPanel";
 
 // Mapping av bygningstype til risikoklasse basert på TEK17
 const bygningsTypeRisikoklasseMap: Record<string, string> = {
@@ -354,6 +355,7 @@ const Konsept = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [generatedConcept, setGeneratedConcept] = useState<string | null>(null);
+  const [documentType, setDocumentType] = useState<"brannkonsept" | "tilstandsvurdering">("brannkonsept");
   
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     searchParams.get('project')
@@ -627,6 +629,8 @@ const Konsept = () => {
     fravikBeskrivelse: "",
     // Fravik
     fravik: "",
+    // Tilstandsvurdering per seksjon (kap 3)
+    tilstandsvurderinger: {} as Record<string, TilstandData>,
   });
 
   // Load existing concept if conceptId is provided
@@ -703,7 +707,7 @@ const Konsept = () => {
       setConceptName(data.name);
       setSelectedProjectId(data.project_id);
       if (data.content && typeof data.content === 'object') {
-        const loadedContent = data.content as typeof formData;
+        const loadedContent = data.content as any;
         // Konverter gammel streng-format til ny array-format for grunnlagsdokumenter
         const legacyDocs = (loadedContent as any).grunnlagsdokumenter;
         if (!Array.isArray(legacyDocs)) {
@@ -723,6 +727,10 @@ const Konsept = () => {
           }));
         }
         setFormData({ ...formData, ...loadedContent });
+        // Load document type if saved
+        if (loadedContent.documentType) {
+          setDocumentType(loadedContent.documentType);
+        }
       }
       setGeneratedConcept("loaded");
     }
@@ -764,7 +772,7 @@ const Konsept = () => {
         .from('fire_concepts')
         .update({
           name: conceptName,
-          content: formData,
+          content: JSON.parse(JSON.stringify({ ...formData, documentType })),
           status: generatedConcept ? 'draft' : 'draft',
         })
         .eq('id', conceptId);
@@ -789,7 +797,7 @@ const Konsept = () => {
           project_id: selectedProjectId,
           user_id: user.id,
           name: conceptName,
-          content: formData,
+          content: JSON.parse(JSON.stringify({ ...formData, documentType })),
           status: 'draft',
         })
         .select()
@@ -829,7 +837,53 @@ const Konsept = () => {
     }, 1500);
   };
 
-  const renderPreview = () => <KonseptPreview formData={formData} logoUrl={logoUrl} authorInfo={authorInfo} />;
+  // Tilstandsvurdering sections definition
+  const tilstandSections = [
+    { key: "3_1", label: "3.1 Bæreevne og stabilitet" },
+    { key: "3_2", label: "3.2 Sikkerhet ved eksplosjon" },
+    { key: "3_3", label: "3.3 Brannspredning mellom byggverk" },
+    { key: "3_4", label: "3.4 Brannseksjoner" },
+    { key: "3_5", label: "3.5 Brannceller" },
+    { key: "3_6", label: "3.6 Materialer" },
+    { key: "3_7", label: "3.7 Tekniske installasjoner" },
+    { key: "3_8", label: "3.8 Rømning og redning" },
+    { key: "3_9", label: "3.9 Tilrettelegging for rømning" },
+    { key: "3_10", label: "3.10 Utgang fra branncelle" },
+    { key: "3_11", label: "3.11 Rømningsvei" },
+    { key: "3_12", label: "3.12 Redning av husdyr" },
+    { key: "3_13", label: "3.13 Manuell slokking" },
+    { key: "3_14", label: "3.14 Slokkemannskap" },
+  ];
+
+  const updateTilstand = (sectionKey: string, data: TilstandData) => {
+    setFormData(prev => ({
+      ...prev,
+      tilstandsvurderinger: {
+        ...prev.tilstandsvurderinger,
+        [sectionKey]: data,
+      },
+    }));
+  };
+
+  const getTilstand = (sectionKey: string): TilstandData => {
+    return formData.tilstandsvurderinger[sectionKey] || emptyTilstand();
+  };
+
+  const renderTilstandPanel = (sectionKey: string) => {
+    if (documentType !== "tilstandsvurdering") return null;
+    const section = tilstandSections.find(s => s.key === sectionKey);
+    if (!section) return null;
+    return (
+      <TilstandsvurderingPanel
+        sectionKey={section.key}
+        sectionLabel={section.label}
+        data={getTilstand(section.key)}
+        onChange={(data) => updateTilstand(section.key, data)}
+      />
+    );
+  };
+
+  const renderPreview = () => <KonseptPreview formData={formData} logoUrl={logoUrl} authorInfo={authorInfo} documentType={documentType} />;
 
   const exportToWord = async () => {
     const tableBorders = {
@@ -1538,6 +1592,28 @@ const Konsept = () => {
                           <span className="text-xs text-muted-foreground">Har du et eksisterende konsept eller forprosjekt? Last det opp for å fylle ut automatisk.</span>
                         </div>
                       )}
+
+              {/* Document type toggle */}
+              <div className="flex items-center gap-2 mb-4 p-3 rounded-lg border bg-muted/30">
+                <Label className="text-sm font-semibold mr-2">Dokumenttype:</Label>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={documentType === "brannkonsept" ? "default" : "outline"}
+                  onClick={() => setDocumentType("brannkonsept")}
+                >
+                  Brannkonsept
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={documentType === "tilstandsvurdering" ? "default" : "outline"}
+                  onClick={() => setDocumentType("tilstandsvurdering")}
+                >
+                  Tilstandsvurdering
+                </Button>
+              </div>
+
               <Accordion type="multiple" defaultValue={["kap1"]} className="w-full">
                 {/* Sammendrag */}
                 <AccordionItem value="sammendrag" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
@@ -2572,6 +2648,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {renderTilstandPanel("3_1")}
                     <div className="space-y-3">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.2 § 11-5 Sikkerhet ved eksplosjon</Label>
@@ -2650,6 +2727,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {renderTilstandPanel("3_2")}
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.3 § 11-6 Tiltak mot brannspredning</Label>
@@ -2722,6 +2800,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {renderTilstandPanel("3_3")}
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.4 § 11-7 Brannseksjoner</Label>
@@ -2923,6 +3002,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {renderTilstandPanel("3_4")}
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.5 § 11-8 Brannceller</Label>
@@ -3692,6 +3772,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {renderTilstandPanel("3_5")}
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.6 § 11-9 Materialer og produkters egenskaper ved brann</Label>
@@ -3811,6 +3892,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {renderTilstandPanel("3_6")}
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.7 § 11-10 Tekniske installasjoner</Label>
@@ -3942,6 +4024,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {renderTilstandPanel("3_7")}
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.8 § 11-11 Rømning og redning</Label>
@@ -3967,6 +4050,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {renderTilstandPanel("3_8")}
                     <div className="space-y-4">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.9 § 11-12 Tilrettelegging for rømning og redning</Label>
@@ -4201,6 +4285,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {renderTilstandPanel("3_9")}
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.10 § 11-13 Utgang fra branncelle</Label>
@@ -4502,6 +4587,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {renderTilstandPanel("3_10")}
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.11 § 11-14 Rømningsvei</Label>
@@ -4628,6 +4714,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {renderTilstandPanel("3_11")}
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.12 § 11-15 Tilrettelegging for redning av husdyr</Label>
@@ -4656,6 +4743,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {renderTilstandPanel("3_12")}
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.13 § 11-16 Manuell slokking</Label>
@@ -4722,6 +4810,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {renderTilstandPanel("3_13")}
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.14 § 11-17 Tilrettelegging for slokkemannskap</Label>
@@ -4761,6 +4850,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {renderTilstandPanel("3_14")}
                   </AccordionContent>
                 </AccordionItem>
 
@@ -4888,9 +4978,9 @@ const Konsept = () => {
                 <CardHeader className="flex-shrink-0">
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle>Generert konsept</CardTitle>
+                      <CardTitle>{documentType === "tilstandsvurdering" ? "Tilstandsvurdering" : "Generert konsept"}</CardTitle>
                       <CardDescription>
-                        Forhåndsvisning av brannkonseptet
+                        Forhåndsvisning av {documentType === "tilstandsvurdering" ? "tilstandsvurderingen" : "brannkonseptet"}
                       </CardDescription>
                     </div>
                     {generatedConcept && canDownload && (
