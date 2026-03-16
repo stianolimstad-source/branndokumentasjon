@@ -1824,7 +1824,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {/* 3.7 §11-10 Tekniske installasjoner */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>3.7 &nbsp;&nbsp; §11-10 Tekniske installasjoner</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.7 &nbsp;&nbsp; §11-10 Tekniske installasjoner</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
