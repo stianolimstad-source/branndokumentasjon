@@ -1949,41 +1949,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <PageFooter pageNum={hasSammendrag ? 8 : 7} />
       </div>
 
-      {/* Tilstandsvurdering page - only shown in tilstandsvurdering mode */}
-      {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger && (() => {
-        const sections = [
-          { key: "3_1", label: "3.1 Bæreevne og stabilitet" },
-          { key: "3_2", label: "3.2 Sikkerhet ved eksplosjon" },
-          { key: "3_3", label: "3.3 Brannspredning mellom byggverk" },
-          { key: "3_4", label: "3.4 Brannseksjoner" },
-          { key: "3_5", label: "3.5 Brannceller" },
-          { key: "3_6", label: "3.6 Materialer" },
-          { key: "3_7", label: "3.7 Tekniske installasjoner" },
-          { key: "3_8", label: "3.8 Rømning og redning" },
-          { key: "3_9", label: "3.9 Tilrettelegging for rømning" },
-          { key: "3_10", label: "3.10 Utgang fra branncelle" },
-          { key: "3_11", label: "3.11 Rømningsvei" },
-          { key: "3_12", label: "3.12 Redning av husdyr" },
-          { key: "3_13", label: "3.13 Manuell slokking" },
-          { key: "3_14", label: "3.14 Slokkemannskap" },
-        ];
-        const filledSections = sections.filter(s => {
-          const d = formData.tilstandsvurderinger[s.key];
-          return d && (d.grad || d.beskrivelse || (d.bilder && d.bilder.length > 0));
-        });
-        if (filledSections.length === 0) return null;
-        return (
-          <div className={pageStyle} style={pageWidth}>
-            <h2 className="font-bold mb-4 text-lg">Tilstandsvurderinger</h2>
-            <div className="space-y-4">
-              {filledSections.map(s => (
-                <TilstandBlock key={s.key} data={formData.tilstandsvurderinger[s.key]} sectionLabel={s.label} />
-              ))}
-            </div>
-            <PageFooter pageNum={hasSammendrag ? 9 : 8} />
-          </div>
-        );
-      })()}
+
+
 
       <div className={pageStyle} style={pageWidth}>
       {/* 4. Utførelses- og driftsfasen */}
