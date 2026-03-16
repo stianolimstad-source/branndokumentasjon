@@ -47,9 +47,12 @@ const TilstandBlock = ({ data, sectionLabel }: { data: TilstandData; sectionLabe
       )}
       {data.beskrivelse && <p style={{ fontSize: 10, whiteSpace: "pre-wrap", marginTop: 4 }}>{data.beskrivelse}</p>}
       {data.bilder && data.bilder.length > 0 && (
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
-          {data.bilder.map((url, i) => (
-            <img key={i} src={url} alt={`Tilstand ${i + 1}`} style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 4, border: "1px solid #e5e7eb" }} />
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
+          {normalizeBilder(data.bilder).map((bilde, i) => (
+            <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+              <img src={bilde.url} alt={bilde.beskrivelse || `Tilstand ${i + 1}`} style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 4, border: "1px solid #e5e7eb" }} />
+              {bilde.beskrivelse && <p style={{ fontSize: 9, fontStyle: "italic", margin: 0 }}>{bilde.beskrivelse}</p>}
+            </div>
           ))}
         </div>
       )}
