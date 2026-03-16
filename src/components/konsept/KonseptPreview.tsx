@@ -1386,6 +1386,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
             )}
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_5"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_5"]} sectionLabel="3.5 Brannceller" />
+            )}
 
             {/* 3.6 §11-9 Materialer og produkter */}
             <tr className="bg-blue-100">
