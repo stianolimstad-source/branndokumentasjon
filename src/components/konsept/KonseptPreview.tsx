@@ -17,10 +17,11 @@ interface KonseptPreviewProps {
 }
 
 const gradColors: Record<string, { bg: string; text: string; label: string }> = {
-  god: { bg: "#dcfce7", text: "#166534", label: "God" },
-  akseptabel: { bg: "#fef9c3", text: "#854d0e", label: "Akseptabel" },
-  mangelfull: { bg: "#ffedd5", text: "#9a3412", label: "Mangelfull" },
-  kritisk: { bg: "#fecaca", text: "#991b1b", label: "Kritisk" },
+  tg0: { bg: "#dcfce7", text: "#166534", label: "TG 0 – Ingen avvik" },
+  tg1: { bg: "#fef9c3", text: "#854d0e", label: "TG 1 – Mindre avvik" },
+  tg2: { bg: "#ffedd5", text: "#9a3412", label: "TG 2 – Vesentlige avvik" },
+  tg3: { bg: "#fecaca", text: "#991b1b", label: "TG 3 – Store avvik" },
+  tgiu: { bg: "#f3f4f6", text: "#374151", label: "TG IU – Ikke undersøkt" },
 };
 
 const TilstandBlock = ({ data, sectionLabel }: { data: TilstandData; sectionLabel: string }) => {
@@ -50,7 +51,7 @@ const TilstandBlock = ({ data, sectionLabel }: { data: TilstandData; sectionLabe
 
 const TilstandTableRow = ({ data, sectionLabel }: { data: TilstandData; sectionLabel: string }) => {
   if (!data || (!data.grad && !data.beskrivelse && (!data.bilder || data.bilder.length === 0))) return null;
-  const gradLabel = { god: "God", akseptabel: "Akseptabel", mangelfull: "Mangelfull", kritisk: "Kritisk" }[data.grad] || "";
+  const gradLabel = { tg0: "TG 0", tg1: "TG 1", tg2: "TG 2", tg3: "TG 3", tgiu: "TG IU" }[data.grad] || "";
   return (
     <tr>
       <td className="border border-gray-400 p-2" colSpan={3} style={{ background: "#FEF3C7" }}>
