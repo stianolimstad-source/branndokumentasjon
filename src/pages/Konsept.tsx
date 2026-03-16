@@ -1127,7 +1127,7 @@ const Konsept = () => {
           properties: {},
           children: [
             new Paragraph({
-              text: "BRANNKONSEPT",
+              text: documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT",
               heading: HeadingLevel.TITLE,
               alignment: AlignmentType.CENTER,
               spacing: { after: 400 },
