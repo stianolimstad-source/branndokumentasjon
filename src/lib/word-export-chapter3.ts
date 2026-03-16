@@ -992,6 +992,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.romningsveiKommentar) {
     rows.push(contentRow("Kommentar", formData.romningsveiKommentar, "-"));
   }
+  rows.push(...tilstandRow(formData, "3_11", "3.11 Rømningsvei"));
 
   // ===== 3.13 Manuell slokking =====
   rows.push(sectionHeaderRow("3.13   §11-16 Tilrettelegging for manuell slokking"));
