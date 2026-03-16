@@ -395,7 +395,13 @@ const Konsept = () => {
       return;
     }
     if (!conceptName.trim()) {
-      toast({ title: "Mangler konseptnavn", description: "Vennligst skriv inn et navn for brannkonseptet", variant: "destructive" });
+      toast({ 
+        title: "Mangler navn", 
+        description: documentType === "tilstandsvurdering" 
+          ? "Vennligst skriv inn et navn for tilstandsvurderingen" 
+          : "Vennligst skriv inn et navn for brannkonseptet", 
+        variant: "destructive" 
+      });
       return;
     }
     setIsCreatingProject(true);
