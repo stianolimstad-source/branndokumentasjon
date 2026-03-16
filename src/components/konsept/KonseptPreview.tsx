@@ -784,7 +784,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* 3.2 §11-5 Sikkerhet ved eksplosjon */}
             <tr className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
-                3.2 &nbsp;&nbsp; §11-5 Sikkerhet ved eksplosjon
+                {sp}.2 &nbsp;&nbsp; §11-5 Sikkerhet ved eksplosjon
               </td>
             </tr>
             <tr className="bg-gray-100">
