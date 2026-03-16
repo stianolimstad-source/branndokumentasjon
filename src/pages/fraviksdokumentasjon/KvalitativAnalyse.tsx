@@ -15,6 +15,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import KvalitativPreview from "@/components/fraviksdokumentasjon/KvalitativPreview";
 import FravikEntryForm, { FravikEntry, emptyFravik } from "@/components/fraviksdokumentasjon/FravikEntryForm";
 import { exportKvalitativWord } from "@/lib/kvalitativ-word-export";
+import { useCanDownload } from "@/hooks/useCanDownload";
 
 
 interface Project {
