@@ -15,6 +15,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import KvalitativPreview from "@/components/fraviksdokumentasjon/KvalitativPreview";
 import FravikEntryForm, { FravikEntry, emptyFravik } from "@/components/fraviksdokumentasjon/FravikEntryForm";
 import { exportKvalitativWord } from "@/lib/kvalitativ-word-export";
+import { useCanDownload } from "@/hooks/useCanDownload";
 
 
 interface Project {
@@ -27,6 +28,7 @@ interface Project {
 
 const KvalitativAnalyse = () => {
   const { user, loading: authLoading } = useAuth();
+  const canDownload = useCanDownload();
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -356,10 +358,12 @@ const KvalitativAnalyse = () => {
                     <CardTitle>Forhåndsvisning</CardTitle>
                     <CardDescription>Fraviksdokumentasjonen oppdateres i sanntid</CardDescription>
                   </div>
-                  <Button variant="outline" size="sm" onClick={() => exportKvalitativWord(fravikEntries, dokumentNavn, logoUrl, projectData, profileData, sammendrag)}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Last ned Word
-                  </Button>
+                  {canDownload && (
+                    <Button variant="outline" size="sm" onClick={() => exportKvalitativWord(fravikEntries, dokumentNavn, logoUrl, projectData, profileData, sammendrag)}>
+                      <Download className="h-4 w-4 mr-2" />
+                      Last ned Word
+                    </Button>
+                  )}
                 </div>
               </CardHeader>
               <CardContent className="flex-1 overflow-hidden p-0">

@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, CheckCircle, XCircle, Clock, MessageSquare, Save, Loader2, Eye, Download } from "lucide-react";
 import KonseptVisning from "@/components/ks/KonseptVisning";
 import { exportKSToWord } from "@/lib/ks-word-export";
+import { useCanDownload } from "@/hooks/useCanDownload";
 
 const sections = [
   { key: "kap1_1", label: "1.1 Informasjon om tiltaket" },
@@ -50,6 +51,7 @@ interface Checkpoint {
 
 const KSGjennomgang = () => {
   const { user, loading: authLoading } = useAuth();
+  const canDownload = useCanDownload();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
@@ -476,10 +478,12 @@ const KSGjennomgang = () => {
                     {taskData?.status === "completed" ? "KS er fullført" : "KS ferdig"}
                   </Button>
                 )}
-                <Button variant="outline" size="sm" className="w-full" onClick={() => downloadChecklist(reviewType)}>
-                  <Download className="h-4 w-4 mr-2" />
-                  {reviewType === "egenkontroll" ? "Last ned egenkontroll" : "Last ned sidemannskontroll"}
-                </Button>
+                {canDownload && (
+                  <Button variant="outline" size="sm" className="w-full" onClick={() => downloadChecklist(reviewType)}>
+                    <Download className="h-4 w-4 mr-2" />
+                    {reviewType === "egenkontroll" ? "Last ned egenkontroll" : "Last ned sidemannskontroll"}
+                  </Button>
+                )}
               </div>
             </Card>
           </div>

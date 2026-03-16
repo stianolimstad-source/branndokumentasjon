@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, ImageRun, ShadingType } from "docx";
 import { saveAs } from "file-saver";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useCanDownload } from "@/hooks/useCanDownload";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import SendToKSDialog from "@/components/konsept/SendToKSDialog";
@@ -345,6 +346,7 @@ const getTiltaksklasse = (brannklasse: string, risikoklasse: string, prosjekteri
 const Konsept = () => {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
+  const canDownload = useCanDownload();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const isViewMode = searchParams.get('view') === 'true';
@@ -4891,7 +4893,7 @@ const Konsept = () => {
                         Forhåndsvisning av brannkonseptet
                       </CardDescription>
                     </div>
-                    {generatedConcept && (
+                    {generatedConcept && canDownload && (
                       <Button variant="outline" size="sm" onClick={exportToWord}>
                         <Download className="h-4 w-4 mr-2" />
                         Last ned Word
