@@ -4984,7 +4984,8 @@ const Konsept = () => {
                   </AccordionContent>
                 </AccordionItem>
 
-                {/* Kapittel 4: Utførelses- og driftsfasen */}
+                {/* Kapittel 4: Utførelses- og driftsfasen (skjult for tilstandsvurdering) */}
+                {documentType !== "tilstandsvurdering" && (
                 <AccordionItem value="kap4" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
                   <AccordionTrigger className="text-lg font-bold bg-blue-50 hover:bg-blue-100 px-4 py-3 text-blue-800">
                     <span className="flex items-center gap-3">
@@ -5015,6 +5016,7 @@ const Konsept = () => {
                     </div>
                   </AccordionContent>
                 </AccordionItem>
+                )}
 
                 {/* Kapittel 5: Revisjonshistorikk */}
                 <AccordionItem value="kap5" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
