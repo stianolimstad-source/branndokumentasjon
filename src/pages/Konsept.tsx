@@ -633,6 +633,8 @@ const Konsept = () => {
     fravik: "",
     // Tilstandsvurdering per seksjon (kap 3)
     tilstandsvurderinger: {} as Record<string, TilstandData>,
+    // Regelverk for tilstandsvurdering
+    regelverk: "" as "" | "TEK17" | "TEK10" | "TEK97" | "BF85",
   });
 
   // Load existing concept if conceptId is provided
