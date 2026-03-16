@@ -77,7 +77,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   const pageStyle = "bg-white text-black p-10 rounded-lg shadow-md text-sm border border-gray-200 mx-auto relative";
   const pageWidth = { maxWidth: '210mm', minHeight: '297mm', paddingBottom: '40px', fontFamily: 'Verdana, Geneva, sans-serif' };
   const hasSammendrag = !!formData.sammendrag;
-  const totalPages = hasSammendrag ? 9 : 8;
+  const isTilstand = documentType === "tilstandsvurdering";
+  const extraPages = (hasSammendrag ? 1 : 0) + (isTilstand ? 1 : 0);
+  const totalPages = 8 + extraPages;
 
   const PageFooter = ({ pageNum }: { pageNum: number }) => (
     <div className="absolute bottom-4 left-0 right-0 flex justify-center">
@@ -125,10 +127,73 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         </div>
       )}
 
+      {/* Tilstandsgrader - egen side (kun for tilstandsvurdering) */}
+      {isTilstand && (
+        <div className={pageStyle} style={pageWidth}>
+          <h2 className="font-bold mb-3">Tilstandsgrader</h2>
+          <p className="text-xs mb-4 whitespace-pre-wrap">
+            {"Ved tilstandsvurdering bruker man tilstandsgrader for å prioritere mangler med tanke på oppfølging. Tabellen nedenfor gir oversikt over grader for bruk i brannteknisk tilstandsanalyse. Graderingen er tilpasset tilstandsgradering i NS 3424, slik at den branntekniske tilstandsanalysen kan integreres i flerfaglig teknisk analyse av bygningen.\n\nDenne rapporten er basert på en NS 3424 nivå 1 tilstandsvurdering."}
+          </p>
+          <p className="text-xs font-semibold mb-2">Tilstandsgrader</p>
+          <table className="w-full border-collapse border border-gray-400 text-xs mb-4">
+            <thead>
+              <tr>
+                <th className="border border-gray-400 p-2 bg-gray-100" rowSpan={2}></th>
+                <th className="border border-gray-400 p-2 bg-gray-100 text-center" colSpan={5}>TILSTANDSGRADER</th>
+              </tr>
+              <tr>
+                <th className="border border-gray-400 p-2 bg-gray-100 text-center" style={{ width: "18%" }}>
+                  <span className="font-bold">TG 0</span><br />Ingen avvik
+                </th>
+                <th className="border border-gray-400 p-2 bg-gray-100 text-center" style={{ width: "18%" }}>
+                  <span className="font-bold">TG 1</span><br />Mindre eller moderate avvik
+                </th>
+                <th className="border border-gray-400 p-2 bg-gray-100 text-center" style={{ width: "18%" }}>
+                  <span className="font-bold">TG 2</span><br />Vesentlige avvik
+                </th>
+                <th className="border border-gray-400 p-2 bg-gray-100 text-center" style={{ width: "18%" }}>
+                  <span className="font-bold">TG 3</span><br />Store eller alvorlige avvik
+                </th>
+                <th className="border border-gray-400 p-2 bg-gray-100 text-center" style={{ width: "18%" }}>
+                  <span className="font-bold">TG IU</span><br />Ikke undersøkt
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold align-top">Teknisk tilstand</td>
+                <td className="border border-gray-400 p-2 align-top text-center">Samsvar med referansenivå. Ingen tiltak nødvendig</td>
+                <td className="border border-gray-400 p-2 align-top text-center">Tilstrekkelig med fortsatt normalt vedlikehold</td>
+                <td className="border border-gray-400 p-2 align-top text-center">Behov for omfattende vedlikehold i form av reparasjon/utbedring</td>
+                <td className="border border-gray-400 p-2 align-top text-center">Bygning, bygningsdel eller tiltak har funksjonssvikt eller kan umiddelbart svikte. Behov for omfattende reparasjon eller utskifting</td>
+                <td className="border border-gray-400 p-2 align-top text-center">Vesentlige forhold som ikke er dokumentert eller som ikke kan avklares uten omfattende undersøkelser</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold align-top">Branntekniske spesifiseringer</td>
+                <td className="border border-gray-400 p-2 align-top text-center">Løsning i henhold til referansesikkerhetsnivå eller brannkonsept i henhold til aktuell forskrift</td>
+                <td className="border border-gray-400 p-2 align-top text-center">Mindre avvik som ikke har stor betydning for person- og verdisikkerheten</td>
+                <td className="border border-gray-400 p-2 align-top text-center">Mangler i tekniske eller organisatoriske forhold, som gir vesentlig dårligere sikkerhet enn forutsatt i referansenivået. Manglene kan skyldes slitasje, byggefeil, ukyndig vedlikehold og dårlige organisatoriske rutiner.</td>
+                <td className="border border-gray-400 p-2 align-top text-center">Vesentlige mangler i den tekniske eller organisatoriske sikkerheten i forhold til det forutsatte referansenivået. Har uakseptabel risiko for mennesker, materiell eller miljø</td>
+                <td className="border border-gray-400 p-2 align-top text-center">Skjult bærekonstruksjon. Manglende beregninger. Udokumentert utførelse</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold align-top">Tiltak</td>
+                <td className="border border-gray-400 p-2 align-top text-center">Ingen tiltak er nødvendig</td>
+                <td className="border border-gray-400 p-2 align-top text-center">Utbedres innen 5 år</td>
+                <td className="border border-gray-400 p-2 align-top text-center">Utbedres innen 2 år</td>
+                <td className="border border-gray-400 p-2 align-top text-center">Må utbedres straks</td>
+                <td className="border border-gray-400 p-2 align-top text-center">Må føyes til øvrig tilstandsanalyse når utført</td>
+              </tr>
+            </tbody>
+          </table>
+          <PageFooter pageNum={2 + extraPages} />
+        </div>
+      )}
+
       {/* Innholdsfortegnelse - egen side */}
       <div className={pageStyle} style={pageWidth}>
         <h2 className="text-xl font-bold text-center mb-6 pb-4">
-          BRANNKONSEPT
+          {isTilstand ? "TILSTANDSVURDERING" : "BRANNKONSEPT"}
         </h2>
       
       {/* Innholdsfortegnelse */}
@@ -166,7 +231,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <p><span className="font-bold">6.</span> Litteraturhenvisninger</p>
         </div>
       </section>
-      <PageFooter pageNum={hasSammendrag ? 3 : 2} />
+      <PageFooter pageNum={2 + extraPages} />
       </div>
 
       {/* Kapittel 1-2 - egen side */}
@@ -266,7 +331,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <li>VTEK17 - Veiledning til teknisk forskrift</li>
         </ul>
       </section>
-      <PageFooter pageNum={hasSammendrag ? 4 : 3} />
+      <PageFooter pageNum={3 + extraPages} />
       </div>
 
       {/* Kapittel 2 - egen side */}
@@ -392,7 +457,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         <h3 className="font-semibold mb-2">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</h3>
         <p className="ml-4 mb-3 whitespace-pre-wrap">{formData.tilleggskrav || "[Eventuelle tilleggskrav beskrives]"}</p>
       </section>
-      <PageFooter pageNum={hasSammendrag ? 5 : 4} />
+      <PageFooter pageNum={4 + extraPages} />
       </div>
       <div className={pageStyle} style={pageWidth}>
       {/* 3. Branntekniske ytelseskrav */}
@@ -878,7 +943,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </tbody>
         </table>
       </section>
-      <PageFooter pageNum={hasSammendrag ? 6 : 5} />
+      <PageFooter pageNum={5 + extraPages} />
       </div>
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
@@ -1715,7 +1780,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </tbody>
         </table>
       </section>
-      <PageFooter pageNum={hasSammendrag ? 7 : 6} />
+      <PageFooter pageNum={6 + extraPages} />
       </div>
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
@@ -1936,7 +2001,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </tbody>
         </table>
       </section>
-      <PageFooter pageNum={hasSammendrag ? 8 : 7} />
+      <PageFooter pageNum={7 + extraPages} />
       </div>
 
 

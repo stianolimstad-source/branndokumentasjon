@@ -977,7 +977,7 @@ const Konsept = () => {
     }
 
     coverPageChildren.push(new Paragraph({
-      text: "BRANNKONSEPT",
+      text: documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT",
       heading: HeadingLevel.TITLE,
       alignment: AlignmentType.CENTER,
       spacing: { before: logoBuffer ? 200 : 1200, after: 200 },
@@ -1048,12 +1048,86 @@ const Konsept = () => {
             new Paragraph({ spacing: { after: 300 }, children: [new TextRun({ text: formData.sammendrag, size: 22 })] }),
           ],
         }] : []),
+        // Tilstandsgrader (egen side, kun for tilstandsvurdering)
+        ...(documentType === "tilstandsvurdering" ? [{
+          properties: {},
+          children: [
+            new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Tilstandsgrader", bold: true })] }),
+            new Paragraph({
+              spacing: { after: 200 },
+              children: [new TextRun({ text: "Ved tilstandsvurdering bruker man tilstandsgrader for å prioritere mangler med tanke på oppfølging. Tabellen nedenfor gir oversikt over grader for bruk i brannteknisk tilstandsanalyse. Graderingen er tilpasset tilstandsgradering i NS 3424, slik at den branntekniske tilstandsanalysen kan integreres i flerfaglig teknisk analyse av bygningen.", size: 20 })],
+            }),
+            new Paragraph({
+              spacing: { after: 300 },
+              children: [new TextRun({ text: "Denne rapporten er basert på en NS 3424 nivå 1 tilstandsvurdering.", size: 20 })],
+            }),
+            new Paragraph({
+              spacing: { after: 100 },
+              children: [new TextRun({ text: "Tilstandsgrader", bold: true, size: 20 })],
+            }),
+            new Table({
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              rows: [
+                // Header row 1
+                new TableRow({
+                  children: [
+                    new TableCell({ borders: tableBorders, width: { size: 14, type: WidthType.PERCENTAGE }, rowSpan: 2, shading: { type: ShadingType.SOLID, color: "F3F4F6", fill: "F3F4F6" }, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ children: [] })] }),
+                    new TableCell({ borders: tableBorders, columnSpan: 5, shading: { type: ShadingType.SOLID, color: "F3F4F6", fill: "F3F4F6" }, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "TILSTANDSGRADER", bold: true, size: 20 })] })] }),
+                  ],
+                }),
+                // Header row 2
+                new TableRow({
+                  children: [
+                    new TableCell({ borders: tableBorders, shading: { type: ShadingType.SOLID, color: "F3F4F6", fill: "F3F4F6" }, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "TG 0", bold: true, size: 18 })]}), new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Ingen avvik", size: 18 })]})] }),
+                    new TableCell({ borders: tableBorders, shading: { type: ShadingType.SOLID, color: "F3F4F6", fill: "F3F4F6" }, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "TG 1", bold: true, size: 18 })]}), new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Mindre eller moderate avvik", size: 18 })]})] }),
+                    new TableCell({ borders: tableBorders, shading: { type: ShadingType.SOLID, color: "F3F4F6", fill: "F3F4F6" }, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "TG 2", bold: true, size: 18 })]}), new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Vesentlige avvik", size: 18 })]})] }),
+                    new TableCell({ borders: tableBorders, shading: { type: ShadingType.SOLID, color: "F3F4F6", fill: "F3F4F6" }, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "TG 3", bold: true, size: 18 })]}), new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Store eller alvorlige avvik", size: 18 })]})] }),
+                    new TableCell({ borders: tableBorders, shading: { type: ShadingType.SOLID, color: "F3F4F6", fill: "F3F4F6" }, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "TG IU", bold: true, size: 18 })]}), new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Ikke undersøkt", size: 18 })]})] }),
+                  ],
+                }),
+                // Teknisk tilstand
+                new TableRow({
+                  children: [
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ children: [new TextRun({ text: "Teknisk tilstand", bold: true, size: 18 })] })] }),
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Samsvar med referansenivå. Ingen tiltak nødvendig", size: 18 })] })] }),
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Tilstrekkelig med fortsatt normalt vedlikehold", size: 18 })] })] }),
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Behov for omfattende vedlikehold i form av reparasjon/utbedring", size: 18 })] })] }),
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Bygning, bygningsdel eller tiltak har funksjonssvikt eller kan umiddelbart svikte. Behov for omfattende reparasjon eller utskifting", size: 18 })] })] }),
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Vesentlige forhold som ikke er dokumentert eller som ikke kan avklares uten omfattende undersøkelser", size: 18 })] })] }),
+                  ],
+                }),
+                // Branntekniske spesifiseringer
+                new TableRow({
+                  children: [
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ children: [new TextRun({ text: "Branntekniske spesifiseringer", bold: true, size: 18 })] })] }),
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Løsning i henhold til referansesikkerhetsnivå eller brannkonsept i henhold til aktuell forskrift", size: 18 })] })] }),
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Mindre avvik som ikke har stor betydning for person- og verdisikkerheten", size: 18 })] })] }),
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Mangler i tekniske eller organisatoriske forhold, som gir vesentlig dårligere sikkerhet enn forutsatt i referansenivået. Manglene kan skyldes slitasje, byggefeil, ukyndig vedlikehold og dårlige organisatoriske rutiner.", size: 18 })] })] }),
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Vesentlige mangler i den tekniske eller organisatoriske sikkerheten i forhold til det forutsatte referansenivået. Har uakseptabel risiko for mennesker, materiell eller miljø", size: 18 })] })] }),
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Skjult bærekonstruksjon. Manglende beregninger. Udokumentert utførelse", size: 18 })] })] }),
+                  ],
+                }),
+                // Tiltak
+                new TableRow({
+                  children: [
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ children: [new TextRun({ text: "Tiltak", bold: true, size: 18 })] })] }),
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Ingen tiltak er nødvendig", size: 18 })] })] }),
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Utbedres innen 5 år", size: 18 })] })] }),
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Utbedres innen 2 år", size: 18 })] })] }),
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Må utbedres straks", size: 18 })] })] }),
+                    new TableCell({ borders: tableBorders, margins: { top: 40, bottom: 40, left: 40, right: 40 }, children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Må føyes til øvrig tilstandsanalyse når utført", size: 18 })] })] }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }] : []),
         // Innholdsfortegnelse (egen side)
         {
           properties: {},
           children: [
             new Paragraph({
-              text: "BRANNKONSEPT",
+              text: documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT",
               heading: HeadingLevel.TITLE,
               alignment: AlignmentType.CENTER,
               spacing: { after: 400 },
