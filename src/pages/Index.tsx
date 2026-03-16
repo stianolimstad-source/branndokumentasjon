@@ -161,6 +161,40 @@ const Index = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Tilstandsvurdering choice dialog */}
+      <Dialog open={showTilstandDialog} onOpenChange={setShowTilstandDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Tilstandsvurdering</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-3 py-4">
+            <Button
+              size="lg"
+              className="justify-start h-auto py-4 px-5"
+              onClick={() => { setShowTilstandDialog(false); navigate("/konsept?new=true&type=tilstandsvurdering"); }}
+            >
+              <Plus className="h-5 w-5 mr-3" />
+              <div className="text-left">
+                <p className="font-medium">Start ny tilstandsvurdering</p>
+                <p className="text-sm text-primary-foreground/70 font-normal">Opprett en ny vurdering for et prosjekt</p>
+              </div>
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="justify-start h-auto py-4 px-5"
+              onClick={() => { setShowTilstandDialog(false); navigate("/mine-prosjekter"); }}
+            >
+              <FolderOpen className="h-5 w-5 mr-3" />
+              <div className="text-left">
+                <p className="font-medium">Mine prosjekter</p>
+                <p className="text-sm text-muted-foreground font-normal">Se og rediger eksisterende tilstandsvurderinger</p>
+              </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Fraviksdokumentasjon choice dialog */}
       <Dialog open={showFravikDialog} onOpenChange={setShowFravikDialog}>
         <DialogContent className="sm:max-w-md">
