@@ -1024,7 +1024,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.utgangBranncelleKommentar) {
     rows.push(contentRow("Kommentar", formData.utgangBranncelleKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_10", "3.10 Utgang fra branncelle"));
+  rows.push(...await tilstandRow(formData, "3_10", "3.10 Utgang fra branncelle"));
 
   // ===== 3.11 Rømningsvei =====
   rows.push(sectionHeaderRow("3.11   §11-14 Rømningsvei"));
