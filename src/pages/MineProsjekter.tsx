@@ -139,7 +139,7 @@ const MineProsjekter = () => {
         const grouped: Record<string, FireConcept[]> = {};
         conceptsRes.data.forEach((concept: any) => {
           if (!grouped[concept.project_id]) grouped[concept.project_id] = [];
-          const contentType = concept.content?.type || undefined;
+          const contentType = concept.content?.type || concept.content?.documentType || undefined;
           grouped[concept.project_id].push({ ...concept, contentType, content: undefined });
         });
         setConceptsByProject(grouped);
