@@ -88,7 +88,12 @@ const Index = () => {
                 </Card>
               );
             }
-            if (feature.href === "dialog" || feature.href === "fravik-dialog") {
+            if (feature.href === "dialog" || feature.href === "fravik-dialog" || feature.href === "tilstand-dialog") {
+              const handleClick = () => {
+                if (feature.href === "dialog") setShowConceptDialog(true);
+                else if (feature.href === "tilstand-dialog") setShowTilstandDialog(true);
+                else setShowFravikDialog(true);
+              };
               return (
                 <Card
                   key={feature.title}
