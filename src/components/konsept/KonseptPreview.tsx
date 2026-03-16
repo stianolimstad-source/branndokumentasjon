@@ -243,11 +243,15 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <p className="ml-4">3.11 § 11-14 Rømningsvei</p>
           <p className="ml-4">3.12 § 11-16 Tilrettelegging for manuell slokking</p>
           <p className="ml-4">3.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap</p>
-          <p><span className="font-bold">4.</span> Utførelses- og driftsfasen</p>
-          <p className="ml-4">4.1 Utførelsesfasen</p>
-          <p className="ml-4">4.2 Driftsfasen</p>
-          <p><span className="font-bold">5.</span> Revisjonshistorikk</p>
-          <p><span className="font-bold">6.</span> Litteraturhenvisninger</p>
+          {documentType !== "tilstandsvurdering" && (
+            <>
+              <p><span className="font-bold">4.</span> Utførelses- og driftsfasen</p>
+              <p className="ml-4">4.1 Utførelsesfasen</p>
+              <p className="ml-4">4.2 Driftsfasen</p>
+            </>
+          )}
+          <p><span className="font-bold">{documentType === "tilstandsvurdering" ? "4" : "5"}.</span> Revisjonshistorikk</p>
+          <p><span className="font-bold">{documentType === "tilstandsvurdering" ? "5" : "6"}.</span> Litteraturhenvisninger</p>
         </div>
       </section>
       <PageFooter pageNum={2 + extraPages} />
@@ -2026,8 +2030,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
 
 
+      {documentType !== "tilstandsvurdering" && (
       <div className={pageStyle} style={pageWidth}>
-      {/* 4. Utførelses- og driftsfasen */}
       <section className="mb-6">
         <h2 className="font-bold mb-3">4. Utførelses- og driftsfasen</h2>
         <h3 className="font-semibold mb-2">4.1 Utførelsesfasen</h3>
@@ -2057,9 +2061,39 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <h2 className="font-bold mb-3">Fravik og kompenserende tiltak</h2>
           <p className="ml-4">{formData.fravik}</p>
         </section>
-        )}
+      )}
       <PageFooter pageNum={totalPages} />
       </div>
+      )}
+
+      {documentType === "tilstandsvurdering" && (
+      <div className={pageStyle} style={pageWidth}>
+      {/* 4. Revisjonshistorikk (renummerert for tilstandsvurdering) */}
+      <section className="mb-6">
+        <h2 className="font-bold mb-3">4. Revisjonshistorikk</h2>
+        <p className="ml-4">{formData.revisjon || "[Revisjonslogg]"}</p>
+      </section>
+
+      {/* 5. Litteraturhenvisninger */}
+      <section className="mb-6">
+        <h2 className="font-bold mb-3">5. Litteraturhenvisninger</h2>
+        <ul className="ml-4 list-disc list-inside">
+          <li>TEK17 - Forskrift om tekniske krav til byggverk</li>
+          <li>VTEK17 - Veiledning til teknisk forskrift</li>
+          <li>NS 3901 - Krav til risikovurdering av brann i byggverk</li>
+          <li>NS 3424 - Tilstandsanalyse av byggverk</li>
+        </ul>
+      </section>
+
+      {formData.fravik && (
+        <section className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
+          <h2 className="font-bold mb-3">Fravik og kompenserende tiltak</h2>
+          <p className="ml-4">{formData.fravik}</p>
+        </section>
+      )}
+      <PageFooter pageNum={totalPages} />
+      </div>
+      )}
     </div>
   );
 };

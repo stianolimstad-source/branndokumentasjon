@@ -1438,7 +1438,8 @@ const Konsept = () => {
             // Tabell 3 - 3-column structure matching preview
             await buildChapter3Table(formData),
 
-            // 4. Utførelses- og driftsfasen
+            // 4. Utførelses- og driftsfasen (kun for brannkonsept)
+            ...(documentType !== "tilstandsvurdering" ? [
             new Paragraph({
               children: [new TextRun({ text: "4. Utførelses- og driftsfasen", bold: true, size: 28 })],
               spacing: { before: 400, after: 200 },
@@ -1459,10 +1460,11 @@ const Konsept = () => {
               text: formData.drift || "[Krav til drift og vedlikehold beskrives]",
               spacing: { after: 100 },
             }),
+            ] : []),
 
-            // 5. Revisjonshistorikk
+            // Revisjonshistorikk
             new Paragraph({
-              children: [new TextRun({ text: "5. Revisjonshistorikk", bold: true, size: 28 })],
+              children: [new TextRun({ text: `${documentType === "tilstandsvurdering" ? "4" : "5"}. Revisjonshistorikk`, bold: true, size: 28 })],
               spacing: { before: 400, after: 200 },
             }),
             new Paragraph({
@@ -1470,9 +1472,9 @@ const Konsept = () => {
               spacing: { after: 100 },
             }),
 
-            // 6. Litteraturhenvisninger
+            // Litteraturhenvisninger
             new Paragraph({
-              children: [new TextRun({ text: "6. Litteraturhenvisninger", bold: true, size: 28 })],
+              children: [new TextRun({ text: `${documentType === "tilstandsvurdering" ? "5" : "6"}. Litteraturhenvisninger`, bold: true, size: 28 })],
               spacing: { before: 400, after: 200 },
             }),
             new Paragraph({
@@ -1485,8 +1487,14 @@ const Konsept = () => {
             }),
             new Paragraph({
               text: "• NS 3901 - Krav til risikovurdering av brann i byggverk",
-              spacing: { after: 100 },
+              spacing: { after: 50 },
             }),
+            ...(documentType === "tilstandsvurdering" ? [
+              new Paragraph({
+                text: "• NS 3424 - Tilstandsanalyse av byggverk",
+                spacing: { after: 100 },
+              }),
+            ] : []),
 
             // Fravik (if any)
             ...(formData.fravik ? [
@@ -4984,7 +4992,8 @@ const Konsept = () => {
                   </AccordionContent>
                 </AccordionItem>
 
-                {/* Kapittel 4: Utførelses- og driftsfasen */}
+                {/* Kapittel 4: Utførelses- og driftsfasen (skjult for tilstandsvurdering) */}
+                {documentType !== "tilstandsvurdering" && (
                 <AccordionItem value="kap4" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
                   <AccordionTrigger className="text-lg font-bold bg-blue-50 hover:bg-blue-100 px-4 py-3 text-blue-800">
                     <span className="flex items-center gap-3">
@@ -5015,6 +5024,7 @@ const Konsept = () => {
                     </div>
                   </AccordionContent>
                 </AccordionItem>
+                )}
 
                 {/* Kapittel 5: Revisjonshistorikk */}
                 <AccordionItem value="kap5" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
