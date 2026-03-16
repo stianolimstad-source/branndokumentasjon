@@ -859,6 +859,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.materialerKommentar) {
     rows.push(contentRow("Kommentar", formData.materialerKommentar, "-"));
   }
+  rows.push(...tilstandRow(formData, "3_6", "3.6 Materialer og produkter"));
 
   // ===== 3.7 Tekniske installasjoner =====
   rows.push(sectionHeaderRow("3.7   §11-10 Tekniske installasjoner"));
