@@ -4850,6 +4850,7 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {renderTilstandPanel("3_14")}
                   </AccordionContent>
                 </AccordionItem>
 
