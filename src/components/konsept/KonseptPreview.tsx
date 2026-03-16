@@ -48,6 +48,35 @@ const TilstandBlock = ({ data, sectionLabel }: { data: TilstandData; sectionLabe
   );
 };
 
+const TilstandTableRow = ({ data, sectionLabel }: { data: TilstandData; sectionLabel: string }) => {
+  if (!data || (!data.grad && !data.beskrivelse && (!data.bilder || data.bilder.length === 0))) return null;
+  const gradInfo = gradColors[data.grad];
+  return (
+    <tr>
+      <td className="border border-gray-400 p-2" colSpan={3} style={{ background: "#fffbeb" }}>
+        <div style={{ border: "2px dashed #f59e0b", borderRadius: 8, padding: 12 }}>
+          <p style={{ fontSize: 10, fontWeight: 700, color: "#92400e", textTransform: "uppercase", marginBottom: 6 }}>
+            Tilstandsvurdering – {sectionLabel}
+          </p>
+          {gradInfo && (
+            <span style={{ fontSize: 10, fontWeight: 600, background: gradInfo.bg, color: gradInfo.text, padding: "2px 8px", borderRadius: 12, display: "inline-block", marginBottom: 6 }}>
+              {gradInfo.label}
+            </span>
+          )}
+          {data.beskrivelse && <p style={{ fontSize: 10, whiteSpace: "pre-wrap", marginTop: 4 }}>{data.beskrivelse}</p>}
+          {data.bilder && data.bilder.length > 0 && (
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+              {data.bilder.map((url, i) => (
+                <img key={i} src={url} alt={`Tilstand ${i + 1}`} style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 4, border: "1px solid #e5e7eb" }} />
+              ))}
+            </div>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
+};
+
 const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannkonsept" }: KonseptPreviewProps) => {
   // Ensure arrays have defaults
   const bygningsdeler = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
@@ -557,6 +586,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 )}
               </>
             )}
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_1"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_1"]} sectionLabel="3.1 Bæreevne og stabilitet" />
+            )}
 
             {/* 3.2 §11-5 Sikkerhet ved eksplosjon */}
             <tr className="bg-blue-100">
@@ -601,6 +633,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">RIBr</td>
             </tr>
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_2"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_2"]} sectionLabel="3.2 Sikkerhet ved eksplosjon" />
+            )}
 
             {/* 3.3 §11-6 Brannspredning mellom byggverk */}
             <tr className="bg-blue-100">
@@ -696,6 +731,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 italic">{formData.brannspredningKommentar}</td>
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
+            )}
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_3"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_3"]} sectionLabel="3.3 Brannspredning mellom byggverk" />
             )}
 
             {/* 3.4 §11-7 Brannseksjoner */}
@@ -842,6 +880,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 italic">{formData.brannseksjonerKommentar}</td>
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
+            )}
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_4"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_4"]} sectionLabel="3.4 Brannseksjoner" />
             )}
 
           </tbody>
@@ -1345,6 +1386,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
             )}
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_5"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_5"]} sectionLabel="3.5 Brannceller" />
+            )}
 
             {/* 3.6 §11-9 Materialer og produkter */}
             <tr className="bg-blue-100">
@@ -1583,6 +1627,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
             )}
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_6"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_6"]} sectionLabel="3.6 Materialer og produkter" />
+            )}
 
             {/* 3.7 §11-10 Tekniske installasjoner */}
             <tr className="bg-blue-100">
@@ -1671,6 +1718,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
             )}
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_7"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_7"]} sectionLabel="3.7 Tekniske installasjoner" />
+            )}
 
           </tbody>
         </table>
@@ -1713,6 +1763,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
             )}
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_8"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_8"]} sectionLabel="3.8 Rømning og redning" />
+            )}
 
             {/* 3.9 §11-12 Tilrettelegging for rømning */}
             <tr className="bg-blue-100">
@@ -1749,6 +1802,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
             )}
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_9"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_9"]} sectionLabel="3.9 Tilrettelegging for rømning" />
+            )}
 
             {/* 3.10 §11-13 Utgang fra branncelle */}
             <tr className="bg-blue-100">
@@ -1779,6 +1835,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 italic">{formData.utgangBranncelleKommentar}</td>
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
+            )}
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_10"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_10"]} sectionLabel="3.10 Utgang fra branncelle" />
             )}
 
             {/* 3.11 §11-14 Rømningsvei */}
@@ -1811,6 +1870,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
             )}
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_11"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_11"]} sectionLabel="3.11 Rømningsvei" />
+            )}
 
             {/* 3.13 §11-16 Manuell slokking */}
             <tr className="bg-blue-100">
@@ -1839,6 +1901,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 italic">{formData.manuellSlokkingKommentar}</td>
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
+            )}
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_13"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_13"]} sectionLabel="3.13 Manuell slokking" />
             )}
 
             {/* 3.14 §11-17 Tilrettelegging for slokkemannskap */}
@@ -1875,47 +1940,17 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
             )}
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_14"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_14"]} sectionLabel="3.14 Slokkemannskap" />
+            )}
           </tbody>
         </table>
       </section>
       <PageFooter pageNum={hasSammendrag ? 8 : 7} />
       </div>
 
-      {/* Tilstandsvurdering page - only shown in tilstandsvurdering mode */}
-      {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger && (() => {
-        const sections = [
-          { key: "3_1", label: "3.1 Bæreevne og stabilitet" },
-          { key: "3_2", label: "3.2 Sikkerhet ved eksplosjon" },
-          { key: "3_3", label: "3.3 Brannspredning mellom byggverk" },
-          { key: "3_4", label: "3.4 Brannseksjoner" },
-          { key: "3_5", label: "3.5 Brannceller" },
-          { key: "3_6", label: "3.6 Materialer" },
-          { key: "3_7", label: "3.7 Tekniske installasjoner" },
-          { key: "3_8", label: "3.8 Rømning og redning" },
-          { key: "3_9", label: "3.9 Tilrettelegging for rømning" },
-          { key: "3_10", label: "3.10 Utgang fra branncelle" },
-          { key: "3_11", label: "3.11 Rømningsvei" },
-          { key: "3_12", label: "3.12 Redning av husdyr" },
-          { key: "3_13", label: "3.13 Manuell slokking" },
-          { key: "3_14", label: "3.14 Slokkemannskap" },
-        ];
-        const filledSections = sections.filter(s => {
-          const d = formData.tilstandsvurderinger[s.key];
-          return d && (d.grad || d.beskrivelse || (d.bilder && d.bilder.length > 0));
-        });
-        if (filledSections.length === 0) return null;
-        return (
-          <div className={pageStyle} style={pageWidth}>
-            <h2 className="font-bold mb-4 text-lg">Tilstandsvurderinger</h2>
-            <div className="space-y-4">
-              {filledSections.map(s => (
-                <TilstandBlock key={s.key} data={formData.tilstandsvurderinger[s.key]} sectionLabel={s.label} />
-              ))}
-            </div>
-            <PageFooter pageNum={hasSammendrag ? 9 : 8} />
-          </div>
-        );
-      })()}
+
+
 
       <div className={pageStyle} style={pageWidth}>
       {/* 4. Utførelses- og driftsfasen */}
