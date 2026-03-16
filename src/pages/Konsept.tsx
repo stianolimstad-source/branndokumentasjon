@@ -1853,6 +1853,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     )}
+                    {/* Skjul 1.3 for tilstandsvurderinger */}
+                    {documentType !== "tilstandsvurdering" && (
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">1.3 Prosjekteringsmetode</Label>
                       <RadioGroup
@@ -1897,6 +1899,7 @@ const Konsept = () => {
                         </div>
                       )}
                     </div>
+                    )}
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">1.4 Avgrensning av tiltak</Label>
                       <div>
