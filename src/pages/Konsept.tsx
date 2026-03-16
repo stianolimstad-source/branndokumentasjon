@@ -395,7 +395,13 @@ const Konsept = () => {
       return;
     }
     if (!conceptName.trim()) {
-      toast({ title: "Mangler konseptnavn", description: "Vennligst skriv inn et navn for brannkonseptet", variant: "destructive" });
+      toast({ 
+        title: "Mangler navn", 
+        description: documentType === "tilstandsvurdering" 
+          ? "Vennligst skriv inn et navn for tilstandsvurderingen" 
+          : "Vennligst skriv inn et navn for brannkonseptet", 
+        variant: "destructive" 
+      });
       return;
     }
     setIsCreatingProject(true);
@@ -784,13 +790,17 @@ const Konsept = () => {
       if (error) {
         toast({
           title: "Feil",
-          description: "Kunne ikke oppdatere brannkonseptet",
+          description: documentType === "tilstandsvurdering" 
+            ? "Kunne ikke oppdatere tilstandsvurderingen" 
+            : "Kunne ikke oppdatere brannkonseptet",
           variant: "destructive",
         });
       } else {
         toast({
           title: "Lagret",
-          description: "Brannkonseptet er oppdatert",
+          description: documentType === "tilstandsvurdering" 
+            ? "Tilstandsvurderingen er oppdatert" 
+            : "Brannkonseptet er oppdatert",
         });
       }
     } else {
@@ -810,14 +820,18 @@ const Konsept = () => {
       if (error) {
         toast({
           title: "Feil",
-          description: "Kunne ikke lagre brannkonseptet",
+          description: documentType === "tilstandsvurdering" 
+            ? "Kunne ikke lagre tilstandsvurderingen" 
+            : "Kunne ikke lagre brannkonseptet",
           variant: "destructive",
         });
       } else if (data) {
         setConceptId(data.id);
         toast({
           title: "Lagret",
-          description: "Brannkonseptet er lagret",
+          description: documentType === "tilstandsvurdering" 
+            ? "Tilstandsvurderingen er lagret" 
+            : "Brannkonseptet er lagret",
         });
         // Update URL with concept id
         navigate(`/konsept?project=${selectedProjectId}&concept=${data.id}`, { replace: true });
