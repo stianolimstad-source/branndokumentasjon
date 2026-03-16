@@ -727,6 +727,10 @@ const Konsept = () => {
           }));
         }
         setFormData({ ...formData, ...loadedContent });
+        // Load document type if saved
+        if (loadedContent.documentType) {
+          setDocumentType(loadedContent.documentType);
+        }
       }
       setGeneratedConcept("loaded");
     }
