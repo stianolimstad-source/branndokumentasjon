@@ -467,7 +467,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           )}
 
           <h3 className="font-semibold mb-2">1.5 Branntekniske forutsetninger</h3>
-          <p className="ml-4 mb-3">{formData.forutsetninger || "[Branntekniske forutsetninger beskrives]"}</p>
+          <p className="ml-4 mb-3">{formData.tiltaksbeskrivelse || "[Branntekniske forutsetninger beskrives]"}</p>
 
           <h3 className="font-semibold mb-2">1.6 Tilleggskrav</h3>
           <p className="ml-4 mb-3 whitespace-pre-wrap">{formData.tilleggskrav || "[Eventuelle tilleggskrav beskrives]"}</p>

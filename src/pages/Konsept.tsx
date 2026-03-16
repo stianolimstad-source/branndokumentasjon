@@ -1530,7 +1530,7 @@ const Konsept = () => {
           children: [
             // 3. Branntekniske ytelseskrav
             new Paragraph({
-              children: [new TextRun({ text: "3. Beskrivelse av branntekniske ytelseskrav", bold: true, size: 28 })],
+              children: [new TextRun({ text: documentType === "tilstandsvurdering" ? "2. Brannteknisk tilstandsvurdering" : "3. Beskrivelse av branntekniske ytelseskrav", bold: true, size: 28 })],
               spacing: { before: 200, after: 200 },
             }),
             // Tabell 3 - 3-column structure matching preview
