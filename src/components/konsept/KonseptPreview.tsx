@@ -74,9 +74,9 @@ const TilstandTableRow = ({ data, sectionLabel }: { data: TilstandData; sectionL
         {data.bilder && data.bilder.length > 0 && (
           <div style={{ marginTop: 8 }}>
             {normalizeBilder(data.bilder).map((bilde, i) => (
-              <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start", marginBottom: 6 }}>
-                <img src={bilde.url} alt={bilde.beskrivelse || `Tilstand ${i + 1}`} style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 4, border: "1px solid #d1d5db" }} />
-                {bilde.beskrivelse && <p style={{ fontSize: 9, fontStyle: "italic", margin: 0 }}>{bilde.beskrivelse}</p>}
+              <div key={i} style={{ marginBottom: 12 }}>
+                <img src={bilde.url} alt={bilde.beskrivelse || `Tilstand ${i + 1}`} style={{ width: 450, maxWidth: "100%", height: "auto", objectFit: "cover", borderRadius: 4, border: "1px solid #d1d5db" }} />
+                {bilde.beskrivelse && <p style={{ fontSize: 9, fontStyle: "italic", margin: "4px 0 0 0" }}>Bilde {i + 1}: {bilde.beskrivelse}</p>}
               </div>
             ))}
           </div>
