@@ -1562,7 +1562,33 @@ const Konsept = () => {
                         />
                       </div>
 
-                      {/* Upload existing concept */}
+                      {/* Regelverk-velger for tilstandsvurdering */}
+                      {documentType === "tilstandsvurdering" && (
+                        <div className="space-y-2 p-4 rounded-lg border-2 border-amber-300 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-700">
+                          <Label htmlFor="regelverk" className="text-sm font-semibold">Gjeldende regelverk *</Label>
+                          <p className="text-xs text-muted-foreground">Velg regelverket bygget er prosjektert etter. Dette styrer hvilke krav som vises.</p>
+                          <Select
+                            value={formData.regelverk}
+                            onValueChange={(val) => setFormData({ ...formData, regelverk: val as any })}
+                          >
+                            <SelectTrigger id="regelverk" className="bg-background">
+                              <SelectValue placeholder="Velg regelverk..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="TEK17">TEK17 (2017–)</SelectItem>
+                              <SelectItem value="TEK10">TEK10 (2010–2017)</SelectItem>
+                              <SelectItem value="TEK97">TEK97 (1997–2010)</SelectItem>
+                              <SelectItem value="BF85">BF85 (1985–1997)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          {formData.regelverk && formData.regelverk !== "TEK17" && (
+                            <p className="text-xs text-amber-700 dark:text-amber-400 font-medium mt-1">
+                              ⚠ Kravene for {formData.regelverk} kan avvike fra TEK17. Tilpassede krav kommer snart.
+                            </p>
+                          )}
+                        </div>
+                      )}
+
                       {!conceptId && (
                         <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg border border-dashed">
                           <UploadConceptDialog onDataExtracted={(extracted) => {
