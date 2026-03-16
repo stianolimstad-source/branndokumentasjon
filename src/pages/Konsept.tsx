@@ -355,7 +355,9 @@ const Konsept = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [generatedConcept, setGeneratedConcept] = useState<string | null>(null);
-  const [documentType, setDocumentType] = useState<"brannkonsept" | "tilstandsvurdering">("brannkonsept");
+  const [documentType, setDocumentType] = useState<"brannkonsept" | "tilstandsvurdering">(
+    searchParams.get('type') === 'tilstandsvurdering' ? 'tilstandsvurdering' : 'brannkonsept'
+  );
   
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     searchParams.get('project')
@@ -1515,7 +1517,7 @@ const Konsept = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="create-concept-name">Navn på brannkonseptet *</Label>
+                  <Label htmlFor="create-concept-name">{documentType === "tilstandsvurdering" ? "Navn på tilstandsvurderingen" : "Navn på brannkonseptet"} *</Label>
                   <Input
                     id="create-concept-name"
                     placeholder="f.eks. Brannkonsept rev. A"
@@ -1549,7 +1551,7 @@ const Konsept = () => {
                     <div className="space-y-6">
                       {/* Konseptnavn */}
                       <div className="space-y-2">
-                        <Label htmlFor="concept-name" className="text-sm font-semibold">Navn på brannkonseptet *</Label>
+                        <Label htmlFor="concept-name" className="text-sm font-semibold">{documentType === "tilstandsvurdering" ? "Navn på tilstandsvurderingen" : "Navn på brannkonseptet"} *</Label>
                         <Input
                           id="concept-name"
                           placeholder="f.eks. Brannkonsept rev. A"
@@ -1592,27 +1594,6 @@ const Konsept = () => {
                           <span className="text-xs text-muted-foreground">Har du et eksisterende konsept eller forprosjekt? Last det opp for å fylle ut automatisk.</span>
                         </div>
                       )}
-
-              {/* Document type toggle */}
-              <div className="flex items-center gap-2 mb-4 p-3 rounded-lg border bg-muted/30">
-                <Label className="text-sm font-semibold mr-2">Dokumenttype:</Label>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={documentType === "brannkonsept" ? "default" : "outline"}
-                  onClick={() => setDocumentType("brannkonsept")}
-                >
-                  Brannkonsept
-                </Button>
-                <Button
-                  type="button"
-                  size="sm"
-                  variant={documentType === "tilstandsvurdering" ? "default" : "outline"}
-                  onClick={() => setDocumentType("tilstandsvurdering")}
-                >
-                  Tilstandsvurdering
-                </Button>
-              </div>
 
               <Accordion type="multiple" defaultValue={["kap1"]} className="w-full">
                 {/* Sammendrag */}

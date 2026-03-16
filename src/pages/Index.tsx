@@ -10,6 +10,7 @@ const Index = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [showConceptDialog, setShowConceptDialog] = useState(false);
+  const [showTilstandDialog, setShowTilstandDialog] = useState(false);
   const [showFravikDialog, setShowFravikDialog] = useState(false);
 
   const features = [
@@ -29,7 +30,7 @@ const Index = () => {
       icon: ClipboardCheck,
       title: "Tilstandsvurdering",
       description: "Lag rapporter og risikoanalyser med bilder",
-      href: "#",
+      href: "tilstand-dialog",
     },
     {
       icon: FileWarning,
@@ -87,12 +88,17 @@ const Index = () => {
                 </Card>
               );
             }
-            if (feature.href === "dialog" || feature.href === "fravik-dialog") {
+            if (feature.href === "dialog" || feature.href === "fravik-dialog" || feature.href === "tilstand-dialog") {
+              const handleClick = () => {
+                if (feature.href === "dialog") setShowConceptDialog(true);
+                else if (feature.href === "tilstand-dialog") setShowTilstandDialog(true);
+                else setShowFravikDialog(true);
+              };
               return (
                 <Card
                   key={feature.title}
                   className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer group"
-                  onClick={() => feature.href === "dialog" ? setShowConceptDialog(true) : setShowFravikDialog(true)}
+                  onClick={handleClick}
                 >
                   <CardHeader>
                     <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4 group-hover:bg-primary/20 transition-colors">
@@ -149,6 +155,40 @@ const Index = () => {
               <div className="text-left">
                 <p className="font-medium">Mine prosjekter</p>
                 <p className="text-sm text-muted-foreground font-normal">Se og rediger eksisterende brannkonsepter</p>
+              </div>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Tilstandsvurdering choice dialog */}
+      <Dialog open={showTilstandDialog} onOpenChange={setShowTilstandDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Tilstandsvurdering</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-3 py-4">
+            <Button
+              size="lg"
+              className="justify-start h-auto py-4 px-5"
+              onClick={() => { setShowTilstandDialog(false); navigate("/konsept?new=true&type=tilstandsvurdering"); }}
+            >
+              <Plus className="h-5 w-5 mr-3" />
+              <div className="text-left">
+                <p className="font-medium">Start ny tilstandsvurdering</p>
+                <p className="text-sm text-primary-foreground/70 font-normal">Opprett en ny vurdering for et prosjekt</p>
+              </div>
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="justify-start h-auto py-4 px-5"
+              onClick={() => { setShowTilstandDialog(false); navigate("/mine-prosjekter"); }}
+            >
+              <FolderOpen className="h-5 w-5 mr-3" />
+              <div className="text-left">
+                <p className="font-medium">Mine prosjekter</p>
+                <p className="text-sm text-muted-foreground font-normal">Se og rediger eksisterende tilstandsvurderinger</p>
               </div>
             </Button>
           </div>
