@@ -158,11 +158,11 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
       
       if (imageBuffer) {
         children.push(new Paragraph({
-          spacing: { before: 80, after: 40 },
+          spacing: { before: 80, after: 20 },
           children: [
             new ImageRun({
               data: imageBuffer,
-              transformation: { width: 200, height: 150 },
+              transformation: { width: 450, height: 338 },
               type: "jpg",
             }),
           ],
@@ -171,8 +171,8 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
 
       if (bilde.beskrivelse) {
         children.push(new Paragraph({
-          spacing: { before: 20, after: 20 },
-          children: [new TextRun({ text: `Bilde ${i + 1}: ${bilde.beskrivelse}`, size: 16, italics: true })],
+          spacing: { before: 10, after: 60 },
+          children: [new TextRun({ text: `Bilde ${i + 1}: ${bilde.beskrivelse}`, size: 18, italics: true })],
         }));
       }
     }
