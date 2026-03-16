@@ -772,7 +772,7 @@ const Konsept = () => {
         .from('fire_concepts')
         .update({
           name: conceptName,
-          content: JSON.parse(JSON.stringify(formData)),
+          content: JSON.parse(JSON.stringify({ ...formData, documentType })),
           status: generatedConcept ? 'draft' : 'draft',
         })
         .eq('id', conceptId);
