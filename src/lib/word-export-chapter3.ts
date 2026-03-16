@@ -938,6 +938,7 @@ export function buildChapter3Table(formData: Record<string, any>): Table {
   if (formData.romningSikkerhetKommentar) {
     rows.push(contentRow("Kommentar", formData.romningSikkerhetKommentar, "-"));
   }
+  rows.push(...tilstandRow(formData, "3_8", "3.8 Rømning og redning"));
 
   // ===== 3.9 Tilrettelegging for rømning og redning =====
   rows.push(sectionHeaderRow("3.9   §11-12 Tilrettelegging for rømning og redning"));
