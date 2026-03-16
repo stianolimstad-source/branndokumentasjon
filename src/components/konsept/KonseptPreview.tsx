@@ -1902,6 +1902,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
             )}
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_13"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_13"]} sectionLabel="3.13 Manuell slokking" />
+            )}
 
             {/* 3.14 §11-17 Tilrettelegging for slokkemannskap */}
             <tr className="bg-blue-100">
