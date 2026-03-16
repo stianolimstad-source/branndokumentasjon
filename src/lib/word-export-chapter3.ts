@@ -102,6 +102,47 @@ function contentRowMultiLine(forhold: string, losningLines: string[], ansvar: st
   });
 }
 
+const tilstandGradLabels: Record<string, string> = {
+  god: "God",
+  akseptabel: "Akseptabel",
+  mangelfull: "Mangelfull",
+  kritisk: "Kritisk",
+};
+
+function tilstandRow(formData: Record<string, any>, sectionKey: string, sectionLabel: string): TableRow[] {
+  const tilstandData = formData.tilstandsvurderinger?.[sectionKey];
+  if (!tilstandData || (!tilstandData.grad && !tilstandData.beskrivelse)) return [];
+  
+  const gradLabel = tilstandGradLabels[tilstandData.grad] || "";
+  const lines: string[] = [];
+  if (gradLabel) lines.push(`Tilstandsgrad: ${gradLabel}`);
+  if (tilstandData.beskrivelse) lines.push(`Beskrivelse: ${tilstandData.beskrivelse}`);
+  if (tilstandData.bilder?.length > 0) lines.push(`(${tilstandData.bilder.length} bilde(r) vedlagt)`);
+  
+  const tilstandShading = { type: ShadingType.SOLID as const, color: "FEF3C7", fill: "FEF3C7" };
+  
+  return [new TableRow({
+    children: [
+      new TableCell({
+        columnSpan: 3,
+        borders: tableBorders,
+        shading: tilstandShading,
+        margins: { top: 40, bottom: 40, left: 80, right: 80 },
+        children: [
+          new Paragraph({
+            spacing: { before: 40, after: 40 },
+            children: [new TextRun({ text: `TILSTANDSVURDERING – ${sectionLabel}`, bold: true, size: 18, color: "92400E" })],
+          }),
+          ...lines.map(line => new Paragraph({
+            spacing: { before: 20, after: 20 },
+            children: [new TextRun({ text: line, size: 18 })],
+          })),
+        ],
+      }),
+    ],
+  })];
+}
+
 // Grenser for brannseksjonering (VTEK § 11-7, tabell 1)
 const seksjoneringsGrenser: Record<string, { normalt: number; brannalarm: number; sprinkler: number; roykventilasjon: number }> = {
   "over400": { normalt: 800, brannalarm: 1200, sprinkler: 5000, roykventilasjon: 0 },
