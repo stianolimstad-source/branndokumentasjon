@@ -751,7 +751,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.branncellerKommentar) {
     rows.push(contentRow("Kommentar", formData.branncellerKommentar, "-"));
   }
-  rows.push(...tilstandRow(formData, "3_5", "3.5 Brannceller"));
+  rows.push(...await tilstandRow(formData, "3_5", "3.5 Brannceller"));
 
   // ===== 3.6 Materialer og produkters egenskaper ved brann =====
   rows.push(sectionHeaderRow("3.6   §11-9 Materialer og produkters egenskaper ved brann"));
