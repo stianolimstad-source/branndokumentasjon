@@ -3559,7 +3559,7 @@ const Konsept = () => {
 
                       {/* BF85: Knapp for å aktivere TEK17-krav ved >400 MJ/m² */}
                       {formData.regelverk === "BF85" && (
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           <div className="flex items-center gap-3">
                             <Checkbox
                               id="brukTEK17Seksjonering"
@@ -3567,19 +3567,86 @@ const Konsept = () => {
                               onCheckedChange={(checked) => setFormData({...formData, brukTEK17Seksjonering: !!checked})}
                             />
                             <label htmlFor="brukTEK17Seksjonering" className="text-xs cursor-pointer font-medium">
-                              Brannbelastning over 400 MJ/m² – bruk TEK17-krav for seksjonering
+                              Brannbelastning over 400 MJ/m² – bruk TEK17 Tabell 2 for brannmotstand
                             </label>
                           </div>
                           {formData.brukTEK17Seksjonering && (
-                            <div className="p-3 bg-muted/50 border border-border rounded-md text-xs text-muted-foreground">
-                              <p>Iht. BF85 Kap. 30:6 skal brannvegg ved brannbelastning over 400 MJ/m² ha tilstrekkelig brannmotstand til å bibeholde sine egenskaper gjennom hele brannforløpet. TEK17-kravene benyttes som dimensjoneringsgrunnlag.</p>
+                            <div className="space-y-3">
+                              <div className="p-3 bg-muted/50 border border-border rounded-md text-xs text-muted-foreground">
+                                <p>Iht. BF85 Kap. 30:6 skal brannvegg ved brannbelastning over 400 MJ/m² ha tilstrekkelig brannmotstand til å bibeholde sine egenskaper gjennom hele brannforløpet. TEK17 § 11-7 Tabell 2 benyttes som dimensjoneringsgrunnlag.</p>
+                              </div>
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
+                                <Select 
+                                  value={formData.seksjoneringsvegBrannenergi} 
+                                  onValueChange={(value) => setFormData({...formData, seksjoneringsvegBrannenergi: value})}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Velg brannenergi..." />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="400-600">400–600 MJ/m²</SelectItem>
+                                    <SelectItem value="600-800">600–800 MJ/m²</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              {formData.seksjoneringsvegBrannenergi && (() => {
+                                const klasse = formData.bygningsbrannklasse;
+                                // Mapping bygningsbrannklasse til brannklasse-nivå for TEK17 tabell
+                                const erBKL1 = klasse === "1" || klasse === "2";
+                                const energi = formData.seksjoneringsvegBrannenergi;
+                                let rei = "";
+                                let bf85Ref = "";
+                                if (erBKL1) {
+                                  rei = energi === "400-600" ? "REI 120-M A2-s1,d0 [A 120]" : "REI 180-M A2-s1,d0 [A 180]";
+                                } else {
+                                  rei = energi === "400-600" ? "REI 180-M A2-s1,d0 [A 180]" : "REI 240-M A2-s1,d0 [A 240]";
+                                }
+                                bf85Ref = erBKL1 ? "Brannklasse 1" : "Brannklasse 2 og 3";
+                                return (
+                                  <div className="space-y-3">
+                                    <div className="p-3 rounded-md border bg-primary/5 border-primary/30">
+                                      <p className="text-xs font-medium text-muted-foreground mb-1">{bf85Ref} · {energi} MJ/m²</p>
+                                      <p className="text-sm font-bold">{rei}</p>
+                                    </div>
+                                    {/* Referansetabell */}
+                                    <div className="text-xs">
+                                      <p className="font-semibold mb-2">§ 11-7 Tabell 2: Brannmotstand for seksjoneringsvegger</p>
+                                      <table className="w-full border-collapse border border-border text-xs">
+                                        <thead>
+                                          <tr className="bg-muted">
+                                            <th className="border border-border p-1.5 text-left">Brannklasse</th>
+                                            <th className="border border-border p-1.5 text-center">Under 400</th>
+                                            <th className={`border border-border p-1.5 text-center ${energi === "400-600" ? "bg-primary/10 font-bold" : ""}`}>400–600</th>
+                                            <th className={`border border-border p-1.5 text-center ${energi === "600-800" ? "bg-primary/10 font-bold" : ""}`}>600–800</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          <tr className={erBKL1 ? "bg-primary/5" : ""}>
+                                            <td className="border border-border p-1.5">Brannklasse 1</td>
+                                            <td className="border border-border p-1.5 text-center">REI 90-M A2-s1,d0<br/>[A 90]</td>
+                                            <td className={`border border-border p-1.5 text-center ${erBKL1 && energi === "400-600" ? "bg-primary/10 font-bold" : ""}`}>REI 120-M A2-s1,d0<br/>[A 120]</td>
+                                            <td className={`border border-border p-1.5 text-center ${erBKL1 && energi === "600-800" ? "bg-primary/10 font-bold" : ""}`}>REI 180-M A2-s1,d0<br/>[A 180]</td>
+                                          </tr>
+                                          <tr className={!erBKL1 ? "bg-primary/5" : ""}>
+                                            <td className="border border-border p-1.5">Brannklasse 2 og 3</td>
+                                            <td className="border border-border p-1.5 text-center">REI 120-M A2-s1,d0<br/>[A 120]</td>
+                                            <td className={`border border-border p-1.5 text-center ${!erBKL1 && energi === "400-600" ? "bg-primary/10 font-bold" : ""}`}>REI 180-M A2-s1,d0<br/>[A 180]</td>
+                                            <td className={`border border-border p-1.5 text-center ${!erBKL1 && energi === "600-800" ? "bg-primary/10 font-bold" : ""}`}>REI 240-M A2-s1,d0<br/>[A 240]</td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </div>
+                                );
+                              })()}
                             </div>
                           )}
                         </div>
                       )}
 
-                      {/* TEK17 tiltak-valg: vises for TEK17 alltid, og for BF85 kun når TEK17-knappen er aktivert */}
-                      {(formData.regelverk !== "BF85" || formData.brukTEK17Seksjonering) && (
+                      {/* TEK17 tiltak-valg: vises kun for TEK17 */}
+                      {formData.regelverk !== "BF85" && (
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Tiltak</Label>
                         <Select 
