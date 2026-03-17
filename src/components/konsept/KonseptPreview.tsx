@@ -2464,7 +2464,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <PageFooter pageNum={totalPages} />
       </div>
       )}
-      </ChapterSection>
     </div>
   );
 };
