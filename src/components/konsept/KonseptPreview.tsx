@@ -98,6 +98,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   const pageWidth = { maxWidth: '210mm', minHeight: '297mm', paddingBottom: '40px', fontFamily: 'Verdana, Geneva, sans-serif' };
   const hasSammendrag = !!formData.sammendrag;
   const isTilstand = documentType === "tilstandsvurdering";
+  const isBF85 = isTilstand && formData.regelverk === "BF85";
   const extraPages = (hasSammendrag ? 1 : 0) + (isTilstand ? 1 : 0);
   const totalPages = isTilstand ? 7 + extraPages : 8 + extraPages;
   // Section prefix for chapter 3 (brannkonsept) → chapter 2 (tilstandsvurdering)
