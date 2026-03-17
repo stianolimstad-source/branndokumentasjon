@@ -4489,7 +4489,7 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_5")}
                     </SectionCollapsible>
-                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.6 Materialer og produkter`}>
+                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.6 ${formData.regelverk === "BF85" ? "Materialer og produkter (§ 11-9)" : "§ 11-9 Materialer og produkter"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.6 § 11-9 Materialer og produkters egenskaper ved brann</Label>
