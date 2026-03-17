@@ -1112,144 +1112,218 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <TilstandTableRow data={formData.tilstandsvurderinger["3_3"]} sectionLabel="3.3 Brannspredning mellom byggverk" />
             )}
 
-            {/* 3.4 §11-7 Brannseksjoner */}
+            {/* 3.4 §11-7 Brannseksjoner / BF85 Kap 30:6 Brannteknisk oppdeling */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.4 &nbsp;&nbsp; §11-7 Brannseksjoner</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.4 &nbsp;&nbsp; {isBF85 ? "Brannteknisk oppdeling (Kap. 30:6)" : "§11-7 Brannseksjoner"}</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
               <th className="border border-gray-400 p-2 text-left">Løsning</th>
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
-            {(() => {
-              const arealNum = parseFloat(formData.areal) || 0;
-              const brannenergi = formData.brannseksjonBrannenergi;
-              const tiltak = formData.brannseksjonTiltak || "normalt";
-              const grenser: Record<string, { normalt: number; brannalarm: number; sprinkler: number; roykventilasjon: number }> = {
-                "over400": { normalt: 800, brannalarm: 1200, sprinkler: 5000, roykventilasjon: 0 },
-                "50-400": { normalt: 1200, brannalarm: 1800, sprinkler: 10000, roykventilasjon: 4000 },
-                "under50": { normalt: 1800, brannalarm: 2700, sprinkler: Infinity, roykventilasjon: 10000 },
-              };
-              const g = brannenergi ? grenser[brannenergi] : null;
-              const maksAreal = g ? (g[tiltak as keyof typeof g] ?? g.normalt) : null;
-              const erPakrevd = g && maksAreal !== null && maksAreal !== Infinity && arealNum > maksAreal;
 
-              if (g && maksAreal !== null && !erPakrevd) {
-                return (
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">Generelt</td>
-                    <td className="border border-gray-400 p-2">
-                      Bruttoarealet ({arealNum} m²) er innenfor tillatt areal uten brannseksjonering ({maksAreal === Infinity ? "ubegrenset" : `${maksAreal} m²`}). Det er derfor ikke krav til brannseksjonering for dette byggverket.
-                    </td>
-                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
-                  </tr>
-                );
-              }
-
-              return (
+            {isBF85 ? (
+              <>
+                {/* BF85 Kap 30:61 Oppdeling med brannvegg */}
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Generelt</td>
-                  <td className="border border-gray-400 p-2">Byggverk skal deles opp i brannseksjoner for å sikre liv og helse der rømning og redning kan ta lang tid, hindre urimelig store økonomiske eller materielle tap, og bidra til at en brann, med påregnelig slokkeinnsats, begrenses til den brannseksjonen der den startet.</td>
+                  <td className="border border-gray-400 p-2 align-top">Generelt (:61)</td>
+                  <td className="border border-gray-400 p-2">
+                    Største grunnflate etter kap. 31 til 39 kan økes dersom bygningen oppdeles med brannvegg i deler med høyst så store arealer som angitt.
+                  </td>
                   <td className="border border-gray-400 p-2 align-top">RIBr</td>
                 </tr>
-              );
-            })()}
-            {formData.brannseksjoner && (
-              <tr>
-                <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
-                <td className="border border-gray-400 p-2">{formData.brannseksjoner}</td>
-                <td className="border border-gray-400 p-2 align-top">RIBr</td>
-              </tr>
-            )}
-            {/* Preaksepterte ytelser for seksjoneringsveggen når seksjonering er påkrevd */}
-            {(() => {
-              const arealNum = parseFloat(formData.areal) || 0;
-              const brannenergi = formData.brannseksjonBrannenergi;
-              const tiltak = formData.brannseksjonTiltak || "normalt";
-              if (!brannenergi || arealNum <= 0) return null;
-              const grenser: Record<string, { normalt: number; brannalarm: number; sprinkler: number; roykventilasjon: number }> = {
-                "over400": { normalt: 800, brannalarm: 1200, sprinkler: 5000, roykventilasjon: 0 },
-                "50-400": { normalt: 1200, brannalarm: 1800, sprinkler: 10000, roykventilasjon: 4000 },
-                "under50": { normalt: 1800, brannalarm: 2700, sprinkler: Infinity, roykventilasjon: 10000 },
-              };
-              const g = grenser[brannenergi];
-              if (!g) return null;
-              const maksAreal = g[tiltak as keyof typeof g] ?? g.normalt;
-              if (maksAreal === Infinity) return null;
-              if (arealNum <= maksAreal && maksAreal !== 0) return null;
-              return (
+                {formData.brannseksjoner && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
+                    <td className="border border-gray-400 p-2">{formData.brannseksjoner}</td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                )}
+                {/* BF85 Kap 30:62 Utførelse av branndekke og brannvegg */}
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Seksjoneringsveggen</td>
+                  <td className="border border-gray-400 p-2 align-top">Utførelse av branndekke og brannvegg (:62)</td>
                   <td className="border border-gray-400 p-2">
-                    <p className="mb-1">Brannseksjonering er påkrevd da bruttoarealet ({arealNum} m²) overskrider tillatt areal uten seksjonering. Seksjoneringsveggen skal oppfylle følgende preaksepterte ytelser:</p>
                     <ul className="list-disc list-inside space-y-1 text-sm">
-                      <li>Takkonstruksjonen må ikke være kontinuerlig over seksjoneringsveggen på en slik måte at en kollaps på den ene siden medfører reduksjon av konstruksjonens bæreevne og brannmotstand på den andre siden.</li>
-                      <li>Konstruksjoner som ligger inntil seksjoneringsveggen må kunne bevege seg fritt ved temperaturendringer, uten at veggens branntekniske egenskaper reduseres.</li>
-                      <li>Seksjoneringsveggens avslutning mot tak og fasade må være utformet og utført for å hindre brannspredning mellom ulike seksjoner. Størst sikkerhet mot brannspredning oppnås ved å føre seksjoneringsveggen over takflaten og utenfor vegglivet, tilsvarende som for brannvegger, jf. § 11-6.</li>
-                      <li>Der seksjoner ligger inntil hverandre i et innvendig hjørne, må det treffes særskilte tiltak for å hindre brannspredning, jf. figur 1a og 1b.</li>
-                      <li>Seksjoneringsveggen må ha brannmotstand minst {(() => {
-                        const bkl = formData.brannklasse;
-                        const be = formData.seksjoneringsvegBrannenergi;
-                        const tabell: Record<string, Record<string, string>> = {
-                          "BKL1": { "under400": "REI 90-M A2-s1,d0 [A 90]", "400-600": "REI 120-M A2-s1,d0 [A 120]", "600-800": "REI 180-M A2-s1,d0 [A 180]" },
-                          "BKL2": { "under400": "REI 120-M A2-s1,d0 [A 120]", "400-600": "REI 180-M A2-s1,d0 [A 180]", "600-800": "REI 240-M A2-s1,d0 [A 240]" },
-                          "BKL3": { "under400": "REI 120-M A2-s1,d0 [A 120]", "400-600": "REI 180-M A2-s1,d0 [A 180]", "600-800": "REI 240-M A2-s1,d0 [A 240]" },
-                        };
-                        return tabell[bkl]?.[be] || "[Brannklasse og/eller brannenergi ikke angitt]";
-                      })()} (jf. VTEK § 11-7, tabell 2).</li>
-                      <li>Seksjoneringsveggen må i sin helhet bestå av materialer som tilfredsstiller klasse A2-s1,d0 [ubrennbare] og må kunne motstå mekanisk påkjenning.</li>
-                      <li>Dersom mekanisk motstandsevne (M) ikke er dokumentert ved prøvning, må seksjoneringsveggen utføres i tunge materialer som mur, betong eller lignende.</li>
-                      <li>Seksjoneringsveggen må føres minimum 0,5 meter over høyeste tilstøtende tak, med mindre taket har brannmotstand minst EI 60 A2-s1,d0 [A 60].</li>
-                      <li>Seksjoneringsveggen må være slik utført at den blir stående selv om byggverket på den ene eller andre siden raser sammen.</li>
-                      {formData.innvendigHjorne === "ja" && (
-                        <li>
-                          {formData.innvendigHjorneAlternativ === "alt1"
-                            ? "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal seksjoneringsveggen forlenges minimum 8,0 meter forbi innvendig hjørne (jf. VTEK § 11-7, figur 1a, alternativ 1)."
-                            : "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal seksjoneringsveggen forlenges minimum 5,0 meter på hver side av innvendig hjørne (jf. VTEK § 11-7, figur 1a, alternativ 2)."}
-                        </li>
-                      )}
+                      <li>Branndekke og brannvegg skal fra fundament bæres av bygningsdel i minst samme klasse.</li>
+                      <li>Bygningsrådet kan i enkelte tilfeller tillate åpninger i branndekke og brannvegg. Åpningene kunne stenges automatisk ved brann. Lukkeanordningene skal minst ha en halvpart av dekkets eller veggens brannmotstand.</li>
+                      <li>Konstruksjoner på eller inntil branndekke og brannvegg må gis bevegelsesfrihet at deformasjoner under brann ikke skader branndekket eller brannveggen.</li>
+                      <li>Der tak er utført i A 60, føres brannvegg opp under tak. Er det forskjell i takhøyden, føres brannveggen opp under høyeste tilstøtende del av tak.</li>
+                      <li>Er takene ikke utført i A 60, skal brannvegg føres minst 500 mm over høyeste tilstøtende tak.</li>
+                      <li>Brennbart materiale skal ikke føres forbi eller gjennom branndekke og brannvegg.</li>
                     </ul>
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIBr / ARK</td>
                 </tr>
-              );
-            })()}
-            {/* Dører og vinduer i seksjoneringsvegg */}
-            {(formData.seksjonDorRelevant || formData.seksjonVinduRelevant) && (() => {
-              const lines: string[] = [];
-              const dorOgVindu = formData.seksjonDorRelevant && formData.seksjonVinduRelevant;
-              const kunDor = formData.seksjonDorRelevant && !formData.seksjonVinduRelevant;
-              const kunVindu = !formData.seksjonDorRelevant && formData.seksjonVinduRelevant;
-              let nr = 1;
-              if (dorOgVindu) {
-                lines.push(`${nr++}. Vinduer og dører må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.`);
-                lines.push(`${nr++}. Vinduer og dører må ha tilsvarende brannmotstand som veggen.`);
-              } else if (kunDor) {
-                lines.push(`${nr++}. Dører må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.`);
-                lines.push(`${nr++}. Dører må ha tilsvarende brannmotstand som veggen.`);
-              } else if (kunVindu) {
-                lines.push(`${nr++}. Vinduer må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.`);
-                lines.push(`${nr++}. Vinduer må ha tilsvarende brannmotstand som veggen.`);
-              }
-              if (formData.seksjonDorRelevant) {
-                lines.push(`${nr++}. Dør som er klassifisert etter NS 3919:1997 [A 120 osv.] må ha anslag, terskel og tettelister på alle sider for å oppnå tilstrekkelig røyktetthet. Dette gjelder ikke dører og luker som er testet og oppfyller kriteriene for Sₐ-klassifisering etter NS-EN 1634-3:2004 (inklusiv rettelsesblad AC:2006).`);
-                lines.push(`${nr++}. Dører må være lukket i en brukssituasjon eller ha automatikk som lukker døren ved deteksjon av røyk.`);
-              }
-              if (formData.seksjonVinduRelevant) {
-                lines.push(`${nr++}. Vinduer må ikke kunne åpnes i vanlig brukstilstand.`);
-              }
-              return (
+                {/* Gjennomføringer :621 */}
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Dører og vinduer i seksjoneringsvegg</td>
+                  <td className="border border-gray-400 p-2 align-top">Gjennomføringer (:621)</td>
                   <td className="border border-gray-400 p-2">
-                    <div className="space-y-1">
-                      {lines.map((l, i) => <div key={i}>{l}</div>)}
-                    </div>
+                    <ul className="list-disc list-inside space-y-1 text-sm">
+                      <li>Gjennomføringer av rør og kanaler (sjakter) skal utføres slik at bygningsdelens brannskillende funksjon opprettholdes. Se også kap. 47.</li>
+                      <li>I branndekke og brannvegg kan det være 150 mm brede slisser eller kanaler som har brannmotstand halvparten av bygningsdelens.</li>
+                    </ul>
                   </td>
-                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr / RIV</td>
                 </tr>
-              );
-            })()}
+                {/* Dører og vinduer i brannvegg (BF85) */}
+                {(formData.seksjonDorRelevant || formData.seksjonVinduRelevant) && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Dører og vinduer i brannvegg</td>
+                    <td className="border border-gray-400 p-2">
+                      <div className="space-y-1">
+                        {formData.seksjonDorRelevant && <div>Dører i brannvegg skal ha lukkeanordning med minst halvparten av veggens brannmotstand. Dører må stenges automatisk ved brann.</div>}
+                        {formData.seksjonVinduRelevant && <div>Vinduer i brannvegg skal ikke kunne åpnes i vanlig brukstilstand og skal ha tilsvarende brannmotstand som veggen.</div>}
+                      </div>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
+                )}
+                {formData.innvendigHjorne === "ja" && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Innvendig hjørne</td>
+                    <td className="border border-gray-400 p-2">
+                      {formData.innvendigHjorneAlternativ === "alt1"
+                        ? "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal brannveggen forlenges minimum 8,0 meter forbi innvendig hjørne."
+                        : "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal brannveggen forlenges minimum 5,0 meter på hver side av innvendig hjørne."}
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr / ARK</td>
+                  </tr>
+                )}
+              </>
+            ) : (
+              <>
+                {/* TEK17 content */}
+                {(() => {
+                  const arealNum = parseFloat(formData.areal) || 0;
+                  const brannenergi = formData.brannseksjonBrannenergi;
+                  const tiltak = formData.brannseksjonTiltak || "normalt";
+                  const grenser: Record<string, { normalt: number; brannalarm: number; sprinkler: number; roykventilasjon: number }> = {
+                    "over400": { normalt: 800, brannalarm: 1200, sprinkler: 5000, roykventilasjon: 0 },
+                    "50-400": { normalt: 1200, brannalarm: 1800, sprinkler: 10000, roykventilasjon: 4000 },
+                    "under50": { normalt: 1800, brannalarm: 2700, sprinkler: Infinity, roykventilasjon: 10000 },
+                  };
+                  const g = brannenergi ? grenser[brannenergi] : null;
+                  const maksAreal = g ? (g[tiltak as keyof typeof g] ?? g.normalt) : null;
+                  const erPakrevd = g && maksAreal !== null && maksAreal !== Infinity && arealNum > maksAreal;
+
+                  if (g && maksAreal !== null && !erPakrevd) {
+                    return (
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">Generelt</td>
+                        <td className="border border-gray-400 p-2">
+                          Bruttoarealet ({arealNum} m²) er innenfor tillatt areal uten brannseksjonering ({maksAreal === Infinity ? "ubegrenset" : `${maksAreal} m²`}). Det er derfor ikke krav til brannseksjonering for dette byggverket.
+                        </td>
+                        <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                      </tr>
+                    );
+                  }
+
+                  return (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Generelt</td>
+                      <td className="border border-gray-400 p-2">Byggverk skal deles opp i brannseksjoner for å sikre liv og helse der rømning og redning kan ta lang tid, hindre urimelig store økonomiske eller materielle tap, og bidra til at en brann, med påregnelig slokkeinnsats, begrenses til den brannseksjonen der den startet.</td>
+                      <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                    </tr>
+                  );
+                })()}
+                {formData.brannseksjoner && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
+                    <td className="border border-gray-400 p-2">{formData.brannseksjoner}</td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                )}
+                {/* Preaksepterte ytelser for seksjoneringsveggen når seksjonering er påkrevd */}
+                {(() => {
+                  const arealNum = parseFloat(formData.areal) || 0;
+                  const brannenergi = formData.brannseksjonBrannenergi;
+                  const tiltak = formData.brannseksjonTiltak || "normalt";
+                  if (!brannenergi || arealNum <= 0) return null;
+                  const grenser: Record<string, { normalt: number; brannalarm: number; sprinkler: number; roykventilasjon: number }> = {
+                    "over400": { normalt: 800, brannalarm: 1200, sprinkler: 5000, roykventilasjon: 0 },
+                    "50-400": { normalt: 1200, brannalarm: 1800, sprinkler: 10000, roykventilasjon: 4000 },
+                    "under50": { normalt: 1800, brannalarm: 2700, sprinkler: Infinity, roykventilasjon: 10000 },
+                  };
+                  const g = grenser[brannenergi];
+                  if (!g) return null;
+                  const maksAreal = g[tiltak as keyof typeof g] ?? g.normalt;
+                  if (maksAreal === Infinity) return null;
+                  if (arealNum <= maksAreal && maksAreal !== 0) return null;
+                  return (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Seksjoneringsveggen</td>
+                      <td className="border border-gray-400 p-2">
+                        <p className="mb-1">Brannseksjonering er påkrevd da bruttoarealet ({arealNum} m²) overskrider tillatt areal uten seksjonering. Seksjoneringsveggen skal oppfylle følgende preaksepterte ytelser:</p>
+                        <ul className="list-disc list-inside space-y-1 text-sm">
+                          <li>Takkonstruksjonen må ikke være kontinuerlig over seksjoneringsveggen på en slik måte at en kollaps på den ene siden medfører reduksjon av konstruksjonens bæreevne og brannmotstand på den andre siden.</li>
+                          <li>Konstruksjoner som ligger inntil seksjoneringsveggen må kunne bevege seg fritt ved temperaturendringer, uten at veggens branntekniske egenskaper reduseres.</li>
+                          <li>Seksjoneringsveggens avslutning mot tak og fasade må være utformet og utført for å hindre brannspredning mellom ulike seksjoner. Størst sikkerhet mot brannspredning oppnås ved å føre seksjoneringsveggen over takflaten og utenfor vegglivet, tilsvarende som for brannvegger, jf. § 11-6.</li>
+                          <li>Der seksjoner ligger inntil hverandre i et innvendig hjørne, må det treffes særskilte tiltak for å hindre brannspredning, jf. figur 1a og 1b.</li>
+                          <li>Seksjoneringsveggen må ha brannmotstand minst {(() => {
+                            const bkl = formData.brannklasse;
+                            const be = formData.seksjoneringsvegBrannenergi;
+                            const tabell: Record<string, Record<string, string>> = {
+                              "BKL1": { "under400": "REI 90-M A2-s1,d0 [A 90]", "400-600": "REI 120-M A2-s1,d0 [A 120]", "600-800": "REI 180-M A2-s1,d0 [A 180]" },
+                              "BKL2": { "under400": "REI 120-M A2-s1,d0 [A 120]", "400-600": "REI 180-M A2-s1,d0 [A 180]", "600-800": "REI 240-M A2-s1,d0 [A 240]" },
+                              "BKL3": { "under400": "REI 120-M A2-s1,d0 [A 120]", "400-600": "REI 180-M A2-s1,d0 [A 180]", "600-800": "REI 240-M A2-s1,d0 [A 240]" },
+                            };
+                            return tabell[bkl]?.[be] || "[Brannklasse og/eller brannenergi ikke angitt]";
+                          })()} (jf. VTEK § 11-7, tabell 2).</li>
+                          <li>Seksjoneringsveggen må i sin helhet bestå av materialer som tilfredsstiller klasse A2-s1,d0 [ubrennbare] og må kunne motstå mekanisk påkjenning.</li>
+                          <li>Dersom mekanisk motstandsevne (M) ikke er dokumentert ved prøvning, må seksjoneringsveggen utføres i tunge materialer som mur, betong eller lignende.</li>
+                          <li>Seksjoneringsveggen må føres minimum 0,5 meter over høyeste tilstøtende tak, med mindre taket har brannmotstand minst EI 60 A2-s1,d0 [A 60].</li>
+                          <li>Seksjoneringsveggen må være slik utført at den blir stående selv om byggverket på den ene eller andre siden raser sammen.</li>
+                          {formData.innvendigHjorne === "ja" && (
+                            <li>
+                              {formData.innvendigHjorneAlternativ === "alt1"
+                                ? "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal seksjoneringsveggen forlenges minimum 8,0 meter forbi innvendig hjørne (jf. VTEK § 11-7, figur 1a, alternativ 1)."
+                                : "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal seksjoneringsveggen forlenges minimum 5,0 meter på hver side av innvendig hjørne (jf. VTEK § 11-7, figur 1a, alternativ 2)."}
+                            </li>
+                          )}
+                        </ul>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIBr / ARK</td>
+                    </tr>
+                  );
+                })()}
+                {/* Dører og vinduer i seksjoneringsvegg */}
+                {(formData.seksjonDorRelevant || formData.seksjonVinduRelevant) && (() => {
+                  const lines: string[] = [];
+                  const dorOgVindu = formData.seksjonDorRelevant && formData.seksjonVinduRelevant;
+                  const kunDor = formData.seksjonDorRelevant && !formData.seksjonVinduRelevant;
+                  const kunVindu = !formData.seksjonDorRelevant && formData.seksjonVinduRelevant;
+                  let nr = 1;
+                  if (dorOgVindu) {
+                    lines.push(`${nr++}. Vinduer og dører må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.`);
+                    lines.push(`${nr++}. Vinduer og dører må ha tilsvarende brannmotstand som veggen.`);
+                  } else if (kunDor) {
+                    lines.push(`${nr++}. Dører må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.`);
+                    lines.push(`${nr++}. Dører må ha tilsvarende brannmotstand som veggen.`);
+                  } else if (kunVindu) {
+                    lines.push(`${nr++}. Vinduer må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.`);
+                    lines.push(`${nr++}. Vinduer må ha tilsvarende brannmotstand som veggen.`);
+                  }
+                  if (formData.seksjonDorRelevant) {
+                    lines.push(`${nr++}. Dør som er klassifisert etter NS 3919:1997 [A 120 osv.] må ha anslag, terskel og tettelister på alle sider for å oppnå tilstrekkelig røyktetthet. Dette gjelder ikke dører og luker som er testet og oppfyller kriteriene for Sₐ-klassifisering etter NS-EN 1634-3:2004 (inklusiv rettelsesblad AC:2006).`);
+                    lines.push(`${nr++}. Dører må være lukket i en brukssituasjon eller ha automatikk som lukker døren ved deteksjon av røyk.`);
+                  }
+                  if (formData.seksjonVinduRelevant) {
+                    lines.push(`${nr++}. Vinduer må ikke kunne åpnes i vanlig brukstilstand.`);
+                  }
+                  return (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Dører og vinduer i seksjoneringsvegg</td>
+                      <td className="border border-gray-400 p-2">
+                        <div className="space-y-1">
+                          {lines.map((l, i) => <div key={i}>{l}</div>)}
+                        </div>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">ARK</td>
+                    </tr>
+                  );
+                })()}
+              </>
+            )}
             {formData.brannseksjonerKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
@@ -1258,7 +1332,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
             )}
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_4"] && (
-              <TilstandTableRow data={formData.tilstandsvurderinger["3_4"]} sectionLabel="3.4 Brannseksjoner" />
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_4"]} sectionLabel={isBF85 ? "2.4 Brannteknisk oppdeling" : "3.4 Brannseksjoner"} />
             )}
 
           </tbody>

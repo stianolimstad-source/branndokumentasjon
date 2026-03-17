@@ -3610,7 +3610,7 @@ const Konsept = () => {
                               checked={formData.seksjonDorRelevant}
                               onCheckedChange={(checked) => setFormData({...formData, seksjonDorRelevant: !!checked})}
                             />
-                            <label htmlFor="seksjonDorRelevant" className="text-xs cursor-pointer font-medium">Dører i seksjoneringsvegg er relevant</label>
+                            <label htmlFor="seksjonDorRelevant" className="text-xs cursor-pointer font-medium">Dører i {formData.regelverk === "BF85" ? "brannvegg" : "seksjoneringsvegg"} er relevant</label>
                           </div>
                           <div className="flex items-center gap-2">
                             <Checkbox
@@ -3618,7 +3618,7 @@ const Konsept = () => {
                               checked={formData.seksjonVinduRelevant}
                               onCheckedChange={(checked) => setFormData({...formData, seksjonVinduRelevant: !!checked})}
                             />
-                            <label htmlFor="seksjonVinduRelevant" className="text-xs cursor-pointer font-medium">Vinduer i seksjoneringsvegg er relevant</label>
+                            <label htmlFor="seksjonVinduRelevant" className="text-xs cursor-pointer font-medium">Vinduer i {formData.regelverk === "BF85" ? "brannvegg" : "seksjoneringsvegg"} er relevant</label>
                           </div>
                           {(formData.seksjonDorRelevant || formData.seksjonVinduRelevant) && (
                             <div className="space-y-1 bg-muted/50 p-2 rounded text-xs">
