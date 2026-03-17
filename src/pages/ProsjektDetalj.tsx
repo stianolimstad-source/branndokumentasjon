@@ -11,7 +11,7 @@ import ShareProjectDialog from "@/components/prosjekt/ShareProjectDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import defaultBuilding from "@/assets/default-building.jpg";
+import { getDefaultBuildingImage } from "@/lib/building-images";
 
 interface Project {
   id: string;
@@ -59,6 +59,7 @@ const ProsjektDetalj = () => {
   const [ksStatus, setKsStatus] = useState<Record<string, KSStatus>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  const [primaryBygningstype, setPrimaryBygningstype] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) navigate('/auth');
@@ -94,6 +95,10 @@ const ProsjektDetalj = () => {
         contentType: c.content?.type || c.content?.documentType || undefined,
       }));
       setConcepts(mapped);
+      
+      // Get primary building type for default image
+      const firstWithType = conceptsRes.data.find((c: any) => c.content?.bygningstype);
+      if (firstWithType) setPrimaryBygningstype((firstWithType as any).content.bygningstype);
 
       const conceptIds = mapped.map(c => c.id);
       if (conceptIds.length > 0) {
@@ -238,7 +243,7 @@ const ProsjektDetalj = () => {
           <Card className="shadow-soft mb-6">
             <div className="relative">
               <img
-                src={project.image_url || defaultBuilding}
+                src={project.image_url || getDefaultBuildingImage(primaryBygningstype)}
                 alt={project.name}
                 className="w-full h-48 object-cover rounded-t-lg"
               />

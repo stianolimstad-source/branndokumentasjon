@@ -12,7 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import defaultBuilding from "@/assets/default-building.jpg";
+import { getDefaultBuildingImage } from "@/lib/building-images";
 
 interface Project {
   id: string;
@@ -30,6 +30,7 @@ const MineProsjekter = () => {
   const { toast } = useToast();
   
   const [projects, setProjects] = useState<Project[]>([]);
+  const [bygningstyper, setBygningstyper] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -82,6 +83,24 @@ const MineProsjekter = () => {
       toast({ title: "Feil", description: "Kunne ikke hente prosjekter", variant: "destructive" });
     } else {
       setProjects((data || []) as Project[]);
+
+      // Fetch building types from concepts for default images
+      const projectIds = (data || []).map((p: any) => p.id);
+      if (projectIds.length > 0) {
+        const { data: concepts } = await supabase
+          .from('fire_concepts')
+          .select('project_id, content')
+          .in('project_id', projectIds);
+        if (concepts) {
+          const typeMap: Record<string, string> = {};
+          concepts.forEach((c: any) => {
+            if (!typeMap[c.project_id] && c.content?.bygningstype) {
+              typeMap[c.project_id] = c.content.bygningstype;
+            }
+          });
+          setBygningstyper(typeMap);
+        }
+      }
     }
     setIsLoading(false);
   };
@@ -201,7 +220,7 @@ const MineProsjekter = () => {
                   <Card className="shadow-soft hover:shadow-medium transition-all overflow-hidden h-full">
                     <div className="aspect-[4/3] overflow-hidden">
                       <img
-                        src={project.image_url || defaultBuilding}
+                        src={project.image_url || getDefaultBuildingImage(bygningstyper[project.id])}
                         alt={project.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
