@@ -3114,7 +3114,7 @@ const Konsept = () => {
                     <div className="space-y-3">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">
-                          {documentType === "tilstandsvurdering" ? "2" : "3"}.1 {formData.regelverk === "BF85" ? "Kap. 30:41 Bæreevne og stabilitet (Bygningsbrannklasse)" : "§ 11-4 Bæreevne og stabilitet"}
+                          3.1 {formData.regelverk === "BF85" ? "Kap. 30:41 Bæreevne og stabilitet (Bygningsbrannklasse)" : "§ 11-4 Bæreevne og stabilitet"}
                         </Label>
                         {formData.regelverk === "BF85" && (
                           <p className="text-xs text-muted-foreground mt-1">Bygningsdelers brannmotstand iht. BF85 Tabell 30:41</p>
