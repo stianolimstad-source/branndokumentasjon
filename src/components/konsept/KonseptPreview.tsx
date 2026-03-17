@@ -868,9 +868,16 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* 3.2 §11-5 Sikkerhet ved eksplosjon */}
             <tr className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
-                {sp}.2 &nbsp;&nbsp; §11-5 Sikkerhet ved eksplosjon
+                {sp}.2 &nbsp;&nbsp; {formData.regelverk === "BF85" ? "Sikkerhet ved eksplosjon" : "§11-5 Sikkerhet ved eksplosjon"}
               </td>
             </tr>
+            {formData.regelverk === "BF85" && (
+              <tr>
+                <td className="border border-gray-400 p-2 italic text-muted-foreground" colSpan={3}>
+                  Sikkerhet ved eksplosjon er ikke spesifikt kravsatt i BF85, men må likevel vurderes i en tilstandsvurdering.
+                </td>
+              </tr>
+            )}
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
               <th className="border border-gray-400 p-2 text-left">Løsning</th>
