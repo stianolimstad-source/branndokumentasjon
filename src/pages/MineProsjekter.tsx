@@ -220,7 +220,7 @@ const MineProsjekter = () => {
                   <Card className="shadow-soft hover:shadow-medium transition-all overflow-hidden h-full">
                     <div className="aspect-[4/3] overflow-hidden">
                       <img
-                        src={project.image_url || defaultBuilding}
+                        src={project.image_url || getDefaultBuildingImage(bygningstyper[project.id])}
                         alt={project.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
