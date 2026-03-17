@@ -272,20 +272,20 @@ const ProsjektDetalj = () => {
           </Card>
 
           {/* Brannkonsepter */}
-          <Card className="shadow-soft mb-4">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-primary" />
-                  <CardTitle className="text-lg">Brannkonsepter ({brannkonsepter.length})</CardTitle>
+          <Card className="shadow-soft mb-3 sm:mb-4">
+            <CardHeader className="p-3 sm:p-6">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+                  <CardTitle className="text-sm sm:text-lg truncate">Brannkonsepter ({brannkonsepter.length})</CardTitle>
                 </div>
                 <Link to={`/konsept?project=${project.id}`}>
-                  <Button size="sm"><Plus className="h-4 w-4 mr-2" />Nytt brannkonsept</Button>
+                  <Button size="sm" className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 whitespace-nowrap"><Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />Nytt</Button>
                 </Link>
               </div>
             </CardHeader>
             {brannkonsepter.length > 0 && (
-              <CardContent className="space-y-2">
+              <CardContent className="space-y-2 px-3 sm:px-6 pb-3 sm:pb-6 pt-0">
                 {brannkonsepter.map(c => (
                   <ConceptRow key={c.id} concept={c} icon={FileText} iconColor="text-primary" linkTo={`/konsept?project=${project.id}&concept=${c.id}`} />
                 ))}
@@ -294,20 +294,20 @@ const ProsjektDetalj = () => {
           </Card>
 
           {/* Tilstandsvurderinger */}
-          <Card className="shadow-soft mb-4">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <ClipboardCheck className="h-5 w-5 text-amber-600" />
-                  <CardTitle className="text-lg">Tilstandsvurderinger ({tilstandsvurderinger.length})</CardTitle>
+          <Card className="shadow-soft mb-3 sm:mb-4">
+            <CardHeader className="p-3 sm:p-6">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                  <ClipboardCheck className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600 flex-shrink-0" />
+                  <CardTitle className="text-sm sm:text-lg truncate">Tilstandsvurderinger ({tilstandsvurderinger.length})</CardTitle>
                 </div>
                 <Link to={`/konsept?project=${project.id}&type=tilstandsvurdering`}>
-                  <Button size="sm" variant="outline"><Plus className="h-4 w-4 mr-2" />Ny tilstandsvurdering</Button>
+                  <Button size="sm" variant="outline" className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 whitespace-nowrap"><Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />Ny</Button>
                 </Link>
               </div>
             </CardHeader>
             {tilstandsvurderinger.length > 0 && (
-              <CardContent className="space-y-2">
+              <CardContent className="space-y-2 px-3 sm:px-6 pb-3 sm:pb-6 pt-0">
                 {tilstandsvurderinger.map(c => (
                   <ConceptRow key={c.id} concept={c} icon={ClipboardCheck} iconColor="text-amber-600" linkTo={`/konsept?project=${project.id}&concept=${c.id}&type=tilstandsvurdering`} />
                 ))}
@@ -316,18 +316,18 @@ const ProsjektDetalj = () => {
           </Card>
 
           {/* Fraviksdokumenter */}
-          <Card className="shadow-soft mb-4">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FileWarning className="h-5 w-5 text-orange-500" />
-                  <CardTitle className="text-lg">Fraviksdokumenter ({fraviksdokumenter.length})</CardTitle>
+          <Card className="shadow-soft mb-3 sm:mb-4">
+            <CardHeader className="p-3 sm:p-6">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                  <FileWarning className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500 flex-shrink-0" />
+                  <CardTitle className="text-sm sm:text-lg truncate">Fraviksdokumenter ({fraviksdokumenter.length})</CardTitle>
                 </div>
-                <Button size="sm" variant="outline" onClick={() => setShowFravikPicker(true)}><Plus className="h-4 w-4 mr-2" />Nytt fravik</Button>
+                <Button size="sm" variant="outline" className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 whitespace-nowrap" onClick={() => setShowFravikPicker(true)}><Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />Nytt</Button>
               </div>
             </CardHeader>
             {fraviksdokumenter.length > 0 && (
-              <CardContent className="space-y-2">
+              <CardContent className="space-y-2 px-3 sm:px-6 pb-3 sm:pb-6 pt-0">
                 {fraviksdokumenter.map(c => (
                   <ConceptRow key={c.id} concept={c} icon={FileWarning} iconColor="text-orange-500" linkTo={`/fraviksdokumentasjon/${c.contentType}?project=${project.id}&concept=${c.id}`} />
                 ))}
