@@ -414,3 +414,55 @@ export const getBygningsbrannklasse = (
       return null;
   }
 };
+
+/**
+ * BF85 Tabell 32:12 – Maks bruttoareal pr etasje uten oppdeling med brannvegg for skoler.
+ * Returns the max area and corresponding bygningsbrannklasse for schools.
+ */
+export interface BF85BrannveggKravSkole {
+  etasjerLabel: string;
+  maksAreal: number;
+  bygningsbrannklasse: string;
+}
+
+export const bf85BrannveggTabellSkole: BF85BrannveggKravSkole[] = [
+  { etasjerLabel: "1", maksAreal: 800, bygningsbrannklasse: "4" },
+  { etasjerLabel: "1", maksAreal: 1200, bygningsbrannklasse: "3" },
+  { etasjerLabel: "2", maksAreal: 800, bygningsbrannklasse: "3" },
+  { etasjerLabel: "2", maksAreal: 1200, bygningsbrannklasse: "2" },
+  { etasjerLabel: "3 og 4", maksAreal: 800, bygningsbrannklasse: "2" },
+  { etasjerLabel: "over 4", maksAreal: 800, bygningsbrannklasse: "1" },
+];
+
+/**
+ * Evaluate if brannvegg is required for a school based on BF85 Tabell 32:12.
+ * Sprinkler, brannalarm, and røykluker do NOT affect the area limits in BF85.
+ */
+export const getBF85BrannveggKravSkole = (
+  etasjer: number,
+  arealPerEtasje: number,
+  bygningsbrannklasse: string,
+): { krevBrannvegg: boolean; maksAreal: number; merknad?: string } | null => {
+  if (etasjer < 1 || arealPerEtasje <= 0 || !bygningsbrannklasse) return null;
+
+  // Find the max area for the given floors + bygningsbrannklasse
+  const match = bf85BrannveggTabellSkole.find((row) => {
+    const klasseMatch = row.bygningsbrannklasse === bygningsbrannklasse;
+    if (etasjer === 1) return klasseMatch && row.etasjerLabel === "1";
+    if (etasjer === 2) return klasseMatch && row.etasjerLabel === "2";
+    if (etasjer >= 3 && etasjer <= 4) return klasseMatch && row.etasjerLabel === "3 og 4";
+    if (etasjer > 4) return klasseMatch && row.etasjerLabel === "over 4";
+    return false;
+  });
+
+  if (!match) return null;
+
+  const krevBrannvegg = arealPerEtasje > match.maksAreal;
+  return {
+    krevBrannvegg,
+    maksAreal: match.maksAreal,
+    merknad: krevBrannvegg
+      ? `Bruttoareal pr. etasje (${arealPerEtasje} m²) overstiger maks tillatt areal (${match.maksAreal} m²) for bygningsbrannklasse ${bygningsbrannklasse}. Oppdeling med brannvegg er påkrevd.`
+      : `Bruttoareal pr. etasje (${arealPerEtasje} m²) er innenfor maks tillatt areal (${match.maksAreal} m²) for bygningsbrannklasse ${bygningsbrannklasse}. Oppdeling med brannvegg er ikke påkrevd.`,
+  };
+};
