@@ -95,6 +95,10 @@ const ProsjektDetalj = () => {
         contentType: c.content?.type || c.content?.documentType || undefined,
       }));
       setConcepts(mapped);
+      
+      // Get primary building type for default image
+      const firstWithType = conceptsRes.data.find((c: any) => c.content?.bygningstype);
+      if (firstWithType) setPrimaryBygningstype((firstWithType as any).content.bygningstype);
 
       const conceptIds = mapped.map(c => c.id);
       if (conceptIds.length > 0) {
