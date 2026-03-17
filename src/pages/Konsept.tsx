@@ -3352,7 +3352,7 @@ const Konsept = () => {
                                         :322 – Beregnet minsteavstand: <strong>{minsteAvstand.toFixed(1)} m</strong>
                                       </p>
                                       <p className="text-xs text-muted-foreground">
-                                        ({hEgen} + {hNabo}) / 2 = {beregnet.toFixed(1)} m {beregnet < 8 ? "(min. 8 m)" : ""}
+                                        Gjennomsnittlig gesimshøyde: ({hEgen} + {hNabo}) / 2 = {gjennomsnitt.toFixed(1)} m. Halvparten: {beregnet.toFixed(1)} m {beregnet < 8 ? "(min. 8 m)" : ""}
                                       </p>
                                       {faktisk > 0 && (
                                         <p className={`text-sm mt-1 font-medium ${oppfylt ? "text-green-700 dark:text-green-300" : "text-orange-700 dark:text-orange-300"}`}>

@@ -982,7 +982,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                           <tr>
                             <td className="border border-gray-400 p-2 align-top font-semibold">:322 Minsteavstand</td>
                             <td className="border border-gray-400 p-2">
-                              <p>Beregnet minsteavstand: ({hEgen} + {hNabo}) / 2 = {beregnet.toFixed(1)} m{beregnet < 8 ? " → minimum 8,0 m" : ""}</p>
+                              <p>Gjennomsnittlig gesimshøyde: ({hEgen} + {hNabo}) / 2 = {gjennomsnitt.toFixed(1)} m. Halvparten: {beregnet.toFixed(1)} m{beregnet < 8 ? " → minimum 8,0 m" : ""}</p>
                               <p className="font-semibold mt-1">Krav: {minsteAvstand.toFixed(1)} m</p>
                               {faktisk > 0 && (
                                 <p className={`mt-1 font-semibold ${oppfylt ? "text-green-700" : "text-red-700"}`}>
