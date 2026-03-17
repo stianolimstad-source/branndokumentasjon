@@ -643,11 +643,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         {isBF85 && (
           <table className="w-full border-collapse border border-gray-400 text-xs">
             <tbody>
-              {bf85Sections.map((section, i) => (
-                <React.Fragment key={section.id}>
+              {bf85MappedSections.map((section) => (
+                <React.Fragment key={section.tek17Key}>
                   <tr className="bg-blue-100">
                     <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
-                      2.{i + 1} &nbsp;&nbsp; {section.ref} – {section.title}
+                      {section.tek17Key.replace("3_", "2.")} &nbsp;&nbsp; {section.bf85Ref} – {section.bf85Title}
                     </td>
                   </tr>
                   <tr className="bg-gray-100">
@@ -657,11 +657,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   </tr>
                   <tr>
                     <td className="border border-gray-400 p-2 align-top">Krav iht. BF85</td>
-                    <td className="border border-gray-400 p-2">{section.description}</td>
+                    <td className="border border-gray-400 p-2">{section.bf85Description}</td>
                     <td className="border border-gray-400 p-2 align-top">RIBr</td>
                   </tr>
-                  {formData.tilstandsvurderinger?.[section.id] && (
-                    <TilstandTableRow data={formData.tilstandsvurderinger[section.id]} sectionLabel={`2.${i + 1} ${section.title}`} />
+                  {formData.tilstandsvurderinger?.[section.tek17Key] && (
+                    <TilstandTableRow data={formData.tilstandsvurderinger[section.tek17Key]} sectionLabel={`${section.tek17Key.replace("3_", "2.")} ${section.bf85Title}`} />
                   )}
                 </React.Fragment>
               ))}
