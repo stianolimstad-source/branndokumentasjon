@@ -236,7 +236,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p><span className="font-bold">2.</span> Brannteknisk tilstandsvurdering</p>
               <p className="ml-4">2.1 Bæreevne og stabilitet</p>
               <p className="ml-4">2.2 Sikkerhet ved eksplosjon</p>
-              <p className="ml-4">2.3 Tiltak mot brannspredning mellom byggverk</p>
+              <p className="ml-4">2.3 {formData.regelverk === "BF85" ? "Avstand mellom bygninger" : "Tiltak mot brannspredning mellom byggverk"}</p>
               <p className="ml-4">2.4 Brannseksjoner</p>
               <p className="ml-4">2.5 Brannceller</p>
               <p className="ml-4">2.6 Materialer og produkters egenskaper ved brann</p>
