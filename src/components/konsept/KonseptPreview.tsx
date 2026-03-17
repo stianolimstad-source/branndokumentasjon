@@ -224,23 +224,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         <h2 className="font-bold mb-3">Innholdsfortegnelse</h2>
         <div className="space-y-1 text-xs">
           {isTilstand ? (
-            isBF85 ? (
-            <>
-              <p><span className="font-bold">1.</span> Innledning</p>
-              <p className="ml-4">1.1 Informasjon om tiltaket</p>
-              <p className="ml-4">1.2 Avgrensning av vurderingen</p>
-              <p className="ml-4">1.3 Bygningsinformasjon</p>
-              <p className="ml-4">1.4 Grunnlagsdokumenter</p>
-              <p className="ml-4">1.5 Branntekniske forutsetninger</p>
-              <p className="ml-4">1.6 Tilleggskrav</p>
-              <p><span className="font-bold">2.</span> Brannteknisk tilstandsvurdering (BF85)</p>
-              {bf85MappedSections.map((s) => (
-                <p key={s.tek17Key} className="ml-4">{s.tek17Key.replace("3_", "2.")} {s.bf85Ref} – {s.bf85Title}</p>
-              ))}
-              <p><span className="font-bold">3.</span> Revisjonshistorikk</p>
-              <p><span className="font-bold">4.</span> Litteraturhenvisninger</p>
-            </>
-            ) : (
             <>
               <p><span className="font-bold">1.</span> Innledning</p>
               <p className="ml-4">1.1 Informasjon om tiltaket</p>
@@ -250,23 +233,22 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p className="ml-4">1.5 Branntekniske forutsetninger</p>
               <p className="ml-4">1.6 Tilleggskrav</p>
               <p><span className="font-bold">2.</span> Brannteknisk tilstandsvurdering</p>
-              <p className="ml-4">2.1 § 11-4 Bæreevne og stabilitet</p>
-              <p className="ml-4">2.2 § 11-5 Sikkerhet ved eksplosjon</p>
-              <p className="ml-4">2.3 § 11-6 Tiltak mot brannspredning mellom byggverk</p>
-              <p className="ml-4">2.4 § 11-7 Brannseksjoner</p>
-              <p className="ml-4">2.5 § 11-8 Brannceller</p>
-              <p className="ml-4">2.6 § 11-9 Materialer og produkters egenskaper ved brann</p>
-              <p className="ml-4">2.7 § 11-10 Tekniske installasjoner</p>
-              <p className="ml-4">2.8 § 11-11 Generelle krav om rømning og redning</p>
-              <p className="ml-4">2.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider</p>
-              <p className="ml-4">2.10 § 11-13 Utgang fra branncelle</p>
-              <p className="ml-4">2.11 § 11-14 Rømningsvei</p>
-              <p className="ml-4">2.12 § 11-16 Tilrettelegging for manuell slokking</p>
-              <p className="ml-4">2.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap</p>
+              <p className="ml-4">2.1 Bæreevne og stabilitet</p>
+              <p className="ml-4">2.2 Sikkerhet ved eksplosjon</p>
+              <p className="ml-4">2.3 Tiltak mot brannspredning mellom byggverk</p>
+              <p className="ml-4">2.4 Brannseksjoner</p>
+              <p className="ml-4">2.5 Brannceller</p>
+              <p className="ml-4">2.6 Materialer og produkters egenskaper ved brann</p>
+              <p className="ml-4">2.7 Tekniske installasjoner</p>
+              <p className="ml-4">2.8 Generelle krav om rømning og redning</p>
+              <p className="ml-4">2.9 Tiltak for å påvirke rømnings- og redningstider</p>
+              <p className="ml-4">2.10 Utgang fra branncelle</p>
+              <p className="ml-4">2.11 Rømningsvei</p>
+              <p className="ml-4">2.12 Tilrettelegging for manuell slokking</p>
+              <p className="ml-4">2.13 Tilrettelegging for rednings- og slokkemannskap</p>
               <p><span className="font-bold">3.</span> Revisjonshistorikk</p>
               <p><span className="font-bold">4.</span> Litteraturhenvisninger</p>
             </>
-            )
           ) : (
             <>
               <p><span className="font-bold">1.</span> Innledning</p>
