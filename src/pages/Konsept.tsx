@@ -641,6 +641,8 @@ const Konsept = () => {
     tilstandsvurderinger: {} as Record<string, TilstandData>,
     // Regelverk for tilstandsvurdering
     regelverk: "" as "" | "TEK17" | "TEK10" | "TEK97" | "BF85",
+    // BF85 bygningsbrannklasse (1-4) – erstatter risikoklasse og brannklasse
+    bygningsbrannklasse: "" as "" | "1" | "2" | "3" | "4",
   });
 
   // Load existing concept if conceptId is provided
