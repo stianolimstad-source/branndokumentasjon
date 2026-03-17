@@ -229,26 +229,27 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p><span className="font-bold">1.</span> Innledning</p>
               <p className="ml-4">1.1 Informasjon om tiltaket</p>
               <p className="ml-4">1.2 Avgrensning av vurderingen</p>
-              <p className="ml-4">1.3 Bygningsinformasjon</p>
-              <p className="ml-4">1.4 Grunnlagsdokumenter</p>
-              <p className="ml-4">1.5 Branntekniske forutsetninger</p>
-              <p className="ml-4">1.6 Tilleggskrav</p>
-              <p><span className="font-bold">2.</span> Brannteknisk tilstandsvurdering</p>
-              <p className="ml-4">2.1 Bæreevne og stabilitet</p>
-              <p className="ml-4">2.2 Sikkerhet ved eksplosjon</p>
-              <p className="ml-4">2.3 {formData.regelverk === "BF85" ? "Avstand mellom bygninger" : "Tiltak mot brannspredning mellom byggverk"}</p>
-              <p className="ml-4">2.4 {formData.regelverk === "BF85" ? "Brannteknisk oppdeling" : "Brannseksjoner"}</p>
-              <p className="ml-4">2.5 Brannceller</p>
-              <p className="ml-4">2.6 Materialer og produkters egenskaper ved brann</p>
-              <p className="ml-4">2.7 Tekniske installasjoner</p>
-              <p className="ml-4">2.8 Generelle krav om rømning og redning</p>
-              <p className="ml-4">2.9 Tiltak for å påvirke rømnings- og redningstider</p>
-              <p className="ml-4">2.10 Utgang fra branncelle</p>
-              <p className="ml-4">2.11 Rømningsvei</p>
-              <p className="ml-4">2.12 Tilrettelegging for manuell slokking</p>
-              <p className="ml-4">2.13 Tilrettelegging for rednings- og slokkemannskap</p>
-              <p><span className="font-bold">3.</span> Revisjonshistorikk</p>
-              <p><span className="font-bold">4.</span> Litteraturhenvisninger</p>
+              <p><span className="font-bold">2.</span> Grunnlag og forutsetninger</p>
+              <p className="ml-4">2.1 Bygningsinformasjon</p>
+              <p className="ml-4">2.2 Grunnlagsdokumenter</p>
+              <p className="ml-4">2.3 Branntekniske forutsetninger</p>
+              <p className="ml-4">2.4 Tilleggskrav</p>
+              <p><span className="font-bold">3.</span> Brannteknisk tilstandsvurdering</p>
+              <p className="ml-4">3.1 Bæreevne og stabilitet</p>
+              <p className="ml-4">3.2 Sikkerhet ved eksplosjon</p>
+              <p className="ml-4">3.3 {formData.regelverk === "BF85" ? "Avstand mellom bygninger" : "Tiltak mot brannspredning mellom byggverk"}</p>
+              <p className="ml-4">3.4 {formData.regelverk === "BF85" ? "Brannteknisk oppdeling" : "Brannseksjoner"}</p>
+              <p className="ml-4">3.5 Brannceller</p>
+              <p className="ml-4">3.6 Materialer og produkters egenskaper ved brann</p>
+              <p className="ml-4">3.7 Tekniske installasjoner</p>
+              <p className="ml-4">3.8 Generelle krav om rømning og redning</p>
+              <p className="ml-4">3.9 Tiltak for å påvirke rømnings- og redningstider</p>
+              <p className="ml-4">3.10 Utgang fra branncelle</p>
+              <p className="ml-4">3.11 Rømningsvei</p>
+              <p className="ml-4">3.12 Tilrettelegging for manuell slokking</p>
+              <p className="ml-4">3.13 Tilrettelegging for rednings- og slokkemannskap</p>
+              <p><span className="font-bold">4.</span> Revisjonshistorikk</p>
+              <p><span className="font-bold">5.</span> Litteraturhenvisninger</p>
             </>
           ) : (
             <>
