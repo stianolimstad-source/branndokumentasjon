@@ -771,6 +771,14 @@ const Konsept = () => {
             dato: doc.dato || "",
           }));
         }
+        // For BF85: always regenerate bæreevne from Tabell 30:41 based on bygningsbrannklasse
+        if (loadedContent.regelverk === "BF85" && loadedContent.bygningsbrannklasse) {
+          const bf85Result = getBaereevneTekstBF85(loadedContent.bygningsbrannklasse);
+          if (bf85Result.tekst) {
+            loadedContent.baereevne = bf85Result.tekst;
+            loadedContent.baereevneUnntak = [];
+          }
+        }
         setFormData({ ...formData, ...loadedContent });
         // Load document type if saved
         if (loadedContent.documentType) {
