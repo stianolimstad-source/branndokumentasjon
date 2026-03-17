@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { branncelleTyperListe, getBrannklasse } from "@/lib/fire-concept-constants";
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
 import { getBaereevneTekstBF85 } from "@/lib/bf85-constants";
+import { ChevronDown, ChevronRight } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 
 interface TilstandBilde {
@@ -85,6 +87,20 @@ const TilstandTableRow = ({ data, sectionLabel }: { data: TilstandData; sectionL
         )}
       </td>
     </tr>
+  );
+};
+const ChapterSection = ({ title, defaultOpen = true, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <CollapsibleTrigger className="flex items-center gap-2 w-full px-4 py-2.5 bg-muted/60 hover:bg-muted rounded-lg border border-border/50 transition-colors cursor-pointer mb-2">
+        {isOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+        <span className="text-sm font-semibold text-foreground">{title}</span>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="space-y-8">
+        {children}
+      </CollapsibleContent>
+    </Collapsible>
   );
 };
 
@@ -288,6 +304,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <PageFooter pageNum={2 + extraPages} />
       </div>
 
+      <ChapterSection title="1. Innledning">
       {/* Kapittel 1 - egen side */}
       <div className={pageStyle} style={pageWidth}>
       {/* 1. Innledning */}
@@ -406,7 +423,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </section>
       <PageFooter pageNum={3 + extraPages} />
       </div>
+      </ChapterSection>
 
+      <ChapterSection title={isTilstand ? "1. Innledning (forts.)" : "2. Grunnlag og forutsetninger"}>
       {/* Kapittel 2 / Kap 1 forts. - egen side */}
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
@@ -618,6 +637,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </section>
       <PageFooter pageNum={4 + extraPages} />
       </div>
+      </ChapterSection>
+
+      <ChapterSection title={`${sp}. ${isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"}`} defaultOpen={false}>
       <div className={pageStyle} style={pageWidth}>
       {/* Branntekniske ytelseskrav */}
       <section className="mb-6">
@@ -2389,10 +2411,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </section>
       <PageFooter pageNum={7 + extraPages} />
       </div>
-      
+      </ChapterSection>
 
-
-
+      <ChapterSection title={documentType === "tilstandsvurdering" ? "3. Revisjonshistorikk / 4. Litteratur" : "4. Utførelses- og driftsfasen"}>
 
       {documentType !== "tilstandsvurdering" && (
       <div className={pageStyle} style={pageWidth}>
@@ -2466,6 +2487,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <PageFooter pageNum={totalPages} />
       </div>
       )}
+      </ChapterSection>
     </div>
   );
 };
