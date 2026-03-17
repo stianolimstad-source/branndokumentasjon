@@ -1096,13 +1096,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_4"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_4"]} sectionLabel="3.4 Brannseksjoner" />
+            )}
+
           </tbody>
         </table>
-        )}
       </section>
       <PageFooter pageNum={5 + extraPages} />
       </div>
-      {!isBF85 && (<>
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
         <h2 className="font-bold mb-3">{sp}. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} (forts.)</h2>
