@@ -3537,61 +3537,23 @@ const Konsept = () => {
                         <Label className="text-base font-extrabold text-foreground">{formData.regelverk === "BF85" ? "2.4 Brannteknisk oppdeling (Kap. 30:6)" : "3.4 § 11-7 Brannseksjoner"}</Label>
                       </div>
                       
-                      {/* BF85 Skole: Brannvegg-vurdering basert på Tabell 32:12 */}
+                      {/* BF85 Skole: Forenklet brannvegg-vurdering */}
                       {formData.regelverk === "BF85" && formData.bygningstype === "Skole" && (() => {
                         const etasjer = parseInt(formData.etasjer, 10) || 0;
                         const areal = parseFloat(formData.areal) || 0;
                         const klasse = formData.bygningsbrannklasse;
                         const krav = getBF85BrannveggKravSkole(etasjer, areal, klasse);
 
-                        return (
+                        return krav ? (
                           <div className="space-y-3">
-                            <div className="p-3 bg-muted/50 border border-border rounded-md">
-                              <p className="text-xs font-semibold mb-2">Tabell 32:12 – Skolebygning, bygningsbrannklasse</p>
-                              <table className="w-full text-xs border-collapse">
-                                <thead>
-                                  <tr className="border-b border-border">
-                                    <th className="text-left py-1 px-2 font-medium">Antall etasjer</th>
-                                    <th className="text-left py-1 px-2 font-medium">Største bruttoareal pr etasje uten oppdeling med brannvegg</th>
-                                    <th className="text-left py-1 px-2 font-medium">Bygningsbrannklasse</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {bf85BrannveggTabellSkole.map((row, idx) => {
-                                    const isActive = row.bygningsbrannklasse === klasse && (() => {
-                                      if (etasjer === 1) return row.etasjerLabel === "1";
-                                      if (etasjer === 2) return row.etasjerLabel === "2";
-                                      if (etasjer >= 3 && etasjer <= 4) return row.etasjerLabel === "3 og 4";
-                                      if (etasjer > 4) return row.etasjerLabel === "over 4";
-                                      return false;
-                                    })();
-                                    return (
-                                      <tr key={idx} className={`border-b border-border/50 ${isActive ? "bg-primary/10 font-semibold" : ""}`}>
-                                        <td className="py-1 px-2">{row.etasjerLabel}</td>
-                                        <td className="py-1 px-2">{row.maksAreal} m²</td>
-                                        <td className="py-1 px-2">{row.bygningsbrannklasse}</td>
-                                      </tr>
-                                    );
-                                  })}
-                                </tbody>
-                              </table>
-                            </div>
-
-                            {krav && (
-                              <div className={`p-3 rounded-md border ${krav.krevBrannvegg ? "bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800" : "bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800"}`}>
-                                <p className={`text-sm font-medium ${krav.krevBrannvegg ? "text-red-800 dark:text-red-200" : "text-green-800 dark:text-green-200"}`}>
-                                  {krav.krevBrannvegg ? "⚠️" : "✅"} {krav.merknad}
-                                </p>
-                              </div>
-                            )}
-
-                            <div className="p-3 bg-muted/30 border border-border/50 rounded-md">
-                              <p className="text-xs text-muted-foreground">
-                                <span className="font-medium">Merk:</span> Tiltak som sprinkler, brannalarmanlegg eller røykluker har ikke betydning for arealgrensen i BF85, men kan benyttes som kompenserende tiltak dersom det er installert.
+                            <div className={`p-3 rounded-md border ${krav.krevBrannvegg ? "bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800" : "bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800"}`}>
+                              <p className={`text-sm font-medium ${krav.krevBrannvegg ? "text-red-800 dark:text-red-200" : "text-green-800 dark:text-green-200"}`}>
+                                {krav.krevBrannvegg ? "⚠️" : "✅"} {krav.merknad}
                               </p>
+                              <p className="text-xs text-muted-foreground mt-1">Ref. Tabell 32:12 (se kap. 2 – Bygningsbrannklasse)</p>
                             </div>
                           </div>
-                        );
+                        ) : null;
                       })()}
 
                       {/* TEK17 / generell BF85 tiltak-valg (ikke for BF85 Skole) */}
