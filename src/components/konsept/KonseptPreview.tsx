@@ -1139,14 +1139,15 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <td className="border border-gray-400 p-2 align-top">RIBr</td>
                   </tr>
                 )}
-                {/* BF85 Kap 30:62 Utførelse av branndekke og brannvegg */}
+                {/* BF85 Brannvegg-krav */}
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Utførelse av branndekke og brannvegg (:62)</td>
+                  <td className="border border-gray-400 p-2 align-top">Brannvegg (:62)</td>
                   <td className="border border-gray-400 p-2">
                     <ul className="list-disc list-inside space-y-1 text-sm">
+                      <li>Vegg minst A 120, uten åpninger, og på fundament med minst samme brannmotstand.</li>
+                      <li>Ved spesifikk brannbelastning over 400 MJ/m² kreves så høy brannmotstand at veggen bibeholder de egenskaper som kreves av den under brannen.</li>
                       <li>Branndekke og brannvegg skal fra fundament bæres av bygningsdel i minst samme klasse.</li>
-                      <li>Bygningsrådet kan i enkelte tilfeller tillate åpninger i branndekke og brannvegg. Åpningene kunne stenges automatisk ved brann. Lukkeanordningene skal minst ha en halvpart av dekkets eller veggens brannmotstand.</li>
-                      <li>Konstruksjoner på eller inntil branndekke og brannvegg må gis bevegelsesfrihet at deformasjoner under brann ikke skader branndekket eller brannveggen.</li>
+                      <li>Konstruksjoner på eller inntil branndekke og brannvegg må gis bevegelsesfrihet slik at deformasjoner under brann ikke skader branndekket eller brannveggen.</li>
                       <li>Der tak er utført i A 60, føres brannvegg opp under tak. Er det forskjell i takhøyden, føres brannveggen opp under høyeste tilstøtende del av tak.</li>
                       <li>Er takene ikke utført i A 60, skal brannvegg føres minst 500 mm over høyeste tilstøtende tak.</li>
                       <li>Brennbart materiale skal ikke føres forbi eller gjennom branndekke og brannvegg.</li>
@@ -1165,28 +1166,18 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIBr / RIV</td>
                 </tr>
-                {/* Dører og vinduer i brannvegg (BF85) */}
+                {/* Åpninger i brannvegg - kun når dør/vindu er huket av */}
                 {(formData.seksjonDorRelevant || formData.seksjonVinduRelevant) && (
                   <tr>
-                    <td className="border border-gray-400 p-2 align-top">Dører og vinduer i brannvegg</td>
+                    <td className="border border-gray-400 p-2 align-top">Åpninger i brannvegg</td>
                     <td className="border border-gray-400 p-2">
-                      <div className="space-y-1">
-                        {formData.seksjonDorRelevant && <div>Dører i brannvegg skal ha lukkeanordning med minst halvparten av veggens brannmotstand. Dører må stenges automatisk ved brann.</div>}
-                        {formData.seksjonVinduRelevant && <div>Vinduer i brannvegg skal ikke kunne åpnes i vanlig brukstilstand og skal ha tilsvarende brannmotstand som veggen.</div>}
+                      <div className="space-y-1 text-sm">
+                        <p>Bygningsrådet kan i enkelte tilfeller tillate åpninger i branndekke og brannvegg. Åpningene skal kunne stenges automatisk ved brann. Lukkeanordningene skal minst ha halvparten av dekkets eller veggens brannmotstand.</p>
+                        {formData.seksjonDorRelevant && <p>Dører i brannvegg skal ha lukkeanordning med minst halvparten av veggens brannmotstand. Dører må stenges automatisk ved brann.</p>}
+                        {formData.seksjonVinduRelevant && <p>Vinduer i brannvegg skal ikke kunne åpnes i vanlig brukstilstand og skal ha tilsvarende brannmotstand som veggen.</p>}
                       </div>
                     </td>
                     <td className="border border-gray-400 p-2 align-top">ARK</td>
-                  </tr>
-                )}
-                {formData.innvendigHjorne === "ja" && (
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">Innvendig hjørne</td>
-                    <td className="border border-gray-400 p-2">
-                      {formData.innvendigHjorneAlternativ === "alt1"
-                        ? "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal brannveggen forlenges minimum 8,0 meter forbi innvendig hjørne."
-                        : "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal brannveggen forlenges minimum 5,0 meter på hver side av innvendig hjørne."}
-                    </td>
-                    <td className="border border-gray-400 p-2 align-top">RIBr / ARK</td>
                   </tr>
                 )}
               </>
