@@ -3562,7 +3562,7 @@ const Konsept = () => {
                       {/* Innvendig hjørne */}
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                          <Label className="text-xs font-medium">Brannseksjoneringsveggen plasseres i innvendig hjørne?</Label>
+                          <Label className="text-xs font-medium">{formData.regelverk === "BF85" ? "Brannveggen" : "Brannseksjoneringsveggen"} plasseres i innvendig hjørne?</Label>
                           <Select
                             value={formData.innvendigHjorne}
                             onValueChange={(value: "ja" | "nei") => setFormData({...formData, innvendigHjorne: value})}
