@@ -17,6 +17,7 @@ import Brannenergi from "./pages/verktoy/Brannenergi";
 
 import Auth from "./pages/Auth";
 import MineProsjekter from "./pages/MineProsjekter";
+import ProsjektDetalj from "./pages/ProsjektDetalj";
 import MineKontakter from "./pages/MineKontakter";
 import MineOppgaver from "./pages/MineOppgaver";
 import GruppeDetalj from "./pages/GruppeDetalj";
