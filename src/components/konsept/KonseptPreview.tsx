@@ -2,7 +2,7 @@ import React from "react";
 import { branncelleTyperListe, getBrannklasse } from "@/lib/fire-concept-constants";
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
-import { bf85Sections } from "@/lib/bf85-constants";
+import { bf85MappedSections, getBF85Requirement } from "@/lib/bf85-constants";
 
 interface TilstandBilde {
   url: string;
@@ -234,8 +234,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p className="ml-4">1.5 Branntekniske forutsetninger</p>
               <p className="ml-4">1.6 Tilleggskrav</p>
               <p><span className="font-bold">2.</span> Brannteknisk tilstandsvurdering (BF85)</p>
-              {bf85Sections.map((s, i) => (
-                <p key={s.id} className="ml-4">2.{i + 1} {s.ref} – {s.title}</p>
+              {bf85MappedSections.map((s) => (
+                <p key={s.tek17Key} className="ml-4">{s.tek17Key.replace("3_", "2.")} {s.bf85Ref} – {s.bf85Title}</p>
               ))}
               <p><span className="font-bold">3.</span> Revisjonshistorikk</p>
               <p><span className="font-bold">4.</span> Litteraturhenvisninger</p>
@@ -643,11 +643,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         {isBF85 && (
           <table className="w-full border-collapse border border-gray-400 text-xs">
             <tbody>
-              {bf85Sections.map((section, i) => (
-                <React.Fragment key={section.id}>
+              {bf85MappedSections.map((section) => (
+                <React.Fragment key={section.tek17Key}>
                   <tr className="bg-blue-100">
                     <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
-                      2.{i + 1} &nbsp;&nbsp; {section.ref} – {section.title}
+                      {section.tek17Key.replace("3_", "2.")} &nbsp;&nbsp; {section.bf85Ref} – {section.bf85Title}
                     </td>
                   </tr>
                   <tr className="bg-gray-100">
@@ -657,11 +657,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   </tr>
                   <tr>
                     <td className="border border-gray-400 p-2 align-top">Krav iht. BF85</td>
-                    <td className="border border-gray-400 p-2">{section.description}</td>
+                    <td className="border border-gray-400 p-2">{section.bf85Description}</td>
                     <td className="border border-gray-400 p-2 align-top">RIBr</td>
                   </tr>
-                  {formData.tilstandsvurderinger?.[section.id] && (
-                    <TilstandTableRow data={formData.tilstandsvurderinger[section.id]} sectionLabel={`2.${i + 1} ${section.title}`} />
+                  {formData.tilstandsvurderinger?.[section.tek17Key] && (
+                    <TilstandTableRow data={formData.tilstandsvurderinger[section.tek17Key]} sectionLabel={`${section.tek17Key.replace("3_", "2.")} ${section.bf85Title}`} />
                   )}
                 </React.Fragment>
               ))}
