@@ -3281,6 +3281,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_2")}
+                    </SectionCollapsible>
+                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.3 ${formData.regelverk === "BF85" ? "Avstand mellom bygninger" : "Tiltak mot brannspredning"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">
