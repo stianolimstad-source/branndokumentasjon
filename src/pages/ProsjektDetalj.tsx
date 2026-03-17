@@ -338,16 +338,16 @@ const ProsjektDetalj = () => {
           {/* Shares */}
           {shares.length > 0 && (
             <Card className="shadow-soft">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Share2 className="h-5 w-5 text-muted-foreground" />
-                  <CardTitle className="text-lg">Delt med</CardTitle>
+              <CardHeader className="p-3 sm:p-6">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Share2 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                  <CardTitle className="text-sm sm:text-lg">Delt med</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
+              <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6 pt-0">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {shares.map(share => (
-                    <span key={share.id} className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
+                    <span key={share.id} className="inline-flex items-center gap-1 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full bg-primary/10 text-primary">
                       {share.group_id ? <Users className="h-3 w-3" /> : <User className="h-3 w-3" />}
                       {share.group_name || share.contact_name}
                     </span>
