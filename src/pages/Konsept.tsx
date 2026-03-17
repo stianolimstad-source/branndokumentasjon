@@ -895,20 +895,20 @@ const Konsept = () => {
   ];
 
   const tilstandSectionsBF85 = [
-    { key: "bf85_brannklasse", label: "2.1 Bygningsbrannklasse og brannmotstand" },
-    { key: "bf85_avstand", label: "2.2 Avstand mellom bygninger" },
-    { key: "bf85_brannseksjoner", label: "2.3 Brannteknisk oppdeling" },
-    { key: "bf85_brannceller", label: "2.4 Branncelleinndeling" },
-    { key: "bf85_kledninger", label: "2.5 Kledninger og overflater" },
-    { key: "bf85_vegger_tak", label: "2.6 Vegger, tak og nedforet himling" },
-    { key: "bf85_tekniske_rom", label: "2.7 Tekniske rom" },
-    { key: "bf85_romningsvei", label: "2.8 Rømningsvei" },
-    { key: "bf85_trapperom", label: "2.9 Trapperom og heissjakt" },
-    { key: "bf85_brannalarm", label: "2.10 Brannalarmanlegg og røykvarsler" },
-    { key: "bf85_slokkingsredskap", label: "2.11 Slokkingsredskap og slokkingsvann" },
-    { key: "bf85_atkomst", label: "2.12 Atkomst for brannvesenet" },
-    { key: "bf85_ventilasjon", label: "2.13 Ventilasjon og installasjoner" },
-    { key: "bf85_roykpipe", label: "2.14 Røykpipe, varmeanlegg og ildsted" },
+    { key: "3_1", label: "3.1 Bæreevne og stabilitet (BF85: Bygningsbrannklasse og brannmotstand)" },
+    { key: "3_2", label: "3.2 Sikkerhet ved eksplosjon (BF85: Tekniske rom, fyrrom og ildsted)" },
+    { key: "3_3", label: "3.3 Brannspredning mellom byggverk (BF85: Avstand mellom bygninger)" },
+    { key: "3_4", label: "3.4 Brannseksjoner (BF85: Brannteknisk oppdeling)" },
+    { key: "3_5", label: "3.5 Brannceller (BF85: Branncelleinndeling)" },
+    { key: "3_6", label: "3.6 Materialer (BF85: Kledninger, overflater, vegger og tak)" },
+    { key: "3_7", label: "3.7 Tekniske installasjoner (BF85: Ventilasjon og installasjoner)" },
+    { key: "3_8", label: "3.8 Rømning og redning (BF85: Rømningsvei)" },
+    { key: "3_9", label: "3.9 Tilrettelegging for rømning (BF85: Brannalarm og røykvarsler)" },
+    { key: "3_10", label: "3.10 Utgang fra branncelle (BF85: Utganger fra branncelle)" },
+    { key: "3_11", label: "3.11 Rømningsvei (BF85: Trapperom og heissjakt)" },
+    { key: "3_12", label: "3.12 Redning av husdyr (BF85: Driftsbygning)" },
+    { key: "3_13", label: "3.13 Manuell slokking (BF85: Slokkingsredskap)" },
+    { key: "3_14", label: "3.14 Slokkemannskap (BF85: Atkomst for brannvesenet)" },
   ];
 
   const tilstandSections = formData.regelverk === "BF85" ? tilstandSectionsBF85 : tilstandSectionsTEK17;
