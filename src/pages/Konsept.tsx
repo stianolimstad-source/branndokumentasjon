@@ -3264,60 +3264,192 @@ const Konsept = () => {
                     {renderTilstandPanel("3_2")}
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.3 § 11-6 Tiltak mot brannspredning</Label>
-                      </div>
-                      <div>
-                        <Label className="text-xs font-medium mb-1 block">Avstand til nabobygg (meter)</Label>
-                        <Input 
-                          type="number"
-                          step="0.1"
-                          value={formData.avstandNabobygg}
-                          onChange={(e) => setFormData({...formData, avstandNabobygg: e.target.value})}
-                          placeholder="Angi avstand i meter..."
-                        />
+                        <Label className="text-base font-extrabold text-foreground">
+                          {documentType === "tilstandsvurdering" ? "2" : "3"}.3 {formData.regelverk === "BF85" ? "Avstand mellom bygninger (Kap. 30:32)" : "§ 11-6 Tiltak mot brannspredning"}
+                        </Label>
+                        {formData.regelverk === "BF85" && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Krav til avstand mellom bygninger og mellom grupper av bygninger iht. BF85 Kap. 30:32.
+                          </p>
+                        )}
                       </div>
 
-                      <div>
-                        <Label className="text-xs font-medium mb-1 block">Bygningshøyde (meter)</Label>
-                        <Input 
-                          type="number"
-                          step="0.1"
-                          value={formData.bygningshoyde}
-                          onChange={(e) => setFormData({...formData, bygningshoyde: e.target.value})}
-                          placeholder="Angi høyde i meter..."
-                        />
-                      </div>
-                      
-                      {parseFloat(formData.bygningshoyde) > 9 && parseFloat(formData.avstandNabobygg || "0") < 8 && (
-                        <div className="p-3 bg-orange-50 border border-orange-200 rounded-md">
-                          <p className="text-sm font-medium text-orange-800 mb-2">Bygning over 9 meter med avstand under 8 m - krav til brannvegg</p>
-                          <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
-                          <Select 
-                            value={formData.spesifikkBrannenergi} 
-                            onValueChange={(value) => setFormData({...formData, spesifikkBrannenergi: value})}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Velg brannenergi..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="inntil400">Inntil 400 MJ/m² → REI 120-M A2-s1,d0</SelectItem>
-                              <SelectItem value="400-600">400-600 MJ/m² → REI 180-M A2-s1,d0</SelectItem>
-                              <SelectItem value="600-800">600-800 MJ/m² → REI 240-M A2-s1,d0</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
-                      
-                      {parseFloat(formData.bygningshoyde) > 9 && parseFloat(formData.avstandNabobygg || "0") >= 8 && (
-                        <div className="p-3 bg-green-50 border border-green-200 rounded-md">
-                          <p className="text-sm font-medium text-green-800">Avstand til nabobygg er 8 meter eller mer – krav til brannvegg gjelder ikke. Branncellevegg benyttes.</p>
-                        </div>
-                      )}
+                      {formData.regelverk === "BF85" ? (
+                        <>
+                          {/* BF85-spesifikk input */}
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Er bygningene skilt med brannvegg?</Label>
+                            <Select
+                              value={formData.bf85SkiltMedBrannvegg}
+                              onValueChange={(value: "ja" | "nei") => setFormData({...formData, bf85SkiltMedBrannvegg: value})}
+                            >
+                              <SelectTrigger><SelectValue /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="nei">Nei</SelectItem>
+                                <SelectItem value="ja">Ja</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
 
-                      {parseFloat(formData.bygningshoyde) > 0 && parseFloat(formData.bygningshoyde) <= 9 && (
-                        <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-                          <p className="text-sm font-medium text-blue-800">Bygning under eller lik 9 meter - krav til branncellevegg</p>
-                        </div>
+                          {formData.bf85SkiltMedBrannvegg === "ja" && (
+                            <div className="p-3 bg-green-50 border border-green-200 rounded-md dark:bg-green-950 dark:border-green-800">
+                              <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                                :321 – Det stilles ingen krav til avstand mellom bygninger som er skilt med brannvegg.
+                              </p>
+                            </div>
+                          )}
+
+                          {formData.bf85SkiltMedBrannvegg === "nei" && (
+                            <>
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <Label className="text-xs font-medium mb-1 block">Gesimshøyde egen bygning (m)</Label>
+                                  <Input
+                                    type="number"
+                                    step="0.1"
+                                    value={formData.gesimshoydeEgen}
+                                    onChange={(e) => setFormData({...formData, gesimshoydeEgen: e.target.value})}
+                                    placeholder="Gjennomsnittlig gesimshøyde..."
+                                  />
+                                  <p className="text-xs text-muted-foreground mt-0.5">Måles på motstående vegg</p>
+                                </div>
+                                <div>
+                                  <Label className="text-xs font-medium mb-1 block">Gesimshøyde nabobygning (m)</Label>
+                                  <Input
+                                    type="number"
+                                    step="0.1"
+                                    value={formData.gesimshoydeNabo}
+                                    onChange={(e) => setFormData({...formData, gesimshoydeNabo: e.target.value})}
+                                    placeholder="Gjennomsnittlig gesimshøyde..."
+                                  />
+                                  <p className="text-xs text-muted-foreground mt-0.5">Måles på motstående vegg</p>
+                                </div>
+                              </div>
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Faktisk avstand til nabobygg (m)</Label>
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  value={formData.avstandNabobygg}
+                                  onChange={(e) => setFormData({...formData, avstandNabobygg: e.target.value})}
+                                  placeholder="Angi avstand i meter..."
+                                />
+                              </div>
+
+                              {/* Beregnet minsteavstand */}
+                              {(() => {
+                                const hEgen = parseFloat(formData.gesimshoydeEgen) || 0;
+                                const hNabo = parseFloat(formData.gesimshoydeNabo) || 0;
+                                const faktisk = parseFloat(formData.avstandNabobygg) || 0;
+                                const beregnet = (hEgen + hNabo) / 2;
+                                const minsteAvstand = Math.max(beregnet, 8);
+                                if (hEgen > 0 && hNabo > 0) {
+                                  const oppfylt = faktisk >= minsteAvstand;
+                                  return (
+                                    <div className={`p-3 rounded-md border ${oppfylt ? "bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800" : "bg-orange-50 border-orange-200 dark:bg-orange-950 dark:border-orange-800"}`}>
+                                      <p className="text-sm font-medium mb-1">
+                                        :322 – Beregnet minsteavstand: <strong>{minsteAvstand.toFixed(1)} m</strong>
+                                      </p>
+                                      <p className="text-xs text-muted-foreground">
+                                        ({hEgen} + {hNabo}) / 2 = {beregnet.toFixed(1)} m {beregnet < 8 ? "(min. 8 m)" : ""}
+                                      </p>
+                                      {faktisk > 0 && (
+                                        <p className={`text-sm mt-1 font-medium ${oppfylt ? "text-green-700 dark:text-green-300" : "text-orange-700 dark:text-orange-300"}`}>
+                                          {oppfylt ? "✓ Faktisk avstand oppfyller kravet" : "✗ Faktisk avstand er mindre enn minsteavstanden"}
+                                        </p>
+                                      )}
+                                    </div>
+                                  );
+                                }
+                                return null;
+                              })()}
+
+                              {/* Gruppe-unntak */}
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Er bygningene i en gruppe? (:3221)</Label>
+                                <Select
+                                  value={formData.bf85ErGruppe}
+                                  onValueChange={(value: "ja" | "nei") => setFormData({...formData, bf85ErGruppe: value})}
+                                >
+                                  <SelectTrigger><SelectValue /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="nei">Nei</SelectItem>
+                                    <SelectItem value="ja">Ja</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+
+                              {formData.bf85ErGruppe === "ja" && (
+                                <div className="p-3 bg-blue-50 border border-blue-200 rounded-md dark:bg-blue-950 dark:border-blue-800">
+                                  <p className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">Unntak for bygninger i gruppe (:3221)</p>
+                                  <ul className="text-xs text-blue-700 dark:text-blue-300 list-disc list-inside space-y-1">
+                                    <li>Bygninger kan ha mindre innbyrdes avstand enn :322 dersom bruttoareal i en gruppe er som angitt i kap. 31–39.</li>
+                                    <li>Yttervegg utsatt for strålevarme skal ha brannmotstand som branncellbegrensende bygningsdel i vedkommende bygningsbrannklasse (jf. Tabell 30:41).</li>
+                                    <li>Kravet gjelder den delen av veggen som ligger nærmere nabobygningen enn minsteavstanden.</li>
+                                    <li>Vegg skal være uten vindu, dør eller andre åpninger.</li>
+                                  </ul>
+                                </div>
+                              )}
+                            </>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          {/* Eksisterende TEK17-input */}
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Avstand til nabobygg (meter)</Label>
+                            <Input 
+                              type="number"
+                              step="0.1"
+                              value={formData.avstandNabobygg}
+                              onChange={(e) => setFormData({...formData, avstandNabobygg: e.target.value})}
+                              placeholder="Angi avstand i meter..."
+                            />
+                          </div>
+
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Bygningshøyde (meter)</Label>
+                            <Input 
+                              type="number"
+                              step="0.1"
+                              value={formData.bygningshoyde}
+                              onChange={(e) => setFormData({...formData, bygningshoyde: e.target.value})}
+                              placeholder="Angi høyde i meter..."
+                            />
+                          </div>
+                          
+                          {parseFloat(formData.bygningshoyde) > 9 && parseFloat(formData.avstandNabobygg || "0") < 8 && (
+                            <div className="p-3 bg-orange-50 border border-orange-200 rounded-md">
+                              <p className="text-sm font-medium text-orange-800 mb-2">Bygning over 9 meter med avstand under 8 m - krav til brannvegg</p>
+                              <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
+                              <Select 
+                                value={formData.spesifikkBrannenergi} 
+                                onValueChange={(value) => setFormData({...formData, spesifikkBrannenergi: value})}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Velg brannenergi..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="inntil400">Inntil 400 MJ/m² → REI 120-M A2-s1,d0</SelectItem>
+                                  <SelectItem value="400-600">400-600 MJ/m² → REI 180-M A2-s1,d0</SelectItem>
+                                  <SelectItem value="600-800">600-800 MJ/m² → REI 240-M A2-s1,d0</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+                          
+                          {parseFloat(formData.bygningshoyde) > 9 && parseFloat(formData.avstandNabobygg || "0") >= 8 && (
+                            <div className="p-3 bg-green-50 border border-green-200 rounded-md">
+                              <p className="text-sm font-medium text-green-800">Avstand til nabobygg er 8 meter eller mer – krav til brannvegg gjelder ikke. Branncellevegg benyttes.</p>
+                            </div>
+                          )}
+
+                          {parseFloat(formData.bygningshoyde) > 0 && parseFloat(formData.bygningshoyde) <= 9 && (
+                            <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
+                              <p className="text-sm font-medium text-blue-800">Bygning under eller lik 9 meter - krav til branncellevegg</p>
+                            </div>
+                          )}
+                        </>
                       )}
                       
                       <div>
@@ -3332,6 +3464,8 @@ const Konsept = () => {
                             />
                           </div>
                         </div>
+                      </div>
+                    </div>
                       </div>
                     </div>
                     {renderTilstandPanel("3_3")}
