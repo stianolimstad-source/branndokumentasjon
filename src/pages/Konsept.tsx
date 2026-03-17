@@ -3110,11 +3110,11 @@ const Konsept = () => {
                     </span>
                   </AccordionTrigger>
                   <AccordionContent className="space-y-3 pt-4 px-4 pb-4">
-                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.1 ${formData.regelverk === "BF85" ? "Bæreevne og stabilitet (§ 11-4)" : "§ 11-4 Bæreevne og stabilitet"}`}>
+                    <SectionCollapsible label={`3.1 ${formData.regelverk === "BF85" ? "Bæreevne og stabilitet (§ 11-4)" : "§ 11-4 Bæreevne og stabilitet"}`}>
                     <div className="space-y-3">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">
-                          {documentType === "tilstandsvurdering" ? "2" : "3"}.1 {formData.regelverk === "BF85" ? "Kap. 30:41 Bæreevne og stabilitet (Bygningsbrannklasse)" : "§ 11-4 Bæreevne og stabilitet"}
+                          3.1 {formData.regelverk === "BF85" ? "Kap. 30:41 Bæreevne og stabilitet (Bygningsbrannklasse)" : "§ 11-4 Bæreevne og stabilitet"}
                         </Label>
                         {formData.regelverk === "BF85" && (
                           <p className="text-xs text-muted-foreground mt-1">Bygningsdelers brannmotstand iht. BF85 Tabell 30:41</p>
@@ -3233,11 +3233,11 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_1")}
                     </SectionCollapsible>
-                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.2 ${formData.regelverk === "BF85" ? "Sikkerhet ved eksplosjon (§ 11-5)" : "§ 11-5 Sikkerhet ved eksplosjon"}`}>
+                    <SectionCollapsible label={`3.2 ${formData.regelverk === "BF85" ? "Sikkerhet ved eksplosjon (§ 11-5)" : "§ 11-5 Sikkerhet ved eksplosjon"}`}>
                     <div className="space-y-3">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">
-                          {documentType === "tilstandsvurdering" ? "2" : "3"}.2 {formData.regelverk === "BF85" ? "Sikkerhet ved eksplosjon" : "§ 11-5 Sikkerhet ved eksplosjon"}
+                          3.2 {formData.regelverk === "BF85" ? "Sikkerhet ved eksplosjon" : "§ 11-5 Sikkerhet ved eksplosjon"}
                         </Label>
                         {formData.regelverk === "BF85" && (
                           <p className="text-xs text-muted-foreground mt-1">
@@ -3323,11 +3323,11 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_2")}
                     </SectionCollapsible>
-                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.3 ${formData.regelverk === "BF85" ? "Avstand mellom bygninger (§ 11-6)" : "§ 11-6 Tiltak mot brannspredning"}`}>
+                    <SectionCollapsible label={`3.3 ${formData.regelverk === "BF85" ? "Avstand mellom bygninger (§ 11-6)" : "§ 11-6 Tiltak mot brannspredning"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">
-                          {documentType === "tilstandsvurdering" ? "2" : "3"}.3 {formData.regelverk === "BF85" ? "Avstand mellom bygninger (Kap. 30:32)" : "§ 11-6 Tiltak mot brannspredning"}
+                          3.3 {formData.regelverk === "BF85" ? "Avstand mellom bygninger (Kap. 30:32)" : "§ 11-6 Tiltak mot brannspredning"}
                         </Label>
                         {formData.regelverk === "BF85" && (
                           <p className="text-xs text-muted-foreground mt-1">
@@ -3531,10 +3531,10 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_3")}
                     </SectionCollapsible>
-                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.4 ${formData.regelverk === "BF85" ? "Brannteknisk oppdeling (§ 11-7)" : "§ 11-7 Brannseksjoner"}`}>
+                    <SectionCollapsible label={`3.4 ${formData.regelverk === "BF85" ? "Brannteknisk oppdeling (§ 11-7)" : "§ 11-7 Brannseksjoner"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">{formData.regelverk === "BF85" ? "2.4 Brannteknisk oppdeling (Kap. 30:6)" : "3.4 § 11-7 Brannseksjoner"}</Label>
+                        <Label className="text-base font-extrabold text-foreground">{formData.regelverk === "BF85" ? "3.4 Brannteknisk oppdeling (Kap. 30:6)" : "3.4 § 11-7 Brannseksjoner"}</Label>
                       </div>
                       
                       {/* BF85 Skole: Forenklet brannvegg-vurdering */}
@@ -3780,7 +3780,7 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_4")}
                     </SectionCollapsible>
-                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.5 ${formData.regelverk === "BF85" ? "Brannceller (§ 11-8)" : "§ 11-8 Brannceller"}`}>
+                    <SectionCollapsible label={`3.5 ${formData.regelverk === "BF85" ? "Brannceller (§ 11-8)" : "§ 11-8 Brannceller"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.5 § 11-8 Brannceller</Label>
@@ -4552,7 +4552,7 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_5")}
                     </SectionCollapsible>
-                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.6 ${formData.regelverk === "BF85" ? "Materialer og produkter (§ 11-9)" : "§ 11-9 Materialer og produkter"}`}>
+                    <SectionCollapsible label={`3.6 ${formData.regelverk === "BF85" ? "Materialer og produkter (§ 11-9)" : "§ 11-9 Materialer og produkter"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.6 § 11-9 Materialer og produkters egenskaper ved brann</Label>
@@ -4674,7 +4674,7 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_6")}
                     </SectionCollapsible>
-                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.7 ${formData.regelverk === "BF85" ? "Tekniske installasjoner (§ 11-10)" : "§ 11-10 Tekniske installasjoner"}`}>
+                    <SectionCollapsible label={`3.7 ${formData.regelverk === "BF85" ? "Tekniske installasjoner (§ 11-10)" : "§ 11-10 Tekniske installasjoner"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.7 § 11-10 Tekniske installasjoner</Label>
@@ -4808,7 +4808,7 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_7")}
                     </SectionCollapsible>
-                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.8 ${formData.regelverk === "BF85" ? "Rømning og redning (§ 11-11)" : "§ 11-11 Rømning og redning"}`}>
+                    <SectionCollapsible label={`3.8 ${formData.regelverk === "BF85" ? "Rømning og redning (§ 11-11)" : "§ 11-11 Rømning og redning"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.8 § 11-11 Rømning og redning</Label>
@@ -4836,7 +4836,7 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_8")}
                     </SectionCollapsible>
-                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.9 ${formData.regelverk === "BF85" ? "Tilrettelegging for rømning (§ 11-12)" : "§ 11-12 Tilrettelegging for rømning"}`}>
+                    <SectionCollapsible label={`3.9 ${formData.regelverk === "BF85" ? "Tilrettelegging for rømning (§ 11-12)" : "§ 11-12 Tilrettelegging for rømning"}`}>
                     <div className="space-y-4">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.9 § 11-12 Tilrettelegging for rømning og redning</Label>
@@ -5073,7 +5073,7 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_9")}
                     </SectionCollapsible>
-                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.10 ${formData.regelverk === "BF85" ? "Utgang fra branncelle (§ 11-13)" : "§ 11-13 Utgang fra branncelle"}`}>
+                    <SectionCollapsible label={`3.10 ${formData.regelverk === "BF85" ? "Utgang fra branncelle (§ 11-13)" : "§ 11-13 Utgang fra branncelle"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.10 § 11-13 Utgang fra branncelle</Label>
@@ -5377,7 +5377,7 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_10")}
                     </SectionCollapsible>
-                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.11 ${formData.regelverk === "BF85" ? "Rømningsvei (§ 11-14)" : "§ 11-14 Rømningsvei"}`}>
+                    <SectionCollapsible label={`3.11 ${formData.regelverk === "BF85" ? "Rømningsvei (§ 11-14)" : "§ 11-14 Rømningsvei"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.11 § 11-14 Rømningsvei</Label>
@@ -5506,7 +5506,7 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_11")}
                     </SectionCollapsible>
-                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.12 ${formData.regelverk === "BF85" ? "Redning av husdyr (§ 11-15)" : "§ 11-15 Redning av husdyr"}`}>
+                    <SectionCollapsible label={`3.12 ${formData.regelverk === "BF85" ? "Redning av husdyr (§ 11-15)" : "§ 11-15 Redning av husdyr"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.12 § 11-15 Tilrettelegging for redning av husdyr</Label>
@@ -5537,7 +5537,7 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_12")}
                     </SectionCollapsible>
-                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.13 ${formData.regelverk === "BF85" ? "Manuell slokking (§ 11-16)" : "§ 11-16 Manuell slokking"}`}>
+                    <SectionCollapsible label={`3.13 ${formData.regelverk === "BF85" ? "Manuell slokking (§ 11-16)" : "§ 11-16 Manuell slokking"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.13 § 11-16 Manuell slokking</Label>
@@ -5606,7 +5606,7 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_13")}
                     </SectionCollapsible>
-                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.14 ${formData.regelverk === "BF85" ? "Tilrettelegging for slokkemannskap (§ 11-17)" : "§ 11-17 Tilrettelegging for slokkemannskap"}`}>
+                    <SectionCollapsible label={`3.14 ${formData.regelverk === "BF85" ? "Tilrettelegging for slokkemannskap (§ 11-17)" : "§ 11-17 Tilrettelegging for slokkemannskap"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.14 § 11-17 Tilrettelegging for slokkemannskap</Label>
