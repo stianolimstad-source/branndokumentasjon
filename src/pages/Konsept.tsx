@@ -4773,7 +4773,7 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_8")}
                     </SectionCollapsible>
-                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.9 Tilrettelegging for rømning`}>
+                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.9 ${formData.regelverk === "BF85" ? "Tilrettelegging for rømning (§ 11-12)" : "§ 11-12 Tilrettelegging for rømning"}`}>
                     <div className="space-y-4">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.9 § 11-12 Tilrettelegging for rømning og redning</Label>
