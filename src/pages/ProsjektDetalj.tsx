@@ -243,7 +243,7 @@ const ProsjektDetalj = () => {
           <Card className="shadow-soft mb-6">
             <div className="relative">
               <img
-                src={project.image_url || defaultBuilding}
+                src={project.image_url || getDefaultBuildingImage(primaryBygningstype)}
                 alt={project.name}
                 className="w-full h-48 object-cover rounded-t-lg"
               />
