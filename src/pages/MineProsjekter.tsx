@@ -30,6 +30,7 @@ const MineProsjekter = () => {
   const { toast } = useToast();
   
   const [projects, setProjects] = useState<Project[]>([]);
+  const [bygningstyper, setBygningstyper] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
