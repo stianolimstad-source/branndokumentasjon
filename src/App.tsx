@@ -17,6 +17,7 @@ import Brannenergi from "./pages/verktoy/Brannenergi";
 
 import Auth from "./pages/Auth";
 import MineProsjekter from "./pages/MineProsjekter";
+import ProsjektDetalj from "./pages/ProsjektDetalj";
 import MineKontakter from "./pages/MineKontakter";
 import MineOppgaver from "./pages/MineOppgaver";
 import GruppeDetalj from "./pages/GruppeDetalj";
@@ -49,6 +50,7 @@ const App = () => (
             
             <Route path="/auth" element={<Auth />} />
             <Route path="/mine-prosjekter" element={<MineProsjekter />} />
+            <Route path="/prosjekt/:id" element={<ProsjektDetalj />} />
             <Route path="/mine-oppgaver" element={<MineOppgaver />} />
             <Route path="/ks-gjennomgang" element={<KSGjennomgang />} />
             <Route path="/mine-kontakter" element={<MineKontakter />} />
