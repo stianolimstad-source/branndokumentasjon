@@ -672,6 +672,21 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal]);
 
+  // Automatisk beregning av BF85 bygningsbrannklasse
+  useEffect(() => {
+    if (isViewMode) return;
+    if (formData.regelverk !== "BF85" || !formData.bf85Bygningstype) return;
+    const result = getBygningsbrannklasse(
+      formData.bf85Bygningstype as BF85Bygningstype,
+      parseInt(formData.etasjer, 10) || 0,
+      parseFloat(formData.areal) || 0,
+      { brannbelastning: formData.bf85Brannbelastning || undefined, harBrannalarm: formData.bf85HarBrannalarm }
+    );
+    if (result) {
+      setFormData(prev => ({ ...prev, bygningsbrannklasse: result.klasse as "" | "1" | "2" | "3" | "4" }));
+    }
+  }, [formData.etasjer, formData.areal, formData.bf85Bygningstype, formData.bf85Brannbelastning, formData.bf85HarBrannalarm, formData.regelverk]);
+
   // Automatisk generering av bæreevne tekst – skip i view-modus
   useEffect(() => {
     if (isViewMode) return;
