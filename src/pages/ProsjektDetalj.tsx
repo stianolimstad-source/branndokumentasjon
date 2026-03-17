@@ -194,29 +194,29 @@ const ProsjektDetalj = () => {
     const ksComplete = ks && ks.completed >= TOTAL_KS_SECTIONS;
     const ksStarted = ks && ks.total > 0;
     return (
-      <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-        <div className="flex items-center gap-2 flex-wrap">
-          <Icon className={`h-4 w-4 ${iconColor}`} />
-          <span className="text-sm font-medium">{concept.name}</span>
-          <span className={`text-xs px-2 py-0.5 rounded ${concept.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
+      <div className="flex items-center justify-between gap-2 p-2 sm:p-3 bg-muted/50 rounded-lg">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap min-w-0 flex-1">
+          <Icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0 ${iconColor}`} />
+          <span className="text-xs sm:text-sm font-medium truncate">{concept.name}</span>
+          <span className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded whitespace-nowrap ${concept.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
             {concept.status === 'draft' ? 'Utkast' : 'Ferdig'}
           </span>
           {concept.contentType && !["brannkonsept", "tilstandsvurdering"].includes(concept.contentType) && (
-            <span className="text-xs px-2 py-0.5 rounded bg-orange-100 text-orange-800 capitalize">{concept.contentType}</span>
+            <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded bg-orange-100 text-orange-800 capitalize whitespace-nowrap">{concept.contentType}</span>
           )}
           {ksComplete ? (
-            <Badge variant="default" className="gap-1 bg-green-600 hover:bg-green-700 text-white"><CheckCircle2 className="h-3 w-3" />KS fullført</Badge>
+            <Badge variant="default" className="gap-1 bg-green-600 hover:bg-green-700 text-white text-[10px] sm:text-xs"><CheckCircle2 className="h-3 w-3" />KS</Badge>
           ) : ksStarted ? (
-            <Badge variant="outline" className="gap-1 text-amber-600 border-amber-300"><Clock className="h-3 w-3" />KS {ks.completed}/{TOTAL_KS_SECTIONS}</Badge>
+            <Badge variant="outline" className="gap-1 text-amber-600 border-amber-300 text-[10px] sm:text-xs"><Clock className="h-3 w-3" />{ks.completed}/{TOTAL_KS_SECTIONS}</Badge>
           ) : null}
         </div>
-        <div className="flex items-center gap-1">
-          <Link to={linkTo}><Button variant="ghost" size="sm">Åpne</Button></Link>
+        <div className="flex items-center gap-0.5 flex-shrink-0">
+          <Link to={linkTo}><Button variant="ghost" size="sm" className="h-7 px-2 text-xs sm:h-8 sm:px-3 sm:text-sm">Åpne</Button></Link>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></Button>
+              <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" /></Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="mx-4 max-w-[calc(100vw-2rem)]">
               <AlertDialogHeader>
                 <AlertDialogTitle>Slette "{concept.name}"?</AlertDialogTitle>
                 <AlertDialogDescription>Denne handlingen kan ikke angres.</AlertDialogDescription>
