@@ -5584,6 +5584,7 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_14")}
+                    </SectionCollapsible>
                   </AccordionContent>
                 </AccordionItem>
 
