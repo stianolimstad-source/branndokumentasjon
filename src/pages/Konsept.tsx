@@ -3624,33 +3624,54 @@ const Konsept = () => {
                           </div>
                           {(formData.seksjonDorRelevant || formData.seksjonVinduRelevant) && (
                             <div className="space-y-1 bg-muted/50 p-2 rounded text-xs">
-                              <p className="font-semibold text-xs">Preaksepterte ytelser:</p>
-                              {formData.seksjonDorRelevant && formData.seksjonVinduRelevant && (
-                                <div>1. Vinduer og dører må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.</div>
-                              )}
-                              {formData.seksjonDorRelevant && formData.seksjonVinduRelevant && (
-                                <div>2. Vinduer og dører må ha tilsvarende brannmotstand som veggen.</div>
-                              )}
-                              {formData.seksjonDorRelevant && !formData.seksjonVinduRelevant && (
+                              {formData.regelverk === "BF85" ? (
                                 <>
-                                  <div>1. Dører må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.</div>
-                                  <div>2. Dører må ha tilsvarende brannmotstand som veggen.</div>
+                                  <p className="font-semibold text-xs">Krav iht. BF85 Kap. 30:62:</p>
+                                  <div>Brannvegg skal være uten åpninger. Dersom åpning likevel er nødvendig, gjelder følgende:</div>
+                                  {formData.seksjonDorRelevant && (
+                                    <>
+                                      <div>– Dør i brannvegg skal ha samme brannmotstand som veggen (minst A 120).</div>
+                                      <div>– Dør skal være selvlukkende eller ha automatisk lukking ved brannalarm/røykdeteksjon.</div>
+                                    </>
+                                  )}
+                                  {formData.seksjonVinduRelevant && (
+                                    <>
+                                      <div>– Vindu i brannvegg skal ha samme brannmotstand som veggen (minst A 120).</div>
+                                      <div>– Vindu skal ikke kunne åpnes.</div>
+                                    </>
+                                  )}
                                 </>
-                              )}
-                              {!formData.seksjonDorRelevant && formData.seksjonVinduRelevant && (
+                              ) : (
                                 <>
-                                  <div>1. Vinduer må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.</div>
-                                  <div>2. Vinduer må ha tilsvarende brannmotstand som veggen.</div>
+                                  <p className="font-semibold text-xs">Preaksepterte ytelser:</p>
+                                  {formData.seksjonDorRelevant && formData.seksjonVinduRelevant && (
+                                    <div>1. Vinduer og dører må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.</div>
+                                  )}
+                                  {formData.seksjonDorRelevant && formData.seksjonVinduRelevant && (
+                                    <div>2. Vinduer og dører må ha tilsvarende brannmotstand som veggen.</div>
+                                  )}
+                                  {formData.seksjonDorRelevant && !formData.seksjonVinduRelevant && (
+                                    <>
+                                      <div>1. Dører må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.</div>
+                                      <div>2. Dører må ha tilsvarende brannmotstand som veggen.</div>
+                                    </>
+                                  )}
+                                  {!formData.seksjonDorRelevant && formData.seksjonVinduRelevant && (
+                                    <>
+                                      <div>1. Vinduer må plasseres, eller være beskyttet, slik at de ikke blir utsatt for mekanisk påkjenning ved nedfall av andre bygningsdeler.</div>
+                                      <div>2. Vinduer må ha tilsvarende brannmotstand som veggen.</div>
+                                    </>
+                                  )}
+                                  {formData.seksjonDorRelevant && (
+                                    <>
+                                      <div>{formData.seksjonVinduRelevant ? "3" : "3"}. Dør som er klassifisert etter NS 3919:1997 [A 120 osv.] må ha anslag, terskel og tettelister på alle sider for å oppnå tilstrekkelig røyktetthet. Dette gjelder ikke dører og luker som er testet og oppfyller kriteriene for Sₐ-klassifisering etter NS-EN 1634-3:2004 (inklusiv rettelsesblad AC:2006).</div>
+                                      <div>{formData.seksjonVinduRelevant ? "4" : "4"}. Dører må være lukket i en brukssituasjon eller ha automatikk som lukker døren ved deteksjon av røyk.</div>
+                                    </>
+                                  )}
+                                  {formData.seksjonVinduRelevant && (
+                                    <div>{formData.seksjonDorRelevant ? "5" : "3"}. Vinduer må ikke kunne åpnes i vanlig brukstilstand.</div>
+                                  )}
                                 </>
-                              )}
-                              {formData.seksjonDorRelevant && (
-                                <>
-                                  <div>{formData.seksjonVinduRelevant ? "3" : "3"}. Dør som er klassifisert etter NS 3919:1997 [A 120 osv.] må ha anslag, terskel og tettelister på alle sider for å oppnå tilstrekkelig røyktetthet. Dette gjelder ikke dører og luker som er testet og oppfyller kriteriene for Sₐ-klassifisering etter NS-EN 1634-3:2004 (inklusiv rettelsesblad AC:2006).</div>
-                                  <div>{formData.seksjonVinduRelevant ? "4" : "4"}. Dører må være lukket i en brukssituasjon eller ha automatikk som lukker døren ved deteksjon av røyk.</div>
-                                </>
-                              )}
-                              {formData.seksjonVinduRelevant && (
-                                <div>{formData.seksjonDorRelevant ? "5" : "3"}. Vinduer må ikke kunne åpnes i vanlig brukstilstand.</div>
                               )}
                             </div>
                           )}
