@@ -406,9 +406,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </section>
       <PageFooter pageNum={3 + extraPages} />
       </div>
-      </ChapterSection>
 
-      <ChapterSection title={isTilstand ? "1. Innledning (forts.)" : "2. Grunnlag og forutsetninger"}>
       {/* Kapittel 2 / Kap 1 forts. - egen side */}
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
