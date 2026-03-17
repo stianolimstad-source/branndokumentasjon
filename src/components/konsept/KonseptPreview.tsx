@@ -2,6 +2,7 @@ import React from "react";
 import { branncelleTyperListe, getBrannklasse } from "@/lib/fire-concept-constants";
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
+import { bf85Sections } from "@/lib/bf85-constants";
 
 interface TilstandBilde {
   url: string;
@@ -97,6 +98,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   const pageWidth = { maxWidth: '210mm', minHeight: '297mm', paddingBottom: '40px', fontFamily: 'Verdana, Geneva, sans-serif' };
   const hasSammendrag = !!formData.sammendrag;
   const isTilstand = documentType === "tilstandsvurdering";
+  const isBF85 = isTilstand && formData.regelverk === "BF85";
   const extraPages = (hasSammendrag ? 1 : 0) + (isTilstand ? 1 : 0);
   const totalPages = isTilstand ? 7 + extraPages : 8 + extraPages;
   // Section prefix for chapter 3 (brannkonsept) → chapter 2 (tilstandsvurdering)
@@ -222,6 +224,23 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         <h2 className="font-bold mb-3">Innholdsfortegnelse</h2>
         <div className="space-y-1 text-xs">
           {isTilstand ? (
+            isBF85 ? (
+            <>
+              <p><span className="font-bold">1.</span> Innledning</p>
+              <p className="ml-4">1.1 Informasjon om tiltaket</p>
+              <p className="ml-4">1.2 Avgrensning av vurderingen</p>
+              <p className="ml-4">1.3 Bygningsinformasjon</p>
+              <p className="ml-4">1.4 Grunnlagsdokumenter</p>
+              <p className="ml-4">1.5 Branntekniske forutsetninger</p>
+              <p className="ml-4">1.6 Tilleggskrav</p>
+              <p><span className="font-bold">2.</span> Brannteknisk tilstandsvurdering (BF85)</p>
+              {bf85Sections.map((s, i) => (
+                <p key={s.id} className="ml-4">2.{i + 1} {s.ref} – {s.title}</p>
+              ))}
+              <p><span className="font-bold">3.</span> Revisjonshistorikk</p>
+              <p><span className="font-bold">4.</span> Litteraturhenvisninger</p>
+            </>
+            ) : (
             <>
               <p><span className="font-bold">1.</span> Innledning</p>
               <p className="ml-4">1.1 Informasjon om tiltaket</p>
@@ -247,6 +266,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p><span className="font-bold">3.</span> Revisjonshistorikk</p>
               <p><span className="font-bold">4.</span> Litteraturhenvisninger</p>
             </>
+            )
           ) : (
             <>
               <p><span className="font-bold">1.</span> Innledning</p>
@@ -598,8 +618,37 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <div className={pageStyle} style={pageWidth}>
       {/* Branntekniske ytelseskrav */}
       <section className="mb-6">
-        <h2 className="font-bold mb-3">{isTilstand ? "2" : "3"}. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"}</h2>
+        <h2 className="font-bold mb-3">{isTilstand ? "2" : "3"}. {isTilstand ? (isBF85 ? "Brannteknisk tilstandsvurdering (BF85)" : "Brannteknisk tilstandsvurdering") : "Beskrivelse av branntekniske ytelseskrav"}</h2>
         
+        {isBF85 ? (
+          /* ===== BF85 SECTIONS ===== */
+          <table className="w-full border-collapse border border-gray-400 text-xs">
+            <tbody>
+              {bf85Sections.map((section, i) => (
+                <React.Fragment key={section.id}>
+                  <tr className="bg-blue-100">
+                    <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
+                      2.{i + 1} &nbsp;&nbsp; {section.ref} – {section.title}
+                    </td>
+                  </tr>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                    <th className="border border-gray-400 p-2 text-left">Krav / Beskrivelse</th>
+                    <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Vurdering</th>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Krav iht. BF85</td>
+                    <td className="border border-gray-400 p-2">{section.description}</td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                  {formData.tilstandsvurderinger?.[section.id] && (
+                    <TilstandTableRow data={formData.tilstandsvurderinger[section.id]} sectionLabel={`2.${i + 1} ${section.title}`} />
+                  )}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        ) : (
         <table className="w-full border-collapse border border-gray-400 text-xs">
           <tbody>
             {/* 3.1 § 11-4 Bæreevne og stabilitet */}

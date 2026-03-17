@@ -855,8 +855,8 @@ const Konsept = () => {
     }, 1500);
   };
 
-  // Tilstandsvurdering sections definition
-  const tilstandSections = [
+  // Tilstandsvurdering sections definition – depends on regelverk
+  const tilstandSectionsTEK17 = [
     { key: "3_1", label: "3.1 Bæreevne og stabilitet" },
     { key: "3_2", label: "3.2 Sikkerhet ved eksplosjon" },
     { key: "3_3", label: "3.3 Brannspredning mellom byggverk" },
@@ -872,6 +872,25 @@ const Konsept = () => {
     { key: "3_13", label: "3.13 Manuell slokking" },
     { key: "3_14", label: "3.14 Slokkemannskap" },
   ];
+
+  const tilstandSectionsBF85 = [
+    { key: "bf85_brannklasse", label: "2.1 Bygningsbrannklasse og brannmotstand" },
+    { key: "bf85_avstand", label: "2.2 Avstand mellom bygninger" },
+    { key: "bf85_brannseksjoner", label: "2.3 Brannteknisk oppdeling" },
+    { key: "bf85_brannceller", label: "2.4 Branncelleinndeling" },
+    { key: "bf85_kledninger", label: "2.5 Kledninger og overflater" },
+    { key: "bf85_vegger_tak", label: "2.6 Vegger, tak og nedforet himling" },
+    { key: "bf85_tekniske_rom", label: "2.7 Tekniske rom" },
+    { key: "bf85_romningsvei", label: "2.8 Rømningsvei" },
+    { key: "bf85_trapperom", label: "2.9 Trapperom og heissjakt" },
+    { key: "bf85_brannalarm", label: "2.10 Brannalarmanlegg og røykvarsler" },
+    { key: "bf85_slokkingsredskap", label: "2.11 Slokkingsredskap og slokkingsvann" },
+    { key: "bf85_atkomst", label: "2.12 Atkomst for brannvesenet" },
+    { key: "bf85_ventilasjon", label: "2.13 Ventilasjon og installasjoner" },
+    { key: "bf85_roykpipe", label: "2.14 Røykpipe, varmeanlegg og ildsted" },
+  ];
+
+  const tilstandSections = formData.regelverk === "BF85" ? tilstandSectionsBF85 : tilstandSectionsTEK17;
 
   const updateTilstand = (sectionKey: string, data: TilstandData) => {
     setFormData(prev => ({
