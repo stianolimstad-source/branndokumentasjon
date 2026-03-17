@@ -625,8 +625,69 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         
         <table className="w-full border-collapse border border-gray-400 text-xs">
           <tbody>
-            {/* 3.1 § 11-4 Bæreevne og stabilitet */}
-            {formData.harFlereRisikoklasser && bygningsdeler.length > 0 ? (
+            {/* 3.1 / 2.1 Bæreevne og stabilitet */}
+            {isBF85 ? (
+              /* ── BF85: Tabell 30:41 ── */
+              <>
+                <tr className="bg-blue-100">
+                  <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
+                    {sp}.1 &nbsp;&nbsp; Kap. 30:41 Bæreevne og stabilitet (Bygningsbrannklasse)
+                  </td>
+                </tr>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-400 p-2 text-left" style={{width: '35%'}}>Bygningsdel</th>
+                  <th className="border border-gray-400 p-2 text-left">Brannmotstand (BF85 Tabell 30:41)</th>
+                  <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
+                </tr>
+                {(() => {
+                  const bf85 = getBaereevneTekstBF85(formData.bygningsbrannklasse || "");
+                  if (!bf85.kravTabell) {
+                    return (
+                      <tr>
+                        <td className="border border-gray-400 p-2 italic" colSpan={3}>
+                          Bygningsbrannklasse ikke fastsatt – krav kan ikke beregnes.
+                        </td>
+                      </tr>
+                    );
+                  }
+                  const k = bf85.kravTabell;
+                  const rows = [
+                    { label: "Bærende hovedsystem", value: k.hovedsystem },
+                    { label: "Sekundære bærende deler, etasjeskiller (ikke stabiliserende)", value: k.sekundaer },
+                    { label: "Ikke-bærende branncellebegrensende bygningsdel (unntatt yttervegg)", value: k.branncellebegrensende },
+                    { label: "Bygningsdel under øverste kjellergolv", value: k.kjeller },
+                    { label: "Bygningsdel som omgir trapperom og heissjakt", value: k.trapperomOgHeissjakt },
+                    { label: "Trappeløp", value: k.trappeloep },
+                  ];
+                  return rows.map((r, i) => (
+                    <tr key={i}>
+                      <td className="border border-gray-400 p-2">{r.label}</td>
+                      <td className="border border-gray-400 p-2 text-red-600 font-medium">{r.value}</td>
+                      <td className="border border-gray-400 p-2">RIB</td>
+                    </tr>
+                  ));
+                })()}
+                {formData.balkongRelevant && (
+                  <tr>
+                    <td className="border border-gray-400 p-2">Balkonger / utkragede deler</td>
+                    <td className="border border-gray-400 p-2">Balkonger og utkragede bygningsdeler skal ha forsvarlig innfesting for å hindre nedfall under brann.</td>
+                    <td className="border border-gray-400 p-2">RIB</td>
+                  </tr>
+                )}
+                {formData.baereevneKommentar && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 italic text-sm" colSpan={3}>
+                      Kommentar: {formData.baereevneKommentar}
+                    </td>
+                  </tr>
+                )}
+                <tr>
+                  <td className="border border-gray-400 p-2 italic text-xs text-gray-600" colSpan={3}>
+                    I bygning uten loft eller med loft som ikke kan nyttes som lager, behøver kravene ikke oppfylles for takkonstruksjoner av ubrennbare materialer. For bygning i 1–2 etasjer gjelder lempninger for takkonstruksjoner av brennbare materialer med kledning K1 og ubrennbart isolasjonsmateriale.
+                  </td>
+                </tr>
+              </>
+            ) : formData.harFlereRisikoklasser && bygningsdeler.length > 0 ? (
               <>
                 <tr className="bg-blue-100">
                   <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
