@@ -234,37 +234,37 @@ const ProsjektDetalj = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <section className="container mx-auto px-4 py-12">
+      <section className="container mx-auto px-3 sm:px-4 py-4 sm:py-12">
         <div className="max-w-4xl mx-auto">
-          <Button variant="ghost" className="mb-4" onClick={() => navigate('/mine-prosjekter')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Tilbake til prosjekter
+          <Button variant="ghost" size="sm" className="mb-3 sm:mb-4" onClick={() => navigate('/mine-prosjekter')}>
+            <ArrowLeft className="h-4 w-4 mr-1.5" />
+            Tilbake
           </Button>
 
           {/* Project header with image */}
-          <Card className="shadow-soft mb-6">
+          <Card className="shadow-soft mb-4 sm:mb-6">
             <div className="relative">
               <img
                 src={project.image_url || getDefaultBuildingImage(primaryBygningstype)}
                 alt={project.name}
-                className="w-full h-48 object-cover rounded-t-lg"
+                className="w-full h-32 sm:h-48 object-cover rounded-t-lg"
               />
-              <label className="absolute bottom-3 right-3 cursor-pointer">
+              <label className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 cursor-pointer">
                 <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isUploading} />
-                <Button size="sm" variant="secondary" className="pointer-events-none" asChild={false}>
-                  <span className="flex items-center gap-2">
-                    <ImagePlus className="h-4 w-4" />
+                <Button size="sm" variant="secondary" className="pointer-events-none text-xs sm:text-sm" asChild={false}>
+                  <span className="flex items-center gap-1.5">
+                    <ImagePlus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     {isUploading ? "Laster opp..." : "Endre bilde"}
                   </span>
                 </Button>
               </label>
             </div>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-2xl">{project.name}</CardTitle>
-                  {project.address && <p className="text-muted-foreground mt-1">{project.address}</p>}
-                  {project.description && <p className="text-sm text-muted-foreground mt-1">{project.description}</p>}
+            <CardHeader className="p-3 sm:p-6">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0 flex-1">
+                  <CardTitle className="text-lg sm:text-2xl truncate">{project.name}</CardTitle>
+                  {project.address && <p className="text-sm sm:text-base text-muted-foreground mt-0.5 sm:mt-1 truncate">{project.address}</p>}
+                  {project.description && <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1 line-clamp-2">{project.description}</p>}
                 </div>
                 <ShareProjectDialog projectId={project.id} projectName={project.name} />
               </div>
