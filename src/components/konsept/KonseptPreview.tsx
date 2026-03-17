@@ -620,8 +620,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <section className="mb-6">
         <h2 className="font-bold mb-3">{isTilstand ? "2" : "3"}. {isTilstand ? (isBF85 ? "Brannteknisk tilstandsvurdering (BF85)" : "Brannteknisk tilstandsvurdering") : "Beskrivelse av branntekniske ytelseskrav"}</h2>
         
-        {isBF85 ? (
-          /* ===== BF85 SECTIONS ===== */
+        {isBF85 && (
           <table className="w-full border-collapse border border-gray-400 text-xs">
             <tbody>
               {bf85Sections.map((section, i) => (
@@ -648,7 +647,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               ))}
             </tbody>
           </table>
-        ) : (
+        )}
+        {!isBF85 && (
         <table className="w-full border-collapse border border-gray-400 text-xs">
           <tbody>
             {/* 3.1 § 11-4 Bæreevne og stabilitet */}
@@ -1127,9 +1127,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
           </tbody>
         </table>
+        )}
       </section>
       <PageFooter pageNum={5 + extraPages} />
       </div>
+      {!isBF85 && (<>
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
         <h2 className="font-bold mb-3">{sp}. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} (forts.)</h2>
@@ -2188,6 +2190,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </section>
       <PageFooter pageNum={7 + extraPages} />
       </div>
+      </>)}
 
 
 
@@ -2230,20 +2233,28 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
       {documentType === "tilstandsvurdering" && (
       <div className={pageStyle} style={pageWidth}>
-      {/* 4. Revisjonshistorikk (renummerert for tilstandsvurdering) */}
       <section className="mb-6">
-        <h2 className="font-bold mb-3">4. Revisjonshistorikk</h2>
+        <h2 className="font-bold mb-3">{isBF85 ? "3" : "4"}. Revisjonshistorikk</h2>
         <p className="ml-4">{formData.revisjon || "[Revisjonslogg]"}</p>
       </section>
 
-      {/* 5. Litteraturhenvisninger */}
       <section className="mb-6">
-        <h2 className="font-bold mb-3">5. Litteraturhenvisninger</h2>
+        <h2 className="font-bold mb-3">{isBF85 ? "4" : "5"}. Litteraturhenvisninger</h2>
         <ul className="ml-4 list-disc list-inside">
-          <li>TEK17 - Forskrift om tekniske krav til byggverk</li>
-          <li>VTEK17 - Veiledning til teknisk forskrift</li>
-          <li>NS 3901 - Krav til risikovurdering av brann i byggverk</li>
-          <li>NS 3424 - Tilstandsanalyse av byggverk</li>
+          {isBF85 ? (
+            <>
+              <li>Byggeforskrift 1985 (BF85) – Del 3 Brannvern</li>
+              <li>NS 3424 - Tilstandsanalyse av byggverk</li>
+              <li>NS 3901 - Krav til risikovurdering av brann i byggverk</li>
+            </>
+          ) : (
+            <>
+              <li>TEK17 - Forskrift om tekniske krav til byggverk</li>
+              <li>VTEK17 - Veiledning til teknisk forskrift</li>
+              <li>NS 3901 - Krav til risikovurdering av brann i byggverk</li>
+              <li>NS 3424 - Tilstandsanalyse av byggverk</li>
+            </>
+          )}
         </ul>
       </section>
 
