@@ -1810,9 +1810,14 @@ const Konsept = () => {
                                 <span className="text-xs text-muted-foreground italic">Låst</span>
                               </div>
                               <p className="text-xs text-muted-foreground">Regelverket kan ikke endres etter at det er valgt. Opprett en ny tilstandsvurdering for å bruke et annet regelverk.</p>
-                              {formData.regelverk !== "TEK17" && (
+                              {formData.regelverk !== "TEK17" && formData.regelverk !== "BF85" && (
                                 <p className="text-xs text-amber-700 dark:text-amber-400 font-medium mt-1">
                                   ⚠ Kravene for {formData.regelverk} kan avvike fra TEK17. Tilpassede krav kommer snart.
+                                </p>
+                              )}
+                              {formData.regelverk === "BF85" && (
+                                <p className="text-xs text-green-700 dark:text-green-400 font-medium mt-1">
+                                  ✓ Kravene er tilpasset BF85 (Byggeforskrift 1985).
                                 </p>
                               )}
                             </>
