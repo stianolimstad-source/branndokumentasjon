@@ -194,29 +194,29 @@ const ProsjektDetalj = () => {
     const ksComplete = ks && ks.completed >= TOTAL_KS_SECTIONS;
     const ksStarted = ks && ks.total > 0;
     return (
-      <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-        <div className="flex items-center gap-2 flex-wrap">
-          <Icon className={`h-4 w-4 ${iconColor}`} />
-          <span className="text-sm font-medium">{concept.name}</span>
-          <span className={`text-xs px-2 py-0.5 rounded ${concept.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
+      <div className="flex items-center justify-between gap-2 p-2 sm:p-3 bg-muted/50 rounded-lg">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap min-w-0 flex-1">
+          <Icon className={`h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0 ${iconColor}`} />
+          <span className="text-xs sm:text-sm font-medium truncate">{concept.name}</span>
+          <span className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded whitespace-nowrap ${concept.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
             {concept.status === 'draft' ? 'Utkast' : 'Ferdig'}
           </span>
           {concept.contentType && !["brannkonsept", "tilstandsvurdering"].includes(concept.contentType) && (
-            <span className="text-xs px-2 py-0.5 rounded bg-orange-100 text-orange-800 capitalize">{concept.contentType}</span>
+            <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded bg-orange-100 text-orange-800 capitalize whitespace-nowrap">{concept.contentType}</span>
           )}
           {ksComplete ? (
-            <Badge variant="default" className="gap-1 bg-green-600 hover:bg-green-700 text-white"><CheckCircle2 className="h-3 w-3" />KS fullført</Badge>
+            <Badge variant="default" className="gap-1 bg-green-600 hover:bg-green-700 text-white text-[10px] sm:text-xs"><CheckCircle2 className="h-3 w-3" />KS</Badge>
           ) : ksStarted ? (
-            <Badge variant="outline" className="gap-1 text-amber-600 border-amber-300"><Clock className="h-3 w-3" />KS {ks.completed}/{TOTAL_KS_SECTIONS}</Badge>
+            <Badge variant="outline" className="gap-1 text-amber-600 border-amber-300 text-[10px] sm:text-xs"><Clock className="h-3 w-3" />{ks.completed}/{TOTAL_KS_SECTIONS}</Badge>
           ) : null}
         </div>
-        <div className="flex items-center gap-1">
-          <Link to={linkTo}><Button variant="ghost" size="sm">Åpne</Button></Link>
+        <div className="flex items-center gap-0.5 flex-shrink-0">
+          <Link to={linkTo}><Button variant="ghost" size="sm" className="h-7 px-2 text-xs sm:h-8 sm:px-3 sm:text-sm">Åpne</Button></Link>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive"><Trash2 className="h-4 w-4" /></Button>
+              <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" /></Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="mx-4 max-w-[calc(100vw-2rem)]">
               <AlertDialogHeader>
                 <AlertDialogTitle>Slette "{concept.name}"?</AlertDialogTitle>
                 <AlertDialogDescription>Denne handlingen kan ikke angres.</AlertDialogDescription>
@@ -234,37 +234,37 @@ const ProsjektDetalj = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <section className="container mx-auto px-4 py-12">
+      <section className="container mx-auto px-3 sm:px-4 py-4 sm:py-12">
         <div className="max-w-4xl mx-auto">
-          <Button variant="ghost" className="mb-4" onClick={() => navigate('/mine-prosjekter')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Tilbake til prosjekter
+          <Button variant="ghost" size="sm" className="mb-3 sm:mb-4" onClick={() => navigate('/mine-prosjekter')}>
+            <ArrowLeft className="h-4 w-4 mr-1.5" />
+            Tilbake
           </Button>
 
           {/* Project header with image */}
-          <Card className="shadow-soft mb-6">
+          <Card className="shadow-soft mb-4 sm:mb-6">
             <div className="relative">
               <img
                 src={project.image_url || getDefaultBuildingImage(primaryBygningstype)}
                 alt={project.name}
-                className="w-full h-48 object-cover rounded-t-lg"
+                className="w-full h-32 sm:h-48 object-cover rounded-t-lg"
               />
-              <label className="absolute bottom-3 right-3 cursor-pointer">
+              <label className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3 cursor-pointer">
                 <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={isUploading} />
-                <Button size="sm" variant="secondary" className="pointer-events-none" asChild={false}>
-                  <span className="flex items-center gap-2">
-                    <ImagePlus className="h-4 w-4" />
+                <Button size="sm" variant="secondary" className="pointer-events-none text-xs sm:text-sm" asChild={false}>
+                  <span className="flex items-center gap-1.5">
+                    <ImagePlus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     {isUploading ? "Laster opp..." : "Endre bilde"}
                   </span>
                 </Button>
               </label>
             </div>
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div>
-                  <CardTitle className="text-2xl">{project.name}</CardTitle>
-                  {project.address && <p className="text-muted-foreground mt-1">{project.address}</p>}
-                  {project.description && <p className="text-sm text-muted-foreground mt-1">{project.description}</p>}
+            <CardHeader className="p-3 sm:p-6">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0 flex-1">
+                  <CardTitle className="text-lg sm:text-2xl truncate">{project.name}</CardTitle>
+                  {project.address && <p className="text-sm sm:text-base text-muted-foreground mt-0.5 sm:mt-1 truncate">{project.address}</p>}
+                  {project.description && <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 sm:mt-1 line-clamp-2">{project.description}</p>}
                 </div>
                 <ShareProjectDialog projectId={project.id} projectName={project.name} />
               </div>
@@ -272,20 +272,20 @@ const ProsjektDetalj = () => {
           </Card>
 
           {/* Brannkonsepter */}
-          <Card className="shadow-soft mb-4">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-primary" />
-                  <CardTitle className="text-lg">Brannkonsepter ({brannkonsepter.length})</CardTitle>
+          <Card className="shadow-soft mb-3 sm:mb-4">
+            <CardHeader className="p-3 sm:p-6">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                  <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+                  <CardTitle className="text-sm sm:text-lg truncate">Brannkonsepter ({brannkonsepter.length})</CardTitle>
                 </div>
                 <Link to={`/konsept?project=${project.id}`}>
-                  <Button size="sm"><Plus className="h-4 w-4 mr-2" />Nytt brannkonsept</Button>
+                  <Button size="sm" className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 whitespace-nowrap"><Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />Nytt</Button>
                 </Link>
               </div>
             </CardHeader>
             {brannkonsepter.length > 0 && (
-              <CardContent className="space-y-2">
+              <CardContent className="space-y-2 px-3 sm:px-6 pb-3 sm:pb-6 pt-0">
                 {brannkonsepter.map(c => (
                   <ConceptRow key={c.id} concept={c} icon={FileText} iconColor="text-primary" linkTo={`/konsept?project=${project.id}&concept=${c.id}`} />
                 ))}
@@ -294,20 +294,20 @@ const ProsjektDetalj = () => {
           </Card>
 
           {/* Tilstandsvurderinger */}
-          <Card className="shadow-soft mb-4">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <ClipboardCheck className="h-5 w-5 text-amber-600" />
-                  <CardTitle className="text-lg">Tilstandsvurderinger ({tilstandsvurderinger.length})</CardTitle>
+          <Card className="shadow-soft mb-3 sm:mb-4">
+            <CardHeader className="p-3 sm:p-6">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                  <ClipboardCheck className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600 flex-shrink-0" />
+                  <CardTitle className="text-sm sm:text-lg truncate">Tilstandsvurderinger ({tilstandsvurderinger.length})</CardTitle>
                 </div>
                 <Link to={`/konsept?project=${project.id}&type=tilstandsvurdering`}>
-                  <Button size="sm" variant="outline"><Plus className="h-4 w-4 mr-2" />Ny tilstandsvurdering</Button>
+                  <Button size="sm" variant="outline" className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 whitespace-nowrap"><Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />Ny</Button>
                 </Link>
               </div>
             </CardHeader>
             {tilstandsvurderinger.length > 0 && (
-              <CardContent className="space-y-2">
+              <CardContent className="space-y-2 px-3 sm:px-6 pb-3 sm:pb-6 pt-0">
                 {tilstandsvurderinger.map(c => (
                   <ConceptRow key={c.id} concept={c} icon={ClipboardCheck} iconColor="text-amber-600" linkTo={`/konsept?project=${project.id}&concept=${c.id}&type=tilstandsvurdering`} />
                 ))}
@@ -316,18 +316,18 @@ const ProsjektDetalj = () => {
           </Card>
 
           {/* Fraviksdokumenter */}
-          <Card className="shadow-soft mb-4">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FileWarning className="h-5 w-5 text-orange-500" />
-                  <CardTitle className="text-lg">Fraviksdokumenter ({fraviksdokumenter.length})</CardTitle>
+          <Card className="shadow-soft mb-3 sm:mb-4">
+            <CardHeader className="p-3 sm:p-6">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                  <FileWarning className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500 flex-shrink-0" />
+                  <CardTitle className="text-sm sm:text-lg truncate">Fraviksdokumenter ({fraviksdokumenter.length})</CardTitle>
                 </div>
-                <Button size="sm" variant="outline" onClick={() => setShowFravikPicker(true)}><Plus className="h-4 w-4 mr-2" />Nytt fravik</Button>
+                <Button size="sm" variant="outline" className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 whitespace-nowrap" onClick={() => setShowFravikPicker(true)}><Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />Nytt</Button>
               </div>
             </CardHeader>
             {fraviksdokumenter.length > 0 && (
-              <CardContent className="space-y-2">
+              <CardContent className="space-y-2 px-3 sm:px-6 pb-3 sm:pb-6 pt-0">
                 {fraviksdokumenter.map(c => (
                   <ConceptRow key={c.id} concept={c} icon={FileWarning} iconColor="text-orange-500" linkTo={`/fraviksdokumentasjon/${c.contentType}?project=${project.id}&concept=${c.id}`} />
                 ))}
@@ -338,16 +338,16 @@ const ProsjektDetalj = () => {
           {/* Shares */}
           {shares.length > 0 && (
             <Card className="shadow-soft">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Share2 className="h-5 w-5 text-muted-foreground" />
-                  <CardTitle className="text-lg">Delt med</CardTitle>
+              <CardHeader className="p-3 sm:p-6">
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Share2 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                  <CardTitle className="text-sm sm:text-lg">Delt med</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2">
+              <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6 pt-0">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {shares.map(share => (
-                    <span key={share.id} className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">
+                    <span key={share.id} className="inline-flex items-center gap-1 text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full bg-primary/10 text-primary">
                       {share.group_id ? <Users className="h-3 w-3" /> : <User className="h-3 w-3" />}
                       {share.group_name || share.contact_name}
                     </span>
