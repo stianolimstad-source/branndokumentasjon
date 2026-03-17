@@ -643,6 +643,9 @@ const Konsept = () => {
     regelverk: "" as "" | "TEK17" | "TEK10" | "TEK97" | "BF85",
     // BF85 bygningsbrannklasse (1-4) – erstatter risikoklasse og brannklasse
     bygningsbrannklasse: "" as "" | "1" | "2" | "3" | "4",
+    bf85Bygningstype: "" as string, // BF85-spesifikk bygningstype for auto-beregning
+    bf85Brannbelastning: "" as "" | "under50" | "50-400" | "over400", // For industri/lager
+    bf85HarBrannalarm: false, // For kontor
   });
 
   // Load existing concept if conceptId is provided
