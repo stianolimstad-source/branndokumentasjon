@@ -1,10 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { branncelleTyperListe, getBrannklasse } from "@/lib/fire-concept-constants";
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
 import { getBaereevneTekstBF85 } from "@/lib/bf85-constants";
-import { ChevronDown, ChevronRight } from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 
 interface TilstandBilde {
