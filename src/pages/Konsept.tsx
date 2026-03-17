@@ -690,6 +690,20 @@ const Konsept = () => {
   // Automatisk generering av bæreevne tekst – skip i view-modus
   useEffect(() => {
     if (isViewMode) return;
+    // BF85: use bygningsbrannklasse (1-4) with Tabell 30:41
+    if (formData.regelverk === "BF85") {
+      if (!formData.bygningsbrannklasse) return;
+      const bf85Result = getBaereevneTekstBF85(formData.bygningsbrannklasse);
+      if (bf85Result.tekst) {
+        setFormData(prev => ({
+          ...prev,
+          baereevne: bf85Result.tekst,
+          baereevneUnntak: [],
+        }));
+      }
+      return;
+    }
+    // TEK17 and others
     const result = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer);
     if (result.tekst) {
       setFormData(prev => ({ 
@@ -698,7 +712,7 @@ const Konsept = () => {
         baereevneUnntak: result.anvendteUnntak
       }));
     }
-  }, [formData.brannklasse, formData.risikoklasse, formData.etasjer]);
+  }, [formData.brannklasse, formData.risikoklasse, formData.etasjer, formData.regelverk, formData.bygningsbrannklasse]);
 
 
   // Beregn automatisk tiltaksklasse for visning
