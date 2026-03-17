@@ -288,7 +288,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <PageFooter pageNum={2 + extraPages} />
       </div>
 
-      <ChapterSection title="1. Innledning">
       {/* Kapittel 1 - egen side */}
       <div className={pageStyle} style={pageWidth}>
       {/* 1. Innledning */}
