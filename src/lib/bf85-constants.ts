@@ -1,8 +1,8 @@
 /**
  * BF85 – Byggeforskrift 1985 (Del 3 Brannvern)
  * 
- * Sections for tilstandsvurdering mapped from Kap. 30–39.
- * Used when regelverk === "BF85" in tilstandsvurderinger.
+ * Requirements mapped to the TEK17 §11-x chapter structure for consistent layout.
+ * Each entry provides the BF85-equivalent requirement for the corresponding TEK17 section.
  */
 
 export interface BF85Section {
@@ -13,104 +13,143 @@ export interface BF85Section {
 }
 
 /**
- * BF85 tilstandsvurdering sections for Chapter 2.
- * These replace the TEK17 § 11-x sections when BF85 is selected.
+ * BF85 requirements mapped to the TEK17 tilstandsvurdering chapter structure.
+ * key = same as TEK17 tilstand section keys (3_1 .. 3_14)
  */
-export const bf85Sections: BF85Section[] = [
+export interface BF85MappedSection {
+  tek17Key: string;        // e.g. "3_1"
+  tek17Label: string;      // TEK17 section label for display
+  bf85Ref: string;         // BF85 reference(s)
+  bf85Title: string;       // BF85 equivalent title
+  bf85Description: string; // BF85 requirement description
+}
+
+export const bf85MappedSections: BF85MappedSection[] = [
   {
-    id: "bf85_brannklasse",
-    ref: "Kap. 30:23 / 30:41",
-    title: "Bygningsbrannklasse og brannmotstand",
-    description: "Bygningsbrannklasse (1–4) iht. kap. 31–39. Bærende og skillende konstruksjoners brannmotstand iht. Tabell 30:41.",
+    tek17Key: "3_1",
+    tek17Label: "3.1 Bæreevne og stabilitet",
+    bf85Ref: "Kap. 30:23 / 30:41",
+    bf85Title: "Bygningsbrannklasse og brannmotstand",
+    bf85Description: "Bygningsbrannklasse (1–4) iht. kap. 31–39. Bærende og skillende konstruksjoners brannmotstand iht. Tabell 30:41.",
   },
   {
-    id: "bf85_avstand",
-    ref: "Kap. 30:32",
-    title: "Avstand mellom bygninger",
-    description: "Minste avstand mellom bygninger, brannvegg, krav til grupper av bygninger og strålevarme.",
+    tek17Key: "3_2",
+    tek17Label: "3.2 Sikkerhet ved eksplosjon",
+    bf85Ref: "Kap. 30:33 / Kap. 49",
+    bf85Title: "Tekniske rom, fyrrom og ildsted",
+    bf85Description: "Heismaskinrom, ventilasjonsrom, søppelrom og fyrrom – branncelle A 60 (Kap. 30:33). Krav til røykpiper, ildsteder, varmeanlegg og fyringsanlegg (Kap. 49).",
   },
   {
-    id: "bf85_brannseksjoner",
-    ref: "Kap. 30:6",
-    title: "Brannteknisk oppdeling (brannvegg/branndekke)",
-    description: "Oppdeling med brannvegg og branndekke, utførelse, gjennomføringer (30:61–62).",
+    tek17Key: "3_3",
+    tek17Label: "3.3 Brannspredning mellom byggverk",
+    bf85Ref: "Kap. 30:32",
+    bf85Title: "Avstand mellom bygninger",
+    bf85Description: "Minste avstand mellom bygninger, brannvegg, krav til grupper av bygninger og strålevarme (Kap. 30:32).",
   },
   {
-    id: "bf85_brannceller",
-    ref: "Kap. 30:63",
-    title: "Branncelleinndeling",
-    description: "Inndeling i brannceller, dører i branncellebegrensende vegger, loft/kjeller (30:63–64). Krav avhengig av bruk (kap. 31–39).",
+    tek17Key: "3_4",
+    tek17Label: "3.4 Brannseksjoner",
+    bf85Ref: "Kap. 30:6",
+    bf85Title: "Brannteknisk oppdeling (brannvegg/branndekke)",
+    bf85Description: "Oppdeling med brannvegg og branndekke, utførelse, gjennomføringer (30:61–62).",
   },
   {
-    id: "bf85_kledninger",
-    ref: "Kap. 30:42",
-    title: "Kledninger og overflater",
-    description: "Innvendige og utvendige overflater og kledninger iht. Tabell 30:42. Særkrav for rømningsvei.",
+    tek17Key: "3_5",
+    tek17Label: "3.5 Brannceller",
+    bf85Ref: "Kap. 30:63–64",
+    bf85Title: "Branncelleinndeling",
+    bf85Description: "Inndeling i brannceller, dører i branncellebegrensende vegger, loft/kjeller (30:63–64). Krav avhengig av bruk (kap. 31–39).",
   },
   {
-    id: "bf85_vegger_tak",
-    ref: "Kap. 30:51–53",
-    title: "Vegger, tak og nedforet himling",
-    description: "Ytterveggers brannmotstand (Tabell 30:512), B-konstruksjoner (30:513), fasademateriale, brennbar isolasjon, taktekning og nedforet himling.",
+    tek17Key: "3_6",
+    tek17Label: "3.6 Materialer og produkter",
+    bf85Ref: "Kap. 30:42 / 30:51–53",
+    bf85Title: "Kledninger, overflater, vegger og tak",
+    bf85Description: "Innvendige og utvendige overflater og kledninger iht. Tabell 30:42. Ytterveggers brannmotstand (Tabell 30:512), B-konstruksjoner (30:513), fasademateriale, brennbar isolasjon, taktekning og nedforet himling.",
   },
   {
-    id: "bf85_tekniske_rom",
-    ref: "Kap. 30:33",
-    title: "Tekniske rom",
-    description: "Heismaskinrom, ventilasjonsrom, søppelrom og fyrrom – branncelle A 60.",
+    tek17Key: "3_7",
+    tek17Label: "3.7 Tekniske installasjoner",
+    bf85Ref: "Kap. 47",
+    bf85Title: "Ventilasjon og installasjoner",
+    bf85Description: "Branntekniske krav til ventilasjonsanlegg, kanaler og gjennomføringer gjennom brannskiller (Kap. 47).",
   },
   {
-    id: "bf85_romningsvei",
-    ref: "Kap. 30:7",
-    title: "Rømningsvei",
-    description: "Generelle krav til rømningsvei (30:71–78), antall, bredde, dører (Tabell 30:75), vindu som rømningsvei, markering, brannventilasjon og ledelys.",
+    tek17Key: "3_8",
+    tek17Label: "3.8 Rømning og redning",
+    bf85Ref: "Kap. 30:7",
+    bf85Title: "Rømningsvei – generelle krav",
+    bf85Description: "Generelle krav til rømningsvei (30:71–78), antall, bredde, dører (Tabell 30:75), vindu som rømningsvei, markering, brannventilasjon og ledelys.",
   },
   {
-    id: "bf85_trapperom",
-    ref: "Kap. 30:7 / 30:41",
-    title: "Trapperom og heissjakt",
-    description: "Krav til åpne, lukkede, branntrygge og røykfrie trapperom. Bygningsdeler som omgir trapperom og heissjakt.",
+    tek17Key: "3_9",
+    tek17Label: "3.9 Tilrettelegging for rømning",
+    bf85Ref: "Kap. 31–39",
+    bf85Title: "Brannalarmanlegg og røykvarsler",
+    bf85Description: "Krav til brannalarmanlegg og røykvarsler avhengig av bygningens bruk og størrelse (Kap. 31–39).",
   },
   {
-    id: "bf85_brannalarm",
-    ref: "Kap. 31–39",
-    title: "Brannalarmanlegg og røykvarsler",
-    description: "Krav til brannalarmanlegg og røykvarsler avhengig av bygningens bruk og størrelse.",
+    tek17Key: "3_10",
+    tek17Label: "3.10 Utgang fra branncelle",
+    bf85Ref: "Kap. 30:71–73",
+    bf85Title: "Utganger og rømningsveier fra branncelle",
+    bf85Description: "Krav til antall utganger, dørbredder og plassering av utganger fra brannceller (30:71–73).",
   },
   {
-    id: "bf85_slokkingsredskap",
-    ref: "Kap. 30:93 / 31–39",
-    title: "Slokkingsredskap og slokkingsvann",
-    description: "Brannslanger, håndslokkingsapparater, stigeledning (30:91) og sprinkleranlegg der krevet.",
+    tek17Key: "3_11",
+    tek17Label: "3.11 Rømningsvei",
+    bf85Ref: "Kap. 30:7 / 30:41",
+    bf85Title: "Trapperom og heissjakt",
+    bf85Description: "Krav til åpne, lukkede, branntrygge og røykfrie trapperom. Bygningsdeler som omgir trapperom og heissjakt.",
   },
   {
-    id: "bf85_atkomst",
-    ref: "Kap. 30:92/94/95",
-    title: "Atkomst for brannvesenet",
-    description: "Kjøreatkomst for brannvesenet (30:92), atkomst til loft og yttertak (30:94), atkomst til kjeller (30:95).",
+    tek17Key: "3_12",
+    tek17Label: "3.12 Redning av husdyr",
+    bf85Ref: "Kap. 39",
+    bf85Title: "Driftsbygning for jordbruket",
+    bf85Description: "Krav til driftsbygninger med husdyrrom (Kap. 39). Brannventilasjon, rømning for husdyr.",
   },
   {
-    id: "bf85_ventilasjon",
-    ref: "Kap. 47",
-    title: "Ventilasjon og installasjoner",
-    description: "Branntekniske krav til ventilasjonsanlegg, kanaler og gjennomføringer gjennom brannskiller (Kap. 47).",
+    tek17Key: "3_13",
+    tek17Label: "3.13 Manuell slokking",
+    bf85Ref: "Kap. 30:93 / 31–39",
+    bf85Title: "Slokkingsredskap og slokkingsvann",
+    bf85Description: "Brannslanger, håndslokkingsapparater, stigeledning (30:91) og sprinkleranlegg der krevet.",
   },
   {
-    id: "bf85_roykpipe",
-    ref: "Kap. 49",
-    title: "Røykpipe, varmeanlegg og ildsted",
-    description: "Krav til røykpiper, ildsteder, varmeanlegg og fyringsanlegg (Kap. 49).",
+    tek17Key: "3_14",
+    tek17Label: "3.14 Slokkemannskap",
+    bf85Ref: "Kap. 30:92/94/95",
+    bf85Title: "Atkomst for brannvesenet",
+    bf85Description: "Kjøreatkomst for brannvesenet (30:92), atkomst til loft og yttertak (30:94), atkomst til kjeller (30:95).",
   },
 ];
 
 /**
- * Get BF85 TOC entries for the preview
+ * Get BF85 requirement description for a given TEK17 section key.
+ */
+export const getBF85Requirement = (tek17Key: string): BF85MappedSection | undefined =>
+  bf85MappedSections.find((s) => s.tek17Key === tek17Key);
+
+/**
+ * Get BF85 TOC entries mapped to TEK17 structure
  */
 export const getBF85TocEntries = (): { num: string; title: string }[] =>
-  bf85Sections.map((s, i) => ({
-    num: `2.${i + 1}`,
-    title: `${s.ref} – ${s.title}`,
+  bf85MappedSections.map((s) => ({
+    num: s.tek17Key.replace("3_", "2."),
+    title: `${s.bf85Ref} – ${s.bf85Title}`,
   }));
+
+/**
+ * Legacy BF85 sections (kept for backward compatibility).
+ * @deprecated Use bf85MappedSections instead.
+ */
+export const bf85Sections: BF85Section[] = bf85MappedSections.map((s, i) => ({
+  id: `bf85_${s.tek17Key}`,
+  ref: s.bf85Ref,
+  title: s.bf85Title,
+  description: s.bf85Description,
+}));
 
 /**
  * BF85 bygningstyper mapped to their kapittel for bygningsbrannklasse lookup.
