@@ -544,7 +544,18 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
             </tbody>
           </table>
-          {formData.harFlereRisikoklasser && bygningsdeler.length > 0 ? (
+          {isBF85 ? (
+            <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+              <tbody>
+                <tr>
+                  <td className="border border-gray-400 p-2 font-semibold w-1/3">Bygningsbrannklasse (BF85)</td>
+                  <td className="border border-gray-400 p-2">
+                    {formData.bygningsbrannklasse ? `Bygningsbrannklasse ${formData.bygningsbrannklasse}` : "[Angis]"}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          ) : formData.harFlereRisikoklasser && bygningsdeler.length > 0 ? (
             <>
               <p className="ml-4 mb-2 text-xs italic">Bygget inneholder flere bygningsdeler med ulike risikoklasser:</p>
               <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
