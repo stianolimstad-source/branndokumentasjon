@@ -323,9 +323,7 @@ const ProsjektDetalj = () => {
                   <FileWarning className="h-5 w-5 text-orange-500" />
                   <CardTitle className="text-lg">Fraviksdokumenter ({fraviksdokumenter.length})</CardTitle>
                 </div>
-                <Link to={`/fraviksdokumentasjon?project=${project.id}`}>
-                  <Button size="sm" variant="outline"><Plus className="h-4 w-4 mr-2" />Nytt fravik</Button>
-                </Link>
+                <Button size="sm" variant="outline" onClick={() => setShowFravikPicker(true)}><Plus className="h-4 w-4 mr-2" />Nytt fravik</Button>
               </div>
             </CardHeader>
             {fraviksdokumenter.length > 0 && (
