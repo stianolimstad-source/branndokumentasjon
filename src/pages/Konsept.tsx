@@ -2446,7 +2446,7 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">{documentType === "tilstandsvurdering" ? "1.5" : "2.3"} Branntekniske forutsetninger</Label>
+                      <Label className="text-xs text-muted-foreground">2.3 Branntekniske forutsetninger</Label>
                       <div className="space-y-3">
                         {/* BF85: Bygningsbrannklasse i stedet for risikoklasse + brannklasse */}
                         {documentType === "tilstandsvurdering" && formData.regelverk === "BF85" ? (
