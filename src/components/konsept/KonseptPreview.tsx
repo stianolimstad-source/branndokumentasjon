@@ -2,7 +2,7 @@ import React from "react";
 import { branncelleTyperListe, getBrannklasse } from "@/lib/fire-concept-constants";
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
-import { bf85MappedSections, getBF85Requirement } from "@/lib/bf85-constants";
+
 
 interface TilstandBilde {
   url: string;
@@ -224,23 +224,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         <h2 className="font-bold mb-3">Innholdsfortegnelse</h2>
         <div className="space-y-1 text-xs">
           {isTilstand ? (
-            isBF85 ? (
-            <>
-              <p><span className="font-bold">1.</span> Innledning</p>
-              <p className="ml-4">1.1 Informasjon om tiltaket</p>
-              <p className="ml-4">1.2 Avgrensning av vurderingen</p>
-              <p className="ml-4">1.3 Bygningsinformasjon</p>
-              <p className="ml-4">1.4 Grunnlagsdokumenter</p>
-              <p className="ml-4">1.5 Branntekniske forutsetninger</p>
-              <p className="ml-4">1.6 Tilleggskrav</p>
-              <p><span className="font-bold">2.</span> Brannteknisk tilstandsvurdering (BF85)</p>
-              {bf85MappedSections.map((s) => (
-                <p key={s.tek17Key} className="ml-4">{s.tek17Key.replace("3_", "2.")} {s.bf85Ref} – {s.bf85Title}</p>
-              ))}
-              <p><span className="font-bold">3.</span> Revisjonshistorikk</p>
-              <p><span className="font-bold">4.</span> Litteraturhenvisninger</p>
-            </>
-            ) : (
             <>
               <p><span className="font-bold">1.</span> Innledning</p>
               <p className="ml-4">1.1 Informasjon om tiltaket</p>
@@ -250,23 +233,22 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p className="ml-4">1.5 Branntekniske forutsetninger</p>
               <p className="ml-4">1.6 Tilleggskrav</p>
               <p><span className="font-bold">2.</span> Brannteknisk tilstandsvurdering</p>
-              <p className="ml-4">2.1 § 11-4 Bæreevne og stabilitet</p>
-              <p className="ml-4">2.2 § 11-5 Sikkerhet ved eksplosjon</p>
-              <p className="ml-4">2.3 § 11-6 Tiltak mot brannspredning mellom byggverk</p>
-              <p className="ml-4">2.4 § 11-7 Brannseksjoner</p>
-              <p className="ml-4">2.5 § 11-8 Brannceller</p>
-              <p className="ml-4">2.6 § 11-9 Materialer og produkters egenskaper ved brann</p>
-              <p className="ml-4">2.7 § 11-10 Tekniske installasjoner</p>
-              <p className="ml-4">2.8 § 11-11 Generelle krav om rømning og redning</p>
-              <p className="ml-4">2.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider</p>
-              <p className="ml-4">2.10 § 11-13 Utgang fra branncelle</p>
-              <p className="ml-4">2.11 § 11-14 Rømningsvei</p>
-              <p className="ml-4">2.12 § 11-16 Tilrettelegging for manuell slokking</p>
-              <p className="ml-4">2.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap</p>
+              <p className="ml-4">2.1 Bæreevne og stabilitet</p>
+              <p className="ml-4">2.2 Sikkerhet ved eksplosjon</p>
+              <p className="ml-4">2.3 Tiltak mot brannspredning mellom byggverk</p>
+              <p className="ml-4">2.4 Brannseksjoner</p>
+              <p className="ml-4">2.5 Brannceller</p>
+              <p className="ml-4">2.6 Materialer og produkters egenskaper ved brann</p>
+              <p className="ml-4">2.7 Tekniske installasjoner</p>
+              <p className="ml-4">2.8 Generelle krav om rømning og redning</p>
+              <p className="ml-4">2.9 Tiltak for å påvirke rømnings- og redningstider</p>
+              <p className="ml-4">2.10 Utgang fra branncelle</p>
+              <p className="ml-4">2.11 Rømningsvei</p>
+              <p className="ml-4">2.12 Tilrettelegging for manuell slokking</p>
+              <p className="ml-4">2.13 Tilrettelegging for rednings- og slokkemannskap</p>
               <p><span className="font-bold">3.</span> Revisjonshistorikk</p>
               <p><span className="font-bold">4.</span> Litteraturhenvisninger</p>
             </>
-            )
           ) : (
             <>
               <p><span className="font-bold">1.</span> Innledning</p>
@@ -638,37 +620,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <div className={pageStyle} style={pageWidth}>
       {/* Branntekniske ytelseskrav */}
       <section className="mb-6">
-        <h2 className="font-bold mb-3">{isTilstand ? "2" : "3"}. {isTilstand ? (isBF85 ? "Brannteknisk tilstandsvurdering (BF85)" : "Brannteknisk tilstandsvurdering") : "Beskrivelse av branntekniske ytelseskrav"}</h2>
+        <h2 className="font-bold mb-3">{isTilstand ? "2" : "3"}. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"}</h2>
         
-        {isBF85 && (
-          <table className="w-full border-collapse border border-gray-400 text-xs">
-            <tbody>
-              {bf85MappedSections.map((section) => (
-                <React.Fragment key={section.tek17Key}>
-                  <tr className="bg-blue-100">
-                    <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
-                      {section.tek17Key.replace("3_", "2.")} &nbsp;&nbsp; {section.bf85Ref} – {section.bf85Title}
-                    </td>
-                  </tr>
-                  <tr className="bg-gray-100">
-                    <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
-                    <th className="border border-gray-400 p-2 text-left">Krav / Beskrivelse</th>
-                    <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Vurdering</th>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">Krav iht. BF85</td>
-                    <td className="border border-gray-400 p-2">{section.bf85Description}</td>
-                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
-                  </tr>
-                  {formData.tilstandsvurderinger?.[section.tek17Key] && (
-                    <TilstandTableRow data={formData.tilstandsvurderinger[section.tek17Key]} sectionLabel={`${section.tek17Key.replace("3_", "2.")} ${section.bf85Title}`} />
-                  )}
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
-        )}
-        {!isBF85 && (
         <table className="w-full border-collapse border border-gray-400 text-xs">
           <tbody>
             {/* 3.1 § 11-4 Bæreevne og stabilitet */}
@@ -1147,11 +1100,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
           </tbody>
         </table>
-        )}
       </section>
       <PageFooter pageNum={5 + extraPages} />
       </div>
-      {!isBF85 && (<>
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
         <h2 className="font-bold mb-3">{sp}. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} (forts.)</h2>
@@ -2210,7 +2161,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </section>
       <PageFooter pageNum={7 + extraPages} />
       </div>
-      </>)}
+      
 
 
 
@@ -2254,12 +2205,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       {documentType === "tilstandsvurdering" && (
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
-        <h2 className="font-bold mb-3">{isBF85 ? "3" : "4"}. Revisjonshistorikk</h2>
+        <h2 className="font-bold mb-3">3. Revisjonshistorikk</h2>
         <p className="ml-4">{formData.revisjon || "[Revisjonslogg]"}</p>
       </section>
 
       <section className="mb-6">
-        <h2 className="font-bold mb-3">{isBF85 ? "4" : "5"}. Litteraturhenvisninger</h2>
+        <h2 className="font-bold mb-3">4. Litteraturhenvisninger</h2>
         <ul className="ml-4 list-disc list-inside">
           {isBF85 ? (
             <>
