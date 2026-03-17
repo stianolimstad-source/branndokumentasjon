@@ -12,7 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import defaultBuilding from "@/assets/default-building.jpg";
+import { getDefaultBuildingImage } from "@/lib/building-images";
 
 interface Project {
   id: string;
