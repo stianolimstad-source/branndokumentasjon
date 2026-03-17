@@ -2551,6 +2551,47 @@ const Konsept = () => {
                               </div>
                             ) : null}
 
+                            {/* BF85 Skole: Tabell 32:12 for å hjelpe med valg av bygningsbrannklasse */}
+                            {formData.bygningstype === "Skole" && (() => {
+                              const etasjer = parseInt(formData.etasjer, 10) || 0;
+                              const klasse = formData.bygningsbrannklasse;
+                              return etasjer > 0 ? (
+                                <div className="p-3 bg-muted/50 border border-border rounded-md">
+                                  <p className="text-xs font-semibold mb-2">Tabell 32:12 – Skolebygning, maks bruttoareal pr etasje uten oppdeling med brannvegg</p>
+                                  <table className="w-full text-xs border-collapse">
+                                    <thead>
+                                      <tr className="border-b border-border">
+                                        <th className="text-left py-1 px-2 font-medium">Antall etasjer</th>
+                                        <th className="text-left py-1 px-2 font-medium">Største bruttoareal pr etasje</th>
+                                        <th className="text-left py-1 px-2 font-medium">Bygningsbrannklasse</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {bf85BrannveggTabellSkole.map((row, idx) => {
+                                        const isActive = row.bygningsbrannklasse === klasse && (() => {
+                                          if (etasjer === 1) return row.etasjerLabel === "1";
+                                          if (etasjer === 2) return row.etasjerLabel === "2";
+                                          if (etasjer >= 3 && etasjer <= 4) return row.etasjerLabel === "3 og 4";
+                                          if (etasjer > 4) return row.etasjerLabel === "over 4";
+                                          return false;
+                                        })();
+                                        return (
+                                          <tr key={idx} className={`border-b border-border/50 ${isActive ? "bg-primary/10 font-semibold" : ""}`}>
+                                            <td className="py-1 px-2">{row.etasjerLabel}</td>
+                                            <td className="py-1 px-2">{row.maksAreal} m²</td>
+                                            <td className="py-1 px-2">{row.bygningsbrannklasse}</td>
+                                          </tr>
+                                        );
+                                      })}
+                                    </tbody>
+                                  </table>
+                                  <p className="text-xs text-muted-foreground mt-2">
+                                    <span className="font-medium">Merk:</span> Sprinkler, brannalarmanlegg eller røykluker har ikke betydning for arealgrensen i BF85, men kan benyttes som kompenserende tiltak.
+                                  </p>
+                                </div>
+                              ) : null;
+                            })()}
+
                             {/* Manuell overstyring */}
                             <div>
                               <Label className="text-xs font-medium mb-1 block">
