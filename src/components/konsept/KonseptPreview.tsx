@@ -1339,13 +1339,64 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <tbody>
             {/* 3.5 §11-8 Brannceller */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.5 &nbsp;&nbsp; §11-8 Brannceller</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.5 &nbsp;&nbsp; {isBF85 ? "Branncelleinndeling (Kap. 30:63–65)" : "§11-8 Brannceller"}</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
               <th className="border border-gray-400 p-2 text-left">Løsning</th>
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
+            {isBF85 ? (() => {
+              const klasse = formData.bygningsbrannklasse || "";
+              const bf85KravMap: Record<string, { branncellebegrensende: string; dorKrav: string; tekniskeRom: string }> = {
+                "1": { branncellebegrensende: "A 60", dorKrav: "A 30", tekniskeRom: "A 60" },
+                "2": { branncellebegrensende: "B 60", dorKrav: "B 30", tekniskeRom: "A 60" },
+                "3": { branncellebegrensende: "B 30", dorKrav: "B 15", tekniskeRom: "A 60" },
+                "4": { branncellebegrensende: "B 30", dorKrav: "B 15", tekniskeRom: "A 60" },
+              };
+              const krav = bf85KravMap[klasse];
+              if (!krav) return null;
+              return (
+                <>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Kap. 30:63 – Branncelleinndeling</td>
+                    <td className="border border-gray-400 p-2">
+                      <p className="text-sm">Bygning skal deles inn i brannceller. Områder med ulik bruk eller risiko skal utgjøre egne brannceller.</p>
+                      <p className="text-sm mt-1">Branncellebegrensende bygningsdel: <span className="font-semibold text-red-600">{krav.branncellebegrensende}</span></p>
+                      <p className="text-sm mt-1">Dør i branncellebegrensende vegg: <span className="font-semibold text-red-600">{krav.dorKrav}</span> (minst halvparten av veggens brannmotstand)</p>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                  {formData.bf85TekniskeRomRelevant && (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Kap. 30:33 – Tekniske rom</td>
+                      <td className="border border-gray-400 p-2">
+                        <p className="text-sm">Heismaskinrom, ventilasjonsrom, søppelrom og fyrrom skal utgjøre egne brannceller med brannmotstand <span className="font-semibold text-red-600">{krav.tekniskeRom}</span>.</p>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                    </tr>
+                  )}
+                  {formData.bf85LoftKjellerRelevant && (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Kap. 30:64 – Rom på loft og i kjeller</td>
+                      <td className="border border-gray-400 p-2">
+                        <p className="text-sm">Lofts- og kjellerrom som ikke er del av en bruksenhet, skal skilles fra øvrige deler av bygningen med branncellebegrensende bygningsdel.</p>
+                        <p className="text-sm mt-1">Uinnredet loft/kjeller og hulrom med brennbar isolasjon skal oppdeles for hver 400 m².</p>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                    </tr>
+                  )}
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Kap. 30:65 – Takflater</td>
+                    <td className="border border-gray-400 p-2">
+                      <p className="text-sm">Takflater med brennbar isolasjon skal oppdeles med brannskiller for hver 400 m².</p>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                </>
+              );
+            })() : (
+            <>
             <tr>
               <td className="border border-gray-400 p-2 align-top">Generelt</td>
               <td className="border border-gray-400 p-2">
@@ -1376,6 +1427,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
                 </tr>
               </>
+            )}
+            </>
             )}
             {formData.heismaskinromRelevant === "ja" && formData.brannklasse && (
               <tr>
