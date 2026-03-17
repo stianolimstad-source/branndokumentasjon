@@ -2799,6 +2799,8 @@ const Konsept = () => {
                             )}
                           </div>
                         )}
+                        </>
+                        )}
                       </div>
                     </div>
                     {documentType !== "tilstandsvurdering" && (
