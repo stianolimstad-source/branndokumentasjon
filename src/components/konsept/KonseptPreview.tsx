@@ -451,6 +451,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 font-semibold">Antall etasjer</td>
                 <td className="border border-gray-400 p-2">{formData.etasjer || "[Angis]"}</td>
               </tr>
+              {isBF85 ? (
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Bygningsbrannklasse</td>
+                <td className="border border-gray-400 p-2">{formData.bygningsbrannklasse ? `Bygningsbrannklasse ${formData.bygningsbrannklasse}` : "[Angis]"}</td>
+              </tr>
+              ) : (
+              <>
               <tr>
                 <td className="border border-gray-400 p-2 font-semibold">Risikoklasse</td>
                 <td className="border border-gray-400 p-2">{formData.risikoklasse || "[Angis]"}</td>
@@ -459,6 +466,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 font-semibold">Brannklasse</td>
                 <td className="border border-gray-400 p-2">{formData.brannklasse || "[Angis]"}</td>
               </tr>
+              </>
+              )}
             </tbody>
           </table>
 
