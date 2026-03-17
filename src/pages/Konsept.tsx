@@ -3557,8 +3557,29 @@ const Konsept = () => {
                         ) : null;
                       })()}
 
-                      {/* TEK17 / generell BF85 tiltak-valg (ikke for BF85 Skole) */}
-                      {!(formData.regelverk === "BF85" && formData.bygningstype === "Skole") && (
+                      {/* BF85: Knapp for å aktivere TEK17-krav ved >400 MJ/m² */}
+                      {formData.regelverk === "BF85" && (
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-3">
+                            <Checkbox
+                              id="brukTEK17Seksjonering"
+                              checked={formData.brukTEK17Seksjonering}
+                              onCheckedChange={(checked) => setFormData({...formData, brukTEK17Seksjonering: !!checked})}
+                            />
+                            <label htmlFor="brukTEK17Seksjonering" className="text-xs cursor-pointer font-medium">
+                              Brannbelastning over 400 MJ/m² – bruk TEK17-krav for seksjonering
+                            </label>
+                          </div>
+                          {formData.brukTEK17Seksjonering && (
+                            <div className="p-3 bg-muted/50 border border-border rounded-md text-xs text-muted-foreground">
+                              <p>Iht. BF85 Kap. 30:6 skal brannvegg ved brannbelastning over 400 MJ/m² ha tilstrekkelig brannmotstand til å bibeholde sine egenskaper gjennom hele brannforløpet. TEK17-kravene benyttes som dimensjoneringsgrunnlag.</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* TEK17 tiltak-valg: vises for TEK17 alltid, og for BF85 kun når TEK17-knappen er aktivert */}
+                      {(formData.regelverk !== "BF85" || formData.brukTEK17Seksjonering) && (
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Tiltak</Label>
                         <Select 
