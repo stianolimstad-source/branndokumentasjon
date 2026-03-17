@@ -358,6 +358,67 @@ const ProsjektDetalj = () => {
           )}
         </div>
       </section>
+
+      {/* Fraviksvurdering type picker */}
+      <Dialog open={showFravikPicker} onOpenChange={setShowFravikPicker}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Velg type fraviksvurdering</DialogTitle>
+            <DialogDescription>Velg metode for fraviksdokumentasjonen</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-3 py-4">
+            <Card
+              className="cursor-pointer hover:border-primary transition-colors"
+              onClick={() => {
+                setShowFravikPicker(false);
+                navigate(`/fraviksdokumentasjon/kvalitativ?project=${project.id}&new=true`);
+              }}
+            >
+              <CardHeader className="py-3 px-4">
+                <div className="flex items-center gap-3">
+                  <BarChart3 className="h-5 w-5 text-orange-500" />
+                  <div>
+                    <CardTitle className="text-sm">Kvalitativ analyse</CardTitle>
+                    <CardDescription className="text-xs">Vurdering basert på faglig skjønn og erfaring</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+            </Card>
+            <Card
+              className="cursor-pointer hover:border-primary transition-colors opacity-60"
+              onClick={() => {
+                toast({ title: "Kommer snart", description: "Komparativ analyse er under utvikling" });
+              }}
+            >
+              <CardHeader className="py-3 px-4">
+                <div className="flex items-center gap-3">
+                  <GitCompare className="h-5 w-5 text-blue-500" />
+                  <div>
+                    <CardTitle className="text-sm">Komparativ analyse</CardTitle>
+                    <CardDescription className="text-xs">Sammenligning med preaksepterte ytelser</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+            </Card>
+            <Card
+              className="cursor-pointer hover:border-primary transition-colors opacity-60"
+              onClick={() => {
+                toast({ title: "Kommer snart", description: "Analyse etter NS 3921 er under utvikling" });
+              }}
+            >
+              <CardHeader className="py-3 px-4">
+                <div className="flex items-center gap-3">
+                  <Shield className="h-5 w-5 text-green-600" />
+                  <div>
+                    <CardTitle className="text-sm">Analyse etter NS 3921</CardTitle>
+                    <CardDescription className="text-xs">Risikobasert analyse iht. norsk standard</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+            </Card>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
