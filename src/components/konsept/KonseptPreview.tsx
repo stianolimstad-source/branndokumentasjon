@@ -2,7 +2,7 @@ import React from "react";
 import { branncelleTyperListe, getBrannklasse } from "@/lib/fire-concept-constants";
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
-import { getBF85Requirement } from "@/lib/bf85-constants";
+
 
 interface TilstandBilde {
   url: string;
