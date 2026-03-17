@@ -2394,9 +2394,9 @@ const Konsept = () => {
                         {/* BF85: Bygningsbrannklasse i stedet for risikoklasse + brannklasse */}
                         {documentType === "tilstandsvurdering" && formData.regelverk === "BF85" ? (
                           (() => {
-                            const bf85Result = formData.bf85Bygningstype
+                            const bf85Result = formData.bygningstype
                               ? getBygningsbrannklasse(
-                                  formData.bf85Bygningstype as BF85Bygningstype,
+                                  formData.bygningstype as BF85Bygningstype,
                                   parseInt(formData.etasjer, 10) || 0,
                                   parseFloat(formData.areal) || 0,
                                   {
@@ -2412,46 +2412,16 @@ const Konsept = () => {
                                 BF85 bruker bygningsbrannklasse (1–4) i stedet for risikoklasse og brannklasse. Bygningsbrannklassen beregnes automatisk basert på bygningstype, etasjer og areal iht. Kap. 31–39.
                               </p>
                             </div>
-                            <div>
-                              <Label className="text-xs font-medium mb-1 block">Bygningstype (BF85)</Label>
-                              <Select 
-                                value={formData.bf85Bygningstype}
-                                onValueChange={(value) => {
-                                  const result = getBygningsbrannklasse(
-                                    value as BF85Bygningstype,
-                                    parseInt(formData.etasjer, 10) || 0,
-                                    parseFloat(formData.areal) || 0,
-                                    { brannbelastning: formData.bf85Brannbelastning || undefined, harBrannalarm: formData.bf85HarBrannalarm }
-                                  );
-                                  setFormData({
-                                    ...formData,
-                                    bf85Bygningstype: value,
-                                    bygningsbrannklasse: (result?.klasse || "") as "" | "1" | "2" | "3" | "4",
-                                  });
-                                }}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Velg bygningstype..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {bf85BygningstyperListe.map((bt) => (
-                                    <SelectItem key={bt.value} value={bt.value}>
-                                      {bt.label} ({bt.kap})
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
 
                             {/* Ekstra felt for industri/lager: brannbelastning */}
-                            {(formData.bf85Bygningstype === "Industri" || formData.bf85Bygningstype === "Lager") && (
+                            {(formData.bygningstype === "Industri" || formData.bygningstype === "Lager") && (
                               <div>
                                 <Label className="text-xs font-medium mb-1 block">Spesifikk brannbelastning (MJ/m²)</Label>
                                 <Select
                                   value={formData.bf85Brannbelastning}
                                   onValueChange={(value) => {
                                     const result = getBygningsbrannklasse(
-                                      formData.bf85Bygningstype as BF85Bygningstype,
+                                      formData.bygningstype as BF85Bygningstype,
                                       parseInt(formData.etasjer, 10) || 0,
                                       parseFloat(formData.areal) || 0,
                                       { brannbelastning: value as any, harBrannalarm: formData.bf85HarBrannalarm }
@@ -2474,7 +2444,7 @@ const Konsept = () => {
                             )}
 
                             {/* Ekstra felt for kontor: brannalarmanlegg */}
-                            {formData.bf85Bygningstype === "Kontor" && (
+                            {formData.bygningstype === "Kontor" && (
                               <div className="flex items-center gap-2 p-3 bg-muted/30 border rounded-md">
                                 <input
                                   type="checkbox"
@@ -2516,7 +2486,7 @@ const Konsept = () => {
                                   </p>
                                 )}
                               </div>
-                            ) : formData.bf85Bygningstype ? (
+                            ) : formData.bygningstype ? (
                               <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700 rounded-md">
                                 <p className="text-xs text-amber-700 dark:text-amber-400">
                                   Fyll inn etasjer og areal for å beregne bygningsbrannklasse automatisk.
