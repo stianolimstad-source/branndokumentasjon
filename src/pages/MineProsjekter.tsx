@@ -83,6 +83,24 @@ const MineProsjekter = () => {
       toast({ title: "Feil", description: "Kunne ikke hente prosjekter", variant: "destructive" });
     } else {
       setProjects((data || []) as Project[]);
+
+      // Fetch building types from concepts for default images
+      const projectIds = (data || []).map((p: any) => p.id);
+      if (projectIds.length > 0) {
+        const { data: concepts } = await supabase
+          .from('fire_concepts')
+          .select('project_id, content')
+          .in('project_id', projectIds);
+        if (concepts) {
+          const typeMap: Record<string, string> = {};
+          concepts.forEach((c: any) => {
+            if (!typeMap[c.project_id] && c.content?.bygningstype) {
+              typeMap[c.project_id] = c.content.bygningstype;
+            }
+          });
+          setBygningstyper(typeMap);
+        }
+      }
     }
     setIsLoading(false);
   };
