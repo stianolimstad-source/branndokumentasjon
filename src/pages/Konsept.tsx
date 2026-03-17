@@ -2354,7 +2354,7 @@ const Konsept = () => {
                               <Label className="text-xs font-medium mb-1 block">Bygningsbrannklasse (BF85)</Label>
                               <Select 
                                 value={formData.bygningsbrannklasse}
-                                onValueChange={(value) => setFormData({...formData, bygningsbrannklasse: value})}
+                                onValueChange={(value) => setFormData({...formData, bygningsbrannklasse: value as "" | "1" | "2" | "3" | "4"})}
                               >
                                 <SelectTrigger>
                                   <SelectValue placeholder="Velg bygningsbrannklasse..." />
