@@ -3341,7 +3341,8 @@ const Konsept = () => {
                                 const hEgen = parseFloat(formData.gesimshoydeEgen) || 0;
                                 const hNabo = parseFloat(formData.gesimshoydeNabo) || 0;
                                 const faktisk = parseFloat(formData.avstandNabobygg) || 0;
-                                const beregnet = (hEgen + hNabo) / 2;
+                                const gjennomsnitt = (hEgen + hNabo) / 2;
+                                const beregnet = gjennomsnitt / 2;
                                 const minsteAvstand = Math.max(beregnet, 8);
                                 if (hEgen > 0 && hNabo > 0) {
                                   const oppfylt = faktisk >= minsteAvstand;
