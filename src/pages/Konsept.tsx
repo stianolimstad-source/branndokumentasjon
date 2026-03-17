@@ -675,9 +675,9 @@ const Konsept = () => {
   // Automatisk beregning av BF85 bygningsbrannklasse
   useEffect(() => {
     if (isViewMode) return;
-    if (formData.regelverk !== "BF85" || !formData.bf85Bygningstype) return;
+    if (formData.regelverk !== "BF85" || !formData.bygningstype) return;
     const result = getBygningsbrannklasse(
-      formData.bf85Bygningstype as BF85Bygningstype,
+      formData.bygningstype as BF85Bygningstype,
       parseInt(formData.etasjer, 10) || 0,
       parseFloat(formData.areal) || 0,
       { brannbelastning: formData.bf85Brannbelastning || undefined, harBrannalarm: formData.bf85HarBrannalarm }
@@ -685,7 +685,7 @@ const Konsept = () => {
     if (result) {
       setFormData(prev => ({ ...prev, bygningsbrannklasse: result.klasse as "" | "1" | "2" | "3" | "4" }));
     }
-  }, [formData.etasjer, formData.areal, formData.bf85Bygningstype, formData.bf85Brannbelastning, formData.bf85HarBrannalarm, formData.regelverk]);
+  }, [formData.etasjer, formData.areal, formData.bygningstype, formData.bf85Brannbelastning, formData.bf85HarBrannalarm, formData.regelverk]);
 
   // Automatisk generering av bæreevne tekst – skip i view-modus
   useEffect(() => {
@@ -2175,76 +2175,106 @@ const Konsept = () => {
                       <div className="space-y-3">
                         <div>
                           <Label className="text-xs font-medium mb-1 block">Bygningstype</Label>
-                          <Select 
-                            value={formData.bygningstype}
-                            onValueChange={(value) => {
-                              const risikoklasse = bygningsTypeRisikoklasseMap[value] || "";
-                              setFormData({...formData, bygningstype: value, risikoklasse: risikoklasse});
-                            }}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Velg bygningstype" />
-                            </SelectTrigger>
-                            <SelectContent className="max-h-[300px]">
-                              {/* Risikoklasse 1 */}
-                              <SelectItem value="Arbeidsbrakke">Arbeidsbrakke</SelectItem>
-                              <SelectItem value="Båtnaust">Båtnaust</SelectItem>
-                              <SelectItem value="Carport">Carport</SelectItem>
-                              <SelectItem value="Flyhangar">Flyhangar</SelectItem>
-                              <SelectItem value="Fryselager">Fryselager</SelectItem>
-                              <SelectItem value="Garasje og parkeringshus med én etasje">Garasje og parkeringshus med én etasje</SelectItem>
-                              <SelectItem value="Sagbruk">Sagbruk</SelectItem>
-                              <SelectItem value="Skur">Skur</SelectItem>
-                              <SelectItem value="Trelastopplag">Trelastopplag</SelectItem>
-                              {/* Risikoklasse 2 */}
-                              <SelectItem value="Brannstasjon uten døgnbemanning">Brannstasjon uten døgnbemanning</SelectItem>
-                              <SelectItem value="Driftsbygning med husdyrrom">Driftsbygning med husdyrrom</SelectItem>
-                              <SelectItem value="Industri">Industri</SelectItem>
-                              <SelectItem value="Kantine beregnet for egne ansatte til og med 150 personer">Kantine beregnet for egne ansatte til og med 150 personer</SelectItem>
-                              <SelectItem value="Kjemisk fabrikk og kjemikalielager">Kjemisk fabrikk og kjemikalielager</SelectItem>
-                              <SelectItem value="Kontor">Kontor</SelectItem>
-                              <SelectItem value="Laboratorium">Laboratorium</SelectItem>
-                              <SelectItem value="Lager">Lager</SelectItem>
-                              <SelectItem value="Parkeringshus og garasje med to eller flere etasjer eller plan">Parkeringshus og garasje med to eller flere etasjer</SelectItem>
-                              <SelectItem value="Parkeringskjeller og garasje under terreng">Parkeringskjeller og garasje under terreng</SelectItem>
-                              <SelectItem value="Sprengstoffindustri">Sprengstoffindustri</SelectItem>
-                              <SelectItem value="Trafo eller fordelingsstasjon">Trafo eller fordelingsstasjon</SelectItem>
-                              {/* Risikoklasse 3 */}
-                              <SelectItem value="Barnehage">Barnehage</SelectItem>
-                              <SelectItem value="Skole">Skole</SelectItem>
-                              {/* Risikoklasse 4 */}
-                              <SelectItem value="Barnehjem">Barnehjem</SelectItem>
-                              <SelectItem value="Bolig">Bolig</SelectItem>
-                              <SelectItem value="Boligbrakke">Boligbrakke</SelectItem>
-                              <SelectItem value="Brannstasjon med døgnbemanning">Brannstasjon med døgnbemanning</SelectItem>
-                              <SelectItem value="Fritidsbolig, inkl. selvbetjente hytter, campinghytter og campingenheter">Fritidsbolig, inkl. hytter og campingenheter</SelectItem>
-                              <SelectItem value="Internat">Internat</SelectItem>
-                              <SelectItem value="Studentbolig">Studentbolig</SelectItem>
-                              {/* Risikoklasse 5 */}
-                              <SelectItem value="Forsamlingslokale">Forsamlingslokale</SelectItem>
-                              <SelectItem value="Idrettshall">Idrettshall</SelectItem>
-                              <SelectItem value="Kantine beregnet for utleie eller for mer enn 150 personer">Kantine for utleie/mer enn 150 personer</SelectItem>
-                              <SelectItem value="Kinolokale">Kinolokale</SelectItem>
-                              <SelectItem value="Kirke">Kirke</SelectItem>
-                              <SelectItem value="Kongressenter">Kongressenter</SelectItem>
-                              <SelectItem value="Messelokale">Messelokale</SelectItem>
-                              <SelectItem value="Museum">Museum</SelectItem>
-                              <SelectItem value="Salgslokale">Salgslokale</SelectItem>
-                              <SelectItem value="Teaterlokale">Teaterlokale</SelectItem>
-                              <SelectItem value="Trafikkterminaler">Trafikkterminaler</SelectItem>
-                              <SelectItem value="Tribuneanlegg for mer enn 150 personer">Tribuneanlegg for mer enn 150 personer</SelectItem>
-                              {/* Risikoklasse 6 */}
-                              <SelectItem value="Arrestlokaler og fengsel">Arrestlokaler og fengsel</SelectItem>
-                              <SelectItem value="Asylmottak og transittmottak">Asylmottak og transittmottak</SelectItem>
-                              <SelectItem value="Bolig beregnet for personer med behov for heldøgns pleie og omsorg">Bolig for heldøgns pleie og omsorg</SelectItem>
-                              <SelectItem value="Bolig spesielt tilrettelagt og beregnet for personer med funksjonsnedsettelse, inkl. alders- og seniorboliger">Bolig for funksjonsnedsettelse/seniorboliger</SelectItem>
-                              <SelectItem value="Forlegning og leirskole">Forlegning og leirskole</SelectItem>
-                              <SelectItem value="Overnattingssted og hotell">Overnattingssted og hotell</SelectItem>
-                              <SelectItem value="Pleieinstitusjon">Pleieinstitusjon</SelectItem>
-                              <SelectItem value="Sykehus og sykehjem">Sykehus og sykehjem</SelectItem>
-                              <SelectItem value="Turisthytte og vandrerhjem">Turisthytte og vandrerhjem</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          {documentType === "tilstandsvurdering" && formData.regelverk === "BF85" ? (
+                            <Select 
+                              value={formData.bygningstype}
+                              onValueChange={(value) => {
+                                const result = getBygningsbrannklasse(
+                                  value as BF85Bygningstype,
+                                  parseInt(formData.etasjer, 10) || 0,
+                                  parseFloat(formData.areal) || 0,
+                                  { brannbelastning: formData.bf85Brannbelastning || undefined, harBrannalarm: formData.bf85HarBrannalarm }
+                                );
+                                setFormData({
+                                  ...formData,
+                                  bygningstype: value,
+                                  bygningsbrannklasse: (result?.klasse || "") as "" | "1" | "2" | "3" | "4",
+                                });
+                              }}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Velg bygningstype (BF85)" />
+                              </SelectTrigger>
+                              <SelectContent className="max-h-[300px]">
+                                {bf85BygningstyperListe.map((bt) => (
+                                  <SelectItem key={bt.value} value={bt.value}>
+                                    {bt.label} ({bt.kap})
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <Select 
+                              value={formData.bygningstype}
+                              onValueChange={(value) => {
+                                const risikoklasse = bygningsTypeRisikoklasseMap[value] || "";
+                                setFormData({...formData, bygningstype: value, risikoklasse: risikoklasse});
+                              }}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Velg bygningstype" />
+                              </SelectTrigger>
+                              <SelectContent className="max-h-[300px]">
+                                {/* Risikoklasse 1 */}
+                                <SelectItem value="Arbeidsbrakke">Arbeidsbrakke</SelectItem>
+                                <SelectItem value="Båtnaust">Båtnaust</SelectItem>
+                                <SelectItem value="Carport">Carport</SelectItem>
+                                <SelectItem value="Flyhangar">Flyhangar</SelectItem>
+                                <SelectItem value="Fryselager">Fryselager</SelectItem>
+                                <SelectItem value="Garasje og parkeringshus med én etasje">Garasje og parkeringshus med én etasje</SelectItem>
+                                <SelectItem value="Sagbruk">Sagbruk</SelectItem>
+                                <SelectItem value="Skur">Skur</SelectItem>
+                                <SelectItem value="Trelastopplag">Trelastopplag</SelectItem>
+                                {/* Risikoklasse 2 */}
+                                <SelectItem value="Brannstasjon uten døgnbemanning">Brannstasjon uten døgnbemanning</SelectItem>
+                                <SelectItem value="Driftsbygning med husdyrrom">Driftsbygning med husdyrrom</SelectItem>
+                                <SelectItem value="Industri">Industri</SelectItem>
+                                <SelectItem value="Kantine beregnet for egne ansatte til og med 150 personer">Kantine beregnet for egne ansatte til og med 150 personer</SelectItem>
+                                <SelectItem value="Kjemisk fabrikk og kjemikalielager">Kjemisk fabrikk og kjemikalielager</SelectItem>
+                                <SelectItem value="Kontor">Kontor</SelectItem>
+                                <SelectItem value="Laboratorium">Laboratorium</SelectItem>
+                                <SelectItem value="Lager">Lager</SelectItem>
+                                <SelectItem value="Parkeringshus og garasje med to eller flere etasjer eller plan">Parkeringshus og garasje med to eller flere etasjer</SelectItem>
+                                <SelectItem value="Parkeringskjeller og garasje under terreng">Parkeringskjeller og garasje under terreng</SelectItem>
+                                <SelectItem value="Sprengstoffindustri">Sprengstoffindustri</SelectItem>
+                                <SelectItem value="Trafo eller fordelingsstasjon">Trafo eller fordelingsstasjon</SelectItem>
+                                {/* Risikoklasse 3 */}
+                                <SelectItem value="Barnehage">Barnehage</SelectItem>
+                                <SelectItem value="Skole">Skole</SelectItem>
+                                {/* Risikoklasse 4 */}
+                                <SelectItem value="Barnehjem">Barnehjem</SelectItem>
+                                <SelectItem value="Bolig">Bolig</SelectItem>
+                                <SelectItem value="Boligbrakke">Boligbrakke</SelectItem>
+                                <SelectItem value="Brannstasjon med døgnbemanning">Brannstasjon med døgnbemanning</SelectItem>
+                                <SelectItem value="Fritidsbolig, inkl. selvbetjente hytter, campinghytter og campingenheter">Fritidsbolig, inkl. hytter og campingenheter</SelectItem>
+                                <SelectItem value="Internat">Internat</SelectItem>
+                                <SelectItem value="Studentbolig">Studentbolig</SelectItem>
+                                {/* Risikoklasse 5 */}
+                                <SelectItem value="Forsamlingslokale">Forsamlingslokale</SelectItem>
+                                <SelectItem value="Idrettshall">Idrettshall</SelectItem>
+                                <SelectItem value="Kantine beregnet for utleie eller for mer enn 150 personer">Kantine for utleie/mer enn 150 personer</SelectItem>
+                                <SelectItem value="Kinolokale">Kinolokale</SelectItem>
+                                <SelectItem value="Kirke">Kirke</SelectItem>
+                                <SelectItem value="Kongressenter">Kongressenter</SelectItem>
+                                <SelectItem value="Messelokale">Messelokale</SelectItem>
+                                <SelectItem value="Museum">Museum</SelectItem>
+                                <SelectItem value="Salgslokale">Salgslokale</SelectItem>
+                                <SelectItem value="Teaterlokale">Teaterlokale</SelectItem>
+                                <SelectItem value="Trafikkterminaler">Trafikkterminaler</SelectItem>
+                                <SelectItem value="Tribuneanlegg for mer enn 150 personer">Tribuneanlegg for mer enn 150 personer</SelectItem>
+                                {/* Risikoklasse 6 */}
+                                <SelectItem value="Arrestlokaler og fengsel">Arrestlokaler og fengsel</SelectItem>
+                                <SelectItem value="Asylmottak og transittmottak">Asylmottak og transittmottak</SelectItem>
+                                <SelectItem value="Bolig beregnet for personer med behov for heldøgns pleie og omsorg">Bolig for heldøgns pleie og omsorg</SelectItem>
+                                <SelectItem value="Bolig spesielt tilrettelagt og beregnet for personer med funksjonsnedsettelse, inkl. alders- og seniorboliger">Bolig for funksjonsnedsettelse/seniorboliger</SelectItem>
+                                <SelectItem value="Forlegning og leirskole">Forlegning og leirskole</SelectItem>
+                                <SelectItem value="Overnattingssted og hotell">Overnattingssted og hotell</SelectItem>
+                                <SelectItem value="Pleieinstitusjon">Pleieinstitusjon</SelectItem>
+                                <SelectItem value="Sykehus og sykehjem">Sykehus og sykehjem</SelectItem>
+                                <SelectItem value="Turisthytte og vandrerhjem">Turisthytte og vandrerhjem</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          )}
                         </div>
                         <div className="grid grid-cols-2 gap-2">
                           <div>
@@ -2364,9 +2394,9 @@ const Konsept = () => {
                         {/* BF85: Bygningsbrannklasse i stedet for risikoklasse + brannklasse */}
                         {documentType === "tilstandsvurdering" && formData.regelverk === "BF85" ? (
                           (() => {
-                            const bf85Result = formData.bf85Bygningstype
+                            const bf85Result = formData.bygningstype
                               ? getBygningsbrannklasse(
-                                  formData.bf85Bygningstype as BF85Bygningstype,
+                                  formData.bygningstype as BF85Bygningstype,
                                   parseInt(formData.etasjer, 10) || 0,
                                   parseFloat(formData.areal) || 0,
                                   {
@@ -2382,46 +2412,16 @@ const Konsept = () => {
                                 BF85 bruker bygningsbrannklasse (1–4) i stedet for risikoklasse og brannklasse. Bygningsbrannklassen beregnes automatisk basert på bygningstype, etasjer og areal iht. Kap. 31–39.
                               </p>
                             </div>
-                            <div>
-                              <Label className="text-xs font-medium mb-1 block">Bygningstype (BF85)</Label>
-                              <Select 
-                                value={formData.bf85Bygningstype}
-                                onValueChange={(value) => {
-                                  const result = getBygningsbrannklasse(
-                                    value as BF85Bygningstype,
-                                    parseInt(formData.etasjer, 10) || 0,
-                                    parseFloat(formData.areal) || 0,
-                                    { brannbelastning: formData.bf85Brannbelastning || undefined, harBrannalarm: formData.bf85HarBrannalarm }
-                                  );
-                                  setFormData({
-                                    ...formData,
-                                    bf85Bygningstype: value,
-                                    bygningsbrannklasse: (result?.klasse || "") as "" | "1" | "2" | "3" | "4",
-                                  });
-                                }}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Velg bygningstype..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {bf85BygningstyperListe.map((bt) => (
-                                    <SelectItem key={bt.value} value={bt.value}>
-                                      {bt.label} ({bt.kap})
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
 
                             {/* Ekstra felt for industri/lager: brannbelastning */}
-                            {(formData.bf85Bygningstype === "Industri" || formData.bf85Bygningstype === "Lager") && (
+                            {(formData.bygningstype === "Industri" || formData.bygningstype === "Lager") && (
                               <div>
                                 <Label className="text-xs font-medium mb-1 block">Spesifikk brannbelastning (MJ/m²)</Label>
                                 <Select
                                   value={formData.bf85Brannbelastning}
                                   onValueChange={(value) => {
                                     const result = getBygningsbrannklasse(
-                                      formData.bf85Bygningstype as BF85Bygningstype,
+                                      formData.bygningstype as BF85Bygningstype,
                                       parseInt(formData.etasjer, 10) || 0,
                                       parseFloat(formData.areal) || 0,
                                       { brannbelastning: value as any, harBrannalarm: formData.bf85HarBrannalarm }
@@ -2444,7 +2444,7 @@ const Konsept = () => {
                             )}
 
                             {/* Ekstra felt for kontor: brannalarmanlegg */}
-                            {formData.bf85Bygningstype === "Kontor" && (
+                            {formData.bygningstype === "Kontor" && (
                               <div className="flex items-center gap-2 p-3 bg-muted/30 border rounded-md">
                                 <input
                                   type="checkbox"
@@ -2486,7 +2486,7 @@ const Konsept = () => {
                                   </p>
                                 )}
                               </div>
-                            ) : formData.bf85Bygningstype ? (
+                            ) : formData.bygningstype ? (
                               <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700 rounded-md">
                                 <p className="text-xs text-amber-700 dark:text-amber-400">
                                   Fyll inn etasjer og areal for å beregne bygningsbrannklasse automatisk.
