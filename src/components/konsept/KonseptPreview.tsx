@@ -618,9 +618,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </section>
       <PageFooter pageNum={4 + extraPages} />
       </div>
-      </ChapterSection>
-
-      <ChapterSection title={`${sp}. ${isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"}`} defaultOpen={false}>
       <div className={pageStyle} style={pageWidth}>
       {/* Branntekniske ytelseskrav */}
       <section className="mb-6">
