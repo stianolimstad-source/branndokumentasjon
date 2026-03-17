@@ -620,8 +620,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <section className="mb-6">
         <h2 className="font-bold mb-3">{isTilstand ? "2" : "3"}. {isTilstand ? (isBF85 ? "Brannteknisk tilstandsvurdering (BF85)" : "Brannteknisk tilstandsvurdering") : "Beskrivelse av branntekniske ytelseskrav"}</h2>
         
-        {isBF85 ? (
-          /* ===== BF85 SECTIONS ===== */
+        {isBF85 && (
           <table className="w-full border-collapse border border-gray-400 text-xs">
             <tbody>
               {bf85Sections.map((section, i) => (
@@ -648,7 +647,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               ))}
             </tbody>
           </table>
-        ) : (
+        )}
+        {!isBF85 && (
         <table className="w-full border-collapse border border-gray-400 text-xs">
           <tbody>
             {/* 3.1 § 11-4 Bæreevne og stabilitet */}
