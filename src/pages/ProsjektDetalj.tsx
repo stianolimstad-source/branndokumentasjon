@@ -3,10 +3,11 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Plus, FileText, Trash2, Building, Users, User, Share2, CheckCircle2, Clock, ClipboardCheck, FileWarning, ArrowLeft, ImagePlus } from "lucide-react";
+import { Plus, FileText, Trash2, Building, Users, User, Share2, CheckCircle2, Clock, ClipboardCheck, FileWarning, ArrowLeft, ImagePlus, BarChart3, GitCompare, Shield } from "lucide-react";
 import ShareProjectDialog from "@/components/prosjekt/ShareProjectDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -60,6 +61,7 @@ const ProsjektDetalj = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [primaryBygningstype, setPrimaryBygningstype] = useState<string | null>(null);
+  const [showFravikPicker, setShowFravikPicker] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) navigate('/auth');
@@ -321,9 +323,7 @@ const ProsjektDetalj = () => {
                   <FileWarning className="h-5 w-5 text-orange-500" />
                   <CardTitle className="text-lg">Fraviksdokumenter ({fraviksdokumenter.length})</CardTitle>
                 </div>
-                <Link to={`/fraviksdokumentasjon?project=${project.id}`}>
-                  <Button size="sm" variant="outline"><Plus className="h-4 w-4 mr-2" />Nytt fravik</Button>
-                </Link>
+                <Button size="sm" variant="outline" onClick={() => setShowFravikPicker(true)}><Plus className="h-4 w-4 mr-2" />Nytt fravik</Button>
               </div>
             </CardHeader>
             {fraviksdokumenter.length > 0 && (
@@ -358,6 +358,67 @@ const ProsjektDetalj = () => {
           )}
         </div>
       </section>
+
+      {/* Fraviksvurdering type picker */}
+      <Dialog open={showFravikPicker} onOpenChange={setShowFravikPicker}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Velg type fraviksvurdering</DialogTitle>
+            <DialogDescription>Velg metode for fraviksdokumentasjonen</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-3 py-4">
+            <Card
+              className="cursor-pointer hover:border-primary transition-colors"
+              onClick={() => {
+                setShowFravikPicker(false);
+                navigate(`/fraviksdokumentasjon/kvalitativ?project=${project.id}&new=true`);
+              }}
+            >
+              <CardHeader className="py-3 px-4">
+                <div className="flex items-center gap-3">
+                  <BarChart3 className="h-5 w-5 text-orange-500" />
+                  <div>
+                    <CardTitle className="text-sm">Kvalitativ analyse</CardTitle>
+                    <CardDescription className="text-xs">Vurdering basert på faglig skjønn og erfaring</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+            </Card>
+            <Card
+              className="cursor-pointer hover:border-primary transition-colors opacity-60"
+              onClick={() => {
+                toast({ title: "Kommer snart", description: "Komparativ analyse er under utvikling" });
+              }}
+            >
+              <CardHeader className="py-3 px-4">
+                <div className="flex items-center gap-3">
+                  <GitCompare className="h-5 w-5 text-blue-500" />
+                  <div>
+                    <CardTitle className="text-sm">Komparativ analyse</CardTitle>
+                    <CardDescription className="text-xs">Sammenligning med preaksepterte ytelser</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+            </Card>
+            <Card
+              className="cursor-pointer hover:border-primary transition-colors opacity-60"
+              onClick={() => {
+                toast({ title: "Kommer snart", description: "Analyse etter NS 3921 er under utvikling" });
+              }}
+            >
+              <CardHeader className="py-3 px-4">
+                <div className="flex items-center gap-3">
+                  <Shield className="h-5 w-5 text-green-600" />
+                  <div>
+                    <CardTitle className="text-sm">Analyse etter NS 3921</CardTitle>
+                    <CardDescription className="text-xs">Risikobasert analyse iht. norsk standard</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+            </Card>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
