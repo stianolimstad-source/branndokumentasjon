@@ -455,7 +455,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             </tbody>
           </table>
 
-          <h3 className="font-semibold mb-2">1.4 Grunnlagsdokumenter</h3>
+          <h3 className="font-semibold mb-2">2.2 Grunnlagsdokumenter</h3>
           {grunnlagsdokumenter.length > 0 ? (
             <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
               <thead>
