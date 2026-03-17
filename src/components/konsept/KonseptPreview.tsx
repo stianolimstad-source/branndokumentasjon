@@ -224,6 +224,23 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         <h2 className="font-bold mb-3">Innholdsfortegnelse</h2>
         <div className="space-y-1 text-xs">
           {isTilstand ? (
+            isBF85 ? (
+            <>
+              <p><span className="font-bold">1.</span> Innledning</p>
+              <p className="ml-4">1.1 Informasjon om tiltaket</p>
+              <p className="ml-4">1.2 Avgrensning av vurderingen</p>
+              <p className="ml-4">1.3 Bygningsinformasjon</p>
+              <p className="ml-4">1.4 Grunnlagsdokumenter</p>
+              <p className="ml-4">1.5 Branntekniske forutsetninger</p>
+              <p className="ml-4">1.6 Tilleggskrav</p>
+              <p><span className="font-bold">2.</span> Brannteknisk tilstandsvurdering (BF85)</p>
+              {bf85Sections.map((s, i) => (
+                <p key={s.id} className="ml-4">2.{i + 1} {s.ref} – {s.title}</p>
+              ))}
+              <p><span className="font-bold">3.</span> Revisjonshistorikk</p>
+              <p><span className="font-bold">4.</span> Litteraturhenvisninger</p>
+            </>
+            ) : (
             <>
               <p><span className="font-bold">1.</span> Innledning</p>
               <p className="ml-4">1.1 Informasjon om tiltaket</p>
@@ -249,6 +266,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p><span className="font-bold">3.</span> Revisjonshistorikk</p>
               <p><span className="font-bold">4.</span> Litteraturhenvisninger</p>
             </>
+            )
           ) : (
             <>
               <p><span className="font-bold">1.</span> Innledning</p>
