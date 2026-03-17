@@ -3466,8 +3466,6 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
-                      </div>
-                    </div>
                     {renderTilstandPanel("3_3")}
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
