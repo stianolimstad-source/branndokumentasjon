@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
+import { bf85BygningstyperListe, getBygningsbrannklasse, BF85Bygningstype } from "@/lib/bf85-constants";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -643,6 +644,9 @@ const Konsept = () => {
     regelverk: "" as "" | "TEK17" | "TEK10" | "TEK97" | "BF85",
     // BF85 bygningsbrannklasse (1-4) – erstatter risikoklasse og brannklasse
     bygningsbrannklasse: "" as "" | "1" | "2" | "3" | "4",
+    bf85Bygningstype: "" as string, // BF85-spesifikk bygningstype for auto-beregning
+    bf85Brannbelastning: "" as "" | "under50" | "50-400" | "over400", // For industri/lager
+    bf85HarBrannalarm: false, // For kontor
   });
 
   // Load existing concept if conceptId is provided
@@ -667,6 +671,21 @@ const Konsept = () => {
       }));
     }
   }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal]);
+
+  // Automatisk beregning av BF85 bygningsbrannklasse
+  useEffect(() => {
+    if (isViewMode) return;
+    if (formData.regelverk !== "BF85" || !formData.bf85Bygningstype) return;
+    const result = getBygningsbrannklasse(
+      formData.bf85Bygningstype as BF85Bygningstype,
+      parseInt(formData.etasjer, 10) || 0,
+      parseFloat(formData.areal) || 0,
+      { brannbelastning: formData.bf85Brannbelastning || undefined, harBrannalarm: formData.bf85HarBrannalarm }
+    );
+    if (result) {
+      setFormData(prev => ({ ...prev, bygningsbrannklasse: result.klasse as "" | "1" | "2" | "3" | "4" }));
+    }
+  }, [formData.etasjer, formData.areal, formData.bf85Bygningstype, formData.bf85Brannbelastning, formData.bf85HarBrannalarm, formData.regelverk]);
 
   // Automatisk generering av bæreevne tekst – skip i view-modus
   useEffect(() => {
@@ -2344,14 +2363,143 @@ const Konsept = () => {
                       <div className="space-y-3">
                         {/* BF85: Bygningsbrannklasse i stedet for risikoklasse + brannklasse */}
                         {documentType === "tilstandsvurdering" && formData.regelverk === "BF85" ? (
+                          (() => {
+                            const bf85Result = formData.bf85Bygningstype
+                              ? getBygningsbrannklasse(
+                                  formData.bf85Bygningstype as BF85Bygningstype,
+                                  parseInt(formData.etasjer, 10) || 0,
+                                  parseFloat(formData.areal) || 0,
+                                  {
+                                    brannbelastning: formData.bf85Brannbelastning || undefined,
+                                    harBrannalarm: formData.bf85HarBrannalarm,
+                                  }
+                                )
+                              : null;
+                            return (
                           <div className="space-y-3">
                             <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700 rounded-md">
                               <p className="text-xs text-amber-700 dark:text-amber-400">
-                                BF85 bruker bygningsbrannklasse (1–4) i stedet for risikoklasse og brannklasse. Bygningsbrannklassen bestemmes av bygningens bruk og størrelse iht. Kap. 31–39.
+                                BF85 bruker bygningsbrannklasse (1–4) i stedet for risikoklasse og brannklasse. Bygningsbrannklassen beregnes automatisk basert på bygningstype, etasjer og areal iht. Kap. 31–39.
                               </p>
                             </div>
                             <div>
-                              <Label className="text-xs font-medium mb-1 block">Bygningsbrannklasse (BF85)</Label>
+                              <Label className="text-xs font-medium mb-1 block">Bygningstype (BF85)</Label>
+                              <Select 
+                                value={formData.bf85Bygningstype}
+                                onValueChange={(value) => {
+                                  const result = getBygningsbrannklasse(
+                                    value as BF85Bygningstype,
+                                    parseInt(formData.etasjer, 10) || 0,
+                                    parseFloat(formData.areal) || 0,
+                                    { brannbelastning: formData.bf85Brannbelastning || undefined, harBrannalarm: formData.bf85HarBrannalarm }
+                                  );
+                                  setFormData({
+                                    ...formData,
+                                    bf85Bygningstype: value,
+                                    bygningsbrannklasse: (result?.klasse || "") as "" | "1" | "2" | "3" | "4",
+                                  });
+                                }}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Velg bygningstype..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {bf85BygningstyperListe.map((bt) => (
+                                    <SelectItem key={bt.value} value={bt.value}>
+                                      {bt.label} ({bt.kap})
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* Ekstra felt for industri/lager: brannbelastning */}
+                            {(formData.bf85Bygningstype === "Industri" || formData.bf85Bygningstype === "Lager") && (
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Spesifikk brannbelastning (MJ/m²)</Label>
+                                <Select
+                                  value={formData.bf85Brannbelastning}
+                                  onValueChange={(value) => {
+                                    const result = getBygningsbrannklasse(
+                                      formData.bf85Bygningstype as BF85Bygningstype,
+                                      parseInt(formData.etasjer, 10) || 0,
+                                      parseFloat(formData.areal) || 0,
+                                      { brannbelastning: value as any, harBrannalarm: formData.bf85HarBrannalarm }
+                                    );
+                                    setFormData({
+                                      ...formData,
+                                      bf85Brannbelastning: value as any,
+                                      bygningsbrannklasse: (result?.klasse || "") as "" | "1" | "2" | "3" | "4",
+                                    });
+                                  }}
+                                >
+                                  <SelectTrigger><SelectValue placeholder="Velg..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="under50">Under 50 MJ/m²</SelectItem>
+                                    <SelectItem value="50-400">50–400 MJ/m²</SelectItem>
+                                    <SelectItem value="over400">Over 400 MJ/m²</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            )}
+
+                            {/* Ekstra felt for kontor: brannalarmanlegg */}
+                            {formData.bf85Bygningstype === "Kontor" && (
+                              <div className="flex items-center gap-2 p-3 bg-muted/30 border rounded-md">
+                                <input
+                                  type="checkbox"
+                                  id="bf85HarBrannalarm"
+                                  checked={formData.bf85HarBrannalarm}
+                                  onChange={(e) => {
+                                    const result = getBygningsbrannklasse(
+                                      "Kontor",
+                                      parseInt(formData.etasjer, 10) || 0,
+                                      parseFloat(formData.areal) || 0,
+                                      { harBrannalarm: e.target.checked }
+                                    );
+                                    setFormData({
+                                      ...formData,
+                                      bf85HarBrannalarm: e.target.checked,
+                                      bygningsbrannklasse: (result?.klasse || "") as "" | "1" | "2" | "3" | "4",
+                                    });
+                                  }}
+                                  className="h-4 w-4"
+                                />
+                                <Label htmlFor="bf85HarBrannalarm" className="text-xs cursor-pointer">
+                                  Bygningen har brannalarmanlegg basert på røykdetektor
+                                </Label>
+                              </div>
+                            )}
+
+                            {/* Auto-beregnet resultat */}
+                            {bf85Result ? (
+                              <div className="p-3 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-700 rounded-md">
+                                <Label className="text-xs font-medium mb-1 block text-green-700 dark:text-green-400">
+                                  Beregnet bygningsbrannklasse ({bf85Result.tabell})
+                                </Label>
+                                <p className="text-sm font-bold text-green-800 dark:text-green-300">
+                                  Bygningsbrannklasse {bf85Result.klasse}
+                                </p>
+                                {bf85Result.merknad && (
+                                  <p className="text-xs text-green-600 dark:text-green-400 mt-1 italic">
+                                    {bf85Result.merknad}
+                                  </p>
+                                )}
+                              </div>
+                            ) : formData.bf85Bygningstype ? (
+                              <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700 rounded-md">
+                                <p className="text-xs text-amber-700 dark:text-amber-400">
+                                  Fyll inn etasjer og areal for å beregne bygningsbrannklasse automatisk.
+                                </p>
+                              </div>
+                            ) : null}
+
+                            {/* Manuell overstyring */}
+                            <div>
+                              <Label className="text-xs font-medium mb-1 block">
+                                Bygningsbrannklasse
+                                {bf85Result && <span className="text-muted-foreground ml-2">(Automatisk: {bf85Result.klasse})</span>}
+                              </Label>
                               <Select 
                                 value={formData.bygningsbrannklasse}
                                 onValueChange={(value) => setFormData({...formData, bygningsbrannklasse: value as "" | "1" | "2" | "3" | "4"})}
@@ -2360,14 +2508,16 @@ const Konsept = () => {
                                   <SelectValue placeholder="Velg bygningsbrannklasse..." />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="1">Bygningsbrannklasse 1 – Mindre bygninger med lav risiko</SelectItem>
-                                  <SelectItem value="2">Bygningsbrannklasse 2 – Vanlige bygninger, moderat risiko</SelectItem>
-                                  <SelectItem value="3">Bygningsbrannklasse 3 – Større bygninger, høyere risiko</SelectItem>
-                                  <SelectItem value="4">Bygningsbrannklasse 4 – Store/komplekse bygninger, høyest risiko</SelectItem>
+                                  <SelectItem value="1">Bygningsbrannklasse 1</SelectItem>
+                                  <SelectItem value="2">Bygningsbrannklasse 2</SelectItem>
+                                  <SelectItem value="3">Bygningsbrannklasse 3</SelectItem>
+                                  <SelectItem value="4">Bygningsbrannklasse 4</SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>
                           </div>
+                            );
+                          })()
                         ) : (
                         <>
                         {/* Toggle for flere risikoklasser */}
