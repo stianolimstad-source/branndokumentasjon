@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Flame, ArrowLeft, FileDown, Download, Save, LogIn, X, Plus, AlertTriangle } from "lucide-react";
+import { Flame, ArrowLeft, FileDown, Download, Save, LogIn, X, Plus, AlertTriangle, ChevronDown, ChevronRight } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
@@ -28,6 +29,21 @@ import KonseptPreview from "@/components/konsept/KonseptPreview";
 import { UploadConceptDialog } from "@/components/konsept/UploadConceptDialog";
 import { buildChapter3Table } from "@/lib/word-export-chapter3";
 import TilstandsvurderingPanel, { TilstandData, emptyTilstand } from "@/components/konsept/TilstandsvurderingPanel";
+
+const SectionCollapsible = ({ label, defaultOpen = false, children }: { label: string; defaultOpen?: boolean; children: React.ReactNode }) => {
+  const [isOpen, setIsOpen] = React.useState(defaultOpen);
+  return (
+    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="border border-border/60 rounded-lg overflow-hidden">
+      <CollapsibleTrigger className="flex items-center gap-2 w-full text-sm font-bold px-3 py-2.5 hover:bg-muted/50 bg-muted/30 transition-colors cursor-pointer">
+        {isOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground flex-shrink-0" /> : <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />}
+        <span className="text-left">{label}</span>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="px-3 pb-3 pt-2">
+        {children}
+      </CollapsibleContent>
+    </Collapsible>
+  );
+};
 
 // Mapping av bygningstype til risikoklasse basert på TEK17
 const bygningsTypeRisikoklasseMap: Record<string, string> = {
@@ -3052,7 +3068,8 @@ const Konsept = () => {
                       Branntekniske ytelseskrav
                     </span>
                   </AccordionTrigger>
-                  <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
+                  <AccordionContent className="space-y-3 pt-4 px-4 pb-4">
+                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.1 Bæreevne og stabilitet`}>
                     <div className="space-y-3">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">
@@ -3174,6 +3191,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_1")}
+                    </SectionCollapsible>
+                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.2 Sikkerhet ved eksplosjon`}>
                     <div className="space-y-3">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">
@@ -3262,6 +3281,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_2")}
+                    </SectionCollapsible>
+                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.3 ${formData.regelverk === "BF85" ? "Avstand mellom bygninger" : "Tiltak mot brannspredning"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">
@@ -3468,6 +3489,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_3")}
+                    </SectionCollapsible>
+                    <SectionCollapsible label={`${formData.regelverk === "BF85" ? `${documentType === "tilstandsvurdering" ? "2" : "3"}.4 Brannteknisk oppdeling` : `${documentType === "tilstandsvurdering" ? "2" : "3"}.4 Brannseksjoner`}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">{formData.regelverk === "BF85" ? "2.4 Brannteknisk oppdeling (Kap. 30:6)" : "3.4 § 11-7 Brannseksjoner"}</Label>
@@ -3693,6 +3716,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_4")}
+                    </SectionCollapsible>
+                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.5 Brannceller`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.5 § 11-8 Brannceller</Label>
@@ -4463,6 +4488,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_5")}
+                    </SectionCollapsible>
+                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.6 Materialer og produkter`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.6 § 11-9 Materialer og produkters egenskaper ved brann</Label>
@@ -4583,6 +4610,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_6")}
+                    </SectionCollapsible>
+                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.7 Tekniske installasjoner`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.7 § 11-10 Tekniske installasjoner</Label>
@@ -4715,6 +4744,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_7")}
+                    </SectionCollapsible>
+                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.8 Rømning og redning`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.8 § 11-11 Rømning og redning</Label>
@@ -4741,6 +4772,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_8")}
+                    </SectionCollapsible>
+                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.9 Tilrettelegging for rømning`}>
                     <div className="space-y-4">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.9 § 11-12 Tilrettelegging for rømning og redning</Label>
@@ -4976,6 +5009,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_9")}
+                    </SectionCollapsible>
+                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.10 Utgang fra branncelle`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.10 § 11-13 Utgang fra branncelle</Label>
@@ -5278,6 +5313,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_10")}
+                    </SectionCollapsible>
+                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.11 Rømningsvei`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.11 § 11-14 Rømningsvei</Label>
@@ -5405,6 +5442,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_11")}
+                    </SectionCollapsible>
+                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.12 Redning av husdyr`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.12 § 11-15 Tilrettelegging for redning av husdyr</Label>
@@ -5434,6 +5473,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_12")}
+                    </SectionCollapsible>
+                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.13 Manuell slokking`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.13 § 11-16 Manuell slokking</Label>
@@ -5501,6 +5542,8 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_13")}
+                    </SectionCollapsible>
+                    <SectionCollapsible label={`${documentType === "tilstandsvurdering" ? "2" : "3"}.14 Tilrettelegging for slokkemannskap`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.14 § 11-17 Tilrettelegging for slokkemannskap</Label>
@@ -5541,6 +5584,7 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_14")}
+                    </SectionCollapsible>
                   </AccordionContent>
                 </AccordionItem>
 
