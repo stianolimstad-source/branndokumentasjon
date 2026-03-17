@@ -3602,7 +3602,7 @@ const Konsept = () => {
 
                       {/* Dører og vinduer i seksjoneringsveggen */}
                       <div>
-                        <Label className="text-xs font-medium mb-2 block">Dører og vinduer i seksjoneringsvegg</Label>
+                        <Label className="text-xs font-medium mb-2 block">Dører og vinduer i {formData.regelverk === "BF85" ? "brannvegg" : "seksjoneringsvegg"}</Label>
                         <div className="border rounded-md p-2 space-y-2 bg-muted/30">
                           <div className="flex items-center gap-2">
                             <Checkbox
