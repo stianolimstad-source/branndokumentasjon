@@ -493,6 +493,11 @@ const Konsept = () => {
     spesifikkBrannenergi: "", // For brannvegg: "inntil400", "400-600", "600-800"
     brannspredning: "",
     brannspredningKommentar: "",
+    // BF85 Kap 30:32 felter
+    gesimshoydeEgen: "", // Gjennomsnittlig gesimshøyde egen bygning (motstående vegg)
+    gesimshoydeNabo: "", // Gjennomsnittlig gesimshøyde nabobygning (motstående vegg)
+    bf85SkiltMedBrannvegg: "nei" as "ja" | "nei", // Om bygningene er skilt med brannvegg
+    bf85ErGruppe: "nei" as "ja" | "nei", // Om bygningene er i gruppe
     brannseksjonBrannenergi: "", // "over400", "50-400", "under50" - brukes for arealgrenser (VTEK tabell 1)
     seksjoneringsvegBrannenergi: "", // "under400", "400-600", "600-800" - brukes for brannmotstand (VTEK tabell 2)
     brannseksjonTiltak: "", // "normalt", "brannalarm", "sprinkler", "roykventilasjon"
