@@ -1800,25 +1800,50 @@ const Konsept = () => {
                       {documentType === "tilstandsvurdering" && (
                         <div className="space-y-2 p-4 rounded-lg border-2 border-amber-300 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-700">
                           <Label htmlFor="regelverk" className="text-sm font-semibold">Gjeldende regelverk *</Label>
-                          <p className="text-xs text-muted-foreground">Velg regelverket bygget er prosjektert etter. Dette styrer hvilke krav som vises.</p>
-                          <Select
-                            value={formData.regelverk}
-                            onValueChange={(val) => setFormData({ ...formData, regelverk: val as any })}
-                          >
-                            <SelectTrigger id="regelverk" className="bg-background">
-                              <SelectValue placeholder="Velg regelverk..." />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="TEK17">TEK17 (2017–)</SelectItem>
-                              <SelectItem value="TEK10">TEK10 (2010–2017)</SelectItem>
-                              <SelectItem value="TEK97">TEK97 (1997–2010)</SelectItem>
-                              <SelectItem value="BF85">BF85 (1985–1997)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          {formData.regelverk && formData.regelverk !== "TEK17" && (
-                            <p className="text-xs text-amber-700 dark:text-amber-400 font-medium mt-1">
-                              ⚠ Kravene for {formData.regelverk} kan avvike fra TEK17. Tilpassede krav kommer snart.
-                            </p>
+                          {formData.regelverk ? (
+                            <>
+                              <div className="flex items-center gap-2">
+                                <div className="flex-1 px-3 py-2 rounded-md border bg-muted/50 text-sm font-medium">
+                                  {formData.regelverk === "TEK17" ? "TEK17 (2017–)" : 
+                                   formData.regelverk === "TEK10" ? "TEK10 (2010–2017)" : 
+                                   formData.regelverk === "TEK97" ? "TEK97 (1997–2010)" : 
+                                   "BF85 (1985–1997)"}
+                                </div>
+                                <span className="text-xs text-muted-foreground italic">Låst</span>
+                              </div>
+                              <p className="text-xs text-muted-foreground">Regelverket kan ikke endres etter at det er valgt. Opprett en ny tilstandsvurdering for å bruke et annet regelverk.</p>
+                              {formData.regelverk !== "TEK17" && (
+                                <p className="text-xs text-amber-700 dark:text-amber-400 font-medium mt-1">
+                                  ⚠ Kravene for {formData.regelverk} kan avvike fra TEK17. Tilpassede krav kommer snart.
+                                </p>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <p className="text-xs text-muted-foreground">Velg regelverket bygget er prosjektert etter. <strong>Dette valget kan ikke endres etterpå.</strong></p>
+                              <Select
+                                value={formData.regelverk}
+                                onValueChange={(val) => {
+                                  const label = val === "TEK17" ? "TEK17 (2017–)" : 
+                                                val === "TEK10" ? "TEK10 (2010–2017)" : 
+                                                val === "TEK97" ? "TEK97 (1997–2010)" : 
+                                                "BF85 (1985–1997)";
+                                  if (window.confirm(`Er du sikker på at du vil velge ${label}? Dette valget kan ikke endres etterpå.`)) {
+                                    setFormData({ ...formData, regelverk: val as any });
+                                  }
+                                }}
+                              >
+                                <SelectTrigger id="regelverk" className="bg-background">
+                                  <SelectValue placeholder="Velg regelverk..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="TEK17">TEK17 (2017–)</SelectItem>
+                                  <SelectItem value="TEK10">TEK10 (2010–2017)</SelectItem>
+                                  <SelectItem value="TEK97">TEK97 (1997–2010)</SelectItem>
+                                  <SelectItem value="BF85">BF85 (1985–1997)</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </>
                           )}
                         </div>
                       )}
