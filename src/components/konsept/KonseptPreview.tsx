@@ -2411,10 +2411,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </section>
       <PageFooter pageNum={7 + extraPages} />
       </div>
-      
+      </ChapterSection>
 
-
-
+      <ChapterSection title={documentType === "tilstandsvurdering" ? "3. Revisjonshistorikk / 4. Litteratur" : "4. Utførelses- og driftsfasen"}>
 
       {documentType !== "tilstandsvurdering" && (
       <div className={pageStyle} style={pageWidth}>
