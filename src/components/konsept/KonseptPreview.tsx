@@ -234,8 +234,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p className="ml-4">1.5 Branntekniske forutsetninger</p>
               <p className="ml-4">1.6 Tilleggskrav</p>
               <p><span className="font-bold">2.</span> Brannteknisk tilstandsvurdering (BF85)</p>
-              {bf85Sections.map((s, i) => (
-                <p key={s.id} className="ml-4">2.{i + 1} {s.ref} – {s.title}</p>
+              {bf85MappedSections.map((s) => (
+                <p key={s.tek17Key} className="ml-4">{s.tek17Key.replace("3_", "2.")} {s.bf85Ref} – {s.bf85Title}</p>
               ))}
               <p><span className="font-bold">3.</span> Revisjonshistorikk</p>
               <p><span className="font-bold">4.</span> Litteraturhenvisninger</p>
