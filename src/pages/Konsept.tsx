@@ -3559,10 +3559,11 @@ const Konsept = () => {
                         })()
                       )}
 
-                      {/* Innvendig hjørne */}
+                      {/* Innvendig hjørne - kun for TEK17, ikke BF85 */}
+                      {formData.regelverk !== "BF85" && (
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                          <Label className="text-xs font-medium">{formData.regelverk === "BF85" ? "Brannveggen" : "Brannseksjoneringsveggen"} plasseres i innvendig hjørne?</Label>
+                          <Label className="text-xs font-medium">Brannseksjoneringsveggen plasseres i innvendig hjørne?</Label>
                           <Select
                             value={formData.innvendigHjorne}
                             onValueChange={(value: "ja" | "nei") => setFormData({...formData, innvendigHjorne: value})}
@@ -3586,19 +3587,20 @@ const Konsept = () => {
                               <div className="flex items-start space-x-2">
                                 <RadioGroupItem value="alt1" id="hjorne-alt1" />
                                 <Label htmlFor="hjorne-alt1" className="text-xs leading-snug cursor-pointer">
-                                   Alternativ 1: {formData.regelverk === "BF85" ? "Brannveggen" : "Seksjoneringsveggen"} forlenges minimum 8,0 meter forbi innvendig hjørne
+                                   Alternativ 1: Seksjoneringsveggen forlenges minimum 8,0 meter forbi innvendig hjørne
                                  </Label>
                                </div>
                                <div className="flex items-start space-x-2">
                                  <RadioGroupItem value="alt2" id="hjorne-alt2" />
                                  <Label htmlFor="hjorne-alt2" className="text-xs leading-snug cursor-pointer">
-                                   Alternativ 2: {formData.regelverk === "BF85" ? "Brannveggen" : "Seksjoneringsveggen"} forlenges minimum 5,0 meter på hver side av innvendig hjørne
+                                   Alternativ 2: Seksjoneringsveggen forlenges minimum 5,0 meter på hver side av innvendig hjørne
                                 </Label>
                               </div>
                             </RadioGroup>
                           </div>
                         )}
                       </div>
+                      )}
 
                       {/* Dører og vinduer i seksjoneringsveggen */}
                       <div>
