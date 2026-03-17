@@ -59,6 +59,7 @@ const ProsjektDetalj = () => {
   const [ksStatus, setKsStatus] = useState<Record<string, KSStatus>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  const [primaryBygningstype, setPrimaryBygningstype] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) navigate('/auth');
