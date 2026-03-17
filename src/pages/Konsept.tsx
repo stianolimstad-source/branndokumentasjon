@@ -669,6 +669,8 @@ const Konsept = () => {
     bf85Bygningstype: "" as string, // BF85-spesifikk bygningstype for auto-beregning
     bf85Brannbelastning: "" as "" | "under50" | "50-400" | "over400", // For industri/lager
     bf85HarBrannalarm: false, // For kontor
+    bf85TekniskeRomRelevant: false, // Kap. 30:33
+    bf85LoftKjellerRelevant: false, // Kap. 30:64
   });
 
   // Load existing concept if conceptId is provided
