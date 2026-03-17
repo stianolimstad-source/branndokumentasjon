@@ -103,7 +103,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   const extraPages = (hasSammendrag ? 1 : 0) + (isTilstand ? 1 : 0);
   const totalPages = isTilstand ? 7 + extraPages : 8 + extraPages;
   // Section prefix for chapter 3 (brannkonsept) → chapter 2 (tilstandsvurdering)
-  const sp = isTilstand ? "2" : "3";
+  const sp = "3";
 
   const PageFooter = ({ pageNum }: { pageNum: number }) => (
     <div className="absolute bottom-4 left-0 right-0 flex justify-center">
