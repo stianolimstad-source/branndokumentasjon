@@ -3890,15 +3890,26 @@ const Konsept = () => {
                             <div className="bg-muted/50 border rounded-md p-3 space-y-3">
                               <p className="text-xs font-semibold text-foreground">BF85 branncellekrav – Bygningsbrannklasse {klasse || "(ikke angitt)"}</p>
                               
-                              {/* :33 Tekniske rom */}
+                              {/* :33 Tekniske rom – toggle */}
                               <div className="space-y-1">
-                                <p className="text-xs font-semibold">Kap. 30:33 – Tekniske rom</p>
-                                <p className="text-xs text-muted-foreground">
-                                  Heismaskinrom, ventilasjonsrom, søppelrom for felles søppelnedkast og fyrrom skal være branncelle <span className="font-semibold text-foreground">A 60</span> for brann innenfra.
-                                </p>
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    id="bf85TekniskeRomRelevant"
+                                    checked={formData.bf85TekniskeRomRelevant ?? false}
+                                    onCheckedChange={(checked) => setFormData({...formData, bf85TekniskeRomRelevant: !!checked})}
+                                  />
+                                  <label htmlFor="bf85TekniskeRomRelevant" className="text-xs font-semibold cursor-pointer">Kap. 30:33 – Tekniske rom</label>
+                                </div>
+                                {formData.bf85TekniskeRomRelevant && (
+                                  <div className="pl-6 border-l-2 border-primary/20 ml-1">
+                                    <p className="text-xs text-muted-foreground">
+                                      Heismaskinrom, ventilasjonsrom, søppelrom for felles søppelnedkast og fyrrom skal være branncelle <span className="font-semibold text-foreground">A 60</span> for brann innenfra.
+                                    </p>
+                                  </div>
+                                )}
                               </div>
 
-                              {/* :63 Branncelleinndeling */}
+                              {/* :63 Branncelleinndeling – alltid synlig */}
                               <div className="space-y-1">
                                 <p className="text-xs font-semibold">Kap. 30:63 – Branncelleinndeling</p>
                                 <p className="text-xs text-muted-foreground">
@@ -3914,18 +3925,29 @@ const Konsept = () => {
                                 </ul>
                               </div>
 
-                              {/* :64 Rom på loft og i kjeller */}
+                              {/* :64 Rom på loft og i kjeller – toggle */}
                               <div className="space-y-1">
-                                <p className="text-xs font-semibold">Kap. 30:64 – Rom på loft og i kjeller</p>
-                                <ul className="text-xs text-muted-foreground list-disc pl-4 space-y-0.5">
-                                  <li>På loft som ikke er innredet til oppholdsrom, skal det ikke være andre rom enn slike som er nødvendige for bygningens drift.</li>
-                                  <li>Loft og kjeller innredning må bevare oversikten og spesifikk brannbelastning fra veggene ikke overstiger 10 MJ/m².</li>
-                                  <li>Del av kjeller på høyst 300 m² kan atskilles fra kjelleren med vegg A 60 og dør A 30 i rom med spesifikk brannbelastning over 10 MJ/m².</li>
-                                  <li>I oppforet takkonstruksjon av brennbart materiale skal hulrom oppdeles med branncellebegrensende vegg i arealer på høyst <span className="font-semibold text-foreground">400 m²</span> etter Tabell 30:4.</li>
-                                </ul>
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    id="bf85LoftKjellerRelevant"
+                                    checked={formData.bf85LoftKjellerRelevant ?? false}
+                                    onCheckedChange={(checked) => setFormData({...formData, bf85LoftKjellerRelevant: !!checked})}
+                                  />
+                                  <label htmlFor="bf85LoftKjellerRelevant" className="text-xs font-semibold cursor-pointer">Kap. 30:64 – Rom på loft og i kjeller</label>
+                                </div>
+                                {formData.bf85LoftKjellerRelevant && (
+                                  <div className="pl-6 border-l-2 border-primary/20 ml-1">
+                                    <ul className="text-xs text-muted-foreground list-disc pl-4 space-y-0.5">
+                                      <li>På loft som ikke er innredet til oppholdsrom, skal det ikke være andre rom enn slike som er nødvendige for bygningens drift.</li>
+                                      <li>Loft og kjeller innredning må bevare oversikten og spesifikk brannbelastning fra veggene ikke overstiger 10 MJ/m².</li>
+                                      <li>Del av kjeller på høyst 300 m² kan atskilles fra kjelleren med vegg A 60 og dør A 30 i rom med spesifikk brannbelastning over 10 MJ/m².</li>
+                                      <li>I oppforet takkonstruksjon av brennbart materiale skal hulrom oppdeles med branncellebegrensende vegg i arealer på høyst <span className="font-semibold text-foreground">400 m²</span> etter Tabell 30:4.</li>
+                                    </ul>
+                                  </div>
+                                )}
                               </div>
 
-                              {/* :65 Brannskiller i takflater */}
+                              {/* :65 Brannskiller i takflater – alltid synlig */}
                               <div className="space-y-1">
                                 <p className="text-xs font-semibold">Kap. 30:65 – Brannskiller i takflater</p>
                                 <p className="text-xs text-muted-foreground">
