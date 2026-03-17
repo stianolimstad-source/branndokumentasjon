@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
-import { bf85BygningstyperListe, getBygningsbrannklasse, BF85Bygningstype } from "@/lib/bf85-constants";
+import { bf85BygningstyperListe, getBygningsbrannklasse, BF85Bygningstype, getBaereevneTekstBF85 } from "@/lib/bf85-constants";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -690,6 +690,20 @@ const Konsept = () => {
   // Automatisk generering av bæreevne tekst – skip i view-modus
   useEffect(() => {
     if (isViewMode) return;
+    // BF85: use bygningsbrannklasse (1-4) with Tabell 30:41
+    if (formData.regelverk === "BF85") {
+      if (!formData.bygningsbrannklasse) return;
+      const bf85Result = getBaereevneTekstBF85(formData.bygningsbrannklasse);
+      if (bf85Result.tekst) {
+        setFormData(prev => ({
+          ...prev,
+          baereevne: bf85Result.tekst,
+          baereevneUnntak: [],
+        }));
+      }
+      return;
+    }
+    // TEK17 and others
     const result = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer);
     if (result.tekst) {
       setFormData(prev => ({ 
@@ -698,7 +712,7 @@ const Konsept = () => {
         baereevneUnntak: result.anvendteUnntak
       }));
     }
-  }, [formData.brannklasse, formData.risikoklasse, formData.etasjer]);
+  }, [formData.brannklasse, formData.risikoklasse, formData.etasjer, formData.regelverk, formData.bygningsbrannklasse]);
 
 
   // Beregn automatisk tiltaksklasse for visning
@@ -1796,9 +1810,14 @@ const Konsept = () => {
                                 <span className="text-xs text-muted-foreground italic">Låst</span>
                               </div>
                               <p className="text-xs text-muted-foreground">Regelverket kan ikke endres etter at det er valgt. Opprett en ny tilstandsvurdering for å bruke et annet regelverk.</p>
-                              {formData.regelverk !== "TEK17" && (
+                              {formData.regelverk !== "TEK17" && formData.regelverk !== "BF85" && (
                                 <p className="text-xs text-amber-700 dark:text-amber-400 font-medium mt-1">
                                   ⚠ Kravene for {formData.regelverk} kan avvike fra TEK17. Tilpassede krav kommer snart.
+                                </p>
+                              )}
+                              {formData.regelverk === "BF85" && (
+                                <p className="text-xs text-green-700 dark:text-green-400 font-medium mt-1">
+                                  ✓ Kravene er tilpasset BF85 (Byggeforskrift 1985).
                                 </p>
                               )}
                             </>
@@ -3023,16 +3042,25 @@ const Konsept = () => {
                   <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
                     <div className="space-y-3">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.1 § 11-4 Bæreevne og stabilitet</Label>
+                        <Label className="text-base font-extrabold text-foreground">
+                          {documentType === "tilstandsvurdering" ? "2" : "3"}.1 {formData.regelverk === "BF85" ? "Kap. 30:41 Bæreevne og stabilitet (Bygningsbrannklasse)" : "§ 11-4 Bæreevne og stabilitet"}
+                        </Label>
+                        {formData.regelverk === "BF85" && (
+                          <p className="text-xs text-muted-foreground mt-1">Bygningsdelers brannmotstand iht. BF85 Tabell 30:41</p>
+                        )}
                       </div>
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Krav til bærende konstruksjoner (automatisk basert på brannklasse — kan redigeres)</Label>
+                        <Label className="text-xs font-medium mb-1 block">
+                          {formData.regelverk === "BF85" 
+                            ? "Krav til bærende konstruksjoner (automatisk basert på bygningsbrannklasse — kan redigeres)"
+                            : "Krav til bærende konstruksjoner (automatisk basert på brannklasse — kan redigeres)"}
+                        </Label>
                         <Textarea 
                           value={formData.baereevne}
                           onChange={(e) => setFormData({...formData, baereevne: e.target.value})}
                           className="min-h-[140px]"
                         />
-                        {formData.baereevne && formData.brannklasse && (() => {
+                        {formData.regelverk !== "BF85" && formData.baereevne && formData.brannklasse && (() => {
                           const auto = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer);
                           return auto.tekst && formData.baereevne !== auto.tekst;
                         })() && (
@@ -3043,8 +3071,19 @@ const Konsept = () => {
                             </p>
                           </div>
                         )}
+                        {formData.regelverk === "BF85" && formData.baereevne && formData.bygningsbrannklasse && (() => {
+                          const auto = getBaereevneTekstBF85(formData.bygningsbrannklasse);
+                          return auto.tekst && formData.baereevne !== auto.tekst;
+                        })() && (
+                          <div className="flex items-start gap-2 mt-2 p-2 border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 rounded-md">
+                            <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                            <p className="text-xs text-amber-700 dark:text-amber-400">
+                              Bæreevne-kravene er endret fra automatisk beregnet verdi (BF85 Tabell 30:41). Beskriv begrunnelsen i kommentarfeltet under.
+                            </p>
+                          </div>
+                        )}
                       </div>
-                      {formData.baereevneUnntak.length > 0 && (
+                      {formData.regelverk !== "BF85" && formData.baereevneUnntak.length > 0 && (
                         <div className="space-y-2">
                           <Label className="text-xs font-medium mb-1 block text-blue-700">Automatisk anvendte unntak (jf. VTEK § 11-4)</Label>
                           <div className="space-y-2 text-sm border border-blue-200 rounded-md p-3 bg-blue-50">
@@ -3057,6 +3096,33 @@ const Konsept = () => {
                           </div>
                         </div>
                        )}
+                      {formData.regelverk === "BF85" && formData.bygningsbrannklasse && (
+                        <div className="p-3 bg-muted/50 border rounded-md space-y-2">
+                          <p className="text-xs font-medium">BF85 Tabell 30:41 – Bygningsbrannklasse {formData.bygningsbrannklasse}:</p>
+                          <div className="text-xs space-y-1 text-muted-foreground">
+                            {(() => {
+                              const bf85 = getBaereevneTekstBF85(formData.bygningsbrannklasse);
+                              if (!bf85.kravTabell) return null;
+                              const k = bf85.kravTabell;
+                              return (
+                                <table className="w-full text-xs border-collapse">
+                                  <tbody>
+                                    <tr><td className="pr-2 py-0.5 font-medium">Bærende hovedsystem:</td><td className="text-red-600 font-semibold">{k.hovedsystem}</td></tr>
+                                    <tr><td className="pr-2 py-0.5 font-medium">Sekundære bærende deler:</td><td className="text-red-600 font-semibold">{k.sekundaer}</td></tr>
+                                    <tr><td className="pr-2 py-0.5 font-medium">Branncellebegrensende (ikke yttervegg):</td><td className="text-red-600 font-semibold">{k.branncellebegrensende}</td></tr>
+                                    <tr><td className="pr-2 py-0.5 font-medium">Under øverste kjellergolv:</td><td className="text-red-600 font-semibold">{k.kjeller}</td></tr>
+                                    <tr><td className="pr-2 py-0.5 font-medium">Trapperom og heissjakt:</td><td className="text-red-600 font-semibold">{k.trapperomOgHeissjakt}</td></tr>
+                                    <tr><td className="pr-2 py-0.5 font-medium">Trappeløp:</td><td className="text-red-600 font-semibold">{k.trappeloep}</td></tr>
+                                  </tbody>
+                                </table>
+                              );
+                            })()}
+                          </div>
+                          <p className="text-xs text-muted-foreground italic mt-1">
+                            Noter: I bygning uten loft behøver kravene ikke oppfylles for takkonstruksjoner av ubrennbare materialer. For bygning i 1–2 etasjer gjelder lempninger for takkonstruksjoner av brennbare materialer med kledning K1.
+                          </p>
+                        </div>
+                      )}
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           id="balkongRelevant"

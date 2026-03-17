@@ -132,6 +132,69 @@ export const getBF85Requirement = (tek17Key: string): BF85MappedSection | undefi
   bf85MappedSections.find((s) => s.tek17Key === tek17Key);
 
 /**
+ * BF85 Tabell 30:41 – Bygningsdelers brannmotstand per bygningsbrannklasse.
+ * Returns auto-generated bæreevne text for section 2.1 based on bygningsbrannklasse (1–4).
+ */
+export const getBaereevneTekstBF85 = (bygningsbrannklasse: string): { tekst: string; kravTabell: BF85BaereevneKrav | null } => {
+  const klasse = parseInt(bygningsbrannklasse, 10);
+  if (isNaN(klasse) || klasse < 1 || klasse > 4) return { tekst: "", kravTabell: null };
+
+  const krav: Record<number, BF85BaereevneKrav> = {
+    1: {
+      hovedsystem: "A 90",
+      sekundaer: "A 60",
+      branncellebegrensende: "A 60",
+      kjeller: "A 180",
+      trapperomOgHeissjakt: "A 60",
+      trappeloep: "A 30",
+    },
+    2: {
+      hovedsystem: "A 60",
+      sekundaer: "B 60",
+      branncellebegrensende: "B 60",
+      kjeller: "A 90",
+      trapperomOgHeissjakt: "A 60",
+      trappeloep: "A 30",
+    },
+    3: {
+      hovedsystem: "A 10 eller B 30",
+      sekundaer: "A 10 eller B 30",
+      branncellebegrensende: "B 30",
+      kjeller: "A 60",
+      trapperomOgHeissjakt: "B 30",
+      trappeloep: "A 10 eller B 30",
+    },
+    4: {
+      hovedsystem: "B 15",
+      sekundaer: "B 15",
+      branncellebegrensende: "B 30",
+      kjeller: "A 60",
+      trapperomOgHeissjakt: "B 15",
+      trappeloep: "Ingen krav",
+    },
+  };
+
+  const k = krav[klasse];
+  const tekst = `Bærende hovedsystem: ${k.hovedsystem}
+Sekundære bærende deler, etasjeskiller som ikke er stabiliserende: ${k.sekundaer}
+Ikke-bærende branncellebegrensende bygningsdel (unntatt yttervegg): ${k.branncellebegrensende}
+Bygningsdel under øverste kjellergolv: ${k.kjeller}
+Bygningsdel som omgir trapperom og heissjakt: ${k.trapperomOgHeissjakt}
+Trappeløp: ${k.trappeloep}`;
+
+  return { tekst, kravTabell: k };
+};
+
+export interface BF85BaereevneKrav {
+  hovedsystem: string;
+  sekundaer: string;
+  branncellebegrensende: string;
+  kjeller: string;
+  trapperomOgHeissjakt: string;
+  trappeloep: string;
+}
+
+/**
  * Get BF85 TOC entries mapped to TEK17 structure
  */
 export const getBF85TocEntries = (): { num: string; title: string }[] =>
