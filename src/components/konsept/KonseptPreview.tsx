@@ -236,7 +236,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p><span className="font-bold">2.</span> Brannteknisk tilstandsvurdering</p>
               <p className="ml-4">2.1 Bæreevne og stabilitet</p>
               <p className="ml-4">2.2 Sikkerhet ved eksplosjon</p>
-              <p className="ml-4">2.3 Tiltak mot brannspredning mellom byggverk</p>
+              <p className="ml-4">2.3 {formData.regelverk === "BF85" ? "Avstand mellom bygninger" : "Tiltak mot brannspredning mellom byggverk"}</p>
               <p className="ml-4">2.4 Brannseksjoner</p>
               <p className="ml-4">2.5 Brannceller</p>
               <p className="ml-4">2.6 Materialer og produkters egenskaper ved brann</p>
@@ -919,93 +919,186 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <TilstandTableRow data={formData.tilstandsvurderinger["3_2"]} sectionLabel="3.2 Sikkerhet ved eksplosjon" />
             )}
 
-            {/* 3.3 §11-6 Brannspredning mellom byggverk */}
+            {/* 3.3 §11-6 / BF85 :32 Brannspredning mellom byggverk */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.3 &nbsp;&nbsp; §11-6 Brannspredning mellom byggverk</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
+                {sp}.3 &nbsp;&nbsp; {formData.regelverk === "BF85" ? "Avstand mellom bygninger (Kap. 30:32)" : "§11-6 Brannspredning mellom byggverk"}
+              </td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
               <th className="border border-gray-400 p-2 text-left">Løsning</th>
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
-            <tr>
-              <td className="border border-gray-400 p-2 align-top">Generelt</td>
-              <td className="border border-gray-400 p-2">
-                Brannspredning mellom byggverk skal forebygges slik at sikkerheten for personer og husdyr ivaretas, og at brann ikke kan føre til urimelige store økonomiske tap eller samfunnsmessige konsekvenser.
-              </td>
-              <td className="border border-gray-400 p-2 align-top">RIBr</td>
-            </tr>
-            <tr>
-              <td className="border border-gray-400 p-2 align-top">Avstand til nabobygg</td>
-              <td className="border border-gray-400 p-2">{formData.avstandNabobygg ? `${formData.avstandNabobygg} meter` : "[Ikke angitt]"}</td>
-              <td className="border border-gray-400 p-2 align-top">-</td>
-            </tr>
-            <tr>
-              <td className="border border-gray-400 p-2 align-top">Bygningshøyde</td>
-              <td className="border border-gray-400 p-2">{formData.bygningshoyde ? `${formData.bygningshoyde} meter` : "[Ikke angitt]"}</td>
-              <td className="border border-gray-400 p-2 align-top">-</td>
-            </tr>
-            {parseFloat(formData.bygningshoyde) > 9 && parseFloat(formData.avstandNabobygg || "0") < 8 ? (
-              <tr>
-                <td className="border border-gray-400 p-2 align-top">Krav til brannvegg</td>
-                <td className="border border-gray-400 p-2">
-                  <p>Brannvegg (bygning over 9 meter, avstand til nabobygg under 8 meter).</p>
-                  {formData.spesifikkBrannenergi && (
-                    <div className="mt-2">
-                      <p className="font-semibold">Brannmotstand basert på spesifikk brannenergi:</p>
-                      <p className="mt-1">
-                        {formData.spesifikkBrannenergi === "inntil400" && "Inntil 400 MJ/m² → REI 120-M A2-s1,d0 [A 120]"}
-                        {formData.spesifikkBrannenergi === "400-600" && "400-600 MJ/m² → REI 180-M A2-s1,d0 [A 180]"}
-                        {formData.spesifikkBrannenergi === "600-800" && "600-800 MJ/m² → REI 240-M A2-s1,d0 [A 240]"}
-                      </p>
-                    </div>
-                  )}
-                  <ol className="list-decimal list-inside space-y-1 mt-2">
-                    <li>Takkonstruksjonen må ikke være kontinuerlig over brannveggen.</li>
-                    <li>Konstruksjoner inntil brannveggen må kunne bevege seg fritt ved temperaturendringer.</li>
-                    <li>Brannveggens avslutning mot tak og fasade må hindre brannspredning.</li>
-                    <li>Brannveggen må ha brannmotstand minst som angitt i tabell 1.</li>
-                    <li>Brannveggen må bestå av materialer i klasse A2-s1,d0 [ubrennbare].</li>
-                    <li>Uten dokumentert mekanisk motstandsevne (M): tunge materialer som mur/betong.</li>
-                    <li>Brannveggen må føres min. 0,5 m over høyeste tilstøtende tak.</li>
-                    <li>Brannveggen må bli stående selv om byggverket på én side raser sammen.</li>
-                  </ol>
-                </td>
-                <td className="border border-gray-400 p-2 align-top">RIB</td>
-              </tr>
-            ) : (parseFloat(formData.bygningshoyde) > 9 && parseFloat(formData.avstandNabobygg || "0") >= 8) ? (
-              <tr>
-                <td className="border border-gray-400 p-2 align-top">Krav til skillevegg</td>
-                <td className="border border-gray-400 p-2">
-                  Avstand til nabobygg er 8 meter eller mer. Krav til brannvegg gjelder ikke. Branncellebegrensende bygningsdel benyttes i stedet.
-                </td>
-                <td className="border border-gray-400 p-2 align-top">RIB</td>
-              </tr>
-            ) : parseFloat(formData.bygningshoyde) > 0 && parseFloat(formData.bygningshoyde) <= 9 ? (
+
+            {formData.regelverk === "BF85" ? (
               <>
+                {/* BF85 Kap 30:32 */}
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Krav til skillevegg</td>
+                  <td className="border border-gray-400 p-2 align-top">Generelt</td>
                   <td className="border border-gray-400 p-2">
-                    Branncellevegg (bygning under eller lik 9 meter). Avstanden mellom lave byggverk kan være mindre enn 8,0 meter når byggverkene er skilt med branncellebegrensende bygningsdel.
+                    Krav til avstand mellom bygninger og mellom grupper av bygninger vurderes iht. BF85 Kap. 30:32. Gesimshøyde måles bare på motstående vegger.
                   </td>
-                  <td className="border border-gray-400 p-2 align-top">RIB</td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
                 </tr>
-                {formData.risikoklasse === "RK1" && (
+
+                {formData.bf85SkiltMedBrannvegg === "ja" ? (
                   <tr>
-                    <td className="border border-gray-400 p-2 align-top">Unntak RK1</td>
+                    <td className="border border-gray-400 p-2 align-top">:321 Brannvegg</td>
                     <td className="border border-gray-400 p-2">
-                      Byggverk i risikoklasse 1 med bruttoareal ≤ 50 m² og liten/middel brannenergi kan plasseres nærmere uten særlige tiltak.
+                      Bygningene er skilt med brannvegg. Det stilles ingen krav til avstand mellom bygninger som er skilt med brannvegg.
                     </td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                ) : (
+                  <>
+                    {/* Gesimshøyde og avstand */}
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Gesimshøyde</td>
+                      <td className="border border-gray-400 p-2">
+                        Egen bygning: {formData.gesimshoydeEgen ? `${formData.gesimshoydeEgen} m` : "[Ikke angitt]"}
+                        {" · "}
+                        Nabobygning: {formData.gesimshoydeNabo ? `${formData.gesimshoydeNabo} m` : "[Ikke angitt]"}
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">-</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Faktisk avstand</td>
+                      <td className="border border-gray-400 p-2">{formData.avstandNabobygg ? `${formData.avstandNabobygg} m` : "[Ikke angitt]"}</td>
+                      <td className="border border-gray-400 p-2 align-top">-</td>
+                    </tr>
+
+                    {/* Beregnet minsteavstand */}
+                    {(() => {
+                      const hEgen = parseFloat(formData.gesimshoydeEgen) || 0;
+                      const hNabo = parseFloat(formData.gesimshoydeNabo) || 0;
+                      const faktisk = parseFloat(formData.avstandNabobygg) || 0;
+                      if (hEgen > 0 && hNabo > 0) {
+                        const beregnet = (hEgen + hNabo) / 2;
+                        const minsteAvstand = Math.max(beregnet, 8);
+                        const oppfylt = faktisk >= minsteAvstand;
+                        return (
+                          <tr>
+                            <td className="border border-gray-400 p-2 align-top font-semibold">:322 Minsteavstand</td>
+                            <td className="border border-gray-400 p-2">
+                              <p>Beregnet minsteavstand: ({hEgen} + {hNabo}) / 2 = {beregnet.toFixed(1)} m{beregnet < 8 ? " → minimum 8,0 m" : ""}</p>
+                              <p className="font-semibold mt-1">Krav: {minsteAvstand.toFixed(1)} m</p>
+                              {faktisk > 0 && (
+                                <p className={`mt-1 font-semibold ${oppfylt ? "text-green-700" : "text-red-700"}`}>
+                                  {oppfylt
+                                    ? `✓ Faktisk avstand (${faktisk} m) oppfyller kravet.`
+                                    : `✗ Faktisk avstand (${faktisk} m) er mindre enn minsteavstanden (${minsteAvstand.toFixed(1)} m).`
+                                  }
+                                </p>
+                              )}
+                            </td>
+                            <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                          </tr>
+                        );
+                      }
+                      return null;
+                    })()}
+
+                    {/* Gruppe-unntak */}
+                    {formData.bf85ErGruppe === "ja" && (
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">:3221 Unntak – bygninger i gruppe</td>
+                        <td className="border border-gray-400 p-2">
+                          <p>Bygningene inngår i en gruppe. To eller flere bygninger i gruppe kan ha mindre innbyrdes avstand enn angitt i :322, forutsatt at bruttoareal i en gruppe er som angitt i kap. 31–39.</p>
+                          <ul className="list-disc list-inside mt-1 space-y-1">
+                            <li>Yttervegg som kan bli utsatt for strålevarme, skal ha samme brannmotstand som branncellbegrensende bygningsdel i vedkommende bygningsbrannklasse (jf. Tabell 30:41) og være uten vindu, dør eller andre åpninger.</li>
+                            <li>Kravene gjelder bare den delen av veggen som ligger nærmere nabobygningen enn minsteavstanden.</li>
+                          </ul>
+                        </td>
+                        <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                      </tr>
+                    )}
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                {/* TEK17 – eksisterende logikk */}
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Generelt</td>
+                  <td className="border border-gray-400 p-2">
+                    Brannspredning mellom byggverk skal forebygges slik at sikkerheten for personer og husdyr ivaretas, og at brann ikke kan føre til urimelige store økonomiske tap eller samfunnsmessige konsekvenser.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Avstand til nabobygg</td>
+                  <td className="border border-gray-400 p-2">{formData.avstandNabobygg ? `${formData.avstandNabobygg} meter` : "[Ikke angitt]"}</td>
+                  <td className="border border-gray-400 p-2 align-top">-</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Bygningshøyde</td>
+                  <td className="border border-gray-400 p-2">{formData.bygningshoyde ? `${formData.bygningshoyde} meter` : "[Ikke angitt]"}</td>
+                  <td className="border border-gray-400 p-2 align-top">-</td>
+                </tr>
+                {parseFloat(formData.bygningshoyde) > 9 && parseFloat(formData.avstandNabobygg || "0") < 8 ? (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Krav til brannvegg</td>
+                    <td className="border border-gray-400 p-2">
+                      <p>Brannvegg (bygning over 9 meter, avstand til nabobygg under 8 meter).</p>
+                      {formData.spesifikkBrannenergi && (
+                        <div className="mt-2">
+                          <p className="font-semibold">Brannmotstand basert på spesifikk brannenergi:</p>
+                          <p className="mt-1">
+                            {formData.spesifikkBrannenergi === "inntil400" && "Inntil 400 MJ/m² → REI 120-M A2-s1,d0 [A 120]"}
+                            {formData.spesifikkBrannenergi === "400-600" && "400-600 MJ/m² → REI 180-M A2-s1,d0 [A 180]"}
+                            {formData.spesifikkBrannenergi === "600-800" && "600-800 MJ/m² → REI 240-M A2-s1,d0 [A 240]"}
+                          </p>
+                        </div>
+                      )}
+                      <ol className="list-decimal list-inside space-y-1 mt-2">
+                        <li>Takkonstruksjonen må ikke være kontinuerlig over brannveggen.</li>
+                        <li>Konstruksjoner inntil brannveggen må kunne bevege seg fritt ved temperaturendringer.</li>
+                        <li>Brannveggens avslutning mot tak og fasade må hindre brannspredning.</li>
+                        <li>Brannveggen må ha brannmotstand minst som angitt i tabell 1.</li>
+                        <li>Brannveggen må bestå av materialer i klasse A2-s1,d0 [ubrennbare].</li>
+                        <li>Uten dokumentert mekanisk motstandsevne (M): tunge materialer som mur/betong.</li>
+                        <li>Brannveggen må føres min. 0,5 m over høyeste tilstøtende tak.</li>
+                        <li>Brannveggen må bli stående selv om byggverket på én side raser sammen.</li>
+                      </ol>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIB</td>
+                  </tr>
+                ) : (parseFloat(formData.bygningshoyde) > 9 && parseFloat(formData.avstandNabobygg || "0") >= 8) ? (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Krav til skillevegg</td>
+                    <td className="border border-gray-400 p-2">
+                      Avstand til nabobygg er 8 meter eller mer. Krav til brannvegg gjelder ikke. Branncellebegrensende bygningsdel benyttes i stedet.
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIB</td>
+                  </tr>
+                ) : parseFloat(formData.bygningshoyde) > 0 && parseFloat(formData.bygningshoyde) <= 9 ? (
+                  <>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Krav til skillevegg</td>
+                      <td className="border border-gray-400 p-2">
+                        Branncellevegg (bygning under eller lik 9 meter). Avstanden mellom lave byggverk kan være mindre enn 8,0 meter når byggverkene er skilt med branncellebegrensende bygningsdel.
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIB</td>
+                    </tr>
+                    {formData.risikoklasse === "RK1" && (
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">Unntak RK1</td>
+                        <td className="border border-gray-400 p-2">
+                          Byggverk i risikoklasse 1 med bruttoareal ≤ 50 m² og liten/middel brannenergi kan plasseres nærmere uten særlige tiltak.
+                        </td>
+                        <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                      </tr>
+                    )}
+                  </>
+                ) : (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Generelt</td>
+                    <td className="border border-gray-400 p-2">[Krav til brannspredning vurderes etter bygningshøyde]</td>
                     <td className="border border-gray-400 p-2 align-top">RIBr</td>
                   </tr>
                 )}
               </>
-            ) : (
-              <tr>
-                <td className="border border-gray-400 p-2 align-top">Generelt</td>
-                <td className="border border-gray-400 p-2">[Krav til brannspredning vurderes etter bygningshøyde]</td>
-                <td className="border border-gray-400 p-2 align-top">RIBr</td>
-              </tr>
             )}
             {formData.brannspredningKommentar && (
               <tr>
