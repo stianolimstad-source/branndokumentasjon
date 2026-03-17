@@ -618,8 +618,37 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <div className={pageStyle} style={pageWidth}>
       {/* Branntekniske ytelseskrav */}
       <section className="mb-6">
-        <h2 className="font-bold mb-3">{isTilstand ? "2" : "3"}. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"}</h2>
+        <h2 className="font-bold mb-3">{isTilstand ? "2" : "3"}. {isTilstand ? (isBF85 ? "Brannteknisk tilstandsvurdering (BF85)" : "Brannteknisk tilstandsvurdering") : "Beskrivelse av branntekniske ytelseskrav"}</h2>
         
+        {isBF85 ? (
+          /* ===== BF85 SECTIONS ===== */
+          <table className="w-full border-collapse border border-gray-400 text-xs">
+            <tbody>
+              {bf85Sections.map((section, i) => (
+                <React.Fragment key={section.id}>
+                  <tr className="bg-blue-100">
+                    <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
+                      2.{i + 1} &nbsp;&nbsp; {section.ref} – {section.title}
+                    </td>
+                  </tr>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                    <th className="border border-gray-400 p-2 text-left">Krav / Beskrivelse</th>
+                    <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Vurdering</th>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Krav iht. BF85</td>
+                    <td className="border border-gray-400 p-2">{section.description}</td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                  {formData.tilstandsvurderinger?.[section.id] && (
+                    <TilstandTableRow data={formData.tilstandsvurderinger[section.id]} sectionLabel={`2.${i + 1} ${section.title}`} />
+                  )}
+                </React.Fragment>
+              ))}
+            </tbody>
+          </table>
+        ) : (
         <table className="w-full border-collapse border border-gray-400 text-xs">
           <tbody>
             {/* 3.1 § 11-4 Bæreevne og stabilitet */}
