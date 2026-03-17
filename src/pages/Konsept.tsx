@@ -517,6 +517,7 @@ const Konsept = () => {
     brannseksjonBrannenergi: "", // "over400", "50-400", "under50" - brukes for arealgrenser (VTEK tabell 1)
     seksjoneringsvegBrannenergi: "", // "under400", "400-600", "600-800" - brukes for brannmotstand (VTEK tabell 2)
     brannseksjonTiltak: "", // "normalt", "brannalarm", "sprinkler", "roykventilasjon"
+    brukTEK17Seksjonering: false, // BF85: bruk TEK17-krav ved >400 MJ/m²
     innvendigHjorne: "nei" as "ja" | "nei",
     innvendigHjorneAlternativ: "alt1" as "alt1" | "alt2", // alt1 = 8m, alt2 = 5m+5m
     seksjonDorRelevant: false,
