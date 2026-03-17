@@ -3198,7 +3198,9 @@ const Konsept = () => {
                       {formData.eksplosjonRelevant === "ikke_relevant" && (
                         <div className="p-3 bg-muted/50 border rounded-md space-y-2">
                           <p className="text-sm text-muted-foreground">
-                            RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket.
+                            {formData.regelverk === "BF85"
+                              ? "Sikkerhet ved eksplosjon er ikke kravsatt i BF85. RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket."
+                              : "RiBr er ikke opplyst eller kjent med at det er fare for eksplosjon i forbindelse med tiltaket."}
                           </p>
                           <p className="text-xs text-muted-foreground">
                             Krav til sikkerhet ved eksplosjon er også gitt i andre regelverk som for eksempel{' '}
