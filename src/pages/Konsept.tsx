@@ -2374,7 +2374,7 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">{documentType === "tilstandsvurdering" ? "1.4" : "2.2"} Grunnlagsdokumenter</Label>
+                      <Label className="text-xs text-muted-foreground">2.2 Grunnlagsdokumenter</Label>
                       <div className="space-y-3">
                         {(Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : []).map((doc, index) => (
                           <div key={index} className="border rounded-md p-3 space-y-2 relative">
