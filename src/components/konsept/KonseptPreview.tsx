@@ -103,7 +103,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   const extraPages = (hasSammendrag ? 1 : 0) + (isTilstand ? 1 : 0);
   const totalPages = isTilstand ? 7 + extraPages : 8 + extraPages;
   // Section prefix for chapter 3 (brannkonsept) → chapter 2 (tilstandsvurdering)
-  const sp = isTilstand ? "2" : "3";
+  const sp = "3";
 
   const PageFooter = ({ pageNum }: { pageNum: number }) => (
     <div className="absolute bottom-4 left-0 right-0 flex justify-center">
@@ -229,26 +229,27 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p><span className="font-bold">1.</span> Innledning</p>
               <p className="ml-4">1.1 Informasjon om tiltaket</p>
               <p className="ml-4">1.2 Avgrensning av vurderingen</p>
-              <p className="ml-4">1.3 Bygningsinformasjon</p>
-              <p className="ml-4">1.4 Grunnlagsdokumenter</p>
-              <p className="ml-4">1.5 Branntekniske forutsetninger</p>
-              <p className="ml-4">1.6 Tilleggskrav</p>
-              <p><span className="font-bold">2.</span> Brannteknisk tilstandsvurdering</p>
-              <p className="ml-4">2.1 Bæreevne og stabilitet</p>
-              <p className="ml-4">2.2 Sikkerhet ved eksplosjon</p>
-              <p className="ml-4">2.3 {formData.regelverk === "BF85" ? "Avstand mellom bygninger" : "Tiltak mot brannspredning mellom byggverk"}</p>
-              <p className="ml-4">2.4 {formData.regelverk === "BF85" ? "Brannteknisk oppdeling" : "Brannseksjoner"}</p>
-              <p className="ml-4">2.5 Brannceller</p>
-              <p className="ml-4">2.6 Materialer og produkters egenskaper ved brann</p>
-              <p className="ml-4">2.7 Tekniske installasjoner</p>
-              <p className="ml-4">2.8 Generelle krav om rømning og redning</p>
-              <p className="ml-4">2.9 Tiltak for å påvirke rømnings- og redningstider</p>
-              <p className="ml-4">2.10 Utgang fra branncelle</p>
-              <p className="ml-4">2.11 Rømningsvei</p>
-              <p className="ml-4">2.12 Tilrettelegging for manuell slokking</p>
-              <p className="ml-4">2.13 Tilrettelegging for rednings- og slokkemannskap</p>
-              <p><span className="font-bold">3.</span> Revisjonshistorikk</p>
-              <p><span className="font-bold">4.</span> Litteraturhenvisninger</p>
+              <p><span className="font-bold">2.</span> Grunnlag og forutsetninger</p>
+              <p className="ml-4">2.1 Bygningsinformasjon</p>
+              <p className="ml-4">2.2 Grunnlagsdokumenter</p>
+              <p className="ml-4">2.3 Branntekniske forutsetninger</p>
+              <p className="ml-4">2.4 Tilleggskrav</p>
+              <p><span className="font-bold">3.</span> Brannteknisk tilstandsvurdering</p>
+              <p className="ml-4">3.1 Bæreevne og stabilitet</p>
+              <p className="ml-4">3.2 Sikkerhet ved eksplosjon</p>
+              <p className="ml-4">3.3 {formData.regelverk === "BF85" ? "Avstand mellom bygninger" : "Tiltak mot brannspredning mellom byggverk"}</p>
+              <p className="ml-4">3.4 {formData.regelverk === "BF85" ? "Brannteknisk oppdeling" : "Brannseksjoner"}</p>
+              <p className="ml-4">3.5 Brannceller</p>
+              <p className="ml-4">3.6 Materialer og produkters egenskaper ved brann</p>
+              <p className="ml-4">3.7 Tekniske installasjoner</p>
+              <p className="ml-4">3.8 Generelle krav om rømning og redning</p>
+              <p className="ml-4">3.9 Tiltak for å påvirke rømnings- og redningstider</p>
+              <p className="ml-4">3.10 Utgang fra branncelle</p>
+              <p className="ml-4">3.11 Rømningsvei</p>
+              <p className="ml-4">3.12 Tilrettelegging for manuell slokking</p>
+              <p className="ml-4">3.13 Tilrettelegging for rednings- og slokkemannskap</p>
+              <p><span className="font-bold">4.</span> Revisjonshistorikk</p>
+              <p><span className="font-bold">5.</span> Litteraturhenvisninger</p>
             </>
           ) : (
             <>
@@ -411,12 +412,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
         {isTilstand ? (
-          <h2 className="font-bold mb-3">1. Innledning (forts.)</h2>
+          <h2 className="font-bold mb-3">2. Grunnlag og forutsetninger</h2>
         ) : (
           <h2 className="font-bold mb-3">2. Grunnlag og forutsetninger for brannteknisk prosjektering</h2>
         )}
         
-        <h3 className="font-semibold mb-2">{isTilstand ? "1.3 Bygningsinformasjon" : "2.1 Grunnlagsdokumenter"}</h3>
+        <h3 className="font-semibold mb-2">{isTilstand ? "2.1 Bygningsinformasjon" : "2.1 Grunnlagsdokumenter"}</h3>
         {isTilstand ? (
           <>
           {/* For tilstandsvurdering: bygningsinfo først */}
@@ -454,7 +455,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             </tbody>
           </table>
 
-          <h3 className="font-semibold mb-2">1.4 Grunnlagsdokumenter</h3>
+          <h3 className="font-semibold mb-2">2.2 Grunnlagsdokumenter</h3>
           {grunnlagsdokumenter.length > 0 ? (
             <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
               <thead>
@@ -478,10 +479,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             <p className="ml-4 mb-3">[Liste over tegninger og dokumenter]</p>
           )}
 
-          <h3 className="font-semibold mb-2">1.5 Branntekniske forutsetninger</h3>
+          <h3 className="font-semibold mb-2">2.3 Branntekniske forutsetninger</h3>
           <p className="ml-4 mb-3">{formData.tiltaksbeskrivelse || "[Branntekniske forutsetninger beskrives]"}</p>
 
-          <h3 className="font-semibold mb-2">1.6 Tilleggskrav</h3>
+          <h3 className="font-semibold mb-2">2.4 Tilleggskrav</h3>
           <p className="ml-4 mb-3 whitespace-pre-wrap">{formData.tilleggskrav || "[Eventuelle tilleggskrav beskrives]"}</p>
           </>
         ) : (
@@ -621,7 +622,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <div className={pageStyle} style={pageWidth}>
       {/* Branntekniske ytelseskrav */}
       <section className="mb-6">
-        <h2 className="font-bold mb-3">{isTilstand ? "2" : "3"}. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"}</h2>
+        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"}</h2>
         
         <table className="w-full border-collapse border border-gray-400 text-xs">
           <tbody>
