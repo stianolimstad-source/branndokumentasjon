@@ -2342,6 +2342,34 @@ const Konsept = () => {
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">{documentType === "tilstandsvurdering" ? "1.5" : "2.3"} Branntekniske forutsetninger</Label>
                       <div className="space-y-3">
+                        {/* BF85: Bygningsbrannklasse i stedet for risikoklasse + brannklasse */}
+                        {documentType === "tilstandsvurdering" && formData.regelverk === "BF85" ? (
+                          <div className="space-y-3">
+                            <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700 rounded-md">
+                              <p className="text-xs text-amber-700 dark:text-amber-400">
+                                BF85 bruker bygningsbrannklasse (1–4) i stedet for risikoklasse og brannklasse. Bygningsbrannklassen bestemmes av bygningens bruk og størrelse iht. Kap. 31–39.
+                              </p>
+                            </div>
+                            <div>
+                              <Label className="text-xs font-medium mb-1 block">Bygningsbrannklasse (BF85)</Label>
+                              <Select 
+                                value={formData.bygningsbrannklasse}
+                                onValueChange={(value) => setFormData({...formData, bygningsbrannklasse: value})}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Velg bygningsbrannklasse..." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="1">Bygningsbrannklasse 1 – Mindre bygninger med lav risiko</SelectItem>
+                                  <SelectItem value="2">Bygningsbrannklasse 2 – Vanlige bygninger, moderat risiko</SelectItem>
+                                  <SelectItem value="3">Bygningsbrannklasse 3 – Større bygninger, høyere risiko</SelectItem>
+                                  <SelectItem value="4">Bygningsbrannklasse 4 – Store/komplekse bygninger, høyest risiko</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                        ) : (
+                        <>
                         {/* Toggle for flere risikoklasser */}
                         <div className="flex items-center gap-2 p-3 bg-muted/30 border rounded-md">
                           <input
