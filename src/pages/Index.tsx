@@ -195,58 +195,49 @@ const Index = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Fraviksdokumentasjon choice dialog */}
       <Dialog open={showFravikDialog} onOpenChange={setShowFravikDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Fraviksdokumentasjon</DialogTitle>
+            <DialogTitle>Velg type fraviksvurdering</DialogTitle>
+            <DialogDescription>Velg metode for fraviksdokumentasjonen</DialogDescription>
           </DialogHeader>
           <div className="grid gap-3 py-4">
-            <Button
-              size="lg"
-              className="justify-start h-auto py-4 px-5"
+            <Card
+              className="cursor-pointer hover:border-primary transition-colors"
               onClick={() => { setShowFravikDialog(false); navigate("/fraviksdokumentasjon/kvalitativ?new=true"); }}
             >
-              <Plus className="h-5 w-5 mr-3" />
-              <div className="text-left">
-                <p className="font-medium">Kvalitativ analyse</p>
-                <p className="text-sm text-primary-foreground/70 font-normal">Fraviksanalyse basert på faglig skjønn</p>
-              </div>
-            </Button>
-            <Button
-              size="lg"
-              className="justify-start h-auto py-4 px-5 opacity-60 cursor-not-allowed"
-              disabled
-            >
-              <Plus className="h-5 w-5 mr-3" />
-              <div className="text-left">
-                <p className="font-medium">Komparativ analyse</p>
-                <p className="text-sm text-primary-foreground/70 font-normal">Kommer snart</p>
-              </div>
-            </Button>
-            <Button
-              size="lg"
-              className="justify-start h-auto py-4 px-5 opacity-60 cursor-not-allowed"
-              disabled
-            >
-              <Plus className="h-5 w-5 mr-3" />
-              <div className="text-left">
-                <p className="font-medium">Analyse etter NS 3921</p>
-                <p className="text-sm text-primary-foreground/70 font-normal">Kommer snart</p>
-              </div>
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="justify-start h-auto py-4 px-5"
-              onClick={() => { setShowFravikDialog(false); navigate("/mine-prosjekter"); }}
-            >
-              <FolderOpen className="h-5 w-5 mr-3" />
-              <div className="text-left">
-                <p className="font-medium">Mine prosjekter</p>
-                <p className="text-sm text-muted-foreground font-normal">Se og rediger eksisterende fraviksdokumenter</p>
-              </div>
-            </Button>
+              <CardHeader className="py-3 px-4">
+                <div className="flex items-center gap-3">
+                  <BarChart3 className="h-5 w-5 text-orange-500" />
+                  <div>
+                    <CardTitle className="text-sm">Kvalitativ analyse</CardTitle>
+                    <CardDescription className="text-xs">Vurdering basert på faglig skjønn og erfaring</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+            </Card>
+            <Card className="cursor-pointer hover:border-primary transition-colors opacity-60">
+              <CardHeader className="py-3 px-4">
+                <div className="flex items-center gap-3">
+                  <GitCompare className="h-5 w-5 text-blue-500" />
+                  <div>
+                    <CardTitle className="text-sm">Komparativ analyse</CardTitle>
+                    <CardDescription className="text-xs">Sammenligning med preaksepterte ytelser – Kommer snart</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+            </Card>
+            <Card className="cursor-pointer hover:border-primary transition-colors opacity-60">
+              <CardHeader className="py-3 px-4">
+                <div className="flex items-center gap-3">
+                  <Shield className="h-5 w-5 text-green-600" />
+                  <div>
+                    <CardTitle className="text-sm">Analyse etter NS 3921</CardTitle>
+                    <CardDescription className="text-xs">Risikobasert analyse iht. norsk standard – Kommer snart</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+            </Card>
           </div>
         </DialogContent>
       </Dialog>
