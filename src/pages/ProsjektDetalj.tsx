@@ -61,6 +61,7 @@ const ProsjektDetalj = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [primaryBygningstype, setPrimaryBygningstype] = useState<string | null>(null);
+  const [showFravikPicker, setShowFravikPicker] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) navigate('/auth');
