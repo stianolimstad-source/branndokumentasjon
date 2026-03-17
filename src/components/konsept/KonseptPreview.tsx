@@ -87,20 +87,6 @@ const TilstandTableRow = ({ data, sectionLabel }: { data: TilstandData; sectionL
     </tr>
   );
 };
-const ChapterSection = ({ title, defaultOpen = true, children }: { title: string; defaultOpen?: boolean; children: React.ReactNode }) => {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
-  return (
-    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <CollapsibleTrigger className="flex items-center gap-2 w-full px-4 py-2.5 bg-muted/60 hover:bg-muted rounded-lg border border-border/50 transition-colors cursor-pointer mb-2">
-        {isOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
-        <span className="text-sm font-semibold text-foreground">{title}</span>
-      </CollapsibleTrigger>
-      <CollapsibleContent className="space-y-8">
-        {children}
-      </CollapsibleContent>
-    </Collapsible>
-  );
-};
 
 const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannkonsept" }: KonseptPreviewProps) => {
   // Ensure arrays have defaults
