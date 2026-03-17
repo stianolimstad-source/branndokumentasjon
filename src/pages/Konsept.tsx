@@ -3171,7 +3171,14 @@ const Konsept = () => {
                     {renderTilstandPanel("3_1")}
                     <div className="space-y-3">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.2 § 11-5 Sikkerhet ved eksplosjon</Label>
+                        <Label className="text-base font-extrabold text-foreground">
+                          {documentType === "tilstandsvurdering" ? "2" : "3"}.2 {formData.regelverk === "BF85" ? "Sikkerhet ved eksplosjon" : "§ 11-5 Sikkerhet ved eksplosjon"}
+                        </Label>
+                        {formData.regelverk === "BF85" && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Sikkerhet ved eksplosjon er ikke spesifikt kravsatt i BF85, men må likevel vurderes i en tilstandsvurdering.
+                          </p>
+                        )}
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Er eksplosjonsfare relevant for dette tiltaket?</Label>
