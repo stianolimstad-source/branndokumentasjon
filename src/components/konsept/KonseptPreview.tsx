@@ -1096,8 +1096,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_4"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_4"]} sectionLabel="3.4 Brannseksjoner" />
-            )}
-
           </tbody>
         </table>
         )}
