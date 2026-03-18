@@ -4080,14 +4080,24 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-2 block">Dører i branncellebegrensende konstruksjoner</Label>
                         <div className="border rounded-md p-2 space-y-2 bg-muted/30">
-                          {[
+                          {(formData.regelverk === "BF85" ? [
+                            { id: "bf85_branncelle_aapent", label: "Branncelle – åpent trapperom" },
+                            { id: "bf85_korridor_lukket", label: "Korridor – lukket trapperom" },
+                            { id: "bf85_korridor_sluse_branntrygt", label: "Korridor/sluse – branntrygt trapperom" },
+                            { id: "bf85_roykfritt_fri_luft", label: "Røykfritt trapperom – fri luft" },
+                            { id: "bf85_korridor_fri_luft", label: "Korridor – fri luft (i kombinasjon med røykfritt trapperom)" },
+                            { id: "bf85_branncelle_korridor", label: "Branncelle – korridor" },
+                            { id: "bf85_loft_trapperom", label: "Loft – trapperom" },
+                            { id: "bf85_kjeller_trapperom", label: "Kjeller – trapperom" },
+                            { id: "bf85_kjeller_under_overste", label: "Kjeller under øverste kjelleretasje – egen trapp eller annen atkomst" },
+                          ] : [
                             { id: "branncelle_trapperom_tr1", label: "Branncelle – trapperom Tr 1" },
                             { id: "korridor_trapperom_tr2", label: "Korridor – trapperom Tr 2" },
                             { id: "mellomliggende_trapperom_tr3", label: "Mellomliggende rom – trapperom Tr 3" },
                             { id: "garasje_brannsluse", label: "Garasje – brannsluse" },
                             { id: "branncelle_korridor", label: "Branncelle – korridor" },
                             { id: "korridor_det_fri_tr3", label: "Korridor – det fri (i kombinasjon med trapperom Tr 3)" },
-                          ].map((dp) => (
+                          ]).map((dp) => (
                             <div key={dp.id} className="flex items-start space-x-2">
                               <Checkbox
                                 id={`dor-${dp.id}`}
