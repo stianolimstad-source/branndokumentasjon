@@ -415,7 +415,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 <AccordionTrigger className="text-sm py-2">Steinull (≥ 26 kg/m³)</AccordionTrigger>
                 <AccordionContent className="text-xs space-y-1 text-muted-foreground">
                   <p>Ubrennbar mineralullsisolasjon laget av steinbasert råmateriale. Standard densitet for veggsisolering. Smelter ikke og bidrar til brannmotstand ved å forsinke varmetransporten gjennom konstruksjonen.</p>
-                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 45 · 50 · 70 · 95 · 100 · 120 · 145 · 148 · 198 · 200 · 250 mm</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 148 mm (også tilgjengelig i 45, 50, 70, 95, 100, 120, 145, 198, 200 og 250 mm)</p>
                   <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 0,2 min/mm</p>
                 </AccordionContent>
               </AccordionItem>
