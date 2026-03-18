@@ -1545,6 +1545,42 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
             {/* Dørkrav */}
             {formData.dorPlasseringer && formData.dorPlasseringer.length > 0 && formData.brannklasse && (() => {
+              const isBF85 = formData.regelverk === "BF85";
+              if (isBF85) {
+                const bbk = parseInt(formData.bygningsbrannklasse || '0', 10);
+                const isBBK12 = bbk <= 2;
+                const bf85DorKravMap: Record<string, { label: string; bbk12: string; bbk34: string }> = {
+                  bf85_branncelle_aapent: { label: "Branncelle – åpent trapperom", bbk12: "B 30 S", bbk34: "B 30 S" },
+                  bf85_korridor_lukket: { label: "Korridor – lukket trapperom", bbk12: "B 30 S eller F 30 S", bbk34: "B 30 S eller F 30 S" },
+                  bf85_korridor_sluse_branntrygt: { label: "Korridor/sluse – branntrygt trapperom", bbk12: "A 60 S", bbk34: "A 60 S" },
+                  bf85_roykfritt_fri_luft: { label: "Røykfritt trapperom – fri luft", bbk12: "A 60 S", bbk34: "A 60 S" },
+                  bf85_korridor_fri_luft: { label: "Korridor – fri luft (i kombinasjon med røykfritt trapperom)", bbk12: "B 30", bbk34: "B 30" },
+                  bf85_branncelle_korridor: { label: "Branncelle – korridor", bbk12: "B 30", bbk34: "B 15" },
+                  bf85_loft_trapperom: { label: "Loft – trapperom", bbk12: "B 30 S", bbk34: "B 15 S" },
+                  bf85_kjeller_trapperom: { label: "Kjeller – trapperom", bbk12: "B 60 S", bbk34: "B 30 S" },
+                  bf85_kjeller_under_overste: { label: "Kjeller under øverste kjelleretasje – egen trapp eller annen atkomst", bbk12: "A 60 S", bbk34: "A 60 S" },
+                };
+                const activeDoors = formData.dorPlasseringer
+                  .map((id: string) => bf85DorKravMap[id])
+                  .filter(Boolean);
+                if (activeDoors.length === 0) return null;
+                return (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Dørkrav (Tabell 30:75)</td>
+                    <td className="border border-gray-400 p-2">
+                      <div className="space-y-1">
+                        {activeDoors.map((d: { label: string; bbk12: string; bbk34: string }, idx: number) => {
+                          const krav = isBBK12 ? d.bbk12 : d.bbk34;
+                          return <div key={idx}>{d.label}: <span className="font-semibold">{krav}</span></div>;
+                        })}
+                      </div>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
+                );
+              }
+
+              // TEK17 logic
               const isBKL1 = formData.brannklasse === "BKL1";
               const dorKravMap: Record<string, { label: string; bkl1: string; bkl23: string }> = {
                 branncelle_trapperom_tr1: { label: "Branncelle – trapperom Tr 1", bkl1: "EI₂ 30-CSₐ [B 30 S]", bkl23: "EI₂ 30-CSₐ [B 30 S]" },
@@ -1612,6 +1648,34 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             })()}
             {/* Trapperom */}
             {formData.trapperomKrav && formData.trapperomKrav.length > 0 && (() => {
+              const isBF85 = formData.regelverk === "BF85";
+              if (isBF85) {
+                const bf85TrapperomMap: Record<string, { title: string; desc: string }> = {
+                  bf85_tr_aapent: { title: "Åpent", desc: "Trapperom som har direkte forbindelse gjennom dør til bruksenheten." },
+                  bf85_tr_lukket: { title: "Lukket", desc: "Trapperom som har forbindelse til bruksenhet bare gjennom lukket korridor, og som er lukket med dør B 30 eller F 30 mot korridor." },
+                  bf85_tr_branntrygt: { title: "Branntrygt", desc: "Lukket trapperom utført som branntrygt rom uten forbindelse til kjeller." },
+                  bf85_tr_roykfritt: { title: "Røykfritt", desc: "Branntrygt trapperom med forbindelse til bruksenheten bare gjennom rom åpent mot det fri (f.eks. balkong)." },
+                };
+                const activeKrav = formData.trapperomKrav
+                  .map((id: string) => ({ id, ...bf85TrapperomMap[id] }))
+                  .filter((k: { title?: string }) => k.title);
+                if (activeKrav.length === 0) return null;
+                return (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Krav til trapperom (Kap. 30:7)</td>
+                    <td className="border border-gray-400 p-2">
+                      <div className="space-y-1">
+                        {activeKrav.map((k: { id: string; title: string; desc: string }) => (
+                          <div key={k.id}><span className="font-semibold">{k.title}:</span> {k.desc}</div>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                );
+              }
+
+              // TEK17 logic
               const rk = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
               const floors = parseInt(formData.etasjer || '0', 10);
               const trapperomTypeMap: Record<number, { lav: string; hoy: string }> = {
