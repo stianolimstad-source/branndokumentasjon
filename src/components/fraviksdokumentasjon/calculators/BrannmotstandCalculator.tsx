@@ -367,6 +367,41 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                     </tbody>
                   </table>
                 </div>
+
+                {/* Forklaring av k_pos og isolasjonsjustering */}
+                <div className="bg-muted/50 p-3 rounded-lg text-xs space-y-2 mt-2">
+                  <p className="font-semibold text-sm">Posisjonsfaktor k<sub>pos</sub></p>
+                  <p className="text-muted-foreground">
+                    Hvert lag får en posisjonsfaktor basert på plasseringen fra brannsiden. Lag lenger bak i konstruksjonen
+                    bidrar mindre fordi de er delvis skjermet av foranliggende lag.
+                  </p>
+                  <table className="w-full text-xs mt-1">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-1 font-medium">Lag fra brannsiden</th>
+                        <th className="text-right py-1 font-medium">k<sub>pos</sub></th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-muted-foreground">
+                      {[1, 2, 3, 4, 5].map((n) => (
+                        <tr key={n} className="border-b border-border/50">
+                          <td className="py-1">{n}{n === 1 ? " (ytterste lag)" : ""}</td>
+                          <td className="text-right py-1">{[1.0, 0.85, 0.70, 0.55, 0.40][n - 1]}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <p className="font-semibold text-sm mt-2">Justering for isolasjon</p>
+                  <p className="text-muted-foreground">
+                    For isolasjon (mineralull / steinull) reduseres bidraget ytterligere. I Annex E brukes normalt:
+                  </p>
+                  <p className="text-center font-medium py-1">
+                    k<sub>pos, isolasjon</sub> = 0,67 × k<sub>pos</sub>
+                  </p>
+                  <p className="text-muted-foreground">
+                    F.eks. steinull på lag 2 får effektiv k<sub>pos</sub> = 0,67 × 0,85 = 0,57.
+                  </p>
+                </div>
               </div>
             )}
 
