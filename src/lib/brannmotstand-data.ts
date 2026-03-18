@@ -128,26 +128,24 @@ export const layerMaterials: LayerMaterial[] = [
 
 // ── Posisjonsfaktorer k_pos ──────────────────────────────────────────
 
+/** Maks antall lag i lett konstruksjon */
+export const MAX_LAYERS = 5;
+
 /**
- * k_pos avhenger av hva som ligger foran laget (mot brannsiden).
- * Basert på EN 1995-1-2 Annex E, Tabell E.5:
- *   - Lag 1 (direkte eksponert):         1.0
- *   - Lag bak gipsplate Type A:          0.77
- *   - Lag bak branngips (Type F/DF):     0.57
- *   - Lag bak isolasjon (steinull etc.): 1.0  (isolasjonen skjermer godt)
- *   - Lag bak annet materiale:           0.85
+ * k_pos avhenger av lagets posisjon (1-indeksert fra brannsiden).
+ * Standard k_pos-verdier:
+ *   Lag 1: 1.0
+ *   Lag 2: 0.85
+ *   Lag 3: 0.70
+ *   Lag 4: 0.55
+ *   Lag 5: 0.40
  */
-export function getPositionFactor(precedingMaterialId: string | null): number {
-  if (!precedingMaterialId) return 1.0; // direkte eksponert
-  // Bak isolasjon → full effekt (isolasjonen holder temperaturen nede)
-  const precedingMat = layerMaterials.find((m) => m.id === precedingMaterialId);
-  if (precedingMat?.category === "isolasjon") return 1.0;
-  // Bak branngips Type F/DF
-  if (precedingMaterialId === "branngips") return 0.57;
-  // Bak standard gips Type A
-  if (precedingMaterialId === "gips_a") return 0.77;
-  // Bak andre materialer
-  return 0.85;
+const KPOS_VALUES = [1.0, 0.85, 0.70, 0.55, 0.40];
+
+export function getPositionFactor(layerIndex: number): number {
+  if (layerIndex < 0) return 1.0;
+  if (layerIndex >= KPOS_VALUES.length) return KPOS_VALUES[KPOS_VALUES.length - 1];
+  return KPOS_VALUES[layerIndex];
 }
 
 // ── Beregning: Komponentadditivmetoden ──────────────────────────────
@@ -171,14 +169,13 @@ export function calculateLightWallResistance(layers: WallLayer[]): CalculationRe
   const references = new Set<string>();
   references.add("EN 1995-1-2:2004, Annex E – Komponentadditivmetoden");
 
-  let previousMaterialId: string | null = null;
-
-  for (const layer of layers) {
+  for (let i = 0; i < Math.min(layers.length, MAX_LAYERS); i++) {
+    const layer = layers[i];
     const mat = layerMaterials.find((m) => m.id === layer.materialId);
     if (!mat) continue;
 
     references.add(mat.ref);
-    const kPos = getPositionFactor(previousMaterialId);
+    const kPos = getPositionFactor(i);
 
     let contribution: number;
     if (mat.fixedMinutes !== undefined) {
@@ -195,7 +192,6 @@ export function calculateLightWallResistance(layers: WallLayer[]): CalculationRe
     });
 
     totalMinutes += contribution;
-    previousMaterialId = mat.id;
   }
 
   totalMinutes = Math.round(totalMinutes);
