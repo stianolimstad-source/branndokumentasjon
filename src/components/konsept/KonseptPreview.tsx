@@ -1648,6 +1648,34 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             })()}
             {/* Trapperom */}
             {formData.trapperomKrav && formData.trapperomKrav.length > 0 && (() => {
+              const isBF85 = formData.regelverk === "BF85";
+              if (isBF85) {
+                const bf85TrapperomMap: Record<string, { title: string; desc: string }> = {
+                  bf85_tr_aapent: { title: "Åpent", desc: "Trapperom som har direkte forbindelse gjennom dør til bruksenheten." },
+                  bf85_tr_lukket: { title: "Lukket", desc: "Trapperom som har forbindelse til bruksenhet bare gjennom lukket korridor, og som er lukket med dør B 30 eller F 30 mot korridor." },
+                  bf85_tr_branntrygt: { title: "Branntrygt", desc: "Lukket trapperom utført som branntrygt rom uten forbindelse til kjeller." },
+                  bf85_tr_roykfritt: { title: "Røykfritt", desc: "Branntrygt trapperom med forbindelse til bruksenheten bare gjennom rom åpent mot det fri (f.eks. balkong)." },
+                };
+                const activeKrav = formData.trapperomKrav
+                  .map((id: string) => ({ id, ...bf85TrapperomMap[id] }))
+                  .filter((k: { title?: string }) => k.title);
+                if (activeKrav.length === 0) return null;
+                return (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Krav til trapperom (Kap. 30:7)</td>
+                    <td className="border border-gray-400 p-2">
+                      <div className="space-y-1">
+                        {activeKrav.map((k: { id: string; title: string; desc: string }) => (
+                          <div key={k.id}><span className="font-semibold">{k.title}:</span> {k.desc}</div>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                );
+              }
+
+              // TEK17 logic
               const rk = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
               const floors = parseInt(formData.etasjer || '0', 10);
               const trapperomTypeMap: Record<number, { lav: string; hoy: string }> = {
