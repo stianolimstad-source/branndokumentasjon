@@ -110,7 +110,7 @@ export const layerMaterials: LayerMaterial[] = [
     category: "isolasjon",
     factor: 0.1,
     standardThicknesses: [45, 50, 70, 95, 100, 120, 145, 148, 150, 198, 200],
-    defaultThickness: 100,
+    defaultThickness: 150,
     ref: "EN 1995-1-2 Annex E, Tabell E.4",
   },
   // ── Luft ──
