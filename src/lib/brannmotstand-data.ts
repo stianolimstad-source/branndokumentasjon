@@ -130,16 +130,23 @@ export const layerMaterials: LayerMaterial[] = [
 
 /**
  * k_pos avhenger av hva som ligger foran laget (mot brannsiden).
- * Forenklet modell basert på EN 1995-1-2 Annex E, Tabell E.2:
- *   - Lag 1 (direkte eksponert): 1.0
- *   - Lag bak Type A gips:       0.77
- *   - Lag bak Type F/DF gips:    0.57
- *   - Lag bak annet materiale:   0.85
+ * Basert på EN 1995-1-2 Annex E, Tabell E.5:
+ *   - Lag 1 (direkte eksponert):         1.0
+ *   - Lag bak gipsplate Type A:          0.77
+ *   - Lag bak branngips (Type F/DF):     0.57
+ *   - Lag bak isolasjon (steinull etc.): 1.0  (isolasjonen skjermer godt)
+ *   - Lag bak annet materiale:           0.85
  */
 export function getPositionFactor(precedingMaterialId: string | null): number {
   if (!precedingMaterialId) return 1.0; // direkte eksponert
-  if (precedingMaterialId === "branngips") return 0.57; // Type F/DF
-  if (precedingMaterialId === "gips_a") return 0.77;    // Type A
+  // Bak isolasjon → full effekt (isolasjonen holder temperaturen nede)
+  const precedingMat = layerMaterials.find((m) => m.id === precedingMaterialId);
+  if (precedingMat?.category === "isolasjon") return 1.0;
+  // Bak branngips Type F/DF
+  if (precedingMaterialId === "branngips") return 0.57;
+  // Bak standard gips Type A
+  if (precedingMaterialId === "gips_a") return 0.77;
+  // Bak andre materialer
   return 0.85;
 }
 
