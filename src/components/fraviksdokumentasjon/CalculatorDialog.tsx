@@ -10,8 +10,9 @@ import FlammehoydeCalculator from "./calculators/FlammehoydeCalculator";
 import BrannenergCalculator from "./calculators/BrannenergCalculator";
 import PersontallCalculator from "./calculators/PersontallCalculator";
 import OmhyllingsflateCalculator from "./calculators/OmhyllingsflateCalculator";
+import BrannmotstandCalculator from "./calculators/BrannmotstandCalculator";
 
-export type CalculatorType = "straling" | "flammehoyde" | "brannenergi" | "persontall" | "omhyllingsflate";
+export type CalculatorType = "straling" | "flammehoyde" | "brannenergi" | "persontall" | "omhyllingsflate" | "brannmotstand";
 
 interface Props {
   open: boolean;
