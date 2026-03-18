@@ -91,6 +91,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
   }, [tab, layers, massiveType, massiveThickness, onResult]);
 
   const addLayer = () => {
+    if (layers.length >= MAX_LAYERS) return;
     setLayers([...layers, { id: crypto.randomUUID(), materialId: "gips_a", thickness: 12.5 }]);
   };
 
