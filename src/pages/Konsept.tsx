@@ -462,6 +462,8 @@ const Konsept = () => {
     etasjer: string;
   };
 
+  const [allKap3Open, setAllKap3Open] = useState<boolean | undefined>(undefined);
+
   const [formData, setFormData] = useState({
     // Sammendrag
     sammendrag: "",
