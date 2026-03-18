@@ -57,7 +57,7 @@ function getBeregningsSteg(calc: AttachedCalculation): string[] {
       `Persontall = ${A} m² ÷ ${factor} m²/person = ${persontall} personer`,
     ];
   }
-  if (calc.type === "omhyllingsflate") {
+   if (calc.type === "omhyllingsflate") {
     const L = Number(calc.inputs.lengde_m) || 0;
     const B = Number(calc.inputs.bredde_m) || 0;
     const H = Number(calc.inputs.hoyde_m) || 0;
@@ -69,6 +69,21 @@ function getBeregningsSteg(calc: AttachedCalculation): string[] {
       `Veggflate = 2×(${L}×${H}) + 2×(${B}×${H}) = ${vegg} m²`,
       `Total At = ${gulv} + ${gulv} + ${vegg} = ${total} m²`,
     ];
+  }
+  if (calc.type === "brannmotstand") {
+    const lines: string[] = [];
+    if (calc.inputs.lagdetaljer) {
+      try {
+        const breakdown = JSON.parse(String(calc.inputs.lagdetaljer));
+        breakdown.forEach((row: { materialName: string; thickness: number; kPos: number; contribution: number }) => {
+          lines.push(`${row.materialName}: ${row.thickness} mm × k_pos ${row.kPos} = ${row.contribution} min`);
+        });
+        lines.push(`Sum = ${calc.results.minutter} min → ${calc.results.brannklasse}`);
+      } catch { /* fallback */ }
+    } else {
+      lines.push(`${calc.inputs.konstruksjonstype}: ${calc.inputs.tykkelse_mm} mm → ${calc.results.brannklasse}`);
+    }
+    return lines;
   }
   return [];
 }
