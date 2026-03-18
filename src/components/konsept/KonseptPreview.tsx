@@ -1550,11 +1550,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 const bbk = parseInt(formData.bygningsbrannklasse || '0', 10);
                 const isBBK12 = bbk <= 2;
                 const bf85DorKravMap: Record<string, { label: string; bbk12: string; bbk34: string }> = {
-                  bf85_branncelle_aapent: { label: "Branncelle – åpent trapperom", bbk12: "B 30 S", bbk34: "B 30 S" },
-                  bf85_korridor_lukket: { label: "Korridor – lukket trapperom", bbk12: "B 30 S eller F 30 S", bbk34: "B 30 S eller F 30 S" },
-                  bf85_korridor_sluse_branntrygt: { label: "Korridor/sluse – branntrygt trapperom", bbk12: "A 60 S", bbk34: "A 60 S" },
-                  bf85_roykfritt_fri_luft: { label: "Røykfritt trapperom – fri luft", bbk12: "A 60 S", bbk34: "A 60 S" },
-                  bf85_korridor_fri_luft: { label: "Korridor – fri luft (i kombinasjon med røykfritt trapperom)", bbk12: "B 30", bbk34: "B 30" },
+                  bf85_branncelle_aapent: { label: "Branncelle – åpent trapperom (Tr1)", bbk12: "B 30 S", bbk34: "B 30 S" },
+                  bf85_korridor_lukket: { label: "Korridor – lukket trapperom (Tr2)", bbk12: "B 30 S eller F 30 S", bbk34: "B 30 S eller F 30 S" },
+                  bf85_korridor_sluse_branntrygt: { label: "Korridor/sluse – branntrygt trapperom (Tr2)", bbk12: "A 60 S", bbk34: "A 60 S" },
+                  bf85_roykfritt_fri_luft: { label: "Røykfritt trapperom (Tr3) – fri luft", bbk12: "A 60 S", bbk34: "A 60 S" },
+                  bf85_korridor_fri_luft: { label: "Korridor – fri luft (i kombinasjon med røykfritt trapperom (Tr3))", bbk12: "B 30", bbk34: "B 30" },
                   bf85_branncelle_korridor: { label: "Branncelle – korridor", bbk12: "B 30", bbk34: "B 15" },
                   bf85_loft_trapperom: { label: "Loft – trapperom", bbk12: "B 30 S", bbk34: "B 15 S" },
                   bf85_kjeller_trapperom: { label: "Kjeller – trapperom", bbk12: "B 60 S", bbk34: "B 30 S" },
