@@ -4160,10 +4160,10 @@ const Konsept = () => {
                         {(() => {
                           if (formData.regelverk === "BF85") {
                             const bf85TrapperomKravListe = [
-                              { id: "bf85_tr_aapent", label: "Åpent trapperom – trapperom som har direkte forbindelse gjennom dør til bruksenheten." },
-                              { id: "bf85_tr_lukket", label: "Lukket trapperom – trapperom som har forbindelse til bruksenhet bare gjennom lukket korridor, og som er lukket med dør B 30 eller F 30 mot korridor." },
-                              { id: "bf85_tr_branntrygt", label: "Branntrygt trapperom – lukket trapperom utført som branntrygt rom uten forbindelse til kjeller." },
-                              { id: "bf85_tr_roykfritt", label: "Røykfritt trapperom – branntrygt trapperom med forbindelse til bruksenheten bare gjennom rom åpent mot det fri (f.eks. balkong)." },
+                              { id: "bf85_tr_aapent", label: "Åpent trapperom (Tr1) – trapperom som har direkte forbindelse gjennom dør til bruksenheten." },
+                              { id: "bf85_tr_lukket", label: "Lukket trapperom (Tr2) – trapperom som har forbindelse til bruksenhet bare gjennom lukket korridor, og som er lukket med dør B 30 eller F 30 mot korridor." },
+                              { id: "bf85_tr_branntrygt", label: "Branntrygt trapperom (Tr2) – lukket trapperom utført som branntrygt rom uten forbindelse til kjeller." },
+                              { id: "bf85_tr_roykfritt", label: "Røykfritt trapperom (Tr3) – branntrygt trapperom med forbindelse til bruksenheten bare gjennom rom åpent mot det fri (f.eks. balkong)." },
                             ];
                             return (
                               <>
