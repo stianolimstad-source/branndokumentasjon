@@ -4158,7 +4158,53 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-2 block">Krav til trapperom</Label>
                         {(() => {
-                          // Auto-determine trapperom type
+                          if (formData.regelverk === "BF85") {
+                            const bf85TrapperomKravListe = [
+                              { id: "bf85_tr_aapent", label: "Åpent trapperom – trapperom som har direkte forbindelse gjennom dør til bruksenheten." },
+                              { id: "bf85_tr_lukket", label: "Lukket trapperom – trapperom som har forbindelse til bruksenhet bare gjennom lukket korridor, og som er lukket med dør B 30 eller F 30 mot korridor." },
+                              { id: "bf85_tr_branntrygt", label: "Branntrygt trapperom – lukket trapperom utført som branntrygt rom uten forbindelse til kjeller." },
+                              { id: "bf85_tr_roykfritt", label: "Røykfritt trapperom – branntrygt trapperom med forbindelse til bruksenheten bare gjennom rom åpent mot det fri (f.eks. balkong)." },
+                            ];
+                            return (
+                              <>
+                                <div className="mb-2 p-2 bg-accent/50 rounded text-xs">
+                                  <span className="font-medium">BF85 trapperomtyper</span>
+                                  <span className="text-muted-foreground ml-1">(Kap. 30:7)</span>
+                                </div>
+                                <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                                  {bf85TrapperomKravListe.map((krav) => (
+                                    <div key={krav.id} className="flex items-start space-x-2">
+                                      <Checkbox
+                                        id={`tr-${krav.id}`}
+                                        checked={formData.trapperomKrav.includes(krav.id)}
+                                        onCheckedChange={(checked) => {
+                                          if (checked) {
+                                            setFormData({...formData, trapperomKrav: [...formData.trapperomKrav, krav.id]});
+                                          } else {
+                                            setFormData({...formData, trapperomKrav: formData.trapperomKrav.filter((k: string) => k !== krav.id)});
+                                          }
+                                        }}
+                                      />
+                                      <label htmlFor={`tr-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className="mt-3 border-t pt-3">
+                                  <Label className="text-xs font-medium mb-1 block">Interntrapp (ikke del av rømningsvei)</Label>
+                                  <p className="text-xs text-muted-foreground mb-1">Beskriv eventuelle interntrapper som kun benyttes internt.</p>
+                                  <Textarea
+                                    value={formData.interntrappBeskrivelse}
+                                    onChange={(e) => setFormData({...formData, interntrappBeskrivelse: e.target.value})}
+                                    placeholder="F.eks. Interntrapp mellom 1. og 2. etasje benyttes kun som internkommunikasjon og er ikke del av rømningsvei."
+                                    className="text-xs"
+                                    rows={3}
+                                  />
+                                </div>
+                              </>
+                            );
+                          }
+
+                          // TEK17 logic
                           const rk = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
                           const floors = parseInt(formData.etasjer || '0', 10);
                           const trapperomTypeMap: Record<number, { lav: string; hoy: string }> = {
