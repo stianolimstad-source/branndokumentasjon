@@ -37,19 +37,11 @@ export const layerMaterials: LayerMaterial[] = [
     ref: "EN 1995-1-2 Annex E, Tabell E.3",
   },
   {
-    id: "gips_f",
-    name: "Gipsplate Type F (brannklassifisert)",
+    id: "branngips",
+    name: "Branngips (Type F/DF)",
     category: "plate",
     factor: 1.5,
-    standardThicknesses: [12.5, 15, 15.4, 18],
-    ref: "EN 1995-1-2 Annex E, Tabell E.3",
-  },
-  {
-    id: "gips_df",
-    name: "Gipsplate Type DF (brann + fukt)",
-    category: "plate",
-    factor: 1.5,
-    standardThicknesses: [12.5, 15, 15.4],
+    standardThicknesses: [12.5, 15, 18],
     ref: "EN 1995-1-2 Annex E, Tabell E.3",
   },
   // ── Andre plater ──
