@@ -36,6 +36,7 @@ const titles: Record<CalculatorType, string> = {
   brannenergi: "Brannenergi",
   persontall: "Persontallsberegning",
   omhyllingsflate: "Omhyllingsflate",
+  brannmotstand: "Brannmotstand",
 };
 
 const CalculatorDialog = ({ open, onOpenChange, type, onImport }: Props) => {

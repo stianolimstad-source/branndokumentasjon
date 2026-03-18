@@ -34,6 +34,12 @@ const tools = [
     description: "Beregn total og spesifikk brannenergi basert på materialer og mengder",
     href: "/verktoy/brannenergi",
   },
+  {
+    icon: Shield,
+    title: "Brannmotstand",
+    description: "Beregn brannmotstandstid (EI) for vegger basert på oppbygning og materialer",
+    href: "/verktoy/brannmotstand",
+  },
 ];
 
 const Verktoy = () => {

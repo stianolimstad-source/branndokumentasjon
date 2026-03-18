@@ -48,6 +48,7 @@ const App = () => (
             <Route path="/verktoy/omhyllingsflate" element={<Omhyllingsflate />} />
             <Route path="/verktoy/persontall" element={<Persontall />} />
             <Route path="/verktoy/brannenergi" element={<Brannenergi />} />
+            <Route path="/verktoy/brannmotstand" element={<Brannmotstand />} />
             
             <Route path="/auth" element={<Auth />} />
             <Route path="/mine-prosjekter" element={<MineProsjekter />} />

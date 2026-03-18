@@ -20,6 +20,7 @@ const calculatorTypes = [
   { type: "brannenergi" as const, label: "Brannenergi", icon: Zap, desc: "Total og spesifikk" },
   { type: "persontall" as const, label: "Persontallsberegning", icon: Users, desc: "Basert på areal og brukskategori" },
   { type: "omhyllingsflate" as const, label: "Omhyllingsflate", icon: Box, desc: "Gulv, tak og vegger" },
+  { type: "brannmotstand" as const, label: "Brannmotstand", icon: Shield, desc: "Veggoppbygning og EI-klasse" },
 ];
 
 interface Props {
