@@ -1441,7 +1441,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
               </tr>
             )}
-            {formData.fyrromRelevant === "ja" && formData.brannklasse && (
+            {!isBF85 && formData.fyrromRelevant === "ja" && formData.brannklasse && (
               <>
                 {formData.fyrromKw === "fast" && (
                   <tr>
