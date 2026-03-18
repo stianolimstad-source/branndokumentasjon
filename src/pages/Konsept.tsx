@@ -4036,6 +4036,8 @@ const Konsept = () => {
                         </Select>
                       </div>
                       
+                      {!isBF85 && (
+                      <>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Fyrrom relevant?</Label>
                         <Select 
@@ -4070,6 +4072,8 @@ const Konsept = () => {
                             </SelectContent>
                           </Select>
                         </div>
+                      )}
+                      </>
                       )}
                       <div>
                         <Label className="text-xs font-medium mb-2 block">Dører i branncellebegrensende konstruksjoner</Label>
