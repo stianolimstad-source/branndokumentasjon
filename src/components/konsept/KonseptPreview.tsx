@@ -2303,7 +2303,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {/* 3.10 §11-13 Utgang fra branncelle */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.10 &nbsp;&nbsp; §11-13 Utgang fra branncelle</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.10 &nbsp;&nbsp; {isBF85 ? <>Utganger og rømningsveier fra branncelle (Kap. 30:71–73) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-13 Utgang fra branncelle)</span></> : "§11-13 Utgang fra branncelle"}</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
