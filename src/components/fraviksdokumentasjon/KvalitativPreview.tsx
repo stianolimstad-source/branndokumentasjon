@@ -94,6 +94,7 @@ const formelMap: Record<string, string[]> = {
   brannenergi: ["Q = Σ (mi · Hc,i)", "q = Q / Arom"],
   persontall: ["Persontall = Areal / Faktor"],
   omhyllingsflate: ["At = Agulv + Atak + Avegg", "Avegg = 2·(L·H) + 2·(B·H)"],
+  brannmotstand: ["t_ins = Σ (t_ins,0,i × k_pos,i)", "t_ins,0 = faktor × tykkelse"],
 };
 
 const paramLabels: Record<string, string> = {
