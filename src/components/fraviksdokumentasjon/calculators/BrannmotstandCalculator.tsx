@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Plus, Trash2, ArrowUp, ArrowDown, Shield, Info } from "lucide-react";
 import { AttachedCalculation } from "../BeregningSection";
 import {
@@ -360,119 +361,103 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Plater */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-primary">Plater og kledninger</h4>
-
-            <div className="space-y-1 border-l-2 border-primary/20 pl-3">
-              <p className="text-sm font-medium">Gipsplate Type A (standard)</p>
-              <p className="text-xs text-muted-foreground">
-                Standard gipsplate (EN 520) med gipskjerne og kartongforing. Brukes i innvendige vegger og himlinger
-                under normale forhold. Gir moderat brannbeskyttelse.
-              </p>
-              <p className="text-xs"><span className="font-medium">Standardtykkelser:</span> 9,5 · 12,5 · 15 mm</p>
-              <p className="text-xs"><span className="font-medium">Brannbidrag:</span> ca. 1,25 min/mm</p>
-            </div>
-
-            <div className="space-y-1 border-l-2 border-primary/20 pl-3">
-              <p className="text-sm font-medium">Gipsplate Type F (brannklassifisert)</p>
-              <p className="text-xs text-muted-foreground">
-                Brannklassifisert gipsplate (EN 520) med glassfiberarmert gipskjerne som gir forbedret
-                brannmotstand og strukturell integritet ved høye temperaturer. Kjernen beholder sin form lenger
-                under brannpåvirkning enn Type A.
-              </p>
-              <p className="text-xs"><span className="font-medium">Standardtykkelser:</span> 12,5 · 15 · 15,4 · 18 mm</p>
-              <p className="text-xs"><span className="font-medium">Brannbidrag:</span> ca. 1,5 min/mm</p>
-            </div>
-
-            <div className="space-y-1 border-l-2 border-primary/20 pl-3">
-              <p className="text-sm font-medium">Gipsplate Type DF (brann + fukt)</p>
-              <p className="text-xs text-muted-foreground">
-                Kombinert brann- og fuktbestandig gipsplate. Har samme brannegenskaper som Type F, men med
-                tillegg av redusert vannabsorpsjon. Brukes i våtrom og andre fuktutsatte områder som krever brannmotstand.
-              </p>
-              <p className="text-xs"><span className="font-medium">Standardtykkelser:</span> 12,5 · 15 · 15,4 mm</p>
-              <p className="text-xs"><span className="font-medium">Brannbidrag:</span> ca. 1,5 min/mm</p>
-            </div>
-
-            <div className="space-y-1 border-l-2 border-primary/20 pl-3">
-              <p className="text-sm font-medium">Kryssfiner</p>
-              <p className="text-xs text-muted-foreground">
-                Plater bygget opp av krysslimte tresjikt. Brennbart materiale, men gir et visst brannbeskyttende
-                bidrag gjennom forkulling. Lavere brannbidrag enn gipsplater.
-              </p>
-              <p className="text-xs"><span className="font-medium">Standardtykkelser:</span> 9 · 12 · 15 · 18 · 21 mm</p>
-              <p className="text-xs"><span className="font-medium">Brannbidrag:</span> ca. 0,5 min/mm</p>
-            </div>
-
-            <div className="space-y-1 border-l-2 border-primary/20 pl-3">
-              <p className="text-sm font-medium">Sponplate</p>
-              <p className="text-xs text-muted-foreground">
-                Plate av sammenpressede trespon og lim. Brennbart materiale med noe lavere brannbidrag enn kryssfiner.
-                Brukes i undergolv, innredninger og ikke-bærende vegger.
-              </p>
-              <p className="text-xs"><span className="font-medium">Standardtykkelser:</span> 12 · 16 · 19 · 22 mm</p>
-              <p className="text-xs"><span className="font-medium">Brannbidrag:</span> ca. 0,45 min/mm</p>
-            </div>
-
-            <div className="space-y-1 border-l-2 border-primary/20 pl-3">
-              <p className="text-sm font-medium">Fibersementplate</p>
-              <p className="text-xs text-muted-foreground">
-                Ubrennbar plate av sement og fiberarmering. God brannmotstand tilsvarende gipsplater, men også
-                egnet for utendørs bruk og fuktige miljøer.
-              </p>
-              <p className="text-xs"><span className="font-medium">Standardtykkelser:</span> 6 · 8 · 10 · 12 mm</p>
-              <p className="text-xs"><span className="font-medium">Brannbidrag:</span> ca. 1,3 min/mm</p>
-            </div>
+          <div>
+            <h4 className="text-sm font-semibold text-primary mb-2">Plater og kledninger</h4>
+            <Accordion type="multiple" className="w-full">
+              <AccordionItem value="gips_a">
+                <AccordionTrigger className="text-sm py-2">Gipsplate Type A (standard)</AccordionTrigger>
+                <AccordionContent className="text-xs space-y-1 text-muted-foreground">
+                  <p>Standard gipsplate (EN 520) med gipskjerne og kartongforing. Brukes i innvendige vegger og himlinger under normale forhold. Gir moderat brannbeskyttelse.</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 9,5 · 12,5 · 15 mm</p>
+                  <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 1,25 min/mm</p>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="gips_f">
+                <AccordionTrigger className="text-sm py-2">Gipsplate Type F (brannklassifisert)</AccordionTrigger>
+                <AccordionContent className="text-xs space-y-1 text-muted-foreground">
+                  <p>Brannklassifisert gipsplate (EN 520) med glassfiberarmert gipskjerne som gir forbedret brannmotstand og strukturell integritet ved høye temperaturer. Kjernen beholder sin form lenger under brannpåvirkning enn Type A.</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 12,5 · 15 · 15,4 · 18 mm</p>
+                  <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 1,5 min/mm</p>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="gips_df">
+                <AccordionTrigger className="text-sm py-2">Gipsplate Type DF (brann + fukt)</AccordionTrigger>
+                <AccordionContent className="text-xs space-y-1 text-muted-foreground">
+                  <p>Kombinert brann- og fuktbestandig gipsplate. Har samme brannegenskaper som Type F, men med tillegg av redusert vannabsorpsjon. Brukes i våtrom og andre fuktutsatte områder som krever brannmotstand.</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 12,5 · 15 · 15,4 mm</p>
+                  <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 1,5 min/mm</p>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="kryssfiner">
+                <AccordionTrigger className="text-sm py-2">Kryssfiner</AccordionTrigger>
+                <AccordionContent className="text-xs space-y-1 text-muted-foreground">
+                  <p>Plater bygget opp av krysslimte tresjikt. Brennbart materiale, men gir et visst brannbeskyttende bidrag gjennom forkulling. Lavere brannbidrag enn gipsplater.</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 9 · 12 · 15 · 18 · 21 mm</p>
+                  <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 0,5 min/mm</p>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="sponplate">
+                <AccordionTrigger className="text-sm py-2">Sponplate</AccordionTrigger>
+                <AccordionContent className="text-xs space-y-1 text-muted-foreground">
+                  <p>Plate av sammenpressede trespon og lim. Brennbart materiale med noe lavere brannbidrag enn kryssfiner. Brukes i undergolv, innredninger og ikke-bærende vegger.</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 12 · 16 · 19 · 22 mm</p>
+                  <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 0,45 min/mm</p>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="fibersement">
+                <AccordionTrigger className="text-sm py-2">Fibersementplate</AccordionTrigger>
+                <AccordionContent className="text-xs space-y-1 text-muted-foreground">
+                  <p>Ubrennbar plate av sement og fiberarmering. God brannmotstand tilsvarende gipsplater, men også egnet for utendørs bruk og fuktige miljøer.</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 6 · 8 · 10 · 12 mm</p>
+                  <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 1,3 min/mm</p>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
 
           {/* Isolasjon */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-primary">Isolasjon</h4>
-
-            <div className="space-y-1 border-l-2 border-primary/20 pl-3">
-              <p className="text-sm font-medium">Steinull (≥ 26 kg/m³)</p>
-              <p className="text-xs text-muted-foreground">
-                Ubrennbar mineralullsisolasjon laget av steinbasert råmateriale. Standard densitet for veggsisolering.
-                Smelter ikke og bidrar til brannmotstand ved å forsinke varmetransporten gjennom konstruksjonen.
-              </p>
-              <p className="text-xs"><span className="font-medium">Standardtykkelser:</span> 45 · 50 · 70 · 95 · 100 · 120 · 145 · 148 · 198 · 200 · 250 mm</p>
-              <p className="text-xs"><span className="font-medium">Brannbidrag:</span> ca. 0,2 min/mm</p>
-            </div>
-
-            <div className="space-y-1 border-l-2 border-primary/20 pl-3">
-              <p className="text-sm font-medium">Steinull høydensitet (≥ 50 kg/m³)</p>
-              <p className="text-xs text-muted-foreground">
-                Steinull med økt densitet som gir bedre brannbeskyttelse per mm. Brukes typisk i brannklassifiserte
-                konstruksjoner der man ønsker høyere ytelse med begrenset tykkelse.
-              </p>
-              <p className="text-xs"><span className="font-medium">Standardtykkelser:</span> 30 · 45 · 50 · 70 · 95 · 100 mm</p>
-              <p className="text-xs"><span className="font-medium">Brannbidrag:</span> ca. 0,25 min/mm</p>
-            </div>
-
-            <div className="space-y-1 border-l-2 border-primary/20 pl-3">
-              <p className="text-sm font-medium">Glassull (≥ 15 kg/m³)</p>
-              <p className="text-xs text-muted-foreground">
-                Mineralullsisolasjon av glass. Ubrennbar, men smelter ved lavere temperatur enn steinull (ca. 600 °C vs. 1000 °C).
-                Gir dermed lavere brannbidrag, men er et kostnadseffektivt alternativ for konstruksjoner med lavere brannkrav.
-              </p>
-              <p className="text-xs"><span className="font-medium">Standardtykkelser:</span> 45 · 50 · 70 · 95 · 100 · 120 · 145 · 148 · 198 · 200 mm</p>
-              <p className="text-xs"><span className="font-medium">Brannbidrag:</span> ca. 0,1 min/mm</p>
-            </div>
+          <div>
+            <h4 className="text-sm font-semibold text-primary mb-2">Isolasjon</h4>
+            <Accordion type="multiple" className="w-full">
+              <AccordionItem value="steinull">
+                <AccordionTrigger className="text-sm py-2">Steinull (≥ 26 kg/m³)</AccordionTrigger>
+                <AccordionContent className="text-xs space-y-1 text-muted-foreground">
+                  <p>Ubrennbar mineralullsisolasjon laget av steinbasert råmateriale. Standard densitet for veggsisolering. Smelter ikke og bidrar til brannmotstand ved å forsinke varmetransporten gjennom konstruksjonen.</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 45 · 50 · 70 · 95 · 100 · 120 · 145 · 148 · 198 · 200 · 250 mm</p>
+                  <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 0,2 min/mm</p>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="steinull_hd">
+                <AccordionTrigger className="text-sm py-2">Steinull høydensitet (≥ 50 kg/m³)</AccordionTrigger>
+                <AccordionContent className="text-xs space-y-1 text-muted-foreground">
+                  <p>Steinull med økt densitet som gir bedre brannbeskyttelse per mm. Brukes typisk i brannklassifiserte konstruksjoner der man ønsker høyere ytelse med begrenset tykkelse.</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 30 · 45 · 50 · 70 · 95 · 100 mm</p>
+                  <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 0,25 min/mm</p>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="glassull">
+                <AccordionTrigger className="text-sm py-2">Glassull (≥ 15 kg/m³)</AccordionTrigger>
+                <AccordionContent className="text-xs space-y-1 text-muted-foreground">
+                  <p>Mineralullsisolasjon av glass. Ubrennbar, men smelter ved lavere temperatur enn steinull (ca. 600 °C vs. 1000 °C). Gir dermed lavere brannbidrag, men er et kostnadseffektivt alternativ for konstruksjoner med lavere brannkrav.</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 45 · 50 · 70 · 95 · 100 · 120 · 145 · 148 · 198 · 200 mm</p>
+                  <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 0,1 min/mm</p>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
 
           {/* Luftspalte */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-primary">Annet</h4>
-
-            <div className="space-y-1 border-l-2 border-primary/20 pl-3">
-              <p className="text-sm font-medium">Luftspalte (tom)</p>
-              <p className="text-xs text-muted-foreground">
-                Tom luftspalte i konstruksjonen. Gir et fast bidrag på 5 minutter uavhengig av bredde, da stille luft
-                har begrenset isolasjonseffekt. Luftspalter kan også gi uønsket brannspredning ved konveksjon
-                dersom de ikke er brannstopp.
-              </p>
-              <p className="text-xs"><span className="font-medium">Fast bidrag:</span> 5 min</p>
-            </div>
+          <div>
+            <h4 className="text-sm font-semibold text-primary mb-2">Annet</h4>
+            <Accordion type="multiple" className="w-full">
+              <AccordionItem value="luftspalte">
+                <AccordionTrigger className="text-sm py-2">Luftspalte (tom)</AccordionTrigger>
+                <AccordionContent className="text-xs space-y-1 text-muted-foreground">
+                  <p>Tom luftspalte i konstruksjonen. Gir et fast bidrag på 5 minutter uavhengig av bredde, da stille luft har begrenset isolasjonseffekt. Luftspalter kan også gi uønsket brannspredning ved konveksjon dersom de ikke er brannstopp.</p>
+                  <p><span className="font-medium text-foreground">Fast bidrag:</span> 5 min</p>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         </CardContent>
       </Card>
