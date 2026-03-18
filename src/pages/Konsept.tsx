@@ -4326,7 +4326,6 @@ const Konsept = () => {
                         <div className="border rounded-md p-2 space-y-2 bg-muted/30">
                           {(formData.regelverk === "BF85" ? [
                             { id: "bf85_royk_brannventilasjon", label: "1. I bygning med flere enn 2 etasjer skal trapperom ha brannventilasjon. For bygninger med inntil 8 etasjer kan brannventilasjonen skje gjennom vindu i trapperom. Alle andre bygninger skal ha en røyksjakt som er skilt fra loft i minst A 30 og som har et tverr snitt på minst 1 m². Sjakten skal gå 20 cm over takflaten." },
-                            { id: "bf85_royk_ledelys", label: "2. Bygning med flere enn 2 etasjer skal ha ledelys." },
                           ] : [
                             { id: "royk_romningsvei", label: "1. Trapperom som er rømningsvei i byggverk med flere enn to etasjer, må røykventileres." },
                             { id: "royk_luke_vindu", label: "2. I byggverk med inntil 8 etasjer med trapperom Tr 1 eller Tr 2, jf. § 11-13 Tabell 2, er det tilstrekkelig med luke eller vindu med fri åpning minimum 1,0 m² øverst i trapperommet." },
