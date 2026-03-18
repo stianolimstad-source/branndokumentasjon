@@ -3814,7 +3814,6 @@ const Konsept = () => {
                                   {formData.seksjonVinduRelevant && (
                                     <>
                                       <div>– Vindu i brannvegg skal ha samme brannmotstand som veggen (minst A 120).</div>
-                                      <div>– Vindu skal ikke kunne åpnes.</div>
                                     </>
                                   )}
                                 </>
@@ -4124,7 +4123,9 @@ const Konsept = () => {
                             onCheckedChange={(checked) => setFormData({...formData, vinduskravRelevant: checked as boolean})}
                           />
                           <Label htmlFor="vinduskravRelevant" className="text-sm cursor-pointer">
-                            Vindu med brannmotstand er relevant
+                            {formData.regelverk === "BF85"
+                              ? "Vindu skal ha samme brannmotstand som veggen det står i"
+                              : "Vindu med brannmotstand er relevant"}
                           </Label>
                         </div>
                       </div>
