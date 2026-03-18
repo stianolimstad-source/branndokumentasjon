@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, MoveVertical, Box, Users, Zap } from "lucide-react";
+import { Flame, MoveVertical, Box, Users, Zap, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 
 
@@ -33,6 +33,12 @@ const tools = [
     title: "Brannenergi",
     description: "Beregn total og spesifikk brannenergi basert på materialer og mengder",
     href: "/verktoy/brannenergi",
+  },
+  {
+    icon: Shield,
+    title: "Brannmotstand",
+    description: "Beregn brannmotstandstid (EI) for vegger basert på oppbygning og materialer",
+    href: "/verktoy/brannmotstand",
   },
 ];
 

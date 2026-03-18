@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Trash2, Flame, MoveVertical, Zap, Calculator, Users, Box } from "lucide-react";
+import { Trash2, Flame, MoveVertical, Zap, Calculator, Users, Box, Shield } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import CalculatorDialog, { CalculatorType } from "./CalculatorDialog";
 
 export interface AttachedCalculation {
   id: string;
-  type: "straling" | "flammehoyde" | "brannenergi" | "persontall" | "omhyllingsflate";
+  type: "straling" | "flammehoyde" | "brannenergi" | "persontall" | "omhyllingsflate" | "brannmotstand";
   label: string;
   inputs: Record<string, string | number>;
   results: Record<string, string | number>;
@@ -20,6 +20,7 @@ const calculatorTypes = [
   { type: "brannenergi" as const, label: "Brannenergi", icon: Zap, desc: "Total og spesifikk" },
   { type: "persontall" as const, label: "Persontallsberegning", icon: Users, desc: "Basert på areal og brukskategori" },
   { type: "omhyllingsflate" as const, label: "Omhyllingsflate", icon: Box, desc: "Gulv, tak og vegger" },
+  { type: "brannmotstand" as const, label: "Brannmotstand", icon: Shield, desc: "Veggoppbygning og EI-klasse" },
 ];
 
 interface Props {

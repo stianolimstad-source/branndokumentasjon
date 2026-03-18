@@ -14,6 +14,7 @@ import Flammehoyde from "./pages/verktoy/Flammehoyde";
 import Omhyllingsflate from "./pages/verktoy/Omhyllingsflate";
 import Persontall from "./pages/verktoy/Persontall";
 import Brannenergi from "./pages/verktoy/Brannenergi";
+import Brannmotstand from "./pages/verktoy/Brannmotstand";
 
 import Auth from "./pages/Auth";
 import MineProsjekter from "./pages/MineProsjekter";
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="/verktoy/omhyllingsflate" element={<Omhyllingsflate />} />
             <Route path="/verktoy/persontall" element={<Persontall />} />
             <Route path="/verktoy/brannenergi" element={<Brannenergi />} />
+            <Route path="/verktoy/brannmotstand" element={<Brannmotstand />} />
             
             <Route path="/auth" element={<Auth />} />
             <Route path="/mine-prosjekter" element={<MineProsjekter />} />
