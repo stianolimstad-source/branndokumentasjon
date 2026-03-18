@@ -138,8 +138,8 @@ export const layerMaterials: LayerMaterial[] = [
  */
 export function getPositionFactor(precedingMaterialId: string | null): number {
   if (!precedingMaterialId) return 1.0; // direkte eksponert
-  if (precedingMaterialId === "gips_f" || precedingMaterialId === "gips_df") return 0.57;
-  if (precedingMaterialId === "gips_a") return 0.77;
+  if (precedingMaterialId === "branngips") return 0.57; // Type F/DF
+  if (precedingMaterialId === "gips_a") return 0.77;    // Type A
   return 0.85;
 }
 
