@@ -297,6 +297,7 @@ const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData, s
                       brannenergi: "Brannenergiberegning",
                       persontall: "Persontallsberegning",
                       omhyllingsflate: "Omhyllingsflateberegning",
+                      brannmotstand: "Brannmotstandsberegning (Komponentadditivmetoden)",
                     };
                     const formler = formelMap[calc.type] || [];
                     const steg = getBeregningsSteg(calc);
