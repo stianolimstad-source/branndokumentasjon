@@ -3118,6 +3118,15 @@ const Konsept = () => {
                     </span>
                   </AccordionTrigger>
                   <AccordionContent className="space-y-3 pt-4 px-4 pb-4">
+                    <div className="flex justify-end mb-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setAllKap3Open(prev => prev === undefined ? true : !prev)}
+                      >
+                        {allKap3Open ? "Lukk alle seksjoner" : "Åpne alle seksjoner"}
+                      </Button>
+                    </div>
                     <SectionCollapsible label={`3.1 ${formData.regelverk === "BF85" ? "Bæreevne og stabilitet (§ 11-4)" : "§ 11-4 Bæreevne og stabilitet"}`}>
                     <div className="space-y-3">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
