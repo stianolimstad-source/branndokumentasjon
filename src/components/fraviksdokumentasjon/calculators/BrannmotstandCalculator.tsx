@@ -423,7 +423,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 <AccordionTrigger className="text-sm py-2">Steinull høydensitet (≥ 50 kg/m³)</AccordionTrigger>
                 <AccordionContent className="text-xs space-y-1 text-muted-foreground">
                   <p>Steinull med økt densitet som gir bedre brannbeskyttelse per mm. Brukes typisk i brannklassifiserte konstruksjoner der man ønsker høyere ytelse med begrenset tykkelse.</p>
-                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 50 mm (også tilgjengelig i 30, 45, 70, 95 og 100 mm)</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 50 mm (også tilgjengelig fra 30 til 100 mm)</p>
                   <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 0,25 min/mm</p>
                 </AccordionContent>
               </AccordionItem>
