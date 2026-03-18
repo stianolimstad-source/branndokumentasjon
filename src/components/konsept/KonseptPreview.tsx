@@ -1339,7 +1339,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <tbody>
             {/* 3.5 §11-8 Brannceller */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.5 &nbsp;&nbsp; {isBF85 ? "Branncelleinndeling (Kap. 30:63–65)" : "§11-8 Brannceller"}</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.5 &nbsp;&nbsp; {isBF85 ? <>Branncelleinndeling (Kap. 30:63–65) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-8 Brannceller)</span></> : "§11-8 Brannceller"}</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
