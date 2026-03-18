@@ -1838,7 +1838,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               if (activeKrav.length === 0) return null;
               return (
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Røykkontroll</td>
+                  <td className="border border-gray-400 p-2 align-top">{formData.regelverk === "BF85" ? "Brannventilasjon og belysning i rømningsveg" : "Røykkontroll"}</td>
                   <td className="border border-gray-400 p-2">
                     <div className="space-y-1">
                       {activeKrav.map((k: { id: string; text: string; num: number }) => (
