@@ -216,30 +216,18 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 </p>
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Konstruksjonstype</Label>
-                  <Select value={massiveType} onValueChange={setMassiveType}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {massiveWallTypes.map((w) => (
-                        <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Veggtykkelse (mm)</Label>
-                  <Input
-                    type="number"
-                    value={massiveThickness}
-                    onChange={(e) => setMassiveThickness(parseFloat(e.target.value) || 0)}
-                    min={0}
-                    step={5}
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label>Konstruksjonstype</Label>
+                <Select value={massiveType} onValueChange={setMassiveType}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {massiveWallTypes.map((w) => (
+                      <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Referansetabell */}
@@ -257,7 +245,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                       </thead>
                       <tbody>
                         {wt.thicknessTable.map((row) => (
-                          <tr key={row.thickness} className={`border-t ${massiveThickness === row.thickness ? "bg-primary/10" : ""}`}>
+                          <tr key={row.thickness} className="border-t">
                             <td className="px-3 py-1.5">{row.thickness} mm</td>
                             <td className="px-3 py-1.5 font-medium">EI {row.minutes}</td>
                           </tr>
@@ -271,9 +259,13 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 );
               })()}
 
-              <Button className="w-full" onClick={calculate}>
-                Slå opp brannmotstand
-              </Button>
+              <div className="bg-muted p-3 rounded-lg text-xs space-y-1">
+                <p className="text-muted-foreground italic">
+                  Merk: Beregningen gir en estimert brannmotstandstid. Faktisk brannmotstand kan avhenge av
+                  utførelse, skjøter, gjennomføringer og testdokumentasjon. For prosjektering bør
+                  dokumenterte løsninger og produktsertifikater benyttes.
+                </p>
+              </div>
             </TabsContent>
           </Tabs>
         </CardContent>
