@@ -1,0 +1,353 @@
+import { useState, useEffect, useCallback } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, Trash2, ArrowUp, ArrowDown, Shield, Info } from "lucide-react";
+import { AttachedCalculation } from "../BeregningSection";
+import {
+  layerMaterials,
+  massiveWallTypes,
+  calculateLightWallResistance,
+  lookupMassiveWallResistance,
+  WallLayer,
+  CalculationResult,
+} from "@/lib/brannmotstand-data";
+
+interface Props {
+  onResult?: (calc: AttachedCalculation) => void;
+}
+
+const BrannmotstandCalculator = ({ onResult }: Props) => {
+  const [tab, setTab] = useState<"lett" | "massiv">("lett");
+
+  // ── Lett vegg state ──
+  const [layers, setLayers] = useState<(WallLayer & { id: string })[]>([
+    { id: crypto.randomUUID(), materialId: "gips_f", thickness: 15.4 },
+    { id: crypto.randomUUID(), materialId: "steinull", thickness: 148 },
+    { id: crypto.randomUUID(), materialId: "gips_f", thickness: 15.4 },
+  ]);
+
+  // ── Massiv vegg state ──
+  const [massiveType, setMassiveType] = useState("betong_normal");
+  const [massiveThickness, setMassiveThickness] = useState(100);
+
+  const [result, setResult] = useState<CalculationResult | null>(null);
+
+  const calculate = useCallback(() => {
+    let res: CalculationResult | null = null;
+    if (tab === "lett") {
+      if (layers.length === 0) return;
+      res = calculateLightWallResistance(layers);
+    } else {
+      res = lookupMassiveWallResistance(massiveType, massiveThickness);
+    }
+    setResult(res);
+    if (res && onResult) {
+      onResult({
+        id: crypto.randomUUID(),
+        type: "brannmotstand" as any,
+        label: `Brannmotstand: ${res.fireClass} (${res.totalMinutes} min) – ${res.method}`,
+        inputs: tab === "lett"
+          ? { antall_lag: layers.length, metode: "Komponentadditivmetoden" }
+          : { type: massiveType, tykkelse_mm: massiveThickness },
+        results: {
+          brannklasse: res.fireClass,
+          minutter: res.totalMinutes,
+        },
+        kommentar: "",
+      });
+    }
+  }, [tab, layers, massiveType, massiveThickness, onResult]);
+
+  const addLayer = () => {
+    setLayers([...layers, { id: crypto.randomUUID(), materialId: "gips_a", thickness: 12.5 }]);
+  };
+
+  const removeLayer = (id: string) => {
+    setLayers(layers.filter((l) => l.id !== id));
+  };
+
+  const updateLayer = (id: string, field: "materialId" | "thickness", value: string | number) => {
+    setLayers(layers.map((l) => (l.id === id ? { ...l, [field]: value } : l)));
+  };
+
+  const moveLayer = (index: number, direction: -1 | 1) => {
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= layers.length) return;
+    const newLayers = [...layers];
+    [newLayers[index], newLayers[newIndex]] = [newLayers[newIndex], newLayers[index]];
+    setLayers(newLayers);
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Shield className="h-5 w-5 text-primary" />
+            Brannmotstand i konstruksjoner
+          </CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Beregn estimert brannmotstandstid (EI) for vegger og skillevegger.
+          </p>
+        </CardHeader>
+        <CardContent>
+          <Tabs value={tab} onValueChange={(v) => { setTab(v as "lett" | "massiv"); setResult(null); }}>
+            <TabsList className="w-full">
+              <TabsTrigger value="lett" className="flex-1">Lett konstruksjon</TabsTrigger>
+              <TabsTrigger value="massiv" className="flex-1">Massiv konstruksjon</TabsTrigger>
+            </TabsList>
+
+            {/* ── Lett konstruksjon ── */}
+            <TabsContent value="lett" className="space-y-4 mt-4">
+              <div className="bg-muted/50 p-3 rounded-lg flex items-start gap-2">
+                <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <p className="text-xs text-muted-foreground">
+                  Bygg opp veggen lag for lag fra brannsiden (øverst) til usiden (nederst).
+                  Beregningen baseres på komponentadditivmetoden iht. EN 1995-1-2 Annex E.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-semibold">Veggoppbygning (fra brannside →)</Label>
+                  <Button variant="outline" size="sm" onClick={addLayer}>
+                    <Plus className="h-3.5 w-3.5 mr-1" /> Legg til lag
+                  </Button>
+                </div>
+
+                {layers.map((layer, idx) => {
+                  const mat = layerMaterials.find((m) => m.id === layer.materialId);
+                  return (
+                    <div key={layer.id} className="flex items-center gap-2 p-2 border rounded-lg bg-background">
+                      <div className="flex flex-col gap-0.5">
+                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => moveLayer(idx, -1)} disabled={idx === 0}>
+                          <ArrowUp className="h-3 w-3" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-5 w-5" onClick={() => moveLayer(idx, 1)} disabled={idx === layers.length - 1}>
+                          <ArrowDown className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <span className="text-xs text-muted-foreground w-5 text-center shrink-0">{idx + 1}</span>
+                      <Select value={layer.materialId} onValueChange={(v) => updateLayer(layer.id, "materialId", v)}>
+                        <SelectTrigger className="flex-1 min-w-0">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem disabled value="__header_plate">── Plater ──</SelectItem>
+                          {layerMaterials.filter((m) => m.category === "plate").map((m) => (
+                            <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                          ))}
+                          <SelectItem disabled value="__header_iso">── Isolasjon ──</SelectItem>
+                          {layerMaterials.filter((m) => m.category === "isolasjon").map((m) => (
+                            <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                          ))}
+                          <SelectItem disabled value="__header_luft">── Annet ──</SelectItem>
+                          {layerMaterials.filter((m) => m.category === "luft").map((m) => (
+                            <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <div className="flex items-center gap-1 shrink-0">
+                        {mat?.category !== "luft" ? (
+                          <>
+                            <Input
+                              type="number"
+                              value={layer.thickness}
+                              onChange={(e) => updateLayer(layer.id, "thickness", parseFloat(e.target.value) || 0)}
+                              className="w-20 text-right"
+                              min={0}
+                              step={0.5}
+                            />
+                            <span className="text-xs text-muted-foreground">mm</span>
+                          </>
+                        ) : (
+                          <span className="text-xs text-muted-foreground w-24 text-center">fast bidrag</span>
+                        )}
+                      </div>
+                      <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={() => removeLayer(layer.id)}>
+                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                      </Button>
+                    </div>
+                  );
+                })}
+
+                {layers.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {layerMaterials
+                      .filter((m) => m.category === "plate")
+                      .slice(0, 3)
+                      .map((m) => (
+                        <Button
+                          key={m.id}
+                          variant="outline"
+                          size="sm"
+                          className="text-xs h-7"
+                          onClick={() =>
+                            setLayers([
+                              ...layers,
+                              { id: crypto.randomUUID(), materialId: m.id, thickness: m.standardThicknesses[1] || m.standardThicknesses[0] },
+                            ])
+                          }
+                        >
+                          + {m.name.split(" ")[0]} {m.name.split(" ").pop()}
+                        </Button>
+                      ))}
+                  </div>
+                )}
+              </div>
+
+              <Button className="w-full" onClick={calculate} disabled={layers.length === 0}>
+                Beregn brannmotstand
+              </Button>
+            </TabsContent>
+
+            {/* ── Massiv konstruksjon ── */}
+            <TabsContent value="massiv" className="space-y-4 mt-4">
+              <div className="bg-muted/50 p-3 rounded-lg flex items-start gap-2">
+                <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <p className="text-xs text-muted-foreground">
+                  Tabellverdier for massive konstruksjoner basert på EN 1992-1-2, EN 1996-1-2 og SINTEF Byggforsk.
+                  Gjelder EI-krav for ikke-bærende skillevegger.
+                </p>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Konstruksjonstype</Label>
+                  <Select value={massiveType} onValueChange={setMassiveType}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {massiveWallTypes.map((w) => (
+                        <SelectItem key={w.id} value={w.id}>{w.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Veggtykkelse (mm)</Label>
+                  <Input
+                    type="number"
+                    value={massiveThickness}
+                    onChange={(e) => setMassiveThickness(parseFloat(e.target.value) || 0)}
+                    min={0}
+                    step={5}
+                  />
+                </div>
+              </div>
+
+              {/* Referansetabell */}
+              {(() => {
+                const wt = massiveWallTypes.find((w) => w.id === massiveType);
+                if (!wt) return null;
+                return (
+                  <div className="border rounded-lg overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead className="bg-muted/50">
+                        <tr>
+                          <th className="text-left px-3 py-2 font-medium">Tykkelse (mm)</th>
+                          <th className="text-left px-3 py-2 font-medium">Brannmotstand</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {wt.thicknessTable.map((row) => (
+                          <tr key={row.thickness} className={`border-t ${massiveThickness === row.thickness ? "bg-primary/10" : ""}`}>
+                            <td className="px-3 py-1.5">{row.thickness} mm</td>
+                            <td className="px-3 py-1.5 font-medium">EI {row.minutes}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {wt.notes && (
+                      <p className="text-xs text-muted-foreground px-3 py-2 border-t bg-muted/30">{wt.notes}</p>
+                    )}
+                  </div>
+                );
+              })()}
+
+              <Button className="w-full" onClick={calculate}>
+                Slå opp brannmotstand
+              </Button>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+
+      {/* ── Resultat ── */}
+      {result && (
+        <Card className={
+          result.totalMinutes >= 60
+            ? "border-green-500 bg-green-50 dark:bg-green-950"
+            : result.totalMinutes >= 30
+            ? "border-yellow-500 bg-yellow-50 dark:bg-yellow-950"
+            : "border-red-500 bg-red-50 dark:bg-red-950"
+        }>
+          <CardHeader>
+            <CardTitle className="text-base">Resultat</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-baseline gap-3">
+              <span className="text-3xl font-bold">{result.fireClass}</span>
+              <span className="text-lg text-muted-foreground">({result.totalMinutes} minutter)</span>
+            </div>
+
+            {/* Lagvis oppbygning */}
+            {result.layerBreakdown.length > 1 && (
+              <div className="space-y-1">
+                <p className="text-sm font-semibold">Bidrag per lag:</p>
+                <div className="border rounded-lg overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted/50">
+                      <tr>
+                        <th className="text-left px-3 py-1.5 font-medium">Lag</th>
+                        <th className="text-right px-3 py-1.5 font-medium">Tykkelse</th>
+                        <th className="text-right px-3 py-1.5 font-medium">k<sub>pos</sub></th>
+                        <th className="text-right px-3 py-1.5 font-medium">Bidrag</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {result.layerBreakdown.map((row, i) => (
+                        <tr key={i} className="border-t">
+                          <td className="px-3 py-1.5">{row.materialName}</td>
+                          <td className="px-3 py-1.5 text-right">{row.thickness} mm</td>
+                          <td className="px-3 py-1.5 text-right">{row.kPos}</td>
+                          <td className="px-3 py-1.5 text-right font-medium">{row.contribution} min</td>
+                        </tr>
+                      ))}
+                      <tr className="border-t bg-muted/30 font-semibold">
+                        <td className="px-3 py-1.5" colSpan={3}>Sum</td>
+                        <td className="px-3 py-1.5 text-right">{result.totalMinutes} min</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            <div className="bg-muted p-3 rounded-lg text-xs space-y-1">
+              <p className="font-semibold">Metode: {result.method}</p>
+              <p className="font-semibold mt-1">Referanser:</p>
+              <ul className="list-disc ml-4">
+                {result.references.map((ref, i) => (
+                  <li key={i}>{ref}</li>
+                ))}
+              </ul>
+              <p className="mt-2 text-muted-foreground italic">
+                Merk: Beregningen gir en estimert brannmotstandstid. Faktisk brannmotstand kan avhenge av
+                utførelse, skjøter, gjennomføringer og testdokumentasjon. For prosjektering bør
+                dokumenterte løsninger og produktsertifikater benyttes.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+};
+
+export default BrannmotstandCalculator;
