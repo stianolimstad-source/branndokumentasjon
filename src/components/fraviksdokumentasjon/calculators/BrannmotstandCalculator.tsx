@@ -79,7 +79,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
         const defaultThickness = mat?.standardThicknesses[0] ?? l.thickness;
         return { ...l, materialId: value as string, thickness: defaultThickness };
       }
-      return { ...l, [field]: value };
+      return { ...l, thickness: value as number };
     }));
   };
 
