@@ -368,7 +368,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 <AccordionTrigger className="text-sm py-2">Gipsplate Type A (standard)</AccordionTrigger>
                 <AccordionContent className="text-xs space-y-1 text-muted-foreground">
                   <p>Standard gipsplate (EN 520) med gipskjerne og kartongforing. Brukes i innvendige vegger og himlinger under normale forhold. Gir moderat brannbeskyttelse.</p>
-                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 9,5 · 12,5 · 15 mm</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 12,5 mm (også tilgjengelig i 9,5 og 15 mm)</p>
                   <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 1,25 min/mm</p>
                 </AccordionContent>
               </AccordionItem>
