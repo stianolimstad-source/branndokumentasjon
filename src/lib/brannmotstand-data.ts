@@ -210,8 +210,8 @@ export interface MassiveWallType {
   name: string;
   /** Tykkelse (mm) → brannmotstand (min) for EI (ikke-bærende) */
   thicknessTable: { thickness: number; minutes: number }[];
-  /** Tykkelse (mm) → brannmotstand (min) for REI (bærende) */
-  thicknessTableREI?: { thickness: number; minutes: number }[];
+  /** Tykkelse-intervall → brannmotstand (min) for REI (bærende) */
+  thicknessTableREI?: { thicknessRange: string; minutes: number }[];
   ref: string;
   notes?: string;
 }
@@ -228,11 +228,12 @@ export const massiveWallTypes: MassiveWallType[] = [
       { thickness: 150, minutes: 240 },
     ],
     thicknessTableREI: [
-      { thickness: 120, minutes: 60 },
-      { thickness: 140, minutes: 90 },
-      { thickness: 160, minutes: 120 },
-      { thickness: 200, minutes: 180 },
-      { thickness: 250, minutes: 240 },
+      { thicknessRange: "ca. 100 mm", minutes: 30 },
+      { thicknessRange: "110–120 mm", minutes: 60 },
+      { thicknessRange: "ca. 120–140 mm", minutes: 90 },
+      { thicknessRange: "ca. 135–160 mm", minutes: 120 },
+      { thicknessRange: "ca. 180–200 mm", minutes: 180 },
+      { thicknessRange: "ca. 230–250 mm", minutes: 240 },
     ],
     ref: "EN 1992-1-2:2004, Tabell 5.3 / 5.4",
     notes: "Verdier gjelder silika-tilslagsmateriale (vanlig betong). REI-verdier forutsetter tilstrekkelig armering iht. EN 1992-1-2.",
@@ -248,11 +249,11 @@ export const massiveWallTypes: MassiveWallType[] = [
       { thickness: 120, minutes: 240 },
     ],
     thicknessTableREI: [
-      { thickness: 100, minutes: 60 },
-      { thickness: 120, minutes: 90 },
-      { thickness: 140, minutes: 120 },
-      { thickness: 170, minutes: 180 },
-      { thickness: 200, minutes: 240 },
+      { thicknessRange: "ca. 80–100 mm", minutes: 60 },
+      { thicknessRange: "ca. 100–120 mm", minutes: 90 },
+      { thicknessRange: "ca. 120–140 mm", minutes: 120 },
+      { thicknessRange: "ca. 150–170 mm", minutes: 180 },
+      { thicknessRange: "ca. 180–200 mm", minutes: 240 },
     ],
     ref: "EN 1992-1-2 Tabell 5.3 / NS-EN 1520 / SINTEF Byggforsk",
     notes: "Lettbetong har bedre branntekniske egenskaper enn normalvektsbetong per mm tykkelse.",
@@ -269,12 +270,12 @@ export const massiveWallTypes: MassiveWallType[] = [
       { thickness: 250, minutes: 240 },
     ],
     thicknessTableREI: [
-      { thickness: 100, minutes: 30 },
-      { thickness: 120, minutes: 60 },
-      { thickness: 150, minutes: 90 },
-      { thickness: 170, minutes: 120 },
-      { thickness: 220, minutes: 180 },
-      { thickness: 270, minutes: 240 },
+      { thicknessRange: "ca. 100–120 mm", minutes: 30 },
+      { thicknessRange: "ca. 120–140 mm", minutes: 60 },
+      { thicknessRange: "ca. 140–160 mm", minutes: 90 },
+      { thicknessRange: "ca. 170–190 mm", minutes: 120 },
+      { thicknessRange: "ca. 220–240 mm", minutes: 180 },
+      { thicknessRange: "ca. 260–280 mm", minutes: 240 },
     ],
     ref: "EN 1996-1-2:2005, Tabell NA.B.1 / SINTEF Byggforsk",
   },
@@ -289,11 +290,11 @@ export const massiveWallTypes: MassiveWallType[] = [
       { thickness: 250, minutes: 240 },
     ],
     thicknessTableREI: [
-      { thickness: 140, minutes: 60 },
-      { thickness: 150, minutes: 90 },
-      { thickness: 180, minutes: 120 },
-      { thickness: 220, minutes: 180 },
-      { thickness: 270, minutes: 240 },
+      { thicknessRange: "ca. 130–150 mm", minutes: 60 },
+      { thicknessRange: "ca. 150–170 mm", minutes: 90 },
+      { thicknessRange: "ca. 170–200 mm", minutes: 120 },
+      { thicknessRange: "ca. 200–230 mm", minutes: 180 },
+      { thicknessRange: "ca. 250–280 mm", minutes: 240 },
     ],
     ref: "EN 1996-1-2:2005 / SINTEF Byggforsk",
     notes: "Verdier avhenger av blokktype og fylling. Oppgitte verdier gjelder tomme blokker.",
@@ -309,11 +310,11 @@ export const massiveWallTypes: MassiveWallType[] = [
       { thickness: 150, minutes: 240 },
     ],
     thicknessTableREI: [
-      { thickness: 75, minutes: 30 },
-      { thickness: 100, minutes: 60 },
-      { thickness: 125, minutes: 120 },
-      { thickness: 150, minutes: 180 },
-      { thickness: 175, minutes: 240 },
+      { thicknessRange: "ca. 75–90 mm", minutes: 30 },
+      { thicknessRange: "ca. 100–115 mm", minutes: 60 },
+      { thicknessRange: "ca. 125–140 mm", minutes: 120 },
+      { thicknessRange: "ca. 150–165 mm", minutes: 180 },
+      { thicknessRange: "ca. 175–190 mm", minutes: 240 },
     ],
     ref: "EN 1992-1-2 / SINTEF Byggforsk 520.331",
     notes: "Porebetong har svært gode branntekniske egenskaper grunnet lav varmeledningsevne.",

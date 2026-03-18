@@ -273,9 +273,9 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                             </tr>
                           </thead>
                           <tbody>
-                            {wt.thicknessTableREI.map((row) => (
-                              <tr key={row.thickness} className="border-t">
-                                <td className="px-3 py-1.5">{row.thickness} mm</td>
+                            {wt.thicknessTableREI.map((row, i) => (
+                              <tr key={i} className="border-t">
+                                <td className="px-3 py-1.5">{row.thicknessRange}</td>
                                 <td className="px-3 py-1.5 font-medium">REI {row.minutes}</td>
                               </tr>
                             ))}
