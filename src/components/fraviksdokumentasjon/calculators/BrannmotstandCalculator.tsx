@@ -400,7 +400,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 <AccordionTrigger className="text-sm py-2">Fibersementplate</AccordionTrigger>
                 <AccordionContent className="text-xs space-y-1 text-muted-foreground">
                   <p>Ubrennbar plate av sement og fiberarmering. God brannmotstand tilsvarende gipsplater, men også egnet for utendørs bruk og fuktige miljøer.</p>
-                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 6 · 8 · 10 · 12 mm</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 8 mm (også tilgjengelig i 6, 10 og 12 mm)</p>
                   <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 1,3 min/mm</p>
                 </AccordionContent>
               </AccordionItem>
