@@ -30,8 +30,11 @@ import { UploadConceptDialog } from "@/components/konsept/UploadConceptDialog";
 import { buildChapter3Table } from "@/lib/word-export-chapter3";
 import TilstandsvurderingPanel, { TilstandData, emptyTilstand } from "@/components/konsept/TilstandsvurderingPanel";
 
-const SectionCollapsible = ({ label, defaultOpen = false, children }: { label: string; defaultOpen?: boolean; children: React.ReactNode }) => {
+const SectionCollapsible = ({ label, defaultOpen = false, forceOpen, children }: { label: string; defaultOpen?: boolean; forceOpen?: boolean; children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
+  React.useEffect(() => {
+    if (forceOpen !== undefined) setIsOpen(forceOpen);
+  }, [forceOpen]);
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="border border-border/60 rounded-lg overflow-hidden">
       <CollapsibleTrigger className="flex items-center gap-2 w-full text-sm font-bold px-3 py-2.5 hover:bg-muted/50 bg-muted/30 transition-colors cursor-pointer">
