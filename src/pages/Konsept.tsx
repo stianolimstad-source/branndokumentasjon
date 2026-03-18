@@ -3548,7 +3548,7 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_3")}
                     </SectionCollapsible>
-                    <SectionCollapsible label={`3.4 ${formData.regelverk === "BF85" ? "Brannteknisk oppdeling (§ 11-7)" : "§ 11-7 Brannseksjoner"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} label={`3.4 ${formData.regelverk === "BF85" ? "Brannteknisk oppdeling (§ 11-7)" : "§ 11-7 Brannseksjoner"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">{formData.regelverk === "BF85" ? "3.4 Brannteknisk oppdeling (Kap. 30:6)" : "3.4 § 11-7 Brannseksjoner"}</Label>
