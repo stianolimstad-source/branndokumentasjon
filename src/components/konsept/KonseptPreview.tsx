@@ -869,7 +869,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* 3.2 §11-5 Sikkerhet ved eksplosjon */}
             <tr className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
-                {sp}.2 &nbsp;&nbsp; {formData.regelverk === "BF85" ? "Sikkerhet ved eksplosjon" : "§11-5 Sikkerhet ved eksplosjon"}
+                {sp}.2 &nbsp;&nbsp; {formData.regelverk === "BF85" ? <>Sikkerhet ved eksplosjon <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-5 Sikkerhet ved eksplosjon)</span></> : "§11-5 Sikkerhet ved eksplosjon"}
               </td>
             </tr>
             {formData.regelverk === "BF85" && (
