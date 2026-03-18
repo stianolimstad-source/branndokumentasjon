@@ -175,7 +175,9 @@ export function calculateLightWallResistance(layers: WallLayer[]): CalculationRe
     if (!mat) continue;
 
     references.add(mat.ref);
-    const kPos = getPositionFactor(i);
+    const basisKPos = getPositionFactor(i);
+    // Isolasjon får redusert k_pos: effektiv = 0.67 × basis k_pos (EN 1995-1-2 Annex E)
+    const kPos = mat.category === "isolasjon" ? 0.67 * basisKPos : basisKPos;
 
     let contribution: number;
     if (mat.fixedMinutes !== undefined) {
