@@ -312,6 +312,14 @@ const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData, s
                           </div>
                         )}
 
+                        {/* Veggoppbygning (brannmotstand) */}
+                        {calc.type === "brannmotstand" && calc.inputs.veggoppbygning && (
+                          <div className="bg-gray-50 p-2 rounded mb-2 text-xs">
+                            <p className="font-semibold mb-1">Veggoppbygning (fra brannside):</p>
+                            <pre className="whitespace-pre-wrap font-sans">{String(calc.inputs.veggoppbygning)}</pre>
+                          </div>
+                        )}
+
                         {/* Inngangsparametre */}
                         <table className="w-full border-collapse border border-gray-400 text-xs mb-2">
                           <thead>
@@ -321,7 +329,9 @@ const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData, s
                             </tr>
                           </thead>
                           <tbody>
-                            {Object.entries(calc.inputs).filter(([k]) => k !== "materialer").map(([key, val]) => (
+                            {Object.entries(calc.inputs)
+                              .filter(([k]) => !["materialer", "lagdetaljer", "veggoppbygning"].includes(k))
+                              .map(([key, val]) => (
                               <tr key={key}>
                                 <td className="border border-gray-400 p-2">{paramLabels[key] || key.replace(/_/g, " ")}</td>
                                 <td className="border border-gray-400 p-2">{val}{paramUnits[key] ? ` ${paramUnits[key]}` : ""}</td>
