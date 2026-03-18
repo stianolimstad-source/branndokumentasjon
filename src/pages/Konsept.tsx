@@ -5889,7 +5889,7 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_13")}
                     </SectionCollapsible>
-                    <SectionCollapsible label={`3.14 ${formData.regelverk === "BF85" ? "Tilrettelegging for slokkemannskap (§ 11-17)" : "§ 11-17 Tilrettelegging for slokkemannskap"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} label={`3.14 ${formData.regelverk === "BF85" ? "Tilrettelegging for slokkemannskap (§ 11-17)" : "§ 11-17 Tilrettelegging for slokkemannskap"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.14 § 11-17 Tilrettelegging for slokkemannskap</Label>
