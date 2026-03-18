@@ -210,8 +210,8 @@ export interface MassiveWallType {
   name: string;
   /** Tykkelse (mm) → brannmotstand (min) for EI (ikke-bærende) */
   thicknessTable: { thickness: number; minutes: number }[];
-  /** Tykkelse (mm) → brannmotstand (min) for REI (bærende) */
-  thicknessTableREI?: { thickness: number; minutes: number }[];
+  /** Tykkelse-intervall → brannmotstand (min) for REI (bærende) */
+  thicknessTableREI?: { thicknessRange: string; minutes: number }[];
   ref: string;
   notes?: string;
 }
