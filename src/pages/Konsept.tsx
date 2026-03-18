@@ -4036,7 +4036,7 @@ const Konsept = () => {
                         </Select>
                       </div>
                       
-                      {!isBF85 && (
+                      {formData.regelverk !== "BF85" && (
                       <>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Fyrrom relevant?</Label>
