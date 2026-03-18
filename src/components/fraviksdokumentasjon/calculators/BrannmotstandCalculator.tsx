@@ -15,6 +15,7 @@ import {
   lookupMassiveWallResistance,
   WallLayer,
   CalculationResult,
+  MAX_LAYERS,
 } from "@/lib/brannmotstand-data";
 
 interface Props {
