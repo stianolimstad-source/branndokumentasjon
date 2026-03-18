@@ -1615,7 +1615,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {formData.vinduskravRelevant && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Vinduskrav</td>
-                <td className="border border-gray-400 p-2">Vindu med brannmotstand må ikke kunne åpnes i vanlig brukstilstand.</td>
+                <td className="border border-gray-400 p-2">
+                  {formData.regelverk === "BF85"
+                    ? "Vindu skal ha samme brannmotstand som veggen det står i."
+                    : "Vindu med brannmotstand må ikke kunne åpnes i vanlig brukstilstand."}
+                </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
             )}

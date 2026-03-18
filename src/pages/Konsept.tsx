@@ -4123,7 +4123,9 @@ const Konsept = () => {
                             onCheckedChange={(checked) => setFormData({...formData, vinduskravRelevant: checked as boolean})}
                           />
                           <Label htmlFor="vinduskravRelevant" className="text-sm cursor-pointer">
-                            Vindu med brannmotstand er relevant
+                            {formData.regelverk === "BF85"
+                              ? "Vindu skal ha samme brannmotstand som veggen det står i"
+                              : "Vindu med brannmotstand er relevant"}
                           </Label>
                         </div>
                       </div>
