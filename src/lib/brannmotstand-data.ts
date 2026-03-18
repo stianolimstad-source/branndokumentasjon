@@ -64,7 +64,7 @@ export const layerMaterials: LayerMaterial[] = [
     category: "plate",
     factor: 0.45,
     standardThicknesses: [12, 16, 19, 22],
-    defaultThickness: 16,
+    defaultThickness: 12,
     ref: "EN 1995-1-2 Annex E, Tabell E.3",
   },
   {
