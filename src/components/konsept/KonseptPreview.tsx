@@ -1830,7 +1830,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 royk_overbygde_garder: "Overbygde gårder og gater må ha røykventilasjon for å hindre røykspredning mellom ulike brannceller som ligger ut mot den overbygde gården.",
                 // BF85 §:78
                 bf85_royk_brannventilasjon: "I bygning med flere enn 2 etasjer skal trapperom ha brannventilasjon. For bygninger med inntil 8 etasjer kan brannventilasjonen skje gjennom vindu i trapperom. Alle andre bygninger skal ha en røyksjakt som er skilt fra loft i minst A 30 og som har et tverr snitt på minst 1 m². Sjakten skal gå 20 cm over takflaten.",
-                bf85_royk_ledelys: "Bygning med flere enn 2 etasjer skal ha ledelys.",
               };
               const activeKrav = formData.roykKontrollKrav
                 .map((id: string, idx: number) => ({ id, text: roykKravMap[id], num: idx + 1 }))
