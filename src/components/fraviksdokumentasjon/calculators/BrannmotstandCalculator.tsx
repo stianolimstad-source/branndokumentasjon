@@ -431,7 +431,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 <AccordionTrigger className="text-sm py-2">Glassull (≥ 15 kg/m³)</AccordionTrigger>
                 <AccordionContent className="text-xs space-y-1 text-muted-foreground">
                   <p>Mineralullsisolasjon av glass. Ubrennbar, men smelter ved lavere temperatur enn steinull (ca. 600 °C vs. 1000 °C). Gir dermed lavere brannbidrag, men er et kostnadseffektivt alternativ for konstruksjoner med lavere brannkrav.</p>
-                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 148 mm (også tilgjengelig i 45, 50, 70, 95, 100, 120, 145, 198 og 200 mm)</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 150 mm (også tilgjengelig i 45, 50, 70, 95, 100, 120, 145, 148, 198 og 200 mm)</p>
                   <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 0,1 min/mm</p>
                 </AccordionContent>
               </AccordionItem>
