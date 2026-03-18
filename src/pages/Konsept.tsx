@@ -4081,11 +4081,11 @@ const Konsept = () => {
                         <Label className="text-xs font-medium mb-2 block">Dører i branncellebegrensende konstruksjoner</Label>
                         <div className="border rounded-md p-2 space-y-2 bg-muted/30">
                           {(formData.regelverk === "BF85" ? [
-                            { id: "bf85_branncelle_aapent", label: "Branncelle – åpent trapperom" },
-                            { id: "bf85_korridor_lukket", label: "Korridor – lukket trapperom" },
-                            { id: "bf85_korridor_sluse_branntrygt", label: "Korridor/sluse – branntrygt trapperom" },
-                            { id: "bf85_roykfritt_fri_luft", label: "Røykfritt trapperom – fri luft" },
-                            { id: "bf85_korridor_fri_luft", label: "Korridor – fri luft (i kombinasjon med røykfritt trapperom)" },
+                            { id: "bf85_branncelle_aapent", label: "Branncelle – åpent trapperom (Tr1)" },
+                            { id: "bf85_korridor_lukket", label: "Korridor – lukket trapperom (Tr2)" },
+                            { id: "bf85_korridor_sluse_branntrygt", label: "Korridor/sluse – branntrygt trapperom (Tr2)" },
+                            { id: "bf85_roykfritt_fri_luft", label: "Røykfritt trapperom (Tr3) – fri luft" },
+                            { id: "bf85_korridor_fri_luft", label: "Korridor – fri luft (i kombinasjon med røykfritt trapperom (Tr3))" },
                             { id: "bf85_branncelle_korridor", label: "Branncelle – korridor" },
                             { id: "bf85_loft_trapperom", label: "Loft – trapperom" },
                             { id: "bf85_kjeller_trapperom", label: "Kjeller – trapperom" },
