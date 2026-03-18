@@ -4131,30 +4131,61 @@ const Konsept = () => {
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-2 block">Krav til heissjakt</Label>
-                        <div className="border rounded-md p-2 space-y-2 bg-muted/30">
-                          {[
-                            { id: "heis_roykventileres_8", label: "1. I byggverk med inntil 8 etasjer må heissjakten røykventileres, eller det må etableres luftsluse (mellomliggende rom) utført som egen, ventilert branncelle, mellom heissjakten og tilstøtende rom." },
-                            { id: "heis_roykventileres_over8", label: "2. Heissjakt i byggverk med mer enn 8 etasjer må røykventileres og i tillegg utføres med luftsluse som beskrevet i nr. 1." },
-                            { id: "heis_dor_brannmotstand", label: "3. Dør må ha samme brannmotstand som veggen den står i, med unntak som gitt i nr. 4 og 5." },
-                            { id: "heis_dor_ei60", label: "4. I heissjakt med brannmotstand EI 60 kan det benyttes heisdør minst E 90 [F 90]. Heisdør kan utføres uten klasse Sₐ." },
-                            { id: "heis_dor_luftsluse", label: "5. Brannmotstand for dør fra tilstøtende rom til luftsluse som beskrevet i nr. 1 og 2 må være minst EI 30-Sₐ." },
-                          ].map((krav) => (
-                            <div key={krav.id} className="flex items-start space-x-2">
-                              <Checkbox
-                                id={`heis-${krav.id}`}
-                                checked={formData.heissjaktkrav.includes(krav.id)}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    setFormData({...formData, heissjaktkrav: [...formData.heissjaktkrav, krav.id]});
-                                  } else {
-                                    setFormData({...formData, heissjaktkrav: formData.heissjaktkrav.filter(k => k !== krav.id)});
-                                  }
-                                }}
-                              />
-                              <label htmlFor={`heis-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                        {formData.regelverk === "BF85" ? (
+                          <>
+                            <div className="mb-2 p-2 bg-accent/50 rounded text-xs">
+                              <span className="font-medium">BF85 heissjakt-krav</span>
+                              <span className="text-muted-foreground ml-1">(Kap. 30:33/30:65)</span>
                             </div>
-                          ))}
-                        </div>
+                            <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                              {[
+                                { id: "bf85_heis_ventilasjon", label: "1. Heissjakt må være ventilert med naturlig avtrekk, mekanisk avtrekk eller frisklufttilførsel iht. tabell nedenfor." },
+                                { id: "bf85_heis_dor_brannmotstand", label: "2. Dør til heis må ha samme brannmotstand som veggen den står i, eller F 90 (E 90)." },
+                                { id: "bf85_heis_dor_luftsluse", label: "3. Brannmotstand for dør fra tilstøtende rom til luftsluse må minst være B 30 (EI 30 Sₐ)." },
+                              ].map((krav) => (
+                                <div key={krav.id} className="flex items-start space-x-2">
+                                  <Checkbox
+                                    id={`heis-${krav.id}`}
+                                    checked={formData.heissjaktkrav.includes(krav.id)}
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        setFormData({...formData, heissjaktkrav: [...formData.heissjaktkrav, krav.id]});
+                                      } else {
+                                        setFormData({...formData, heissjaktkrav: formData.heissjaktkrav.filter(k => k !== krav.id)});
+                                      }
+                                    }}
+                                  />
+                                  <label htmlFor={`heis-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        ) : (
+                          <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                            {[
+                              { id: "heis_roykventileres_8", label: "1. I byggverk med inntil 8 etasjer må heissjakten røykventileres, eller det må etableres luftsluse (mellomliggende rom) utført som egen, ventilert branncelle, mellom heissjakten og tilstøtende rom." },
+                              { id: "heis_roykventileres_over8", label: "2. Heissjakt i byggverk med mer enn 8 etasjer må røykventileres og i tillegg utføres med luftsluse som beskrevet i nr. 1." },
+                              { id: "heis_dor_brannmotstand", label: "3. Dør må ha samme brannmotstand som veggen den står i, med unntak som gitt i nr. 4 og 5." },
+                              { id: "heis_dor_ei60", label: "4. I heissjakt med brannmotstand EI 60 kan det benyttes heisdør minst E 90 [F 90]. Heisdør kan utføres uten klasse Sₐ." },
+                              { id: "heis_dor_luftsluse", label: "5. Brannmotstand for dør fra tilstøtende rom til luftsluse som beskrevet i nr. 1 og 2 må være minst EI 30-Sₐ." },
+                            ].map((krav) => (
+                              <div key={krav.id} className="flex items-start space-x-2">
+                                <Checkbox
+                                  id={`heis-${krav.id}`}
+                                  checked={formData.heissjaktkrav.includes(krav.id)}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      setFormData({...formData, heissjaktkrav: [...formData.heissjaktkrav, krav.id]});
+                                    } else {
+                                      setFormData({...formData, heissjaktkrav: formData.heissjaktkrav.filter(k => k !== krav.id)});
+                                    }
+                                  }}
+                                />
+                                <label htmlFor={`heis-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-2 block">Krav til trapperom</Label>
