@@ -27,7 +27,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
   // ── Lett vegg state ──
   const [layers, setLayers] = useState<(WallLayer & { id: string })[]>([
     { id: crypto.randomUUID(), materialId: "branngips", thickness: 15 },
-    { id: crypto.randomUUID(), materialId: "steinull", thickness: 148 },
+    { id: crypto.randomUUID(), materialId: "steinull", thickness: 150 },
     { id: crypto.randomUUID(), materialId: "branngips", thickness: 15 },
   ]);
 
