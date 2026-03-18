@@ -64,7 +64,7 @@ export const layerMaterials: LayerMaterial[] = [
     category: "plate",
     factor: 0.45,
     standardThicknesses: [12, 16, 19, 22],
-    defaultThickness: 16,
+    defaultThickness: 12,
     ref: "EN 1995-1-2 Annex E, Tabell E.3",
   },
   {
@@ -92,7 +92,7 @@ export const layerMaterials: LayerMaterial[] = [
     category: "isolasjon",
     factor: 0.2,
     standardThicknesses: [45, 50, 70, 95, 100, 120, 145, 148, 150, 198, 200, 250],
-    defaultThickness: 100,
+    defaultThickness: 150,
     ref: "EN 1995-1-2 Annex E, Tabell E.4",
   },
   {
@@ -110,7 +110,7 @@ export const layerMaterials: LayerMaterial[] = [
     category: "isolasjon",
     factor: 0.1,
     standardThicknesses: [45, 50, 70, 95, 100, 120, 145, 148, 150, 198, 200],
-    defaultThickness: 100,
+    defaultThickness: 150,
     ref: "EN 1995-1-2 Annex E, Tabell E.4",
   },
   // ── Luft ──
