@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Trash2, Flame, MoveVertical, Zap, Calculator, Users, Box } from "lucide-react";
+import { Trash2, Flame, MoveVertical, Zap, Calculator, Users, Box, Shield } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import CalculatorDialog, { CalculatorType } from "./CalculatorDialog";
 
