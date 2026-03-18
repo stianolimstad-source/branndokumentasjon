@@ -368,7 +368,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 <AccordionTrigger className="text-sm py-2">Gipsplate Type A (standard)</AccordionTrigger>
                 <AccordionContent className="text-xs space-y-1 text-muted-foreground">
                   <p>Standard gipsplate (EN 520) med gipskjerne og kartongforing. Brukes i innvendige vegger og himlinger under normale forhold. Gir moderat brannbeskyttelse.</p>
-                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 9,5 · 12,5 · 15 mm</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 12,5 mm (også tilgjengelig i 9,5 og 15 mm)</p>
                   <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 1,25 min/mm</p>
                 </AccordionContent>
               </AccordionItem>
@@ -384,7 +384,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 <AccordionTrigger className="text-sm py-2">Kryssfiner</AccordionTrigger>
                 <AccordionContent className="text-xs space-y-1 text-muted-foreground">
                   <p>Plater bygget opp av krysslimte tresjikt. Brennbart materiale, men gir et visst brannbeskyttende bidrag gjennom forkulling. Lavere brannbidrag enn gipsplater.</p>
-                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 9 · 12 · 15 · 18 · 21 mm</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 15 mm (også tilgjengelig i 9, 12, 18 og 21 mm)</p>
                   <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 0,5 min/mm</p>
                 </AccordionContent>
               </AccordionItem>
@@ -392,7 +392,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 <AccordionTrigger className="text-sm py-2">Sponplate</AccordionTrigger>
                 <AccordionContent className="text-xs space-y-1 text-muted-foreground">
                   <p>Plate av sammenpressede trespon og lim. Brennbart materiale med noe lavere brannbidrag enn kryssfiner. Brukes i undergolv, innredninger og ikke-bærende vegger.</p>
-                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 12 · 16 · 19 · 22 mm</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 22 mm (også tilgjengelig i 12, 16 og 19 mm)</p>
                   <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 0,45 min/mm</p>
                 </AccordionContent>
               </AccordionItem>
@@ -400,7 +400,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 <AccordionTrigger className="text-sm py-2">Fibersementplate</AccordionTrigger>
                 <AccordionContent className="text-xs space-y-1 text-muted-foreground">
                   <p>Ubrennbar plate av sement og fiberarmering. God brannmotstand tilsvarende gipsplater, men også egnet for utendørs bruk og fuktige miljøer.</p>
-                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 6 · 8 · 10 · 12 mm</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 8 mm (også tilgjengelig i 6, 10 og 12 mm)</p>
                   <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 1,3 min/mm</p>
                 </AccordionContent>
               </AccordionItem>
