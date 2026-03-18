@@ -743,6 +743,22 @@ const Konsept = () => {
     }
   }, [formData.brannklasse, formData.risikoklasse, formData.etasjer, formData.regelverk, formData.bygningsbrannklasse]);
 
+  // Automatisk BF85 røykventilasjonskrav basert på etasjer
+  useEffect(() => {
+    if (isViewMode || formData.regelverk !== "BF85") return;
+    const etasjer = parseInt(formData.etasjer, 10) || 0;
+    if (etasjer > 2) {
+      // Auto-add the requirement if not already present
+      if (!formData.roykKontrollKrav.includes("bf85_royk_brannventilasjon")) {
+        setFormData(prev => ({ ...prev, roykKontrollKrav: [...prev.roykKontrollKrav, "bf85_royk_brannventilasjon"] }));
+      }
+    } else {
+      // Auto-remove if floors <= 2
+      if (formData.roykKontrollKrav.includes("bf85_royk_brannventilasjon")) {
+        setFormData(prev => ({ ...prev, roykKontrollKrav: prev.roykKontrollKrav.filter((k: string) => k !== "bf85_royk_brannventilasjon") }));
+      }
+    }
+  }, [formData.etasjer, formData.regelverk]);
 
   // Beregn automatisk tiltaksklasse for visning
   const autoTiltaksklasse = (() => {
@@ -4324,16 +4340,50 @@ const Konsept = () => {
                       <div>
                         <Label className="text-xs font-medium mb-2 block">{formData.regelverk === "BF85" ? "Brannventilasjon og belysning i rømningsveg (§:78)" : "Røykkontroll"}</Label>
                         <div className="border rounded-md p-2 space-y-2 bg-muted/30">
-                          {(formData.regelverk === "BF85" ? [
-                            { id: "bf85_royk_brannventilasjon", label: "1. I bygning med flere enn 2 etasjer skal trapperom ha brannventilasjon. For bygninger med inntil 8 etasjer kan brannventilasjonen skje gjennom vindu i trapperom. Alle andre bygninger skal ha en røyksjakt som er skilt fra loft i minst A 30 og som har et tverr snitt på minst 1 m². Sjakten skal gå 20 cm over takflaten." },
-                          ] : [
+                          {formData.regelverk === "BF85" ? (() => {
+                            const etasjer = parseInt(formData.etasjer, 10) || 0;
+                            const isAutoSet = etasjer > 2;
+                            const isOver8 = etasjer > 8;
+                            return (
+                              <>
+                                {isAutoSet && (
+                                  <div className="text-xs text-muted-foreground italic border-l-2 border-primary pl-2 mb-1">
+                                    Automatisk satt basert på {etasjer} etasjer
+                                  </div>
+                                )}
+                                <div className="flex items-start space-x-2">
+                                  <Checkbox
+                                    id="royk-bf85_royk_brannventilasjon"
+                                    checked={formData.roykKontrollKrav.includes("bf85_royk_brannventilasjon")}
+                                    disabled={isAutoSet}
+                                    onCheckedChange={(checked) => {
+                                      if (checked) {
+                                        setFormData({...formData, roykKontrollKrav: [...formData.roykKontrollKrav, "bf85_royk_brannventilasjon"]});
+                                      } else {
+                                        setFormData({...formData, roykKontrollKrav: formData.roykKontrollKrav.filter((k: string) => k !== "bf85_royk_brannventilasjon")});
+                                      }
+                                    }}
+                                  />
+                                  <label htmlFor="royk-bf85_royk_brannventilasjon" className="text-xs leading-tight cursor-pointer">
+                                    {isOver8
+                                      ? "I bygning med flere enn 2 etasjer skal trapperom ha brannventilasjon. Bygningen har over 8 etasjer og skal ha en røyksjakt som er skilt fra loft i minst A 30 og som har et tverrsnitt på minst 1 m². Sjakten skal gå 20 cm over takflaten."
+                                      : "I bygning med flere enn 2 etasjer skal trapperom ha brannventilasjon. For bygninger med inntil 8 etasjer kan brannventilasjonen skje gjennom vindu i trapperom."
+                                    }
+                                  </label>
+                                </div>
+                                {!isAutoSet && (
+                                  <p className="text-xs text-muted-foreground">Kravet aktiveres automatisk når bygget har mer enn 2 etasjer.</p>
+                                )}
+                              </>
+                            );
+                          })() : [
                             { id: "royk_romningsvei", label: "1. Trapperom som er rømningsvei i byggverk med flere enn to etasjer, må røykventileres." },
                             { id: "royk_luke_vindu", label: "2. I byggverk med inntil 8 etasjer med trapperom Tr 1 eller Tr 2, jf. § 11-13 Tabell 2, er det tilstrekkelig med luke eller vindu med fri åpning minimum 1,0 m² øverst i trapperommet." },
                             { id: "royk_manuell_bryter", label: "3. Luke eller vindu skal kunne åpnes manuelt med bryter fra inngangsplanet." },
                             { id: "royk_mekanisk_ventilasjon", label: "4. Mellomliggende rom knyttet til Tr 2 må ha mekanisk balansert ventilasjon." },
                             { id: "royk_tr3_trykksetting", label: "5. I byggverk med mer enn 8 etasjer med trapperom Tr 3, jf. § 11-13 Tabell 2, må det mellomliggende rommet være åpent mot det fri, eller trapperommet må trykksettes og det mellomliggende rommet må ha trykkavlastning (røykventilasjon)." },
                             { id: "royk_overbygde_garder", label: "6. Overbygde gårder og gater må ha røykventilasjon for å hindre røykspredning mellom ulike brannceller som ligger ut mot den overbygde gården." },
-                          ]).map((krav) => (
+                          ].map((krav) => (
                             <div key={krav.id} className="flex items-start space-x-2">
                               <Checkbox
                                 id={`royk-${krav.id}`}
