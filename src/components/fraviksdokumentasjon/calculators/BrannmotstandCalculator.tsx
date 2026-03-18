@@ -384,7 +384,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 <AccordionTrigger className="text-sm py-2">Kryssfiner</AccordionTrigger>
                 <AccordionContent className="text-xs space-y-1 text-muted-foreground">
                   <p>Plater bygget opp av krysslimte tresjikt. Brennbart materiale, men gir et visst brannbeskyttende bidrag gjennom forkulling. Lavere brannbidrag enn gipsplater.</p>
-                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 9 · 12 · 15 · 18 · 21 mm</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 15 mm (også tilgjengelig i 9, 12, 18 og 21 mm)</p>
                   <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 0,5 min/mm</p>
                 </AccordionContent>
               </AccordionItem>
