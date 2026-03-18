@@ -57,7 +57,7 @@ function getBeregningsSteg(calc: AttachedCalculation): string[] {
       `Persontall = ${A} m² ÷ ${factor} m²/person = ${persontall} personer`,
     ];
   }
-  if (calc.type === "omhyllingsflate") {
+   if (calc.type === "omhyllingsflate") {
     const L = Number(calc.inputs.lengde_m) || 0;
     const B = Number(calc.inputs.bredde_m) || 0;
     const H = Number(calc.inputs.hoyde_m) || 0;
@@ -70,6 +70,21 @@ function getBeregningsSteg(calc: AttachedCalculation): string[] {
       `Total At = ${gulv} + ${gulv} + ${vegg} = ${total} m²`,
     ];
   }
+  if (calc.type === "brannmotstand") {
+    const lines: string[] = [];
+    if (calc.inputs.lagdetaljer) {
+      try {
+        const breakdown = JSON.parse(String(calc.inputs.lagdetaljer));
+        breakdown.forEach((row: { materialName: string; thickness: number; kPos: number; contribution: number }) => {
+          lines.push(`${row.materialName}: ${row.thickness} mm × k_pos ${row.kPos} = ${row.contribution} min`);
+        });
+        lines.push(`Sum = ${calc.results.minutter} min → ${calc.results.brannklasse}`);
+      } catch { /* fallback */ }
+    } else {
+      lines.push(`${calc.inputs.konstruksjonstype}: ${calc.inputs.tykkelse_mm} mm → ${calc.results.brannklasse}`);
+    }
+    return lines;
+  }
   return [];
 }
 
@@ -79,6 +94,7 @@ const formelMap: Record<string, string[]> = {
   brannenergi: ["Q = Σ (mi · Hc,i)", "q = Q / Arom"],
   persontall: ["Persontall = Areal / Faktor"],
   omhyllingsflate: ["At = Agulv + Atak + Avegg", "Avegg = 2·(L·H) + 2·(B·H)"],
+  brannmotstand: ["t_ins = Σ (t_ins,0,i × k_pos,i)", "t_ins,0 = faktor × tykkelse"],
 };
 
 const paramLabels: Record<string, string> = {
@@ -88,6 +104,8 @@ const paramLabels: Record<string, string> = {
   areal_m2: "Areal", kategori: "Brukskategori", faktor_m2_per_person: "Faktor",
   persontall: "Persontall",
   gulvareal_m2: "Gulvareal", takareal_m2: "Takareal", veggflate_m2: "Veggflate", total_omhylling_m2: "Total omhylling",
+  metode: "Metode", antall_lag: "Antall lag", konstruksjonstype: "Konstruksjonstype",
+  tykkelse_mm: "Tykkelse", brannklasse: "Brannklasse", minutter: "Brannmotstandstid",
 };
 
 const paramUnits: Record<string, string> = {
@@ -97,6 +115,7 @@ const paramUnits: Record<string, string> = {
   areal_m2: "m²", faktor_m2_per_person: "m²/person",
   persontall: "personer",
   gulvareal_m2: "m²", takareal_m2: "m²", veggflate_m2: "m²", total_omhylling_m2: "m²",
+  tykkelse_mm: "mm", minutter: "min",
 };
 
 interface KvalitativPreviewProps {
@@ -278,6 +297,7 @@ const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData, s
                       brannenergi: "Brannenergiberegning",
                       persontall: "Persontallsberegning",
                       omhyllingsflate: "Omhyllingsflateberegning",
+                      brannmotstand: "Brannmotstandsberegning (Komponentadditivmetoden)",
                     };
                     const formler = formelMap[calc.type] || [];
                     const steg = getBeregningsSteg(calc);
@@ -292,6 +312,14 @@ const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData, s
                           </div>
                         )}
 
+                        {/* Veggoppbygning (brannmotstand) */}
+                        {calc.type === "brannmotstand" && calc.inputs.veggoppbygning && (
+                          <div className="bg-gray-50 p-2 rounded mb-2 text-xs">
+                            <p className="font-semibold mb-1">Veggoppbygning (fra brannside):</p>
+                            <pre className="whitespace-pre-wrap font-sans">{String(calc.inputs.veggoppbygning)}</pre>
+                          </div>
+                        )}
+
                         {/* Inngangsparametre */}
                         <table className="w-full border-collapse border border-gray-400 text-xs mb-2">
                           <thead>
@@ -301,7 +329,9 @@ const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData, s
                             </tr>
                           </thead>
                           <tbody>
-                            {Object.entries(calc.inputs).filter(([k]) => k !== "materialer").map(([key, val]) => (
+                            {Object.entries(calc.inputs)
+                              .filter(([k]) => !["materialer", "lagdetaljer", "veggoppbygning"].includes(k))
+                              .map(([key, val]) => (
                               <tr key={key}>
                                 <td className="border border-gray-400 p-2">{paramLabels[key] || key.replace(/_/g, " ")}</td>
                                 <td className="border border-gray-400 p-2">{val}{paramUnits[key] ? ` ${paramUnits[key]}` : ""}</td>

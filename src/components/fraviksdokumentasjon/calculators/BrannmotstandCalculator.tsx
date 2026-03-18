@@ -47,19 +47,45 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
     }
     setResult(res);
     if (res && onResult) {
-      onResult({
-        id: crypto.randomUUID(),
-        type: "brannmotstand" as any,
-        label: `Brannmotstand: ${res.fireClass} (${res.totalMinutes} min) – ${res.method}`,
-        inputs: tab === "lett"
-          ? { antall_lag: layers.length, metode: "Komponentadditivmetoden" }
-          : { type: massiveType, tykkelse_mm: massiveThickness },
-        results: {
-          brannklasse: res.fireClass,
-          minutter: res.totalMinutes,
-        },
-        kommentar: "",
-      });
+      if (tab === "lett") {
+        const veggbeskrivelse = layers.map((l, i) => {
+          const mat = layerMaterials.find(m => m.id === l.materialId);
+          return `${i + 1}. ${mat?.name || l.materialId} – ${l.thickness} mm`;
+        }).join("\n");
+        onResult({
+          id: crypto.randomUUID(),
+          type: "brannmotstand" as any,
+          label: `Brannmotstand: ${res.fireClass} (${res.totalMinutes} min) – ${res.method}`,
+          inputs: {
+            metode: "Komponentadditivmetoden (EN 1995-1-2 Annex E)",
+            antall_lag: layers.length,
+            veggoppbygning: veggbeskrivelse,
+            lagdetaljer: JSON.stringify(res.layerBreakdown),
+          },
+          results: {
+            brannklasse: res.fireClass,
+            minutter: res.totalMinutes,
+          },
+          kommentar: "",
+        });
+      } else {
+        const wt = massiveWallTypes.find(w => w.id === massiveType);
+        onResult({
+          id: crypto.randomUUID(),
+          type: "brannmotstand" as any,
+          label: `Brannmotstand: ${res.fireClass} (${res.totalMinutes} min) – ${res.method}`,
+          inputs: {
+            metode: "Tabelloppslag",
+            konstruksjonstype: wt?.name || massiveType,
+            tykkelse_mm: massiveThickness,
+          },
+          results: {
+            brannklasse: res.fireClass,
+            minutter: res.totalMinutes,
+          },
+          kommentar: "",
+        });
+      }
     }
   }, [tab, layers, massiveType, massiveThickness, onResult]);
 
