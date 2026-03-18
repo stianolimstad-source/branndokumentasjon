@@ -14,6 +14,7 @@ import Flammehoyde from "./pages/verktoy/Flammehoyde";
 import Omhyllingsflate from "./pages/verktoy/Omhyllingsflate";
 import Persontall from "./pages/verktoy/Persontall";
 import Brannenergi from "./pages/verktoy/Brannenergi";
+import Brannmotstand from "./pages/verktoy/Brannmotstand";
 
 import Auth from "./pages/Auth";
 import MineProsjekter from "./pages/MineProsjekter";
