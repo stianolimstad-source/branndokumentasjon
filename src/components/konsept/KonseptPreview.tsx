@@ -632,7 +632,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <>
                 <tr className="bg-blue-100">
                   <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
-                    {sp}.1 &nbsp;&nbsp; Kap. 30:41 Bæreevne og stabilitet (Bygningsbrannklasse)
+                    {sp}.1 &nbsp;&nbsp; Kap. 30:41 Bæreevne og stabilitet (Bygningsbrannklasse) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-4 Bæreevne og stabilitet)</span>
                   </td>
                 </tr>
                 <tr className="bg-gray-100">
