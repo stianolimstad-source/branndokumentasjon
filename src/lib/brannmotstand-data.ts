@@ -235,7 +235,7 @@ export const massiveWallTypes: MassiveWallType[] = [
       { thickness: 250, minutes: 240 },
     ],
     ref: "EN 1992-1-2:2004, Tabell 5.3 / 5.4",
-    notes: "Verdier gjelder silika-tilslagsmateriale. REI-verdier forutsetter tilstrekkelig armering iht. EN 1992-1-2.",
+    notes: "Verdier gjelder silika-tilslagsmateriale (vanlig betong). REI-verdier forutsetter tilstrekkelig armering iht. EN 1992-1-2.",
   },
   {
     id: "lettbetong",
