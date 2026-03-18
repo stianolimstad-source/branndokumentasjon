@@ -3814,7 +3814,6 @@ const Konsept = () => {
                                   {formData.seksjonVinduRelevant && (
                                     <>
                                       <div>– Vindu i brannvegg skal ha samme brannmotstand som veggen (minst A 120).</div>
-                                      <div>– Vindu skal ikke kunne åpnes.</div>
                                     </>
                                   )}
                                 </>
