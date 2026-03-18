@@ -1175,7 +1175,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       <div className="space-y-1 text-sm">
                         <p>Bygningsrådet kan i enkelte tilfeller tillate åpninger i branndekke og brannvegg. Åpningene skal kunne stenges automatisk ved brann. Lukkeanordningene skal minst ha halvparten av dekkets eller veggens brannmotstand.</p>
                         {formData.seksjonDorRelevant && <p>Dører i brannvegg skal ha lukkeanordning med minst halvparten av veggens brannmotstand. Dører må stenges automatisk ved brann.</p>}
-                        {formData.seksjonVinduRelevant && <p>Vinduer i brannvegg skal ikke kunne åpnes i vanlig brukstilstand og skal ha tilsvarende brannmotstand som veggen.</p>}
+                        {formData.seksjonVinduRelevant && <p>Vinduer i brannvegg skal ha tilsvarende brannmotstand som veggen.</p>}
                       </div>
                     </td>
                     <td className="border border-gray-400 p-2 align-top">ARK</td>
