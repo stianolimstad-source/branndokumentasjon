@@ -221,11 +221,12 @@ export const massiveWallTypes: MassiveWallType[] = [
     id: "betong_normal",
     name: "Normalvektsbetong (uarmert/armert)",
     thicknessTable: [
-      { thickness: 60, minutes: 60 },
-      { thickness: 80, minutes: 90 },
-      { thickness: 100, minutes: 120 },
-      { thickness: 120, minutes: 180 },
-      { thickness: 150, minutes: 240 },
+      { thickness: 60, minutes: 30 },
+      { thickness: 80, minutes: 60 },
+      { thickness: 100, minutes: 90 },
+      { thickness: 120, minutes: 120 },
+      { thickness: 150, minutes: 180 },
+      { thickness: 175, minutes: 240 },
     ],
     thicknessTableREI: [
       { thicknessRange: "ca. 100 mm", minutes: 30 },
