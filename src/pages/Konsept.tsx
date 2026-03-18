@@ -4020,6 +4020,7 @@ const Konsept = () => {
                         </div>
                       </div>
                       
+                      {formData.regelverk !== "BF85" && (
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Heismaskinrom relevant?</Label>
                         <Select 
@@ -4035,6 +4036,7 @@ const Konsept = () => {
                           </SelectContent>
                         </Select>
                       </div>
+                      )}
                       
                       {formData.regelverk !== "BF85" && (
                       <>

@@ -1430,7 +1430,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
             </>
             )}
-            {formData.heismaskinromRelevant === "ja" && formData.brannklasse && (
+            {!isBF85 && formData.heismaskinromRelevant === "ja" && formData.brannklasse && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Heismaskinrom</td>
                 <td className="border border-gray-400 p-2 font-semibold">
