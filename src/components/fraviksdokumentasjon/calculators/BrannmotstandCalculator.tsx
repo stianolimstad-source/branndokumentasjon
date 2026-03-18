@@ -176,29 +176,6 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                   );
                 })}
 
-                {layers.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {layerMaterials
-                      .filter((m) => m.category === "plate")
-                      .slice(0, 3)
-                      .map((m) => (
-                        <Button
-                          key={m.id}
-                          variant="outline"
-                          size="sm"
-                          className="text-xs h-7"
-                          onClick={() =>
-                            setLayers([
-                              ...layers,
-                              { id: crypto.randomUUID(), materialId: m.id, thickness: m.standardThicknesses[1] || m.standardThicknesses[0] },
-                            ])
-                          }
-                        >
-                          + {m.name.split(" ")[0]} {m.name.split(" ").pop()}
-                        </Button>
-                      ))}
-                  </div>
-                )}
               </div>
 
               <Button className="w-full" onClick={calculate} disabled={layers.length === 0}>
