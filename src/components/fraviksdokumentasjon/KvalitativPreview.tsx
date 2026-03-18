@@ -312,33 +312,97 @@ const KvalitativPreview = ({ fravikEntries, logoUrl, projectData, profileData, s
                           </div>
                         )}
 
-                        {/* Veggoppbygning (brannmotstand) */}
-                        {calc.type === "brannmotstand" && calc.inputs.veggoppbygning && (
-                          <div className="bg-gray-50 p-2 rounded mb-2 text-xs">
-                            <p className="font-semibold mb-1">Veggoppbygning (fra brannside):</p>
-                            <pre className="whitespace-pre-wrap font-sans">{String(calc.inputs.veggoppbygning)}</pre>
-                          </div>
+                        {/* Brannmotstand: veggoppbygning + lagtabell */}
+                        {calc.type === "brannmotstand" && calc.inputs.lagdetaljer && (() => {
+                          try {
+                            const breakdown = JSON.parse(String(calc.inputs.lagdetaljer)) as { materialName: string; thickness: number; kPos: number; contribution: number }[];
+                            return (
+                              <div className="mb-2">
+                                <p className="text-xs font-semibold mb-1">Veggoppbygning (fra brannside):</p>
+                                <table className="w-full border-collapse border border-gray-400 text-xs mb-2">
+                                  <thead>
+                                    <tr className="bg-gray-100">
+                                      <th className="border border-gray-400 p-2 text-left">Lag</th>
+                                      <th className="border border-gray-400 p-2 text-left">Materiale</th>
+                                      <th className="border border-gray-400 p-2 text-right">Tykkelse</th>
+                                      <th className="border border-gray-400 p-2 text-right">k<sub>pos</sub></th>
+                                      <th className="border border-gray-400 p-2 text-right">Bidrag</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {breakdown.map((row, ri) => (
+                                      <tr key={ri}>
+                                        <td className="border border-gray-400 p-2">{ri + 1}</td>
+                                        <td className="border border-gray-400 p-2">{row.materialName}</td>
+                                        <td className="border border-gray-400 p-2 text-right">{row.thickness} mm</td>
+                                        <td className="border border-gray-400 p-2 text-right">{row.kPos}</td>
+                                        <td className="border border-gray-400 p-2 text-right">{row.contribution} min</td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                                <table className="w-full border-collapse border border-gray-400 text-xs mb-2">
+                                  <thead>
+                                    <tr className="bg-gray-100">
+                                      <th className="border border-gray-400 p-2 text-left w-1/2">Parameter</th>
+                                      <th className="border border-gray-400 p-2 text-left w-1/2">Verdi</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td className="border border-gray-400 p-2">Metode</td>
+                                      <td className="border border-gray-400 p-2">{calc.inputs.metode}</td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                            );
+                          } catch { return null; }
+                        })()}
+
+                        {/* Brannmotstand massiv: enkel tabell */}
+                        {calc.type === "brannmotstand" && !calc.inputs.lagdetaljer && (
+                          <table className="w-full border-collapse border border-gray-400 text-xs mb-2">
+                            <thead>
+                              <tr className="bg-gray-100">
+                                <th className="border border-gray-400 p-2 text-left w-1/2">Parameter</th>
+                                <th className="border border-gray-400 p-2 text-left w-1/2">Verdi</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {Object.entries(calc.inputs)
+                                .filter(([k]) => !["materialer", "lagdetaljer", "veggoppbygning"].includes(k))
+                                .map(([key, val]) => (
+                                <tr key={key}>
+                                  <td className="border border-gray-400 p-2">{paramLabels[key] || key.replace(/_/g, " ")}</td>
+                                  <td className="border border-gray-400 p-2">{val}{paramUnits[key] ? ` ${paramUnits[key]}` : ""}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
                         )}
 
-                        {/* Inngangsparametre */}
-                        <table className="w-full border-collapse border border-gray-400 text-xs mb-2">
-                          <thead>
-                            <tr className="bg-gray-100">
-                              <th className="border border-gray-400 p-2 text-left w-1/2">Parameter</th>
-                              <th className="border border-gray-400 p-2 text-left w-1/2">Verdi</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {Object.entries(calc.inputs)
-                              .filter(([k]) => !["materialer", "lagdetaljer", "veggoppbygning"].includes(k))
-                              .map(([key, val]) => (
-                              <tr key={key}>
-                                <td className="border border-gray-400 p-2">{paramLabels[key] || key.replace(/_/g, " ")}</td>
-                                <td className="border border-gray-400 p-2">{val}{paramUnits[key] ? ` ${paramUnits[key]}` : ""}</td>
+                        {/* Inngangsparametre (andre typer) */}
+                        {calc.type !== "brannmotstand" && (
+                          <table className="w-full border-collapse border border-gray-400 text-xs mb-2">
+                            <thead>
+                              <tr className="bg-gray-100">
+                                <th className="border border-gray-400 p-2 text-left w-1/2">Parameter</th>
+                                <th className="border border-gray-400 p-2 text-left w-1/2">Verdi</th>
                               </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                            </thead>
+                            <tbody>
+                              {Object.entries(calc.inputs)
+                                .filter(([k]) => !["materialer"].includes(k))
+                                .map(([key, val]) => (
+                                <tr key={key}>
+                                  <td className="border border-gray-400 p-2">{paramLabels[key] || key.replace(/_/g, " ")}</td>
+                                  <td className="border border-gray-400 p-2">{val}{paramUnits[key] ? ` ${paramUnits[key]}` : ""}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        )}
 
                         {/* Beregningssteg */}
                         {steg.length > 0 && (
