@@ -1651,10 +1651,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               const isBF85 = formData.regelverk === "BF85";
               if (isBF85) {
                 const bf85TrapperomMap: Record<string, { title: string; desc: string }> = {
-                  bf85_tr_aapent: { title: "Åpent", desc: "Trapperom som har direkte forbindelse gjennom dør til bruksenheten." },
-                  bf85_tr_lukket: { title: "Lukket", desc: "Trapperom som har forbindelse til bruksenhet bare gjennom lukket korridor, og som er lukket med dør B 30 eller F 30 mot korridor." },
-                  bf85_tr_branntrygt: { title: "Branntrygt", desc: "Lukket trapperom utført som branntrygt rom uten forbindelse til kjeller." },
-                  bf85_tr_roykfritt: { title: "Røykfritt", desc: "Branntrygt trapperom med forbindelse til bruksenheten bare gjennom rom åpent mot det fri (f.eks. balkong)." },
+                  bf85_tr_aapent: { title: "Åpent trapperom (Tr1)", desc: "Trapperom som har direkte forbindelse gjennom dør til bruksenheten." },
+                  bf85_tr_lukket: { title: "Lukket trapperom (Tr2)", desc: "Trapperom som har forbindelse til bruksenhet bare gjennom lukket korridor, og som er lukket med dør B 30 eller F 30 mot korridor." },
+                  bf85_tr_branntrygt: { title: "Branntrygt trapperom (Tr2)", desc: "Lukket trapperom utført som branntrygt rom uten forbindelse til kjeller." },
+                  bf85_tr_roykfritt: { title: "Røykfritt trapperom (Tr3)", desc: "Branntrygt trapperom med forbindelse til bruksenheten bare gjennom rom åpent mot det fri (f.eks. balkong)." },
                 };
                 const activeKrav = formData.trapperomKrav
                   .map((id: string) => ({ id, ...bf85TrapperomMap[id] }))
