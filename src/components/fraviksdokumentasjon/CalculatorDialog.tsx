@@ -27,6 +27,7 @@ const calculatorComponents: Record<CalculatorType, React.FC<{ onResult: (calc: A
   brannenergi: BrannenergCalculator,
   persontall: PersontallCalculator,
   omhyllingsflate: OmhyllingsflateCalculator,
+  brannmotstand: BrannmotstandCalculator,
 };
 
 const titles: Record<CalculatorType, string> = {
