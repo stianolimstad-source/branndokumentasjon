@@ -1629,70 +1629,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               if (isBF85) {
                 const bf85HeisMap: Record<string, React.ReactNode> = {
                   bf85_heis_ventilasjon: (
-                    <div>
-                      <p>Heissjakt må være ventilert med naturlig avtrekk, mekanisk avtrekk eller frisklufttilførsel:</p>
-                      <table className="mt-2 w-full text-xs border-collapse border border-gray-400">
-                        <thead>
-                          <tr className="bg-gray-100">
-                            <th className="border border-gray-400 p-1.5 text-left font-semibold" rowSpan={2}>Rom</th>
-                            <th className="border border-gray-400 p-1.5 text-center font-semibold">Med naturlig avtrekk</th>
-                            <th className="border border-gray-400 p-1.5 text-center font-semibold">Med mekanisk avtrekk</th>
-                            <th className="border border-gray-400 p-1.5 text-center font-semibold" rowSpan={2}>Frisklufttilførsel</th>
-                          </tr>
-                          <tr className="bg-gray-100">
-                            <th className="border border-gray-400 p-1.5 text-center font-semibold">Kanaltverrsnitt i cm²</th>
-                            <th className="border border-gray-400 p-1.5 text-center font-semibold">Luftmengde i m³/h</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td className="border border-gray-400 p-1.5 font-medium" colSpan={4}>Felles vaske- og tørkerom som forutsettes brukt av:</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-400 p-1.5 pl-4">a) en husstand pr. dag</td>
-                            <td className="border border-gray-400 p-1.5 text-center">300</td>
-                            <td className="border border-gray-400 p-1.5 text-center">120</td>
-                            <td className="border border-gray-400 p-1.5 text-center" rowSpan={3}>Kanaltverrsnitt 80 % av det kanaltverrsnittet som kreves ved kanaler for naturlig avtrekk</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-400 p-1.5 pl-4">b) flere husstander pr. dag, men ikke samtidig</td>
-                            <td className="border border-gray-400 p-1.5 text-center">500¹⁾</td>
-                            <td className="border border-gray-400 p-1.5 text-center">200</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-400 p-1.5 pl-4">c) flere husstander samtidig. Pr. husstand</td>
-                            <td className="border border-gray-400 p-1.5 text-center">400¹⁾</td>
-                            <td className="border border-gray-400 p-1.5 text-center">160</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-400 p-1.5">Felles korridor og trapperom</td>
-                            <td className="border border-gray-400 p-1.5 text-center">20 cm² pr. tilsluttet leilighet og heisdør</td>
-                            <td className="border border-gray-400 p-1.5 text-center">–</td>
-                            <td className="border border-gray-400 p-1.5 text-center">50 cm² pr. tilsluttet leilighet og heisdør</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-400 p-1.5">Kjeller som ikke har vindu som kan åpnes</td>
-                            <td className="border border-gray-400 p-1.5 text-center">3 cm² pr. m² golvareal</td>
-                            <td className="border border-gray-400 p-1.5 text-center">1 m³/h pr. m² golvareal</td>
-                            <td className="border border-gray-400 p-1.5 text-center">Ventiltverrsnitt 3 cm² pr. m² golvareal</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-400 p-1.5 font-semibold">Heissjakt</td>
-                            <td className="border border-gray-400 p-1.5 text-center">50 cm² pr. m² sjaktareal</td>
-                            <td className="border border-gray-400 p-1.5 text-center">30 m³/h pr. m² sjaktareal</td>
-                            <td className="border border-gray-400 p-1.5 text-center">50 cm² pr. m² sjaktareal</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-400 p-1.5">Søppelnedkast og tilhørende søppelrom</td>
-                            <td className="border border-gray-400 p-1.5 text-center" colSpan={3}>Avtrekk og tilførsel dimensjoneres slik at undertrykk oppnås</td>
-                          </tr>
-                          <tr>
-                            <td className="border border-gray-400 p-1.5">Boder og loftsrom</td>
-                            <td className="border border-gray-400 p-1.5 text-center" colSpan={3}>Tilfredsstillende ventilasjon</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <p className="text-xs text-muted-foreground mt-1">¹⁾ Naturlig avtrekk tillates bare rent unntaksvis</p>
+                    <div className="space-y-1">
+                      <p>Heissjakt skal være ventilert med naturlig avtrekk, mekanisk avtrekk eller frisklufttilførsel:</p>
+                      <ul className="list-disc ml-4 space-y-0.5">
+                        <li>Naturlig avtrekk: Kanaltverrsnitt 50 cm² pr. m² sjaktareal</li>
+                        <li>Mekanisk avtrekk: 30 m³/h pr. m² sjaktareal</li>
+                        <li>Frisklufttilførsel: 50 cm² pr. m² sjaktareal</li>
+                      </ul>
                     </div>
                   ),
                   bf85_heis_dor_brannmotstand: "Dør til heis må ha samme brannmotstand som veggen den står i, eller F 90 (E 90).",
