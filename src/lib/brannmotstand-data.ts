@@ -22,6 +22,8 @@ export interface LayerMaterial {
   fixedMinutes?: number;
   /** Standard tykkelser (mm) */
   standardThicknesses: number[];
+  /** Mest vanlig tykkelse (mm) – brukes som default */
+  defaultThickness: number;
   /** Referanse */
   ref: string;
 }
@@ -34,6 +36,7 @@ export const layerMaterials: LayerMaterial[] = [
     category: "plate",
     factor: 1.25,
     standardThicknesses: [9.5, 12.5, 15],
+    defaultThickness: 12.5,
     ref: "EN 1995-1-2 Annex E, Tabell E.3",
   },
   {
@@ -42,6 +45,7 @@ export const layerMaterials: LayerMaterial[] = [
     category: "plate",
     factor: 1.5,
     standardThicknesses: [12.5, 15, 18],
+    defaultThickness: 15,
     ref: "EN 1995-1-2 Annex E, Tabell E.3",
   },
   // ── Andre plater ──
@@ -51,6 +55,7 @@ export const layerMaterials: LayerMaterial[] = [
     category: "plate",
     factor: 0.5,
     standardThicknesses: [9, 12, 15, 18, 21],
+    defaultThickness: 15,
     ref: "EN 1995-1-2 Annex E, Tabell E.3",
   },
   {
@@ -59,6 +64,7 @@ export const layerMaterials: LayerMaterial[] = [
     category: "plate",
     factor: 0.45,
     standardThicknesses: [12, 16, 19, 22],
+    defaultThickness: 16,
     ref: "EN 1995-1-2 Annex E, Tabell E.3",
   },
   {
@@ -67,6 +73,7 @@ export const layerMaterials: LayerMaterial[] = [
     category: "plate",
     factor: 0.4,
     standardThicknesses: [6, 9, 12, 15],
+    defaultThickness: 12,
     ref: "EN 1995-1-2 Annex E, Tabell E.3",
   },
   {
@@ -75,6 +82,7 @@ export const layerMaterials: LayerMaterial[] = [
     category: "plate",
     factor: 1.3,
     standardThicknesses: [6, 8, 10, 12],
+    defaultThickness: 8,
     ref: "SINTEF Byggforsk / EN 1995-1-2",
   },
   // ── Isolasjon ──
@@ -84,6 +92,7 @@ export const layerMaterials: LayerMaterial[] = [
     category: "isolasjon",
     factor: 0.2,
     standardThicknesses: [45, 50, 70, 95, 100, 120, 145, 148, 150, 198, 200, 250],
+    defaultThickness: 100,
     ref: "EN 1995-1-2 Annex E, Tabell E.4",
   },
   {
@@ -92,6 +101,7 @@ export const layerMaterials: LayerMaterial[] = [
     category: "isolasjon",
     factor: 0.25,
     standardThicknesses: [30, 45, 50, 70, 95, 100],
+    defaultThickness: 50,
     ref: "EN 1995-1-2 Annex E / SINTEF",
   },
   {
@@ -100,6 +110,7 @@ export const layerMaterials: LayerMaterial[] = [
     category: "isolasjon",
     factor: 0.1,
     standardThicknesses: [45, 50, 70, 95, 100, 120, 145, 148, 150, 198, 200],
+    defaultThickness: 100,
     ref: "EN 1995-1-2 Annex E, Tabell E.4",
   },
   // ── Luft ──
@@ -110,6 +121,7 @@ export const layerMaterials: LayerMaterial[] = [
     factor: 0,
     fixedMinutes: 5,
     standardThicknesses: [25, 36, 48, 70],
+    defaultThickness: 36,
     ref: "EN 1995-1-2 Annex E",
   },
 ];

@@ -76,7 +76,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
       if (l.id !== id) return l;
       if (field === "materialId") {
         const mat = layerMaterials.find((m) => m.id === value);
-        const defaultThickness = mat?.standardThicknesses[0] ?? l.thickness;
+        const defaultThickness = mat?.defaultThickness ?? l.thickness;
         return { ...l, materialId: value as string, thickness: defaultThickness };
       }
       return { ...l, thickness: value as number };
