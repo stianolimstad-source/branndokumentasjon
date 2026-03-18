@@ -169,14 +169,13 @@ export function calculateLightWallResistance(layers: WallLayer[]): CalculationRe
   const references = new Set<string>();
   references.add("EN 1995-1-2:2004, Annex E – Komponentadditivmetoden");
 
-  let previousMaterialId: string | null = null;
-
-  for (const layer of layers) {
+  for (let i = 0; i < Math.min(layers.length, MAX_LAYERS); i++) {
+    const layer = layers[i];
     const mat = layerMaterials.find((m) => m.id === layer.materialId);
     if (!mat) continue;
 
     references.add(mat.ref);
-    const kPos = getPositionFactor(previousMaterialId);
+    const kPos = getPositionFactor(i);
 
     let contribution: number;
     if (mat.fixedMinutes !== undefined) {
@@ -193,7 +192,6 @@ export function calculateLightWallResistance(layers: WallLayer[]): CalculationRe
     });
 
     totalMinutes += contribution;
-    previousMaterialId = mat.id;
   }
 
   totalMinutes = Math.round(totalMinutes);

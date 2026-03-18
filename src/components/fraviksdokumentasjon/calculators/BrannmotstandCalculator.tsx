@@ -151,8 +151,8 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label className="text-sm font-semibold">Veggoppbygning (fra brannside →)</Label>
-                  <Button variant="outline" size="sm" onClick={addLayer}>
-                    <Plus className="h-3.5 w-3.5 mr-1" /> Legg til lag
+                  <Button variant="outline" size="sm" onClick={addLayer} disabled={layers.length >= MAX_LAYERS}>
+                    <Plus className="h-3.5 w-3.5 mr-1" /> Legg til lag ({layers.length}/{MAX_LAYERS})
                   </Button>
                 </div>
 
