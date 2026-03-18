@@ -104,6 +104,8 @@ const paramLabels: Record<string, string> = {
   areal_m2: "Areal", kategori: "Brukskategori", faktor_m2_per_person: "Faktor",
   persontall: "Persontall",
   gulvareal_m2: "Gulvareal", takareal_m2: "Takareal", veggflate_m2: "Veggflate", total_omhylling_m2: "Total omhylling",
+  metode: "Metode", antall_lag: "Antall lag", konstruksjonstype: "Konstruksjonstype",
+  tykkelse_mm: "Tykkelse", brannklasse: "Brannklasse", minutter: "Brannmotstandstid",
 };
 
 const paramUnits: Record<string, string> = {
@@ -113,6 +115,7 @@ const paramUnits: Record<string, string> = {
   areal_m2: "m²", faktor_m2_per_person: "m²/person",
   persontall: "personer",
   gulvareal_m2: "m²", takareal_m2: "m²", veggflate_m2: "m²", total_omhylling_m2: "m²",
+  tykkelse_mm: "mm", minutter: "min",
 };
 
 interface KvalitativPreviewProps {
