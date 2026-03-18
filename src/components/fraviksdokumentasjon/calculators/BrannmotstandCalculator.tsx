@@ -72,7 +72,15 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
   };
 
   const updateLayer = (id: string, field: "materialId" | "thickness", value: string | number) => {
-    setLayers(layers.map((l) => (l.id === id ? { ...l, [field]: value } : l)));
+    setLayers(layers.map((l) => {
+      if (l.id !== id) return l;
+      if (field === "materialId") {
+        const mat = layerMaterials.find((m) => m.id === value);
+        const defaultThickness = mat?.standardThicknesses[0] ?? l.thickness;
+        return { ...l, materialId: value as string, thickness: defaultThickness };
+      }
+      return { ...l, [field]: value };
+    }));
   };
 
   const moveLayer = (index: number, direction: -1 | 1) => {
