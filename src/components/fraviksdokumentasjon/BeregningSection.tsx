@@ -7,7 +7,7 @@ import CalculatorDialog, { CalculatorType } from "./CalculatorDialog";
 
 export interface AttachedCalculation {
   id: string;
-  type: "straling" | "flammehoyde" | "brannenergi" | "persontall" | "omhyllingsflate";
+  type: "straling" | "flammehoyde" | "brannenergi" | "persontall" | "omhyllingsflate" | "brannmotstand";
   label: string;
   inputs: Record<string, string | number>;
   results: Record<string, string | number>;
