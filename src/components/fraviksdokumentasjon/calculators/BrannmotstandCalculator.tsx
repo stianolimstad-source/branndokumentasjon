@@ -27,7 +27,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
   // ── Lett vegg state ──
   const [layers, setLayers] = useState<(WallLayer & { id: string })[]>([
     { id: crypto.randomUUID(), materialId: "branngips", thickness: 15 },
-    { id: crypto.randomUUID(), materialId: "steinull", thickness: 148 },
+    { id: crypto.randomUUID(), materialId: "steinull", thickness: 150 },
     { id: crypto.randomUUID(), materialId: "branngips", thickness: 15 },
   ]);
 
@@ -415,7 +415,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 <AccordionTrigger className="text-sm py-2">Steinull (≥ 26 kg/m³)</AccordionTrigger>
                 <AccordionContent className="text-xs space-y-1 text-muted-foreground">
                   <p>Ubrennbar mineralullsisolasjon laget av steinbasert råmateriale. Standard densitet for veggsisolering. Smelter ikke og bidrar til brannmotstand ved å forsinke varmetransporten gjennom konstruksjonen.</p>
-                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 148 mm (også tilgjengelig i 45, 50, 70, 95, 100, 120, 145, 198, 200 og 250 mm)</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 150 mm (også tilgjengelig i 45, 50, 70, 95, 100, 120, 145, 148, 198, 200 og 250 mm)</p>
                   <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 0,2 min/mm</p>
                 </AccordionContent>
               </AccordionItem>
@@ -431,7 +431,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 <AccordionTrigger className="text-sm py-2">Glassull (≥ 15 kg/m³)</AccordionTrigger>
                 <AccordionContent className="text-xs space-y-1 text-muted-foreground">
                   <p>Mineralullsisolasjon av glass. Ubrennbar, men smelter ved lavere temperatur enn steinull (ca. 600 °C vs. 1000 °C). Gir dermed lavere brannbidrag, men er et kostnadseffektivt alternativ for konstruksjoner med lavere brannkrav.</p>
-                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 148 mm (også tilgjengelig i 45, 50, 70, 95, 100, 120, 145, 198 og 200 mm)</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 150 mm (også tilgjengelig i 45, 50, 70, 95, 100, 120, 145, 148, 198 og 200 mm)</p>
                   <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 0,1 min/mm</p>
                 </AccordionContent>
               </AccordionItem>

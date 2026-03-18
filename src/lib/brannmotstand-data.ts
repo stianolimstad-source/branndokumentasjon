@@ -83,7 +83,7 @@ export const layerMaterials: LayerMaterial[] = [
     name: "Steinull (≥ 26 kg/m³)",
     category: "isolasjon",
     factor: 0.2,
-    standardThicknesses: [45, 50, 70, 95, 100, 120, 145, 148, 198, 200, 250],
+    standardThicknesses: [45, 50, 70, 95, 100, 120, 145, 148, 150, 198, 200, 250],
     ref: "EN 1995-1-2 Annex E, Tabell E.4",
   },
   {
@@ -99,7 +99,7 @@ export const layerMaterials: LayerMaterial[] = [
     name: "Glassull (≥ 15 kg/m³)",
     category: "isolasjon",
     factor: 0.1,
-    standardThicknesses: [45, 50, 70, 95, 100, 120, 145, 148, 198, 200],
+    standardThicknesses: [45, 50, 70, 95, 100, 120, 145, 148, 150, 198, 200],
     ref: "EN 1995-1-2 Annex E, Tabell E.4",
   },
   // ── Luft ──
