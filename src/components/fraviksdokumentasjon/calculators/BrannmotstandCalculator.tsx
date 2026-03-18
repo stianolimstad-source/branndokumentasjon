@@ -376,7 +376,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 <AccordionTrigger className="text-sm py-2">Gipsplate Type F (brannklassifisert)</AccordionTrigger>
                 <AccordionContent className="text-xs space-y-1 text-muted-foreground">
                   <p>Brannklassifisert gipsplate (EN 520) med glassfiberarmert gipskjerne som gir forbedret brannmotstand og strukturell integritet ved høye temperaturer. Kjernen beholder sin form lenger under brannpåvirkning enn Type A.</p>
-                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 12,5 · 15 · 18 mm</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 15 mm (også tilgjengelig i 12,5 og 18 mm)</p>
                   <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 1,5 min/mm</p>
                 </AccordionContent>
               </AccordionItem>
@@ -384,7 +384,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 <AccordionTrigger className="text-sm py-2">Gipsplate Type DF (brann + fukt)</AccordionTrigger>
                 <AccordionContent className="text-xs space-y-1 text-muted-foreground">
                   <p>Kombinert brann- og fuktbestandig gipsplate. Har samme brannegenskaper som Type F, men med tillegg av redusert vannabsorpsjon. Brukes i våtrom og andre fuktutsatte områder som krever brannmotstand.</p>
-                  <p><span className="font-medium text-foreground">Standardtykkelser:</span> 12,5 · 15 mm</p>
+                  <p><span className="font-medium text-foreground">Standardtykkelse:</span> 15 mm (også tilgjengelig i 12,5 mm)</p>
                   <p><span className="font-medium text-foreground">Brannbidrag:</span> ca. 1,5 min/mm</p>
                 </AccordionContent>
               </AccordionItem>
