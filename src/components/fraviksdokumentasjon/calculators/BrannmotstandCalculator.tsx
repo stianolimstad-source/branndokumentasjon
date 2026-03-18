@@ -212,7 +212,7 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                 <p className="text-xs text-muted-foreground">
                   Tabellverdier for massive konstruksjoner basert på EN 1992-1-2, EN 1996-1-2 og SINTEF Byggforsk.
-                  Gjelder EI-krav for ikke-bærende skillevegger.
+                  Viser krav for både ikke-bærende (EI) og bærende (REI) vegger.
                 </p>
               </div>
 
@@ -235,25 +235,57 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                 const wt = massiveWallTypes.find((w) => w.id === massiveType);
                 if (!wt) return null;
                 return (
-                  <div className="border rounded-lg overflow-hidden">
-                    <table className="w-full text-sm">
-                      <thead className="bg-muted/50">
-                        <tr>
-                          <th className="text-left px-3 py-2 font-medium">Tykkelse (mm)</th>
-                          <th className="text-left px-3 py-2 font-medium">Brannmotstand</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {wt.thicknessTable.map((row) => (
-                          <tr key={row.thickness} className="border-t">
-                            <td className="px-3 py-1.5">{row.thickness} mm</td>
-                            <td className="px-3 py-1.5 font-medium">EI {row.minutes}</td>
+                  <div className="space-y-3">
+                    {/* EI-tabell (ikke-bærende) */}
+                    <div className="border rounded-lg overflow-hidden">
+                      <div className="bg-muted/50 px-3 py-2">
+                        <p className="text-sm font-semibold">EI – Ikke-bærende vegger</p>
+                      </div>
+                      <table className="w-full text-sm">
+                        <thead className="bg-muted/30">
+                          <tr>
+                            <th className="text-left px-3 py-1.5 font-medium">Tykkelse (mm)</th>
+                            <th className="text-left px-3 py-1.5 font-medium">Brannmotstand</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {wt.thicknessTable.map((row) => (
+                            <tr key={row.thickness} className="border-t">
+                              <td className="px-3 py-1.5">{row.thickness} mm</td>
+                              <td className="px-3 py-1.5 font-medium">EI {row.minutes}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* REI-tabell (bærende) */}
+                    {wt.thicknessTableREI && (
+                      <div className="border rounded-lg overflow-hidden">
+                        <div className="bg-muted/50 px-3 py-2">
+                          <p className="text-sm font-semibold">REI – Bærende vegger</p>
+                        </div>
+                        <table className="w-full text-sm">
+                          <thead className="bg-muted/30">
+                            <tr>
+                              <th className="text-left px-3 py-1.5 font-medium">Tykkelse (mm)</th>
+                              <th className="text-left px-3 py-1.5 font-medium">Brannmotstand</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {wt.thicknessTableREI.map((row) => (
+                              <tr key={row.thickness} className="border-t">
+                                <td className="px-3 py-1.5">{row.thickness} mm</td>
+                                <td className="px-3 py-1.5 font-medium">REI {row.minutes}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+
                     {wt.notes && (
-                      <p className="text-xs text-muted-foreground px-3 py-2 border-t bg-muted/30">{wt.notes}</p>
+                      <p className="text-xs text-muted-foreground px-3 py-1 italic">{wt.notes}</p>
                     )}
                   </div>
                 );
