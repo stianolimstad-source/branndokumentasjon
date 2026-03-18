@@ -1938,7 +1938,7 @@ const Konsept = () => {
                         </div>
                       )}
 
-              <Accordion type="multiple" defaultValue={["kap1"]} className="w-full">
+              <Accordion type="multiple" defaultValue={[]} className="w-full">
                 {/* Sammendrag */}
                 <AccordionItem value="sammendrag" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
                   <AccordionTrigger className="text-lg font-bold bg-blue-50 hover:bg-blue-100 px-4 py-3 text-blue-800">
