@@ -22,6 +22,8 @@ export interface LayerMaterial {
   fixedMinutes?: number;
   /** Standard tykkelser (mm) */
   standardThicknesses: number[];
+  /** Mest vanlig tykkelse (mm) – brukes som default */
+  defaultThickness: number;
   /** Referanse */
   ref: string;
 }
