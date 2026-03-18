@@ -281,6 +281,9 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
                             ))}
                           </tbody>
                         </table>
+                        <p className="text-xs text-muted-foreground px-3 py-2 border-t bg-muted/30 italic">
+                          Merk: REI-verdiene er veiledende. Faktisk bæreevne under brann avhenger av armeringsmengde, armeringsoverdekning og lastnivå.
+                        </p>
                       </div>
                     )}
 
