@@ -4168,7 +4168,7 @@ const Konsept = () => {
                             </div>
                             <div className="border rounded-md p-2 space-y-2 bg-muted/30">
                               {[
-                                { id: "bf85_heis_ventilasjon", label: "1. Heissjakt må være ventilert med naturlig avtrekk, mekanisk avtrekk eller frisklufttilførsel iht. tabell nedenfor." },
+                                { id: "bf85_heis_ventilasjon", label: "1. Heissjakt skal være ventilert med naturlig avtrekk, mekanisk avtrekk eller frisklufttilførsel." },
                                 { id: "bf85_heis_dor_brannmotstand", label: "2. Dør til heis må ha samme brannmotstand som veggen den står i, eller F 90 (E 90)." },
                                 { id: "bf85_heis_dor_luftsluse", label: "3. Brannmotstand for dør fra tilstøtende rom til luftsluse må minst være B 30 (EI 30 Sₐ)." },
                               ].map((krav) => (
