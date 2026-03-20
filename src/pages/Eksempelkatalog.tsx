@@ -5,7 +5,7 @@ import { Layers, FileWarning, Package, Settings } from "lucide-react";
 const categories = [
   {
     icon: Layers,
-    title: "Branncellevegger",
+    title: "Branntekniske konstruksjoner",
     description: "Eksempler på branncellevegger, gjennomføringer og detaljer for ulike brannklasser og motstandskrav.",
     href: "/eksempelkatalog/branncellevegger",
     color: "text-orange-500",
