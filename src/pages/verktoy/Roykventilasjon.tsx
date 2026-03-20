@@ -12,23 +12,26 @@ import BrannArealTool from "@/components/verktoy/BrannArealTool";
 const Roykventilasjon = () => {
   const [selectedH, setSelectedH] = useState("");
   const [selectedh, setSelectedh] = useState("");
-  const [selectedAb, setSelectedAb] = useState("");
+  const [abInput, setAbInput] = useState("");
   const [showBrannArealDialog, setShowBrannArealDialog] = useState(false);
 
   const uniqueH = getUniqueH();
   const hVerdier = selectedH ? getHValuesForH(parseInt(selectedH)) : [];
-  const resultat = selectedH && selectedh && selectedAb
-    ? lookupAv(parseInt(selectedH), parseInt(selectedh), parseInt(selectedAb))
+
+  // Find closest Ab column for lookup
+  const abNum = abInput ? parseFloat(abInput) : null;
+  const closestAb = abNum && abNum > 0
+    ? abKolonner.reduce((prev, curr) => Math.abs(curr - abNum) < Math.abs(prev - abNum) ? curr : prev)
+    : null;
+
+  const resultat = selectedH && selectedh && closestAb
+    ? lookupAv(parseInt(selectedH), parseInt(selectedh), closestAb)
     : undefined;
 
   const currentRows = selectedH ? roykventTabell.filter((r) => r.H === parseInt(selectedH)) : [];
 
   const handleBrannArealSelect = (brannareal: number) => {
-    // Find closest Ab column
-    const closest = abKolonner.reduce((prev, curr) =>
-      Math.abs(curr - brannareal) < Math.abs(prev - brannareal) ? curr : prev
-    );
-    setSelectedAb(String(closest));
+    setAbInput(String(brannareal));
     setShowBrannArealDialog(false);
   };
 
