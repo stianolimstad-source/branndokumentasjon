@@ -214,6 +214,15 @@ const BrannmotstandCalculator = ({ onResult }: Props) => {
 
               </div>
 
+              <div className="bg-accent/50 border border-border/50 p-3 rounded-lg flex items-start gap-2">
+                <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <p className="text-xs text-muted-foreground">
+                  <span className="font-medium text-foreground">Tips:</span> Har du flere lag av samme materiale etter hverandre (f.eks. 2 × 13 mm gips),
+                  trenger du ikke opprette separate lag. Legg dem inn som ett lag med samlet tykkelse (26 mm).
+                  Beregningen blir da mer presis fordi k<sub>pos</sub>-faktoren kun tildeles én gang per posisjon.
+                </p>
+              </div>
+
               <Button className="w-full" onClick={calculate} disabled={layers.length === 0}>
                 Beregn brannmotstand
               </Button>
