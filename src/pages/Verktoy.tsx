@@ -46,6 +46,12 @@ const tools = [
     description: "Finn brannareal over tid basert på brannbelastning og brannveksttid (HO-3/2000)",
     href: "/verktoy/brannareal",
   },
+  {
+    icon: Wind,
+    title: "Røykventilasjon",
+    description: "Beregn nødvendig åpningsareal for termisk røykventilasjon (HO-3/2000)",
+    href: "/verktoy/roykventilasjon",
+  },
 ];
 
 const Verktoy = () => {
