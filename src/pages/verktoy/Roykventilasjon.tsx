@@ -83,14 +83,18 @@ const Roykventilasjon = () => {
 
                 <div className="space-y-2">
                   <Label>Brannareal A<sub>b</sub> (m²)</Label>
-                  <Select value={selectedAb} onValueChange={setSelectedAb}>
-                    <SelectTrigger><SelectValue placeholder="Velg brannareal" /></SelectTrigger>
-                    <SelectContent>
-                      {abKolonner.map((ab) => (
-                        <SelectItem key={ab} value={String(ab)}>{ab} m²</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Input
+                    type="number"
+                    min="0"
+                    placeholder="Skriv inn brannareal"
+                    value={abInput}
+                    onChange={(e) => setAbInput(e.target.value)}
+                  />
+                  {abInput && closestAb && closestAb !== abNum && (
+                    <p className="text-xs text-muted-foreground">
+                      Nærmeste tabellverdi: {closestAb} m²
+                    </p>
+                  )}
                   <Button
                     variant="outline"
                     size="sm"
