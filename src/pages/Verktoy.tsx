@@ -40,6 +40,12 @@ const tools = [
     description: "Beregn brannmotstandstid (EI) for vegger basert på oppbygning og materialer",
     href: "/verktoy/brannmotstand",
   },
+  {
+    icon: Maximize,
+    title: "Brannareal",
+    description: "Finn brannareal over tid basert på brannbelastning og brannveksttid (HO-3/2000)",
+    href: "/verktoy/brannareal",
+  },
 ];
 
 const Verktoy = () => {
