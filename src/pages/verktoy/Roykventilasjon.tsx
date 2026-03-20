@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
@@ -11,23 +12,26 @@ import BrannArealTool from "@/components/verktoy/BrannArealTool";
 const Roykventilasjon = () => {
   const [selectedH, setSelectedH] = useState("");
   const [selectedh, setSelectedh] = useState("");
-  const [selectedAb, setSelectedAb] = useState("");
+  const [abInput, setAbInput] = useState("");
   const [showBrannArealDialog, setShowBrannArealDialog] = useState(false);
 
   const uniqueH = getUniqueH();
   const hVerdier = selectedH ? getHValuesForH(parseInt(selectedH)) : [];
-  const resultat = selectedH && selectedh && selectedAb
-    ? lookupAv(parseInt(selectedH), parseInt(selectedh), parseInt(selectedAb))
+
+  // Find closest Ab column for lookup
+  const abNum = abInput ? parseFloat(abInput) : null;
+  const closestAb = abNum && abNum > 0
+    ? abKolonner.reduce((prev, curr) => Math.abs(curr - abNum) < Math.abs(prev - abNum) ? curr : prev)
+    : null;
+
+  const resultat = selectedH && selectedh && closestAb
+    ? lookupAv(parseInt(selectedH), parseInt(selectedh), closestAb)
     : undefined;
 
   const currentRows = selectedH ? roykventTabell.filter((r) => r.H === parseInt(selectedH)) : [];
 
   const handleBrannArealSelect = (brannareal: number) => {
-    // Find closest Ab column
-    const closest = abKolonner.reduce((prev, curr) =>
-      Math.abs(curr - brannareal) < Math.abs(prev - brannareal) ? curr : prev
-    );
-    setSelectedAb(String(closest));
+    setAbInput(String(brannareal));
     setShowBrannArealDialog(false);
   };
 
@@ -79,14 +83,18 @@ const Roykventilasjon = () => {
 
                 <div className="space-y-2">
                   <Label>Brannareal A<sub>b</sub> (m²)</Label>
-                  <Select value={selectedAb} onValueChange={setSelectedAb}>
-                    <SelectTrigger><SelectValue placeholder="Velg brannareal" /></SelectTrigger>
-                    <SelectContent>
-                      {abKolonner.map((ab) => (
-                        <SelectItem key={ab} value={String(ab)}>{ab} m²</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Input
+                    type="number"
+                    min="0"
+                    placeholder="Skriv inn brannareal"
+                    value={abInput}
+                    onChange={(e) => setAbInput(e.target.value)}
+                  />
+                  {abInput && closestAb && closestAb !== abNum && (
+                    <p className="text-xs text-muted-foreground">
+                      Nærmeste tabellverdi: {closestAb} m²
+                    </p>
+                  )}
                   <Button
                     variant="outline"
                     size="sm"
@@ -113,7 +121,7 @@ const Roykventilasjon = () => {
                       <p className="text-sm font-medium">Nødvendig åpningsareal A<sub>v</sub>:</p>
                       <p className="text-3xl font-bold mt-1">{resultat} m²</p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        H = {selectedH} m, røykfri sone h = {selectedh} m, brannareal A<sub>b</sub> = {selectedAb} m²
+                        H = {selectedH} m, røykfri sone h = {selectedh} m, brannareal A<sub>b</sub> = {abInput} m² (tabellverdi: {closestAb} m²)
                       </p>
                     </div>
                   )}
@@ -152,7 +160,7 @@ const Roykventilasjon = () => {
                         }`}>
                           <td className="py-2 pr-3">{row.h}</td>
                           {row.values.map((val, i) => {
-                            const isSelected = String(row.h) === selectedh && String(abKolonner[i]) === selectedAb;
+                            const isSelected = String(row.h) === selectedh && closestAb === abKolonner[i];
                             return (
                               <td key={i} className={`text-right py-2 px-2 ${
                                 isSelected ? "bg-primary/20 font-bold rounded" : ""
