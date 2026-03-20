@@ -5141,10 +5141,13 @@ const Konsept = () => {
                                   : "Brannceller i risikoklasse 1, 2, 4 og 5 kan ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte, dersom følgende ytelser er oppfylt:"
                                 }
                               </p>
-                              {[
+                              {(formData.regelverk === "BF85" ? [
+                                { id: "fp_sprinkler", label: "1. Det må installeres automatisk sprinkleranlegg når samlet bruttoareal for plan som har åpen forbindelse er over 800 m²." },
+                                { id: "fp_romningsvei", label: "2. Det må være tilrettelagte rømningsveier fra hvert enkelt plan." },
+                              ] : [
                                 { id: "fp_sprinkler", label: "1. Det må installeres automatisk sprinkleranlegg når samlet bruttoareal for plan som har åpen forbindelse er over 800 m², jf. også § 11-12 første ledd." },
                                 { id: "fp_romningsvei", label: "2. Det må være tilrettelagte rømningsveier fra hvert enkelt plan, jf. også § 11-13 fjerde ledd." },
-                              ].map((krav) => (
+                              ]).map((krav) => (
                                 <div key={krav.id} className="flex items-start gap-2">
                                   <Checkbox
                                     id={`fp-${krav.id}`}

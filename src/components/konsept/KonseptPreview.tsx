@@ -2062,10 +2062,17 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             })()}
             {/* Brannceller over flere plan */}
             {formData.branncellerFlerePlanRelevant && (() => {
-              const fpKravMap: Record<string, string> = {
-                fp_sprinkler: "Det må installeres automatisk sprinkleranlegg når samlet bruttoareal for plan som har åpen forbindelse er over 800 m², jf. også § 11-12 første ledd.",
-                fp_romningsvei: "Det må være tilrettelagte rømningsveier fra hvert enkelt plan, jf. også § 11-13 fjerde ledd.",
+              const fpKravMap: Record<string, Record<string, string>> = {
+                BF85: {
+                  fp_sprinkler: "Det må installeres automatisk sprinkleranlegg når samlet bruttoareal for plan som har åpen forbindelse er over 800 m².",
+                  fp_romningsvei: "Det må være tilrettelagte rømningsveier fra hvert enkelt plan.",
+                },
+                default: {
+                  fp_sprinkler: "Det må installeres automatisk sprinkleranlegg når samlet bruttoareal for plan som har åpen forbindelse er over 800 m², jf. også § 11-12 første ledd.",
+                  fp_romningsvei: "Det må være tilrettelagte rømningsveier fra hvert enkelt plan, jf. også § 11-13 fjerde ledd.",
+                },
               };
+              const kravSet = fpKravMap[formData.regelverk] || fpKravMap.default;
               const activeKrav = (formData.branncellerFlerePlanKrav || [])
                 .map((id: string, idx: number) => ({ id, text: fpKravMap[id], num: idx + 1 }))
                 .filter((k: { text: string }) => k.text);
