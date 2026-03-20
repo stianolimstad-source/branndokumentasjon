@@ -178,43 +178,61 @@ const Roykventilasjon = () => {
             </CardContent>
           </Card>
 
-          {/* Hovedtabell — alle H-verdier */}
-          {uniqueH.map((tableH) => {
-            const rows = roykventTabell.filter((r) => r.H === tableH);
-            return (
-              <Card key={tableH} className="shadow-soft">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">H = {tableH} m</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b">
-                          <th className="text-left py-2 pr-3 font-medium">h (m)</th>
-                          {abKolonner.map((ab) => (
-                            <th key={ab} className="text-right py-2 px-2 font-medium">{ab}</th>
+          {/* Hovedtabell — samlet som i HO-3/2000 */}
+          <Card className="shadow-soft">
+            <CardHeader>
+              <CardTitle className="text-base">Tabell: Nødvendig åpningsareal A<sub>v</sub> (m²)</CardTitle>
+              <CardDescription>Melding HO-3/2000. Kolonner viser brannareal A<sub>b</sub> (m²).</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm border-collapse">
+                  <thead className="sticky top-0 bg-background z-10">
+                    <tr className="border-b-2 border-border">
+                      <th rowSpan={2} className="text-left py-2 pr-2 font-semibold w-16">H (m)</th>
+                      <th rowSpan={2} className="text-left py-2 pr-2 font-semibold w-16">h (m)</th>
+                      <th colSpan={abKolonner.length} className="text-center py-1 font-semibold border-b border-border">
+                        Brannareal A<sub>b</sub> (m²)
+                      </th>
+                    </tr>
+                    <tr className="border-b-2 border-border">
+                      {abKolonner.map((ab) => (
+                        <th key={ab} className="text-right py-1.5 px-2 font-semibold text-xs">{ab}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {uniqueH.map((tableH) => {
+                      const rows = roykventTabell.filter((r) => r.H === tableH);
+                      return rows.map((row, rowIdx) => (
+                        <tr
+                          key={`${row.H}-${row.h}`}
+                          className={`border-b border-border/40 ${
+                            rowIdx === 0 ? "border-t-2 border-t-border" : ""
+                          } hover:bg-muted/50 transition-colors`}
+                        >
+                          {rowIdx === 0 && (
+                            <td
+                              rowSpan={rows.length}
+                              className="py-1.5 pr-2 font-semibold text-foreground align-top border-r border-border/40"
+                            >
+                              {tableH}
+                            </td>
+                          )}
+                          <td className="py-1.5 pr-2 text-muted-foreground">{row.h}</td>
+                          {row.values.map((val, i) => (
+                            <td key={i} className="text-right py-1.5 px-2 tabular-nums">
+                              {val === null ? "—" : val}
+                            </td>
                           ))}
                         </tr>
-                      </thead>
-                      <tbody>
-                        {rows.map((row) => (
-                          <tr key={row.h} className="border-b border-border/50">
-                            <td className="py-1.5 pr-3">{row.h}</td>
-                            {row.values.map((val, i) => (
-                              <td key={i} className="text-right py-1.5 px-2">
-                                {val === null ? "—" : val}
-                              </td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+                      ));
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
