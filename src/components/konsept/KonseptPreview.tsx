@@ -1765,6 +1765,29 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 return null;
               }
 
+              // BF85 Forsamlingslokale – vis automatisk krav
+              if (isBF85 && formData.bygningstype === "Forsamlingslokale" && floors >= 1) {
+                const kravTekst = floors > 8
+                  ? "Forsamlingslokale over 8. etasje eller med gulv mer enn 22 m over terreng skal ha minst to branntrygge trapperom."
+                  : "Forsamlingslokale i høyst 8. etasje og med gulv inntil 2 m over terreng skal ha minst to lukkede trapperom.";
+                return (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Krav til trapperom (Kap. 30:7)</td>
+                    <td className="border border-gray-400 p-2">
+                      <div className="space-y-1">
+                        <p>{kravTekst}</p>
+                        {formData.trapperomBeskrivelse && (
+                          <div className="mt-2 pt-2 border-t border-gray-300">
+                            <span className="font-semibold">Beskrivelse:</span> {formData.trapperomBeskrivelse}
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                );
+              }
+
               // Manual BF85 or TEK17 trapperomKrav
               if (!formData.trapperomKrav || formData.trapperomKrav.length === 0) return null;
 
