@@ -44,8 +44,8 @@ const ei30Kategorier: Kategori[] = [
         lydklasse: "R'w 30–48 dB",
         tykkelse: "ca. 70–95 mm",
         leverandor: "Norgips",
-        referanse: "Norgips – Innervegger W111",
-        referanseUrl: "https://norgips.no/prosjektering/vegger-med-st%C3%A5l/innervegger",
+        referanse: "Norgips Veggtabell – W111 Stålstender",
+        referanseUrl: "https://byggeteknikk.norgips.no/prosjektering/innervegger/veggtabell/veggtabell-w111-vegger-med-ett-platelag/",
       },
       {
         navn: "BB Stål Skilleveggsystem — SINTEF TG",
