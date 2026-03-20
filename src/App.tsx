@@ -28,6 +28,7 @@ import KSGjennomgang from "./pages/KSGjennomgang";
 import KvalitativAnalyse from "./pages/fraviksdokumentasjon/KvalitativAnalyse";
 import MinProfil from "./pages/MinProfil";
 import Sikkerhetsrutiner from "./pages/Sikkerhetsrutiner";
+import Eksempelkatalog from "./pages/Eksempelkatalog";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -64,6 +65,7 @@ const App = () => (
             <Route path="/fraviksdokumentasjon/kvalitativ" element={<KvalitativAnalyse />} />
             <Route path="/min-profil" element={<MinProfil />} />
             <Route path="/sikkerhetsrutiner" element={<Sikkerhetsrutiner />} />
+            <Route path="/eksempelkatalog" element={<Eksempelkatalog />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

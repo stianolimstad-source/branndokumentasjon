@@ -48,7 +48,7 @@ const Index = () => {
       icon: BookOpen,
       title: "Eksempelkatalog",
       description: "Bibliotek med løsninger og konstruksjoner",
-      href: "#",
+      href: "/eksempelkatalog",
     },
   ];
 
@@ -72,22 +72,6 @@ const Index = () => {
       <section className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {features.map((feature) => {
-            if (feature.href === "#") {
-              return (
-                <Card
-                  key={feature.title}
-                  className="shadow-soft transition-shadow group opacity-60 cursor-not-allowed"
-                >
-                  <CardHeader>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4 transition-colors">
-                      <feature.icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <CardTitle>{feature.title}</CardTitle>
-                    <CardDescription>{feature.description}</CardDescription>
-                  </CardHeader>
-                </Card>
-              );
-            }
             if (feature.href === "dialog" || feature.href === "fravik-dialog" || feature.href === "tilstand-dialog") {
               const handleClick = () => {
                 if (feature.href === "dialog") setShowConceptDialog(true);
