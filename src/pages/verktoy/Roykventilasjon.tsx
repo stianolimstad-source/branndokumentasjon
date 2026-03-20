@@ -121,7 +121,7 @@ const Roykventilasjon = () => {
                       <p className="text-sm font-medium">Nødvendig åpningsareal A<sub>v</sub>:</p>
                       <p className="text-3xl font-bold mt-1">{resultat} m²</p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        H = {selectedH} m, røykfri sone h = {selectedh} m, brannareal A<sub>b</sub> = {selectedAb} m²
+                        H = {selectedH} m, røykfri sone h = {selectedh} m, brannareal A<sub>b</sub> = {abInput} m² (tabellverdi: {closestAb} m²)
                       </p>
                     </div>
                   )}
