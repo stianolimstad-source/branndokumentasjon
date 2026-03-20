@@ -29,6 +29,7 @@ import KvalitativAnalyse from "./pages/fraviksdokumentasjon/KvalitativAnalyse";
 import MinProfil from "./pages/MinProfil";
 import Sikkerhetsrutiner from "./pages/Sikkerhetsrutiner";
 import Eksempelkatalog from "./pages/Eksempelkatalog";
+import BranntekniskeKonstruksjoner from "./pages/eksempelkatalog/BranntekniskeKonstruksjoner";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -66,6 +67,7 @@ const App = () => (
             <Route path="/min-profil" element={<MinProfil />} />
             <Route path="/sikkerhetsrutiner" element={<Sikkerhetsrutiner />} />
             <Route path="/eksempelkatalog" element={<Eksempelkatalog />} />
+            <Route path="/eksempelkatalog/branncellevegger" element={<BranntekniskeKonstruksjoner />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
