@@ -142,71 +142,75 @@ const BranntekniskeKonstruksjoner = () => {
             </p>
           </div>
 
-          {/* EI 30 seksjon */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-500/10">
-                <Layers className="h-5 w-5 text-orange-500" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold">EI 30 konstruksjoner</h3>
-                <p className="text-sm text-muted-foreground">30 minutters brannmotstand — integritet (E) og isolasjon (I)</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {ei30Eksempler.map((eks, idx) => (
-              <Card key={idx} className="shadow-soft">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="space-y-1">
-                      <CardTitle className="text-base">{eks.navn}</CardTitle>
-                      <CardDescription className="text-sm leading-relaxed">{eks.beskrivelse}</CardDescription>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5 shrink-0">
-                      <Badge variant="secondary" className="whitespace-nowrap">{eks.brannklasse}</Badge>
-                      {eks.lydklasse && <Badge variant="outline" className="whitespace-nowrap">{eks.lydklasse}</Badge>}
-                    </div>
+          <Accordion type="single" collapsible defaultValue="ei30">
+            <AccordionItem value="ei30" className="border rounded-lg px-4">
+              <AccordionTrigger className="hover:no-underline">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-500/10">
+                    <Layers className="h-5 w-5 text-orange-500" />
                   </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">Oppbygging</p>
-                    <ul className="text-sm space-y-1">
-                      {eks.oppbygging.map((lag, i) => (
-                        <li key={i} className="flex items-start gap-2">
-                          <span className="text-muted-foreground mt-1">•</span>
-                          <span>{lag}</span>
-                        </li>
-                      ))}
-                    </ul>
+                  <div className="text-left">
+                    <h3 className="text-xl font-semibold">EI 30 konstruksjoner</h3>
+                    <p className="text-sm text-muted-foreground">30 minutters brannmotstand — integritet (E) og isolasjon (I)</p>
                   </div>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-4 pt-2">
+                  {ei30Eksempler.map((eks, idx) => (
+                    <Card key={idx} className="shadow-soft">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="space-y-1">
+                            <CardTitle className="text-base">{eks.navn}</CardTitle>
+                            <CardDescription className="text-sm leading-relaxed">{eks.beskrivelse}</CardDescription>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5 shrink-0">
+                            <Badge variant="secondary" className="whitespace-nowrap">{eks.brannklasse}</Badge>
+                            {eks.lydklasse && <Badge variant="outline" className="whitespace-nowrap">{eks.lydklasse}</Badge>}
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div>
+                          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">Oppbygging</p>
+                          <ul className="text-sm space-y-1">
+                            {eks.oppbygging.map((lag, i) => (
+                              <li key={i} className="flex items-start gap-2">
+                                <span className="text-muted-foreground mt-1">•</span>
+                                <span>{lag}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
 
-                  <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
-                    {eks.tykkelse && <span>Tykkelse: <span className="text-foreground font-medium">{eks.tykkelse}</span></span>}
-                    <span>Leverandør: <span className="text-foreground font-medium">{eks.leverandor}</span></span>
-                  </div>
+                        <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
+                          {eks.tykkelse && <span>Tykkelse: <span className="text-foreground font-medium">{eks.tykkelse}</span></span>}
+                          <span>Leverandør: <span className="text-foreground font-medium">{eks.leverandor}</span></span>
+                        </div>
 
-                  {eks.merknader && (
-                    <p className="text-xs text-muted-foreground italic">ⓘ {eks.merknader}</p>
-                  )}
+                        {eks.merknader && (
+                          <p className="text-xs text-muted-foreground italic">ⓘ {eks.merknader}</p>
+                        )}
 
-                  <div className="pt-1 border-t border-border/50">
-                    <a
-                      href={eks.referanseUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-primary hover:underline inline-flex items-center gap-1"
-                    >
-                      <ExternalLink className="h-3 w-3" />
-                      {eks.referanse}
-                    </a>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                        <div className="pt-1 border-t border-border/50">
+                          <a
+                            href={eks.referanseUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-primary hover:underline inline-flex items-center gap-1"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            {eks.referanse}
+                          </a>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
 
           <Card className="shadow-soft border-dashed">
             <CardContent className="py-6">
