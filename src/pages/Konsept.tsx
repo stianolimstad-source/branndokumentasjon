@@ -4938,13 +4938,15 @@ const Konsept = () => {
                           </div>
                           {formData.vinduBrannspredningRelevant && (
                             <div className="pl-4 space-y-3 border-l-2 border-primary/20 ml-2">
-                              {[
+                              {(formData.regelverk === "BF85" ? [
+                                { id: "vv_brannmotstand_vegg", label: "1. Vinduer skal ha samme brannklasse som veggen de står i." },
+                              ] : [
                                 { id: "vv_branncellebegrensende", label: "1. Branncellebegrensende konstruksjoner i et byggverk, eller mellom to lave byggverk, må utføres slik at det blir liten sannsynlighet for brannspredning via vinduer som ligger med liten innbyrdes avstand i innvendig hjørne, eller mellom vinduer i motstående fasader." },
                                 { id: "vv_brannmotstand_vegg", label: "2. Vinduer må ha samme brannmotstand som veggen de står i. For motstående parallelle yttervegger gjelder dette bare når vindusarealet ikke utgjør mer enn 1/3 av veggarealet." },
                                 { id: "vv_sprinkler_unntak", label: "3. Hvis byggverket eller byggverkene har automatisk sprinkleranlegg kan det benyttes vinduer uten spesifisert brannmotstand, med unntak for vinduer mot rømningsvei." },
                                 { id: "vv_sprinkler_romningsvei", label: "4. Hvis byggverket eller byggverkene har automatisk sprinkleranlegg kan vindu mot utvendig rømningsvei ha brannmotstand EW 30 i brannklasse 1 og EW 60 i brannklasse 2 og 3." },
                                 { id: "vv_enkeltvinduer", label: "5. Enkeltvinduer i mindre rom i bolighus (for eksempel i vaskerom, bad og soverom) opp til 0,20 m² glassflate, kan være uten spesifisert brannmotstand når avstanden til uklassifisert bygningsdel er minimum 5 meter." },
-                              ].map((krav) => (
+                              ]).map((krav) => (
                                 <div key={krav.id} className="flex items-start gap-2">
                                   <Checkbox
                                     id={`vv-${krav.id}`}
