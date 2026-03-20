@@ -4293,6 +4293,70 @@ const Konsept = () => {
                           const trType = rk >= 1 && rk <= 6 && floors > 0
                             ? (floors <= 8 ? trapperomTypeMap[rk].lav : trapperomTypeMap[rk].hoy)
                             : null;
+
+                          // Automatiske krav for skole, barnehage, fritidshjem
+                          const isSkoleBarneHage = ["Skole", "Barnehage", "Fritidshjem"].includes(formData.bygningstype);
+
+                          if (isSkoleBarneHage && floors > 0) {
+                            const isOver8 = floors > 8;
+                            return (
+                              <>
+                                <div className="mb-2 p-2 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded text-xs">
+                                  <span className="font-medium text-blue-800 dark:text-blue-300">Automatisk satt for {formData.bygningstype.toLowerCase()} ({floors} etasje{floors > 1 ? "r" : ""}):</span>
+                                </div>
+                                <div className="border rounded-md p-3 space-y-2 bg-muted/30">
+                                  {isOver8 ? (
+                                    <div className="space-y-2">
+                                      <p className="text-xs font-semibold text-foreground">
+                                        Bygning med flere enn 8 etasjer eller med golv mer enn 22 m over terreng, skal ha minst to branntrygge trapperom.
+                                      </p>
+                                      <div className="text-xs text-muted-foreground italic border-l-2 border-primary pl-2">
+                                        Trapperomtype: <span className="font-bold text-foreground">Tr 3</span> (branntrygge trapperom)
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="space-y-2">
+                                      <p className="text-xs font-semibold text-foreground">
+                                        Bygning med inntil 8 etasjer og med golv inntil 22 m over terreng, skal ha lukkede trapperom.
+                                      </p>
+                                      <p className="text-xs text-foreground">
+                                        Trapperom i kjeller skal være skilt fra denne med vegg A 60.
+                                      </p>
+                                      <div className="text-xs text-muted-foreground italic border-l-2 border-primary pl-2">
+                                        Trapperomtype: <span className="font-bold text-foreground">Tr 2</span> (lukkede trapperom)
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                                <Collapsible className="mt-3">
+                                  <CollapsibleTrigger className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                                    <ChevronRight className="h-3 w-3 transition-transform [[data-state=open]>&]:rotate-90" />
+                                    Beskrivelse av trapperom
+                                  </CollapsibleTrigger>
+                                  <CollapsibleContent className="pt-2">
+                                    <Textarea
+                                      value={formData.trapperomBeskrivelse}
+                                      onChange={(e) => setFormData({...formData, trapperomBeskrivelse: e.target.value})}
+                                      placeholder="Beskriv trapperommene i bygget, f.eks. plassering, antall, utforming..."
+                                      className="text-xs"
+                                      rows={3}
+                                    />
+                                  </CollapsibleContent>
+                                </Collapsible>
+                                <div className="mt-3 border-t pt-3">
+                                  <Label className="text-xs font-medium mb-1 block">Interntrapp (ikke del av rømningsvei)</Label>
+                                  <p className="text-xs text-muted-foreground mb-1">Beskriv eventuelle interntrapper som kun benyttes internt.</p>
+                                  <Textarea
+                                    value={formData.interntrappBeskrivelse}
+                                    onChange={(e) => setFormData({...formData, interntrappBeskrivelse: e.target.value})}
+                                    placeholder="F.eks. Interntrapp mellom 1. og 2. etasje benyttes kun som internkommunikasjon og er ikke del av rømningsvei."
+                                    className="text-xs"
+                                    rows={3}
+                                  />
+                                </div>
+                              </>
+                            );
+                          }
                           
                           const trapperomKravListe = [
                             { id: "tr_forbinder_brannceller", label: "1. Trapperom som forbinder ulike brannceller, må utføres som egen branncelle selv om trapperommet ikke er en del av en rømningsvei." },
