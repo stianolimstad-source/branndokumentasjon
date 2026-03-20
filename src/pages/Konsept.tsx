@@ -4456,6 +4456,63 @@ const Konsept = () => {
                               );
                             }
 
+                            // BF85 Forsamlingslokale – automatiske trapperomkrav
+                            const isBf85Forsamling = formData.bygningstype === "Forsamlingslokale";
+                            if (isBf85Forsamling) {
+                              const kravTekst = bf85Floors > 8
+                                ? "Forsamlingslokale over 8. etasje eller med gulv mer enn 22 m over terreng skal ha minst to branntrygge trapperom."
+                                : "Forsamlingslokale i høyst 8. etasje og med gulv inntil 2 m over terreng skal ha minst to lukkede trapperom.";
+                              return (
+                                <>
+                                  <div className="mb-2 p-2 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded text-xs">
+                                    <span className="font-medium text-blue-800 dark:text-blue-300">
+                                      Forsamlingslokale med {bf85Floors} etasje{bf85Floors > 1 ? "r" : ""} – krav til trapperom (Kap. 30:7):
+                                    </span>
+                                  </div>
+                                  <div className="border rounded-md p-2 bg-muted/30 text-xs">
+                                    {kravTekst}
+                                  </div>
+                                  <div className="mt-3">
+                                    <Label className="text-xs font-medium mb-1 block">Beskrivelse av trapperom</Label>
+                                    <p className="text-xs text-muted-foreground mb-1">Beskriv trapperommene i bygget, f.eks. plassering, antall, utforming.</p>
+                                    <Textarea
+                                      value={formData.trapperomBeskrivelse}
+                                      onChange={(e) => setFormData({...formData, trapperomBeskrivelse: e.target.value})}
+                                      placeholder="F.eks. Bygget har to trapperom plassert i hver ende av bygget med utgang direkte til det fri."
+                                      className="text-xs"
+                                      rows={3}
+                                    />
+                                  </div>
+                                  <Collapsible className="mt-3">
+                                    <CollapsibleTrigger className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                                      <ChevronRight className="h-3 w-3 transition-transform [[data-state=open]>&]:rotate-90" />
+                                      BF85 trapperomtyper (Kap. 30:7) – informasjon
+                                    </CollapsibleTrigger>
+                                    <CollapsibleContent className="pt-2">
+                                      <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                                        {bf85TrapperomKravListe.map((krav) => (
+                                          <div key={krav.id} className="text-xs leading-tight text-muted-foreground py-1 border-b last:border-b-0">
+                                            {krav.label}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </CollapsibleContent>
+                                  </Collapsible>
+                                  <div className="mt-3 border-t pt-3">
+                                    <Label className="text-xs font-medium mb-1 block">Interntrapp (ikke del av rømningsvei)</Label>
+                                    <p className="text-xs text-muted-foreground mb-1">Beskriv eventuelle interntrapper som kun benyttes internt.</p>
+                                    <Textarea
+                                      value={formData.interntrappBeskrivelse}
+                                      onChange={(e) => setFormData({...formData, interntrappBeskrivelse: e.target.value})}
+                                      placeholder="F.eks. Interntrapp mellom 1. og 2. etasje benyttes kun som internkommunikasjon og er ikke del av rømningsvei."
+                                      className="text-xs"
+                                      rows={3}
+                                    />
+                                  </div>
+                                </>
+                              );
+                            }
+
                             return (
                               <>
                                 <div className="mb-2 p-2 bg-accent/50 rounded text-xs">
