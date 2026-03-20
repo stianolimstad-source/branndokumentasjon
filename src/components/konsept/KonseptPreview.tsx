@@ -1747,6 +1747,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                               {valgte.map((v: string, i: number) => <li key={i}>{v}</li>)}
                             </ul>
                           )}
+                          {(formData.trapperomKrav || []).includes("bf85_bolig_aapent_brannvesen") && (
+                            <div className="mt-2 pt-2 border-t border-gray-300" style={{backgroundColor: '#fffbeb', padding: '8px', borderRadius: '4px'}}>
+                              <span className="font-semibold" style={{color: '#92400e'}}>⚠ Fravik fra BF85:</span>{' '}
+                              <span style={{color: '#92400e'}}>Løsningen med ett åpent trapperom (Tr1) og brannvesenets stigemateriell som alternativ rømningsvei er en preakseptert ytelse etter TEK17, men utgjør et fravik fra BF85 Kap. 30:7. Fraviket må dokumenteres særskilt.</span>
+                            </div>
+                          )}
                           {formData.trapperomBeskrivelse && (
                             <div className="mt-2 pt-2 border-t border-gray-300">
                               <span className="font-semibold">Beskrivelse:</span> {formData.trapperomBeskrivelse}
