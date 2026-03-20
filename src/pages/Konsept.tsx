@@ -540,6 +540,7 @@ const Konsept = () => {
     vinduskravRelevant: false,
     heissjaktkrav: [] as string[],
     trapperomKrav: [] as string[],
+    trapperomBeskrivelse: "",
     interntrappBeskrivelse: "",
     roykKontrollKrav: [] as string[],
     vertikalBrannspredningRelevant: false,
