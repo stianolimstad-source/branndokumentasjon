@@ -4289,21 +4289,17 @@ const Konsept = () => {
                                       </div>
                                     </CollapsibleContent>
                                   </Collapsible>
-                                  <Collapsible className="mt-3">
-                                    <CollapsibleTrigger className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
-                                      <ChevronRight className="h-3 w-3 transition-transform [[data-state=open]>&]:rotate-90" />
-                                      Beskrivelse av trapperom
-                                    </CollapsibleTrigger>
-                                    <CollapsibleContent className="pt-2">
-                                      <Textarea
-                                        value={formData.trapperomBeskrivelse}
-                                        onChange={(e) => setFormData({...formData, trapperomBeskrivelse: e.target.value})}
-                                        placeholder="Beskriv trapperommene i bygget, f.eks. plassering, antall, utforming..."
-                                        className="text-xs"
-                                        rows={3}
-                                      />
-                                    </CollapsibleContent>
-                                  </Collapsible>
+                                  <div className="mt-3">
+                                    <Label className="text-xs font-medium mb-1 block">Beskrivelse av trapperom</Label>
+                                    <p className="text-xs text-muted-foreground mb-1">Beskriv trapperommene i bygget, f.eks. plassering, antall, utforming.</p>
+                                    <Textarea
+                                      value={formData.trapperomBeskrivelse}
+                                      onChange={(e) => setFormData({...formData, trapperomBeskrivelse: e.target.value})}
+                                      placeholder="F.eks. Bygget har ett trapperom plassert sentralt med utgang direkte til det fri i 1. etasje."
+                                      className="text-xs"
+                                      rows={3}
+                                    />
+                                  </div>
                                   <div className="mt-3 border-t pt-3">
                                     <Label className="text-xs font-medium mb-1 block">Interntrapp (ikke del av rømningsvei)</Label>
                                     <p className="text-xs text-muted-foreground mb-1">Beskriv eventuelle interntrapper som kun benyttes internt.</p>
