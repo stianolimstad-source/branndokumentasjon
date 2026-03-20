@@ -1686,8 +1686,47 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               );
             })()}
             {/* Trapperom */}
-            {formData.trapperomKrav && formData.trapperomKrav.length > 0 && (() => {
+            {(() => {
               const isBF85 = formData.regelverk === "BF85";
+              const floors = parseInt(formData.etasjer || '0', 10);
+
+              // BF85 auto-set for skole/barnehage
+              if (isBF85 && ["Skole", "Barnehage"].includes(formData.bygningstype) && floors > 0) {
+                let autoType = "";
+                let autoDesc = "";
+                if (floors <= 2) {
+                  autoType = "Åpent trapperom (Tr1)";
+                  autoDesc = "Bygning med inntil 2 etasjer: Åpent trapperom (Tr1) – trapperom som har direkte forbindelse gjennom dør til bruksenheten.";
+                } else if (floors <= 4) {
+                  autoType = "Lukket trapperom (Tr2)";
+                  autoDesc = "Bygning med 3–4 etasjer: Lukket trapperom (Tr2) – trapperom som har forbindelse til bruksenhet bare gjennom lukket korridor, og som er lukket med dør B 30 eller F 30 mot korridor.";
+                } else {
+                  autoType = "Røykfritt trapperom (Tr3)";
+                  autoDesc = "Bygning med flere enn 4 etasjer: Røykfritt trapperom (Tr3) – branntrygt trapperom med forbindelse til bruksenheten bare gjennom rom åpent mot det fri.";
+                }
+                return (
+                  <>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Krav til trapperom (Kap. 30:7)</td>
+                      <td className="border border-gray-400 p-2">
+                        <div className="space-y-1">
+                          <div><span className="font-semibold">{autoType}:</span> {autoDesc}</div>
+                          {formData.trapperomBeskrivelse && (
+                            <div className="mt-2 pt-2 border-t border-gray-300">
+                              <span className="font-semibold">Beskrivelse:</span> {formData.trapperomBeskrivelse}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                    </tr>
+                  </>
+                );
+              }
+
+              // Manual BF85 or TEK17 trapperomKrav
+              if (!formData.trapperomKrav || formData.trapperomKrav.length === 0) return null;
+
               if (isBF85) {
                 const bf85TrapperomMap: Record<string, { title: string; desc: string }> = {
                   bf85_tr_aapent: { title: "Åpent trapperom (Tr1)", desc: "Trapperom som har direkte forbindelse gjennom dør til bruksenheten." },
@@ -1716,7 +1755,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
               // TEK17 logic
               const rk = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
-              const floors = parseInt(formData.etasjer || '0', 10);
               const trapperomTypeMap: Record<number, { lav: string; hoy: string }> = {
                 1: { lav: "Tr 1", hoy: "Tr 3" },
                 2: { lav: "Tr 1", hoy: "Tr 3" },
