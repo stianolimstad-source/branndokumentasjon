@@ -28,6 +28,7 @@ import KSGjennomgang from "./pages/KSGjennomgang";
 import KvalitativAnalyse from "./pages/fraviksdokumentasjon/KvalitativAnalyse";
 import MinProfil from "./pages/MinProfil";
 import Sikkerhetsrutiner from "./pages/Sikkerhetsrutiner";
+import Eksempelkatalog from "./pages/Eksempelkatalog";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
