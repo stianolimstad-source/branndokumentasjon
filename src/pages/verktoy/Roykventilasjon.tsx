@@ -6,106 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Info, Calculator } from "lucide-react";
 import { abKolonner, getUniqueH, getHValuesForH, lookupAv, roykventTabell } from "@/lib/roykventilasjon-data";
-
-// Inline the Brannareal mini-tool for the dialog
-const belastningKategorier = [
-  { label: "Under 50 MJ/m²", tg: 300, tgLabel: "300 s (5 min)", eksempler: "Kirke, idrettshall, kantine" },
-  { label: "50–200 MJ/m²", tg: 225, tgLabel: "225 s (3,75 min)", eksempler: "Mekanisk verksted, teater, skole, kontor, bolig, garasje" },
-  { label: "200–400 MJ/m²", tg: 150, tgLabel: "150 s (2,50 min)", eksempler: "Restaurant, klesbutikk" },
-  { label: "Over 400 MJ/m²", tg: 75, tgLabel: "75–150 s (vurderes spesielt)", eksempler: "Trevarefabrikk, høylager" },
-];
-
-const brannarealtabell = [
-  { tid: 3.0, tidLabel: "3,0 min", verdier: { 75: 12, 150: 3, 225: 1, 300: 1 } as Record<number, number | null> },
-  { tid: 5.0, tidLabel: "5,0 min", verdier: { 75: 32, 150: 8, 225: 4, 300: 2 } as Record<number, number | null> },
-  { tid: 7.5, tidLabel: "7,5 min", verdier: { 75: 72, 150: 18, 225: 8, 300: 5 } as Record<number, number | null> },
-  { tid: 10.0, tidLabel: "10,0 min", verdier: { 75: null, 150: 32, 225: 14, 300: 8 } as Record<number, number | null> },
-  { tid: 15.0, tidLabel: "15,0 min", verdier: { 75: null, 150: 72, 225: 32, 300: 18 } as Record<number, number | null> },
-];
-
-const BrannArealDialog = ({
-  open,
-  onOpenChange,
-  onSelect,
-}: {
-  open: boolean;
-  onOpenChange: (o: boolean) => void;
-  onSelect: (ab: number) => void;
-}) => {
-  const [bel, setBel] = useState("");
-  const [tid, setTid] = useState("");
-
-  const valgtKat = belastningKategorier.find((b) => String(b.tg) === bel);
-  const valgtTid = brannarealtabell.find((r) => String(r.tid) === tid);
-  const tgNum = bel ? parseInt(bel) : null;
-  const resultat = valgtTid && tgNum ? valgtTid.verdier[tgNum] : undefined;
-
-  const handleUse = () => {
-    if (resultat && resultat > 0) {
-      // Find closest Ab column
-      const closest = abKolonner.reduce((prev, curr) =>
-        Math.abs(curr - resultat) < Math.abs(prev - resultat) ? curr : prev
-      );
-      onSelect(closest);
-      onOpenChange(false);
-    }
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Beregn brannareal (HO-3/2000)</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label>Spesifikk brannbelastning</Label>
-            <Select value={bel} onValueChange={setBel}>
-              <SelectTrigger><SelectValue placeholder="Velg brannbelastning" /></SelectTrigger>
-              <SelectContent>
-                {belastningKategorier.map((k) => (
-                  <SelectItem key={k.tg} value={String(k.tg)}>
-                    {k.label} → tg = {k.tgLabel}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {valgtKat && <p className="text-xs text-muted-foreground">Eks.: {valgtKat.eksempler}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label>Tid etter brannstart / innsatstid</Label>
-            <Select value={tid} onValueChange={setTid}>
-              <SelectTrigger><SelectValue placeholder="Velg tid" /></SelectTrigger>
-              <SelectContent>
-                {brannarealtabell.map((r) => (
-                  <SelectItem key={r.tid} value={String(r.tid)}>{r.tidLabel}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          {resultat !== undefined && resultat !== null && (
-            <div className="bg-primary/10 p-3 rounded-lg">
-              <p className="text-sm">Beregnet brannareal: <strong>{resultat} m²</strong></p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Nærmeste tabellverdi for A<sub>b</sub>: {abKolonner.reduce((prev, curr) =>
-                  Math.abs(curr - resultat) < Math.abs(prev - resultat) ? curr : prev
-                )} m²
-              </p>
-              <Button size="sm" className="mt-2" onClick={handleUse}>
-                Bruk dette brannarealet
-              </Button>
-            </div>
-          )}
-          {resultat === null && bel && tid && (
-            <div className="bg-yellow-100 dark:bg-yellow-900 p-3 rounded-lg text-sm text-yellow-900 dark:text-yellow-100">
-              Må vurderes spesielt for denne kombinasjonen.
-            </div>
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-};
+import BrannArealTool from "@/components/verktoy/BrannArealTool";
 
 const Roykventilasjon = () => {
   const [selectedH, setSelectedH] = useState("");
@@ -119,8 +20,16 @@ const Roykventilasjon = () => {
     ? lookupAv(parseInt(selectedH), parseInt(selectedh), parseInt(selectedAb))
     : undefined;
 
-  // Get rows for selected H for the sub-table
   const currentRows = selectedH ? roykventTabell.filter((r) => r.H === parseInt(selectedH)) : [];
+
+  const handleBrannArealSelect = (brannareal: number) => {
+    // Find closest Ab column
+    const closest = abKolonner.reduce((prev, curr) =>
+      Math.abs(curr - brannareal) < Math.abs(prev - brannareal) ? curr : prev
+    );
+    setSelectedAb(String(closest));
+    setShowBrannArealDialog(false);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
@@ -226,9 +135,7 @@ const Roykventilasjon = () => {
                       <tr className="border-b">
                         <th className="text-left py-2 pr-3 font-medium">h (m)</th>
                         {abKolonner.map((ab) => (
-                          <th key={ab} className="text-right py-2 px-2 font-medium">
-                            {ab}
-                          </th>
+                          <th key={ab} className="text-right py-2 px-2 font-medium">{ab}</th>
                         ))}
                       </tr>
                       <tr className="border-b border-border/50">
@@ -296,12 +203,15 @@ const Roykventilasjon = () => {
         </div>
       </div>
 
-      {/* Brannareal-dialog */}
-      <BrannArealDialog
-        open={showBrannArealDialog}
-        onOpenChange={setShowBrannArealDialog}
-        onSelect={(ab) => setSelectedAb(String(ab))}
-      />
+      {/* Full brannareal-verktøy i dialog */}
+      <Dialog open={showBrannArealDialog} onOpenChange={setShowBrannArealDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Beregn brannareal — HO-3/2000</DialogTitle>
+          </DialogHeader>
+          <BrannArealTool onSelectResult={handleBrannArealSelect} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
