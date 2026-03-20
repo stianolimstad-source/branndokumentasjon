@@ -2074,7 +2074,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               };
               const kravSet = fpKravMap[formData.regelverk] || fpKravMap.default;
               const activeKrav = (formData.branncellerFlerePlanKrav || [])
-                .map((id: string, idx: number) => ({ id, text: fpKravMap[id], num: idx + 1 }))
+                .map((id: string, idx: number) => ({ id, text: kravSet[id], num: idx + 1 }))
                 .filter((k: { text: string }) => k.text);
               if (activeKrav.length === 0) return null;
               return (
