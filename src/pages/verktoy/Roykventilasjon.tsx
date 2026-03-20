@@ -160,7 +160,7 @@ const Roykventilasjon = () => {
                         }`}>
                           <td className="py-2 pr-3">{row.h}</td>
                           {row.values.map((val, i) => {
-                            const isSelected = String(row.h) === selectedh && String(abKolonner[i]) === selectedAb;
+                            const isSelected = String(row.h) === selectedh && closestAb === abKolonner[i];
                             return (
                               <td key={i} className={`text-right py-2 px-2 ${
                                 isSelected ? "bg-primary/20 font-bold rounded" : ""
