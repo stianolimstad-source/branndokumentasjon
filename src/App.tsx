@@ -67,6 +67,7 @@ const App = () => (
             <Route path="/min-profil" element={<MinProfil />} />
             <Route path="/sikkerhetsrutiner" element={<Sikkerhetsrutiner />} />
             <Route path="/eksempelkatalog" element={<Eksempelkatalog />} />
+            <Route path="/eksempelkatalog/branncellevegger" element={<BranntekniskeKonstruksjoner />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
