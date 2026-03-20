@@ -79,7 +79,7 @@ const Brannareal = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Tid etter brannstart</Label>
+                  <Label>Tid etter brannstart / innsatstid</Label>
                   <Select value={tid} onValueChange={setTid}>
                     <SelectTrigger>
                       <SelectValue placeholder="Velg tid" />
@@ -92,6 +92,9 @@ const Brannareal = () => {
                       ))}
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Sett tid lik forventet innsatstid for brannvesenet for å beregne brannarealet de kan forvente å møte ved ankomst.
+                  </p>
                 </div>
               </div>
 
