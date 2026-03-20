@@ -178,14 +178,13 @@ const Roykventilasjon = () => {
             </CardContent>
           </Card>
 
-          {/* Visuell tabell for nærmeste H-verdier */}
-          {bracketH.map((tableH) => {
+          {/* Hovedtabell — alle H-verdier */}
+          {uniqueH.map((tableH) => {
             const rows = roykventTabell.filter((r) => r.H === tableH);
-            if (rows.length === 0) return null;
             return (
               <Card key={tableH} className="shadow-soft">
-                <CardHeader>
-                  <CardTitle className="text-base">Referansetabell for H = {tableH} m</CardTitle>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">H = {tableH} m</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="overflow-x-auto">
@@ -197,19 +196,13 @@ const Roykventilasjon = () => {
                             <th key={ab} className="text-right py-2 px-2 font-medium">{ab}</th>
                           ))}
                         </tr>
-                        <tr className="border-b border-border/50">
-                          <th className="text-left py-1 pr-3 text-xs text-muted-foreground font-normal">Røykfri sone</th>
-                          {abKolonner.map((ab) => (
-                            <th key={ab} className="text-right py-1 px-2 text-xs text-muted-foreground font-normal">m²</th>
-                          ))}
-                        </tr>
                       </thead>
                       <tbody>
                         {rows.map((row) => (
                           <tr key={row.h} className="border-b border-border/50">
-                            <td className="py-2 pr-3">{row.h}</td>
+                            <td className="py-1.5 pr-3">{row.h}</td>
                             {row.values.map((val, i) => (
-                              <td key={i} className="text-right py-2 px-2">
+                              <td key={i} className="text-right py-1.5 px-2">
                                 {val === null ? "—" : val}
                               </td>
                             ))}
@@ -218,9 +211,6 @@ const Roykventilasjon = () => {
                       </tbody>
                     </table>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Verdier: Nødvendig åpningsareal A<sub>v</sub> (m²). Kolonnene viser brannareal A<sub>b</sub> (m²).
-                  </p>
                 </CardContent>
               </Card>
             );
