@@ -146,6 +146,38 @@ const Roykventilasjon = () => {
             </CardContent>
           </Card>
 
+          {/* Forklaring */}
+          <Card className="shadow-soft">
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <Info className="h-4 w-4 text-primary" />
+                Om termisk røykventilasjon
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground space-y-3">
+              <p>
+                Termisk røykventilasjon benytter oppdriften i varme røykgasser til å lede røyken ut gjennom
+                åpninger i tak eller øvre del av vegger. Tabellen gir nødvendig samlet åpningsareal (A<sub>v</sub>)
+                for å opprettholde en røykfri sone av angitt høyde.
+              </p>
+              <p>
+                <strong>H</strong> er romhøyden (fra gulv til tak). <strong>h</strong> er høyden på den røykfrie sonen
+                målt fra gulv. Differansen (H − h) er tykkelsen på røyklaget.
+              </p>
+              <p>
+                <strong>A<sub>b</sub></strong> (brannareal) er det arealet brannen dekker på et gitt tidspunkt.
+                Bruk «Beregn brannareal»-knappen for å finne dette basert på brannbelastning og innsatstid.
+              </p>
+              <p>
+                Verdier som ikke finnes direkte i tabellen interpoleres lineært mellom de nærmeste tabellpunktene
+                for H, h og A<sub>b</sub>. Interpolerte verdier er merket med ⓘ.
+              </p>
+              <p className="font-medium text-foreground">
+                Referanse: Melding HO-3/2000 — Røykventilasjon.
+              </p>
+            </CardContent>
+          </Card>
+
           {/* Visuell tabell for nærmeste H-verdier */}
           {bracketH.map((tableH) => {
             const rows = roykventTabell.filter((r) => r.H === tableH);
@@ -193,38 +225,6 @@ const Roykventilasjon = () => {
               </Card>
             );
           })}
-
-          {/* Forklaring */}
-          <Card className="shadow-soft">
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <Info className="h-4 w-4 text-primary" />
-                Om termisk røykventilasjon
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground space-y-3">
-              <p>
-                Termisk røykventilasjon benytter oppdriften i varme røykgasser til å lede røyken ut gjennom
-                åpninger i tak eller øvre del av vegger. Tabellen gir nødvendig samlet åpningsareal (A<sub>v</sub>)
-                for å opprettholde en røykfri sone av angitt høyde.
-              </p>
-              <p>
-                <strong>H</strong> er romhøyden (fra gulv til tak). <strong>h</strong> er høyden på den røykfrie sonen
-                målt fra gulv. Differansen (H − h) er tykkelsen på røyklaget.
-              </p>
-              <p>
-                <strong>A<sub>b</sub></strong> (brannareal) er det arealet brannen dekker på et gitt tidspunkt.
-                Bruk «Beregn brannareal»-knappen for å finne dette basert på brannbelastning og innsatstid.
-              </p>
-              <p>
-                Verdier som ikke finnes direkte i tabellen interpoleres lineært mellom de nærmeste tabellpunktene
-                for H, h og A<sub>b</sub>. Interpolerte verdier er merket med ⓘ.
-              </p>
-              <p className="font-medium text-foreground">
-                Referanse: Melding HO-3/2000 — Røykventilasjon.
-              </p>
-            </CardContent>
-          </Card>
         </div>
       </div>
 
