@@ -48,7 +48,7 @@ const Index = () => {
       icon: BookOpen,
       title: "Eksempelkatalog",
       description: "Bibliotek med løsninger og konstruksjoner",
-      href: "#",
+      href: "/eksempelkatalog",
     },
   ];
 

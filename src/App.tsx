@@ -65,6 +65,7 @@ const App = () => (
             <Route path="/fraviksdokumentasjon/kvalitativ" element={<KvalitativAnalyse />} />
             <Route path="/min-profil" element={<MinProfil />} />
             <Route path="/sikkerhetsrutiner" element={<Sikkerhetsrutiner />} />
+            <Route path="/eksempelkatalog" element={<Eksempelkatalog />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
