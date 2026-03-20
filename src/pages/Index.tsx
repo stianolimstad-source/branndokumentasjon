@@ -109,6 +109,11 @@ const Index = () => {
             );
           })}
         </div>
+        <div className="max-w-6xl mx-auto mt-8 p-4 rounded-lg border border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-950/30">
+          <p className="text-sm text-amber-800 dark:text-amber-200 text-center">
+            <strong>Merk:</strong> Dette verktøyet er under utvikling. Alle dokumenter og beregninger som genereres kan inneholde feil og må kontrolleres og godkjennes av personer med tilstrekkelig kompetanse.
+          </p>
+        </div>
       </section>
 
       {/* Brannkonsept choice dialog */}
