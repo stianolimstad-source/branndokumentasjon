@@ -4348,19 +4348,17 @@ const Konsept = () => {
                                       </div>
                                     ))}
                                   </div>
-                                  {formData.trapperomKrav.includes("bf85_bolig_aapent_brannvesen") && (
-                                    <div className="mt-2 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700 rounded text-xs space-y-1">
-                                      <div className="flex items-start gap-1.5">
-                                        <span className="text-amber-600 dark:text-amber-400 font-bold text-sm leading-none mt-0.5">⚠</span>
-                                        <div>
-                                          <p className="font-semibold text-amber-800 dark:text-amber-300">Fravik fra BF85 – krever særskilt dokumentasjon</p>
-                                          <p className="text-amber-700 dark:text-amber-400 mt-1">
-                                            Løsningen med ett åpent trapperom (Tr1) og brannvesenets stigemateriell som alternativ rømningsvei er en preakseptert ytelse etter TEK17, men utgjør et fravik fra BF85 Kap. 30:7. Fraviket må dokumenteres særskilt, f.eks. gjennom en kvalitativ analyse iht. Byggforsk 321.026.
-                                          </p>
-                                        </div>
+                                  <div className="mt-2 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-300 dark:border-amber-700 rounded text-xs space-y-1">
+                                    <div className="flex items-start gap-1.5">
+                                      <span className="text-amber-600 dark:text-amber-400 font-bold text-sm leading-none mt-0.5">⚠</span>
+                                      <div>
+                                        <p className="font-semibold text-amber-800 dark:text-amber-300">Fravik fra BF85 – krever særskilt dokumentasjon</p>
+                                        <p className="text-amber-700 dark:text-amber-400 mt-1">
+                                          Løsningen med ett åpent trapperom (Tr1) og brannvesenets stigemateriell som alternativ rømningsvei er en preakseptert ytelse etter TEK17, men utgjør et fravik fra BF85 Kap. 30:7. Dette er den vanligste løsningen for moderne boligbygg. Fraviket må dokumenteres særskilt, f.eks. gjennom en kvalitativ analyse iht. Byggforsk 321.026.
+                                        </p>
                                       </div>
                                     </div>
-                                  )}
+                                  </div>
                                   <div className="mt-3">
                                     <Label className="text-xs font-medium mb-1 block">Beskrivelse av trapperom</Label>
                                     <p className="text-xs text-muted-foreground mb-1">Beskriv trapperommene i bygget, f.eks. plassering, antall, utforming.</p>
