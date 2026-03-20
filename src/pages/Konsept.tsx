@@ -75,6 +75,7 @@ const bygningsTypeRisikoklasseMap: Record<string, string> = {
   "Trafo eller fordelingsstasjon": "RK2",
   // Risikoklasse 3
   "Barnehage": "RK3",
+  "Fritidshjem": "RK3",
   "Skole": "RK3",
   // Risikoklasse 4
   "Barnehjem": "RK4",
