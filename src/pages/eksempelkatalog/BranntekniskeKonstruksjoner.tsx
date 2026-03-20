@@ -56,7 +56,7 @@ const ei30Kategorier: Kategori[] = [
           "Stålstender Norgips dB+ c/c 450 eller 600 mm",
           "Mineralull i hulrom (anbefalt for lyd)",
         ],
-        brannklasse: "EI 30",
+        brannklasse: "EI 60",
         lydklasse: "R'w 40–55 dB",
         tykkelse: "ca. 95–120 mm",
         leverandor: "Norgips",
