@@ -178,6 +178,31 @@ const ei30Kategorier: Kategori[] = [
   },
 ];
 
+const ei60Kategorier: Kategori[] = [
+  {
+    navn: "Innervegger",
+    icon: Home,
+    eksempler: [
+      {
+        navn: "Norgips W112 — Dobbel gipsplatekledning",
+        kortbeskrivelse: "Dobbel gips på stålstender. Oppnår EI 60.",
+        beskrivelse: "Ikke-bærende branncellevegg med stålstendere og dobbel gipsplatekledning på begge sider. Dokumentert EI 60 iht. Norgips systemdokumentasjon.",
+        oppbygging: [
+          "2× 13 mm Norgips Standard gipsplate (hver side)",
+          "Stålstender Norgips dB+ c/c 450 eller 600 mm",
+          "Mineralull i hulrom (anbefalt for lyd)",
+        ],
+        brannklasse: "EI 60",
+        lydklasse: "R'w 40–55 dB",
+        tykkelse: "ca. 95–120 mm",
+        leverandor: "Norgips",
+        referanse: "Norgips – Innervegger W112",
+        referanseUrl: "https://norgips.no/prosjektering/vegger-med-st%C3%A5l/innervegger",
+      },
+    ],
+  },
+];
+
 const KonstruksjonDetalj = ({ eks }: { eks: KonstruksjonEksempel }) => (
   <div className="space-y-3 pt-1">
     <p className="text-sm text-muted-foreground leading-relaxed">{eks.beskrivelse}</p>
