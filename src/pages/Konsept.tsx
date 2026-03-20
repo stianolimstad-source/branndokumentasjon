@@ -4389,6 +4389,62 @@ const Konsept = () => {
                               );
                             }
 
+                            if (isBf85Bolig && bf85Floors > 8) {
+                              const boligOver8Options = [
+                                { id: "bf85_bolig_2_branntrygge", label: "2 branntrygge trapperom (Tr2)" },
+                                { id: "bf85_bolig_roykfritt", label: "Et røykfritt trapperom (Tr3)" },
+                              ];
+                              return (
+                                <>
+                                  <div className="mb-2 p-2 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded text-xs">
+                                    <span className="font-medium text-blue-800 dark:text-blue-300">
+                                      Bolig over 8 etasjer ({bf85Floors} etasjer) – velg trapperomløsning (Kap. 30:7):
+                                    </span>
+                                  </div>
+                                  <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                                    {boligOver8Options.map((opt) => (
+                                      <div key={opt.id} className="flex items-start space-x-2">
+                                        <Checkbox
+                                          id={`tr-${opt.id}`}
+                                          checked={formData.trapperomKrav.includes(opt.id)}
+                                          onCheckedChange={(checked) => {
+                                            if (checked) {
+                                              setFormData({...formData, trapperomKrav: [...formData.trapperomKrav, opt.id]});
+                                            } else {
+                                              setFormData({...formData, trapperomKrav: formData.trapperomKrav.filter((k: string) => k !== opt.id)});
+                                            }
+                                          }}
+                                        />
+                                        <label htmlFor={`tr-${opt.id}`} className="text-xs leading-tight cursor-pointer">{opt.label}</label>
+                                      </div>
+                                    ))}
+                                  </div>
+                                  <div className="mt-3">
+                                    <Label className="text-xs font-medium mb-1 block">Beskrivelse av trapperom</Label>
+                                    <p className="text-xs text-muted-foreground mb-1">Beskriv trapperommene i bygget, f.eks. plassering, antall, utforming.</p>
+                                    <Textarea
+                                      value={formData.trapperomBeskrivelse}
+                                      onChange={(e) => setFormData({...formData, trapperomBeskrivelse: e.target.value})}
+                                      placeholder="F.eks. Bygget har to trapperom plassert i hver ende av bygget."
+                                      className="text-xs"
+                                      rows={3}
+                                    />
+                                  </div>
+                                  <div className="mt-3 border-t pt-3">
+                                    <Label className="text-xs font-medium mb-1 block">Interntrapp (ikke del av rømningsvei)</Label>
+                                    <p className="text-xs text-muted-foreground mb-1">Beskriv eventuelle interntrapper som kun benyttes internt.</p>
+                                    <Textarea
+                                      value={formData.interntrappBeskrivelse}
+                                      onChange={(e) => setFormData({...formData, interntrappBeskrivelse: e.target.value})}
+                                      placeholder="F.eks. Interntrapp mellom 1. og 2. etasje benyttes kun som internkommunikasjon og er ikke del av rømningsvei."
+                                      className="text-xs"
+                                      rows={3}
+                                    />
+                                  </div>
+                                </>
+                              );
+                            }
+
                             return (
                               <>
                                 <div className="mb-2 p-2 bg-accent/50 rounded text-xs">

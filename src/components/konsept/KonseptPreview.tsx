@@ -1724,12 +1724,14 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 );
               }
 
-              // BF85 Bolig 1-8 etasjer – vis valgte trapperomløsninger
-              if (isBF85 && formData.bygningstype === "Bolig" && floors >= 1 && floors <= 8) {
+              // BF85 Bolig – vis valgte trapperomløsninger
+              if (isBF85 && formData.bygningstype === "Bolig" && floors >= 1) {
                 const boligTrapperomMap: Record<string, string> = {
                   bf85_bolig_2_aapne: "2 åpne trapperom (Tr1)",
                   bf85_bolig_lukket: "Et lukket trapperom (Tr2)",
                   bf85_bolig_aapent_brannvesen: "Et åpent trapperom (Tr1) med brannvesenet som alternativ rømningsvei (maks 5 m til underkant vindu/balkong)",
+                  bf85_bolig_2_branntrygge: "2 branntrygge trapperom (Tr2)",
+                  bf85_bolig_roykfritt: "Et røykfritt trapperom (Tr3)",
                 };
                 const valgte = (formData.trapperomKrav || [])
                   .map((id: string) => boligTrapperomMap[id])
