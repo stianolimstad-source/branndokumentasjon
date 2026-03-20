@@ -188,10 +188,15 @@ const Roykventilasjon = () => {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm border-collapse">
                   <thead className="sticky top-0 bg-background z-10">
-                    <tr className="border-b-2 border-border">
-                      <th rowSpan={2} className="text-left py-2 pr-2 font-semibold w-16">H (m)</th>
-                      <th rowSpan={2} className="text-left py-2 pr-2 font-semibold w-16">h (m)</th>
-                      <th colSpan={abKolonner.length} className="text-center py-1 font-semibold border-b border-border">
+                    <tr className="border-b border-border">
+                      <th rowSpan={3} className="text-left py-2 pr-2 font-semibold w-20 align-bottom">Høyde<br/>H (m)</th>
+                      <th rowSpan={3} className="text-left py-2 pr-2 font-semibold w-20 align-bottom">Røykfri<br/>sone h (m)</th>
+                      <th colSpan={abKolonner.length} className="text-center py-1.5 font-semibold">
+                        Nødvendig åpningsareal (A<sub>v</sub>)
+                      </th>
+                    </tr>
+                    <tr className="border-b border-border">
+                      <th colSpan={abKolonner.length} className="text-center py-1 text-xs text-muted-foreground font-medium">
                         Brannareal A<sub>b</sub> (m²)
                       </th>
                     </tr>
