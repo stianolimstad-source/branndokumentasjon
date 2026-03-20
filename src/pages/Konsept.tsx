@@ -4963,6 +4963,7 @@ const Konsept = () => {
                                 </div>
                               ))}
 
+                              {formData.regelverk !== "BF85" && (
                               <div className="border-t pt-2 mt-2 space-y-2">
                                 <Label className="text-xs font-medium">Innbyrdes plassering av vinduer</Label>
                                 <div className="space-y-3">
@@ -5100,6 +5101,7 @@ const Konsept = () => {
                                   </div>
                                 </div>
                               </div>
+                              )}
                             </div>
                           )}
                         </div>
