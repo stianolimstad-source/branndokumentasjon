@@ -53,15 +53,15 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
+    <div className="min-h-screen bg-gradient-subtle overflow-x-hidden">
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16">
         <div className="max-w-3xl mx-auto text-center space-y-4">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-balance">
             Ditt komplette branntekniske dokumentasjonsverktøy
           </h2>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-base sm:text-xl text-muted-foreground">
             Komplett verktøykasse for konsepter, vurderinger og beregninger. 
             Spar tid og forbedre kvaliteten på dine leveranser.
           </p>
