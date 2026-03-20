@@ -1992,7 +1992,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             })()}
             {/* Brannspredning via vinduer */}
             {formData.vinduBrannspredningRelevant && (() => {
-              const vvKravMap: Record<string, string> = {
+              const isBF85 = formData.regelverk === "BF85";
+              const vvKravMap: Record<string, string> = isBF85 ? {
+                vv_brannmotstand_vegg: "Vinduer skal ha samme brannklasse som veggen de står i.",
+              } : {
                 vv_branncellebegrensende: "Branncellebegrensende konstruksjoner i et byggverk, eller mellom to lave byggverk, må utføres slik at det blir liten sannsynlighet for brannspredning via vinduer som ligger med liten innbyrdes avstand i innvendig hjørne, eller mellom vinduer i motstående fasader.",
                 vv_brannmotstand_vegg: "Vinduer må ha samme brannmotstand som veggen de står i. For motstående parallelle yttervegger gjelder dette bare når vindusarealet ikke utgjør mer enn 1/3 av veggarealet.",
                 vv_sprinkler_unntak: "Hvis byggverket eller byggverkene har automatisk sprinkleranlegg kan det benyttes vinduer uten spesifisert brannmotstand, med unntak for vinduer mot rømningsvei.",
