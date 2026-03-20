@@ -20,7 +20,7 @@ const AppHeader = () => {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
               <Flame className="h-6 w-6 text-primary-foreground" />
             </div>
-            <h1 className="text-xl font-bold">Branndokumentasjon.no</h1>
+            <h1 className="text-base sm:text-xl font-bold truncate">Branndokumentasjon.no</h1>
           </Link>
           <div className="flex items-center gap-2">
             <ThemeToggle />

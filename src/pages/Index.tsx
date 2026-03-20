@@ -61,7 +61,7 @@ const Index = () => {
           <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-balance">
             Ditt komplette branntekniske dokumentasjonsverktøy
           </h2>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-base sm:text-xl text-muted-foreground">
             Komplett verktøykasse for konsepter, vurderinger og beregninger. 
             Spar tid og forbedre kvaliteten på dine leveranser.
           </p>
