@@ -48,22 +48,6 @@ const ei30Kategorier: Kategori[] = [
         referanseUrl: "https://norgips.no/prosjektering/vegger-med-st%C3%A5l/innervegger",
       },
       {
-        navn: "Norgips W112 — Dobbel gipsplatekledning",
-        kortbeskrivelse: "Dobbel gips på stålstender. Bedre lyd og brann enn W111.",
-        beskrivelse: "Ikke-bærende branncellevegg med stålstendere og dobbel gipsplatekledning. Gir bedre lyd- og brannegenskaper enn W111.",
-        oppbygging: [
-          "2× 13 mm Norgips Standard gipsplate (hver side)",
-          "Stålstender Norgips dB+ c/c 450 eller 600 mm",
-          "Mineralull i hulrom (anbefalt for lyd)",
-        ],
-        brannklasse: "EI 60",
-        lydklasse: "R'w 40–55 dB",
-        tykkelse: "ca. 95–120 mm",
-        leverandor: "Norgips",
-        referanse: "Norgips – Innervegger W112",
-        referanseUrl: "https://norgips.no/prosjektering/vegger-med-st%C3%A5l/innervegger",
-      },
-      {
         navn: "BB Stål Skilleveggsystem — SINTEF TG",
         kortbeskrivelse: "Tynnplateprofiler med SINTEF godkjenning. For kontorbygg.",
         beskrivelse: "Ikke-bærende skilleveggsystem basert på tynnplateprofiler med SINTEF Teknisk Godkjenning. Egnet for kontorbygg og næringsbygg.",
