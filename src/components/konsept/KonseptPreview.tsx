@@ -1724,6 +1724,41 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 );
               }
 
+              // BF85 Bolig 1-8 etasjer – vis valgte trapperomløsninger
+              if (isBF85 && formData.bygningstype === "Bolig" && floors >= 1 && floors <= 8) {
+                const boligTrapperomMap: Record<string, string> = {
+                  bf85_bolig_2_aapne: "2 åpne trapperom (Tr1)",
+                  bf85_bolig_lukket: "Et lukket trapperom (Tr2)",
+                  bf85_bolig_aapent_brannvesen: "Et åpent trapperom (Tr1) med brannvesenet som alternativ rømningsvei (maks 5 m til underkant vindu/balkong)",
+                };
+                const valgte = (formData.trapperomKrav || [])
+                  .map((id: string) => boligTrapperomMap[id])
+                  .filter(Boolean);
+                if (valgte.length > 0 || formData.trapperomBeskrivelse) {
+                  return (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Krav til trapperom (Kap. 30:7)</td>
+                      <td className="border border-gray-400 p-2">
+                        <div className="space-y-1">
+                          {valgte.length > 0 && (
+                            <ul className="list-disc list-inside">
+                              {valgte.map((v: string, i: number) => <li key={i}>{v}</li>)}
+                            </ul>
+                          )}
+                          {formData.trapperomBeskrivelse && (
+                            <div className="mt-2 pt-2 border-t border-gray-300">
+                              <span className="font-semibold">Beskrivelse:</span> {formData.trapperomBeskrivelse}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                    </tr>
+                  );
+                }
+                return null;
+              }
+
               // Manual BF85 or TEK17 trapperomKrav
               if (!formData.trapperomKrav || formData.trapperomKrav.length === 0) return null;
 

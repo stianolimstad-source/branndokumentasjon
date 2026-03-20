@@ -4315,6 +4315,80 @@ const Konsept = () => {
                               );
                             }
 
+                            // BF85 Bolig 1-8 etasjer – avkrysning for trapperomløsning
+                            const isBf85Bolig = formData.bygningstype === "Bolig";
+                            if (isBf85Bolig && bf85Floors >= 1 && bf85Floors <= 8) {
+                              const boligTrapperomOptions = [
+                                { id: "bf85_bolig_2_aapne", label: "2 åpne trapperom (Tr1)" },
+                                { id: "bf85_bolig_lukket", label: "Et lukket trapperom (Tr2)" },
+                                { id: "bf85_bolig_aapent_brannvesen", label: "Et åpent trapperom (Tr1) med brannvesenet som alternativ rømningsvei (maks 5 m til underkant vindu/balkong)" },
+                              ];
+                              return (
+                                <>
+                                  <div className="mb-2 p-2 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded text-xs">
+                                    <span className="font-medium text-blue-800 dark:text-blue-300">
+                                      Bolig med {bf85Floors} etasje{bf85Floors > 1 ? "r" : ""} – velg trapperomløsning (Kap. 30:7):
+                                    </span>
+                                  </div>
+                                  <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                                    {boligTrapperomOptions.map((opt) => (
+                                      <div key={opt.id} className="flex items-start space-x-2">
+                                        <Checkbox
+                                          id={`tr-${opt.id}`}
+                                          checked={formData.trapperomKrav.includes(opt.id)}
+                                          onCheckedChange={(checked) => {
+                                            if (checked) {
+                                              setFormData({...formData, trapperomKrav: [...formData.trapperomKrav, opt.id]});
+                                            } else {
+                                              setFormData({...formData, trapperomKrav: formData.trapperomKrav.filter((k: string) => k !== opt.id)});
+                                            }
+                                          }}
+                                        />
+                                        <label htmlFor={`tr-${opt.id}`} className="text-xs leading-tight cursor-pointer">{opt.label}</label>
+                                      </div>
+                                    ))}
+                                  </div>
+                                  <div className="mt-3">
+                                    <Label className="text-xs font-medium mb-1 block">Beskrivelse av trapperom</Label>
+                                    <p className="text-xs text-muted-foreground mb-1">Beskriv trapperommene i bygget, f.eks. plassering, antall, utforming.</p>
+                                    <Textarea
+                                      value={formData.trapperomBeskrivelse}
+                                      onChange={(e) => setFormData({...formData, trapperomBeskrivelse: e.target.value})}
+                                      placeholder="F.eks. Bygget har ett trapperom plassert sentralt med utgang direkte til det fri i 1. etasje."
+                                      className="text-xs"
+                                      rows={3}
+                                    />
+                                  </div>
+                                  <Collapsible className="mt-3">
+                                    <CollapsibleTrigger className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                                      <ChevronRight className="h-3 w-3 transition-transform [[data-state=open]>&]:rotate-90" />
+                                      BF85 trapperomtyper (Kap. 30:7) – informasjon
+                                    </CollapsibleTrigger>
+                                    <CollapsibleContent className="pt-2">
+                                      <div className="border rounded-md p-2 space-y-2 bg-muted/30">
+                                        {bf85TrapperomKravListe.map((krav) => (
+                                          <div key={krav.id} className="text-xs leading-tight text-muted-foreground py-1 border-b last:border-b-0">
+                                            {krav.label}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </CollapsibleContent>
+                                  </Collapsible>
+                                  <div className="mt-3 border-t pt-3">
+                                    <Label className="text-xs font-medium mb-1 block">Interntrapp (ikke del av rømningsvei)</Label>
+                                    <p className="text-xs text-muted-foreground mb-1">Beskriv eventuelle interntrapper som kun benyttes internt.</p>
+                                    <Textarea
+                                      value={formData.interntrappBeskrivelse}
+                                      onChange={(e) => setFormData({...formData, interntrappBeskrivelse: e.target.value})}
+                                      placeholder="F.eks. Interntrapp mellom 1. og 2. etasje benyttes kun som internkommunikasjon og er ikke del av rømningsvei."
+                                      className="text-xs"
+                                      rows={3}
+                                    />
+                                  </div>
+                                </>
+                              );
+                            }
+
                             return (
                               <>
                                 <div className="mb-2 p-2 bg-accent/50 rounded text-xs">
