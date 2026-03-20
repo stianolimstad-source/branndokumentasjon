@@ -5129,7 +5129,7 @@ const Konsept = () => {
                                 return harUgyldigRK ? (
                                   <div className="bg-destructive/10 border border-destructive/30 rounded p-2 text-xs text-destructive font-medium">
                                     {formData.regelverk === "BF85"
-                                      ? <>⚠ Obs: Krav til brannceller over flere plan gjelder ikke for {rkList.filter((rk: number) => rk === 3 || rk === 6).flatMap((rk: number) => rk === 3 ? ["skole", "barnehage"] : ["sykehjem", "sykehus", "omsorgshjem"]).join(", ")}.</>
+                                      ? <>⚠ Obs: Krav til brannceller over flere plan gjelder ikke for {rkList.filter((rk: number) => rk === 3 || rk === 6).flatMap((rk: number) => rk === 3 ? ["skole", "barnehage"] : ["sykehjem", "sykehus", "omsorgshjem"]).join(", ")}. Dersom dette er relevant for bygget, må det behandles som et fravik som krever særskilt dokumentasjon.</>
                                       : <>⚠ Obs: Preakseptert ytelse for brannceller over flere plan gjelder kun risikoklasse 1, 2, 4 og 5. Prosjektet inneholder risikoklasse {rkList.filter((rk: number) => rk === 3 || rk === 6).map((rk: number) => `RK ${rk}`).join(" og ")}, som ikke dekkes av denne ytelsen.</>
                                     }
                                   </div>
