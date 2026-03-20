@@ -94,11 +94,84 @@ export const getHValuesForH = (H: number): number[] => {
   return roykventTabell.filter((r) => r.H === H).map((r) => r.h);
 };
 
-/** Lookup Av value */
+/** Lookup Av value (exact match) */
 export const lookupAv = (H: number, h: number, Ab: number): number | null => {
   const row = roykventTabell.find((r) => r.H === H && r.h === h);
   if (!row) return null;
   const colIdx = abKolonner.indexOf(Ab);
   if (colIdx === -1) return null;
   return row.values[colIdx];
+};
+
+/** Linear interpolation helper */
+const lerp = (x: number, x0: number, x1: number, y0: number, y1: number): number => {
+  if (x1 === x0) return y0;
+  return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
+};
+
+/** Find bracketing values in a sorted array */
+const bracket = (val: number, arr: number[]): [number, number] | null => {
+  const sorted = [...arr].sort((a, b) => a - b);
+  if (val < sorted[0] || val > sorted[sorted.length - 1]) return null;
+  if (sorted.includes(val)) return [val, val];
+  for (let i = 0; i < sorted.length - 1; i++) {
+    if (sorted[i] < val && val < sorted[i + 1]) return [sorted[i], sorted[i + 1]];
+  }
+  return null;
+};
+
+/** Get Av for exact H and h, interpolating across Ab */
+const getAvForHh = (H: number, h: number, Ab: number): number | null => {
+  const row = roykventTabell.find((r) => r.H === H && r.h === h);
+  if (!row) return null;
+
+  const abIdx = abKolonner.indexOf(Ab);
+  if (abIdx !== -1) return row.values[abIdx];
+
+  // Interpolate across Ab columns
+  const abBracket = bracket(Ab, abKolonner);
+  if (!abBracket) return null;
+  const [abLo, abHi] = abBracket;
+  if (abLo === abHi) return row.values[abKolonner.indexOf(abLo)];
+  const vLo = row.values[abKolonner.indexOf(abLo)];
+  const vHi = row.values[abKolonner.indexOf(abHi)];
+  if (vLo === null || vHi === null) return null;
+  return lerp(Ab, abLo, abHi, vLo, vHi);
+};
+
+/** Get Av interpolating across h for a given exact H */
+const getAvForH = (H: number, h: number, Ab: number): number | null => {
+  const hVals = getHValuesForH(H);
+  if (hVals.includes(h)) return getAvForHh(H, h, Ab);
+
+  const hBracket = bracket(h, hVals);
+  if (!hBracket) return null;
+  const [hLo, hHi] = hBracket;
+  if (hLo === hHi) return getAvForHh(H, hLo, Ab);
+  const vLo = getAvForHh(H, hLo, Ab);
+  const vHi = getAvForHh(H, hHi, Ab);
+  if (vLo === null || vHi === null) return null;
+  return lerp(h, hLo, hHi, vLo, vHi);
+};
+
+/**
+ * Interpolated lookup of Av.
+ * Supports arbitrary H, h, and Ab values within table range.
+ * Uses trilinear interpolation across H, h, and Ab.
+ */
+export const interpolateAv = (H: number, h: number, Ab: number): number | null => {
+  const uniqueHVals = getUniqueH();
+
+  // If exact H exists, interpolate h and Ab
+  if (uniqueHVals.includes(H)) return getAvForH(H, h, Ab);
+
+  // Interpolate across H
+  const hBracket = bracket(H, uniqueHVals);
+  if (!hBracket) return null;
+  const [HLo, HHi] = hBracket;
+  if (HLo === HHi) return getAvForH(HLo, h, Ab);
+  const vLo = getAvForH(HLo, h, Ab);
+  const vHi = getAvForH(HHi, h, Ab);
+  if (vLo === null || vHi === null) return null;
+  return lerp(H, HLo, HHi, vLo, vHi);
 };

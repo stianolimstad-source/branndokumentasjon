@@ -1,34 +1,47 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Info, Calculator } from "lucide-react";
-import { abKolonner, getUniqueH, getHValuesForH, lookupAv, roykventTabell } from "@/lib/roykventilasjon-data";
+import { abKolonner, getUniqueH, interpolateAv, roykventTabell } from "@/lib/roykventilasjon-data";
 import BrannArealTool from "@/components/verktoy/BrannArealTool";
 
 const Roykventilasjon = () => {
-  const [selectedH, setSelectedH] = useState("");
-  const [selectedh, setSelectedh] = useState("");
+  const [hInput, setHInput] = useState("");
+  const [hSmallInput, setHSmallInput] = useState("");
   const [abInput, setAbInput] = useState("");
   const [showBrannArealDialog, setShowBrannArealDialog] = useState(false);
 
-  const uniqueH = getUniqueH();
-  const hVerdier = selectedH ? getHValuesForH(parseInt(selectedH)) : [];
+  const H = hInput ? parseFloat(hInput) : null;
+  const h = hSmallInput ? parseFloat(hSmallInput) : null;
+  const Ab = abInput ? parseFloat(abInput) : null;
 
-  // Find closest Ab column for lookup
-  const abNum = abInput ? parseFloat(abInput) : null;
-  const closestAb = abNum && abNum > 0
-    ? abKolonner.reduce((prev, curr) => Math.abs(curr - abNum) < Math.abs(prev - abNum) ? curr : prev)
-    : null;
+  const isInterpolated = useMemo(() => {
+    if (!H || !h) return false;
+    const uniqueH = getUniqueH();
+    if (!uniqueH.includes(H)) return true;
+    const hVals = roykventTabell.filter((r) => r.H === H).map((r) => r.h);
+    if (!hVals.includes(h)) return true;
+    if (Ab && !abKolonner.includes(Ab)) return true;
+    return false;
+  }, [H, h, Ab]);
 
-  const resultat = selectedH && selectedh && closestAb
-    ? lookupAv(parseInt(selectedH), parseInt(selectedh), closestAb)
+  const resultat = H && h && Ab && h < H && h > 0 && Ab > 0
+    ? interpolateAv(H, h, Ab)
     : undefined;
 
-  const currentRows = selectedH ? roykventTabell.filter((r) => r.H === parseInt(selectedH)) : [];
+  // Find bracketing H values for showing reference tables
+  const uniqueH = getUniqueH();
+  const bracketH = useMemo(() => {
+    if (!H) return [];
+    if (uniqueH.includes(H)) return [H];
+    const sorted = [...uniqueH].sort((a, b) => a - b);
+    const lo = sorted.filter((v) => v < H).pop();
+    const hi = sorted.find((v) => v > H);
+    return [lo, hi].filter((v): v is number => v !== undefined);
+  }, [H, uniqueH]);
 
   const handleBrannArealSelect = (brannareal: number) => {
     setAbInput(String(brannareal));
@@ -51,34 +64,37 @@ const Roykventilasjon = () => {
           <Card className="shadow-soft">
             <CardHeader>
               <CardTitle>Finn nødvendig åpningsareal A<sub>v</sub></CardTitle>
-              <CardDescription>Velg romhøyde, ønsket røykfri sone og brannareal for oppslag i tabellen.</CardDescription>
+              <CardDescription>Oppgi romhøyde, ønsket røykfri sone og brannareal. Verdier mellom tabellpunkter interpoleres automatisk.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid sm:grid-cols-3 gap-4">
                 <div className="space-y-2">
                   <Label>Høyde H (m)</Label>
-                  <Select value={selectedH} onValueChange={(v) => { setSelectedH(v); setSelectedh(""); }}>
-                    <SelectTrigger><SelectValue placeholder="Velg høyde" /></SelectTrigger>
-                    <SelectContent>
-                      {uniqueH.map((h) => (
-                        <SelectItem key={h} value={String(h)}>{h} m</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">Romhøyde / takhøyde</p>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    placeholder="f.eks. 15"
+                    value={hInput}
+                    onChange={(e) => setHInput(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">Romhøyde / takhøyde (tabellverdier: {uniqueH.join(", ")})</p>
                 </div>
 
                 <div className="space-y-2">
                   <Label>Røykfri sone h (m)</Label>
-                  <Select value={selectedh} onValueChange={setSelectedh} disabled={!selectedH}>
-                    <SelectTrigger><SelectValue placeholder="Velg røykfri sone" /></SelectTrigger>
-                    <SelectContent>
-                      {hVerdier.map((hv) => (
-                        <SelectItem key={hv} value={String(hv)}>{hv} m</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">Fri høyde under røyklaget</p>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="0.5"
+                    placeholder="f.eks. 7"
+                    value={hSmallInput}
+                    onChange={(e) => setHSmallInput(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">Fri høyde under røyklaget (må være mindre enn H)</p>
+                  {H && h && h >= H && (
+                    <p className="text-xs text-destructive">Røykfri sone må være lavere enn romhøyden.</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -90,11 +106,6 @@ const Roykventilasjon = () => {
                     value={abInput}
                     onChange={(e) => setAbInput(e.target.value)}
                   />
-                  {abInput && closestAb && closestAb !== abNum && (
-                    <p className="text-xs text-muted-foreground">
-                      Nærmeste tabellverdi: {closestAb} m²
-                    </p>
-                  )}
                   <Button
                     variant="outline"
                     size="sm"
@@ -115,14 +126,19 @@ const Roykventilasjon = () => {
                     : "bg-primary/10 text-foreground"
                 }`}>
                   {resultat === null ? (
-                    <p className="font-semibold">Verdi ikke tilgjengelig for denne kombinasjonen.</p>
+                    <p className="font-semibold">Verdien er utenfor tabellens gyldighetsområde for denne kombinasjonen.</p>
                   ) : (
                     <div>
                       <p className="text-sm font-medium">Nødvendig åpningsareal A<sub>v</sub>:</p>
-                      <p className="text-3xl font-bold mt-1">{resultat} m²</p>
+                      <p className="text-3xl font-bold mt-1">{Math.round(resultat * 10) / 10} m²</p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        H = {selectedH} m, røykfri sone h = {selectedh} m, brannareal A<sub>b</sub> = {abInput} m² (tabellverdi: {closestAb} m²)
+                        H = {hInput} m, røykfri sone h = {hSmallInput} m, brannareal A<sub>b</sub> = {abInput} m²
                       </p>
+                      {isInterpolated && (
+                        <p className="text-xs text-muted-foreground mt-1 italic">
+                          ⓘ Verdien er interpolert mellom tabellverdier.
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
@@ -130,56 +146,53 @@ const Roykventilasjon = () => {
             </CardContent>
           </Card>
 
-          {/* Visuell tabell for valgt H */}
-          {selectedH && currentRows.length > 0 && (
-            <Card className="shadow-soft">
-              <CardHeader>
-                <CardTitle className="text-base">Tabell for H = {selectedH} m</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-2 pr-3 font-medium">h (m)</th>
-                        {abKolonner.map((ab) => (
-                          <th key={ab} className="text-right py-2 px-2 font-medium">{ab}</th>
-                        ))}
-                      </tr>
-                      <tr className="border-b border-border/50">
-                        <th className="text-left py-1 pr-3 text-xs text-muted-foreground font-normal">Røykfri sone</th>
-                        {abKolonner.map((ab) => (
-                          <th key={ab} className="text-right py-1 px-2 text-xs text-muted-foreground font-normal">m²</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {currentRows.map((row) => (
-                        <tr key={row.h} className={`border-b border-border/50 ${
-                          String(row.h) === selectedh ? "bg-primary/10 font-medium" : ""
-                        }`}>
-                          <td className="py-2 pr-3">{row.h}</td>
-                          {row.values.map((val, i) => {
-                            const isSelected = String(row.h) === selectedh && closestAb === abKolonner[i];
-                            return (
-                              <td key={i} className={`text-right py-2 px-2 ${
-                                isSelected ? "bg-primary/20 font-bold rounded" : ""
-                              }`}>
+          {/* Visuell tabell for nærmeste H-verdier */}
+          {bracketH.map((tableH) => {
+            const rows = roykventTabell.filter((r) => r.H === tableH);
+            if (rows.length === 0) return null;
+            return (
+              <Card key={tableH} className="shadow-soft">
+                <CardHeader>
+                  <CardTitle className="text-base">Referansetabell for H = {tableH} m</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-2 pr-3 font-medium">h (m)</th>
+                          {abKolonner.map((ab) => (
+                            <th key={ab} className="text-right py-2 px-2 font-medium">{ab}</th>
+                          ))}
+                        </tr>
+                        <tr className="border-b border-border/50">
+                          <th className="text-left py-1 pr-3 text-xs text-muted-foreground font-normal">Røykfri sone</th>
+                          {abKolonner.map((ab) => (
+                            <th key={ab} className="text-right py-1 px-2 text-xs text-muted-foreground font-normal">m²</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {rows.map((row) => (
+                          <tr key={row.h} className="border-b border-border/50">
+                            <td className="py-2 pr-3">{row.h}</td>
+                            {row.values.map((val, i) => (
+                              <td key={i} className="text-right py-2 px-2">
                                 {val === null ? "—" : val}
                               </td>
-                            );
-                          })}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Verdier: Nødvendig åpningsareal A<sub>v</sub> (m²). Kolonnene viser brannareal A<sub>b</sub> (m²).
-                </p>
-              </CardContent>
-            </Card>
-          )}
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Verdier: Nødvendig åpningsareal A<sub>v</sub> (m²). Kolonnene viser brannareal A<sub>b</sub> (m²).
+                  </p>
+                </CardContent>
+              </Card>
+            );
+          })}
 
           {/* Forklaring */}
           <Card className="shadow-soft">
@@ -202,6 +215,10 @@ const Roykventilasjon = () => {
               <p>
                 <strong>A<sub>b</sub></strong> (brannareal) er det arealet brannen dekker på et gitt tidspunkt.
                 Bruk «Beregn brannareal»-knappen for å finne dette basert på brannbelastning og innsatstid.
+              </p>
+              <p>
+                Verdier som ikke finnes direkte i tabellen interpoleres lineært mellom de nærmeste tabellpunktene
+                for H, h og A<sub>b</sub>. Interpolerte verdier er merket med ⓘ.
               </p>
               <p className="font-medium text-foreground">
                 Referanse: Melding HO-3/2000 — Røykventilasjon.
