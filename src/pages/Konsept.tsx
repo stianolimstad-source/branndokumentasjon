@@ -1759,7 +1759,19 @@ const Konsept = () => {
     <div className="min-h-screen bg-gradient-subtle">
 
       <div className="w-full px-4 py-6">
-        <div className="max-w-[1800px] mx-auto">
+        <div className="max-w-[1800px] mx-auto space-y-4">
+          {/* Back button to project */}
+          {selectedProjectId && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(`/prosjekt/${selectedProjectId}`)}
+              className="gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Tilbake til prosjekt
+            </Button>
+          )}
           {/* Create Project Dialog - triggered by ?new=true */}
           <Dialog open={isCreateProjectOpen} onOpenChange={(open) => {
             setIsCreateProjectOpen(open);
