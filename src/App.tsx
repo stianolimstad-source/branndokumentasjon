@@ -16,6 +16,7 @@ import Persontall from "./pages/verktoy/Persontall";
 import Brannenergi from "./pages/verktoy/Brannenergi";
 import Brannmotstand from "./pages/verktoy/Brannmotstand";
 import Brannareal from "./pages/verktoy/Brannareal";
+import RoykventilasjonPage from "./pages/verktoy/Roykventilasjon";
 
 import Auth from "./pages/Auth";
 import MineProsjekter from "./pages/MineProsjekter";
