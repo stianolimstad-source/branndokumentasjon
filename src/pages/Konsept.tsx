@@ -4802,7 +4802,7 @@ const Konsept = () => {
                         })()}
                       </div>
                       <div>
-                        <Label className="text-xs font-medium mb-2 block">{formData.regelverk === "BF85" ? "Brannventilasjon og belysning i rømningsveg (§:78)" : "Røykkontroll"}</Label>
+                        <Label className="text-xs font-medium mb-2 block">{formData.regelverk === "BF85" ? "Brannventilasjon (Røykventilasjon) (§:78)" : "Røykkontroll"}</Label>
                         <div className="border rounded-md p-2 space-y-2 bg-muted/30">
                           {formData.regelverk === "BF85" ? (() => {
                             const etasjer = parseInt(formData.etasjer, 10) || 0;
