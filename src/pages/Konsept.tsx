@@ -4881,7 +4881,7 @@ const Konsept = () => {
                           {formData.vertikalBrannspredningRelevant && (
                             <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
                               {[
-                                { id: "vb_kjolesone", label: "1. Kjølesone (vertikal avstand) mellom vinduer er minst lik høyden til underliggende vindu og utført med brannmotstand minst E 30." },
+                                { id: "vb_kjolesone", label: formData.regelverk === "BF85" ? "1. Kjølesone mellom vinduer i ulike etasjer skal være minst 1,2 meter og utført med brannmotstand minst E 30." : "1. Kjølesone (vertikal avstand) mellom vinduer er minst lik høyden til underliggende vindu og utført med brannmotstand minst E 30." },
                                 { id: "vb_fasade_e30", label: "2. Annenhver etasje er utført med fasade minst E 30." },
                                 { id: "vb_inntrukne", label: "3. Inntrukne fasadepartier er på minimum 1,2 meter, eller utkragede bygningsdeler med samme brannmotstand som etasjeskiller er minimum 1,2 meter ut fra fasadelivet." },
                                 { id: "vb_sprinkler", label: "4. Byggverket har automatisk sprinkleranlegg." },

@@ -1951,7 +1951,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* Vertikal brannspredning */}
             {formData.vertikalBrannspredningRelevant && (() => {
               const vbKravMap: Record<string, string> = {
-                vb_kjolesone: "Kjølesone (vertikal avstand) mellom vinduer er minst lik høyden til underliggende vindu og utført med brannmotstand minst E 30.",
+                vb_kjolesone: formData.regelverk === "BF85" ? "Kjølesone mellom vinduer i ulike etasjer skal være minst 1,2 meter og utført med brannmotstand minst E 30." : "Kjølesone (vertikal avstand) mellom vinduer er minst lik høyden til underliggende vindu og utført med brannmotstand minst E 30.",
                 vb_fasade_e30: "Annenhver etasje er utført med fasade minst E 30.",
                 vb_inntrukne: "Inntrukne fasadepartier er på minimum 1,2 meter, eller utkragede bygningsdeler med samme brannmotstand som etasjeskiller er minimum 1,2 meter ut fra fasadelivet.",
                 vb_sprinkler: "Byggverket har automatisk sprinkleranlegg.",
