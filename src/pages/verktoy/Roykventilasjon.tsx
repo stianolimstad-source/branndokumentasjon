@@ -87,7 +87,7 @@ const Roykventilasjon = () => {
                     type="number"
                     min="0"
                     step="0.5"
-                    placeholder="f.eks. 7"
+                    placeholder="f.eks. 10"
                     value={hSmallInput}
                     onChange={(e) => setHSmallInput(e.target.value)}
                   />
