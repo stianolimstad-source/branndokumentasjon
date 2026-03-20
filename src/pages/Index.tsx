@@ -58,7 +58,7 @@ const Index = () => {
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16">
         <div className="max-w-3xl mx-auto text-center space-y-4">
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-balance">
             Ditt komplette branntekniske dokumentasjonsverktøy
           </h2>
           <p className="text-xl text-muted-foreground">
