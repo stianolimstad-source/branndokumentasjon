@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, MoveVertical, Box, Users, Zap, Shield } from "lucide-react";
+import { Flame, MoveVertical, Box, Users, Zap, Shield, Maximize } from "lucide-react";
 import { Link } from "react-router-dom";
 
 
@@ -39,6 +39,12 @@ const tools = [
     title: "Brannmotstand",
     description: "Beregn brannmotstandstid (EI) for vegger basert på oppbygning og materialer",
     href: "/verktoy/brannmotstand",
+  },
+  {
+    icon: Maximize,
+    title: "Brannareal",
+    description: "Finn brannareal over tid basert på brannbelastning og brannveksttid (HO-3/2000)",
+    href: "/verktoy/brannareal",
   },
 ];
 
