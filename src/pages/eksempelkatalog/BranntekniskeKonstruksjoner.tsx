@@ -48,22 +48,6 @@ const ei30Kategorier: Kategori[] = [
         referanseUrl: "https://norgips.no/prosjektering/vegger-med-st%C3%A5l/innervegger",
       },
       {
-        navn: "Norgips W112 — Dobbel gipsplatekledning",
-        kortbeskrivelse: "Dobbel gips på stålstender. Bedre lyd og brann enn W111.",
-        beskrivelse: "Ikke-bærende branncellevegg med stålstendere og dobbel gipsplatekledning. Gir bedre lyd- og brannegenskaper enn W111.",
-        oppbygging: [
-          "2× 13 mm Norgips Standard gipsplate (hver side)",
-          "Stålstender Norgips dB+ c/c 450 eller 600 mm",
-          "Mineralull i hulrom (anbefalt for lyd)",
-        ],
-        brannklasse: "EI 60",
-        lydklasse: "R'w 40–55 dB",
-        tykkelse: "ca. 95–120 mm",
-        leverandor: "Norgips",
-        referanse: "Norgips – Innervegger W112",
-        referanseUrl: "https://norgips.no/prosjektering/vegger-med-st%C3%A5l/innervegger",
-      },
-      {
         navn: "BB Stål Skilleveggsystem — SINTEF TG",
         kortbeskrivelse: "Tynnplateprofiler med SINTEF godkjenning. For kontorbygg.",
         beskrivelse: "Ikke-bærende skilleveggsystem basert på tynnplateprofiler med SINTEF Teknisk Godkjenning. Egnet for kontorbygg og næringsbygg.",
@@ -194,6 +178,31 @@ const ei30Kategorier: Kategori[] = [
   },
 ];
 
+const ei60Kategorier: Kategori[] = [
+  {
+    navn: "Innervegger",
+    icon: Home,
+    eksempler: [
+      {
+        navn: "Norgips W112 — Dobbel gipsplatekledning",
+        kortbeskrivelse: "Dobbel gips på stålstender. Oppnår EI 60.",
+        beskrivelse: "Ikke-bærende branncellevegg med stålstendere og dobbel gipsplatekledning på begge sider. Dokumentert EI 60 iht. Norgips systemdokumentasjon.",
+        oppbygging: [
+          "2× 13 mm Norgips Standard gipsplate (hver side)",
+          "Stålstender Norgips dB+ c/c 450 eller 600 mm",
+          "Mineralull i hulrom (anbefalt for lyd)",
+        ],
+        brannklasse: "EI 60",
+        lydklasse: "R'w 40–55 dB",
+        tykkelse: "ca. 95–120 mm",
+        leverandor: "Norgips",
+        referanse: "Norgips – Innervegger W112",
+        referanseUrl: "https://norgips.no/prosjektering/vegger-med-st%C3%A5l/innervegger",
+      },
+    ],
+  },
+];
+
 const KonstruksjonDetalj = ({ eks }: { eks: KonstruksjonEksempel }) => (
   <div className="space-y-3 pt-1">
     <p className="text-sm text-muted-foreground leading-relaxed">{eks.beskrivelse}</p>
@@ -248,60 +257,66 @@ const BranntekniskeKonstruksjoner = () => {
             </p>
           </div>
 
-          {/* EI 30 hovedakkordion */}
-          <Accordion type="single" collapsible defaultValue="ei30">
-            <AccordionItem value="ei30" className="border rounded-lg px-4">
-              <AccordionTrigger className="hover:no-underline">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-500/10">
-                    <Layers className="h-5 w-5 text-orange-500" />
-                  </div>
-                  <div className="text-left">
-                    <h3 className="text-xl font-semibold">EI 30 konstruksjoner</h3>
-                    <p className="text-sm text-muted-foreground">30 minutters brannmotstand — integritet (E) og isolasjon (I)</p>
-                  </div>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-6 pt-2">
-                  {ei30Kategorier.map((kategori) => (
-                    <div key={kategori.navn} className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                        <kategori.icon className="h-4 w-4" />
-                        {kategori.navn}
-                      </div>
-                      <Accordion type="single" collapsible>
-                        {kategori.eksempler.map((eks, idx) => (
-                          <AccordionItem key={idx} value={`${kategori.navn}-${idx}`} className="border rounded-lg px-4 mb-2">
-                            <AccordionTrigger className="hover:no-underline py-3">
-                              <div className="flex items-start justify-between gap-3 w-full pr-2">
-                                <div className="text-left">
-                                  <p className="text-sm font-medium">{eks.navn}</p>
-                                  <p className="text-xs text-muted-foreground mt-0.5">{eks.kortbeskrivelse}</p>
-                                </div>
-                                <div className="flex flex-wrap gap-1.5 shrink-0">
-                                  <Badge variant="secondary" className="whitespace-nowrap text-xs">{eks.brannklasse}</Badge>
-                                  {eks.lydklasse && <Badge variant="outline" className="whitespace-nowrap text-xs">{eks.lydklasse}</Badge>}
-                                </div>
-                              </div>
-                            </AccordionTrigger>
-                            <AccordionContent>
-                              <KonstruksjonDetalj eks={eks} />
-                            </AccordionContent>
-                          </AccordionItem>
-                        ))}
-                      </Accordion>
+          {/* Brannklasse-seksjoner */}
+          <Accordion type="multiple" defaultValue={["ei30"]}>
+            {[
+              { id: "ei30", tittel: "EI 30 konstruksjoner", beskrivelse: "30 minutters brannmotstand — integritet (E) og isolasjon (I)", kategorier: ei30Kategorier },
+              { id: "ei60", tittel: "EI 60 konstruksjoner", beskrivelse: "60 minutters brannmotstand — integritet (E) og isolasjon (I)", kategorier: ei60Kategorier },
+            ].map((seksjon) => (
+              <AccordionItem key={seksjon.id} value={seksjon.id} className="border rounded-lg px-4 mb-3">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-500/10">
+                      <Layers className="h-5 w-5 text-orange-500" />
                     </div>
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
+                    <div className="text-left">
+                      <h3 className="text-xl font-semibold">{seksjon.tittel}</h3>
+                      <p className="text-sm text-muted-foreground">{seksjon.beskrivelse}</p>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-6 pt-2">
+                    {seksjon.kategorier.map((kategori) => (
+                      <div key={kategori.navn} className="space-y-2">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                          <kategori.icon className="h-4 w-4" />
+                          {kategori.navn}
+                        </div>
+                        <Accordion type="single" collapsible>
+                          {kategori.eksempler.map((eks, idx) => (
+                            <AccordionItem key={idx} value={`${seksjon.id}-${kategori.navn}-${idx}`} className="border rounded-lg px-4 mb-2">
+                              <AccordionTrigger className="hover:no-underline py-3">
+                                <div className="flex items-start justify-between gap-3 w-full pr-2">
+                                  <div className="text-left">
+                                    <p className="text-sm font-medium">{eks.navn}</p>
+                                    <p className="text-xs text-muted-foreground mt-0.5">{eks.kortbeskrivelse}</p>
+                                  </div>
+                                  <div className="flex flex-wrap gap-1.5 shrink-0">
+                                    <Badge variant="secondary" className="whitespace-nowrap text-xs">{eks.brannklasse}</Badge>
+                                    {eks.lydklasse && <Badge variant="outline" className="whitespace-nowrap text-xs">{eks.lydklasse}</Badge>}
+                                  </div>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent>
+                                <KonstruksjonDetalj eks={eks} />
+                              </AccordionContent>
+                            </AccordionItem>
+                          ))}
+                        </Accordion>
+                      </div>
+                    ))}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
           </Accordion>
 
           <Card className="shadow-soft border-dashed">
             <CardContent className="py-6">
               <p className="text-sm text-muted-foreground text-center">
-                Flere brannklasser (EI 60, EI 90, EI 120, REI) legges til fortløpende.
+                Flere brannklasser (EI 90, EI 120, REI) legges til fortløpende.
+                Kun konstruksjoner med verifisert referanse til kilde blir inkludert.
               </p>
             </CardContent>
           </Card>
