@@ -2075,7 +2075,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2 align-top">Brannceller over flere plan</td>
                   <td className="border border-gray-400 p-2">
                     <div className="space-y-1">
-                      <div>Brannceller i risikoklasse 1, 2, 4 og 5 kan ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte, dersom følgende ytelser er oppfylt:</div>
+                      <div>{formData.regelverk === "BF85"
+                        ? "Brannceller kan ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte, dersom følgende krav er oppfylt:"
+                        : "Brannceller i risikoklasse 1, 2, 4 og 5 kan ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte, dersom følgende ytelser er oppfylt:"
+                      }</div>
                       {activeKrav.map((k: { id: string; text: string; num: number }) => (
                         <div key={k.id} className="pl-4">{k.num}. {k.text}</div>
                       ))}
