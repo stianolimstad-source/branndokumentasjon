@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, MoveVertical, Box, Users, Zap, Shield, Maximize } from "lucide-react";
+import { Flame, MoveVertical, Box, Users, Zap, Shield, Maximize, Wind } from "lucide-react";
 import { Link } from "react-router-dom";
 
 
@@ -45,6 +45,12 @@ const tools = [
     title: "Brannareal",
     description: "Finn brannareal over tid basert på brannbelastning og brannveksttid (HO-3/2000)",
     href: "/verktoy/brannareal",
+  },
+  {
+    icon: Wind,
+    title: "Røykventilasjon",
+    description: "Beregn nødvendig åpningsareal for termisk røykventilasjon (HO-3/2000)",
+    href: "/verktoy/roykventilasjon",
   },
 ];
 
