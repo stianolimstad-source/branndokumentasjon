@@ -240,7 +240,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p className="ml-4">3.3 {formData.regelverk === "BF85" ? "Avstand mellom bygninger" : "Tiltak mot brannspredning mellom byggverk"}</p>
               <p className="ml-4">3.4 {formData.regelverk === "BF85" ? "Brannteknisk oppdeling" : "Brannseksjoner"}</p>
               <p className="ml-4">3.5 Brannceller</p>
-              <p className="ml-4">3.6 Materialer og produkters egenskaper ved brann</p>
+              <p className="ml-4">3.6 Kledninger og overflater for vegger og tak</p>
               <p className="ml-4">3.7 Tekniske installasjoner</p>
               <p className="ml-4">3.8 Generelle krav om rømning og redning</p>
               <p className="ml-4">3.9 Tiltak for å påvirke rømnings- og redningstider</p>
