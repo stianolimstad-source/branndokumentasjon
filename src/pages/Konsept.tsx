@@ -5369,7 +5369,7 @@ const Konsept = () => {
                                         checked={formData.oljelagringBF85Krav.includes("bf85_olje_innendors")}
                                         onCheckedChange={(checked) => {
                                           const current = formData.oljelagringBF85Krav || [];
-                                          const innendorsItems = ["bf85_olje_innendors", "bf85_olje_innendors_20l", "bf85_olje_innendors_vegger", "bf85_olje_belysning", "bf85_olje_tank_avstand", "bf85_olje_tank_600l"];
+                                          const innendorsItems = ["bf85_olje_innendors"];
                                           setFormData({
                                             ...formData,
                                             oljelagringBF85Krav: checked
@@ -5382,32 +5382,17 @@ const Konsept = () => {
                                       <label htmlFor="bf85_olje_innendors_relevant" className="text-xs cursor-pointer font-medium">:344 Oljelager innendørs</label>
                                     </div>
                                     {formData.oljelagringBF85Krav.includes("bf85_olje_innendors") && (
-                                      <div className="pl-6 space-y-2">
-                                        {[
-                                          { id: "bf85_olje_innendors_20l", label: "Olje i mengde over 20 liter må bare lagres i tankrom, fyrrom eller garasje som tilfredsstiller kravene til branncellebegrensning." },
-                                          { id: "bf85_olje_innendors_vegger", label: "Vegger og golv skal være tette, og rommet skal være slik innredet at olje ved lekkasje fra tanken samles opp og ikke kan trenge inn i andre rom eller i ildsted eller røykkanal." },
-                                          { id: "bf85_olje_belysning", label: "Rommet skal ha elektrisk belysning." },
-                                          { id: "bf85_olje_tank_avstand", label: "Tank for fyringsolje må plasseres minst 1,0 m fra kjele, brenner eller røykkanal. For petroleumstank må tilsvarende avstand være 2,0 m." },
-                                          { id: "bf85_olje_tank_600l", label: "Tank på inntil 600 liter kan plasseres på brakett på vegg i A 60-konstruksjon. Tank av brennbart materiale skal plasseres i tankrom med branncellebegrensende bygningsdel minst A 60." },
-                                        ].map((opt) => (
-                                          <div key={opt.id} className="flex items-start gap-2">
-                                            <Checkbox
-                                              id={opt.id}
-                                              checked={formData.oljelagringBF85Krav.includes(opt.id)}
-                                              onCheckedChange={(checked) => {
-                                                const current = formData.oljelagringBF85Krav || [];
-                                                setFormData({
-                                                  ...formData,
-                                                  oljelagringBF85Krav: checked
-                                                    ? [...current, opt.id]
-                                                    : current.filter((k: string) => k !== opt.id),
-                                                });
-                                              }}
-                                              className="mt-0.5"
-                                            />
-                                            <label htmlFor={opt.id} className="text-xs cursor-pointer leading-relaxed">{opt.label}</label>
-                                          </div>
-                                        ))}
+                                      <div className="pl-6 space-y-3">
+                                        <div className="text-xs leading-relaxed text-muted-foreground bg-muted/50 p-3 rounded-md border">
+                                          <p className="font-medium text-foreground mb-1">:344 Oljelager innendørs</p>
+                                          <ul className="list-disc pl-4 space-y-1">
+                                            <li>Olje i mengde over 20 liter må bare lagres i tankrom, fyrrom eller garasje som tilfredsstiller kravene til branncellebegrensning.</li>
+                                            <li>Vegger og golv skal være tette, og rommet skal være slik innredet at olje ved lekkasje fra tanken samles opp og ikke kan trenge inn i andre rom eller i ildsted eller røykkanal.</li>
+                                            <li>Rommet skal ha elektrisk belysning.</li>
+                                            <li>Tank for fyringsolje må plasseres minst 1,0 m fra kjele, brenner eller røykkanal. For petroleumstank må tilsvarende avstand være 2,0 m.</li>
+                                            <li>Tank på inntil 600 liter kan plasseres på brakett på vegg i A 60-konstruksjon. Tank av brennbart materiale skal plasseres i tankrom med branncellebegrensende bygningsdel minst A 60.</li>
+                                          </ul>
+                                        </div>
 
                                         {/* :345 Mengdebegrensninger */}
                                         <div className="mt-2 pt-2 border-t space-y-2">

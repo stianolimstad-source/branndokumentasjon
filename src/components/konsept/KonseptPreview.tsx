@@ -2131,12 +2131,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 items.push(":343 Oljelager fri over jord – Tank skal plasseres slik i forhold til bygning og opplag at det ikke er fare for at tanken kan bli antent ved brann i disse.");
               }
               if (krav.includes("bf85_olje_innendors")) {
-                const innendorsLabels: Record<string, string> = {
-                  bf85_olje_innendors_20l: ":344 Olje i mengde over 20 liter må bare lagres i tankrom, fyrrom eller garasje som tilfredsstiller kravene til branncellebegrensning.",
-                  bf85_olje_innendors_vegger: ":344 Vegger og golv skal være tette, og rommet skal være slik innredet at olje ved lekkasje fra tanken samles opp og ikke kan trenge inn i andre rom eller i ildsted eller røykkanal.",
-                  bf85_olje_belysning: ":344 Rommet skal ha elektrisk belysning.",
-                  bf85_olje_tank_avstand: ":344 Tank for fyringsolje må plasseres minst 1,0 m fra kjele, brenner eller røykkanal. For petroleumstank må tilsvarende avstand være 2,0 m.",
-                  bf85_olje_tank_600l: ":344 Tank på inntil 600 liter kan plasseres på brakett på vegg i A 60-konstruksjon. Tank av brennbart materiale skal plasseres i tankrom med branncellebegrensende bygningsdel minst A 60.",
+                items.push(":344 Oljelager innendørs – Olje i mengde over 20 liter må bare lagres i tankrom, fyrrom eller garasje som tilfredsstiller kravene til branncellebegrensning. Vegger og golv skal være tette, og rommet skal være slik innredet at olje ved lekkasje fra tanken samles opp og ikke kan trenge inn i andre rom eller i ildsted eller røykkanal. Rommet skal ha elektrisk belysning. Tank for fyringsolje må plasseres minst 1,0 m fra kjele, brenner eller røykkanal. For petroleumstank må tilsvarende avstand være 2,0 m. Tank på inntil 600 liter kan plasseres på brakett på vegg i A 60-konstruksjon. Tank av brennbart materiale skal plasseres i tankrom med branncellebegrensende bygningsdel minst A 60.");
+                const mengdeLabels: Record<string, string> = {
                   bf85_olje_fyringsparafin_a: ":345a Fyringssolje – På tank som utgjør en del av typegodkjent ildsted: Høyst 20 liter.",
                   bf85_olje_fyringsparafin_b: ":345a Fyringssolje – På vegg-/tankovn med forgassingsbrenner plassert minst 0,6 m fra ildsted: Høyst 20 liter.",
                   bf85_olje_fyringsparafin_c: ":345a Fyringssolje – På tank i fyrrom eller garasje med grunnflate høyst 50 m² med branncellebegrensende bygningsdel minst B 30: Inntil 4 000 liter.",
@@ -2145,7 +2141,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   bf85_olje_fyringsparafin_f: ":345a Fyringssolje – På nedgravd tank: Ingen begrensning.",
                   bf85_olje_petroleum: ":345b Petroleum – Petroleum i mengde inntil 1 650 liter kan lagres som fyringssolje. Ved fellesanlegg for rekkehus, leiegårder o.l. kan brannstyret tillate inntil 1 000 liter petroleum pr. boligenhet, dog ikke over 6 000 liter.",
                 };
-                Object.entries(innendorsLabels).forEach(([id, label]) => {
+                Object.entries(mengdeLabels).forEach(([id, label]) => {
                   if (krav.includes(id)) items.push(label);
                 });
               }
