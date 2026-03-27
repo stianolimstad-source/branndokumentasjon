@@ -5301,42 +5301,148 @@ const Konsept = () => {
                                 <label htmlFor="oljelagringRelevant" className="text-xs cursor-pointer font-medium">Lagring av olje er relevant for bygget</label>
                               </div>
                               {formData.oljelagringRelevant && (
-                                <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
-                                  {[
-                                    { id: "bf85_olje_generelt", label: ":341 Generelt – Bestemmelsene gjelder lagring på tank tilknyttet oljeovn eller oljefyringsanlegg. Brenseltank skal tåle mekaniske påkjenninger og beskyttes mot korrosjon." },
-                                    { id: "bf85_olje_jord_fjell", label: ":342 Oljelager i jord eller i fjell – Nedgravd tank skal være dekket av et minst 0,5 m tykt lag av jord eller med betryggande betongplate." },
-                                    { id: "bf85_olje_fri_over_jord", label: ":343 Oljelager fri over jord – Tank skal plasseres slik i forhold til bygning og opplag at det ikke er fare for at tanken kan bli antent ved brann i disse." },
-                                    { id: "bf85_olje_innendors_20l", label: ":344 Oljelager innendørs – Olje i mengde over 20 liter må bare lagres i tankrom, fyrrom eller garasje som tilfredsstiller kravene til branncellebegrensning." },
-                                    { id: "bf85_olje_innendors_vegger", label: ":344 Vegger og golv skal være tette, og rommet skal være slik innredet at olje ved lekkasje fra tanken samles opp og ikke kan trenge inn i andre rom eller i ildsted eller røykkanal." },
-                                    { id: "bf85_olje_belysning", label: ":344 Rommet skal ha elektrisk belysning." },
-                                    { id: "bf85_olje_tank_avstand", label: ":344 Tank for fyringsolje må plasseres minst 1,0 m fra kjele, brenner eller røykkanal. For petroleumstank må tilsvarende avstand være 2,0 m." },
-                                    { id: "bf85_olje_tank_600l", label: ":344 Tank på inntil 600 liter kan plasseres på brakett på vegg i A 60-konstruksjon. Tank av brennbart materiale skal plasseres i tankrom med branncellebegrensende bygningsdel minst A 60." },
-                                    { id: "bf85_olje_fyringsparafin_a", label: ":345a Fyringssolje – På tank som utgjør en del av typegodkjent ildsted: Høyst 20 liter." },
-                                    { id: "bf85_olje_fyringsparafin_b", label: ":345a Fyringssolje – På vegg-/tankovn med forgassingsbrenner plassert minst 0,6 m fra ildsted: Høyst 20 liter." },
-                                    { id: "bf85_olje_fyringsparafin_c", label: ":345a Fyringssolje – På tank i fyrrom eller garasje med grunnflate høyst 50 m² med branncellebegrensende bygningsdel minst B 30: Inntil 4 000 liter." },
-                                    { id: "bf85_olje_fyringsparafin_d", label: ":345a Fyringssolje – På tank i tankrom eller i fyrrom med branncellebegrensende bygningsdel h.h.v minst B 30 og A 60: Inntil 10 000 liter." },
-                                    { id: "bf85_olje_fyringsparafin_e", label: ":345a Fyringssolje – På tank i tankrom med branncellebegrensende bygningsdel minst A 60: Over 10 000 liter (avhengig av brannstyrets godkjenning)." },
-                                    { id: "bf85_olje_fyringsparafin_f", label: ":345a Fyringssolje – På nedgravd tank: Ingen begrensning." },
-                                    { id: "bf85_olje_petroleum", label: ":345b Petroleum – Petroleum i mengde inntil 1 650 liter kan lagres som fyringssolje. Ved fellesanlegg for rekkehus, leiegårder o.l. kan brannstyret tillate inntil 1 000 liter petroleum pr. boligenhet, dog ikke over 6 000 liter." },
-                                  ].map((opt) => (
-                                    <div key={opt.id} className="flex items-start gap-2">
+                                <div className="pl-4 space-y-3 border-l-2 border-primary/20 ml-2">
+                                  {/* :341 Generelt – alltid synlig */}
+                                  <div className="p-2 rounded bg-muted/50 border">
+                                    <p className="text-xs leading-relaxed font-medium">:341 Generelt – Bestemmelsene gjelder lagring på tank tilknyttet oljeovn eller oljefyringsanlegg. Brenseltank skal tåle mekaniske påkjenninger og beskyttes mot korrosjon.</p>
+                                  </div>
+
+                                  {/* :342 Oljelager i jord eller fjell */}
+                                  <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
                                       <Checkbox
-                                        id={opt.id}
-                                        checked={formData.oljelagringBF85Krav.includes(opt.id)}
+                                        id="bf85_olje_jord_fjell_relevant"
+                                        checked={formData.oljelagringBF85Krav.includes("bf85_olje_jord_fjell")}
                                         onCheckedChange={(checked) => {
                                           const current = formData.oljelagringBF85Krav || [];
+                                          const jordItems = ["bf85_olje_jord_fjell"];
                                           setFormData({
                                             ...formData,
                                             oljelagringBF85Krav: checked
-                                              ? [...current, opt.id]
-                                              : current.filter((k: string) => k !== opt.id),
+                                              ? [...current, ...jordItems.filter(i => !current.includes(i))]
+                                              : current.filter((k: string) => !jordItems.includes(k)),
                                           });
                                         }}
                                         className="mt-0.5"
                                       />
-                                      <label htmlFor={opt.id} className="text-xs cursor-pointer leading-relaxed">{opt.label}</label>
+                                      <label htmlFor="bf85_olje_jord_fjell_relevant" className="text-xs cursor-pointer font-medium">:342 Oljelager i jord eller i fjell</label>
                                     </div>
-                                  ))}
+                                    {formData.oljelagringBF85Krav.includes("bf85_olje_jord_fjell") && (
+                                      <div className="pl-6 text-xs leading-relaxed text-muted-foreground">
+                                        Nedgravd tank skal være dekket av et minst 0,5 m tykt lag av jord eller med betryggande betongplate.
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* :343 Oljelager fri over jord */}
+                                  <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                      <Checkbox
+                                        id="bf85_olje_fri_over_jord_relevant"
+                                        checked={formData.oljelagringBF85Krav.includes("bf85_olje_fri_over_jord")}
+                                        onCheckedChange={(checked) => {
+                                          const current = formData.oljelagringBF85Krav || [];
+                                          const overJordItems = ["bf85_olje_fri_over_jord"];
+                                          setFormData({
+                                            ...formData,
+                                            oljelagringBF85Krav: checked
+                                              ? [...current, ...overJordItems.filter(i => !current.includes(i))]
+                                              : current.filter((k: string) => !overJordItems.includes(k)),
+                                          });
+                                        }}
+                                        className="mt-0.5"
+                                      />
+                                      <label htmlFor="bf85_olje_fri_over_jord_relevant" className="text-xs cursor-pointer font-medium">:343 Oljelager fri over jord</label>
+                                    </div>
+                                    {formData.oljelagringBF85Krav.includes("bf85_olje_fri_over_jord") && (
+                                      <div className="pl-6 text-xs leading-relaxed text-muted-foreground">
+                                        Tank skal plasseres slik i forhold til bygning og opplag at det ikke er fare for at tanken kan bli antent ved brann i disse.
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* :344 Oljelager innendørs */}
+                                  <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                      <Checkbox
+                                        id="bf85_olje_innendors_relevant"
+                                        checked={formData.oljelagringBF85Krav.includes("bf85_olje_innendors")}
+                                        onCheckedChange={(checked) => {
+                                          const current = formData.oljelagringBF85Krav || [];
+                                          const innendorsItems = ["bf85_olje_innendors", "bf85_olje_innendors_20l", "bf85_olje_innendors_vegger", "bf85_olje_belysning", "bf85_olje_tank_avstand", "bf85_olje_tank_600l"];
+                                          setFormData({
+                                            ...formData,
+                                            oljelagringBF85Krav: checked
+                                              ? [...current, ...innendorsItems.filter(i => !current.includes(i))]
+                                              : current.filter((k: string) => !innendorsItems.includes(k)),
+                                          });
+                                        }}
+                                        className="mt-0.5"
+                                      />
+                                      <label htmlFor="bf85_olje_innendors_relevant" className="text-xs cursor-pointer font-medium">:344 Oljelager innendørs</label>
+                                    </div>
+                                    {formData.oljelagringBF85Krav.includes("bf85_olje_innendors") && (
+                                      <div className="pl-6 space-y-2">
+                                        {[
+                                          { id: "bf85_olje_innendors_20l", label: "Olje i mengde over 20 liter må bare lagres i tankrom, fyrrom eller garasje som tilfredsstiller kravene til branncellebegrensning." },
+                                          { id: "bf85_olje_innendors_vegger", label: "Vegger og golv skal være tette, og rommet skal være slik innredet at olje ved lekkasje fra tanken samles opp og ikke kan trenge inn i andre rom eller i ildsted eller røykkanal." },
+                                          { id: "bf85_olje_belysning", label: "Rommet skal ha elektrisk belysning." },
+                                          { id: "bf85_olje_tank_avstand", label: "Tank for fyringsolje må plasseres minst 1,0 m fra kjele, brenner eller røykkanal. For petroleumstank må tilsvarende avstand være 2,0 m." },
+                                          { id: "bf85_olje_tank_600l", label: "Tank på inntil 600 liter kan plasseres på brakett på vegg i A 60-konstruksjon. Tank av brennbart materiale skal plasseres i tankrom med branncellebegrensende bygningsdel minst A 60." },
+                                        ].map((opt) => (
+                                          <div key={opt.id} className="flex items-start gap-2">
+                                            <Checkbox
+                                              id={opt.id}
+                                              checked={formData.oljelagringBF85Krav.includes(opt.id)}
+                                              onCheckedChange={(checked) => {
+                                                const current = formData.oljelagringBF85Krav || [];
+                                                setFormData({
+                                                  ...formData,
+                                                  oljelagringBF85Krav: checked
+                                                    ? [...current, opt.id]
+                                                    : current.filter((k: string) => k !== opt.id),
+                                                });
+                                              }}
+                                              className="mt-0.5"
+                                            />
+                                            <label htmlFor={opt.id} className="text-xs cursor-pointer leading-relaxed">{opt.label}</label>
+                                          </div>
+                                        ))}
+
+                                        {/* :345 Mengdebegrensninger */}
+                                        <div className="mt-2 pt-2 border-t space-y-2">
+                                          <Label className="text-xs font-medium">:345 Mengdebegrensninger</Label>
+                                          {[
+                                            { id: "bf85_olje_fyringsparafin_a", label: ":345a Fyringssolje – På tank som utgjør en del av typegodkjent ildsted: Høyst 20 liter." },
+                                            { id: "bf85_olje_fyringsparafin_b", label: ":345a Fyringssolje – På vegg-/tankovn med forgassingsbrenner plassert minst 0,6 m fra ildsted: Høyst 20 liter." },
+                                            { id: "bf85_olje_fyringsparafin_c", label: ":345a Fyringssolje – På tank i fyrrom eller garasje med grunnflate høyst 50 m² med branncellebegrensende bygningsdel minst B 30: Inntil 4 000 liter." },
+                                            { id: "bf85_olje_fyringsparafin_d", label: ":345a Fyringssolje – På tank i tankrom eller i fyrrom med branncellebegrensende bygningsdel h.h.v minst B 30 og A 60: Inntil 10 000 liter." },
+                                            { id: "bf85_olje_fyringsparafin_e", label: ":345a Fyringssolje – På tank i tankrom med branncellebegrensende bygningsdel minst A 60: Over 10 000 liter (avhengig av brannstyrets godkjenning)." },
+                                            { id: "bf85_olje_fyringsparafin_f", label: ":345a Fyringssolje – På nedgravd tank: Ingen begrensning." },
+                                            { id: "bf85_olje_petroleum", label: ":345b Petroleum – Petroleum i mengde inntil 1 650 liter kan lagres som fyringssolje. Ved fellesanlegg for rekkehus, leiegårder o.l. kan brannstyret tillate inntil 1 000 liter petroleum pr. boligenhet, dog ikke over 6 000 liter." },
+                                          ].map((opt) => (
+                                            <div key={opt.id} className="flex items-start gap-2">
+                                              <Checkbox
+                                                id={opt.id}
+                                                checked={formData.oljelagringBF85Krav.includes(opt.id)}
+                                                onCheckedChange={(checked) => {
+                                                  const current = formData.oljelagringBF85Krav || [];
+                                                  setFormData({
+                                                    ...formData,
+                                                    oljelagringBF85Krav: checked
+                                                      ? [...current, opt.id]
+                                                      : current.filter((k: string) => k !== opt.id),
+                                                  });
+                                                }}
+                                                className="mt-0.5"
+                                              />
+                                              <label htmlFor={opt.id} className="text-xs cursor-pointer leading-relaxed">{opt.label}</label>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
                               )}
                             </>
