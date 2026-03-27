@@ -2754,7 +2754,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {formData.romningSikkerhetKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
-                <td className="border border-gray-400 p-2 italic">{formData.romningSikkerhetKommentar}</td>
+                <td className="border border-gray-400 p-2 italic" colSpan={2}>{formData.romningSikkerhetKommentar}</td>
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
             )}
