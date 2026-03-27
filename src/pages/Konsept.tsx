@@ -366,6 +366,7 @@ const getTiltaksklasse = (brannklasse: string, risikoklasse: string, prosjekteri
 
 
 const Konsept = () => {
+  const location = useLocation();
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const canDownload = useCanDownload();
@@ -376,8 +377,9 @@ const Konsept = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [generatedConcept, setGeneratedConcept] = useState<string | null>(null);
+  const isTilstandRoute = location.pathname === '/tilstandsvurdering';
   const [documentType, setDocumentType] = useState<"brannkonsept" | "tilstandsvurdering">(
-    searchParams.get('type') === 'tilstandsvurdering' ? 'tilstandsvurdering' : 'brannkonsept'
+    isTilstandRoute || searchParams.get('type') === 'tilstandsvurdering' ? 'tilstandsvurdering' : 'brannkonsept'
   );
   
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
