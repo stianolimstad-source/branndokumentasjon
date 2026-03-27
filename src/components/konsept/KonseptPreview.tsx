@@ -2227,12 +2227,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 {formData.bygningsbrannklasse && (() => {
                   const bkl = parseInt(formData.bygningsbrannklasse, 10);
                   const krav = {
-                    innvOverflate: bkl === 1 ? "In1" : "In2",
-                    utvOverflate: bkl <= 2 ? "Ut1" : "Ut2",
-                    innvKledning: bkl <= 2 ? "K1" : "K2",
-                    utvKledning: bkl <= 2 ? "K1" : "K2",
-                    saerInnvOverflate: "In1",
-                    saerInnvKledning: bkl <= 2 ? "K1-A" : "K1",
+                    innvOverflate: bkl === 1 ? "In1 (B-s1,d0)" : "In2 (D-s2,d0)",
+                    utvOverflate: bkl <= 2 ? "Ut1 (B-s3,d0)" : "Ut2 (D-s3,d0)",
+                    innvKledning: bkl <= 2 ? "K1 (K₂10 B-s1,d0)" : "K2 (K₂10 D-s2,d0)",
+                    utvKledning: bkl <= 2 ? "K1 (K₂10 B-s1,d0)" : "K2 (K₂10 D-s2,d0)",
+                    saerInnvOverflate: "In1 (B-s1,d0)",
+                    saerInnvKledning: bkl <= 2 ? "K1-A (K₂10 A2-s1,d0)" : "K1 (K₂10 B-s1,d0)",
                   };
                   return (
                     <>
