@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
-import { bf85BygningstyperListe, getBygningsbrannklasse, BF85Bygningstype, getBaereevneTekstBF85, bf85BrannveggTabellSkole, getBF85BrannveggKravSkole } from "@/lib/bf85-constants";
+import { bf85BygningstyperListe, getBygningsbrannklasse, BF85Bygningstype, getBaereevneTekstBF85, bf85BrannveggTabellSkole, getBF85BrannveggKravSkole, getBF85BrannveggKravKap34, BF85Tabell3423Tiltak } from "@/lib/bf85-constants";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -524,6 +524,8 @@ const Konsept = () => {
     seksjoneringsvegBrannenergi: "", // "under400", "400-600", "600-800" - brukes for brannmotstand (VTEK tabell 2)
     brannseksjonTiltak: "", // "normalt", "brannalarm", "sprinkler", "roykventilasjon"
     brukTEK17Seksjonering: false, // BF85: bruk TEK17-krav ved >400 MJ/m²
+    bf85_34_brannbelastning: "", // For Tabell 34:23
+    bf85_34_tiltak: "ingen" as BF85Tabell3423Tiltak, // For Tabell 34:23
     innvendigHjorne: "nei" as "ja" | "nei",
     innvendigHjorneAlternativ: "alt1" as "alt1" | "alt2", // alt1 = 8m, alt2 = 5m+5m
     seksjonDorRelevant: false,
