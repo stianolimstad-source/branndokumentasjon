@@ -2728,11 +2728,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <tbody>
             {/* 3.8 §11-11 Generelle krav om rømning */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.8 &nbsp;&nbsp; {isBF85 ? <>Rømningsvei – generelle krav (Kap. 30:7) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-11 Generelle krav om rømning og redning)</span></> : "§11-11 Generelle krav om rømning og redning"}</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={4}>{sp}.8 &nbsp;&nbsp; {isBF85 ? <>Rømningsvei – generelle krav (Kap. 30:7) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-11 Generelle krav om rømning og redning)</span></> : "§11-11 Generelle krav om rømning og redning"}</td>
             </tr>
             <tr className="bg-gray-100">
-              <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
-              <th className="border border-gray-400 p-2 text-left">Løsning</th>
+              <th className="border border-gray-400 p-2 text-left" style={{width: '20%'}}>Forhold</th>
+              <th className="border border-gray-400 p-2 text-left" style={{width: '35%'}}>Løsning</th>
+              <th className="border border-gray-400 p-2 text-left" style={{width: '35%'}}>Prosjektbeskrivelse</th>
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
             <tr>
@@ -2747,15 +2748,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <li>Skilt, symbol og tekst som viser rømningsveier og sikkerhetsutstyr skal kunne leses under rømning.</li>
                 </ul>
               </td>
+              <td className="border border-gray-400 p-2 align-top italic text-sm">{formData.romningSikkerhet || "—"}</td>
               <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
             </tr>
-            {formData.romningSikkerhet && (
-              <tr>
-                <td className="border border-gray-400 p-2 align-top">Generell beskrivelse av evakuering</td>
-                <td className="border border-gray-400 p-2 italic text-sm">{formData.romningSikkerhet}</td>
-                <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
-              </tr>
-            )}
             {formData.romningSikkerhetKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
