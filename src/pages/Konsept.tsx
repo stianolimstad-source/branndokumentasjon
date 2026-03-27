@@ -5951,6 +5951,7 @@ const Konsept = () => {
                         </div>
                       )}
                       
+                      {formData.regelverk !== "BF85" && (<>
                       {/* Automatiske krav basert på RK */}
                       {(formData.risikoklasse === "RK4" || formData.bygningsdeler.some(b => b.risikoklasse === "RK4")) && (
                         <div className="p-3 bg-blue-50 border border-blue-200 rounded text-sm">
