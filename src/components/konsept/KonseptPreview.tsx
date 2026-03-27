@@ -2750,13 +2750,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
             </tr>
             {formData.romningSikkerhet && (
-              <tr className="bg-blue-50">
-                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>Beskrivelse av evakueringen</td>
-              </tr>
-            )}
-            {formData.romningSikkerhet && (
               <tr>
-                <td className="border border-gray-400 p-2 italic text-sm" colSpan={3} style={{whiteSpace: 'pre-wrap'}}>{formData.romningSikkerhet}</td>
+                <td className="border border-gray-400 p-2 align-top font-semibold">Beskrivelse av evakueringen</td>
+                <td className="border border-gray-400 p-2 italic text-sm" style={{whiteSpace: 'pre-wrap'}}>{formData.romningSikkerhet}</td>
+                <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
               </tr>
             )}
             {formData.romningSikkerhetKommentar && (
