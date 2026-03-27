@@ -2,7 +2,7 @@ import React from "react";
 import { branncelleTyperListe, getBrannklasse } from "@/lib/fire-concept-constants";
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
-import { getBaereevneTekstBF85 } from "@/lib/bf85-constants";
+import { getBaereevneTekstBF85, getBF85BrannveggKravKap34 } from "@/lib/bf85-constants";
 
 
 interface TilstandBilde {
@@ -1140,7 +1140,31 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <td className="border border-gray-400 p-2 align-top">RIBr</td>
                   </tr>
                 )}
-                {/* BF85 Brannvegg-krav */}
+                {/* BF85 Tabell 34:23 – Industri/Kontor/Garasje/Lager */}
+                {["Industri", "Kontor", "Garasje", "Lager"].includes(formData.bygningstype) && formData.bf85_34_brannbelastning && (() => {
+                  const areal = parseFloat(formData.areal) || 0;
+                  const brannbelastning = parseFloat(formData.bf85_34_brannbelastning) || 0;
+                  const tiltak = formData.bf85_34_tiltak || "ingen";
+                  const krav = brannbelastning > 0 ? getBF85BrannveggKravKap34(areal, brannbelastning, tiltak) : null;
+                  const tiltakTekst = tiltak === "sprinkler" ? "med sprinkleranlegg" : tiltak === "brannventilasjon" ? "med brannventilasjon" : "uten brannventilasjon og sprinkleranlegg";
+                  return krav ? (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Tabell 34:23</td>
+                      <td className="border border-gray-400 p-2">
+                        <p>Gjennomsnittlig spesifikk brannbelastning: <strong>{formData.bf85_34_brannbelastning} MJ/m²</strong> – {tiltakTekst}.</p>
+                        <p className="mt-1">
+                          {krav.ingenKrav
+                            ? "Ingen krav til oppdeling med brannvegg."
+                            : krav.krevBrannvegg
+                              ? `Bruttoareal pr. etasje (${areal} m²) overstiger maks tillatt areal (${krav.maksAreal} m²). Oppdeling med brannvegg er påkrevd.`
+                              : `Bruttoareal pr. etasje (${areal} m²) er innenfor maks tillatt areal (${krav.maksAreal} m²). Oppdeling med brannvegg er ikke påkrevd.`
+                          }
+                        </p>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                    </tr>
+                  ) : null;
+                })()}
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Brannvegg (:62)</td>
                   <td className="border border-gray-400 p-2">
