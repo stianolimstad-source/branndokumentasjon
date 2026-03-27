@@ -435,6 +435,73 @@ export const bf85BrannveggTabellSkole: BF85BrannveggKravSkole[] = [
 ];
 
 /**
+ * BF85 Tabell 34:23 – Største bruttoareal uten oppdeling med brannvegg.
+ * Gjelder for Industri, Kontor, Garasje og Lager (Kap. 34).
+ */
+export interface BF85Tabell3423Row {
+  brannbelastningLabel: string;
+  brannbelastningMin: number;
+  brannbelastningMax: number;
+  utenTiltak: number;
+  medBrannventilasjon: number | null; // null = "Ingen krav til oppdeling"
+  medSprinkler: number | null; // null = "Ingen krav til oppdeling"
+}
+
+export const bf85Tabell3423: BF85Tabell3423Row[] = [
+  { brannbelastningLabel: "under 50", brannbelastningMin: 0, brannbelastningMax: 50, utenTiltak: 1800, medBrannventilasjon: null, medSprinkler: null },
+  { brannbelastningLabel: "50 – 200", brannbelastningMin: 50, brannbelastningMax: 200, utenTiltak: 1200, medBrannventilasjon: null, medSprinkler: null },
+  { brannbelastningLabel: "200 – 400", brannbelastningMin: 200, brannbelastningMax: 400, utenTiltak: 1200, medBrannventilasjon: 1800, medSprinkler: null },
+  { brannbelastningLabel: "over 400", brannbelastningMin: 400, brannbelastningMax: Infinity, utenTiltak: 800, medBrannventilasjon: 1200, medSprinkler: 5400 },
+];
+
+export type BF85Tabell3423Tiltak = "ingen" | "brannventilasjon" | "sprinkler";
+
+export const getBF85BrannveggKravKap34 = (
+  arealPerEtasje: number,
+  brannbelastning: number,
+  tiltak: BF85Tabell3423Tiltak = "ingen",
+): { krevBrannvegg: boolean; maksAreal: number | null; ingenKrav: boolean; merknad: string } | null => {
+  if (arealPerEtasje <= 0 || brannbelastning < 0) return null;
+
+  const row = bf85Tabell3423.find(
+    (r) => brannbelastning >= r.brannbelastningMin && brannbelastning < r.brannbelastningMax
+  );
+  // handle exact 50, 200, 400 edge: use the higher range
+  const finalRow = row || bf85Tabell3423[bf85Tabell3423.length - 1];
+
+  let maksAreal: number | null;
+  let ingenKrav = false;
+
+  if (tiltak === "sprinkler") {
+    maksAreal = finalRow.medSprinkler;
+  } else if (tiltak === "brannventilasjon") {
+    maksAreal = finalRow.medBrannventilasjon;
+  } else {
+    maksAreal = finalRow.utenTiltak;
+  }
+
+  if (maksAreal === null) {
+    ingenKrav = true;
+    return {
+      krevBrannvegg: false,
+      maksAreal: null,
+      ingenKrav: true,
+      merknad: `Ved brannbelastning ${finalRow.brannbelastningLabel} MJ/m² ${tiltak !== "ingen" ? `med ${tiltak === "sprinkler" ? "sprinkleranlegg" : "brannventilasjon"}` : ""} er det ingen krav til oppdeling med brannvegg.`,
+    };
+  }
+
+  const krevBrannvegg = arealPerEtasje > maksAreal;
+  return {
+    krevBrannvegg,
+    maksAreal,
+    ingenKrav: false,
+    merknad: krevBrannvegg
+      ? `Bruttoareal pr. etasje (${arealPerEtasje} m²) overstiger maks tillatt areal (${maksAreal} m²) for brannbelastning ${finalRow.brannbelastningLabel} MJ/m²${tiltak !== "ingen" ? ` med ${tiltak === "sprinkler" ? "sprinkleranlegg" : "brannventilasjon"}` : ""}. Oppdeling med brannvegg er påkrevd.`
+      : `Bruttoareal pr. etasje (${arealPerEtasje} m²) er innenfor maks tillatt areal (${maksAreal} m²) for brannbelastning ${finalRow.brannbelastningLabel} MJ/m²${tiltak !== "ingen" ? ` med ${tiltak === "sprinkler" ? "sprinkleranlegg" : "brannventilasjon"}` : ""}. Oppdeling med brannvegg er ikke påkrevd.`,
+  };
+};
+
+/**
  * Evaluate if brannvegg is required for a school based on BF85 Tabell 32:12.
  * Sprinkler, brannalarm, and røykluker do NOT affect the area limits in BF85.
  */
