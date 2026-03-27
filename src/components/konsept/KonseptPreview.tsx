@@ -62,12 +62,12 @@ const TilstandBlock = ({ data, sectionLabel }: { data: TilstandData; sectionLabe
   );
 };
 
-const TilstandTableRow = ({ data, sectionLabel }: { data: TilstandData; sectionLabel: string }) => {
+const TilstandTableRow = ({ data, sectionLabel, colSpan = 3 }: { data: TilstandData; sectionLabel: string; colSpan?: number }) => {
   if (!data || (!data.grad && !data.beskrivelse && (!data.bilder || data.bilder.length === 0))) return null;
   const gradLabel = { tg0: "TG 0", tg1: "TG 1", tg2: "TG 2", tg3: "TG 3", tgiu: "TG IU" }[data.grad] || "";
   return (
     <tr>
-      <td className="border border-gray-400 p-2" colSpan={3} style={{ background: "#FEF3C7" }}>
+      <td className="border border-gray-400 p-2" colSpan={colSpan} style={{ background: "#FEF3C7" }}>
         <p style={{ fontSize: 10, fontWeight: 700, color: "#92400E", textTransform: "uppercase", marginBottom: 4 }}>
           TILSTANDSVURDERING – {sectionLabel}
         </p>
