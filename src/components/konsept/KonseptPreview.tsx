@@ -2728,12 +2728,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <tbody>
             {/* 3.8 §11-11 Generelle krav om rømning */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={4}>{sp}.8 &nbsp;&nbsp; {isBF85 ? <>Rømningsvei – generelle krav (Kap. 30:7) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-11 Generelle krav om rømning og redning)</span></> : "§11-11 Generelle krav om rømning og redning"}</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.8 &nbsp;&nbsp; {isBF85 ? <>Rømningsvei – generelle krav (Kap. 30:7) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-11 Generelle krav om rømning og redning)</span></> : "§11-11 Generelle krav om rømning og redning"}</td>
             </tr>
             <tr className="bg-gray-100">
-              <th className="border border-gray-400 p-2 text-left" style={{width: '20%'}}>Forhold</th>
-              <th className="border border-gray-400 p-2 text-left" style={{width: '35%'}}>Løsning</th>
-              <th className="border border-gray-400 p-2 text-left" style={{width: '35%'}}>Prosjektbeskrivelse</th>
+              <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+              <th className="border border-gray-400 p-2 text-left">Løsning</th>
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
             <tr>
@@ -2748,18 +2747,27 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <li>Skilt, symbol og tekst som viser rømningsveier og sikkerhetsutstyr skal kunne leses under rømning.</li>
                 </ul>
               </td>
-              <td className="border border-gray-400 p-2 align-top italic text-sm">{formData.romningSikkerhet || "—"}</td>
               <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
             </tr>
+            {formData.romningSikkerhet && (
+              <tr className="bg-blue-50">
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>Beskrivelse av evakueringen</td>
+              </tr>
+            )}
+            {formData.romningSikkerhet && (
+              <tr>
+                <td className="border border-gray-400 p-2 italic text-sm" colSpan={3} style={{whiteSpace: 'pre-wrap'}}>{formData.romningSikkerhet}</td>
+              </tr>
+            )}
             {formData.romningSikkerhetKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
-                <td className="border border-gray-400 p-2 italic" colSpan={2}>{formData.romningSikkerhetKommentar}</td>
+                <td className="border border-gray-400 p-2 italic">{formData.romningSikkerhetKommentar}</td>
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
             )}
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_8"] && (
-              <TilstandTableRow data={formData.tilstandsvurderinger["3_8"]} sectionLabel="3.8 Rømning og redning" colSpan={4} />
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_8"]} sectionLabel="3.8 Rømning og redning" />
             )}
 
             {/* 3.9 §11-12 Tilrettelegging for rømning */}
