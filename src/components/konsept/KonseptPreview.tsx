@@ -2283,60 +2283,68 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   );
                 })()}
                 {/* BF85 :5 Vegger, tak og nedforet himling */}
-                <tr className="bg-gray-100">
-                  <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Vegger, tak og nedforet himling (:5)</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">:511 Generelt</td>
-                  <td className="border border-gray-400 p-2">
-                    <p className="text-sm">Bærende eller branncellebegrensende vegg skal ha brannmotstand etter Tabell 30:41. For vegger med brennbar isolasjon gjelder dessuten 30:515. For yttervegger i brannceller som kan utsettes for strålevarme gjennom vindu, dør eller annen åpning i annen branncelle i samme bygning, gjelder bestemmelsene i 30:322 tilsvarende.</p>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">:512 Ikke-bærende ytterveggers brannmotstand</td>
-                  <td className="border border-gray-400 p-2">
-                    <p className="text-sm">Ikke-bærende yttervegger unntatt vindu og dør, skal ha brannmotstand som angitt i Tabell 30:512 nedenfor.</p>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
-                </tr>
-                {(() => {
+                {(formData.bf85_511 || formData.bf85_512 || formData.bf85_513 || formData.bf85_514 || formData.bf85_515) && (
+                  <tr className="bg-gray-100">
+                    <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Vegger, tak og nedforet himling (:5)</td>
+                  </tr>
+                )}
+                {formData.bf85_511 && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">:511 Generelt</td>
+                    <td className="border border-gray-400 p-2">
+                      <p className="text-sm">Bærende eller branncellebegrensende vegg skal ha brannmotstand etter Tabell 30:41. For vegger med brennbar isolasjon gjelder dessuten 30:515. For yttervegger i brannceller som kan utsettes for strålevarme gjennom vindu, dør eller annen åpning i annen branncelle i samme bygning, gjelder bestemmelsene i 30:322 tilsvarende.</p>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                )}
+                {formData.bf85_512 && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">:512 Ikke-bærende ytterveggers brannmotstand</td>
+                    <td className="border border-gray-400 p-2">
+                      <p className="text-sm">Ikke-bærende yttervegger unntatt vindu og dør, skal ha brannmotstand som angitt i Tabell 30:512 nedenfor.</p>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                )}
+                {formData.bf85_513 && (() => {
                   const bkl = parseInt(formData.bygningsbrannklasse, 10);
                   return (
-                    <>
-                      <tr>
-                        <td className="border border-gray-400 p-2 align-top">:513 Yttervegger i B-konstruksjon</td>
-                        <td className="border border-gray-400 p-2">
-                          <p className="text-sm mb-1">I bygninger i bygningsbrannklasse 1 og 2 gjelder følgende:</p>
-                          <p className="text-sm mb-1">Isolasjon skal være ubrennbar. Brennbare materialer skal være beskyttet utvendig og innvendig med kledning K1.</p>
-                          {bkl <= 2 && (
-                            <>
-                              <p className="text-sm mb-1">I bygning i inntil 2 etasjer kan det brukes kledning K2 med overflate Ut2.</p>
-                              <p className="text-sm mb-1">Bygning i inntil 4 etasjer kan ha fasademateriale K2/Ut2. Slik kledning må ikke være sammenhengende mere enn 20 m i horisontalretningen. Flere slike felt må ha en innbyrdes avstand på minst 10 m med K1/Ut1. Felt mellom direkte overliggende vinduer må likevel ha kledning K1/Ut1.</p>
-                            </>
-                          )}
-                          <p className="text-sm">Hvor utvendig kledning er utlektet, skal det utenpå bindingsverk, isolasjon og eventuell vindsperre være kledning K1.</p>
-                        </td>
-                        <td className="border border-gray-400 p-2 align-top">ARK</td>
-                      </tr>
-                      <tr>
-                        <td className="border border-gray-400 p-2 align-top">:514 Fasademateriale på vegg i A-konstruksjon</td>
-                        <td className="border border-gray-400 p-2">
-                          <p className="text-sm mb-1">I bygning i inntil 2 etasjer kan det brukes fasademateriale K2/Ut2.</p>
-                          <p className="text-sm mb-1">I bygning i 3 til 8 etasjer og der brannvesenet kan komme til hele fasaden for slokking kan fasademateriale være K2/Ut2. Slik kledning må ikke være sammenhengende mere enn 20 m i horisontalretningen. Flere slike felt må ha en innbyrdes avstand på minst 10 m med K1/Ut1. I bygning med flere enn 4 etasjer må kledning dessuten ved hver etasjeskiller være brutt av ubrennbar flammesperre som stikker minst 1 m ut fra fasaden.</p>
-                        </td>
-                        <td className="border border-gray-400 p-2 align-top">ARK</td>
-                      </tr>
-                      <tr>
-                        <td className="border border-gray-400 p-2 align-top">:515 Brennbar isolasjon</td>
-                        <td className="border border-gray-400 p-2">
-                          <p className="text-sm">Brennbar isolasjon i vegger og dekker i bygning inntil 2 etasjer i bygningsbrannklasse 3 og 4 skal ha kledning på begge sider, med mindre isolasjonen pga sine egenskaper eller sin bruk ikke bidrar til spredning av brann.</p>
-                        </td>
-                        <td className="border border-gray-400 p-2 align-top">ARK</td>
-                      </tr>
-                    </>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">:513 Yttervegger i B-konstruksjon</td>
+                      <td className="border border-gray-400 p-2">
+                        <p className="text-sm mb-1">I bygninger i bygningsbrannklasse 1 og 2 gjelder følgende:</p>
+                        <p className="text-sm mb-1">Isolasjon skal være ubrennbar. Brennbare materialer skal være beskyttet utvendig og innvendig med kledning K1.</p>
+                        {bkl <= 2 && (
+                          <>
+                            <p className="text-sm mb-1">I bygning i inntil 2 etasjer kan det brukes kledning K2 med overflate Ut2.</p>
+                            <p className="text-sm mb-1">Bygning i inntil 4 etasjer kan ha fasademateriale K2/Ut2. Slik kledning må ikke være sammenhengende mere enn 20 m i horisontalretningen. Flere slike felt må ha en innbyrdes avstand på minst 10 m med K1/Ut1. Felt mellom direkte overliggende vinduer må likevel ha kledning K1/Ut1.</p>
+                          </>
+                        )}
+                        <p className="text-sm">Hvor utvendig kledning er utlektet, skal det utenpå bindingsverk, isolasjon og eventuell vindsperre være kledning K1.</p>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">ARK</td>
+                    </tr>
                   );
                 })()}
+                {formData.bf85_514 && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">:514 Fasademateriale på vegg i A-konstruksjon</td>
+                    <td className="border border-gray-400 p-2">
+                      <p className="text-sm mb-1">I bygning i inntil 2 etasjer kan det brukes fasademateriale K2/Ut2.</p>
+                      <p className="text-sm mb-1">I bygning i 3 til 8 etasjer og der brannvesenet kan komme til hele fasaden for slokking kan fasademateriale være K2/Ut2. Slik kledning må ikke være sammenhengende mere enn 20 m i horisontalretningen. Flere slike felt må ha en innbyrdes avstand på minst 10 m med K1/Ut1. I bygning med flere enn 4 etasjer må kledning dessuten ved hver etasjeskiller være brutt av ubrennbar flammesperre som stikker minst 1 m ut fra fasaden.</p>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
+                )}
+                {formData.bf85_515 && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">:515 Brennbar isolasjon</td>
+                    <td className="border border-gray-400 p-2">
+                      <p className="text-sm">Brennbar isolasjon i vegger og dekker i bygning inntil 2 etasjer i bygningsbrannklasse 3 og 4 skal ha kledning på begge sider, med mindre isolasjonen pga sine egenskaper eller sin bruk ikke bidrar til spredning av brann.</p>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
+                )}
               </>
             ) : (
               <>
