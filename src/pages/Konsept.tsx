@@ -6166,6 +6166,7 @@ const Konsept = () => {
                           </Label>
                         </div>
                       </div>
+                      </>)}
 
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('tilrettelegging-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
