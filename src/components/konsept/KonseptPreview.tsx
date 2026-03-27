@@ -2752,6 +2752,15 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <th className="border border-gray-400 p-2 text-left">Løsning</th>
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
+            {isBF85 && formData.bf85_16_brannalarmanlegg && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">:16 Brannalarmanlegg</td>
+                <td className="border border-gray-400 p-2">
+                  Bygningsrådet kan kreve Brannalarmanlegg.
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIE</td>
+              </tr>
+            )}
             {formData.tilretteleggingLedd2a && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Brannalarmanlegg</td>
