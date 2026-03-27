@@ -2073,8 +2073,29 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">RIBr</td>
               </tr>
             )}
-            {/* Garasje - automatisk genererte krav */}
-            {formData.garasjeRelevant && formData.garasjePlassering && formData.garasjeAreal && 
+            {/* Garasje - BF85 krav */}
+            {formData.garasjeRelevant && formData.regelverk === "BF85" && (formData.garasjeBF85Krav || []).length > 0 && (() => {
+              const bf85Labels: Record<string, string> = {
+                bf85_garasje_eksos: "Garasje skal være skilt fra resten av bygningen med bygningsdeler som er så tette at eksos ikke trenger gjennom.",
+                bf85_garasje_over50: "Garasje over 50 m² bruttoareal skal være skilt fra resten av bygningen med brannvegg eller branndekke.",
+                bf85_garasje_under50: "Garasje inntil 50 m² bruttoareal skal være skilt fra resten av bygningen med bygningsdeler i B 30.",
+              };
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Garasje – :44 Skille mot rom for annet formål</td>
+                  <td className="border border-gray-400 p-2">
+                    <div className="space-y-1">
+                      {(formData.garasjeBF85Krav as string[]).map((id: string, i: number) => (
+                        <div key={i}>{bf85Labels[id] || id}</div>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK / RIBr</td>
+                </tr>
+              );
+            })()}
+            {/* Garasje - TEK17 automatisk genererte krav */}
+            {formData.garasjeRelevant && formData.regelverk !== "BF85" && formData.garasjePlassering && formData.garasjeAreal && 
              (formData.garasjeAreal !== "under_50" || formData.garasjeBruksenhet) && (() => {
               const krav = getGarasjeKrav(formData.garasjePlassering, formData.garasjeAreal, formData.garasjeBruksenhet, formData.brannklasse || "");
               // Group by kategori
