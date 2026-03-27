@@ -2759,7 +2759,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
             )}
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_8"] && (
-              <TilstandTableRow data={formData.tilstandsvurderinger["3_8"]} sectionLabel="3.8 Rømning og redning" />
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_8"]} sectionLabel="3.8 Rømning og redning" colSpan={4} />
             )}
 
             {/* 3.9 §11-12 Tilrettelegging for rømning */}
