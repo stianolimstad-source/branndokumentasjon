@@ -2840,6 +2840,97 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">-</td>
             </tr>
+            {/* Boenhet kun ett trapperom */}
+            {formData.boenhetKunEttTrapperom && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Trapperom (boenhet)</td>
+                <td className="border border-gray-400 p-2">
+                  Boenheter har kun tilgang til ett trapperom. Det skal være alternativ rømningsvei, f.eks. via vindu eller balkong.
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
+            {/* Brannceller over flere etasjer */}
+            {formData.branncelleFlereEtasjer && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Branncelle over flere etasjer</td>
+                <td className="border border-gray-400 p-2">
+                  Brannceller som strekker seg over flere etasjer eller har mellometasje skal ha utganger som sikrer rømning fra alle plan.
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
+            {/* Lavt byggverk med vinduer for rømning */}
+            {formData.lavtByggverkVinduerRomning && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Vinduer for rømning</td>
+                <td className="border border-gray-400 p-2">
+                  Lavt byggverk (RK 1–4) med vinduer som sikrer rømning. Vindu kan benyttes som alternativ rømningsvei i etasjer med gulv inntil 5,0 m over planert terreng.
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
+            {/* Stort antall personer */}
+            {formData.branncelleStortAntallPersoner && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Persontall</td>
+                <td className="border border-gray-400 p-2">
+                  <div className="space-y-1">
+                    <p>Branncelle beregnet for stort antall personer.</p>
+                    {formData.persontallAreal && formData.persontallKategori && (() => {
+                      const arealPerPerson: Record<string, number> = {
+                        salgslokaler: 2, kontor: 15, skoler: 2, barnehager: 4, forsamlingslokaler: 0.6, spisesaler: 1.4
+                      };
+                      const areal = parseFloat(formData.persontallAreal) || 0;
+                      const factor = arealPerPerson[formData.persontallKategori] || 1;
+                      const persontall = Math.floor(areal / factor);
+                      return <p><strong>Beregnet persontall:</strong> {persontall} personer ({areal} m² / {factor} m²/pers)</p>;
+                    })()}
+                    <ul className="list-disc list-inside text-sm mt-1">
+                      {formData.stortAntallUnder600 && <li>Inntil 600 personer: Minst 2 utganger fra branncellen. Dør i rømningsretning, bredde min. 1,16 m.</li>}
+                      {formData.stortAntallOver600 && <li>Mer enn 600 personer: Minst 3 utganger, fordelt slik at personbelastningen utjevnes.</li>}
+                      {formData.stortAntallUnder150 && <li>Mindre enn 150 personer: Kan ha én utgang dersom rømningsforholdene tilsier det.</li>}
+                      {formData.stortAntallFlereEtasjer && <li>Branncelle over flere etasjer: Utganger fra hvert plan branncellen strekker seg over.</li>}
+                    </ul>
+                  </div>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
+            {/* Dør-krav */}
+            {(formData.dorerTilbakerømning || formData.dorerNattlaser || formData.dorerLiteAntallPersoner || formData.dorerStromforsyningBKL1 || formData.dorerStromforsyningBKL2 || formData.dorerStromforsyningBKL3) && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Dører</td>
+                <td className="border border-gray-400 p-2">
+                  <ul className="list-disc list-inside text-sm space-y-1">
+                    {formData.dorerTilbakerømning && <li>Låsesystem skal tillate tilbakerømning (retur gjennom dør etter passering).</li>}
+                    {formData.dorerNattlaser && <li>Nattlåser benyttes. Dører med nattlås skal kunne åpnes med én håndgrepsbevegelse uten bruk av nøkkel ved rømning.</li>}
+                    {formData.dorerLiteAntallPersoner && <li>Rom med færre enn 10 personer: Dør kan slå mot rømningsretningen.</li>}
+                    {formData.dorerStromforsyningBKL1 && <li>Elektriske låsesystemer i BKL1 skal ha reservestrømforsyning (UPS) i minst 30 minutter.</li>}
+                    {(formData.dorerStromforsyningBKL2 || formData.dorerStromforsyningBKL3) && <li>Elektriske låsesystemer i BKL2/BKL3 skal ha reservestrømforsyning (UPS) i minst 60 minutter.</li>}
+                  </ul>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK / RIE</td>
+              </tr>
+            )}
+            {/* Rømningsvindu */}
+            {formData.romningsvinduRelevant && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Evakuering via vindu</td>
+                <td className="border border-gray-400 p-2">
+                  <div className="space-y-1 text-sm">
+                    <p>Vindu benyttes som rømningsvei. Fri åpning min. 0,50 m × 0,60 m.</p>
+                    {formData.romningsvinduHoyde && <p>Høyde over terreng: {formData.romningsvinduHoyde} m.</p>}
+                    {formData.romningsvinduGulvAvstand && <p>Avstand fra gulv til underkant vindu: {formData.romningsvinduGulvAvstand} m (maks 1,0 m).</p>}
+                    <ul className="list-disc list-inside">
+                      {formData.romningsvinduHarStige && <li>Fastmontert stige med ryggbøyler er montert til rømningsvindu.</li>}
+                      {formData.romningsvinduHarBalkong && <li>Utgang til balkong er tilgjengelig som alternativ rømningsvei.</li>}
+                    </ul>
+                  </div>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
             {formData.utgangBranncelle && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Utganger</td>
