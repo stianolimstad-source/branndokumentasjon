@@ -686,6 +686,7 @@ const Konsept = () => {
     bf85HarBrannalarm: false, // For kontor
     bf85TekniskeRomRelevant: false, // Kap. 30:33
     bf85LoftKjellerRelevant: false, // Kap. 30:64
+    bf85_1332_avtrekk: false, // :1332 Avtrekk
   });
 
   // Load existing concept if conceptId is provided
