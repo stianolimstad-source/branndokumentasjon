@@ -2223,62 +2223,65 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIBr</td>
                 </tr>
-                {/* Tabell 30:42 */}
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Tabell 30:42 Kledningers og overflaters branntekniske klasse</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-400 p-2" colSpan={3}>
-                    <table className="w-full text-xs border-collapse border border-gray-400">
-                      <thead>
-                        <tr className="bg-gray-100">
-                          <th className="border border-gray-400 p-1.5 text-left" colSpan={2}>Bygningsbrannklasse</th>
-                          <th className="border border-gray-400 p-1.5 text-center">1</th>
-                          <th className="border border-gray-400 p-1.5 text-center">2</th>
-                          <th className="border border-gray-400 p-1.5 text-center">3</th>
-                          <th className="border border-gray-400 p-1.5 text-center">4</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {[
-                          { label: "Innvendig overflate", vals: ["In1", "In2", "In2", "In2"] },
-                          { label: "Utvendig overflate", vals: ["Ut1", "Ut1", "Ut2", "Ut2"] },
-                          { label: "Innvendig kledning", vals: ["K1", "K1", "K2", "K2"] },
-                          { label: "Utvendig kledning", vals: ["K1", "K1", "K2", "K2"] },
-                        ].map((row) => (
-                          <tr key={row.label}>
-                            <td className="border border-gray-400 p-1.5" colSpan={2}>{row.label}</td>
-                            {row.vals.map((v, i) => (
-                              <td key={i} className={`border border-gray-400 p-1.5 text-center ${formData.bygningsbrannklasse === String(i + 1) ? "bg-blue-50 font-bold" : ""}`}>{v}</td>
-                            ))}
-                          </tr>
-                        ))}
+                {/* Krav basert på bygningsbrannklasse fra Tabell 30:42 */}
+                {formData.bygningsbrannklasse && (() => {
+                  const bkl = parseInt(formData.bygningsbrannklasse, 10);
+                  const krav = {
+                    innvOverflate: bkl === 1 ? "In1" : "In2",
+                    utvOverflate: bkl <= 2 ? "Ut1" : "Ut2",
+                    innvKledning: bkl <= 2 ? "K1" : "K2",
+                    utvKledning: bkl <= 2 ? "K1" : "K2",
+                    saerInnvOverflate: "In1",
+                    saerInnvKledning: bkl <= 2 ? "K1-A" : "K1",
+                  };
+                  return (
+                    <>
+                      <tr className="bg-gray-100">
+                        <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Krav iht. Tabell 30:42 – Bygningsbrannklasse {formData.bygningsbrannklasse}</td>
+                      </tr>
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">Innvendig overflate</td>
+                        <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">{krav.innvOverflate}</span></td>
+                        <td className="border border-gray-400 p-2 align-top">ARK</td>
+                      </tr>
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">Utvendig overflate</td>
+                        <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">{krav.utvOverflate}</span></td>
+                        <td className="border border-gray-400 p-2 align-top">ARK</td>
+                      </tr>
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">Innvendig kledning</td>
+                        <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">{krav.innvKledning}</span></td>
+                        <td className="border border-gray-400 p-2 align-top">ARK</td>
+                      </tr>
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">Utvendig kledning</td>
+                        <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">{krav.utvKledning}</span></td>
+                        <td className="border border-gray-400 p-2 align-top">ARK</td>
+                      </tr>
+                      <tr className="bg-gray-100">
+                        <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Særkrav for rømningsveg</td>
+                      </tr>
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">Innvendig overflate (rømningsveg)</td>
+                        <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">{krav.saerInnvOverflate}</span></td>
+                        <td className="border border-gray-400 p-2 align-top">ARK</td>
+                      </tr>
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">Innvendig kledning (rømningsveg)</td>
+                        <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">{krav.saerInnvKledning}</span></td>
+                        <td className="border border-gray-400 p-2 align-top">ARK</td>
+                      </tr>
+                      {(formData.bygningstype === "Overnattingssted" || formData.bygningstype === "Sykehus") && (
                         <tr>
-                          <td className="border border-gray-400 p-1.5 italic" colSpan={6}>Særkrav for rømningsveg:</td>
+                          <td className="border border-gray-400 p-2 italic text-xs text-red-600" colSpan={3}>
+                            ⚠️ Bygningen er {formData.bygningstype === "Overnattingssted" ? "overnattingssted (Kap. 36)" : "sykehus/pleieanstalt (Kap. 37)"} – unntaket for brannceller inntil 200 m² (K2/In3) gjelder ikke.
+                          </td>
                         </tr>
-                        {[
-                          { label: "Innvendig overflate", vals: ["In1", "In1", "In1", "In1"] },
-                          { label: "Innvendig kledning", vals: ["K1-A", "K1-A", "K1", "K1"] },
-                        ].map((row) => (
-                          <tr key={`saer-${row.label}`}>
-                            <td className="border border-gray-400 p-1.5 pl-4" colSpan={2}>{row.label}</td>
-                            {row.vals.map((v, i) => (
-                              <td key={i} className={`border border-gray-400 p-1.5 text-center ${formData.bygningsbrannklasse === String(i + 1) ? "bg-blue-50 font-bold" : ""}`}>{v}</td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    {formData.bygningsbrannklasse && (
-                      <p className="text-xs mt-1 italic">Bygningsbrannklasse {formData.bygningsbrannklasse} er markert i tabellen.</p>
-                    )}
-                    {(formData.bygningstype === "Overnattingssted" || formData.bygningstype === "Sykehus") && (
-                      <p className="text-xs mt-1 font-medium text-red-600">
-                        Bygningen er {formData.bygningstype === "Overnattingssted" ? "overnattingssted (Kap. 36)" : "sykehus/pleieanstalt (Kap. 37)"} – unntaket for brannceller inntil 200 m² (K2/In3) gjelder ikke.
-                      </p>
-                    )}
-                  </td>
-                </tr>
+                      )}
+                    </>
+                  );
+                })()}
                 {/* Isolasjon for BF85 */}
                 {(formData.isolasjonSandwich === "relevant" || formData.isolasjonBrennbar === "relevant") && (
                   <tr>
