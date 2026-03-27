@@ -2590,76 +2590,96 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <th className="border border-gray-400 p-2 text-left">Løsning</th>
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
-            {formData.ventilasjonRelevant && (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Ventilasjonsanlegg</td>
-                  <td className="border border-gray-400 p-2">
-                    <p className="font-medium mb-1">Preaksepterte ytelser</p>
-                    <ol className="list-decimal ml-4 space-y-2">
-                      <li>Ventilasjonskanal som føres gjennom en brannskillende bygningsdel, må utføres slik at bygningsdelens brannmotstand blir opprettholdt.</li>
-                      <li>Innfesting og oppheng for kanaler og ventilasjonsutstyr må utføres slik at forutsatt funksjonstid og brannmotstand blir opprettholdt.</li>
-                      <li>Avtrekk fra komfyr må føres i egen kanal.</li>
-                      <li>Ventilasjonsanlegg må utføres i materialer som tilfredsstiller klasse <span className="text-red-600 font-medium">A2-s1,d0</span>.</li>
-                      {formData.ventKrav9 && <li>Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.</li>}
-                    </ol>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">RIV</td>
-                </tr>
-            )}
-            {formData.vannAvlopRelevant && (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Vann- og avløpsrør</td>
-                  <td className="border border-gray-400 p-2">
-                    <p className="font-medium mb-1">Preaksepterte ytelser</p>
-                    <ol className="list-decimal ml-4 space-y-2">
-                      <li>Rørgjennomføringer i brannskillende konstruksjoner må ha dokumentert brannmotstand.</li>
-                      <li>Plastrør med ytre diameter til og med 32 mm kan føres gjennom murte eller støpte konstruksjoner.</li>
-                      <li>Støpejernrør med ytre diameter til og med 110 mm kan føres gjennom murte eller støpte konstruksjoner.</li>
-                    </ol>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">RIV</td>
-                </tr>
-            )}
-            {formData.rorIsolasjonRelevant && (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Rør- og kanalisolasjon</td>
-                  <td className="border border-gray-400 p-2">
-                    <p className="font-medium mb-1">Preaksepterte ytelser</p>
-                    <ol className="list-decimal ml-4 space-y-2">
-                      <li>Dersom den samlede eksponerte overflaten av isolasjonen på rør og kanaler utgjør mer enn 20 prosent av tilgrensende vegg- eller himlingsflate, må isolasjonen tilfredsstille klasse <span className="text-red-600 font-medium">A2<sub>L</sub>-s1,d0</span> [ubrennbar eller begrenset brennbar] eller ha minst samme klasse som de tilgrensende overflatene.</li>
-                      <li>Dersom den samlede eksponerte overflaten av isolasjonen utgjør mindre enn 20 prosent av tilgrensende vegg- eller himlingsflate, gjelder følgende:
-                        <ol className="list-decimal ml-6 mt-1 space-y-1">
-                          <li>Isolasjon på rør og kanaler i rømningsveier må minst tilfredsstille klasse <span className="text-red-600 font-medium">B<sub>L</sub>-s1,d0 [PI]</span>. Unntak gjelder isolasjon på enkeltstående rør eller kanal med ytre diameter til og med 200 mm som minst må tilfredsstille klasse <span className="text-red-600 font-medium">C<sub>L</sub>-s3,d0 [PII]</span>.</li>
-                          <li>Isolasjon på rør og kanaler som er lagt i sjakt, i hulrom og bak nedforet himling med branncellebegrensende funksjon, må minst tilfredsstille klasse <span className="text-red-600 font-medium">C<sub>L</sub>-s3,d0 [PII]</span>.</li>
-                          <li>Øvrig isolasjon på rør og kanaler i byggverk i risikoklasse 3, 5 og 6, og i byggverk i brannklasse 2 og 3 må minst tilfredsstille klasse <span className="text-red-600 font-medium">C<sub>L</sub>-s3,d0 [PII]</span>.</li>
-                          <li>Øvrig isolasjon på rør og kanaler i byggverk i risikoklasse 1, 2 og 4 i brannklasse 1 må minst tilfredsstille klasse <span className="text-red-600 font-medium">D<sub>L</sub>-s3,d0 [PIII]</span>.</li>
+            {isBF85 ? (
+              <>
+                {formData.bf85_1332_avtrekk && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">:1332 Avtrekk</td>
+                    <td className="border border-gray-400 p-2">
+                      <ul className="list-disc ml-4 space-y-2">
+                        <li>Avtrekk fra kjøkken og WC skal føres i egne kanaler.</li>
+                        <li>Avtrekk fra forskjellige leiligheter skal føres i egne kanaler minst en full etasjehøyde opp, før de eventuelt føres sammen i felles kanal. Alle rom som knyttes til felles kanal, skal ha friskluftstilførsel i samme fasade.</li>
+                        <li>Oppholdsrom, soverom og arbeidsrom i bygninger med naturlig avtrekk skal ha vindu eller ytterdør som gir mulighet for rask utlufting.</li>
+                      </ul>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIV</td>
+                  </tr>
+                )}
+              </>
+            ) : (
+              <>
+                {formData.ventilasjonRelevant && (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Ventilasjonsanlegg</td>
+                      <td className="border border-gray-400 p-2">
+                        <p className="font-medium mb-1">Preaksepterte ytelser</p>
+                        <ol className="list-decimal ml-4 space-y-2">
+                          <li>Ventilasjonskanal som føres gjennom en brannskillende bygningsdel, må utføres slik at bygningsdelens brannmotstand blir opprettholdt.</li>
+                          <li>Innfesting og oppheng for kanaler og ventilasjonsutstyr må utføres slik at forutsatt funksjonstid og brannmotstand blir opprettholdt.</li>
+                          <li>Avtrekk fra komfyr må føres i egen kanal.</li>
+                          <li>Ventilasjonsanlegg må utføres i materialer som tilfredsstiller klasse <span className="text-red-600 font-medium">A2-s1,d0</span>.</li>
+                          {formData.ventKrav9 && <li>Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.</li>}
                         </ol>
-                      </li>
-                    </ol>
-                    <p className="mt-2 text-sm">Den flaten der rør eller kanal er innfestet, regnes som tilgrensede vegg- eller himlingsflate. For vertikale rør og kanaler er det veggflaten som skal legges til grunn.</p>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">RIV</td>
-                </tr>
-            )}
-            {formData.elektriskRelevant && (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Elektriske installasjoner</td>
-                  <td className="border border-gray-400 p-2">
-                    <p className="font-medium mb-1">Preaksepterte ytelser</p>
-                    <ol className="list-decimal ml-4 space-y-2">
-                      <li>Kabler må ikke legges over nedforet himling eller i hulrom i rømningsvei med mindre ett av følgende punkter er oppfylt:
-                        <ol className="list-decimal ml-4 mt-1 space-y-1">
-                          <li>kablene representerer liten brannenergi, det vil si mindre enn ca. <span className="text-red-600 font-medium">50 MJ/løpemeter</span> hulrom</li>
-                          <li>kablene er ført i egen sjakt med sjaktvegger som har brannmotstand tilsvarende branncellebegrensende bygningsdel</li>
-                          <li>himlingen har brannmotstand tilsvarende branncellebegrensende bygningsdel</li>
-                          <li>hulrommet er sprinklet.</li>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIV</td>
+                    </tr>
+                )}
+                {formData.vannAvlopRelevant && (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Vann- og avløpsrør</td>
+                      <td className="border border-gray-400 p-2">
+                        <p className="font-medium mb-1">Preaksepterte ytelser</p>
+                        <ol className="list-decimal ml-4 space-y-2">
+                          <li>Rørgjennomføringer i brannskillende konstruksjoner må ha dokumentert brannmotstand.</li>
+                          <li>Plastrør med ytre diameter til og med 32 mm kan føres gjennom murte eller støpte konstruksjoner.</li>
+                          <li>Støpejernrør med ytre diameter til og med 110 mm kan føres gjennom murte eller støpte konstruksjoner.</li>
                         </ol>
-                      </li>
-                      <li>Kabler som utgjør liten brannenergi, det vil si mindre enn ca. <span className="text-red-600 font-medium">50 MJ/løpemeter</span> korridor eller hulrom, kan føres ubeskyttet gjennom rømningsvei. Dette er et spesifikt unntak som gjelder kabler, og kan ikke brukes som begrunnelse for andre fravik fra preaksepterte ytelser.</li>
-                    </ol>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">RIE</td>
-                </tr>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIV</td>
+                    </tr>
+                )}
+                {formData.rorIsolasjonRelevant && (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Rør- og kanalisolasjon</td>
+                      <td className="border border-gray-400 p-2">
+                        <p className="font-medium mb-1">Preaksepterte ytelser</p>
+                        <ol className="list-decimal ml-4 space-y-2">
+                          <li>Dersom den samlede eksponerte overflaten av isolasjonen på rør og kanaler utgjør mer enn 20 prosent av tilgrensende vegg- eller himlingsflate, må isolasjonen tilfredsstille klasse <span className="text-red-600 font-medium">A2<sub>L</sub>-s1,d0</span> [ubrennbar eller begrenset brennbar] eller ha minst samme klasse som de tilgrensende overflatene.</li>
+                          <li>Dersom den samlede eksponerte overflaten av isolasjonen utgjør mindre enn 20 prosent av tilgrensende vegg- eller himlingsflate, gjelder følgende:
+                            <ol className="list-decimal ml-6 mt-1 space-y-1">
+                              <li>Isolasjon på rør og kanaler i rømningsveier må minst tilfredsstille klasse <span className="text-red-600 font-medium">B<sub>L</sub>-s1,d0 [PI]</span>. Unntak gjelder isolasjon på enkeltstående rør eller kanal med ytre diameter til og med 200 mm som minst må tilfredsstille klasse <span className="text-red-600 font-medium">C<sub>L</sub>-s3,d0 [PII]</span>.</li>
+                              <li>Isolasjon på rør og kanaler som er lagt i sjakt, i hulrom og bak nedforet himling med branncellebegrensende funksjon, må minst tilfredsstille klasse <span className="text-red-600 font-medium">C<sub>L</sub>-s3,d0 [PII]</span>.</li>
+                              <li>Øvrig isolasjon på rør og kanaler i byggverk i risikoklasse 3, 5 og 6, og i byggverk i brannklasse 2 og 3 må minst tilfredsstille klasse <span className="text-red-600 font-medium">C<sub>L</sub>-s3,d0 [PII]</span>.</li>
+                              <li>Øvrig isolasjon på rør og kanaler i byggverk i risikoklasse 1, 2 og 4 i brannklasse 1 må minst tilfredsstille klasse <span className="text-red-600 font-medium">D<sub>L</sub>-s3,d0 [PIII]</span>.</li>
+                            </ol>
+                          </li>
+                        </ol>
+                        <p className="mt-2 text-sm">Den flaten der rør eller kanal er innfestet, regnes som tilgrensede vegg- eller himlingsflate. For vertikale rør og kanaler er det veggflaten som skal legges til grunn.</p>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIV</td>
+                    </tr>
+                )}
+                {formData.elektriskRelevant && (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Elektriske installasjoner</td>
+                      <td className="border border-gray-400 p-2">
+                        <p className="font-medium mb-1">Preaksepterte ytelser</p>
+                        <ol className="list-decimal ml-4 space-y-2">
+                          <li>Kabler må ikke legges over nedforet himling eller i hulrom i rømningsvei med mindre ett av følgende punkter er oppfylt:
+                            <ol className="list-decimal ml-4 mt-1 space-y-1">
+                              <li>kablene representerer liten brannenergi, det vil si mindre enn ca. <span className="text-red-600 font-medium">50 MJ/løpemeter</span> hulrom</li>
+                              <li>kablene er ført i egen sjakt med sjaktvegger som har brannmotstand tilsvarende branncellebegrensende bygningsdel</li>
+                              <li>himlingen har brannmotstand tilsvarende branncellebegrensende bygningsdel</li>
+                              <li>hulrommet er sprinklet.</li>
+                            </ol>
+                          </li>
+                          <li>Kabler som utgjør liten brannenergi, det vil si mindre enn ca. <span className="text-red-600 font-medium">50 MJ/løpemeter</span> korridor eller hulrom, kan føres ubeskyttet gjennom rømningsvei. Dette er et spesifikt unntak som gjelder kabler, og kan ikke brukes som begrunnelse for andre fravik fra preaksepterte ytelser.</li>
+                        </ol>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIE</td>
+                    </tr>
+                )}
+              </>
             )}
             {formData.installasjonerKommentar && (
               <tr>
