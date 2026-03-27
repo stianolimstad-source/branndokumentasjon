@@ -556,6 +556,7 @@ const Konsept = () => {
     garasjePlassering: "" as "" | "i_tiltaket" | "utenfor_tiltaket",
     garasjeAreal: "" as "" | "under_50" | "50_400" | "over_400",
     garasjeBruksenhet: "" as "" | "samme" | "annen",
+    garasjeBF85Krav: [] as string[],
     brensellagringRelevant: false,
     brenselType: "" as "" | "fyringsparafin" | "lett_fyringsolje" | "begge",
     brenselMengde: "" as string,
@@ -5158,7 +5159,34 @@ const Konsept = () => {
                             />
                             <label htmlFor="garasjeRelevant" className="text-xs cursor-pointer font-medium">Garasje er relevant for tiltaket</label>
                           </div>
-                          {formData.garasjeRelevant && (
+                          {formData.garasjeRelevant && formData.regelverk === "BF85" && (
+                            <div className="pl-4 space-y-3 border-l-2 border-primary/20 ml-2">
+                              <Label className="text-xs font-medium mb-1 block">:44 Skille mot rom for annet formål</Label>
+                              {[
+                                { id: "bf85_garasje_eksos", label: "Garasje skal være skilt fra resten av bygningen med bygningsdeler som er så tette at eksos ikke trenger gjennom." },
+                                { id: "bf85_garasje_over50", label: "Garasje over 50 m² bruttoareal skal være skilt fra resten av bygningen med brannvegg eller branndekke." },
+                                { id: "bf85_garasje_under50", label: "Garasje inntil 50 m² bruttoareal skal være skilt fra resten av bygningen med bygningsdeler i B 30." },
+                              ].map((opt) => (
+                                <div key={opt.id} className="flex items-start gap-2">
+                                  <Checkbox
+                                    id={`garasje-bf85-${opt.id}`}
+                                    checked={(formData.garasjeBF85Krav || []).includes(opt.id)}
+                                    onCheckedChange={(checked) => {
+                                      const current = formData.garasjeBF85Krav || [];
+                                      setFormData({
+                                        ...formData,
+                                        garasjeBF85Krav: checked
+                                          ? [...current, opt.id]
+                                          : current.filter((k: string) => k !== opt.id),
+                                      });
+                                    }}
+                                  />
+                                  <label htmlFor={`garasje-bf85-${opt.id}`} className="text-xs cursor-pointer leading-relaxed">{opt.label}</label>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          {formData.garasjeRelevant && formData.regelverk !== "BF85" && (
                             <div className="pl-4 space-y-3 border-l-2 border-primary/20 ml-2">
                               {/* Plassering */}
                               <div>
