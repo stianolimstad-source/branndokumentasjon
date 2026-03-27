@@ -688,6 +688,7 @@ const Konsept = () => {
     bf85LoftKjellerRelevant: false, // Kap. 30:64
     bf85_1332_avtrekk: false, // :1332 Avtrekk
     bf85_16_brannalarmanlegg: false, // :16 Brannalarmanlegg (skoler)
+    bf85_sprinkler_installert: false, // Sprinkleranlegg installert (BF85)
   });
 
   // Load existing concept if conceptId is provided
@@ -5946,6 +5947,16 @@ const Konsept = () => {
                             />
                             <Label htmlFor="bf85_16_brannalarmanlegg" className="text-xs cursor-pointer leading-relaxed">
                               <strong>:16 Brannalarmanlegg:</strong> Bygningsrådet kan kreve Brannalarmanlegg.
+                            </Label>
+                          </div>
+                          <div className="flex items-start space-x-2">
+                            <Checkbox 
+                              id="bf85_sprinkler_installert" 
+                              checked={formData.bf85_sprinkler_installert}
+                              onCheckedChange={(checked) => setFormData({...formData, bf85_sprinkler_installert: !!checked})}
+                            />
+                            <Label htmlFor="bf85_sprinkler_installert" className="text-xs cursor-pointer leading-relaxed">
+                              <strong>Sprinkleranlegg installert:</strong> Bygget har installert sprinkleranlegg. Dette kan benyttes som kompenserende tiltak for å fravike andre krav i BF85.
                             </Label>
                           </div>
                         </div>
