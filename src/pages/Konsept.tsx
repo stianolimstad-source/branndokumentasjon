@@ -687,6 +687,7 @@ const Konsept = () => {
     bf85TekniskeRomRelevant: false, // Kap. 30:33
     bf85LoftKjellerRelevant: false, // Kap. 30:64
     bf85_1332_avtrekk: false, // :1332 Avtrekk
+    bf85_16_brannalarmanlegg: false, // :16 Brannalarmanlegg (skoler)
   });
 
   // Load existing concept if conceptId is provided
@@ -5932,6 +5933,23 @@ const Konsept = () => {
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.9 § 11-12 Tilrettelegging for rømning og redning</Label>
                       </div>
+
+                      {/* BF85-spesifikt: :16 Brannalarmanlegg for skoler */}
+                      {formData.regelverk === "BF85" && formData.bygningstype.toLowerCase().includes("skole") && (
+                        <div className="p-3 bg-muted/50 border border-border rounded space-y-2">
+                          <Label className="text-xs font-medium block">BF85-krav for skoler:</Label>
+                          <div className="flex items-start space-x-2">
+                            <Checkbox 
+                              id="bf85_16_brannalarmanlegg" 
+                              checked={formData.bf85_16_brannalarmanlegg}
+                              onCheckedChange={(checked) => setFormData({...formData, bf85_16_brannalarmanlegg: !!checked})}
+                            />
+                            <Label htmlFor="bf85_16_brannalarmanlegg" className="text-xs cursor-pointer leading-relaxed">
+                              <strong>:16 Brannalarmanlegg:</strong> Bygningsrådet kan kreve Brannalarmanlegg.
+                            </Label>
+                          </div>
+                        </div>
+                      )}
                       
                       {/* Automatiske krav basert på RK */}
                       {(formData.risikoklasse === "RK4" || formData.bygningsdeler.some(b => b.risikoklasse === "RK4")) && (
