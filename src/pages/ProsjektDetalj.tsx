@@ -301,7 +301,7 @@ const ProsjektDetalj = () => {
                   <ClipboardCheck className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600 flex-shrink-0" />
                   <CardTitle className="text-sm sm:text-lg truncate">Tilstandsvurderinger ({tilstandsvurderinger.length})</CardTitle>
                 </div>
-                <Link to={`/konsept?project=${project.id}&type=tilstandsvurdering`}>
+                <Link to={`/tilstandsvurdering?project=${project.id}`}>
                   <Button size="sm" variant="outline" className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 whitespace-nowrap"><Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />Ny</Button>
                 </Link>
               </div>
@@ -309,7 +309,7 @@ const ProsjektDetalj = () => {
             {tilstandsvurderinger.length > 0 && (
               <CardContent className="space-y-2 px-3 sm:px-6 pb-3 sm:pb-6 pt-0">
                 {tilstandsvurderinger.map(c => (
-                  <ConceptRow key={c.id} concept={c} icon={ClipboardCheck} iconColor="text-amber-600" linkTo={`/konsept?project=${project.id}&concept=${c.id}&type=tilstandsvurdering`} />
+                  <ConceptRow key={c.id} concept={c} icon={ClipboardCheck} iconColor="text-amber-600" linkTo={`/tilstandsvurdering?project=${project.id}&concept=${c.id}`} />
                 ))}
               </CardContent>
             )}

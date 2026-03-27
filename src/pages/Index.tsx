@@ -160,7 +160,7 @@ const Index = () => {
             <Button
               size="lg"
               className="justify-start h-auto py-4 px-5"
-              onClick={() => { setShowTilstandDialog(false); navigate("/konsept?new=true&type=tilstandsvurdering"); }}
+              onClick={() => { setShowTilstandDialog(false); navigate("/tilstandsvurdering?new=true"); }}
             >
               <Plus className="h-5 w-5 mr-3" />
               <div className="text-left">

@@ -7,6 +7,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import AppHeader from "@/components/AppHeader";
 import Index from "./pages/Index";
 import Konsept from "./pages/Konsept";
+import Tilstandsvurdering from "./pages/Tilstandsvurdering";
 import Verktoy from "./pages/Verktoy";
 import Romningsvei from "./pages/verktoy/Romningsvei";
 import Straling from "./pages/verktoy/Straling";
@@ -45,6 +46,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/konsept" element={<Konsept />} />
+            <Route path="/tilstandsvurdering" element={<Tilstandsvurdering />} />
             <Route path="/verktoy" element={<Verktoy />} />
             <Route path="/verktoy/romningsvei" element={<Romningsvei />} />
             <Route path="/verktoy/straling" element={<Straling />} />
