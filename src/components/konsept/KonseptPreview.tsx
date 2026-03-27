@@ -2761,7 +2761,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">RIE</td>
               </tr>
             )}
-            {formData.tilretteleggingLedd2a && (
+            {!isBF85 && formData.tilretteleggingLedd2a && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Brannalarmanlegg</td>
                 <td className="border border-gray-400 p-2">
@@ -2771,7 +2771,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">RIE</td>
               </tr>
             )}
-            {formData.tilretteleggingLedd3 && (
+            {!isBF85 && formData.tilretteleggingLedd3 && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Ledesystem</td>
                 <td className="border border-gray-400 p-2">
