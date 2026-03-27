@@ -574,6 +574,11 @@ const Konsept = () => {
     himlingNote2: true, // Overflater over himling som rømningsvei
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
     isolasjonBrennbar: "ikke_relevant" as "relevant" | "ikke_relevant",
+    bf85_511: false, // :511 Generelt
+    bf85_512: false, // :512 Ikke-bærende ytterveggers brannmotstand
+    bf85_513: false, // :513 Yttervegger i B-konstruksjon
+    bf85_514: false, // :514 Fasademateriale på vegg i A-konstruksjon
+    bf85_515: false, // :515 Brennbar isolasjon
     installasjoner: "",
     installasjonerKommentar: "",
     // Ventilasjonsanlegg
@@ -5593,33 +5598,29 @@ const Konsept = () => {
                             )}
                           </div>
 
-                          {/* Isolasjon-valg for BF85 */}
+                          {/* BF85 :5 Vegger, tak og nedforet himling */}
                           <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
-                            <Label className="text-xs font-medium">Isolasjon</Label>
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id="isolasjonSandwich"
-                                checked={formData.isolasjonSandwich === "relevant"}
-                                onCheckedChange={(checked) => 
-                                  setFormData({...formData, isolasjonSandwich: checked ? "relevant" : "ikke_relevant"})
-                                }
-                              />
-                              <label htmlFor="isolasjonSandwich" className="text-xs cursor-pointer">
-                                Bruk av sandwichelementer
-                              </label>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id="isolasjonBrennbar"
-                                checked={formData.isolasjonBrennbar === "relevant"}
-                                onCheckedChange={(checked) => 
-                                  setFormData({...formData, isolasjonBrennbar: checked ? "relevant" : "ikke_relevant"})
-                                }
-                              />
-                              <label htmlFor="isolasjonBrennbar" className="text-xs cursor-pointer">
-                                Bruk av brennbar isolasjon
-                              </label>
-                            </div>
+                            <Label className="text-xs font-medium">Vegger, tak og nedforet himling (:5)</Label>
+                            {[
+                              { key: "bf85_511", label: ":511 Generelt – Brannmotstand for bærende/branncellebegrensende vegger" },
+                              { key: "bf85_512", label: ":512 Ikke-bærende ytterveggers brannmotstand" },
+                              { key: "bf85_513", label: ":513 Yttervegger i B-konstruksjon" },
+                              { key: "bf85_514", label: ":514 Fasademateriale på vegg i A-konstruksjon" },
+                              { key: "bf85_515", label: ":515 Brennbar isolasjon" },
+                            ].map((item) => (
+                              <div key={item.key} className="flex items-center gap-2">
+                                <Checkbox
+                                  id={item.key}
+                                  checked={!!formData[item.key]}
+                                  onCheckedChange={(checked) =>
+                                    setFormData({ ...formData, [item.key]: !!checked })
+                                  }
+                                />
+                                <label htmlFor={item.key} className="text-xs cursor-pointer">
+                                  {item.label}
+                                </label>
+                              </div>
+                            ))}
                           </div>
                         </>
                       ) : (
