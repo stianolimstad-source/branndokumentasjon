@@ -2712,17 +2712,14 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
             <tr>
-              <td className="border border-gray-400 p-2 align-top">Rømning og redning</td>
+              <td className="border border-gray-400 p-2 align-top">Generell beskrivelse av evakuering</td>
               <td className="border border-gray-400 p-2">
-                <p className="font-medium mb-2">Krav fra TEK17 §11-11</p>
-                <ul className="list-disc ml-4 space-y-3">
-                  <li>Byggverk skal prosjekteres og utføres for rask og sikker rømning og redning.</li>
-                  <li>Den tiden som er tilgjengelig for rømning, skal være større enn den tiden som er nødvendig for rømning.</li>
-                  <li>Brannceller skal utformes slik at varsling, rømning og redning kan skje på en rask og effektiv måte.</li>
-                  <li>Fluktvei fra oppholdssted til utgang fra en branncelle skal være oversiktlig.</li>
-                  <li>I den tiden en branncelle eller rømningsvei skal benyttes til rømning, skal det ikke forekomme temperaturer, røykgasskonsentrasjoner eller andre forhold som hindrer rømning.</li>
-                  <li>Skilt, symbol og tekst som viser rømningsveier og sikkerhetsutstyr skal kunne leses under rømning.</li>
-                </ul>
+                <p className="text-sm">
+                  Byggverk skal prosjekteres og utføres for rask og sikker rømning og redning. Den tiden som er tilgjengelig for rømning, skal være større enn den tiden som er nødvendig for rømning. Brannceller skal utformes slik at varsling, rømning og redning kan skje på en rask og effektiv måte. Fluktvei fra oppholdssted til utgang fra en branncelle skal være oversiktlig. I den tiden en branncelle eller rømningsvei skal benyttes til rømning, skal det ikke forekomme temperaturer, røykgasskonsentrasjoner eller andre forhold som hindrer rømning. Skilt, symbol og tekst som viser rømningsveier og sikkerhetsutstyr skal kunne leses under rømning.
+                </p>
+                {formData.romningSikkerhet && (
+                  <p className="text-sm mt-2 italic">{formData.romningSikkerhet}</p>
+                )}
               </td>
               <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
             </tr>

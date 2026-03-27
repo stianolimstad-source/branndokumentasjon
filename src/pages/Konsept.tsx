@@ -5905,7 +5905,7 @@ const Konsept = () => {
                         <Label className="text-base font-extrabold text-foreground">3.8 § 11-11 Rømning og redning</Label>
                       </div>
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Generelle krav om rømning</Label>
+                        <Label className="text-xs font-medium mb-1 block">Generell beskrivelse av evakuering</Label>
                         <Textarea 
                           value={formData.romningSikkerhet}
                           onChange={(e) => setFormData({...formData, romningSikkerhet: e.target.value})}
