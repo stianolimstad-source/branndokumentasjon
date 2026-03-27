@@ -2761,6 +2761,15 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">RIE</td>
               </tr>
             )}
+            {isBF85 && formData.bf85_sprinkler_installert && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Sprinkleranlegg</td>
+                <td className="border border-gray-400 p-2">
+                  Det er installert sprinkleranlegg i bygget. Sprinkleranlegget kan benyttes som kompenserende tiltak for å fravike andre krav i BF85 der forholdene tilsier det.
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIV</td>
+              </tr>
+            )}
             {!isBF85 && formData.tilretteleggingLedd2a && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Brannalarmanlegg</td>
