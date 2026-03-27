@@ -5520,111 +5520,212 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_5")}
                     </SectionCollapsible>
-                    <SectionCollapsible forceOpen={allKap3Open} label={`3.6 ${formData.regelverk === "BF85" ? "Materialer og produkter (§ 11-9)" : "§ 11-9 Materialer og produkter"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} label={`3.6 ${formData.regelverk === "BF85" ? "Kledninger og overflater (:42)" : "§ 11-9 Materialer og produkter"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.6 § 11-9 Materialer og produkters egenskaper ved brann</Label>
+                        <Label className="text-base font-extrabold text-foreground">3.6 {formData.regelverk === "BF85" ? "Kledninger og overflater for vegger og tak (:42)" : "§ 11-9 Materialer og produkters egenskaper ved brann"}</Label>
                       </div>
-                      <p className="text-xs text-muted-foreground">Krav til overflater og kledninger genereres automatisk basert på brannklasse ({formData.brannklasse || "ikke angitt"}).</p>
+
+                      {formData.regelverk === "BF85" ? (
+                        <>
+                          {/* BF85 :42 Kledninger og overflater */}
+                          <div className="text-xs leading-relaxed text-muted-foreground bg-muted/50 p-3 rounded-md border space-y-2">
+                            <p>Kledninger og overflater for vegger og tak skal være i brannteknisk klasse som angitt i Tabell 30:42.</p>
+                            <p>Brannceller inntil 200 m², unntatt bygninger etter kap. 36 og 37, kan ha kledning K2 og overflate In3, forutsatt at brannvesenet med det stigemateriell det rår over kan komme til bygningens fasader.</p>
+                            <p className="text-xs italic">Kap. 36 = Overnattingssteder, Kap. 37 = Sykehus og pleieanstalter</p>
+                            <p>Små atskilte rom, overstykker og brystning til vinduer, samt overstykker til dører kan ha overflate In3.</p>
+                          </div>
+
+                          {/* Tabell 30:42 */}
+                          <div className="mt-3">
+                            <Label className="text-xs font-bold mb-2 block">Tabell 30:42 Kledningers og overflaters branntekniske klasse</Label>
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-xs border-collapse border border-border">
+                                <thead>
+                                  <tr className="bg-muted/50">
+                                    <th className="border border-border p-2 text-left font-medium" colSpan={2}>Bygningsbrannklasse</th>
+                                    <th className="border border-border p-2 text-center font-medium">1</th>
+                                    <th className="border border-border p-2 text-center font-medium">2</th>
+                                    <th className="border border-border p-2 text-center font-medium">3</th>
+                                    <th className="border border-border p-2 text-center font-medium">4</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {[
+                                    { label: "Innvendig overflate", vals: ["In1", "In2", "In2", "In2"] },
+                                    { label: "Utvendig overflate", vals: ["Ut1", "Ut1", "Ut2", "Ut2"] },
+                                    { label: "Innvendig kledning", vals: ["K1", "K1", "K2", "K2"] },
+                                    { label: "Utvendig kledning", vals: ["K1", "K1", "K2", "K2"] },
+                                  ].map((row) => (
+                                    <tr key={row.label}>
+                                      <td className="border border-border p-2" colSpan={2}>{row.label}</td>
+                                      {row.vals.map((v, i) => (
+                                        <td key={i} className={`border border-border p-2 text-center ${formData.bygningsbrannklasse === String(i + 1) ? "bg-primary/10 font-bold" : ""}`}>{v}</td>
+                                      ))}
+                                    </tr>
+                                  ))}
+                                  <tr>
+                                    <td className="border border-border p-2 italic text-muted-foreground" colSpan={6}>Særkrav for rømningsveg:</td>
+                                  </tr>
+                                  {[
+                                    { label: "Innvendig overflate", vals: ["In1", "In1", "In1", "In1"] },
+                                    { label: "Innvendig kledning", vals: ["K1-A", "K1-A", "K1", "K1"] },
+                                  ].map((row) => (
+                                    <tr key={`saer-${row.label}`}>
+                                      <td className="border border-border p-2 pl-6" colSpan={2}>{row.label}</td>
+                                      {row.vals.map((v, i) => (
+                                        <td key={i} className={`border border-border p-2 text-center ${formData.bygningsbrannklasse === String(i + 1) ? "bg-primary/10 font-bold" : ""}`}>{v}</td>
+                                      ))}
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                            {formData.bygningsbrannklasse && (
+                              <p className="text-xs text-primary font-medium mt-2">
+                                Bygningsbrannklasse {formData.bygningsbrannklasse} er markert i tabellen.
+                              </p>
+                            )}
+                            {(formData.bygningstype === "Overnattingssted" || formData.bygningstype === "Sykehus") && (
+                              <div className="mt-2 p-2 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700 rounded text-xs text-amber-700 dark:text-amber-400">
+                                ⚠️ Bygningen er {formData.bygningstype === "Overnattingssted" ? "overnattingssted (Kap. 36)" : "sykehus/pleieanstalt (Kap. 37)"} – unntaket for brannceller inntil 200 m² (K2/In3) gjelder ikke.
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Isolasjon-valg for BF85 */}
+                          <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                            <Label className="text-xs font-medium">Isolasjon</Label>
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id="isolasjonSandwich"
+                                checked={formData.isolasjonSandwich === "relevant"}
+                                onCheckedChange={(checked) => 
+                                  setFormData({...formData, isolasjonSandwich: checked ? "relevant" : "ikke_relevant"})
+                                }
+                              />
+                              <label htmlFor="isolasjonSandwich" className="text-xs cursor-pointer">
+                                Bruk av sandwichelementer
+                              </label>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id="isolasjonBrennbar"
+                                checked={formData.isolasjonBrennbar === "relevant"}
+                                onCheckedChange={(checked) => 
+                                  setFormData({...formData, isolasjonBrennbar: checked ? "relevant" : "ikke_relevant"})
+                                }
+                              />
+                              <label htmlFor="isolasjonBrennbar" className="text-xs cursor-pointer">
+                                Bruk av brennbar isolasjon
+                              </label>
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-xs text-muted-foreground">Krav til overflater og kledninger genereres automatisk basert på brannklasse ({formData.brannklasse || "ikke angitt"}).</p>
                       
-                      {/* Innvendige overflater og kledninger - noter */}
-                      <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
-                        <Label className="text-xs font-medium">Innvendige overflater og kledninger – velg relevante bestemmelser</Label>
-                        <div className="flex items-start gap-2">
-                          <Checkbox
-                            id="matNote1"
-                            checked={formData.matNote1}
-                            onCheckedChange={(checked) => setFormData({...formData, matNote1: !!checked})}
-                          />
-                          <label htmlFor="matNote1" className="text-xs cursor-pointer leading-relaxed">
-                            Overflater og kledninger er tilfredsstillende når det benyttes produkter med egenskaper som angitt i tabell 1A og 1B, med unntak gitt i nr. 3 og 4.
-                          </label>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <Checkbox
-                            id="matNote2"
-                            checked={formData.matNote2}
-                            onCheckedChange={(checked) => setFormData({...formData, matNote2: !!checked})}
-                          />
-                          <label htmlFor="matNote2" className="text-xs cursor-pointer leading-relaxed">
-                            Overflater i hulrom betraktes på samme måte som innvendig overflate og må ha minst like gode branntekniske egenskaper.
-                          </label>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <Checkbox
-                            id="matNote3"
-                            checked={formData.matNote3}
-                            onCheckedChange={(checked) => setFormData({...formData, matNote3: !!checked})}
-                          />
-                          <label htmlFor="matNote3" className="text-xs cursor-pointer leading-relaxed">
-                            Rom med brannfarlig virksomhet må ha kledning som tilfredsstiller klasse K₂10 A2-s1,d0 [K1-A]. Eksempel på rom med brannfarlig virksomhet er rom hvor det oppbevares fyrverkeri, brannfarlig væske kategori 1 og 2, eller rom hvor det utføres varme arbeider som sveising, sliping samt rom hvor det arbeides med åpen varme.
-                          </label>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <Checkbox
-                            id="matNote4"
-                            checked={formData.matNote4}
-                            onCheckedChange={(checked) => setFormData({...formData, matNote4: !!checked})}
-                          />
-                          <label htmlFor="matNote4" className="text-xs cursor-pointer leading-relaxed">
-                            Selv om sikkerhet ved brann dokumenteres ved analyse, må innvendige overflater på vegger og i himlinger ha minst klasse D-s2,d0 [In 2]. Lavere ytelse kan gi uakseptabelt bidrag til brannutviklingen.
-                          </label>
-                        </div>
-                      </div>
+                          {/* Innvendige overflater og kledninger - noter */}
+                          <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                            <Label className="text-xs font-medium">Innvendige overflater og kledninger – velg relevante bestemmelser</Label>
+                            <div className="flex items-start gap-2">
+                              <Checkbox
+                                id="matNote1"
+                                checked={formData.matNote1}
+                                onCheckedChange={(checked) => setFormData({...formData, matNote1: !!checked})}
+                              />
+                              <label htmlFor="matNote1" className="text-xs cursor-pointer leading-relaxed">
+                                Overflater og kledninger er tilfredsstillende når det benyttes produkter med egenskaper som angitt i tabell 1A og 1B, med unntak gitt i nr. 3 og 4.
+                              </label>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <Checkbox
+                                id="matNote2"
+                                checked={formData.matNote2}
+                                onCheckedChange={(checked) => setFormData({...formData, matNote2: !!checked})}
+                              />
+                              <label htmlFor="matNote2" className="text-xs cursor-pointer leading-relaxed">
+                                Overflater i hulrom betraktes på samme måte som innvendig overflate og må ha minst like gode branntekniske egenskaper.
+                              </label>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <Checkbox
+                                id="matNote3"
+                                checked={formData.matNote3}
+                                onCheckedChange={(checked) => setFormData({...formData, matNote3: !!checked})}
+                              />
+                              <label htmlFor="matNote3" className="text-xs cursor-pointer leading-relaxed">
+                                Rom med brannfarlig virksomhet må ha kledning som tilfredsstiller klasse K₂10 A2-s1,d0 [K1-A]. Eksempel på rom med brannfarlig virksomhet er rom hvor det oppbevares fyrverkeri, brannfarlig væske kategori 1 og 2, eller rom hvor det utføres varme arbeider som sveising, sliping samt rom hvor det arbeides med åpen varme.
+                              </label>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <Checkbox
+                                id="matNote4"
+                                checked={formData.matNote4}
+                                onCheckedChange={(checked) => setFormData({...formData, matNote4: !!checked})}
+                              />
+                              <label htmlFor="matNote4" className="text-xs cursor-pointer leading-relaxed">
+                                Selv om sikkerhet ved brann dokumenteres ved analyse, må innvendige overflater på vegger og i himlinger ha minst klasse D-s2,d0 [In 2]. Lavere ytelse kan gi uakseptabelt bidrag til brannutviklingen.
+                              </label>
+                            </div>
+                          </div>
 
-                      {/* Nedforet himling i rømningsvei */}
-                      <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
-                        <Label className="text-xs font-medium">Nedforet himling i rømningsvei</Label>
-                        <div className="flex items-start gap-2">
-                          <Checkbox
-                            id="himlingNote1"
-                            checked={formData.himlingNote1}
-                            onCheckedChange={(checked) => setFormData({...formData, himlingNote1: !!checked})}
-                          />
-                          <label htmlFor="himlingNote1" className="text-xs cursor-pointer leading-relaxed">
-                            Himlingen må tilfredsstille klasse A2-s1,d0 [In 1 på begrenset brennbart underlag] og ha et opphengsystem med dokumentert brannmotstand minst 10 minutter for den aktuelle eksponering, eller himlingen må bestå av kledning som tilfredsstiller klasse K₂10 A2-s1,d0 [K1-A].
-                          </label>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <Checkbox
-                            id="himlingNote2"
-                            checked={formData.himlingNote2}
-                            onCheckedChange={(checked) => setFormData({...formData, himlingNote2: !!checked})}
-                          />
-                          <label htmlFor="himlingNote2" className="text-xs cursor-pointer leading-relaxed">
-                            Overflater og kledninger i hulrom over himlingen må ha minst like gode branntekniske egenskaper som overflatene og kledningene i rømningsveien for øvrig.
-                          </label>
-                        </div>
-                      </div>
+                          {/* Nedforet himling i rømningsvei */}
+                          <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                            <Label className="text-xs font-medium">Nedforet himling i rømningsvei</Label>
+                            <div className="flex items-start gap-2">
+                              <Checkbox
+                                id="himlingNote1"
+                                checked={formData.himlingNote1}
+                                onCheckedChange={(checked) => setFormData({...formData, himlingNote1: !!checked})}
+                              />
+                              <label htmlFor="himlingNote1" className="text-xs cursor-pointer leading-relaxed">
+                                Himlingen må tilfredsstille klasse A2-s1,d0 [In 1 på begrenset brennbart underlag] og ha et opphengsystem med dokumentert brannmotstand minst 10 minutter for den aktuelle eksponering, eller himlingen må bestå av kledning som tilfredsstiller klasse K₂10 A2-s1,d0 [K1-A].
+                              </label>
+                            </div>
+                            <div className="flex items-start gap-2">
+                              <Checkbox
+                                id="himlingNote2"
+                                checked={formData.himlingNote2}
+                                onCheckedChange={(checked) => setFormData({...formData, himlingNote2: !!checked})}
+                              />
+                              <label htmlFor="himlingNote2" className="text-xs cursor-pointer leading-relaxed">
+                                Overflater og kledninger i hulrom over himlingen må ha minst like gode branntekniske egenskaper som overflatene og kledningene i rømningsveien for øvrig.
+                              </label>
+                            </div>
+                          </div>
 
-                      {/* Isolasjon-valg */}
-                      <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
-                        <Label className="text-xs font-medium">Isolasjon</Label>
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id="isolasjonSandwich"
-                            checked={formData.isolasjonSandwich === "relevant"}
-                            onCheckedChange={(checked) => 
-                              setFormData({...formData, isolasjonSandwich: checked ? "relevant" : "ikke_relevant"})
-                            }
-                          />
-                          <label htmlFor="isolasjonSandwich" className="text-xs cursor-pointer">
-                            Bruk av sandwichelementer
-                          </label>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id="isolasjonBrennbar"
-                            checked={formData.isolasjonBrennbar === "relevant"}
-                            onCheckedChange={(checked) => 
-                              setFormData({...formData, isolasjonBrennbar: checked ? "relevant" : "ikke_relevant"})
-                            }
-                          />
-                          <label htmlFor="isolasjonBrennbar" className="text-xs cursor-pointer">
-                            Bruk av brennbar isolasjon
-                          </label>
-                        </div>
-                      </div>
+                          {/* Isolasjon-valg */}
+                          <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                            <Label className="text-xs font-medium">Isolasjon</Label>
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id="isolasjonSandwich"
+                                checked={formData.isolasjonSandwich === "relevant"}
+                                onCheckedChange={(checked) => 
+                                  setFormData({...formData, isolasjonSandwich: checked ? "relevant" : "ikke_relevant"})
+                                }
+                              />
+                              <label htmlFor="isolasjonSandwich" className="text-xs cursor-pointer">
+                                Bruk av sandwichelementer
+                              </label>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id="isolasjonBrennbar"
+                                checked={formData.isolasjonBrennbar === "relevant"}
+                                onCheckedChange={(checked) => 
+                                  setFormData({...formData, isolasjonBrennbar: checked ? "relevant" : "ikke_relevant"})
+                                }
+                              />
+                              <label htmlFor="isolasjonBrennbar" className="text-xs cursor-pointer">
+                                Bruk av brennbar isolasjon
+                              </label>
+                            </div>
+                          </div>
+                        </>
+                      )}
                       
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('materialer-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
