@@ -5369,7 +5369,7 @@ const Konsept = () => {
                                         checked={formData.oljelagringBF85Krav.includes("bf85_olje_innendors")}
                                         onCheckedChange={(checked) => {
                                           const current = formData.oljelagringBF85Krav || [];
-                                          const innendorsItems = ["bf85_olje_innendors", "bf85_olje_innendors_20l", "bf85_olje_innendors_vegger", "bf85_olje_belysning", "bf85_olje_tank_avstand", "bf85_olje_tank_600l"];
+                                          const innendorsItems = ["bf85_olje_innendors"];
                                           setFormData({
                                             ...formData,
                                             oljelagringBF85Krav: checked
