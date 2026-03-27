@@ -2203,50 +2203,165 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {/* 3.6 §11-9 Materialer og produkter */}
             <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.6 &nbsp;&nbsp; {isBF85 ? <>Kledninger, overflater, vegger og tak (Kap. 30:42/30:51–53) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-9 Materialer og produkters egenskaper ved brann)</span></> : "§11-9 Materialer og produkters egenskaper ved brann"}</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.6 &nbsp;&nbsp; {isBF85 ? <>Kledninger og overflater for vegger og tak (:42) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-9 Materialer og produkters egenskaper ved brann)</span></> : "§11-9 Materialer og produkters egenskaper ved brann"}</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
               <th className="border border-gray-400 p-2 text-left">Løsning</th>
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
-            <tr>
-              <td className="border border-gray-400 p-2 align-top">Generelt</td>
-              <td className="border border-gray-400 p-2">
-                <p className="text-sm">Byggverk skal prosjekteres og utføres slik at det er liten sannsynlighet for at brann skal oppstå, utvikle og spre seg. Det skal tas hensyn til byggverkets bruk og den nødvendige tiden for rømning og redning.</p>
-              </td>
-              <td className="border border-gray-400 p-2 align-top">RIBr</td>
-            </tr>
-            {/* Innvendige overflater og kledninger – noter */}
-            {(formData.matNote1 || formData.matNote2 || formData.matNote3 || formData.matNote4) && (
-              <tr>
-                <td className="border border-gray-400 p-2 align-top">Innvendige overflater og kledninger</td>
-                <td className="border border-gray-400 p-2">
-                  <ol className="list-disc ml-4 space-y-1 text-sm">
-                    {formData.matNote1 && (
-                      <li>Overflater og kledninger er tilfredsstillende når det benyttes produkter med egenskaper som angitt i tabell 1A og 1B, med unntak gitt i nr. 3 og 4.</li>
+
+            {isBF85 ? (
+              <>
+                {/* BF85 :42 Generelt */}
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Generelt (:42)</td>
+                  <td className="border border-gray-400 p-2">
+                    <p className="text-sm mb-2">Kledninger og overflater for vegger og tak skal være i brannteknisk klasse som angitt i Tabell 30:42.</p>
+                    <p className="text-sm mb-2">Brannceller inntil 200 m², unntatt bygninger etter kap. 36 (overnattingssteder) og kap. 37 (sykehus og pleieanstalter), kan ha kledning K2 og overflate In3, forutsatt at brannvesenet med det stigemateriell det rår over kan komme til bygningens fasader.</p>
+                    <p className="text-sm">Små atskilte rom, overstykker og brystning til vinduer, samt overstykker til dører kan ha overflate In3.</p>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                </tr>
+                {/* Tabell 30:42 */}
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Tabell 30:42 Kledningers og overflaters branntekniske klasse</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2" colSpan={3}>
+                    <table className="w-full text-xs border-collapse border border-gray-400">
+                      <thead>
+                        <tr className="bg-gray-100">
+                          <th className="border border-gray-400 p-1.5 text-left" colSpan={2}>Bygningsbrannklasse</th>
+                          <th className="border border-gray-400 p-1.5 text-center">1</th>
+                          <th className="border border-gray-400 p-1.5 text-center">2</th>
+                          <th className="border border-gray-400 p-1.5 text-center">3</th>
+                          <th className="border border-gray-400 p-1.5 text-center">4</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { label: "Innvendig overflate", vals: ["In1", "In2", "In2", "In2"] },
+                          { label: "Utvendig overflate", vals: ["Ut1", "Ut1", "Ut2", "Ut2"] },
+                          { label: "Innvendig kledning", vals: ["K1", "K1", "K2", "K2"] },
+                          { label: "Utvendig kledning", vals: ["K1", "K1", "K2", "K2"] },
+                        ].map((row) => (
+                          <tr key={row.label}>
+                            <td className="border border-gray-400 p-1.5" colSpan={2}>{row.label}</td>
+                            {row.vals.map((v, i) => (
+                              <td key={i} className={`border border-gray-400 p-1.5 text-center ${formData.bygningsbrannklasse === String(i + 1) ? "bg-blue-50 font-bold" : ""}`}>{v}</td>
+                            ))}
+                          </tr>
+                        ))}
+                        <tr>
+                          <td className="border border-gray-400 p-1.5 italic" colSpan={6}>Særkrav for rømningsveg:</td>
+                        </tr>
+                        {[
+                          { label: "Innvendig overflate", vals: ["In1", "In1", "In1", "In1"] },
+                          { label: "Innvendig kledning", vals: ["K1-A", "K1-A", "K1", "K1"] },
+                        ].map((row) => (
+                          <tr key={`saer-${row.label}`}>
+                            <td className="border border-gray-400 p-1.5 pl-4" colSpan={2}>{row.label}</td>
+                            {row.vals.map((v, i) => (
+                              <td key={i} className={`border border-gray-400 p-1.5 text-center ${formData.bygningsbrannklasse === String(i + 1) ? "bg-blue-50 font-bold" : ""}`}>{v}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    {formData.bygningsbrannklasse && (
+                      <p className="text-xs mt-1 italic">Bygningsbrannklasse {formData.bygningsbrannklasse} er markert i tabellen.</p>
                     )}
-                    {formData.matNote2 && (
-                      <li>Overflater i hulrom betraktes på samme måte som innvendig overflate og må ha minst like gode branntekniske egenskaper.</li>
+                    {(formData.bygningstype === "Overnattingssted" || formData.bygningstype === "Sykehus") && (
+                      <p className="text-xs mt-1 font-medium text-red-600">
+                        Bygningen er {formData.bygningstype === "Overnattingssted" ? "overnattingssted (Kap. 36)" : "sykehus/pleieanstalt (Kap. 37)"} – unntaket for brannceller inntil 200 m² (K2/In3) gjelder ikke.
+                      </p>
                     )}
-                    {formData.matNote3 && (
-                      <li>Rom med brannfarlig virksomhet må ha kledning som tilfredsstiller klasse K<sub>2</sub>10 A2-s1,d0 [K1-A]. Eksempel på rom med brannfarlig virksomhet er rom hvor det oppbevares fyrverkeri, brannfarlig væske kategori 1 og 2, eller rom hvor det utføres varme arbeider som sveising, sliping samt rom hvor det arbeides med åpen varme.</li>
-                    )}
-                    {formData.matNote4 && (
-                      <li>Selv om sikkerhet ved brann dokumenteres ved analyse, må innvendige overflater på vegger og i himlinger ha minst klasse D-s2,d0 [In 2]. Lavere ytelse kan gi uakseptabelt bidrag til brannutviklingen. Dette kan utgjøre en fare for personsikkerheten. En meget rask brannutvikling kan også medføre at automatiske slokkeanlegg ikke har den effekten som er forutsatt.</li>
-                    )}
-                  </ol>
-                </td>
-                <td className="border border-gray-400 p-2 align-top">RIBr</td>
-              </tr>
-            )}
-            <tr className="bg-gray-100">
-              <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Overflater i brannceller som ikke er rømningsvei</td>
-            </tr>
-            {formData.risikoklasse === "RK6" ? (
+                  </td>
+                </tr>
+                {/* Isolasjon for BF85 */}
+                {(formData.isolasjonSandwich === "relevant" || formData.isolasjonBrennbar === "relevant") && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Isolasjon</td>
+                    <td className="border border-gray-400 p-2">
+                      <ul className="list-disc ml-4 space-y-1 text-sm">
+                        {formData.isolasjonSandwich === "relevant" && <li>Bruk av sandwichelementer er relevant for tiltaket.</li>}
+                        {formData.isolasjonBrennbar === "relevant" && <li>Bruk av brennbar isolasjon er relevant for tiltaket.</li>}
+                      </ul>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
+                )}
+              </>
+            ) : (
               <>
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak, og i sjakter og hulrom</td>
+                  <td className="border border-gray-400 p-2 align-top">Generelt</td>
+                  <td className="border border-gray-400 p-2">
+                    <p className="text-sm">Byggverk skal prosjekteres og utføres slik at det er liten sannsynlighet for at brann skal oppstå, utvikle og spre seg. Det skal tas hensyn til byggverkets bruk og den nødvendige tiden for rømning og redning.</p>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                </tr>
+                {/* Innvendige overflater og kledninger – noter */}
+                {(formData.matNote1 || formData.matNote2 || formData.matNote3 || formData.matNote4) && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Innvendige overflater og kledninger</td>
+                    <td className="border border-gray-400 p-2">
+                      <ol className="list-disc ml-4 space-y-1 text-sm">
+                        {formData.matNote1 && (
+                          <li>Overflater og kledninger er tilfredsstillende når det benyttes produkter med egenskaper som angitt i tabell 1A og 1B, med unntak gitt i nr. 3 og 4.</li>
+                        )}
+                        {formData.matNote2 && (
+                          <li>Overflater i hulrom betraktes på samme måte som innvendig overflate og må ha minst like gode branntekniske egenskaper.</li>
+                        )}
+                        {formData.matNote3 && (
+                          <li>Rom med brannfarlig virksomhet må ha kledning som tilfredsstiller klasse K<sub>2</sub>10 A2-s1,d0 [K1-A]. Eksempel på rom med brannfarlig virksomhet er rom hvor det oppbevares fyrverkeri, brannfarlig væske kategori 1 og 2, eller rom hvor det utføres varme arbeider som sveising, sliping samt rom hvor det arbeides med åpen varme.</li>
+                        )}
+                        {formData.matNote4 && (
+                          <li>Selv om sikkerhet ved brann dokumenteres ved analyse, må innvendige overflater på vegger og i himlinger ha minst klasse D-s2,d0 [In 2]. Lavere ytelse kan gi uakseptabelt bidrag til brannutviklingen. Dette kan utgjøre en fare for personsikkerheten. En meget rask brannutvikling kan også medføre at automatiske slokkeanlegg ikke har den effekten som er forutsatt.</li>
+                        )}
+                      </ol>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                )}
+                <tr className="bg-gray-100">
+                  <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Overflater i brannceller som ikke er rømningsvei</td>
+                </tr>
+                {formData.risikoklasse === "RK6" ? (
+                  <>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak, og i sjakter og hulrom</td>
+                      <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">B-s1,d0 [In 1]</span></td>
+                      <td className="border border-gray-400 p-2 align-top">ARK</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Overflater på gulv</td>
+                      <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">D<sub>fl</sub>-s1 [G]</span></td>
+                      <td className="border border-gray-400 p-2 align-top">ARK</td>
+                    </tr>
+                  </>
+                ) : (
+                  <>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak i branncelle inntil 200 m²</td>
+                      <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">D-s2,d0 [In 2]</span></td>
+                      <td className="border border-gray-400 p-2 align-top">ARK</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak i branncelle over 200 m²</td>
+                      <td className="border border-gray-400 p-2">
+                        <span className="text-red-600 font-medium">{formData.brannklasse === "BKL1" ? "D-s2,d0 [In 2]" : "B-s1,d0 [In 1]"}</span>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">ARK</td>
+                    </tr>
+                  </>
+                )}
+                <tr className="bg-gray-100">
+                  <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Overflater i brannceller som er rømningsvei</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak</td>
                   <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">B-s1,d0 [In 1]</span></td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
@@ -2255,182 +2370,153 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">D<sub>fl</sub>-s1 [G]</span></td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
-              </>
-            ) : (
-              <>
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak i branncelle inntil 200 m²</td>
-                  <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">D-s2,d0 [In 2]</span></td>
-                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                <tr className="bg-gray-100">
+                  <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Utvendige overflater</td>
                 </tr>
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak i branncelle over 200 m²</td>
+                  <td className="border border-gray-400 p-2 align-top">Overflater på ytterkledning</td>
                   <td className="border border-gray-400 p-2">
-                    <span className="text-red-600 font-medium">{formData.brannklasse === "BKL1" ? "D-s2,d0 [In 2]" : "B-s1,d0 [In 1]"}</span>
+                    <span className="text-red-600 font-medium">{formData.brannklasse === "BKL1" ? "D-s3,d0 [Ut 2]" : "B-s3,d0 [Ut 1]"}</span>
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
-              </>
-            )}
-            <tr className="bg-gray-100">
-              <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Overflater i brannceller som er rømningsvei</td>
-            </tr>
-            <tr>
-              <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak</td>
-              <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">B-s1,d0 [In 1]</span></td>
-              <td className="border border-gray-400 p-2 align-top">ARK</td>
-            </tr>
-            <tr>
-              <td className="border border-gray-400 p-2 align-top">Overflater på gulv</td>
-              <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">D<sub>fl</sub>-s1 [G]</span></td>
-              <td className="border border-gray-400 p-2 align-top">ARK</td>
-            </tr>
-            {/* Utvendige overflater section is unchanged - preaksepterte ytelser apply for all RK */}
-            <tr className="bg-gray-100">
-              <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Utvendige overflater</td>
-            </tr>
-            <tr>
-              <td className="border border-gray-400 p-2 align-top">Overflater på ytterkledning</td>
-              <td className="border border-gray-400 p-2">
-                <span className="text-red-600 font-medium">{formData.brannklasse === "BKL1" ? "D-s3,d0 [Ut 2]" : "B-s3,d0 [Ut 1]"}</span>
-              </td>
-              <td className="border border-gray-400 p-2 align-top">ARK</td>
-            </tr>
-            <tr>
-              <td className="border border-gray-400 p-2 align-top">Utvendige overflater</td>
-              <td className="border border-gray-400 p-2">
-                <p className="font-medium mb-1">Preaksepterte ytelser</p>
-                <ol className="list-decimal list-inside space-y-2 text-sm">
-                  <li>Utvendige overflater er tilfredsstillende når det benyttes produkter med egenskaper som angitt i tabell 1A og 1B, med unntak gitt i nr. 2 til 4.</li>
-                  <li>Yttervegg i byggverk i brannklasse 2 og 3 kan ha utvendig overflate som tilfredsstiller klasse <span className="text-red-600 font-medium">D-s3,d0 [Ut 2]</span>, når enten
-                    <ol className="list-decimal ml-6 mt-1 space-y-1">
-                      <li>ytterveggen er utformet slik at den hindrer brannspredning i fasaden, eller</li>
-                      <li>byggverket er i risikoklasse 1, 2 og 4 og har inntil fire etasjer, og det er liten fare for brannspredning til og fra nabobyggverk.</li>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Utvendige overflater</td>
+                  <td className="border border-gray-400 p-2">
+                    <p className="font-medium mb-1">Preaksepterte ytelser</p>
+                    <ol className="list-decimal list-inside space-y-2 text-sm">
+                      <li>Utvendige overflater er tilfredsstillende når det benyttes produkter med egenskaper som angitt i tabell 1A og 1B, med unntak gitt i nr. 2 til 4.</li>
+                      <li>Yttervegg i byggverk i brannklasse 2 og 3 kan ha utvendig overflate som tilfredsstiller klasse <span className="text-red-600 font-medium">D-s3,d0 [Ut 2]</span>, når enten
+                        <ol className="list-decimal ml-6 mt-1 space-y-1">
+                          <li>ytterveggen er utformet slik at den hindrer brannspredning i fasaden, eller</li>
+                          <li>byggverket er i risikoklasse 1, 2 og 4 og har inntil fire etasjer, og det er liten fare for brannspredning til og fra nabobyggverk.</li>
+                        </ol>
+                      </li>
+                      <li>Overflater i hulrom i ytterveggkonstruksjoner betraktes på samme måte som utvendig overflate og må ha minst like gode branntekniske egenskaper.</li>
+                      <li>Byggverk i brannklasse 1 og boliger inntil 3 etasjer kan ha uklassifiserte overflater i hulrom.</li>
                     </ol>
-                  </li>
-                  <li>Overflater i hulrom i ytterveggkonstruksjoner betraktes på samme måte som utvendig overflate og må ha minst like gode branntekniske egenskaper.</li>
-                  <li>Byggverk i brannklasse 1 og boliger inntil 3 etasjer kan ha uklassifiserte overflater i hulrom.</li>
-                </ol>
-              </td>
-              <td className="border border-gray-400 p-2 align-top">ARK</td>
-            </tr>
-            <tr className="bg-gray-100">
-              <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Kledninger</td>
-            </tr>
-            {formData.risikoklasse === "RK6" ? (
-              <>
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Kledning i brannceller</td>
-                  <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">K<sub>2</sub>10 B-s1,d0 [K1]</span></td>
+                  </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Kledninger i branncelle som er rømningsvei</td>
-                  <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">K<sub>2</sub>10 A2-s1,d0 [K1-A]</span></td>
-                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                <tr className="bg-gray-100">
+                  <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Kledninger</td>
+                </tr>
+                {formData.risikoklasse === "RK6" ? (
+                  <>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Kledning i brannceller</td>
+                      <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">K<sub>2</sub>10 B-s1,d0 [K1]</span></td>
+                      <td className="border border-gray-400 p-2 align-top">ARK</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Kledninger i branncelle som er rømningsvei</td>
+                      <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">K<sub>2</sub>10 A2-s1,d0 [K1-A]</span></td>
+                      <td className="border border-gray-400 p-2 align-top">ARK</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Kledning i sjakter og hulrom</td>
+                      <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">K<sub>2</sub>10 A2-s1,d0 [K1-A]</span></td>
+                      <td className="border border-gray-400 p-2 align-top">ARK</td>
+                    </tr>
+                  </>
+                ) : (
+                  <>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Kledning i branncelle inntil 200 m²</td>
+                      <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">K<sub>2</sub>10 D-s2,d0 [K2]</span></td>
+                      <td className="border border-gray-400 p-2 align-top">ARK</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Kledning i branncelle som er rømningsvei</td>
+                      <td className="border border-gray-400 p-2">
+                        <span className="text-red-600 font-medium">{formData.brannklasse === "BKL1" ? "K₂10 B-s1,d0 [K1]" : "K₂10 A2-s1,d0 [K1-A]"}</span>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">ARK</td>
+                    </tr>
+                  </>
+                )}
+                <tr className="bg-gray-100">
+                  <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Taktekning</td>
                 </tr>
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Kledning i sjakter og hulrom</td>
-                  <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">K<sub>2</sub>10 A2-s1,d0 [K1-A]</span></td>
-                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                </tr>
-              </>
-            ) : (
-              <>
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Kledning i branncelle inntil 200 m²</td>
-                  <td className="border border-gray-400 p-2"><span className="text-red-600 font-medium">K<sub>2</sub>10 D-s2,d0 [K2]</span></td>
-                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Kledning i branncelle som er rømningsvei</td>
+                  <td className="border border-gray-400 p-2 align-top">Taktekning</td>
                   <td className="border border-gray-400 p-2">
-                    <span className="text-red-600 font-medium">{formData.brannklasse === "BKL1" ? "K₂10 B-s1,d0 [K1]" : "K₂10 A2-s1,d0 [K1-A]"}</span>
+                    <p className="mb-2">Taktekning kan bidra til brannspredning i et byggverk og mellom ulike byggverk.</p>
+                    <p className="font-medium mb-1">Preaksepterte ytelser</p>
+                    <ol className="list-decimal list-inside space-y-1">
+                      <li>Taktekning må tilfredsstille klasse <span className="text-red-600 font-medium">B<sub>ROOF</sub>(t2) [Ta]</span>.</li>
+                      <li>Teglstein, betongtakstein, skifertak og metallplater kan uten ytterligere dokumentasjon antas å tilfredsstille klasse B<sub>ROOF</sub>(t2) [Ta].</li>
+                      <li>For småhus kan taktekning være uklassifisert der avstanden mellom de enkelte byggverk er minst 8 m.</li>
+                      <li>Ett-sjikts tak av duk og folie må tilfredsstille klasse <span className="text-red-600 font-medium">B-s3,d0 (Ut1)</span>.</li>
+                    </ol>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+                {(formData.himlingNote1 || formData.himlingNote2) && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Nedforet himling i rømningsvei</td>
+                    <td className="border border-gray-400 p-2">
+                      <ol className="list-decimal list-inside space-y-1 text-sm">
+                        {formData.himlingNote1 && (
+                          <li>Himlingen må tilfredsstille klasse A2-s1,d0 [In 1 på begrenset brennbart underlag] og ha et opphengsystem med dokumentert brannmotstand minst 10 minutter for den aktuelle eksponering, eller himlingen må bestå av kledning som tilfredsstiller klasse K<sub>2</sub>10 A2-s1,d0 [K1-A].</li>
+                        )}
+                        {formData.himlingNote2 && (
+                          <li>Overflater og kledninger i hulrom over himlingen må ha minst like gode branntekniske egenskaper som overflatene og kledningene i rømningsveien for øvrig.</li>
+                        )}
+                      </ol>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
+                )}
+                {/* Isolasjon */}
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Isolasjon</td>
+                  <td className="border border-gray-400 p-2">
+                    <p className="mb-2">Isolasjonsmaterialer kan bidra til brannspredning og røykutvikling i et byggverk.</p>
+                    <p className="font-medium mb-1">Preaksepterte ytelser</p>
+                    <ol className="list-decimal list-inside space-y-2 text-sm">
+                      <li>Isolasjon må tilfredsstille klasse <span className="text-red-600 font-medium">A2-s1,d0</span> med mindre annet er angitt i nr. 2 til 9.</li>
+                      {formData.isolasjonSandwich === "relevant" && (
+                        <>
+                          <li>Produkter (sandwichelementer) som tilfredsstiller klasse B-s1,d0 eller Eurefic-klasse A, kan benyttes i byggverk i risikoklasse 1–4 i brannklasse 1 og i industri- og lagerbygninger i brannklasse 2. For tak gjelder nr. 6 og 7.</li>
+                          <li>Produkter (sandwichelementer) som tilfredsstiller klasse D-s2,d0 eller Eurefic-klasse E, kan benyttes i industri- og lagerbygninger i brannklasse 1. For tak gjelder nr. 6 og 7.</li>
+                          <li>Produkter (sandwichelementer) som ikke tilfredsstiller A2-s1,d0 må være beskyttet av kledning K<sub>2</sub>10 A2-s1,d0 [K1-A] mot rømningsveier.</li>
+                          <li>Produkter (sandwichelementer) for små kjøle- og fryserom i risikoklasse 4 kan ha uspesifisert ytelse.</li>
+                        </>
+                      )}
+                      {formData.isolasjonBrennbar === "relevant" && (
+                        <>
+                          <li>Brennbar isolasjon kan benyttes på oversiden av etasjeskiller mot oppforet tak eller loft som bare kan benyttes som lager, forutsatt at
+                            <ol className="list-decimal ml-6 mt-1 space-y-1">
+                              <li>etasjeskilleren mot oppforet tak eller loft er branncellebegrensende bygningsdel dimensjonert for tosidig brannpåkjenning</li>
+                              <li>takkonstruksjonen over etasjeskilleren ikke har avgjørende betydning for byggverkets stabilitet i rømningsfasen</li>
+                            </ol>
+                          </li>
+                          <li>Brennbar isolasjon kan benyttes i isolerte takflater forutsatt at
+                            <ol className="list-decimal ml-6 mt-1 space-y-1">
+                              <li>isolasjonen legges på et bærende underlag som tilfredsstiller klasse A2-s1,d0 og som har dokumentert bæreevne under brann (R-klasse i samsvar med § 11–4)</li>
+                              <li>det bærende underlaget beskytter isolasjonen mot varmepåkjenning fra undersiden (for eksempel betongdekke). I brannklasse 1 og 2 kan alternativt den brennbare isolasjonen beskyttes på undersiden av isolasjon av klasse A2-s1,d0 med tilstrekkelig tykkelse til å isolere mot varmepåkjenning.</li>
+                              <li>den brennbare isolasjonen er beskyttet på oversiden av isolasjon med tykkelse 30 mm og som tilfredsstiller klasse A2-s1,d0. Alternativt til beskyttelse på oversiden kan den brennbare isolasjonen oppdeles i arealer på inntil 400 m².</li>
+                            </ol>
+                          </li>
+                          <li>Brennbar isolasjon kan benyttes som utvendig tilleggsisolering av yttervegger med unntak for i byggverk i brannklasse 3 og i byggverk i risikoklasse 6 forutsatt at
+                            <ol className="list-decimal ml-6 mt-1 space-y-1">
+                              <li>det benyttes isolasjonssystemer som er dokumentert ved prøving etter <em>SP Fire 105: Large scale testing of facade systems (1994)</em> eller tilsvarende. Med isolasjonssystemer menes systemer som består av isolasjon og fasademateriale som monteres på et eksisterende underlag.</li>
+                              <li>fasademateriale og isolasjon må være prøvet som en enhet. Underlaget må ha branntekniske egenskaper som minst tilsvarer det som ble benyttet ved prøving.</li>
+                            </ol>
+                          </li>
+                          <li>Brennbar isolasjon basert på cellulose- eller tekstilfiber og lignende kan benyttes i byggverk i brannklasse 1, og boliger inntil 3 etasjer. Isolasjonen må tilfredsstille Euroklasse E, eller være i samsvar med <em>NT Fire 035: Building products: Flammability and smouldering resistance of loose-fill thermal insulation (1988)</em>. Isolasjonen kan være utildekket i kaldt uinnredet loft og oppforet tak.</li>
+                        </>
+                      )}
+                      {formData.isolasjonSandwich === "ikke_relevant" && formData.isolasjonBrennbar === "ikke_relevant" && (
+                        <li className="list-none ml-0 mt-2 italic text-gray-600">Det er ikke planlagt bruk av sandwichelementer eller brennbar isolasjon i tiltaket. Kun hovedkravet om A2-s1,d0 gjelder.</li>
+                      )}
+                    </ol>
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
               </>
             )}
-            <tr className="bg-gray-100">
-              <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Taktekning</td>
-            </tr>
-            <tr>
-              <td className="border border-gray-400 p-2 align-top">Taktekning</td>
-              <td className="border border-gray-400 p-2">
-                <p className="mb-2">Taktekning kan bidra til brannspredning i et byggverk og mellom ulike byggverk.</p>
-                <p className="font-medium mb-1">Preaksepterte ytelser</p>
-                <ol className="list-decimal list-inside space-y-1">
-                  <li>Taktekning må tilfredsstille klasse <span className="text-red-600 font-medium">B<sub>ROOF</sub>(t2) [Ta]</span>.</li>
-                  <li>Teglstein, betongtakstein, skifertak og metallplater kan uten ytterligere dokumentasjon antas å tilfredsstille klasse B<sub>ROOF</sub>(t2) [Ta].</li>
-                  <li>For småhus kan taktekning være uklassifisert der avstanden mellom de enkelte byggverk er minst 8 m.</li>
-                  <li>Ett-sjikts tak av duk og folie må tilfredsstille klasse <span className="text-red-600 font-medium">B-s3,d0 (Ut1)</span>.</li>
-                </ol>
-              </td>
-              <td className="border border-gray-400 p-2 align-top">ARK</td>
-            </tr>
-            {(formData.himlingNote1 || formData.himlingNote2) && (
-              <tr>
-                <td className="border border-gray-400 p-2 align-top">Nedforet himling i rømningsvei</td>
-                <td className="border border-gray-400 p-2">
-                  <ol className="list-decimal list-inside space-y-1 text-sm">
-                    {formData.himlingNote1 && (
-                      <li>Himlingen må tilfredsstille klasse A2-s1,d0 [In 1 på begrenset brennbart underlag] og ha et opphengsystem med dokumentert brannmotstand minst 10 minutter for den aktuelle eksponering, eller himlingen må bestå av kledning som tilfredsstiller klasse K<sub>2</sub>10 A2-s1,d0 [K1-A].</li>
-                    )}
-                    {formData.himlingNote2 && (
-                      <li>Overflater og kledninger i hulrom over himlingen må ha minst like gode branntekniske egenskaper som overflatene og kledningene i rømningsveien for øvrig.</li>
-                    )}
-                  </ol>
-                </td>
-                <td className="border border-gray-400 p-2 align-top">ARK</td>
-              </tr>
-            )}
-            {/* Isolasjon */}
-            <tr>
-              <td className="border border-gray-400 p-2 align-top">Isolasjon</td>
-              <td className="border border-gray-400 p-2">
-                <p className="mb-2">Isolasjonsmaterialer kan bidra til brannspredning og røykutvikling i et byggverk.</p>
-                <p className="font-medium mb-1">Preaksepterte ytelser</p>
-                <ol className="list-decimal list-inside space-y-2 text-sm">
-                  <li>Isolasjon må tilfredsstille klasse <span className="text-red-600 font-medium">A2-s1,d0</span> med mindre annet er angitt i nr. 2 til 9.</li>
-                  {formData.isolasjonSandwich === "relevant" && (
-                    <>
-                      <li>Produkter (sandwichelementer) som tilfredsstiller klasse B-s1,d0 eller Eurefic-klasse A, kan benyttes i byggverk i risikoklasse 1–4 i brannklasse 1 og i industri- og lagerbygninger i brannklasse 2. For tak gjelder nr. 6 og 7.</li>
-                      <li>Produkter (sandwichelementer) som tilfredsstiller klasse D-s2,d0 eller Eurefic-klasse E, kan benyttes i industri- og lagerbygninger i brannklasse 1. For tak gjelder nr. 6 og 7.</li>
-                      <li>Produkter (sandwichelementer) som ikke tilfredsstiller A2-s1,d0 må være beskyttet av kledning K<sub>2</sub>10 A2-s1,d0 [K1-A] mot rømningsveier.</li>
-                      <li>Produkter (sandwichelementer) for små kjøle- og fryserom i risikoklasse 4 kan ha uspesifisert ytelse.</li>
-                    </>
-                  )}
-                  {formData.isolasjonBrennbar === "relevant" && (
-                    <>
-                      <li>Brennbar isolasjon kan benyttes på oversiden av etasjeskiller mot oppforet tak eller loft som bare kan benyttes som lager, forutsatt at
-                        <ol className="list-decimal ml-6 mt-1 space-y-1">
-                          <li>etasjeskilleren mot oppforet tak eller loft er branncellebegrensende bygningsdel dimensjonert for tosidig brannpåkjenning</li>
-                          <li>takkonstruksjonen over etasjeskilleren ikke har avgjørende betydning for byggverkets stabilitet i rømningsfasen</li>
-                        </ol>
-                      </li>
-                      <li>Brennbar isolasjon kan benyttes i isolerte takflater forutsatt at
-                        <ol className="list-decimal ml-6 mt-1 space-y-1">
-                          <li>isolasjonen legges på et bærende underlag som tilfredsstiller klasse A2-s1,d0 og som har dokumentert bæreevne under brann (R-klasse i samsvar med § 11–4)</li>
-                          <li>det bærende underlaget beskytter isolasjonen mot varmepåkjenning fra undersiden (for eksempel betongdekke). I brannklasse 1 og 2 kan alternativt den brennbare isolasjonen beskyttes på undersiden av isolasjon av klasse A2-s1,d0 med tilstrekkelig tykkelse til å isolere mot varmepåkjenning.</li>
-                          <li>den brennbare isolasjonen er beskyttet på oversiden av isolasjon med tykkelse 30 mm og som tilfredsstiller klasse A2-s1,d0. Alternativt til beskyttelse på oversiden kan den brennbare isolasjonen oppdeles i arealer på inntil 400 m².</li>
-                        </ol>
-                      </li>
-                      <li>Brennbar isolasjon kan benyttes som utvendig tilleggsisolering av yttervegger med unntak for i byggverk i brannklasse 3 og i byggverk i risikoklasse 6 forutsatt at
-                        <ol className="list-decimal ml-6 mt-1 space-y-1">
-                          <li>det benyttes isolasjonssystemer som er dokumentert ved prøving etter <em>SP Fire 105: Large scale testing of facade systems (1994)</em> eller tilsvarende. Med isolasjonssystemer menes systemer som består av isolasjon og fasademateriale som monteres på et eksisterende underlag.</li>
-                          <li>fasademateriale og isolasjon må være prøvet som en enhet. Underlaget må ha branntekniske egenskaper som minst tilsvarer det som ble benyttet ved prøving.</li>
-                        </ol>
-                      </li>
-                      <li>Brennbar isolasjon basert på cellulose- eller tekstilfiber og lignende kan benyttes i byggverk i brannklasse 1, og boliger inntil 3 etasjer. Isolasjonen må tilfredsstille Euroklasse E, eller være i samsvar med <em>NT Fire 035: Building products: Flammability and smouldering resistance of loose-fill thermal insulation (1988)</em>. Isolasjonen kan være utildekket i kaldt uinnredet loft og oppforet tak.</li>
-                    </>
-                  )}
-                  {formData.isolasjonSandwich === "ikke_relevant" && formData.isolasjonBrennbar === "ikke_relevant" && (
-                    <li className="list-none ml-0 mt-2 italic text-gray-600">Det er ikke planlagt bruk av sandwichelementer eller brennbar isolasjon i tiltaket. Kun hovedkravet om A2-s1,d0 gjelder.</li>
-                  )}
-                </ol>
-              </td>
-              <td className="border border-gray-400 p-2 align-top">ARK</td>
-            </tr>
             {formData.materialerKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
