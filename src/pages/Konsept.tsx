@@ -3616,7 +3616,54 @@ const Konsept = () => {
                         ) : null;
                       })()}
 
-                      {/* BF85: Knapp for å aktivere TEK17-krav ved >400 MJ/m² */}
+                      {/* BF85 Kap 34: Industri, Kontor, Garasje, Lager – Tabell 34:23 */}
+                      {formData.regelverk === "BF85" && ["Industri", "Kontor", "Garasje", "Lager"].includes(formData.bygningstype) && (() => {
+                        const areal = parseFloat(formData.areal) || 0;
+                        const brannbelastning = parseFloat(formData.bf85_34_brannbelastning) || 0;
+                        const tiltak = formData.bf85_34_tiltak || "ingen";
+                        const krav = brannbelastning > 0 ? getBF85BrannveggKravKap34(areal, brannbelastning, tiltak) : null;
+
+                        return (
+                          <div className="space-y-3">
+                            <p className="text-xs font-semibold">Tabell 34:23 – Største bruttoareal uten oppdeling med brannvegg</p>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Gjennomsnittlig spesifikk brannbelastning (MJ/m²)</Label>
+                                <Input
+                                  type="number"
+                                  placeholder="f.eks. 150"
+                                  value={formData.bf85_34_brannbelastning}
+                                  onChange={(e) => setFormData({...formData, bf85_34_brannbelastning: e.target.value})}
+                                  className="h-8 text-xs"
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Tiltak</Label>
+                                <Select
+                                  value={formData.bf85_34_tiltak}
+                                  onValueChange={(value) => setFormData({...formData, bf85_34_tiltak: value as BF85Tabell3423Tiltak})}
+                                >
+                                  <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="ingen">Uten brannventilasjon og sprinkleranlegg</SelectItem>
+                                    <SelectItem value="brannventilasjon">Med brannventilasjon</SelectItem>
+                                    <SelectItem value="sprinkler">Med sprinkleranlegg</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                            {krav && (
+                              <div className={`p-3 rounded-md border ${krav.krevBrannvegg ? "bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800" : "bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800"}`}>
+                                <p className={`text-sm font-medium ${krav.krevBrannvegg ? "text-red-800 dark:text-red-200" : "text-green-800 dark:text-green-200"}`}>
+                                  {krav.krevBrannvegg ? "⚠️" : "✅"} {krav.merknad}
+                                </p>
+                                <p className="text-xs text-muted-foreground mt-1">Ref. Tabell 34:23 – Kap. 34</p>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
+
                       {formData.regelverk === "BF85" && (
                         <div className="space-y-3">
                           <div className="flex items-center gap-3">
