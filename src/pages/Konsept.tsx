@@ -686,6 +686,7 @@ const Konsept = () => {
     bf85HarBrannalarm: false, // For kontor
     bf85TekniskeRomRelevant: false, // Kap. 30:33
     bf85LoftKjellerRelevant: false, // Kap. 30:64
+    bf85_1332_avtrekk: false, // :1332 Avtrekk
   });
 
   // Load existing concept if conceptId is provided
@@ -5750,117 +5751,137 @@ const Konsept = () => {
                         <Label className="text-base font-extrabold text-foreground">3.7 § 11-10 Tekniske installasjoner</Label>
                       </div>
                       
-                      {/* Ventilasjonsanlegg */}
-                      <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id="ventilasjonRelevant"
-                            checked={formData.ventilasjonRelevant}
-                            onCheckedChange={(checked) => setFormData({...formData, ventilasjonRelevant: !!checked})}
-                          />
-                          <label htmlFor="ventilasjonRelevant" className="text-xs font-medium cursor-pointer">
-                            A. Ventilasjonsanlegg er relevant for tiltaket
-                          </label>
-                        </div>
-                        
-                        {formData.ventilasjonRelevant && (
-                          <div className="ml-6 space-y-2 pt-2 border-t">
-                            <Label className="text-xs text-muted-foreground">Tilleggskrav (krav 1-4 inkluderes alltid):</Label>
+                      {formData.regelverk === "BF85" ? (
+                        <>
+                          {/* BF85 :1332 Avtrekk */}
+                          <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
                             <div className="flex items-center gap-2">
                               <Checkbox
-                                id="ventKrav5"
-                                checked={formData.ventKrav5}
-                                onCheckedChange={(checked) => setFormData({...formData, ventKrav5: !!checked})}
+                                id="bf85_1332_avtrekk"
+                                checked={!!formData.bf85_1332_avtrekk}
+                                onCheckedChange={(checked) => setFormData({...formData, bf85_1332_avtrekk: !!checked})}
                               />
-                              <label htmlFor="ventKrav5" className="text-xs cursor-pointer">
-                                Storkjøkken/frityr - EI 30 A2-s1,d0
-                              </label>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id="ventKrav6"
-                                checked={formData.ventKrav6}
-                                onCheckedChange={(checked) => setFormData({...formData, ventKrav6: !!checked})}
-                              />
-                              <label htmlFor="ventKrav6" className="text-xs cursor-pointer">
-                                Kjøkken boenheter - EI 15 A2-s1,d0
-                              </label>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id="ventKrav7"
-                                checked={formData.ventKrav7}
-                                onCheckedChange={(checked) => setFormData({...formData, ventKrav7: !!checked})}
-                              />
-                              <label htmlFor="ventKrav7" className="text-xs cursor-pointer">
-                                Småhus - avtrekk stål/aluminium
-                              </label>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id="ventKrav8"
-                                checked={formData.ventKrav8}
-                                onCheckedChange={(checked) => setFormData({...formData, ventKrav8: !!checked})}
-                              />
-                              <label htmlFor="ventKrav8" className="text-xs cursor-pointer">
-                                Småhus - kanal klasse E
-                              </label>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id="ventKrav9"
-                                checked={formData.ventKrav9}
-                                onCheckedChange={(checked) => setFormData({...formData, ventKrav9: !!checked})}
-                              />
-                              <label htmlFor="ventKrav9" className="text-xs cursor-pointer">
-                                Brannspjeld i seksjoneringsvegg
+                              <label htmlFor="bf85_1332_avtrekk" className="text-xs font-medium cursor-pointer">
+                                :1332 Avtrekk
                               </label>
                             </div>
                           </div>
-                        )}
-                      </div>
-                      
-                      {/* Vann- og avløpsrør */}
-                      <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id="vannAvlopRelevant"
-                            checked={formData.vannAvlopRelevant}
-                            onCheckedChange={(checked) => setFormData({...formData, vannAvlopRelevant: !!checked})}
-                          />
-                          <label htmlFor="vannAvlopRelevant" className="text-xs font-medium cursor-pointer">
-                            B. Vann- og avløpsrør, rørpostanlegg, sentralstøvsugeranlegg og lignende
-                          </label>
-                        </div>
-                      </div>
-                      
-                      {/* Rør- og kanalisolasjon */}
-                      <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id="rorIsolasjonRelevant"
-                            checked={formData.rorIsolasjonRelevant}
-                            onCheckedChange={(checked) => setFormData({...formData, rorIsolasjonRelevant: !!checked})}
-                          />
-                          <label htmlFor="rorIsolasjonRelevant" className="text-xs font-medium cursor-pointer">
-                            C. Rør- og kanalisolasjon er relevant for tiltaket
-                          </label>
-                        </div>
-                      </div>
-                      
-                      {/* Elektriske installasjoner */}
-                      <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id="elektriskRelevant"
-                            checked={formData.elektriskRelevant}
-                            onCheckedChange={(checked) => setFormData({...formData, elektriskRelevant: !!checked})}
-                          />
-                          <label htmlFor="elektriskRelevant" className="text-xs font-medium cursor-pointer">
-                            D. Elektriske installasjoner er relevant for tiltaket
-                          </label>
-                        </div>
-                      </div>
+                        </>
+                      ) : (
+                        <>
+                          {/* Ventilasjonsanlegg */}
+                          <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id="ventilasjonRelevant"
+                                checked={formData.ventilasjonRelevant}
+                                onCheckedChange={(checked) => setFormData({...formData, ventilasjonRelevant: !!checked})}
+                              />
+                              <label htmlFor="ventilasjonRelevant" className="text-xs font-medium cursor-pointer">
+                                A. Ventilasjonsanlegg er relevant for tiltaket
+                              </label>
+                            </div>
+                            
+                            {formData.ventilasjonRelevant && (
+                              <div className="ml-6 space-y-2 pt-2 border-t">
+                                <Label className="text-xs text-muted-foreground">Tilleggskrav (krav 1-4 inkluderes alltid):</Label>
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    id="ventKrav5"
+                                    checked={formData.ventKrav5}
+                                    onCheckedChange={(checked) => setFormData({...formData, ventKrav5: !!checked})}
+                                  />
+                                  <label htmlFor="ventKrav5" className="text-xs cursor-pointer">
+                                    Storkjøkken/frityr - EI 30 A2-s1,d0
+                                  </label>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    id="ventKrav6"
+                                    checked={formData.ventKrav6}
+                                    onCheckedChange={(checked) => setFormData({...formData, ventKrav6: !!checked})}
+                                  />
+                                  <label htmlFor="ventKrav6" className="text-xs cursor-pointer">
+                                    Kjøkken boenheter - EI 15 A2-s1,d0
+                                  </label>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    id="ventKrav7"
+                                    checked={formData.ventKrav7}
+                                    onCheckedChange={(checked) => setFormData({...formData, ventKrav7: !!checked})}
+                                  />
+                                  <label htmlFor="ventKrav7" className="text-xs cursor-pointer">
+                                    Småhus - avtrekk stål/aluminium
+                                  </label>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    id="ventKrav8"
+                                    checked={formData.ventKrav8}
+                                    onCheckedChange={(checked) => setFormData({...formData, ventKrav8: !!checked})}
+                                  />
+                                  <label htmlFor="ventKrav8" className="text-xs cursor-pointer">
+                                    Småhus - kanal klasse E
+                                  </label>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    id="ventKrav9"
+                                    checked={formData.ventKrav9}
+                                    onCheckedChange={(checked) => setFormData({...formData, ventKrav9: !!checked})}
+                                  />
+                                  <label htmlFor="ventKrav9" className="text-xs cursor-pointer">
+                                    Brannspjeld i seksjoneringsvegg
+                                  </label>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Vann- og avløpsrør */}
+                          <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id="vannAvlopRelevant"
+                                checked={formData.vannAvlopRelevant}
+                                onCheckedChange={(checked) => setFormData({...formData, vannAvlopRelevant: !!checked})}
+                              />
+                              <label htmlFor="vannAvlopRelevant" className="text-xs font-medium cursor-pointer">
+                                B. Vann- og avløpsrør, rørpostanlegg, sentralstøvsugeranlegg og lignende
+                              </label>
+                            </div>
+                          </div>
+                          
+                          {/* Rør- og kanalisolasjon */}
+                          <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id="rorIsolasjonRelevant"
+                                checked={formData.rorIsolasjonRelevant}
+                                onCheckedChange={(checked) => setFormData({...formData, rorIsolasjonRelevant: !!checked})}
+                              />
+                              <label htmlFor="rorIsolasjonRelevant" className="text-xs font-medium cursor-pointer">
+                                C. Rør- og kanalisolasjon er relevant for tiltaket
+                              </label>
+                            </div>
+                          </div>
+                          
+                          {/* Elektriske installasjoner */}
+                          <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id="elektriskRelevant"
+                                checked={formData.elektriskRelevant}
+                                onCheckedChange={(checked) => setFormData({...formData, elektriskRelevant: !!checked})}
+                              />
+                              <label htmlFor="elektriskRelevant" className="text-xs font-medium cursor-pointer">
+                                D. Elektriske installasjoner er relevant for tiltaket
+                              </label>
+                            </div>
+                          </div>
+                        </>
+                      )}
                       
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('installasjoner-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
