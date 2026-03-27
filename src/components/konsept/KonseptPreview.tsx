@@ -2118,13 +2118,46 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </tr>
               ));
             })()}
-            {/* Brensellagring - automatisk genererte krav */}
-            {formData.brensellagringRelevant && formData.brenselType && formData.brenselMengde && (() => {
+            {/* Oljelagring BF85 */}
+            {isBF85 && formData.oljelagringRelevant && formData.oljelagringBF85Krav?.length > 0 && (() => {
+              const bf85OljeLabels: Record<string, string> = {
+                bf85_olje_generelt: ":341 Generelt – Bestemmelsene gjelder lagring på tank tilknyttet oljeovn eller oljefyringsanlegg. Brenseltank skal tåle mekaniske påkjenninger og beskyttes mot korrosjon.",
+                bf85_olje_jord_fjell: ":342 Oljelager i jord eller i fjell – Nedgravd tank skal være dekket av et minst 0,5 m tykt lag av jord eller med betryggande betongplate.",
+                bf85_olje_fri_over_jord: ":343 Oljelager fri over jord – Tank skal plasseres slik i forhold til bygning og opplag at det ikke er fare for at tanken kan bli antent ved brann i disse.",
+                bf85_olje_innendors_20l: ":344 Oljelager innendørs – Olje i mengde over 20 liter må bare lagres i tankrom, fyrrom eller garasje som tilfredsstiller kravene til branncellebegrensning.",
+                bf85_olje_innendors_vegger: ":344 Vegger og golv skal være tette, og rommet skal være slik innredet at olje ved lekkasje fra tanken samles opp og ikke kan trenge inn i andre rom eller i ildsted eller røykkanal.",
+                bf85_olje_belysning: ":344 Rommet skal ha elektrisk belysning.",
+                bf85_olje_tank_avstand: ":344 Tank for fyringsolje må plasseres minst 1,0 m fra kjele, brenner eller røykkanal. For petroleumstank må tilsvarende avstand være 2,0 m.",
+                bf85_olje_tank_600l: ":344 Tank på inntil 600 liter kan plasseres på brakett på vegg i A 60-konstruksjon. Tank av brennbart materiale skal plasseres i tankrom med branncellebegrensende bygningsdel minst A 60.",
+                bf85_olje_fyringsparafin_a: ":345a Fyringssolje – På tank som utgjør en del av typegodkjent ildsted: Høyst 20 liter.",
+                bf85_olje_fyringsparafin_b: ":345a Fyringssolje – På vegg-/tankovn med forgassingsbrenner plassert minst 0,6 m fra ildsted: Høyst 20 liter.",
+                bf85_olje_fyringsparafin_c: ":345a Fyringssolje – På tank i fyrrom eller garasje med grunnflate høyst 50 m² med branncellebegrensende bygningsdel minst B 30: Inntil 4 000 liter.",
+                bf85_olje_fyringsparafin_d: ":345a Fyringssolje – På tank i tankrom eller i fyrrom med branncellebegrensende bygningsdel h.h.v minst B 30 og A 60: Inntil 10 000 liter.",
+                bf85_olje_fyringsparafin_e: ":345a Fyringssolje – På tank i tankrom med branncellebegrensende bygningsdel minst A 60: Over 10 000 liter (avhengig av brannstyrets godkjenning).",
+                bf85_olje_fyringsparafin_f: ":345a Fyringssolje – På nedgravd tank: Ingen begrensning.",
+                bf85_olje_petroleum: ":345b Petroleum – Petroleum i mengde inntil 1 650 liter kan lagres som fyringssolje. Ved fellesanlegg for rekkehus, leiegårder o.l. kan brannstyret tillate inntil 1 000 liter petroleum pr. boligenhet, dog ikke over 6 000 liter.",
+              };
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Lagring av olje (:34)</td>
+                  <td className="border border-gray-400 p-2">
+                    <ul className="list-disc pl-4 space-y-1">
+                      {formData.oljelagringBF85Krav.map((id: string) => (
+                        <li key={id}>{bf85OljeLabels[id] || id}</li>
+                      ))}
+                    </ul>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              );
+            })()}
+            {/* Brensellagring TEK17 - automatisk genererte krav */}
+            {!isBF85 && formData.brensellagringRelevant && formData.brenselType && formData.brenselMengde && (() => {
               const result = getBrensellagringKrav(formData.brenselType as BrenselType, parseInt(formData.brenselMengde));
               if (result.feilmelding || result.krav.length === 0) return null;
               return (
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Rom for lagring av flytende brensel</td>
+                  <td className="border border-gray-400 p-2 align-top">Rom for lagring av olje</td>
                   <td className="border border-gray-400 p-2">
                     <div className="space-y-1">
                       <div className="font-medium text-xs mb-1">Romtype: {result.romType}</div>
