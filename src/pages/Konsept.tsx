@@ -6027,6 +6027,21 @@ const Konsept = () => {
                           </Label>
                         </div>
                       )}
+                      {formData.tilretteleggingLedd1a && (
+                        <div className="ml-6 p-3 bg-muted/50 border border-border rounded space-y-2">
+                          <Label className="text-xs font-medium block mb-1">Utdypende krav for RK4:</Label>
+                          <ol className="text-xs space-y-1.5 list-decimal ml-4">
+                            <li>Forskriftens krav til automatisk brannslokkeanlegg i byggverk i risikoklasse 4 anses oppfylt når det installeres automatisk sprinkleranlegg i samsvar med NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019. I byggverk med både næringsvirksomhet og boliger gjelder følgende:
+                              <ol className="list-decimal ml-4 mt-1 space-y-1">
+                                <li>NS-EN 12845:2015+A1:2019 kan benyttes i arealer avsatt for næring.</li>
+                                <li>Arealer avsatt for boligformål sprinklet etter NS-EN 12845:2015 må ha hurtigutløsende (QR–quick response) sprinklere.</li>
+                                <li>Arealer avsatt for boligformål og tilhørende rømningsveier definert i NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019 kan prosjekteres og utføres etter denne standarden.</li>
+                              </ol>
+                            </li>
+                            <li>Dersom ulike deler av et byggverk ikke kan oppdeles i brannseksjoner, må hele byggverket ha automatisk sprinkleranlegg.</li>
+                          </ol>
+                        </div>
+                      )}
                       {(formData.risikoklasse === "RK6" || formData.bygningsdeler.some(b => b.risikoklasse === "RK6")) && (
                         <div className="space-y-3">
                           <div className="flex items-start space-x-2">
