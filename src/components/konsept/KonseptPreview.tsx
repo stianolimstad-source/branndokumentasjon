@@ -2839,7 +2839,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">RIBr</td>
               </tr>
             )}
-            {!isBF85 && formData.tilretteleggingLedd2a && (() => {
+            {!isBF85 && (formData.tilretteleggingLedd2a || formData.alarmValg === "brannalarm") && (() => {
               const bt = (formData.bygningstype || "").toLowerCase();
               const erBolig = bt.includes("bolig") || bt.includes("enebolig") || bt.includes("rekkehus") || bt.includes("kjedehus") || bt.includes("leilighet") || formData.risikoklasse === "RK4";
               const rk = formData.risikoklasse;
@@ -2885,6 +2885,48 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <p className="mb-1">• Takterrasse beregnet for personopphold må ha utstyr for varsling av brann.</p>
                   )}
                   <p className="mt-2">Brannalarmanlegg må ha alarmoverføring til nødmeldesentral, alarmstasjon, vaktselskap eller til sted lokalt i byggverket med personell som har ansvar for å iverksette aksjon i henhold til alarmorganisering.</p>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIE</td>
+              </tr>
+              );
+            })()}
+            {!isBF85 && (formData.tilretteleggingLedd2b || formData.alarmValg === "roykvarsler") && (() => {
+              const rk = formData.risikoklasse;
+              const areal = parseFloat(formData.areal) || 0;
+              const bygningstype = (formData.bygningstype || "").toLowerCase();
+              
+              const erRK2IndustriLager = rk === "RK2" && areal <= 1200 && 
+                (bygningstype.includes("industri") || bygningstype.includes("lager"));
+              const erRK2Kontor = rk === "RK2" && areal <= 1200 && bygningstype.includes("kontor");
+              const erRK4Bolig = rk === "RK4" && 
+                (bygningstype.includes("enebolig") || bygningstype.includes("rekkehus") || 
+                 bygningstype.includes("kjedehus") || bygningstype.includes("fritidsbolig") ||
+                 bygningstype.includes("bolig"));
+              const erRK5Liten = rk === "RK5" && areal <= 600;
+              
+              return (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Røykvarslere</td>
+                <td className="border border-gray-400 p-2">
+                  <p className="mb-2">I byggverk beregnet for få personer og byggverk av mindre størrelse kan det brukes røykvarslere dersom rømningsforholdene er særlig enkle og oversiktlige.</p>
+                  <p className="mb-2">Røykvarslere skal være tilknyttet strømforsyningen og ha batteri som reserveløsning. I branncelle med behov for flere røykvarslere skal varslerne være seriekoblet. I byggverk uten strømforsyning kan det benyttes batteridrevne røykvarslere.</p>
+                  {erRK2IndustriLager && (
+                    <p className="mb-1">• Industri- og lagerbygninger i RK2 med samlet bruttoareal inntil 1 200 m², og hvor rømningsforholdene er enkle og oversiktlige. Røykvarslere må plasseres i alle rømningsveier, fellesarealer og arealer med arbeidsplasser.</p>
+                  )}
+                  {erRK2Kontor && (
+                    <p className="mb-1">• Kontorbygninger i RK2 med samlet bruttoareal inntil 1 200 m², og hvor rømningsforholdene er enkle og oversiktlige. Røykvarslere må plasseres i alle rømningsveier, fellesarealer og arealer med arbeidsplasser.</p>
+                  )}
+                  {erRK4Bolig && (
+                    <>
+                      <p className="mb-1">• Eneboliger, to- til firemannsboliger, rekkehus, kjedehus og fritidsbolig med én boenhet i risikoklasse 4.</p>
+                      <p className="mb-1">• Røykvarslerne må dekke områdene kjøkken, stue, sone utenfor soverom og tekniske rom. Det må være minst én røykvarsler per etasje.</p>
+                      <p className="mb-1">• Røykvarslere må plasseres slik at alarmstyrken er minst 60 desibel i oppholdsrom og soverom når mellomliggende dører er lukket.</p>
+                    </>
+                  )}
+                  {erRK5Liten && (
+                    <p className="mb-1">• Byggverk i RK5 med samlet bruttoareal inntil 600 m², og hvor rømningsveiene er oversiktlige og fører direkte til terreng. Røykvarslere må plasseres i alle rømningsveier og fellesarealer.</p>
+                  )}
+                  <p className="mt-2">Røykvarslere må oppfylle kravene i NS-EN 14604:2005, eller ha detektor i samsvar med NS-EN 54-7:2018 og lydgiver i samsvar med NS-EN 14604:2005.</p>
                 </td>
                 <td className="border border-gray-400 p-2 align-top">RIE</td>
               </tr>
