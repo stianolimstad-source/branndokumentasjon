@@ -2794,6 +2794,40 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">RIV</td>
               </tr>
             )}
+            {!isBF85 && formData.tilretteleggingLedd1a && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Automatisk brannslokkeanlegg (RK4)</td>
+                <td className="border border-gray-400 p-2">
+                  <p>Byggverk eller del av byggverk i risikoklasse 4 hvor det kreves heis, skal ha automatisk brannslokkeanlegg. Deler av et byggverk med og uten automatisk brannslokkeanlegg skal være ulike brannseksjoner.</p>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIV</td>
+              </tr>
+            )}
+            {!isBF85 && formData.tilretteleggingLedd1b && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Automatisk brannslokkeanlegg (RK6)</td>
+                <td className="border border-gray-400 p-2">
+                  <p className="mb-2">Byggverk i risikoklasse 6 skal ha automatisk brannslokkeanlegg.</p>
+                  {formData.rk6Institusjon !== undefined && (
+                    <p className="text-sm">
+                      {formData.rk6Institusjon
+                        ? "Slokkeanlegg prosjekteres etter NS-EN 12845 (institusjon)."
+                        : "Slokkeanlegg kan prosjekteres etter NS-EN 16925 (egeneide boenheter i RK6)."}
+                    </p>
+                  )}
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIV</td>
+              </tr>
+            )}
+            {!isBF85 && formData.tilretteleggingLedd1c && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Automatisk slokkeanlegg</td>
+                <td className="border border-gray-400 p-2">
+                  Der det er krav om automatisk brannslokkeanlegg, kan det benyttes andre tiltak som gir tilsvarende sikkerhet.
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIV</td>
+              </tr>
+            )}
             {!isBF85 && formData.tilretteleggingLedd2a && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Brannalarmanlegg</td>
