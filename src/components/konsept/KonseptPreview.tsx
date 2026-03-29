@@ -2827,13 +2827,14 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">RIV</td>
               </tr>
             )}
-            {!isBF85 && formData.tilretteleggingLedd1c && (
+            {!isBF85 && formData.tilretteleggingLedd1c && (formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Automatisk slokkeanlegg</td>
+                <td className="border border-gray-400 p-2 align-top">Alternativt tiltak for slokkeanlegg</td>
                 <td className="border border-gray-400 p-2">
-                  Der det er krav om automatisk brannslokkeanlegg, kan det benyttes andre tiltak som gir tilsvarende sikkerhet.
+                  <p>Der det er krav om automatisk brannslokkeanlegg, kan det likevel benyttes andre tiltak som gir tilsvarende sikkerhet ved å hindre, begrense eller kontrollere en brann lokalt der den oppstår.</p>
+                  <p className="mt-2 text-sm">Nye teknikker eller løsninger for spesielle situasjoner kan aksepteres når de er dokumentert å ha minst tilsvarende funksjon og pålitelighet som et automatisk sprinkleranlegg. Dokumentasjonen skal foreligge i byggesaken.</p>
                 </td>
-                <td className="border border-gray-400 p-2 align-top">RIV</td>
+                <td className="border border-gray-400 p-2 align-top">RIBr</td>
               </tr>
             )}
             {!isBF85 && formData.tilretteleggingLedd2a && (
