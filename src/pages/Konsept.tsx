@@ -6146,7 +6146,7 @@ const Konsept = () => {
                               </Label>
                             </div>
                             
-                            {/* Følgende krav vises IKKE for boligbygg */}
+                            {/* Følgende krav vises for ikke-boligbygg (RK2, RK3, RK5, RK6) */}
                             {!erBolig && (
                               <>
                                 <div className="flex items-start space-x-2">
@@ -6156,7 +6156,7 @@ const Konsept = () => {
                                     onCheckedChange={(checked) => setFormData({...formData, brannalarmPublikum: checked as boolean})}
                                   />
                                   <Label htmlFor="brannalarmPublikum" className="text-xs cursor-pointer leading-relaxed">
-                                    Byggverk for publikum og/eller arbeidsbygninger (optiske alarmorganer)
+                                    <strong>Publikum/arbeidsbygninger:</strong> Akustiske alarmorganer må suppleres med optiske i deler åpent for publikum og fellesarealer i arbeidsbygninger.
                                   </Label>
                                 </div>
                                 
@@ -6167,10 +6167,10 @@ const Konsept = () => {
                                     onCheckedChange={(checked) => setFormData({...formData, brannalarmUniversell: checked as boolean})}
                                   />
                                   <Label htmlFor="brannalarmUniversell" className="text-xs cursor-pointer leading-relaxed">
-                                    Universelt utformet (krav om optiske alarmorganer i UU-rom)
+                                    <strong>Universell utforming:</strong> Rom som er universelt utformet må ha optiske alarmorganer i tillegg til akustiske, jf. § 12-7. I bad og toalettrom som er universelt utformet, jf. § 12-9, må akustiske alarmorganer suppleres med optiske.
                                   </Label>
                                 </div>
-                                
+
                                 <div className="flex items-start space-x-2">
                                   <Checkbox 
                                     id="brannalarmTalevarsling" 
@@ -6178,7 +6178,7 @@ const Konsept = () => {
                                     onCheckedChange={(checked) => setFormData({...formData, brannalarmTalevarsling: checked as boolean})}
                                   />
                                   <Label htmlFor="brannalarmTalevarsling" className="text-xs cursor-pointer leading-relaxed">
-                                    Branncelle over flere plan med over 1 000 personer (talevarsling)
+                                    <strong>Talevarsling:</strong> Branncelle over flere plan beregnet for flere enn 1 000 personer må ha talevarslingssanlegg.
                                   </Label>
                                 </div>
                                 
@@ -6189,8 +6189,14 @@ const Konsept = () => {
                                     onCheckedChange={(checked) => setFormData({...formData, brannalarmTakterrasse: checked as boolean})}
                                   />
                                   <Label htmlFor="brannalarmTakterrasse" className="text-xs cursor-pointer leading-relaxed">
-                                    Takterrasse beregnet for personopphold
+                                    <strong>Takterrasse:</strong> Takterrasse beregnet for personopphold må ha utstyr for varsling av brann.
                                   </Label>
+                                </div>
+
+                                <div className="p-2 bg-muted/30 border border-border rounded mt-2">
+                                  <p className="text-xs text-muted-foreground italic">
+                                    Rømningsveier trenger ikke ha optiske alarmorganer i tillegg til akustiske. Brannalarmanlegg må ha alarmoverføring til nødmeldesentral, alarmstasjon, vaktselskap eller til sted lokalt i byggverket med personell som har ansvar for å iverksette aksjon.
+                                  </p>
                                 </div>
                               </>
                             )}
