@@ -2857,6 +2857,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <p className="mb-2">Byggverk beregnet for virksomhet i risikoklasse 2 til 6 skal ha brannalarmanlegg.</p>
                   <p className="mb-2">Brannalarmanlegg må prosjekteres og utføres i samsvar med NS 3960:2019 og NS-EN 54-serien.</p>
                   <p className="mb-2"><strong>Brannalarmkategori: {brannalarmkategori}</strong></p>
+                  <p className="mb-2">{brannalarmkategori === 1
+                    ? "Brannalarmkategori 1: Optiske røykdetektorer i rømningsveier og fellesarealer."
+                    : "Brannalarmkategori 2: Heldekkende brannalarmanlegg med optiske røykdetektorer i alle områder."}</p>
                   {erBolig && (
                     <>
                       <p className="mb-1">• Detektorer i leiligheter må dekke kjøkken, stue og sone utenfor soverom. Det må være minst én detektor per etasje.</p>

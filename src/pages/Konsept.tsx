@@ -6128,12 +6128,19 @@ const Konsept = () => {
                           return (
                           <div className="ml-6 p-3 bg-muted/50 border border-border rounded space-y-2">
                             {/* Brannalarmkategori */}
-                            <div className="p-2 bg-muted/30 border border-border rounded flex items-center gap-2">
-                              <Label className="text-xs font-medium">Brannalarmkategori:</Label>
-                              <span className="text-xs font-bold text-primary">{brannalarmkategori}</span>
-                              <span className="text-xs text-muted-foreground ml-1">
-                                (basert på {rk}, {etasjer} {etasjer === 1 ? "etasje" : "etasjer"})
-                              </span>
+                            <div className="p-2 bg-muted/30 border border-border rounded space-y-1">
+                              <div className="flex items-center gap-2">
+                                <Label className="text-xs font-medium">Brannalarmkategori:</Label>
+                                <span className="text-xs font-bold text-primary">{brannalarmkategori}</span>
+                                <span className="text-xs text-muted-foreground ml-1">
+                                  (basert på {rk}, {etasjer} {etasjer === 1 ? "etasje" : "etasjer"})
+                                </span>
+                              </div>
+                              <p className="text-xs text-muted-foreground">
+                                {brannalarmkategori === 1
+                                  ? "Brannalarmkategori 1: Optiske røykdetektorer i rømningsveier og fellesarealer."
+                                  : "Brannalarmkategori 2: Heldekkende brannalarmanlegg med optiske røykdetektorer i alle områder."}
+                              </p>
                             </div>
 
                             <Label className="text-xs font-medium block mb-2">Krav for brannalarmanlegg:</Label>
