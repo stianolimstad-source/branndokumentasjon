@@ -6099,25 +6099,28 @@ const Konsept = () => {
                       <div className="space-y-3">
                         <Label className="text-xs font-medium">Velg relevante krav:</Label>
                         
-                        <div className="flex items-start space-x-2">
-                          <Checkbox
-                            id="tilretteleggingLedd2a" 
-                            checked={formData.tilretteleggingLedd2a}
-                            onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd2a: checked as boolean})}
-                          />
-                          <Label htmlFor="tilretteleggingLedd2a" className="text-xs cursor-pointer leading-relaxed">
-                            <strong>Brannalarmanlegg:</strong> Byggverk beregnet for virksomhet i risikoklasse 2 til 6 skal ha brannalarmanlegg.
-                          </Label>
-                        </div>
-                        
-                        {/* Sub-checkboxer for brannalarmanlegg */}
-                        {formData.tilretteleggingLedd2a && (() => {
+                        {/* Sjekk om bygget kvalifiserer for røykvarslere */}
+                        {(() => {
+                          const rk = formData.risikoklasse;
+                          const areal = parseFloat(formData.areal) || 0;
+                          const bygningstype = formData.bygningstype.toLowerCase();
+                          const etasjer = parseInt(formData.etasjer) || 1;
+                          
+                          const erRK2IndustriLager = rk === "RK2" && areal <= 1200 && 
+                            (bygningstype.includes("industri") || bygningstype.includes("lager"));
+                          const erRK2Kontor = rk === "RK2" && areal <= 1200 && bygningstype.includes("kontor");
+                          const erRK4Bolig = rk === "RK4" && 
+                            (bygningstype.includes("enebolig") || bygningstype.includes("rekkehus") || 
+                             bygningstype.includes("kjedehus") || bygningstype.includes("fritidsbolig") ||
+                             bygningstype.includes("bolig"));
+                          const erRK5Liten = rk === "RK5" && areal <= 600;
+                          
+                          const kanVelgeRoykvarsler = erRK2IndustriLager || erRK2Kontor || erRK4Bolig || erRK5Liten;
+                          
                           const bt = formData.bygningstype.toLowerCase();
                           const erBolig = bt.includes("bolig") || bt.includes("enebolig") || bt.includes("rekkehus") || bt.includes("kjedehus") || bt.includes("leilighet") || formData.risikoklasse === "RK4";
                           
-                          // Beregn brannalarmkategori basert på risikoklasse og etasjer
-                          const rk = formData.risikoklasse;
-                          const etasjer = parseInt(formData.etasjer) || 1;
+                          // Beregn brannalarmkategori
                           let brannalarmkategori = 1;
                           if (rk === "RK5" || rk === "RK6") {
                             brannalarmkategori = 2;
@@ -6125,153 +6128,194 @@ const Konsept = () => {
                             brannalarmkategori = 2;
                           }
                           
+                          // Alarmvalg: "brannalarm" eller "roykvarsler"
+                          const alarmValg = formData.alarmValg || "brannalarm";
+                          
                           return (
-                          <div className="ml-6 p-3 bg-muted/50 border border-border rounded space-y-2">
-                            {/* Brannalarmkategori */}
-                            <div className="p-2 bg-muted/30 border border-border rounded space-y-1">
-                              <div className="flex items-center gap-2">
-                                <Label className="text-xs font-medium">Brannalarmkategori:</Label>
-                                <span className="text-xs font-bold text-primary">{brannalarmkategori}</span>
-                                <span className="text-xs text-muted-foreground ml-1">
-                                  (basert på {rk}, {etasjer} {etasjer === 1 ? "etasje" : "etasjer"})
-                                </span>
-                              </div>
-                              <p className="text-xs text-muted-foreground">
-                                {brannalarmkategori === 1
-                                  ? "Brannalarmkategori 1: Optiske røykdetektorer i rømningsveier og fellesarealer."
-                                  : "Brannalarmkategori 2: Heldekkende brannalarmanlegg med optiske røykdetektorer i alle områder."}
-                              </p>
-                            </div>
+                            <>
+                              {kanVelgeRoykvarsler && (
+                                <div className="p-3 bg-muted/30 border border-border rounded space-y-2 mb-2">
+                                  <Label className="text-xs font-medium block">Velg varslingsløsning:</Label>
+                                  <div className="space-y-2">
+                                    <div className="flex items-center space-x-2">
+                                      <input
+                                        type="radio"
+                                        id="alarmValg_brannalarm"
+                                        name="alarmValg"
+                                        value="brannalarm"
+                                        checked={alarmValg === "brannalarm"}
+                                        onChange={() => setFormData({...formData, alarmValg: "brannalarm", tilretteleggingLedd2a: true, tilretteleggingLedd2b: false})}
+                                        className="accent-primary"
+                                      />
+                                      <Label htmlFor="alarmValg_brannalarm" className="text-xs cursor-pointer">
+                                        <strong>Brannalarmanlegg</strong> (NS 3960 / NS-EN 54)
+                                      </Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <input
+                                        type="radio"
+                                        id="alarmValg_roykvarsler"
+                                        name="alarmValg"
+                                        value="roykvarsler"
+                                        checked={alarmValg === "roykvarsler"}
+                                        onChange={() => setFormData({...formData, alarmValg: "roykvarsler", tilretteleggingLedd2a: false, tilretteleggingLedd2b: true})}
+                                        className="accent-primary"
+                                      />
+                                      <Label htmlFor="alarmValg_roykvarsler" className="text-xs cursor-pointer">
+                                        <strong>Røykvarslere</strong> (preakseptert alternativ for dette bygget)
+                                      </Label>
+                                    </div>
+                                  </div>
+                                  {alarmValg === "roykvarsler" && (
+                                    <div className="p-2 bg-muted/30 border border-border rounded text-xs text-muted-foreground mt-2 space-y-1">
+                                      <p className="font-medium text-foreground">Krav til røykvarslere:</p>
+                                      <p>• Røykvarslere skal være tilknyttet strømforsyningen og ha batteri som reserveløsning.</p>
+                                      <p>• I branncelle med behov for flere røykvarslere skal varslerne være seriekoblet.</p>
+                                      <p>• I byggverk uten strømforsyning kan det benyttes batteridrevne røykvarslere.</p>
+                                      {erRK2IndustriLager && (
+                                        <p>• Industri- og lagerbygninger i RK2 med samlet bruttoareal inntil 1 200 m², og hvor rømningsforholdene er enkle og oversiktlige. Røykvarslere må plasseres i alle rømningsveier, fellesarealer og arealer med arbeidsplasser.</p>
+                                      )}
+                                      {erRK2Kontor && (
+                                        <p>• Kontorbygninger i RK2 med samlet bruttoareal inntil 1 200 m², og hvor rømningsforholdene er enkle og oversiktlige. Røykvarslere må plasseres i alle rømningsveier, fellesarealer og arealer med arbeidsplasser.</p>
+                                      )}
+                                      {erRK4Bolig && (
+                                        <>
+                                          <p>• Eneboliger, to- til firemannsboliger, rekkehus, kjedehus og fritidsbolig med én boenhet i risikoklasse 4.</p>
+                                          <p>• Røykvarslerne må dekke områdene kjøkken, stue, sone utenfor soverom og tekniske rom.</p>
+                                          <p>• Det må være minst én røykvarsler per etasje.</p>
+                                          <p>• Røykvarslere må plasseres slik at alarmstyrken er minst 60 desibel i oppholdsrom og soverom når mellomliggende dører er lukket.</p>
+                                        </>
+                                      )}
+                                      {erRK5Liten && (
+                                        <p>• Byggverk i RK5 med samlet bruttoareal inntil 600 m², og hvor rømningsveiene er oversiktlige og fører direkte til terreng. Røykvarslere må plasseres i alle rømningsveier og fellesarealer.</p>
+                                      )}
+                                      <p className="mt-1">• Røykvarslere må oppfylle kravene i NS-EN 14604:2005, eller ha detektor i samsvar med NS-EN 54-7:2018 og lydgiver i samsvar med NS-EN 14604:2005.</p>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              
+                              {!kanVelgeRoykvarsler && (
+                                <div className="flex items-start space-x-2">
+                                  <Checkbox
+                                    id="tilretteleggingLedd2a" 
+                                    checked={formData.tilretteleggingLedd2a}
+                                    onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd2a: checked as boolean})}
+                                  />
+                                  <Label htmlFor="tilretteleggingLedd2a" className="text-xs cursor-pointer leading-relaxed">
+                                    <strong>Brannalarmanlegg:</strong> Byggverk beregnet for virksomhet i risikoklasse 2 til 6 skal ha brannalarmanlegg.
+                                  </Label>
+                                </div>
+                              )}
+                              
+                              {/* Sub-checkboxer for brannalarmanlegg - vises når brannalarm er valgt */}
+                              {(formData.tilretteleggingLedd2a || (kanVelgeRoykvarsler && alarmValg === "brannalarm")) && (
+                                <div className="ml-6 p-3 bg-muted/50 border border-border rounded space-y-2">
+                                  {/* Brannalarmkategori */}
+                                  <div className="p-2 bg-muted/30 border border-border rounded space-y-1">
+                                    <div className="flex items-center gap-2">
+                                      <Label className="text-xs font-medium">Brannalarmkategori:</Label>
+                                      <span className="text-xs font-bold text-primary">{brannalarmkategori}</span>
+                                      <span className="text-xs text-muted-foreground ml-1">
+                                        (basert på {rk}, {etasjer} {etasjer === 1 ? "etasje" : "etasjer"})
+                                      </span>
+                                    </div>
+                                    <p className="text-xs text-muted-foreground">
+                                      {brannalarmkategori === 1
+                                        ? "Brannalarmkategori 1: Optiske røykdetektorer i rømningsveier og fellesarealer."
+                                        : "Brannalarmkategori 2: Heldekkende brannalarmanlegg med optiske røykdetektorer i alle områder."}
+                                    </p>
+                                  </div>
 
-                            <Label className="text-xs font-medium block mb-2">Krav for brannalarmanlegg:</Label>
-                            
-                            {/* Boligkrav – vises automatisk for boligbygg */}
-                            {erBolig && (
-                              <div className="p-2 bg-muted/30 border border-border rounded">
-                                <div className="flex items-start space-x-2">
-                                  <Checkbox 
-                                    id="brannalarmBoligbygg" 
-                                    checked={true}
-                                    disabled
-                                  />
-                                  <Label htmlFor="brannalarmBoligbygg" className="text-xs cursor-pointer leading-relaxed">
-                                    <strong>Detektorer i leiligheter:</strong> Må dekke kjøkken, stue og sone utenfor soverom. Minst én detektor per etasje. Akustiske alarmorganer plasseres slik at alarmstyrken er minst 60 dB. Detektorer og akustiske alarmorganer må installeres i trapperom, kjeller og loft. Manuell melder i trapperom ved hovedinngang.
-                                  </Label>
-                                </div>
-                              </div>
-                            )}
+                                  <Label className="text-xs font-medium block mb-2">Krav for brannalarmanlegg:</Label>
+                                  
+                                  {/* Boligkrav */}
+                                  {erBolig && (
+                                    <div className="p-2 bg-muted/30 border border-border rounded">
+                                      <div className="flex items-start space-x-2">
+                                        <Checkbox 
+                                          id="brannalarmBoligbygg" 
+                                          checked={true}
+                                          disabled
+                                        />
+                                        <Label htmlFor="brannalarmBoligbygg" className="text-xs cursor-pointer leading-relaxed">
+                                          <strong>Detektorer i leiligheter:</strong> Må dekke kjøkken, stue og sone utenfor soverom. Minst én detektor per etasje. Akustiske alarmorganer plasseres slik at alarmstyrken er minst 60 dB. Detektorer og akustiske alarmorganer må installeres i trapperom, kjeller og loft. Manuell melder i trapperom ved hovedinngang.
+                                        </Label>
+                                      </div>
+                                    </div>
+                                  )}
 
-                            {/* Parkering – valgfritt for bolig, også tilgjengelig for andre */}
-                            <div className="flex items-start space-x-2">
-                              <Checkbox 
-                                id="brannalarmParkering" 
-                                checked={formData.brannalarmParkering}
-                                onCheckedChange={(checked) => setFormData({...formData, brannalarmParkering: checked as boolean})}
-                              />
-                              <Label htmlFor="brannalarmParkering" className="text-xs cursor-pointer leading-relaxed">
-                                Parkeringskjeller/garasje større enn 1 200 m²
-                              </Label>
-                            </div>
-                            
-                            {/* Følgende krav vises for ikke-boligbygg (RK2, RK3, RK5, RK6) */}
-                            {!erBolig && (
-                              <>
-                                <div className="flex items-start space-x-2">
-                                  <Checkbox 
-                                    id="brannalarmPublikum" 
-                                    checked={formData.brannalarmPublikum}
-                                    onCheckedChange={(checked) => setFormData({...formData, brannalarmPublikum: checked as boolean})}
-                                  />
-                                  <Label htmlFor="brannalarmPublikum" className="text-xs cursor-pointer leading-relaxed">
-                                    <strong>Publikum/arbeidsbygninger:</strong> Akustiske alarmorganer må suppleres med optiske i deler åpent for publikum og fellesarealer i arbeidsbygninger.
-                                  </Label>
-                                </div>
-                                
-                                <div className="flex items-start space-x-2">
-                                  <Checkbox 
-                                    id="brannalarmUniversell" 
-                                    checked={formData.brannalarmUniversell}
-                                    onCheckedChange={(checked) => setFormData({...formData, brannalarmUniversell: checked as boolean})}
-                                  />
-                                  <Label htmlFor="brannalarmUniversell" className="text-xs cursor-pointer leading-relaxed">
-                                    <strong>Universell utforming:</strong> Rom som er universelt utformet må ha optiske alarmorganer i tillegg til akustiske, jf. § 12-7. I bad og toalettrom som er universelt utformet, jf. § 12-9, må akustiske alarmorganer suppleres med optiske.
-                                  </Label>
-                                </div>
+                                  {/* Parkering */}
+                                  <div className="flex items-start space-x-2">
+                                    <Checkbox 
+                                      id="brannalarmParkering" 
+                                      checked={formData.brannalarmParkering}
+                                      onCheckedChange={(checked) => setFormData({...formData, brannalarmParkering: checked as boolean})}
+                                    />
+                                    <Label htmlFor="brannalarmParkering" className="text-xs cursor-pointer leading-relaxed">
+                                      Parkeringskjeller/garasje større enn 1 200 m²
+                                    </Label>
+                                  </div>
+                                  
+                                  {/* Ikke-boligkrav */}
+                                  {!erBolig && (
+                                    <>
+                                      <div className="flex items-start space-x-2">
+                                        <Checkbox 
+                                          id="brannalarmPublikum" 
+                                          checked={formData.brannalarmPublikum}
+                                          onCheckedChange={(checked) => setFormData({...formData, brannalarmPublikum: checked as boolean})}
+                                        />
+                                        <Label htmlFor="brannalarmPublikum" className="text-xs cursor-pointer leading-relaxed">
+                                          <strong>Publikum/arbeidsbygninger:</strong> Akustiske alarmorganer må suppleres med optiske i deler åpent for publikum og fellesarealer i arbeidsbygninger.
+                                        </Label>
+                                      </div>
+                                      
+                                      <div className="flex items-start space-x-2">
+                                        <Checkbox 
+                                          id="brannalarmUniversell" 
+                                          checked={formData.brannalarmUniversell}
+                                          onCheckedChange={(checked) => setFormData({...formData, brannalarmUniversell: checked as boolean})}
+                                        />
+                                        <Label htmlFor="brannalarmUniversell" className="text-xs cursor-pointer leading-relaxed">
+                                          <strong>Universell utforming:</strong> Rom som er universelt utformet må ha optiske alarmorganer i tillegg til akustiske, jf. § 12-7. I bad og toalettrom som er universelt utformet, jf. § 12-9, må akustiske alarmorganer suppleres med optiske.
+                                        </Label>
+                                      </div>
 
-                                <div className="flex items-start space-x-2">
-                                  <Checkbox 
-                                    id="brannalarmTalevarsling" 
-                                    checked={formData.brannalarmTalevarsling}
-                                    onCheckedChange={(checked) => setFormData({...formData, brannalarmTalevarsling: checked as boolean})}
-                                  />
-                                  <Label htmlFor="brannalarmTalevarsling" className="text-xs cursor-pointer leading-relaxed">
-                                    <strong>Talevarsling:</strong> Branncelle over flere plan beregnet for flere enn 1 000 personer må ha talevarslingssanlegg.
-                                  </Label>
-                                </div>
-                                
-                                <div className="flex items-start space-x-2">
-                                  <Checkbox 
-                                    id="brannalarmTakterrasse" 
-                                    checked={formData.brannalarmTakterrasse}
-                                    onCheckedChange={(checked) => setFormData({...formData, brannalarmTakterrasse: checked as boolean})}
-                                  />
-                                  <Label htmlFor="brannalarmTakterrasse" className="text-xs cursor-pointer leading-relaxed">
-                                    <strong>Takterrasse:</strong> Takterrasse beregnet for personopphold må ha utstyr for varsling av brann.
-                                  </Label>
-                                </div>
+                                      <div className="flex items-start space-x-2">
+                                        <Checkbox 
+                                          id="brannalarmTalevarsling" 
+                                          checked={formData.brannalarmTalevarsling}
+                                          onCheckedChange={(checked) => setFormData({...formData, brannalarmTalevarsling: checked as boolean})}
+                                        />
+                                        <Label htmlFor="brannalarmTalevarsling" className="text-xs cursor-pointer leading-relaxed">
+                                          <strong>Talevarsling:</strong> Branncelle over flere plan beregnet for flere enn 1 000 personer må ha talevarslingssanlegg.
+                                        </Label>
+                                      </div>
+                                      
+                                      <div className="flex items-start space-x-2">
+                                        <Checkbox 
+                                          id="brannalarmTakterrasse" 
+                                          checked={formData.brannalarmTakterrasse}
+                                          onCheckedChange={(checked) => setFormData({...formData, brannalarmTakterrasse: checked as boolean})}
+                                        />
+                                        <Label htmlFor="brannalarmTakterrasse" className="text-xs cursor-pointer leading-relaxed">
+                                          <strong>Takterrasse:</strong> Takterrasse beregnet for personopphold må ha utstyr for varsling av brann.
+                                        </Label>
+                                      </div>
 
-                                <div className="p-2 bg-muted/30 border border-border rounded mt-2">
-                                  <p className="text-xs text-muted-foreground italic">
-                                    Rømningsveier trenger ikke ha optiske alarmorganer i tillegg til akustiske. Brannalarmanlegg må ha alarmoverføring til nødmeldesentral, alarmstasjon, vaktselskap eller til sted lokalt i byggverket med personell som har ansvar for å iverksette aksjon.
-                                  </p>
+                                      <div className="p-2 bg-muted/30 border border-border rounded mt-2">
+                                        <p className="text-xs text-muted-foreground italic">
+                                          Rømningsveier trenger ikke ha optiske alarmorganer i tillegg til akustiske. Brannalarmanlegg må ha alarmoverføring til nødmeldesentral, alarmstasjon, vaktselskap eller til sted lokalt i byggverket med personell som har ansvar for å iverksette aksjon.
+                                        </p>
+                                      </div>
+                                    </>
+                                  )}
                                 </div>
-                              </>
-                            )}
-                          </div>
+                              )}
+                            </>
                           );
                         })()}
-
-                        <div className="space-y-2">
-                          <div className="flex items-start space-x-2">
-                            <Checkbox 
-                              id="tilretteleggingLedd2b" 
-                              checked={formData.tilretteleggingLedd2b}
-                              onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd2b: checked as boolean})}
-                            />
-                            <Label htmlFor="tilretteleggingLedd2b" className="text-xs cursor-pointer leading-relaxed">
-                              <strong>Røykvarslere:</strong> I byggverk beregnet for få personer og byggverk av mindre størrelse kan det brukes røykvarslere (seriekoblet, tilknyttet strømforsyning med batterireserve).
-                            </Label>
-                          </div>
-                          {formData.tilretteleggingLedd2b && (() => {
-                            const rk = formData.risikoklasse;
-                            const areal = parseFloat(formData.areal) || 0;
-                            const bygningstype = formData.bygningstype.toLowerCase();
-                            
-                            // Sjekk preaksepterte ytelser for røykvarslere
-                            const erRK2IndustriLager = rk === "RK2" && areal <= 1200 && 
-                              (bygningstype.includes("industri") || bygningstype.includes("lager"));
-                            const erRK2Kontor = rk === "RK2" && areal <= 1200 && bygningstype.includes("kontor");
-                            const erRK4Bolig = rk === "RK4" && 
-                              (bygningstype.includes("enebolig") || bygningstype.includes("rekkehus") || 
-                               bygningstype.includes("kjedehus") || bygningstype.includes("fritidsbolig") ||
-                               bygningstype.includes("bolig"));
-                            const erRK5Liten = rk === "RK5" && areal <= 600;
-                            
-                            if (erRK2IndustriLager || erRK2Kontor || erRK4Bolig || erRK5Liten) {
-                              return (
-                                <div className="ml-6 p-3 bg-green-50 border border-green-200 rounded text-xs">
-                                  <strong className="text-green-800">Minstekrav oppfylt:</strong>
-                                  <span className="text-green-700 ml-1">
-                                    Røykvarslere er preakseptert minstekrav for dette tiltaket basert på risikoklasse og areal. 
-                                    Heldekkende brannalarmanlegg kan likevel velges for økt sikkerhet.
-                                  </span>
-                                </div>
-                              );
-                            }
-                            return null;
-                          })()}
-                        </div>
-
                         <div className="flex items-start space-x-2">
                           <Checkbox 
                             id="tilretteleggingLedd3" 
