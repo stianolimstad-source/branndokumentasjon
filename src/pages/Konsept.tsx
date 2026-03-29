@@ -6067,22 +6067,31 @@ const Konsept = () => {
                         </div>
                       )}
 
+                      {(formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) && (
+                        <div className="ml-6 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded space-y-2">
+                          <div className="flex items-start space-x-2">
+                            <Checkbox 
+                              id="tilretteleggingLedd1c" 
+                              checked={formData.tilretteleggingLedd1c}
+                              onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd1c: checked as boolean})}
+                            />
+                            <Label htmlFor="tilretteleggingLedd1c" className="text-xs cursor-pointer leading-relaxed">
+                              <strong>Alternativt tiltak (§ 11-12, 1. ledd bokstav c):</strong> Der det er krav om automatisk brannslokkeanlegg, kan det likevel benyttes andre tiltak som gir tilsvarende sikkerhet ved å hindre, begrense eller kontrollere en brann lokalt der den oppstår.
+                            </Label>
+                          </div>
+                          {formData.tilretteleggingLedd1c && (
+                            <p className="text-xs text-muted-foreground ml-6">
+                              Nye teknikker eller løsninger for spesielle situasjoner kan aksepteres når de er dokumentert å ha minst tilsvarende funksjon og pålitelighet som et automatisk sprinkleranlegg. Dokumentasjonen skal foreligge i byggesaken.
+                            </p>
+                          )}
+                        </div>
+                      )}
+
                       <div className="space-y-3">
                         <Label className="text-xs font-medium">Velg relevante krav:</Label>
                         
                         <div className="flex items-start space-x-2">
-                          <Checkbox 
-                            id="tilretteleggingLedd1c" 
-                            checked={formData.tilretteleggingLedd1c}
-                            onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd1c: checked as boolean})}
-                          />
-                          <Label htmlFor="tilretteleggingLedd1c" className="text-xs cursor-pointer leading-relaxed">
-                            <strong>Automatisk slokkeanlegg:</strong> Der det er krav om automatisk brannslokkeanlegg, kan det benyttes andre tiltak som gir tilsvarende sikkerhet.
-                          </Label>
-                        </div>
-                        
-                        <div className="flex items-start space-x-2">
-                          <Checkbox 
+                          <Checkbox
                             id="tilretteleggingLedd2a" 
                             checked={formData.tilretteleggingLedd2a}
                             onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd2a: checked as boolean})}
