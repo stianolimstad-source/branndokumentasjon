@@ -6016,43 +6016,59 @@ const Konsept = () => {
                       {formData.regelverk !== "BF85" && (<>
                       {/* Automatiske krav basert på RK */}
                       {(formData.risikoklasse === "RK4" || formData.bygningsdeler.some(b => b.risikoklasse === "RK4")) && (
-                        <div className="p-3 bg-blue-50 border border-blue-200 rounded text-sm">
-                          <strong>Automatisk krav (RK4 med heis):</strong> Byggverk i RK4 hvor det kreves heis, skal ha automatisk brannslokkeanlegg.
+                        <div className="flex items-start space-x-2">
+                          <Checkbox 
+                            id="tilretteleggingLedd1a" 
+                            checked={formData.tilretteleggingLedd1a}
+                            onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd1a: checked as boolean})}
+                          />
+                          <Label htmlFor="tilretteleggingLedd1a" className="text-xs cursor-pointer leading-relaxed">
+                            <strong>Automatisk brannslokkeanlegg (RK4):</strong> Byggverk eller del av byggverk i risikoklasse 4 hvor det kreves heis, skal ha automatisk brannslokkeanlegg. Deler av et byggverk med og uten automatisk brannslokkeanlegg skal være ulike brannseksjoner.
+                          </Label>
                         </div>
                       )}
                       {(formData.risikoklasse === "RK6" || formData.bygningsdeler.some(b => b.risikoklasse === "RK6")) && (
                         <div className="space-y-3">
-                          <div className="p-3 bg-blue-50 border border-blue-200 rounded text-sm">
-                            <strong>Automatisk krav (RK6):</strong> Byggverk i RK6 skal ha automatisk brannslokkeanlegg.
+                          <div className="flex items-start space-x-2">
+                            <Checkbox 
+                              id="tilretteleggingLedd1b" 
+                              checked={formData.tilretteleggingLedd1b}
+                              onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd1b: checked as boolean})}
+                            />
+                            <Label htmlFor="tilretteleggingLedd1b" className="text-xs cursor-pointer leading-relaxed">
+                              <strong>Automatisk brannslokkeanlegg (RK6):</strong> Byggverk i risikoklasse 6 skal ha automatisk brannslokkeanlegg.
+                            </Label>
                           </div>
-                          <div className="p-3 bg-gray-50 border border-gray-200 rounded">
-                            <Label className="text-xs font-medium mb-2 block">Type virksomhet i RK6:</Label>
-                            <div className="flex gap-2">
-                              <Button 
-                                type="button"
-                                size="sm"
-                                variant={formData.rk6Institusjon ? "default" : "outline"}
-                                onClick={() => setFormData({...formData, rk6Institusjon: true})}
-                                className="text-xs"
-                              >
-                                Institusjon
-                              </Button>
-                              <Button 
-                                type="button"
-                                size="sm"
-                                variant={!formData.rk6Institusjon ? "default" : "outline"}
-                                onClick={() => setFormData({...formData, rk6Institusjon: false})}
-                                className="text-xs"
-                              >
-                                Egeneide boenheter
-                              </Button>
+                          {formData.tilretteleggingLedd1b && (
+                            <div className="ml-6 p-3 bg-muted/50 border border-border rounded">
+                              <Label className="text-xs font-medium mb-2 block">Type virksomhet i RK6:</Label>
+                              <div className="flex gap-2">
+                                <Button 
+                                  type="button"
+                                  size="sm"
+                                  variant={formData.rk6Institusjon ? "default" : "outline"}
+                                  onClick={() => setFormData({...formData, rk6Institusjon: true})}
+                                  className="text-xs"
+                                >
+                                  Institusjon
+                                </Button>
+                                <Button 
+                                  type="button"
+                                  size="sm"
+                                  variant={!formData.rk6Institusjon ? "default" : "outline"}
+                                  onClick={() => setFormData({...formData, rk6Institusjon: false})}
+                                  className="text-xs"
+                                >
+                                  Egeneide boenheter
+                                </Button>
+                              </div>
+                              <p className="text-xs text-muted-foreground mt-2">
+                                {formData.rk6Institusjon 
+                                  ? "NS-EN 12845 skal benyttes for institusjoner." 
+                                  : "NS-EN 16925 kan benyttes for egeneide boenheter i RK6."}
+                              </p>
                             </div>
-                            <p className="text-xs text-muted-foreground mt-2">
-                              {formData.rk6Institusjon 
-                                ? "NS-EN 12845 skal benyttes for institusjoner." 
-                                : "NS-EN 16925 kan benyttes for egeneide boenheter i RK6."}
-                            </p>
-                          </div>
+                          )}
                         </div>
                       )}
 
