@@ -2839,34 +2839,45 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">RIBr</td>
               </tr>
             )}
-            {!isBF85 && formData.tilretteleggingLedd2a && (
+            {!isBF85 && formData.tilretteleggingLedd2a && (() => {
+              const bt = (formData.bygningstype || "").toLowerCase();
+              const erBolig = bt.includes("bolig") || bt.includes("enebolig") || bt.includes("rekkehus") || bt.includes("kjedehus") || bt.includes("leilighet") || formData.risikoklasse === "RK4";
+              return (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Brannalarmanlegg</td>
                 <td className="border border-gray-400 p-2">
                   <p className="mb-2">Byggverk beregnet for virksomhet i risikoklasse 2 til 6 skal ha brannalarmanlegg.</p>
                   <p className="mb-2">Brannalarmanlegg må prosjekteres og utføres i samsvar med NS 3960:2019 og NS-EN 54-serien.</p>
-                  {formData.brannalarmBoligbygg && (
-                    <p className="mb-1">• Boligbygg med leiligheter – krav til detektorer i leiligheter.</p>
+                  {erBolig && (
+                    <>
+                      <p className="mb-1">• Detektorer i leiligheter må dekke kjøkken, stue og sone utenfor soverom. Det må være minst én detektor per etasje.</p>
+                      <p className="mb-1">• Akustiske alarmorganer må plasseres slik at alarmstyrken er minst 60 dB i oppholdsrom og soverom når mellomliggende dører er lukket.</p>
+                      <p className="mb-1">• Detektorer og akustiske alarmorganer må installeres i trapperom, kjeller og loft.</p>
+                      <p className="mb-1">• Manuell melder må installeres i trapperom ved hovedinngang.</p>
+                      <p className="mb-1">• Alarmorganer både i leiligheter og i fellesarealer må aktiveres ved alarm utløst i leilighet som ikke er kvittert ut i løpet av 2 minutter, alarm utløst i fellesarealer, eller utløst slokkeanlegg.</p>
+                    </>
                   )}
                   {formData.brannalarmParkering && (
                     <p className="mb-1">• Parkeringskjeller/garasje større enn 1 200 m² – skal ha brannalarmanlegg.</p>
                   )}
                   {formData.brannalarmPublikum && (
-                    <p className="mb-1">• Byggverk for publikum og/eller arbeidsbygninger – optiske alarmorganer skal benyttes.</p>
+                    <p className="mb-1">• I byggverk for publikum og arbeidsbygninger må akustiske alarmorganer suppleres med optiske i de deler som er åpent for publikum og fellesarealer i arbeidsbygninger.</p>
                   )}
                   {formData.brannalarmUniversell && (
-                    <p className="mb-1">• Universelt utformet – krav om optiske alarmorganer i UU-rom.</p>
+                    <p className="mb-1">• I byggverk med krav om universell utforming må rom som er universelt utformet ha optiske alarmorganer i tillegg til akustiske. I bad og toalettrom som er universelt utformet må akustiske alarmorganer suppleres med optiske.</p>
                   )}
                   {formData.brannalarmTalevarsling && (
-                    <p className="mb-1">• Branncelle over flere plan med over 1 000 personer – talevarsling kreves.</p>
+                    <p className="mb-1">• Branncelle over flere plan beregnet for flere enn 1 000 personer må ha talevarslingssanlegg.</p>
                   )}
                   {formData.brannalarmTakterrasse && (
-                    <p className="mb-1">• Takterrasse beregnet for personopphold – skal varsles.</p>
+                    <p className="mb-1">• Takterrasse beregnet for personopphold må ha utstyr for varsling av brann.</p>
                   )}
+                  <p className="mt-2">Brannalarmanlegg må ha alarmoverføring til nødmeldesentral, alarmstasjon, vaktselskap eller til sted lokalt i byggverket med personell som har ansvar for å iverksette aksjon i henhold til alarmorganisering.</p>
                 </td>
                 <td className="border border-gray-400 p-2 align-top">RIE</td>
               </tr>
-            )}
+              );
+            })()}
             {!isBF85 && formData.tilretteleggingLedd3 && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Ledesystem</td>

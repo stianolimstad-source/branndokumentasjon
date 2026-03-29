@@ -6111,21 +6111,30 @@ const Konsept = () => {
                         </div>
                         
                         {/* Sub-checkboxer for brannalarmanlegg */}
-                        {formData.tilretteleggingLedd2a && (
+                        {formData.tilretteleggingLedd2a && (() => {
+                          const bt = formData.bygningstype.toLowerCase();
+                          const erBolig = bt.includes("bolig") || bt.includes("enebolig") || bt.includes("rekkehus") || bt.includes("kjedehus") || bt.includes("leilighet") || formData.risikoklasse === "RK4";
+                          return (
                           <div className="ml-6 p-3 bg-muted/50 border border-border rounded space-y-2">
-                            <Label className="text-xs font-medium block mb-2">Velg relevante krav for brannalarmanlegg:</Label>
+                            <Label className="text-xs font-medium block mb-2">Krav for brannalarmanlegg:</Label>
                             
-                            <div className="flex items-start space-x-2">
-                              <Checkbox 
-                                id="brannalarmBoligbygg" 
-                                checked={formData.brannalarmBoligbygg}
-                                onCheckedChange={(checked) => setFormData({...formData, brannalarmBoligbygg: checked as boolean})}
-                              />
-                              <Label htmlFor="brannalarmBoligbygg" className="text-xs cursor-pointer leading-relaxed">
-                                Boligbygg med leiligheter (krav til detektorer i leiligheter)
-                              </Label>
-                            </div>
-                            
+                            {/* Boligkrav – vises automatisk for boligbygg */}
+                            {erBolig && (
+                              <div className="p-2 bg-muted/30 border border-border rounded">
+                                <div className="flex items-start space-x-2">
+                                  <Checkbox 
+                                    id="brannalarmBoligbygg" 
+                                    checked={true}
+                                    disabled
+                                  />
+                                  <Label htmlFor="brannalarmBoligbygg" className="text-xs cursor-pointer leading-relaxed">
+                                    <strong>Detektorer i leiligheter:</strong> Må dekke kjøkken, stue og sone utenfor soverom. Minst én detektor per etasje. Akustiske alarmorganer plasseres slik at alarmstyrken er minst 60 dB. Detektorer og akustiske alarmorganer må installeres i trapperom, kjeller og loft. Manuell melder i trapperom ved hovedinngang.
+                                  </Label>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Parkering – valgfritt for bolig, også tilgjengelig for andre */}
                             <div className="flex items-start space-x-2">
                               <Checkbox 
                                 id="brannalarmParkering" 
@@ -6137,51 +6146,57 @@ const Konsept = () => {
                               </Label>
                             </div>
                             
-                            <div className="flex items-start space-x-2">
-                              <Checkbox 
-                                id="brannalarmPublikum" 
-                                checked={formData.brannalarmPublikum}
-                                onCheckedChange={(checked) => setFormData({...formData, brannalarmPublikum: checked as boolean})}
-                              />
-                              <Label htmlFor="brannalarmPublikum" className="text-xs cursor-pointer leading-relaxed">
-                                Byggverk for publikum og/eller arbeidsbygninger (optiske alarmorganer)
-                              </Label>
-                            </div>
-                            
-                            <div className="flex items-start space-x-2">
-                              <Checkbox 
-                                id="brannalarmUniversell" 
-                                checked={formData.brannalarmUniversell}
-                                onCheckedChange={(checked) => setFormData({...formData, brannalarmUniversell: checked as boolean})}
-                              />
-                              <Label htmlFor="brannalarmUniversell" className="text-xs cursor-pointer leading-relaxed">
-                                Universelt utformet (krav om optiske alarmorganer i UU-rom)
-                              </Label>
-                            </div>
-                            
-                            <div className="flex items-start space-x-2">
-                              <Checkbox 
-                                id="brannalarmTalevarsling" 
-                                checked={formData.brannalarmTalevarsling}
-                                onCheckedChange={(checked) => setFormData({...formData, brannalarmTalevarsling: checked as boolean})}
-                              />
-                              <Label htmlFor="brannalarmTalevarsling" className="text-xs cursor-pointer leading-relaxed">
-                                Branncelle over flere plan med over 1 000 personer (talevarsling)
-                              </Label>
-                            </div>
-                            
-                            <div className="flex items-start space-x-2">
-                              <Checkbox 
-                                id="brannalarmTakterrasse" 
-                                checked={formData.brannalarmTakterrasse}
-                                onCheckedChange={(checked) => setFormData({...formData, brannalarmTakterrasse: checked as boolean})}
-                              />
-                              <Label htmlFor="brannalarmTakterrasse" className="text-xs cursor-pointer leading-relaxed">
-                                Takterrasse beregnet for personopphold
-                              </Label>
-                            </div>
+                            {/* Følgende krav vises IKKE for boligbygg */}
+                            {!erBolig && (
+                              <>
+                                <div className="flex items-start space-x-2">
+                                  <Checkbox 
+                                    id="brannalarmPublikum" 
+                                    checked={formData.brannalarmPublikum}
+                                    onCheckedChange={(checked) => setFormData({...formData, brannalarmPublikum: checked as boolean})}
+                                  />
+                                  <Label htmlFor="brannalarmPublikum" className="text-xs cursor-pointer leading-relaxed">
+                                    Byggverk for publikum og/eller arbeidsbygninger (optiske alarmorganer)
+                                  </Label>
+                                </div>
+                                
+                                <div className="flex items-start space-x-2">
+                                  <Checkbox 
+                                    id="brannalarmUniversell" 
+                                    checked={formData.brannalarmUniversell}
+                                    onCheckedChange={(checked) => setFormData({...formData, brannalarmUniversell: checked as boolean})}
+                                  />
+                                  <Label htmlFor="brannalarmUniversell" className="text-xs cursor-pointer leading-relaxed">
+                                    Universelt utformet (krav om optiske alarmorganer i UU-rom)
+                                  </Label>
+                                </div>
+                                
+                                <div className="flex items-start space-x-2">
+                                  <Checkbox 
+                                    id="brannalarmTalevarsling" 
+                                    checked={formData.brannalarmTalevarsling}
+                                    onCheckedChange={(checked) => setFormData({...formData, brannalarmTalevarsling: checked as boolean})}
+                                  />
+                                  <Label htmlFor="brannalarmTalevarsling" className="text-xs cursor-pointer leading-relaxed">
+                                    Branncelle over flere plan med over 1 000 personer (talevarsling)
+                                  </Label>
+                                </div>
+                                
+                                <div className="flex items-start space-x-2">
+                                  <Checkbox 
+                                    id="brannalarmTakterrasse" 
+                                    checked={formData.brannalarmTakterrasse}
+                                    onCheckedChange={(checked) => setFormData({...formData, brannalarmTakterrasse: checked as boolean})}
+                                  />
+                                  <Label htmlFor="brannalarmTakterrasse" className="text-xs cursor-pointer leading-relaxed">
+                                    Takterrasse beregnet for personopphold
+                                  </Label>
+                                </div>
+                              </>
+                            )}
                           </div>
-                        )}
+                          );
+                        })()}
 
                         <div className="space-y-2">
                           <div className="flex items-start space-x-2">
