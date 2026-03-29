@@ -2936,7 +2936,38 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Ledesystem</td>
                 <td className="border border-gray-400 p-2">
-                  Store byggverk, byggverk beregnet for et stort antall personer og byggverk i risikoklasse 5 og 6 skal ha ledesystem.
+                  <p className="mb-2">I byggverk hvor flukt- og rømningsveiene er lange og har retningsendringer eller skal benyttes av mange personer, skal flukt- og rømningsveiene ha god belysning og være merket slik at rømning kan skje på en rask og effektiv måte. Store byggverk, byggverk beregnet for et stort antall personer og byggverk beregnet for virksomhet i risikoklasse 5 og 6 skal ha ledesystem.</p>
+                  <p className="mb-1 font-semibold">Preaksepterte ytelser:</p>
+                  <ul className="list-disc list-inside space-y-1">
+                    {formData.ledesystemLedelinjer && (
+                      <li>Ledesystem i fluktveier og rømningsveier må omfatte ledelinjer som oppfattes kontinuerlig, i form av komponenter på gulv eller lavt plasserte på vegg.</li>
+                    )}
+                    {formData.ledesystemRomningsmerking && (
+                      <li>Rømningsmerking må være synlig og lesbar fra alle steder i fluktveien og rømningsveien.</li>
+                    )}
+                    {formData.ledesystemMarkeringsskilt && (
+                      <li>Alle byggverk må ha markeringsskilt plassert over alle utganger til og i rømningsvei. Unntak kan gjøres for utgang fra boenheter og fra små rom der slike skilt åpenbart er unødvendige.</li>
+                    )}
+                    {formData.ledesystemBoligRomningsveier && (
+                      <li>Rømningsveier i store boligbygninger med flere boenheter i mer enn 2 etasjer må ha ledesystem.</li>
+                    )}
+                    {formData.ledesystemForsamling && (
+                      <li>I byggverk der forskriften stiller krav om ledesystem vil dette gjelde rømningsveiene, samt fluktveier i større, uoversiktlige brannceller.</li>
+                    )}
+                    {formData.ledesystemKontorSkole && (
+                      <li>Kontorbygninger med store kontorlandskap, skoler med store undervisningsbaser og byggverk eller del av byggverk som er offentlig tilgjengelig og ligger under terreng, må ha ledesystem i fluktveier og rømningsveier.</li>
+                    )}
+                    {formData.ledesystemStoreBrannceller && (
+                      <li>I store brannceller der det ikke er spesielt tilrettelagte fluktveier i branncellen fram til rømningsveiene, må det vurderes om hele branncellen må utstyres med ledesystem tilsvarende som for rømningsveiene. Det kan være nødvendig at ledesystemet omfatter automatisk taleinformasjon.</li>
+                    )}
+                    {formData.ledesystemBKL1Varighet && (
+                      <li>Ledesystem i byggverk i brannklasse 1 må fungere i den tiden som er nødvendig for rømning og redning, og i minst 30 minutter etter utløst brannalarm eller bortfall av kunstig belysning (strømbrudd).</li>
+                    )}
+                    {formData.ledesystemBKL23Varighet && (
+                      <li>Ledesystem i byggverk i brannklasse 2 og 3 må fungere i den tiden som er nødvendig for rømning og redning, og i minst 60 minutter etter utløst brannalarm eller bortfall av kunstig belysning (strømbrudd).</li>
+                    )}
+                  </ul>
+                  <p className="mt-2">For prosjektering og utførelse av ledesystem vises til NS 3926-1:2017.</p>
                 </td>
                 <td className="border border-gray-400 p-2 align-top">RIE</td>
               </tr>
