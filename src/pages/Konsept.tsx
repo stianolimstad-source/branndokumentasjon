@@ -6114,8 +6114,28 @@ const Konsept = () => {
                         {formData.tilretteleggingLedd2a && (() => {
                           const bt = formData.bygningstype.toLowerCase();
                           const erBolig = bt.includes("bolig") || bt.includes("enebolig") || bt.includes("rekkehus") || bt.includes("kjedehus") || bt.includes("leilighet") || formData.risikoklasse === "RK4";
+                          
+                          // Beregn brannalarmkategori basert på risikoklasse og etasjer
+                          const rk = formData.risikoklasse;
+                          const etasjer = parseInt(formData.etasjer) || 1;
+                          let brannalarmkategori = 1;
+                          if (rk === "RK5" || rk === "RK6") {
+                            brannalarmkategori = 2;
+                          } else if ((rk === "RK2" || rk === "RK3" || rk === "RK4") && etasjer >= 2) {
+                            brannalarmkategori = 2;
+                          }
+                          
                           return (
                           <div className="ml-6 p-3 bg-muted/50 border border-border rounded space-y-2">
+                            {/* Brannalarmkategori */}
+                            <div className="p-2 bg-muted/30 border border-border rounded flex items-center gap-2">
+                              <Label className="text-xs font-medium">Brannalarmkategori:</Label>
+                              <span className="text-xs font-bold text-primary">{brannalarmkategori}</span>
+                              <span className="text-xs text-muted-foreground ml-1">
+                                (basert på {rk}, {etasjer} {etasjer === 1 ? "etasje" : "etasjer"})
+                              </span>
+                            </div>
+
                             <Label className="text-xs font-medium block mb-2">Krav for brannalarmanlegg:</Label>
                             
                             {/* Boligkrav – vises automatisk for boligbygg */}
