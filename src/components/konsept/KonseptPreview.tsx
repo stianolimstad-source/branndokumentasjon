@@ -2832,7 +2832,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">Alternativt tiltak for slokkeanlegg</td>
                 <td className="border border-gray-400 p-2">
                   <p>Der det er krav om automatisk brannslokkeanlegg, kan det likevel benyttes andre tiltak som gir tilsvarende sikkerhet ved å hindre, begrense eller kontrollere en brann lokalt der den oppstår.</p>
-                  <p className="mt-2 text-sm">Nye teknikker eller løsninger for spesielle situasjoner kan aksepteres når de er dokumentert å ha minst tilsvarende funksjon og pålitelighet som et automatisk sprinkleranlegg. Dokumentasjonen skal foreligge i byggesaken.</p>
+                  {formData.tilretteleggingLedd1cBeskrivelse && (
+                    <p className="mt-2"><strong>Valgt tiltak:</strong> {formData.tilretteleggingLedd1cBeskrivelse}</p>
+                  )}
                 </td>
                 <td className="border border-gray-400 p-2 align-top">RIBr</td>
               </tr>
