@@ -2798,7 +2798,17 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Automatisk brannslokkeanlegg (RK4)</td>
                 <td className="border border-gray-400 p-2">
-                  <p>Byggverk eller del av byggverk i risikoklasse 4 hvor det kreves heis, skal ha automatisk brannslokkeanlegg. Deler av et byggverk med og uten automatisk brannslokkeanlegg skal være ulike brannseksjoner.</p>
+                  <p className="mb-2">Byggverk eller del av byggverk i risikoklasse 4 hvor det kreves heis, skal ha automatisk brannslokkeanlegg. Deler av et byggverk med og uten automatisk brannslokkeanlegg skal være ulike brannseksjoner.</p>
+                  <ol className="list-decimal ml-4 space-y-1 text-sm">
+                    <li>Forskriftens krav til automatisk brannslokkeanlegg i byggverk i risikoklasse 4 anses oppfylt når det installeres automatisk sprinkleranlegg i samsvar med NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019. I byggverk med både næringsvirksomhet og boliger gjelder følgende:
+                      <ol className="list-decimal ml-4 mt-1 space-y-0.5">
+                        <li>NS-EN 12845:2015+A1:2019 kan benyttes i arealer avsatt for næring.</li>
+                        <li>Arealer avsatt for boligformål sprinklet etter NS-EN 12845:2015 må ha hurtigutløsende (QR–quick response) sprinklere.</li>
+                        <li>Arealer avsatt for boligformål og tilhørende rømningsveier definert i NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019 kan prosjekteres og utføres etter denne standarden.</li>
+                      </ol>
+                    </li>
+                    <li>Dersom ulike deler av et byggverk ikke kan oppdeles i brannseksjoner, må hele byggverket ha automatisk sprinkleranlegg.</li>
+                  </ol>
                 </td>
                 <td className="border border-gray-400 p-2 align-top">RIV</td>
               </tr>
