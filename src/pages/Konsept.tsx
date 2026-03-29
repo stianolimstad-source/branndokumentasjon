@@ -603,7 +603,8 @@ const Konsept = () => {
     // 3.9 §11-12 Tilrettelegging for rømning og redning
     tilretteleggingLedd1a: false, // RK4 heis - automatisk brannslokkeanlegg
     tilretteleggingLedd1b: false, // RK6 - automatisk brannslokkeanlegg
-    tilretteleggingLedd1c: false, // Generelt automatisk brannslokkeanlegg (andre tilfeller)
+    tilretteleggingLedd1c: false, // Alternativt tiltak istedenfor automatisk slokkeanlegg
+    tilretteleggingLedd1cBeskrivelse: "", // Beskrivelse av alternativt tiltak
     rk6Institusjon: true as boolean, // true = institusjon, false = egeneide boenheter
     tilretteleggingLedd2a: false, // RK2-6 brannalarmanlegg
     // Brannalarm sub-checkboxer
@@ -6080,9 +6081,17 @@ const Konsept = () => {
                             </Label>
                           </div>
                           {formData.tilretteleggingLedd1c && (
-                            <p className="text-xs text-muted-foreground ml-6">
-                              Nye teknikker eller løsninger for spesielle situasjoner kan aksepteres når de er dokumentert å ha minst tilsvarende funksjon og pålitelighet som et automatisk sprinkleranlegg. Dokumentasjonen skal foreligge i byggesaken.
-                            </p>
+                            <div className="ml-6 space-y-2">
+                              <p className="text-xs text-muted-foreground">
+                                Nye teknikker eller løsninger for spesielle situasjoner kan aksepteres når de er dokumentert å ha minst tilsvarende funksjon og pålitelighet som et automatisk sprinkleranlegg. Dokumentasjonen skal foreligge i byggesaken.
+                              </p>
+                              <Textarea
+                                placeholder="Beskriv det alternative tiltaket som benyttes..."
+                                value={formData.tilretteleggingLedd1cBeskrivelse || ""}
+                                onChange={(e) => setFormData({...formData, tilretteleggingLedd1cBeskrivelse: e.target.value})}
+                                className="text-xs min-h-[80px]"
+                              />
+                            </div>
                           )}
                         </div>
                       )}
