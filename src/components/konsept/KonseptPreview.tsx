@@ -2842,12 +2842,21 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {!isBF85 && formData.tilretteleggingLedd2a && (() => {
               const bt = (formData.bygningstype || "").toLowerCase();
               const erBolig = bt.includes("bolig") || bt.includes("enebolig") || bt.includes("rekkehus") || bt.includes("kjedehus") || bt.includes("leilighet") || formData.risikoklasse === "RK4";
+              const rk = formData.risikoklasse;
+              const etasjer = parseInt(formData.etasjer) || 1;
+              let brannalarmkategori = 1;
+              if (rk === "RK5" || rk === "RK6") {
+                brannalarmkategori = 2;
+              } else if ((rk === "RK2" || rk === "RK3" || rk === "RK4") && etasjer >= 2) {
+                brannalarmkategori = 2;
+              }
               return (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Brannalarmanlegg</td>
                 <td className="border border-gray-400 p-2">
                   <p className="mb-2">Byggverk beregnet for virksomhet i risikoklasse 2 til 6 skal ha brannalarmanlegg.</p>
                   <p className="mb-2">Brannalarmanlegg må prosjekteres og utføres i samsvar med NS 3960:2019 og NS-EN 54-serien.</p>
+                  <p className="mb-2"><strong>Brannalarmkategori: {brannalarmkategori}</strong></p>
                   {erBolig && (
                     <>
                       <p className="mb-1">• Detektorer i leiligheter må dekke kjøkken, stue og sone utenfor soverom. Det må være minst én detektor per etasje.</p>
