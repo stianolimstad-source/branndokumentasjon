@@ -6055,33 +6055,13 @@ const Konsept = () => {
                             </Label>
                           </div>
                           {formData.tilretteleggingLedd1b && (
-                            <div className="ml-6 p-3 bg-muted/50 border border-border rounded">
-                              <Label className="text-xs font-medium mb-2 block">Type virksomhet i RK6:</Label>
-                              <div className="flex gap-2">
-                                <Button 
-                                  type="button"
-                                  size="sm"
-                                  variant={formData.rk6Institusjon ? "default" : "outline"}
-                                  onClick={() => setFormData({...formData, rk6Institusjon: true})}
-                                  className="text-xs"
-                                >
-                                  Institusjon
-                                </Button>
-                                <Button 
-                                  type="button"
-                                  size="sm"
-                                  variant={!formData.rk6Institusjon ? "default" : "outline"}
-                                  onClick={() => setFormData({...formData, rk6Institusjon: false})}
-                                  className="text-xs"
-                                >
-                                  Egeneide boenheter
-                                </Button>
-                              </div>
-                              <p className="text-xs text-muted-foreground mt-2">
-                                {formData.rk6Institusjon 
-                                  ? "NS-EN 12845 skal benyttes for institusjoner." 
-                                  : "NS-EN 16925 kan benyttes for egeneide boenheter i RK6."}
-                              </p>
+                            <div className="ml-6 p-3 bg-muted/50 border border-border rounded space-y-2">
+                              <Label className="text-xs font-medium block mb-1">Utdypende krav for RK6:</Label>
+                              <ol className="text-xs space-y-1.5 list-decimal ml-4">
+                                <li>Forskriftens krav til automatisk slokkeanlegg i byggverk i risikoklasse 6 anses oppfylt når det installeres automatisk sprinkleranlegg i samsvar med NS-EN 12845:2015+A1:2019. Boligsprinkleranlegg i samsvar med NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019 kan benyttes der dette er angitt i tabell NA.2 i standarden.</li>
+                                <li>Dersom byggverket også har virksomhet i andre risikoklasser, må deler av byggverket med og uten automatisk sprinkleranlegg være ulike brannseksjoner.</li>
+                                <li>Dersom virksomhet i ulike risikoklasser ikke kan oppdeles i brannseksjoner, må hele byggverket ha automatisk sprinkleranlegg.</li>
+                              </ol>
                             </div>
                           )}
                         </div>

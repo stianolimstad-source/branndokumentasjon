@@ -2818,13 +2818,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">Automatisk brannslokkeanlegg (RK6)</td>
                 <td className="border border-gray-400 p-2">
                   <p className="mb-2">Byggverk i risikoklasse 6 skal ha automatisk brannslokkeanlegg.</p>
-                  {formData.rk6Institusjon !== undefined && (
-                    <p className="text-sm">
-                      {formData.rk6Institusjon
-                        ? "Slokkeanlegg prosjekteres etter NS-EN 12845 (institusjon)."
-                        : "Slokkeanlegg kan prosjekteres etter NS-EN 16925 (egeneide boenheter i RK6)."}
-                    </p>
-                  )}
+                  <ol className="list-decimal ml-4 space-y-1 text-sm">
+                    <li>Forskriftens krav til automatisk slokkeanlegg i byggverk i risikoklasse 6 anses oppfylt når det installeres automatisk sprinkleranlegg i samsvar med NS-EN 12845:2015+A1:2019. Boligsprinkleranlegg i samsvar med NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019 kan benyttes der dette er angitt i tabell NA.2 i standarden.</li>
+                    <li>Dersom byggverket også har virksomhet i andre risikoklasser, må deler av byggverket med og uten automatisk sprinkleranlegg være ulike brannseksjoner.</li>
+                    <li>Dersom virksomhet i ulike risikoklasser ikke kan oppdeles i brannseksjoner, må hele byggverket ha automatisk sprinkleranlegg.</li>
+                  </ol>
                 </td>
                 <td className="border border-gray-400 p-2 align-top">RIV</td>
               </tr>
