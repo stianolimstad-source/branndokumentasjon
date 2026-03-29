@@ -614,6 +614,7 @@ const Konsept = () => {
     brannalarmUniversell: false, // Universelt utformet
     brannalarmTalevarsling: false, // Branncelle over flere plan > 1000 personer
     brannalarmTakterrasse: false, // Takterrasse
+    alarmValg: "brannalarm", // "brannalarm" eller "roykvarsler"
     tilretteleggingLedd2b: false, // Få personer røykvarslere
     tilretteleggingLedd3: false, // Ledesystem
     tilretteleggingLedd4: false, // Evakueringsplaner
