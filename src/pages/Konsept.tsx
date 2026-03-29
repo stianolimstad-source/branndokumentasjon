@@ -6112,7 +6112,7 @@ const Konsept = () => {
                         
                         {/* Sub-checkboxer for brannalarmanlegg */}
                         {formData.tilretteleggingLedd2a && (
-                          <div className="ml-6 p-3 bg-gray-50 border border-gray-200 rounded space-y-2">
+                          <div className="ml-6 p-3 bg-muted/50 border border-border rounded space-y-2">
                             <Label className="text-xs font-medium block mb-2">Velg relevante krav for brannalarmanlegg:</Label>
                             
                             <div className="flex items-start space-x-2">
