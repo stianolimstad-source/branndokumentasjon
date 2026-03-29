@@ -2844,7 +2844,25 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">Brannalarmanlegg</td>
                 <td className="border border-gray-400 p-2">
                   <p className="mb-2">Byggverk beregnet for virksomhet i risikoklasse 2 til 6 skal ha brannalarmanlegg.</p>
-                  <p>Brannalarmanlegg må prosjekteres og utføres i samsvar med NS 3960:2019 og NS-EN 54-serien.</p>
+                  <p className="mb-2">Brannalarmanlegg må prosjekteres og utføres i samsvar med NS 3960:2019 og NS-EN 54-serien.</p>
+                  {formData.brannalarmBoligbygg && (
+                    <p className="mb-1">• Boligbygg med leiligheter – krav til detektorer i leiligheter.</p>
+                  )}
+                  {formData.brannalarmParkering && (
+                    <p className="mb-1">• Parkeringskjeller/garasje større enn 1 200 m² – skal ha brannalarmanlegg.</p>
+                  )}
+                  {formData.brannalarmPublikum && (
+                    <p className="mb-1">• Byggverk for publikum og/eller arbeidsbygninger – optiske alarmorganer skal benyttes.</p>
+                  )}
+                  {formData.brannalarmUniversell && (
+                    <p className="mb-1">• Universelt utformet – krav om optiske alarmorganer i UU-rom.</p>
+                  )}
+                  {formData.brannalarmTalevarsling && (
+                    <p className="mb-1">• Branncelle over flere plan med over 1 000 personer – talevarsling kreves.</p>
+                  )}
+                  {formData.brannalarmTakterrasse && (
+                    <p className="mb-1">• Takterrasse beregnet for personopphold – skal varsles.</p>
+                  )}
                 </td>
                 <td className="border border-gray-400 p-2 align-top">RIE</td>
               </tr>
