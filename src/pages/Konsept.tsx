@@ -6373,7 +6373,7 @@ const Konsept = () => {
                               <Checkbox id="ledesystemMarkeringsskilt" checked={formData.ledesystemMarkeringsskilt}
                                 onCheckedChange={(checked) => setFormData({...formData, ledesystemMarkeringsskilt: checked as boolean})} />
                               <Label htmlFor="ledesystemMarkeringsskilt" className="text-xs cursor-pointer leading-relaxed">
-                                Alle byggverk må ha markeringsskilt plassert over alle utganger til og i rømningsvei. Unntak kan gjøres for utgang fra boenheter og fra små rom der slike skilt åpenbart er unødvendige.
+                                3. Alle byggverk må ha markeringsskilt plassert over alle utganger til og i rømningsvei. Unntak kan gjøres for utgang fra boenheter og fra små rom der slike skilt åpenbart er unødvendige.
                               </Label>
                             </div>
 
@@ -6392,7 +6392,7 @@ const Konsept = () => {
                                       <Checkbox id="ledesystemBoligRomningsveier" checked={formData.ledesystemBoligRomningsveier}
                                         onCheckedChange={(checked) => setFormData({...formData, ledesystemBoligRomningsveier: checked as boolean})} />
                                       <Label htmlFor="ledesystemBoligRomningsveier" className="text-xs cursor-pointer leading-relaxed">
-                                        Rømningsveier i store boligbygninger med flere boenheter i mer enn 2 etasjer må ha ledesystem.
+                                        4. Rømningsveier i store boligbygninger med flere boenheter i mer enn 2 etasjer må ha ledesystem.
                                       </Label>
                                     </div>
                                   )}
@@ -6402,7 +6402,7 @@ const Konsept = () => {
                                       <Checkbox id="ledesystemForsamling" checked={formData.ledesystemForsamling}
                                         onCheckedChange={(checked) => setFormData({...formData, ledesystemForsamling: checked as boolean})} />
                                       <Label htmlFor="ledesystemForsamling" className="text-xs cursor-pointer leading-relaxed">
-                                        I byggverk der forskriften stiller krav om ledesystem vil dette gjelde rømningsveiene, samt fluktveier i større, uoversiktlige brannceller.
+                                        5. I byggverk der forskriften stiller krav om ledesystem vil dette gjelde rømningsveiene, samt fluktveier i større, uoversiktlige brannceller.
                                       </Label>
                                     </div>
                                   )}
@@ -6412,7 +6412,7 @@ const Konsept = () => {
                                       <Checkbox id="ledesystemKontorSkole" checked={formData.ledesystemKontorSkole}
                                         onCheckedChange={(checked) => setFormData({...formData, ledesystemKontorSkole: checked as boolean})} />
                                       <Label htmlFor="ledesystemKontorSkole" className="text-xs cursor-pointer leading-relaxed">
-                                        Kontorbygninger med store kontorlandskap, skoler med store undervisningsbaser og byggverk eller del av byggverk som er offentlig tilgjengelig og ligger under terreng, må ha ledesystem i fluktveier og rømningsveier.
+                                        6. Kontorbygninger med store kontorlandskap, skoler med store undervisningsbaser og byggverk eller del av byggverk som er offentlig tilgjengelig og ligger under terreng, må ha ledesystem i fluktveier og rømningsveier.
                                       </Label>
                                     </div>
                                   )}
@@ -6421,7 +6421,7 @@ const Konsept = () => {
                                     <Checkbox id="ledesystemStoreBrannceller" checked={formData.ledesystemStoreBrannceller}
                                       onCheckedChange={(checked) => setFormData({...formData, ledesystemStoreBrannceller: checked as boolean})} />
                                     <Label htmlFor="ledesystemStoreBrannceller" className="text-xs cursor-pointer leading-relaxed">
-                                      I store brannceller der det ikke er spesielt tilrettelagte fluktveier i branncellen fram til rømningsveiene, må det vurderes om hele branncellen må utstyres med ledesystem tilsvarende som for rømningsveiene. Det kan være nødvendig at ledesystemet omfatter automatisk taleinformasjon.
+                                      7. I store brannceller der det ikke er spesielt tilrettelagte fluktveier i branncellen fram til rømningsveiene, må det vurderes om hele branncellen må utstyres med ledesystem tilsvarende som for rømningsveiene. Det kan være nødvendig at ledesystemet omfatter automatisk taleinformasjon.
                                     </Label>
                                   </div>
 
