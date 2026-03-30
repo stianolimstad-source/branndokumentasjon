@@ -6405,9 +6405,9 @@ const Konsept = () => {
                             <strong>Ledesystem:</strong> Store byggverk, byggverk for mange personer og RK5/RK6 skal ha ledesystem med god belysning og merking.
                           </Label>
                         </div>
-                        {!formData.tilretteleggingLedd3 && erBoligMedLedesystemkrav && (
+                        {!formData.tilretteleggingLedd3 && erLedesystemPaakrevd && (
                           <div className="ml-6 p-3 border border-destructive/50 rounded-lg bg-destructive/10">
-                            <p className="text-xs font-semibold text-destructive">⚠️ Fravik: Ledesystem er påkrevd for boligbygning med flere boenheter i mer enn 2 etasjer (jf. VTEK § 11-14). Ved å fjerne ledesystem må dette dokumenteres som et fravik fra preaksepterte ytelser.</p>
+                            <p className="text-xs font-semibold text-destructive">{ledesystemFravikTekst}</p>
                           </div>
                         )}
                         {formData.tilretteleggingLedd3 && (
