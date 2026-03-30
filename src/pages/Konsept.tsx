@@ -645,6 +645,7 @@ const Konsept = () => {
     ledesystemForsamling: false,
     ledesystemKontorSkole: false,
     ledesystemStoreBrannceller: false,
+    ledesystemStoreBranncellerBeskrivelse: "",
     ledesystemBKL1Varighet: false,
     ledesystemBKL23Varighet: false,
     tilretteleggingLedd4: false, // Evakueringsplaner
@@ -6448,6 +6449,17 @@ const Konsept = () => {
                                       I store brannceller der det ikke er spesielt tilrettelagte fluktveier i branncellen fram til rømningsveiene, må det vurderes om hele branncellen må utstyres med ledesystem tilsvarende som for rømningsveiene. Det kan være nødvendig at ledesystemet omfatter automatisk taleinformasjon.
                                     </Label>
                                   </div>
+                                  {formData.ledesystemStoreBrannceller && (
+                                    <div className="ml-6 p-3 bg-muted/50 border border-border rounded space-y-2">
+                                      <Label className="text-xs font-medium block">Beskriv hvilke brannceller det gjelder og forholdet:</Label>
+                                      <Textarea
+                                        value={formData.ledesystemStoreBranncellerBeskrivelse || ""}
+                                        onChange={(e) => setFormData({...formData, ledesystemStoreBranncellerBeskrivelse: e.target.value})}
+                                        placeholder="F.eks. branncelle for lager i 1. etasje (ca. 800 m²) uten tilrettelagte fluktveier..."
+                                        className="text-xs min-h-[80px]"
+                                      />
+                                    </div>
+                                  )}
 
                                   {(brannklasse === "BKL1" || brannklasse === "-") && (
                                     <p className="text-xs text-muted-foreground leading-relaxed bg-muted/40 p-2 rounded">
