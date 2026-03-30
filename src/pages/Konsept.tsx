@@ -645,6 +645,7 @@ const Konsept = () => {
     ledesystemForsamling: false,
     ledesystemKontorSkole: false,
     ledesystemStoreBrannceller: false,
+    ledesystemStoreBranncellerBeskrivelse: "",
     ledesystemBKL1Varighet: false,
     ledesystemBKL23Varighet: false,
     tilretteleggingLedd4: false, // Evakueringsplaner
