@@ -783,6 +783,16 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.etasjer, formData.brannklasse]);
 
+  // Automatisk aktivering av evakueringsplaner for RK5 og RK6
+  const erEvakueringsplanPaakrevd = ["RK5", "RK6"].includes(formData.risikoklasse);
+  
+  useEffect(() => {
+    if (isViewMode) return;
+    if (erEvakueringsplanPaakrevd && !formData.tilretteleggingLedd4) {
+      setFormData(prev => ({ ...prev, tilretteleggingLedd4: true }));
+    }
+  }, [formData.risikoklasse]);
+
 
   useEffect(() => {
     if (isViewMode) return;
@@ -6498,6 +6508,13 @@ const Konsept = () => {
                             <strong>Evakueringsplaner:</strong> For RK5/RK6, publikumsbygg og arbeidsbygninger skal det foreligge evakueringsplaner før bruk.
                           </Label>
                         </div>
+                        {!formData.tilretteleggingLedd4 && erEvakueringsplanPaakrevd && (
+                          <div className="ml-6 p-3 border border-destructive/50 rounded-lg bg-destructive/10">
+                            <p className="text-xs font-semibold text-destructive">
+                              ⚠️ Fravik: Evakueringsplaner er påkrevd for {formData.risikoklasse === "RK5" ? "overnattingssteder og publikumsbygg (RK5)" : "pleie- og sykehusbygg (RK6)"} (jf. TEK17 § 11-14, fjerde ledd). Ved å fjerne dette kravet må det dokumenteres som et fravik fra preaksepterte ytelser.
+                            </p>
+                          </div>
+                        )}
 
                         <div className="flex items-start space-x-2">
                           <Checkbox 
