@@ -730,7 +730,29 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal]);
 
-  // Automatisk beregning av BF85 bygningsbrannklasse
+  // Automatisk aktivering av ledesystem for boligbygg med 3+ etasjer
+  const erBoligMedLedesystemkrav = formData.risikoklasse === "RK4" && (parseInt(formData.etasjer, 10) || 0) >= 3;
+  useEffect(() => {
+    if (isViewMode) return;
+    if (erBoligMedLedesystemkrav && !formData.tilretteleggingLedd3) {
+      const bk = formData.brannklasse || "";
+      setFormData(prev => ({
+        ...prev,
+        tilretteleggingLedd3: true,
+        ledesystemKrevesAutomatisk: true,
+        ledesystemLedelinjer: true,
+        ledesystemRomningsmerking: true,
+        ledesystemBoligRomningsveier: true,
+        ledesystemBKL1Varighet: bk === "BKL1" || bk === "-",
+        ledesystemBKL23Varighet: bk === "BKL2" || bk === "BKL3",
+      }));
+    }
+    if (!erBoligMedLedesystemkrav) {
+      setFormData(prev => ({ ...prev, ledesystemKrevesAutomatisk: false }));
+    }
+  }, [formData.risikoklasse, formData.etasjer, formData.brannklasse]);
+
+
   useEffect(() => {
     if (isViewMode) return;
     if (formData.regelverk !== "BF85" || !formData.bygningstype) return;
