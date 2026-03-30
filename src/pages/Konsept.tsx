@@ -6728,7 +6728,7 @@ const Konsept = () => {
                                   onCheckedChange={(checked) => setFormData({...formData, stortAntallUnder600: checked as boolean})}
                                 />
                                 <Label htmlFor="stortAntallUnder600" className="text-sm cursor-pointer">
-                                  Inntil 600 personer
+                                  Minst én utgang per 300 personer
                                 </Label>
                               </div>
                               <div className="flex items-center space-x-2">
@@ -6738,7 +6738,7 @@ const Konsept = () => {
                                   onCheckedChange={(checked) => setFormData({...formData, stortAntallOver600: checked as boolean})}
                                 />
                                 <Label htmlFor="stortAntallOver600" className="text-sm cursor-pointer">
-                                  Mer enn 600 personer
+                                  Inntil 600 personer (minst to utganger)
                                 </Label>
                               </div>
                               <div className="flex items-center space-x-2">
@@ -6748,7 +6748,7 @@ const Konsept = () => {
                                   onCheckedChange={(checked) => setFormData({...formData, stortAntallUnder150: checked as boolean})}
                                 />
                                 <Label htmlFor="stortAntallUnder150" className="text-sm cursor-pointer">
-                                  Mindre enn 150 personer
+                                  Mindre enn 150 personer (én utgang til sikkert sted)
                                 </Label>
                               </div>
                               <div className="flex items-center space-x-2">
@@ -6758,7 +6758,7 @@ const Konsept = () => {
                                   onCheckedChange={(checked) => setFormData({...formData, stortAntallFlereEtasjer: checked as boolean})}
                                 />
                                 <Label htmlFor="stortAntallFlereEtasjer" className="text-sm cursor-pointer">
-                                  Branncelle over flere etasjer
+                                  Åpen forbindelse over flere etasjer / mellometasje
                                 </Label>
                               </div>
                             </div>
