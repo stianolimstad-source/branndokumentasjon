@@ -6404,10 +6404,10 @@ const Konsept = () => {
                             <p className="text-xs font-semibold text-foreground mb-2">Preaksepterte ytelser for ledesystem:</p>
                             
                             <p className="text-xs text-muted-foreground leading-relaxed">
-                              1. Ledesystem i fluktveier og rømningsveier må omfatte ledelinjer som oppfattes kontinuerlig, i form av komponenter på gulv eller lavt plasserte på vegg.
+                              Ledesystem i fluktveier og rømningsveier må omfatte ledelinjer som oppfattes kontinuerlig, i form av komponenter på gulv eller lavt plasserte på vegg.
                             </p>
                             <p className="text-xs text-muted-foreground leading-relaxed">
-                              2. Rømningsmerking må være synlig og lesbar fra alle steder i fluktveien og rømningsveien.
+                              Rømningsmerking må være synlig og lesbar fra alle steder i fluktveien og rømningsveien.
                             </p>
 
                             {(() => {
