@@ -27,6 +27,7 @@
   <body>
     <script>
       (function(){var t=localStorage.getItem("theme");if(t==="dark"||((!t)&&window.matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.classList.add("dark");})();
+      if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(function(registrations){registrations.forEach(function(r){r.unregister();});});if('caches' in window){caches.keys().then(function(names){names.forEach(function(name){caches.delete(name);});});}}
     </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
