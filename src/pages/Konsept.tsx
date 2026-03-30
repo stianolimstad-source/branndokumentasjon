@@ -6379,7 +6379,6 @@ const Konsept = () => {
                             <p className="text-xs font-semibold text-destructive">⚠️ Fravik: Ledesystem er påkrevd for boligbygning med flere boenheter i mer enn 2 etasjer (jf. VTEK § 11-14). Ved å fjerne ledesystem må dette dokumenteres som et fravik fra preaksepterte ytelser.</p>
                           </div>
                         )}
-                        </div>
                         {formData.tilretteleggingLedd3 && (
                           <div className="ml-6 space-y-2 p-3 border border-border rounded-lg bg-card">
                             <p className="text-xs font-semibold text-foreground mb-2">Preaksepterte ytelser for ledesystem:</p>
