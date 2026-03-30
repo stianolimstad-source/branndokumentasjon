@@ -6327,6 +6327,14 @@ const Konsept = () => {
                           );
                         })()}
                         <div className="flex items-start space-x-2">
+                          <Checkbox id="ledesystemMarkeringsskilt" checked={formData.ledesystemMarkeringsskilt}
+                            onCheckedChange={(checked) => setFormData({...formData, ledesystemMarkeringsskilt: checked as boolean})} />
+                          <Label htmlFor="ledesystemMarkeringsskilt" className="text-xs cursor-pointer leading-relaxed">
+                            <strong>Markeringsskilt:</strong> Alle byggverk må ha markeringsskilt plassert over alle utganger til og i rømningsvei. Unntak kan gjøres for utgang fra boenheter og fra små rom der slike skilt åpenbart er unødvendige.
+                          </Label>
+                        </div>
+
+                        <div className="flex items-start space-x-2">
                           <Checkbox 
                             id="tilretteleggingLedd3" 
                             checked={formData.tilretteleggingLedd3}
@@ -6336,10 +6344,8 @@ const Konsept = () => {
                               setFormData({
                                 ...formData,
                                 tilretteleggingLedd3: on,
-                                // Krav 1 og 2 alltid på som standard
                                 ledesystemLedelinjer: on ? true : false,
                                 ledesystemRomningsmerking: on ? true : false,
-                                // Varighet auto-settes basert på brannklasse
                                 ledesystemBKL1Varighet: on && (bk === "BKL1" || bk === "-"),
                                 ledesystemBKL23Varighet: on && (bk === "BKL2" || bk === "BKL3"),
                               });
@@ -6359,14 +6365,6 @@ const Konsept = () => {
                             <p className="text-xs text-muted-foreground leading-relaxed">
                               2. Rømningsmerking må være synlig og lesbar fra alle steder i fluktveien og rømningsveien.
                             </p>
-
-                            <div className="flex items-start space-x-2">
-                              <Checkbox id="ledesystemMarkeringsskilt" checked={formData.ledesystemMarkeringsskilt}
-                                onCheckedChange={(checked) => setFormData({...formData, ledesystemMarkeringsskilt: checked as boolean})} />
-                              <Label htmlFor="ledesystemMarkeringsskilt" className="text-xs cursor-pointer leading-relaxed">
-                                3. Alle byggverk må ha markeringsskilt plassert over alle utganger til og i rømningsvei. Unntak kan gjøres for utgang fra boenheter og fra små rom der slike skilt åpenbart er unødvendige.
-                              </Label>
-                            </div>
 
                             {(() => {
                               const rk = formData.risikoklasse;
