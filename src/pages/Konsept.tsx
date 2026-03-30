@@ -617,6 +617,7 @@ const Konsept = () => {
     alarmValg: "brannalarm", // "brannalarm" eller "roykvarsler"
     tilretteleggingLedd2b: false, // Få personer røykvarslere
     tilretteleggingLedd3: false, // Ledesystem
+    ledesystemKrevesAutomatisk: false, // Auto-required for bolig 3+ etasjer
     ledesystemLedelinjer: false,
     ledesystemRomningsmerking: false,
     ledesystemMarkeringsskilt: false,
