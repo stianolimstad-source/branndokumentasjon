@@ -751,11 +751,21 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal]);
 
-  // Automatisk aktivering av ledesystem for boligbygg med 3+ etasjer
+  // Automatisk aktivering av ledesystem basert på TEK17 § 11-14
+  // Boligbygg (RK4) med 3+ etasjer, skoler (RK3), RK5, RK6, og store kontorer/offentlige bygg
   const erBoligMedLedesystemkrav = formData.risikoklasse === "RK4" && (parseInt(formData.etasjer, 10) || 0) >= 3;
+  const erSkoleEllerOffentlig = ["RK3", "RK5", "RK6"].includes(formData.risikoklasse);
+  const erLedesystemPaakrevd = erBoligMedLedesystemkrav || erSkoleEllerOffentlig;
+  
+  const ledesystemFravikTekst = erBoligMedLedesystemkrav
+    ? "⚠️ Fravik: Ledesystem er påkrevd for boligbygning med flere boenheter i mer enn 2 etasjer (jf. VTEK § 11-14). Ved å fjerne ledesystem må dette dokumenteres som et fravik fra preaksepterte ytelser."
+    : erSkoleEllerOffentlig
+    ? `⚠️ Fravik: Ledesystem er påkrevd for ${formData.risikoklasse === "RK3" ? "skoler og undervisningsbygg" : formData.risikoklasse === "RK5" ? "overnattingssteder (RK5)" : "pleie- og sykehusbygg (RK6)"} (jf. TEK17 § 11-14). Ved å fjerne ledesystem må dette dokumenteres som et fravik fra preaksepterte ytelser.`
+    : "";
+
   useEffect(() => {
     if (isViewMode) return;
-    if (erBoligMedLedesystemkrav && !formData.tilretteleggingLedd3) {
+    if (erLedesystemPaakrevd && !formData.tilretteleggingLedd3) {
       const bk = formData.brannklasse || "";
       setFormData(prev => ({
         ...prev,
@@ -763,12 +773,12 @@ const Konsept = () => {
         ledesystemKrevesAutomatisk: true,
         ledesystemLedelinjer: true,
         ledesystemRomningsmerking: true,
-        ledesystemBoligRomningsveier: true,
+        ledesystemBoligRomningsveier: erBoligMedLedesystemkrav,
         ledesystemBKL1Varighet: bk === "BKL1" || bk === "-",
         ledesystemBKL23Varighet: bk === "BKL2" || bk === "BKL3",
       }));
     }
-    if (!erBoligMedLedesystemkrav) {
+    if (!erLedesystemPaakrevd) {
       setFormData(prev => ({ ...prev, ledesystemKrevesAutomatisk: false }));
     }
   }, [formData.risikoklasse, formData.etasjer, formData.brannklasse]);
