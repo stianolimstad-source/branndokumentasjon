@@ -2985,6 +2985,28 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">RIE</td>
               </tr>
             )}
+            {!isBF85 && formData.tilretteleggingLedd4 && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Evakueringsplaner</td>
+                <td className="border border-gray-400 p-2">
+                  <p>For byggverk i risikoklasse 5 og 6, øvrige byggverk for publikum og for arbeidsbygninger, skal det foreligge evakueringsplaner før byggverket tas i bruk.</p>
+                  <ul className="list-disc ml-5 mt-2 space-y-1 text-sm">
+                    <li>Evakueringsplanen må være tilpasset det enkelte byggverk ut fra bruk, virksomhet og enkeltpersoner som har behov for assistanse.</li>
+                    <li>En evakueringsplan må blant annet omfatte:
+                      <ul className="list-disc ml-5 mt-1 space-y-0.5">
+                        <li>Prosedyrer for rapportering av brann og andre situasjoner som krever evakuering.</li>
+                        <li>Beskrivelse av hvilke omstendigheter eller situasjoner som krever evakuering.</li>
+                        <li>Beskrivelse av kommandolinjer for intern organisasjon.</li>
+                        <li>Oppgavebeskrivelser for personer som har en rolle under evakueringen, inklusiv de som skal assistere personer som har behov for hjelp til å komme ut av byggverket.</li>
+                        <li>Plan for øvelser. Øvelsene må være realistiske med hensyn til assistert rømning.</li>
+                        <li>Rømningsplaner som viser planlagte fluktveier og rømningsveier og utganger, og plassering av slokkeutstyr og manuelle brannmeldere.</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">BH/Eier</td>
+              </tr>
+            )}
             {formData.tilretteleggingKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
