@@ -6689,6 +6689,69 @@ const Konsept = () => {
                           </div>
                         </div>
                       )}
+                      <div className="pt-2 border-t">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id="romningsvinduRelevant"
+                            checked={formData.romningsvinduRelevant}
+                            onCheckedChange={(checked) => setFormData({...formData, romningsvinduRelevant: checked as boolean})}
+                          />
+                          <Label htmlFor="romningsvinduRelevant" className="text-sm cursor-pointer font-medium">
+                            Evakuering via vindu er relevant
+                          </Label>
+                        </div>
+                        {formData.romningsvinduRelevant && (
+                          <div className="mt-3 ml-6 space-y-3 p-3 bg-muted/30 rounded-md">
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Høyde over terreng (meter)</Label>
+                                <Input 
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  placeholder="f.eks. 3.5"
+                                  value={formData.romningsvinduHoyde}
+                                  onChange={(e) => setFormData({...formData, romningsvinduHoyde: e.target.value})}
+                                />
+                              </div>
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Avstand gulv til underkant vindu (meter)</Label>
+                                <Input 
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  max="1.2"
+                                  placeholder="maks 1.0"
+                                  value={formData.romningsvinduGulvAvstand}
+                                  onChange={(e) => setFormData({...formData, romningsvinduGulvAvstand: e.target.value})}
+                                />
+                              </div>
+                            </div>
+                            <div className="flex flex-col space-y-2">
+                              <div className="flex items-center space-x-2">
+                                <Checkbox 
+                                  id="romningsvinduHarStige"
+                                  checked={formData.romningsvinduHarStige}
+                                  onCheckedChange={(checked) => setFormData({...formData, romningsvinduHarStige: checked as boolean})}
+                                />
+                                <Label htmlFor="romningsvinduHarStige" className="text-xs cursor-pointer">
+                                  Fastmontert stige med ryggbøyler til rømningsvindu
+                                </Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Checkbox 
+                                  id="romningsvinduHarBalkong"
+                                  checked={formData.romningsvinduHarBalkong}
+                                  onCheckedChange={(checked) => setFormData({...formData, romningsvinduHarBalkong: checked as boolean})}
+                                />
+                                <Label htmlFor="romningsvinduHarBalkong" className="text-xs cursor-pointer">
+                                  Utgang til balkong tilgjengelig
+                                </Label>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                       <div className="pt-2 border-t space-y-2">
                         <p className="text-xs text-muted-foreground font-medium">Valgfrie dør-krav:</p>
                         <div className="flex items-center space-x-2">
@@ -6759,69 +6822,6 @@ const Konsept = () => {
                           }
                           return null;
                         })()}
-                      </div>
-                      <div className="pt-2 border-t">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox 
-                            id="romningsvinduRelevant"
-                            checked={formData.romningsvinduRelevant}
-                            onCheckedChange={(checked) => setFormData({...formData, romningsvinduRelevant: checked as boolean})}
-                          />
-                          <Label htmlFor="romningsvinduRelevant" className="text-sm cursor-pointer font-medium">
-                            Evakuering via vindu er relevant
-                          </Label>
-                        </div>
-                        {formData.romningsvinduRelevant && (
-                          <div className="mt-3 ml-6 space-y-3 p-3 bg-muted/30 rounded-md">
-                            <div className="grid grid-cols-2 gap-3">
-                              <div>
-                                <Label className="text-xs font-medium mb-1 block">Høyde over terreng (meter)</Label>
-                                <Input 
-                                  type="number"
-                                  step="0.1"
-                                  min="0"
-                                  placeholder="f.eks. 3.5"
-                                  value={formData.romningsvinduHoyde}
-                                  onChange={(e) => setFormData({...formData, romningsvinduHoyde: e.target.value})}
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-xs font-medium mb-1 block">Avstand gulv til underkant vindu (meter)</Label>
-                                <Input 
-                                  type="number"
-                                  step="0.1"
-                                  min="0"
-                                  max="1.2"
-                                  placeholder="maks 1.0"
-                                  value={formData.romningsvinduGulvAvstand}
-                                  onChange={(e) => setFormData({...formData, romningsvinduGulvAvstand: e.target.value})}
-                                />
-                              </div>
-                            </div>
-                            <div className="flex flex-col space-y-2">
-                              <div className="flex items-center space-x-2">
-                                <Checkbox 
-                                  id="romningsvinduHarStige"
-                                  checked={formData.romningsvinduHarStige}
-                                  onCheckedChange={(checked) => setFormData({...formData, romningsvinduHarStige: checked as boolean})}
-                                />
-                                <Label htmlFor="romningsvinduHarStige" className="text-xs cursor-pointer">
-                                  Fastmontert stige med ryggbøyler til rømningsvindu
-                                </Label>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <Checkbox 
-                                  id="romningsvinduHarBalkong"
-                                  checked={formData.romningsvinduHarBalkong}
-                                  onCheckedChange={(checked) => setFormData({...formData, romningsvinduHarBalkong: checked as boolean})}
-                                />
-                                <Label htmlFor="romningsvinduHarBalkong" className="text-xs cursor-pointer">
-                                  Utgang til balkong tilgjengelig
-                                </Label>
-                              </div>
-                            </div>
-                          </div>
-                        )}
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Utganger beskrives</Label>
