@@ -6326,13 +6326,9 @@ const Konsept = () => {
                             </>
                           );
                         })()}
-                        <div className="flex items-start space-x-2">
-                          <Checkbox id="ledesystemMarkeringsskilt" checked={formData.ledesystemMarkeringsskilt}
-                            onCheckedChange={(checked) => setFormData({...formData, ledesystemMarkeringsskilt: checked as boolean})} />
-                          <Label htmlFor="ledesystemMarkeringsskilt" className="text-xs cursor-pointer leading-relaxed">
-                            <strong>Markeringsskilt:</strong> Alle byggverk må ha markeringsskilt plassert over alle utganger til og i rømningsvei. Unntak kan gjøres for utgang fra boenheter og fra små rom der slike skilt åpenbart er unødvendige.
-                          </Label>
-                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed bg-muted/40 p-2 rounded">
+                          <strong>Markeringsskilt:</strong> Alle byggverk må ha markeringsskilt plassert over alle utganger til og i rømningsvei. Unntak kan gjøres for utgang fra boenheter og fra små rom der slike skilt åpenbart er unødvendige.
+                        </p>
 
                         <div className="flex items-start space-x-2">
                           <Checkbox 

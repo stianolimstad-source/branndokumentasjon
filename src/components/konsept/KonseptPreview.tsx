@@ -2932,6 +2932,15 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
               );
             })()}
+            {!isBF85 && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Markeringsskilt</td>
+                <td className="border border-gray-400 p-2">
+                  <p>Alle byggverk må ha markeringsskilt plassert over alle utganger til og i rømningsvei. Unntak kan gjøres for utgang fra boenheter og fra små rom der slike skilt åpenbart er unødvendige.</p>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIE</td>
+              </tr>
+            )}
             {!isBF85 && formData.tilretteleggingLedd3 && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Ledesystem</td>
@@ -2944,9 +2953,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     )}
                     {formData.ledesystemRomningsmerking && (
                       <li>Rømningsmerking må være synlig og lesbar fra alle steder i fluktveien og rømningsveien.</li>
-                    )}
-                    {formData.ledesystemMarkeringsskilt && (
-                      <li>Alle byggverk må ha markeringsskilt plassert over alle utganger til og i rømningsvei. Unntak kan gjøres for utgang fra boenheter og fra små rom der slike skilt åpenbart er unødvendige.</li>
                     )}
                     {formData.ledesystemBoligRomningsveier && (
                       <li>Rømningsveier i store boligbygninger med flere boenheter i mer enn 2 etasjer må ha ledesystem.</li>
