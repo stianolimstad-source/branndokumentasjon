@@ -2967,7 +2967,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                         I store brannceller der det ikke er spesielt tilrettelagte fluktveier i branncellen fram til rømningsveiene, må det vurderes om hele branncellen må utstyres med ledesystem tilsvarende som for rømningsveiene. Det kan være nødvendig at ledesystemet omfatter automatisk taleinformasjon.
                         {formData.ledesystemStoreBranncellerBeskrivelse && (
                           <div style={{ marginTop: 8 }}>
-                            <p style={{ fontWeight: 600, fontSize: '0.85em', marginBottom: 2 }}>Beskrivelse av aktuelle brannceller:</p>
+                            <p style={{ fontWeight: 600, fontSize: '1em', marginBottom: 4 }}>Beskrivelse av aktuelle brannceller:</p>
                             <p style={{ fontStyle: 'italic' }}>{formData.ledesystemStoreBranncellerBeskrivelse}</p>
                           </div>
                         )}
