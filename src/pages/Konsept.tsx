@@ -617,6 +617,7 @@ const Konsept = () => {
     alarmValg: "brannalarm", // "brannalarm" eller "roykvarsler"
     tilretteleggingLedd2b: false, // Få personer røykvarslere
     tilretteleggingLedd3: false, // Ledesystem
+    ledesystemKrevesAutomatisk: false, // Auto-required for bolig 3+ etasjer
     ledesystemLedelinjer: false,
     ledesystemRomningsmerking: false,
     ledesystemMarkeringsskilt: false,
@@ -729,7 +730,29 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal]);
 
-  // Automatisk beregning av BF85 bygningsbrannklasse
+  // Automatisk aktivering av ledesystem for boligbygg med 3+ etasjer
+  const erBoligMedLedesystemkrav = formData.risikoklasse === "RK4" && (parseInt(formData.etasjer, 10) || 0) >= 3;
+  useEffect(() => {
+    if (isViewMode) return;
+    if (erBoligMedLedesystemkrav && !formData.tilretteleggingLedd3) {
+      const bk = formData.brannklasse || "";
+      setFormData(prev => ({
+        ...prev,
+        tilretteleggingLedd3: true,
+        ledesystemKrevesAutomatisk: true,
+        ledesystemLedelinjer: true,
+        ledesystemRomningsmerking: true,
+        ledesystemBoligRomningsveier: true,
+        ledesystemBKL1Varighet: bk === "BKL1" || bk === "-",
+        ledesystemBKL23Varighet: bk === "BKL2" || bk === "BKL3",
+      }));
+    }
+    if (!erBoligMedLedesystemkrav) {
+      setFormData(prev => ({ ...prev, ledesystemKrevesAutomatisk: false }));
+    }
+  }, [formData.risikoklasse, formData.etasjer, formData.brannklasse]);
+
+
   useEffect(() => {
     if (isViewMode) return;
     if (formData.regelverk !== "BF85" || !formData.bygningstype) return;
@@ -6351,6 +6374,11 @@ const Konsept = () => {
                             <strong>Ledesystem:</strong> Store byggverk, byggverk for mange personer og RK5/RK6 skal ha ledesystem med god belysning og merking.
                           </Label>
                         </div>
+                        {!formData.tilretteleggingLedd3 && erBoligMedLedesystemkrav && (
+                          <div className="ml-6 p-3 border border-destructive/50 rounded-lg bg-destructive/10">
+                            <p className="text-xs font-semibold text-destructive">⚠️ Fravik: Ledesystem er påkrevd for boligbygning med flere boenheter i mer enn 2 etasjer (jf. VTEK § 11-14). Ved å fjerne ledesystem må dette dokumenteres som et fravik fra preaksepterte ytelser.</p>
+                          </div>
+                        )}
                         {formData.tilretteleggingLedd3 && (
                           <div className="ml-6 space-y-2 p-3 border border-border rounded-lg bg-card">
                             <p className="text-xs font-semibold text-foreground mb-2">Preaksepterte ytelser for ledesystem:</p>
