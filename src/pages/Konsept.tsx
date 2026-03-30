@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Flame, ArrowLeft, FileDown, Download, Save, LogIn, X, Plus, AlertTriangle, ChevronDown, ChevronRight } from "lucide-react";
+import { Flame, ArrowLeft, FileDown, Download, Save, LogIn, X, Plus, AlertTriangle, ChevronDown, ChevronRight, Eye } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Link, useSearchParams, useNavigate, useLocation } from "react-router-dom";
@@ -30,17 +30,37 @@ import { UploadConceptDialog } from "@/components/konsept/UploadConceptDialog";
 import { buildChapter3Table } from "@/lib/word-export-chapter3";
 import TilstandsvurderingPanel, { TilstandData, emptyTilstand } from "@/components/konsept/TilstandsvurderingPanel";
 
-const SectionCollapsible = ({ label, defaultOpen = false, forceOpen, children }: { label: string; defaultOpen?: boolean; forceOpen?: boolean; children: React.ReactNode }) => {
+const SectionCollapsible = ({ label, defaultOpen = false, forceOpen, previewId, children }: { label: string; defaultOpen?: boolean; forceOpen?: boolean; previewId?: string; children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
   React.useEffect(() => {
     if (forceOpen !== undefined) setIsOpen(forceOpen);
   }, [forceOpen]);
+
+  const scrollToPreview = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!previewId) return;
+    const el = document.getElementById(previewId);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="border border-border/60 rounded-lg overflow-hidden">
-      <CollapsibleTrigger className="flex items-center gap-2 w-full text-sm font-bold px-3 py-2.5 hover:bg-muted/50 bg-muted/30 transition-colors cursor-pointer">
-        {isOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground flex-shrink-0" /> : <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />}
-        <span className="text-left">{label}</span>
-      </CollapsibleTrigger>
+      <div className="flex items-center bg-muted/30">
+        <CollapsibleTrigger className="flex items-center gap-2 flex-1 text-sm font-bold px-3 py-2.5 hover:bg-muted/50 transition-colors cursor-pointer">
+          {isOpen ? <ChevronDown className="h-4 w-4 text-muted-foreground flex-shrink-0" /> : <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />}
+          <span className="text-left">{label}</span>
+        </CollapsibleTrigger>
+        {previewId && (
+          <button
+            type="button"
+            onClick={scrollToPreview}
+            className="p-1.5 mr-2 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+            title="Gå til i forhåndsvisning"
+          >
+            <Eye className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </div>
       <CollapsibleContent className="px-3 pb-3 pt-2">
         {children}
       </CollapsibleContent>
