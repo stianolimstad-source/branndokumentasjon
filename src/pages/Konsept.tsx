@@ -783,8 +783,8 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.etasjer, formData.brannklasse]);
 
-  // Automatisk aktivering av evakueringsplaner for RK5 og RK6
-  const erEvakueringsplanPaakrevd = ["RK5", "RK6"].includes(formData.risikoklasse);
+  // Automatisk aktivering av evakueringsplaner for RK2 (kontorer), RK3 (skoler/barnehager), RK5 og RK6
+  const erEvakueringsplanPaakrevd = ["RK2", "RK3", "RK5", "RK6"].includes(formData.risikoklasse);
   
   useEffect(() => {
     if (isViewMode) return;
