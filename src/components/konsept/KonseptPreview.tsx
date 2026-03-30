@@ -3161,7 +3161,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Persontall</td>
                 <td className="border border-gray-400 p-2">
-                  <div className="space-y-1">
+                  <div className="space-y-2 text-sm">
                     <p>Branncelle beregnet for stort antall personer.</p>
                     {formData.persontallAreal && formData.persontallKategori && (() => {
                       const arealPerPerson: Record<string, number> = {
@@ -3172,12 +3172,27 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       const persontall = Math.floor(areal / factor);
                       return <p><strong>Beregnet persontall:</strong> {persontall} personer ({areal} m² / {factor} m²/pers)</p>;
                     })()}
-                    <ul className="list-disc list-inside text-sm mt-1">
-                      {formData.stortAntallUnder600 && <li>Inntil 600 personer: Minst 2 utganger fra branncellen. Dør i rømningsretning, bredde min. 1,16 m.</li>}
-                      {formData.stortAntallOver600 && <li>Mer enn 600 personer: Minst 3 utganger, fordelt slik at personbelastningen utjevnes.</li>}
-                      {formData.stortAntallUnder150 && <li>Mindre enn 150 personer: Kan ha én utgang dersom rømningsforholdene tilsier det.</li>}
-                      {formData.stortAntallFlereEtasjer && <li>Branncelle over flere etasjer: Utganger fra hvert plan branncellen strekker seg over.</li>}
-                    </ul>
+                    <ol className="list-decimal list-inside space-y-2 mt-2">
+                      <li>Antall personer i en branncelle uten faste sitteplasser bestemmes av tabell 3. I salgslokale legges alle de områder som er tilgjengelig for publikum til grunn for dimensjonering av fri bredde. Det gjøres ikke fradrag for inventar.</li>
+                      <li>Samlet fri bredde i utgangene bestemmes ut fra det antall personer branncellen er beregnet for. Dessuten gjelder:
+                        <ol className="list-decimal list-inside ml-4 mt-1 space-y-1">
+                          <li>Utgangene må være hensiktsmessig fordelt i lokalet.</li>
+                          <li>For dimensjoneringen av fri bredde benyttes 1 cm per person.</li>
+                        </ol>
+                      </li>
+                      {formData.stortAntallUnder600 && (
+                        <li>Brannceller må ha minst én utgang per 300 personer.</li>
+                      )}
+                      {formData.stortAntallOver600 && (
+                        <li>Brannceller beregnet for inntil 600 personer må ha minst to utganger. Med mindre utgangene fører til sikkert sted, må de fordeles på minst to uavhengige rømningsveier eller på ulike deler av rømningsvei som er skilt med bygningsdel og dør minst klasse E 30-CS<sub>a</sub> [F 30S].</li>
+                      )}
+                      {formData.stortAntallUnder150 && (
+                        <li>Brannceller beregnet for mindre enn 150 personer kan ha bare én utgang dersom denne går til sikkert sted.</li>
+                      )}
+                      {formData.stortAntallFlereEtasjer && (
+                        <li>Branncelle som har åpen forbindelse over flere etasjer, eller har mellometasje, må ha tilsvarende antall utganger fra hver etasje. Interntrapp kan anses likeverdig med en utgang. Det skal likevel være minst én utgang til rømningsvei eller sikkert sted fra hver etasje, jf. tredje ledd.</li>
+                      )}
+                    </ol>
                   </div>
                 </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
