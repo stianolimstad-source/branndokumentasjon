@@ -650,6 +650,8 @@ const Konsept = () => {
     ledesystemBKL23Varighet: false,
     tilretteleggingLedd4: false, // Evakueringsplaner
     tilretteleggingLedd5: false, // Merking av branntekniske installasjoner
+    tilretteleggingLedd5EnBruksenhet: false, // Unntak for én bruksenhet
+    tilretteleggingLedd5EnBruksenhetBeskrivelse: "", // Beskrivelse av unntaket
     tilretteleggingKommentar: "",
     romningTiltak: "",
     romningTiltakKommentar: "",
@@ -6520,12 +6522,37 @@ const Konsept = () => {
                           <Checkbox 
                             id="tilretteleggingLedd5" 
                             checked={formData.tilretteleggingLedd5}
-                            onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd5: checked as boolean})}
+                            onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd5: checked as boolean, ...(!checked ? { tilretteleggingLedd5EnBruksenhet: false, tilretteleggingLedd5EnBruksenhetBeskrivelse: "" } : {})})}
                           />
                           <Label htmlFor="tilretteleggingLedd5" className="text-xs cursor-pointer leading-relaxed">
-                            <strong>Merking av installasjoner:</strong> Branntekniske installasjoner som har betydning for rømning og redning skal være tydelig merket.
+                            <strong>Merking av installasjoner:</strong> Plasseringen av branntekniske installasjoner som har betydning for rømnings- og redningsinnsatsen skal være tydelig merket.
                           </Label>
                         </div>
+                        {formData.tilretteleggingLedd5 && (
+                          <div className="ml-6 space-y-2 p-3 border border-border rounded-lg bg-card">
+                            <div className="flex items-start space-x-2">
+                              <Checkbox 
+                                id="tilretteleggingLedd5EnBruksenhet" 
+                                checked={formData.tilretteleggingLedd5EnBruksenhet}
+                                onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd5EnBruksenhet: checked as boolean, ...(!checked ? { tilretteleggingLedd5EnBruksenhetBeskrivelse: "" } : {})})}
+                              />
+                              <Label htmlFor="tilretteleggingLedd5EnBruksenhet" className="text-xs cursor-pointer leading-relaxed">
+                                Installasjonene er bare beregnet for personer i én bruksenhet og personene må forventes å være godt kjent med plasseringen.
+                              </Label>
+                            </div>
+                            {formData.tilretteleggingLedd5EnBruksenhet && (
+                              <div className="ml-6">
+                                <Label className="text-xs font-medium mb-1 block">Beskriv forholdet</Label>
+                                <Textarea 
+                                  value={formData.tilretteleggingLedd5EnBruksenhetBeskrivelse}
+                                  onChange={(e) => setFormData({...formData, tilretteleggingLedd5EnBruksenhetBeskrivelse: e.target.value})}
+                                  placeholder="Beskriv hvilke installasjoner og bruksenheter dette gjelder..."
+                                  className="text-xs min-h-[60px]"
+                                />
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                       </>)}
 
