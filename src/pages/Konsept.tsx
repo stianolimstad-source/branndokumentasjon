@@ -6404,10 +6404,10 @@ const Konsept = () => {
                             <p className="text-xs font-semibold text-foreground mb-2">Preaksepterte ytelser for ledesystem:</p>
                             
                             <p className="text-xs text-muted-foreground leading-relaxed">
-                              1. Ledesystem i fluktveier og rømningsveier må omfatte ledelinjer som oppfattes kontinuerlig, i form av komponenter på gulv eller lavt plasserte på vegg.
+                              Ledesystem i fluktveier og rømningsveier må omfatte ledelinjer som oppfattes kontinuerlig, i form av komponenter på gulv eller lavt plasserte på vegg.
                             </p>
                             <p className="text-xs text-muted-foreground leading-relaxed">
-                              2. Rømningsmerking må være synlig og lesbar fra alle steder i fluktveien og rømningsveien.
+                              Rømningsmerking må være synlig og lesbar fra alle steder i fluktveien og rømningsveien.
                             </p>
 
                             {(() => {
@@ -6420,22 +6420,13 @@ const Konsept = () => {
 
                               return (
                                 <>
-                                  {erBolig && etasjer > 2 && (
-                                    <div className="flex items-start space-x-2">
-                                      <Checkbox id="ledesystemBoligRomningsveier" checked={formData.ledesystemBoligRomningsveier}
-                                        onCheckedChange={(checked) => setFormData({...formData, ledesystemBoligRomningsveier: checked as boolean})} />
-                                      <Label htmlFor="ledesystemBoligRomningsveier" className="text-xs cursor-pointer leading-relaxed">
-                                        4. Rømningsveier i store boligbygninger med flere boenheter i mer enn 2 etasjer må ha ledesystem.
-                                      </Label>
-                                    </div>
-                                  )}
 
                                   {(erRK5 || erRK6) && (
                                     <div className="flex items-start space-x-2">
                                       <Checkbox id="ledesystemForsamling" checked={formData.ledesystemForsamling}
                                         onCheckedChange={(checked) => setFormData({...formData, ledesystemForsamling: checked as boolean})} />
                                       <Label htmlFor="ledesystemForsamling" className="text-xs cursor-pointer leading-relaxed">
-                                        5. I byggverk der forskriften stiller krav om ledesystem vil dette gjelde rømningsveiene, samt fluktveier i større, uoversiktlige brannceller.
+                                        I byggverk der forskriften stiller krav om ledesystem vil dette gjelde rømningsveiene, samt fluktveier i større, uoversiktlige brannceller.
                                       </Label>
                                     </div>
                                   )}
@@ -6445,7 +6436,7 @@ const Konsept = () => {
                                       <Checkbox id="ledesystemKontorSkole" checked={formData.ledesystemKontorSkole}
                                         onCheckedChange={(checked) => setFormData({...formData, ledesystemKontorSkole: checked as boolean})} />
                                       <Label htmlFor="ledesystemKontorSkole" className="text-xs cursor-pointer leading-relaxed">
-                                        6. Kontorbygninger med store kontorlandskap, skoler med store undervisningsbaser og byggverk eller del av byggverk som er offentlig tilgjengelig og ligger under terreng, må ha ledesystem i fluktveier og rømningsveier.
+                                        Kontorbygninger med store kontorlandskap, skoler med store undervisningsbaser og byggverk eller del av byggverk som er offentlig tilgjengelig og ligger under terreng, må ha ledesystem i fluktveier og rømningsveier.
                                       </Label>
                                     </div>
                                   )}
@@ -6454,19 +6445,19 @@ const Konsept = () => {
                                     <Checkbox id="ledesystemStoreBrannceller" checked={formData.ledesystemStoreBrannceller}
                                       onCheckedChange={(checked) => setFormData({...formData, ledesystemStoreBrannceller: checked as boolean})} />
                                     <Label htmlFor="ledesystemStoreBrannceller" className="text-xs cursor-pointer leading-relaxed">
-                                      7. I store brannceller der det ikke er spesielt tilrettelagte fluktveier i branncellen fram til rømningsveiene, må det vurderes om hele branncellen må utstyres med ledesystem tilsvarende som for rømningsveiene. Det kan være nødvendig at ledesystemet omfatter automatisk taleinformasjon.
+                                      I store brannceller der det ikke er spesielt tilrettelagte fluktveier i branncellen fram til rømningsveiene, må det vurderes om hele branncellen må utstyres med ledesystem tilsvarende som for rømningsveiene. Det kan være nødvendig at ledesystemet omfatter automatisk taleinformasjon.
                                     </Label>
                                   </div>
 
                                   {(brannklasse === "BKL1" || brannklasse === "-") && (
                                     <p className="text-xs text-muted-foreground leading-relaxed bg-muted/40 p-2 rounded">
-                                      8. Ledesystem i byggverk i brannklasse 1 må fungere i den tiden som er nødvendig for rømning og redning, og i minst 30 minutter etter utløst brannalarm eller bortfall av kunstig belysning (strømbrudd).
+                                      Ledesystem i byggverk i brannklasse 1 må fungere i den tiden som er nødvendig for rømning og redning, og i minst 30 minutter etter utløst brannalarm eller bortfall av kunstig belysning (strømbrudd).
                                     </p>
                                   )}
 
                                   {(brannklasse === "BKL2" || brannklasse === "BKL3") && (
                                     <p className="text-xs text-muted-foreground leading-relaxed bg-muted/40 p-2 rounded">
-                                      9. Ledesystem i byggverk i brannklasse 2 og 3 må fungere i den tiden som er nødvendig for rømning og redning, og i minst 60 minutter etter utløst brannalarm eller bortfall av kunstig belysning (strømbrudd).
+                                      Ledesystem i byggverk i brannklasse 2 og 3 må fungere i den tiden som er nødvendig for rømning og redning, og i minst 60 minutter etter utløst brannalarm eller bortfall av kunstig belysning (strømbrudd).
                                     </p>
                                   )}
                                 </>
