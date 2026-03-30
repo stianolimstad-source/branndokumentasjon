@@ -6511,7 +6511,7 @@ const Konsept = () => {
                         {!formData.tilretteleggingLedd4 && erEvakueringsplanPaakrevd && (
                           <div className="ml-6 p-3 border border-destructive/50 rounded-lg bg-destructive/10">
                             <p className="text-xs font-semibold text-destructive">
-                              ⚠️ Fravik: Evakueringsplaner er påkrevd for {formData.risikoklasse === "RK5" ? "overnattingssteder og publikumsbygg (RK5)" : "pleie- og sykehusbygg (RK6)"} (jf. TEK17 § 11-14, fjerde ledd). Ved å fjerne dette kravet må det dokumenteres som et fravik fra preaksepterte ytelser.
+                              ⚠️ Fravik: Evakueringsplaner er påkrevd for {formData.risikoklasse === "RK2" ? "arbeidsbygninger/kontorer (RK2)" : formData.risikoklasse === "RK3" ? "skoler og barnehager (RK3)" : formData.risikoklasse === "RK5" ? "overnattingssteder og publikumsbygg (RK5)" : "pleie- og sykehusbygg (RK6)"} (jf. TEK17 § 11-14, fjerde ledd). Ved å fjerne dette kravet må det dokumenteres som et fravik fra preaksepterte ytelser.
                             </p>
                           </div>
                         )}
