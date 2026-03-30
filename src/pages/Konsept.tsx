@@ -6590,36 +6590,6 @@ const Konsept = () => {
                           </Label>
                         </div>
                       )}
-                      <div className="flex items-center space-x-2 p-2 bg-muted rounded">
-                        <Checkbox 
-                          id="branncelleFlereEtasjer"
-                          checked={formData.branncelleFlereEtasjer}
-                          onCheckedChange={(checked) => setFormData({...formData, branncelleFlereEtasjer: checked as boolean})}
-                        />
-                        <Label htmlFor="branncelleFlereEtasjer" className="text-sm cursor-pointer">
-                          Brannceller over flere etasjer / mellometasje
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2 p-2 bg-muted rounded">
-                        <Checkbox 
-                          id="lavtByggverkVinduerRomning"
-                          checked={formData.lavtByggverkVinduerRomning}
-                          onCheckedChange={(checked) => setFormData({...formData, lavtByggverkVinduerRomning: checked as boolean})}
-                        />
-                        <Label htmlFor="lavtByggverkVinduerRomning" className="text-sm cursor-pointer">
-                          Lavt byggverk (RK 1-4) med vinduer for sikker rømning
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2 p-2 bg-muted rounded">
-                        <Checkbox 
-                          id="branncelleStortAntallPersoner"
-                          checked={formData.branncelleStortAntallPersoner}
-                          onCheckedChange={(checked) => setFormData({...formData, branncelleStortAntallPersoner: checked as boolean})}
-                        />
-                        <Label htmlFor="branncelleStortAntallPersoner" className="text-sm cursor-pointer">
-                          Brannceller for stort antall personer
-                        </Label>
-                      </div>
                       {formData.branncelleStortAntallPersoner && (
                         <div className="ml-6 space-y-3 p-3 border-l-2 border-primary/30 bg-muted/50 rounded">
                           <div className="space-y-2">
