@@ -2964,7 +2964,14 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       <li>Kontorbygninger med store kontorlandskap, skoler med store undervisningsbaser og byggverk eller del av byggverk som er offentlig tilgjengelig og ligger under terreng, må ha ledesystem i fluktveier og rømningsveier.</li>
                     )}
                     {formData.ledesystemStoreBrannceller && (
-                      <li>I store brannceller der det ikke er spesielt tilrettelagte fluktveier i branncellen fram til rømningsveiene, må det vurderes om hele branncellen må utstyres med ledesystem tilsvarende som for rømningsveiene. Det kan være nødvendig at ledesystemet omfatter automatisk taleinformasjon.</li>
+                      <>
+                        <li>I store brannceller der det ikke er spesielt tilrettelagte fluktveier i branncellen fram til rømningsveiene, må det vurderes om hele branncellen må utstyres med ledesystem tilsvarende som for rømningsveiene. Det kan være nødvendig at ledesystemet omfatter automatisk taleinformasjon.</li>
+                        {formData.ledesystemStoreBranncellerBeskrivelse && (
+                          <li style={{ listStyleType: 'none', marginLeft: -16 }}>
+                            <p style={{ fontStyle: 'italic', marginTop: 4 }}>{formData.ledesystemStoreBranncellerBeskrivelse}</p>
+                          </li>
+                        )}
+                      </>
                     )}
                     {formData.ledesystemBKL1Varighet && (
                       <li>Ledesystem i byggverk i brannklasse 1 må fungere i den tiden som er nødvendig for rømning og redning, og i minst 30 minutter etter utløst brannalarm eller bortfall av kunstig belysning (strømbrudd).</li>
