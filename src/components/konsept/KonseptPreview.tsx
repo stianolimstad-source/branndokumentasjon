@@ -3007,6 +3007,21 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">BH/Eier</td>
               </tr>
             )}
+            {!isBF85 && formData.tilretteleggingLedd5 && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Merking av installasjoner</td>
+                <td className="border border-gray-400 p-2">
+                  <p>Plasseringen av branntekniske installasjoner som har betydning for rømnings- og redningsinnsatsen skal være tydelig merket{formData.tilretteleggingLedd5EnBruksenhet ? ", med mindre installasjonene bare er beregnet for personer i én bruksenhet og personene må forventes å være godt kjent med plasseringen." : "."}</p>
+                  {formData.tilretteleggingLedd5EnBruksenhet && formData.tilretteleggingLedd5EnBruksenhetBeskrivelse && (
+                    <div style={{ marginTop: 8 }}>
+                      <p style={{ fontWeight: 600, fontSize: '1em', marginBottom: 4 }}>Beskrivelse av forholdet:</p>
+                      <p style={{ fontStyle: 'italic' }}>{formData.tilretteleggingLedd5EnBruksenhetBeskrivelse}</p>
+                    </div>
+                  )}
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
             {formData.tilretteleggingKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
