@@ -3156,6 +3156,33 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
               );
             })()}
+            {/* Stort antall personer */}
+            {formData.branncelleStortAntallPersoner && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Persontall</td>
+                <td className="border border-gray-400 p-2">
+                  <div className="space-y-1">
+                    <p>Branncelle beregnet for stort antall personer.</p>
+                    {formData.persontallAreal && formData.persontallKategori && (() => {
+                      const arealPerPerson: Record<string, number> = {
+                        salgslokaler: 2, kontor: 15, skoler: 2, barnehager: 4, forsamlingslokaler: 0.6, spisesaler: 1.4
+                      };
+                      const areal = parseFloat(formData.persontallAreal) || 0;
+                      const factor = arealPerPerson[formData.persontallKategori] || 1;
+                      const persontall = Math.floor(areal / factor);
+                      return <p><strong>Beregnet persontall:</strong> {persontall} personer ({areal} m² / {factor} m²/pers)</p>;
+                    })()}
+                    <ul className="list-disc list-inside text-sm mt-1">
+                      {formData.stortAntallUnder600 && <li>Inntil 600 personer: Minst 2 utganger fra branncellen. Dør i rømningsretning, bredde min. 1,16 m.</li>}
+                      {formData.stortAntallOver600 && <li>Mer enn 600 personer: Minst 3 utganger, fordelt slik at personbelastningen utjevnes.</li>}
+                      {formData.stortAntallUnder150 && <li>Mindre enn 150 personer: Kan ha én utgang dersom rømningsforholdene tilsier det.</li>}
+                      {formData.stortAntallFlereEtasjer && <li>Branncelle over flere etasjer: Utganger fra hvert plan branncellen strekker seg over.</li>}
+                    </ul>
+                  </div>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
             {formData.utgangBranncelle && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Utganger</td>
