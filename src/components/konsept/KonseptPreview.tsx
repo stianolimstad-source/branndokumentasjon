@@ -3172,13 +3172,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       const persontall = Math.floor(areal / factor);
                       return <p><strong>Beregnet persontall:</strong> {persontall} personer ({areal} m² / {factor} m²/pers)</p>;
                     })()}
-                    <ol className="list-decimal list-inside space-y-2 mt-2">
-                      <li>Antall personer i en branncelle uten faste sitteplasser bestemmes av tabell 3. I salgslokale legges alle de områder som er tilgjengelig for publikum til grunn for dimensjonering av fri bredde. Det gjøres ikke fradrag for inventar.</li>
+                    <ul className="list-disc list-inside space-y-2 mt-2">
+                      <li>Antall personer i en branncelle uten faste sitteplasser bestemmes av tabell 3.{formData.persontallKategori === 'salgslokaler' && <> I salgslokale legges alle de områder som er tilgjengelig for publikum til grunn for dimensjonering av fri bredde. Det gjøres ikke fradrag for inventar.</>}</li>
                       <li>Samlet fri bredde i utgangene bestemmes ut fra det antall personer branncellen er beregnet for. Dessuten gjelder:
-                        <ol className="list-decimal list-inside ml-4 mt-1 space-y-1">
+                        <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
                           <li>Utgangene må være hensiktsmessig fordelt i lokalet.</li>
                           <li>For dimensjoneringen av fri bredde benyttes 1 cm per person.</li>
-                        </ol>
+                        </ul>
                       </li>
                       {formData.stortAntallUnder600 && (
                         <li>Brannceller må ha minst én utgang per 300 personer.</li>
@@ -3192,7 +3192,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       {formData.stortAntallFlereEtasjer && (
                         <li>Branncelle som har åpen forbindelse over flere etasjer, eller har mellometasje, må ha tilsvarende antall utganger fra hver etasje. Interntrapp kan anses likeverdig med en utgang. Det skal likevel være minst én utgang til rømningsvei eller sikkert sted fra hver etasje, jf. tredje ledd.</li>
                       )}
-                    </ol>
+                    </ul>
                   </div>
                 </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
