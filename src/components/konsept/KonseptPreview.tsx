@@ -3122,19 +3122,37 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">ARK / RIE</td>
               </tr>
             )}
-            {/* Rømningsvindu */}
+            {/* Rømningsvindu - § 11-13 (3) */}
             {formData.romningsvinduRelevant && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Evakuering via vindu</td>
+                <td className="border border-gray-400 p-2 align-top">Rømningsvindu<br/><span className="text-xs text-muted-foreground">§ 11-13 (3)</span></td>
                 <td className="border border-gray-400 p-2">
-                  <div className="space-y-1 text-sm">
-                    <p>Vindu benyttes som rømningsvei. Fri åpning min. 0,50 m × 0,60 m.</p>
-                    {formData.romningsvinduHoyde && <p>Høyde over terreng: {formData.romningsvinduHoyde} m.</p>}
-                    {formData.romningsvinduGulvAvstand && <p>Avstand fra gulv til underkant vindu: {formData.romningsvinduGulvAvstand} m (maks 1,0 m).</p>}
-                    <ul className="list-disc list-inside">
-                      {formData.romningsvinduHarStige && <li>Fastmontert stige med ryggbøyler er montert til rømningsvindu.</li>}
-                      {formData.romningsvinduHarBalkong && <li>Utgang til balkong er tilgjengelig som alternativ rømningsvei.</li>}
+                  <div className="space-y-2 text-sm">
+                    <p>Brannceller som består av flere etasjer, eller har mellometasje, skal ha minst én utgang fra hver etasje. I byggverk i risikoklasse 1, 2, 3 og 4 kan utgangen fra disse planene, utenom inngangsplanet, være vindu som er tilrettelagt for sikker rømning.</p>
+                    <ul className="list-disc list-inside space-y-1">
+                      <li>I byggverk i risikoklasse 1, 2 og 4 kan utgangen være rømningsvindu som har underkant til og med 5,0 meter over planert terreng, eller til og med 7,5 meter over planert terreng dersom det er atkomst til fastmontert stige med ryggbøyler. Ved større høyder må det være atkomst fra rømningsvindu til utvendig trapp. Stige eller trapp må ha avstand minimum 2,0 meter fra vindu, eller være skjermet mot flammer og strålevarme.</li>
+                      <li>I byggverk i risikoklasse 3 kan utgangen være rømningsvindu som har underkant til og med 2,0 meter over terreng. Ved større høyder må det være atkomst fra rømningsvindu til utvendig trapp. Trappen må ha avstand minimum 2,0 meter fra vindu, eller være skjermet mot flammer og strålevarme.</li>
+                      <li>I risikoklasse 1, 2 og 3 må etasjer som er beregnet for 15 personer eller mindre, ha minst ett rømningsvindu. Etasjer som er beregnet for mer enn 15 personer, må ha ett ekstra rømningsvindu per 15 personer. Vinduene må være hensiktsmessig fordelt i etasjen. Avstanden til nærmeste rømningsvindu må ikke være større enn angitt i tabell 1.</li>
+                      <li>I risikoklasse 4 må minst annethvert rom for varig opphold ha rømningsvindu.</li>
+                      <li>Fra mellometasje beregnet for maksimum ti personer i byggverk i risikoklasse 1, 2 og 3, kan utgangen være interntrapp til underliggende plan.</li>
+                      <li>Rømningsvindu må ha høyde 0,6 meter og bredde minimum 0,5 meter. Summen av høyde og bredde må være minimum 1,5 meter, jf. figur 5. Svingvinduer med dreieakse, må ha tilsvarende effektiv åpning.</li>
+                      <li>Avstanden fra gulv til underkant av vindusåpningen må være maksimalt 1,0 meter med mindre det er truffet tiltak for å lette rømning.</li>
+                      <li>Rømningsvindu må være lett å åpne uten bruk av spesialverktøy og må være hengslet slik at det er lett å komme ut av vinduet.</li>
+                      <li>Rømningsvindu, unntatt i boenheter, må ha markeringsskilt.</li>
+                      <li>Rømningsvindu må være tilgjengelig for brannvesenets høyderedskap. I etasjer beregnet for inntil 15 personer, og i boenheter, er det tilstrekkelig at ett rømningsvindu er tilgjengelig for brannvesenets høyderedskap.</li>
+                      <li>Utgang til balkong anses likeverdig med rømningsvindu når tilhørende ytelser for å lette rømning er oppfylt.</li>
+                      <li>Forskriftens krav til automatisk slokkeanlegg i byggverk i risikoklasse 4 anses oppfylt når det installeres automatisk sprinkleranlegg i samsvar med § 11-12 første ledd bokstav a.</li>
                     </ul>
+                    {formData.romningsvinduHoyde && <p className="mt-2"><strong>Høyde over terreng:</strong> {formData.romningsvinduHoyde} m</p>}
+                    {formData.romningsvinduGulvAvstand && <p><strong>Avstand fra gulv til underkant vindu:</strong> {formData.romningsvinduGulvAvstand} m</p>}
+                    {(formData.romningsvinduHarStige || formData.romningsvinduHarBalkong) && (
+                      <div className="mt-1">
+                        <ul className="list-disc list-inside">
+                          {formData.romningsvinduHarStige && <li>Fastmontert stige med ryggbøyler er montert til rømningsvindu.</li>}
+                          {formData.romningsvinduHarBalkong && <li>Utgang til balkong er tilgjengelig som alternativ rømningsvei.</li>}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
