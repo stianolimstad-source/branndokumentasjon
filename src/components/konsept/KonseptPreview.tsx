@@ -3049,12 +3049,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">-</td>
             </tr>
-            {/* Boenhet kun ett trapperom */}
+            {/* Boenhet kun ett trapperom - §11-13 (2) */}
             {formData.boenhetKunEttTrapperom && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Trapperom (boenhet)</td>
+                <td className="border border-gray-400 p-2 align-top">Utgang fra branncelle (leiligheter)</td>
                 <td className="border border-gray-400 p-2">
-                  Boenheter har kun tilgang til ett trapperom. Det skal være alternativ rømningsvei, f.eks. via vindu eller balkong.
+                  Brannceller i byggverk i risikoklasse 4 med inntil 8 etasjer kan ha utgang til ett trapperom utført som rømningsvei. Dette forutsetter at hver boenhet har minst ett vindu eller balkong som er tilgjengelig for rednings- og slokkeinnsats, jf. § 11–17.
                 </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>

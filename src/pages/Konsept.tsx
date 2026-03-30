@@ -6577,8 +6577,8 @@ const Konsept = () => {
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.10 § 11-13 Utgang fra branncelle</Label>
                       </div>
-                      {((formData.risikoklasse === "RK4" && parseInt(formData.etasjer) >= 2) || 
-                        formData.bygningsdeler.some(b => b.risikoklasse === "RK4" && parseInt(b.etasjer) >= 2)) && (
+                      {((formData.risikoklasse === "RK4" && parseInt(formData.etasjer) >= 2 && parseInt(formData.etasjer) <= 8) || 
+                        formData.bygningsdeler.some(b => b.risikoklasse === "RK4" && parseInt(b.etasjer) >= 2 && parseInt(b.etasjer) <= 8)) && (
                         <div className="flex items-center space-x-2 p-2 bg-muted rounded">
                           <Checkbox 
                             id="boenhetKunEttTrapperom"
@@ -6586,7 +6586,7 @@ const Konsept = () => {
                             onCheckedChange={(checked) => setFormData({...formData, boenhetKunEttTrapperom: checked as boolean})}
                           />
                           <Label htmlFor="boenhetKunEttTrapperom" className="text-sm cursor-pointer">
-                            Boenheter har kun tilgang til ett trapperom
+                            Leiligheter har kun tilgang til ett trapperom
                           </Label>
                         </div>
                       )}
