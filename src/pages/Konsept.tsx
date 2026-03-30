@@ -6590,105 +6590,7 @@ const Konsept = () => {
                           </Label>
                         </div>
                       )}
-                      {formData.branncelleStortAntallPersoner && (
-                        <div className="ml-6 space-y-3 p-3 border-l-2 border-primary/30 bg-muted/50 rounded">
-                          <div className="space-y-2">
-                            <p className="text-xs font-medium text-foreground">Persontallkalkulator</p>
-                            <div className="grid grid-cols-2 gap-2">
-                              <div>
-                                <Label className="text-xs mb-1 block">Areal (m²)</Label>
-                                <Input
-                                  type="number"
-                                  placeholder="f.eks. 500"
-                                  value={formData.persontallAreal}
-                                  onChange={(e) => setFormData({...formData, persontallAreal: e.target.value})}
-                                  className="h-8"
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-xs mb-1 block">Kategori</Label>
-                                <Select
-                                  value={formData.persontallKategori}
-                                  onValueChange={(value) => setFormData({...formData, persontallKategori: value})}
-                                >
-                                  <SelectTrigger className="h-8">
-                                    <SelectValue placeholder="Velg kategori" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="salgslokaler">Salgslokaler (2 m²/pers)</SelectItem>
-                                    <SelectItem value="kontor">Kontor (15 m²/pers)</SelectItem>
-                                    <SelectItem value="skoler">Skoler (2 m²/pers)</SelectItem>
-                                    <SelectItem value="barnehager">Barnehager/fritidshjem (4 m²/pers)</SelectItem>
-                                    <SelectItem value="forsamlingslokaler">Forsamlingslokaler (0,6 m²/pers)</SelectItem>
-                                    <SelectItem value="spisesaler">Spisesaler (1,4 m²/pers)</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            </div>
-                            {formData.persontallAreal && formData.persontallKategori && (
-                              <div className="text-sm bg-primary/10 p-2 rounded">
-                                <span className="font-medium">Beregnet persontall: </span>
-                                {(() => {
-                                  const arealPerPerson: Record<string, number> = {
-                                    salgslokaler: 2,
-                                    kontor: 15,
-                                    skoler: 2,
-                                    barnehager: 4,
-                                    forsamlingslokaler: 0.6,
-                                    spisesaler: 1.4
-                                  };
-                                  const areal = parseFloat(formData.persontallAreal) || 0;
-                                  const factor = arealPerPerson[formData.persontallKategori] || 1;
-                                  return Math.floor(areal / factor);
-                                })()}{" "}personer
-                              </div>
-                            )}
-                          </div>
-                          <div className="border-t pt-2">
-                            <p className="text-xs text-muted-foreground mb-2">Velg relevante kategorier:</p>
-                            <div className="flex items-center space-x-2">
-                              <Checkbox 
-                                id="stortAntallUnder600"
-                                checked={formData.stortAntallUnder600}
-                                onCheckedChange={(checked) => setFormData({...formData, stortAntallUnder600: checked as boolean})}
-                              />
-                              <Label htmlFor="stortAntallUnder600" className="text-sm cursor-pointer">
-                                Inntil 600 personer
-                              </Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Checkbox 
-                                id="stortAntallOver600"
-                                checked={formData.stortAntallOver600}
-                                onCheckedChange={(checked) => setFormData({...formData, stortAntallOver600: checked as boolean})}
-                              />
-                              <Label htmlFor="stortAntallOver600" className="text-sm cursor-pointer">
-                                Mer enn 600 personer
-                              </Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Checkbox 
-                                id="stortAntallUnder150"
-                                checked={formData.stortAntallUnder150}
-                                onCheckedChange={(checked) => setFormData({...formData, stortAntallUnder150: checked as boolean})}
-                              />
-                              <Label htmlFor="stortAntallUnder150" className="text-sm cursor-pointer">
-                                Mindre enn 150 personer
-                              </Label>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Checkbox 
-                                id="stortAntallFlereEtasjer"
-                                checked={formData.stortAntallFlereEtasjer}
-                                onCheckedChange={(checked) => setFormData({...formData, stortAntallFlereEtasjer: checked as boolean})}
-                              />
-                              <Label htmlFor="stortAntallFlereEtasjer" className="text-sm cursor-pointer">
-                                Branncelle over flere etasjer
-                              </Label>
-                            </div>
-                          </div>
-                        </div>
-                      )}
+                      
                       <div className="pt-2 border-t">
                         <div className="flex items-center space-x-2">
                           <Checkbox 
@@ -6752,76 +6654,116 @@ const Konsept = () => {
                           </div>
                         )}
                       </div>
-                      <div className="pt-2 border-t space-y-2">
-                        <p className="text-xs text-muted-foreground font-medium">Valgfrie dør-krav:</p>
+                      <div className="pt-2 border-t">
                         <div className="flex items-center space-x-2">
                           <Checkbox 
-                            id="dorerTilbakerømning"
-                            checked={formData.dorerTilbakerømning}
-                            onCheckedChange={(checked) => setFormData({...formData, dorerTilbakerømning: checked as boolean})}
+                            id="branncelleStortAntallPersoner"
+                            checked={formData.branncelleStortAntallPersoner}
+                            onCheckedChange={(checked) => setFormData({...formData, branncelleStortAntallPersoner: checked as boolean})}
                           />
-                          <Label htmlFor="dorerTilbakerømning" className="text-sm cursor-pointer">
-                            Krav til tilbakerømning (låsesystem for retur)
+                          <Label htmlFor="branncelleStortAntallPersoner" className="text-sm cursor-pointer font-medium">
+                            Brannceller for stort antall personer er relevant
                           </Label>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox 
-                            id="dorerNattlaser"
-                            checked={formData.dorerNattlaser}
-                            onCheckedChange={(checked) => setFormData({...formData, dorerNattlaser: checked as boolean})}
-                          />
-                          <Label htmlFor="dorerNattlaser" className="text-sm cursor-pointer">
-                            Nattlåser er relevant
-                          </Label>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Checkbox 
-                            id="dorerLiteAntallPersoner"
-                            checked={formData.dorerLiteAntallPersoner}
-                            onCheckedChange={(checked) => setFormData({...formData, dorerLiteAntallPersoner: checked as boolean})}
-                          />
-                          <Label htmlFor="dorerLiteAntallPersoner" className="text-sm cursor-pointer">
-                            Rom med &lt;10 personer (dør kan slå mot rømningsretning)
-                          </Label>
-                        </div>
-                        {(() => {
-                          const brannklasser = formData.bygningsdeler && formData.bygningsdeler.length > 0
-                            ? [...new Set(formData.bygningsdeler.map(d => d.brannklasse).filter(Boolean))]
-                            : formData.brannklasse ? [formData.brannklasse] : [];
-                          
-                          if (brannklasser.length > 1) {
-                            return (
-                              <div className="pt-2 border-t">
-                                <p className="text-xs text-muted-foreground mb-2">Velg brannklasser for strømforsyningskrav:</p>
-                                {brannklasser.includes("BKL1") && (
-                                  <div className="flex items-center space-x-2">
-                                    <Checkbox 
-                                      id="dorerStromforsyningBKL1"
-                                      checked={formData.dorerStromforsyningBKL1}
-                                      onCheckedChange={(checked) => setFormData({...formData, dorerStromforsyningBKL1: checked as boolean})}
-                                    />
-                                    <Label htmlFor="dorerStromforsyningBKL1" className="text-sm cursor-pointer">
-                                      BKL1 (30 min)
-                                    </Label>
-                                  </div>
-                                )}
-                                {(brannklasser.includes("BKL2") || brannklasser.includes("BKL3")) && (
-                                  <div className="flex items-center space-x-2">
-                                    <Checkbox 
-                                      id="dorerStromforsyningBKL2"
-                                      checked={formData.dorerStromforsyningBKL2 || formData.dorerStromforsyningBKL3}
-                                      onCheckedChange={(checked) => setFormData({...formData, dorerStromforsyningBKL2: checked as boolean, dorerStromforsyningBKL3: checked as boolean})}
-                                    />
-                                    <Label htmlFor="dorerStromforsyningBKL2" className="text-sm cursor-pointer">
-                                      BKL2/3 (60 min)
-                                    </Label>
-                                  </div>
-                                )}
+                        {formData.branncelleStortAntallPersoner && (
+                          <div className="mt-3 ml-6 space-y-3 p-3 border-l-2 border-primary/30 bg-muted/50 rounded">
+                            <div className="space-y-2">
+                              <p className="text-xs font-medium text-foreground">Persontallkalkulator</p>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                  <Label className="text-xs mb-1 block">Areal (m²)</Label>
+                                  <Input
+                                    type="number"
+                                    placeholder="f.eks. 500"
+                                    value={formData.persontallAreal}
+                                    onChange={(e) => setFormData({...formData, persontallAreal: e.target.value})}
+                                    className="h-8"
+                                  />
+                                </div>
+                                <div>
+                                  <Label className="text-xs mb-1 block">Kategori</Label>
+                                  <Select
+                                    value={formData.persontallKategori}
+                                    onValueChange={(value) => setFormData({...formData, persontallKategori: value})}
+                                  >
+                                    <SelectTrigger className="h-8">
+                                      <SelectValue placeholder="Velg kategori" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="salgslokaler">Salgslokaler (2 m²/pers)</SelectItem>
+                                      <SelectItem value="kontor">Kontor (15 m²/pers)</SelectItem>
+                                      <SelectItem value="skoler">Skoler (2 m²/pers)</SelectItem>
+                                      <SelectItem value="barnehager">Barnehager/fritidshjem (4-5 m²/pers)</SelectItem>
+                                      <SelectItem value="forsamlingslokaler">Forsamlingslokaler uten faste sitteplasser (0,6 m²/pers)</SelectItem>
+                                      <SelectItem value="spisesaler">Spisesaler (1,4 m²/pers)</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
                               </div>
-                            );
-                          }
-                          return null;
-                        })()}
+                              {formData.persontallAreal && formData.persontallKategori && (
+                                <div className="text-sm bg-primary/10 p-2 rounded">
+                                  <span className="font-medium">Beregnet persontall: </span>
+                                  {(() => {
+                                    const arealPerPerson: Record<string, number> = {
+                                      salgslokaler: 2,
+                                      kontor: 15,
+                                      skoler: 2,
+                                      barnehager: 4.5,
+                                      forsamlingslokaler: 0.6,
+                                      spisesaler: 1.4
+                                    };
+                                    const areal = parseFloat(formData.persontallAreal) || 0;
+                                    const factor = arealPerPerson[formData.persontallKategori] || 1;
+                                    return Math.floor(areal / factor);
+                                  })()}{" "}personer
+                                </div>
+                              )}
+                            </div>
+                            <div className="border-t pt-2">
+                              <p className="text-xs text-muted-foreground mb-2">Velg relevante kategorier:</p>
+                              <div className="flex items-center space-x-2">
+                                <Checkbox 
+                                  id="stortAntallUnder600"
+                                  checked={formData.stortAntallUnder600}
+                                  onCheckedChange={(checked) => setFormData({...formData, stortAntallUnder600: checked as boolean})}
+                                />
+                                <Label htmlFor="stortAntallUnder600" className="text-sm cursor-pointer">
+                                  Inntil 600 personer
+                                </Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Checkbox 
+                                  id="stortAntallOver600"
+                                  checked={formData.stortAntallOver600}
+                                  onCheckedChange={(checked) => setFormData({...formData, stortAntallOver600: checked as boolean})}
+                                />
+                                <Label htmlFor="stortAntallOver600" className="text-sm cursor-pointer">
+                                  Mer enn 600 personer
+                                </Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Checkbox 
+                                  id="stortAntallUnder150"
+                                  checked={formData.stortAntallUnder150}
+                                  onCheckedChange={(checked) => setFormData({...formData, stortAntallUnder150: checked as boolean})}
+                                />
+                                <Label htmlFor="stortAntallUnder150" className="text-sm cursor-pointer">
+                                  Mindre enn 150 personer
+                                </Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Checkbox 
+                                  id="stortAntallFlereEtasjer"
+                                  checked={formData.stortAntallFlereEtasjer}
+                                  onCheckedChange={(checked) => setFormData({...formData, stortAntallFlereEtasjer: checked as boolean})}
+                                />
+                                <Label htmlFor="stortAntallFlereEtasjer" className="text-sm cursor-pointer">
+                                  Branncelle over flere etasjer
+                                </Label>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Utganger beskrives</Label>
