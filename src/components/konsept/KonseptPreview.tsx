@@ -3822,11 +3822,22 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       {documentType !== "tilstandsvurdering" && (
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
-        <h2 className="font-bold mb-3">4. Utførelses- og driftsfasen</h2>
+        <h2 className="font-bold mb-3" style={{ color: "#00a3e0" }}>4. Utførelses- og driftsfasen</h2>
+        
         <h3 className="font-semibold mb-2">4.1 Utførelsesfasen</h3>
-        <p className="ml-4 mb-3">{formData.utfoerelse || "[Krav til utførelse beskrives]"}</p>
+        <p className="ml-4 mb-1 font-semibold">Til innkjøpsfasen</p>
+        <p className="ml-4 mb-3">
+          Materialer og produkter skal tilfredsstille dokumentasjonskrav i <em>VTEK §2</em>. Det henvises også til <em>321.028 Brannsikkerhet. Dokumentasjon av utførelse</em> [9].
+        </p>
+        <p className="ml-4 mb-1 font-semibold">Til utførelsesfasen</p>
+        <p className="ml-4 mb-3">
+          Midlertidige branntekniske tiltak i utførelsesfasen, for eksempel endringer i rømningssituasjon, og atkomst for redningsmannskap, behandles som et kapittel i en egen SHA-plan ift. krav i <em>byggherreforskriften</em> [10]. Ansvar for etablering og ajourføring av SHA-planen ligger til SHA-koordinator for prosjekteringsfasen og utførelsesfasen.
+        </p>
+
         <h3 className="font-semibold mb-2">4.2 Driftsfasen</h3>
-        <p className="ml-4 mb-3">{formData.drift || "[Krav til drift og vedlikehold beskrives]"}</p>
+        <p className="ml-4 mb-3">
+          Det henvises til <em>Brann- og eksplosjonsvernloven</em> [5] og <em>forskrift om brannforebygging</em> [11] for krav som gjelder under driftsfasen. Dersom forutsetninger som er lagt til grunn endres under driften av bygg, må dette tas i betraktning. Det kan være behov for ny vurdering av brannkrav.
+        </p>
       </section>
 
       {/* 5. Revisjonshistorikk */}
