@@ -3872,7 +3872,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
 
       {documentType === "tilstandsvurdering" && (
-      <div className={pageStyle} style={pageWidth}>
+      <>
       <section className="mb-6">
         <h2 id="preview-kap5" className="font-bold mb-3">3. Revisjonshistorikk</h2>
         {formData.revisjoner && formData.revisjoner.length > 0 ? (
@@ -3903,23 +3903,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         )}
       </section>
 
-      <section className="mb-6" style={{ breakBefore: "page" }}>
-        <h2 id="preview-kap6" className="font-bold mb-3">4. Litteraturhenvisninger</h2>
-        <ul className="ml-4 list-disc list-inside">
-          {(formData.litteratur || "").split("\n").filter((r: string) => r.trim()).map((ref: string, i: number) => (
-            <li key={i}>{ref}</li>
-          ))}
-        </ul>
-      </section>
-
       {formData.fravik && (
         <section className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
           <h2 className="font-bold mb-3">Fravik og kompenserende tiltak</h2>
           <p className="ml-4">{formData.fravik}</p>
         </section>
       )}
-      <PageFooter pageNum={totalPages} />
-      </div>
+      </>
       )}
     </div>
   );
