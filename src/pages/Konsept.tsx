@@ -717,6 +717,7 @@ const Konsept = () => {
     utfoerelse: "Midlertidige branntekniske tiltak i utførelsesfasen, for eksempel endringer i rømningssituasjon, og atkomst for redningsmannskap, behandles som et kapittel i en egen SHA-plan ift. krav i byggherreforskriften. Ansvar for etablering og ajourføring av SHA-planen ligger til SHA-koordinator for prosjekteringsfasen og utførelsesfasen.",
     drift: "Det henvises til Brann- og eksplosjonsvernloven og forskrift om brannforebygging for krav som gjelder under driftsfasen. Dersom forutsetninger som er lagt til grunn endres under driften av bygg, må dette tas i betraktning. Det kan være behov for ny vurdering av brannkrav.",
     // 5. Revisjonshistorikk
+    revisjoner: [{ nummer: "0", dato: new Date().toISOString().split('T')[0], prosjekterende: "", ks: "", kommentar: "Første utgave" }] as { nummer: string; dato: string; prosjekterende: string; ks: string; kommentar: string }[],
     revisjon: "",
     // 6. Litteraturhenvisninger
     litteratur: "",
