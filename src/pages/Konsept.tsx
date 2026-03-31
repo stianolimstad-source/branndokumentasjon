@@ -2162,12 +2162,17 @@ const Konsept = () => {
                 </AccordionItem>
                 {/* Kapittel 1: Innledning */}
                 <AccordionItem value="kap1" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
-                  <AccordionTrigger className="text-lg font-bold bg-blue-50 hover:bg-blue-100 px-4 py-3 text-blue-800">
-                    <span className="flex items-center gap-3">
-                      <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">1</span>
-                      Innledning
-                    </span>
-                  </AccordionTrigger>
+                  <div className="flex items-center bg-blue-50 hover:bg-blue-100 px-4 py-3">
+                    <AccordionTrigger className="text-lg font-bold text-blue-800 flex-1 p-0 hover:no-underline">
+                      <span className="flex items-center gap-3">
+                        <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">1</span>
+                        Innledning
+                      </span>
+                    </AccordionTrigger>
+                    <button type="button" onClick={(e) => { e.stopPropagation(); document.getElementById('preview-kap1')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="p-1.5 ml-2 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors" title="Gå til i forhåndsvisning">
+                      <Eye className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                   <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">1.1 Informasjon om tiltaket</Label>
