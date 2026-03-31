@@ -2145,6 +2145,26 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">RIBr</td>
               </tr>
             )}
+          </tbody>
+        </table>
+      </section>
+      <PageFooter pageNum={pageKap3c} />
+      </div>
+
+      {/* Side 3.5 (forts.) */}
+      <div className={pageStyle} style={pageWidth}>
+      <section className="mb-6">
+        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
+        <table className="w-full border-collapse border border-gray-400 text-xs">
+          <tbody>
+            <tr className="bg-blue-100">
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.5 &nbsp;&nbsp; {isBF85 ? <>Branncelleinndeling <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(forts.)</span></> : "§11-8 Brannceller"} <span style={{ fontWeight: 'normal', fontStyle: 'italic' }}>(forts.)</span></td>
+            </tr>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+              <th className="border border-gray-400 p-2 text-left">Løsning</th>
+              <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
+            </tr>
             {/* Garasje - BF85 krav */}
             {formData.garasjeRelevant && formData.regelverk === "BF85" && (formData.garasjeBF85Krav || []).length > 0 && (() => {
               const bf85Labels: Record<string, string> = {
