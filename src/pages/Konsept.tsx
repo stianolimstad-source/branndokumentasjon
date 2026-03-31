@@ -801,6 +801,27 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse]);
 
+  // Automatisk sett slokkeutstyr basert på risikoklasse
+  useEffect(() => {
+    if (isViewMode) return;
+    const alleRK = formData.bygningsdeler?.length
+      ? [...new Set(formData.bygningsdeler.map((d: any) => d.risikoklasse).filter(Boolean))]
+      : formData.risikoklasse ? [formData.risikoklasse] : [];
+    const harRK356 = alleRK.some((rk: string) => ["RK3","RK5","RK6"].includes(rk));
+    const harRK124 = alleRK.some((rk: string) => ["RK1","RK2","RK4"].includes(rk));
+    
+    const updates: any = {};
+    if (harRK356 && !formData.slokkeBrannslange) {
+      updates.slokkeBrannslange = true;
+    }
+    if (harRK124 && !formData.slokkeHandslukker) {
+      updates.slokkeHandslukker = true;
+    }
+    if (Object.keys(updates).length > 0) {
+      setFormData(prev => ({ ...prev, ...updates }));
+    }
+  }, [formData.risikoklasse, formData.bygningsdeler]);
+
 
   useEffect(() => {
     if (isViewMode) return;
