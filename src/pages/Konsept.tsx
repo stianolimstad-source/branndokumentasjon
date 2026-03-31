@@ -6977,6 +6977,8 @@ const Konsept = () => {
                         </Label>
                       </div>
 
+                      {/* Bekreftelse på automatiske krav inkludert i rapporten */}
+                      {(() => {
                         const rk = formData.risikoklasse || "";
                         const harRK3 = rk === "RK3" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK3");
                         const harRK5 = rk === "RK5" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK5");
