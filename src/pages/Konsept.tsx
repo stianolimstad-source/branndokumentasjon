@@ -1838,7 +1838,19 @@ const Konsept = () => {
               spacing: { before: 200, after: 100 },
             }),
             new Paragraph({
-              text: formData.utfoerelse || "[Krav til utførelse beskrives]",
+              children: [new TextRun({ text: "Til innkjøpsfasen", bold: true, size: 20 })],
+              spacing: { before: 100, after: 50 },
+            }),
+            new Paragraph({
+              text: formData.utfoerelsInnkjop || "Materialer og produkter skal tilfredsstille dokumentasjonskrav i VTEK §2. Det henvises også til 321.028 Brannsikkerhet. Dokumentasjon av utførelse.",
+              spacing: { after: 100 },
+            }),
+            new Paragraph({
+              children: [new TextRun({ text: "Til utførelsesfasen", bold: true, size: 20 })],
+              spacing: { before: 100, after: 50 },
+            }),
+            new Paragraph({
+              text: formData.utfoerelse || "Midlertidige branntekniske tiltak i utførelsesfasen, for eksempel endringer i rømningssituasjon, og atkomst for redningsmannskap, behandles som et kapittel i en egen SHA-plan ift. krav i byggherreforskriften. Ansvar for etablering og ajourføring av SHA-planen ligger til SHA-koordinator for prosjekteringsfasen og utførelsesfasen.",
               spacing: { after: 100 },
             }),
             new Paragraph({
@@ -1846,44 +1858,48 @@ const Konsept = () => {
               spacing: { before: 200, after: 100 },
             }),
             new Paragraph({
-              text: formData.drift || "[Krav til drift og vedlikehold beskrives]",
+              text: formData.drift || "Det henvises til Brann- og eksplosjonsvernloven og forskrift om brannforebygging for krav som gjelder under driftsfasen. Dersom forutsetninger som er lagt til grunn endres under driften av bygg, må dette tas i betraktning. Det kan være behov for ny vurdering av brannkrav.",
               spacing: { after: 100 },
             }),
             ] : []),
 
             // Revisjonshistorikk
             new Paragraph({
-              children: [new TextRun({ text: `${documentType === "tilstandsvurdering" ? "4" : "5"}. Revisjonshistorikk`, bold: true, size: 28 })],
+              children: [new TextRun({ text: `${documentType === "tilstandsvurdering" ? "3" : "5"}. Revisjonshistorikk`, bold: true, size: 28 })],
               spacing: { before: 400, after: 200 },
             }),
-            new Paragraph({
-              text: formData.revisjon || "[Revisjonslogg]",
-              spacing: { after: 100 },
-            }),
-
-            // Litteraturhenvisninger
-            new Paragraph({
-              children: [new TextRun({ text: `${documentType === "tilstandsvurdering" ? "5" : "6"}. Litteraturhenvisninger`, bold: true, size: 28 })],
-              spacing: { before: 400, after: 200 },
-            }),
-            new Paragraph({
-              text: "• TEK17 - Forskrift om tekniske krav til byggverk",
-              spacing: { after: 50 },
-            }),
-            new Paragraph({
-              text: "• VTEK17 - Veiledning til teknisk forskrift",
-              spacing: { after: 50 },
-            }),
-            new Paragraph({
-              text: "• NS 3901 - Krav til risikovurdering av brann i byggverk",
-              spacing: { after: 50 },
-            }),
-            ...(documentType === "tilstandsvurdering" ? [
+            ...(formData.revisjoner && formData.revisjoner.length > 0 ? [
+              new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
+                  new TableRow({
+                    children: [
+                      createTableCellShaded("Rev.", true, 8),
+                      createTableCellShaded("Dato", true, 15),
+                      createTableCellShaded("Prosjekterende", true, 25),
+                      createTableCellShaded("KS", true, 25),
+                      createTableCellShaded("Kommentar", true, 27),
+                    ],
+                  }),
+                  ...formData.revisjoner.map((rev: any) =>
+                    new TableRow({
+                      children: [
+                        createTableCell(rev.nummer || "—", false, 8),
+                        createTableCell(rev.dato || "—", false, 15),
+                        createTableCell(rev.prosjekterende || "—", false, 25),
+                        createTableCell(rev.ks || "—", false, 25),
+                        createTableCell(rev.kommentar || "—", false, 27),
+                      ],
+                    })
+                  ),
+                ],
+              }),
+            ] : [
               new Paragraph({
-                text: "• NS 3424 - Tilstandsanalyse av byggverk",
+                text: formData.revisjon || "[Revisjonslogg]",
                 spacing: { after: 100 },
               }),
-            ] : []),
+            ]),
 
             // Fravik (if any)
             ...(formData.fravik ? [
@@ -1896,6 +1912,22 @@ const Konsept = () => {
                 spacing: { after: 200 },
               }),
             ] : []),
+          ],
+        },
+        // Litteraturhenvisninger - egen side
+        {
+          properties: {},
+          children: [
+            new Paragraph({
+              children: [new TextRun({ text: `${documentType === "tilstandsvurdering" ? "4" : "6"}. Litteraturhenvisninger`, bold: true, size: 28 })],
+              spacing: { before: 200, after: 200 },
+            }),
+            ...((formData.litteratur || "").split("\n").filter((r: string) => r.trim()).map((ref: string) =>
+              new Paragraph({
+                text: `• ${ref.replace(/^[•\-]\s*/, "")}`,
+                spacing: { after: 50 },
+              })
+            )),
           ],
         },
       ],
