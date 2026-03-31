@@ -710,6 +710,7 @@ const Konsept = () => {
     slangeutlegg50m: true,
     harRadiokommunikasjon: false,
     harUniversalnokkel: false,
+    stortAntallPersonerSlokke: false,
     eksplosjonKommentar: "",
     // 4. Utførelses- og driftsfasen
     utfoerelse: "",
