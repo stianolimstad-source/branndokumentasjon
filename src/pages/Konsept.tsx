@@ -1329,7 +1329,7 @@ const Konsept = () => {
       sections: [
         {
           properties: {},
-          footers: { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ children: [PageNumber.CURRENT] , size: 16, color: "888888" })] })] }) },
+          footers: wordFooter,
           children: coverPageChildren,
         },
         // Sammendrag (egen side)
