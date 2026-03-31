@@ -3698,7 +3698,15 @@ const Konsept = () => {
                           )}
                         </>
                       )}
-                      
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          <li>Avstandskrav mellom byggverk basert på bygningshøyde og avstand til nabobygg</li>
+                          <li>Automatisk beregning av minsteavstand og krav til brannvegg/branncellevegg</li>
+                          <li>Krav til yttervegger og vinduer/åpninger mot nabobygg</li>
+                        </ul>
+                      </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('brannspredning-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="brannspredning-kommentar" className={formData.brannspredningKommentar ? "" : "hidden"}>
