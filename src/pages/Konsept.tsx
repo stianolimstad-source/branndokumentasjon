@@ -713,8 +713,9 @@ const Konsept = () => {
     stortAntallPersonerSlokke: false,
     eksplosjonKommentar: "",
     // 4. Utførelses- og driftsfasen
-    utfoerelse: "",
-    drift: "",
+    utfoerelsInnkjop: "Materialer og produkter skal tilfredsstille dokumentasjonskrav i VTEK §2. Det henvises også til 321.028 Brannsikkerhet. Dokumentasjon av utførelse [9].",
+    utfoerelse: "Midlertidige branntekniske tiltak i utførelsesfasen, for eksempel endringer i rømningssituasjon, og atkomst for redningsmannskap, behandles som et kapittel i en egen SHA-plan ift. krav i byggherreforskriften [10]. Ansvar for etablering og ajourføring av SHA-planen ligger til SHA-koordinator for prosjekteringsfasen og utførelsesfasen.",
+    drift: "Det henvises til Brann- og eksplosjonsvernloven [5] og forskrift om brannforebygging [11] for krav som gjelder under driftsfasen. Dersom forutsetninger som er lagt til grunn endres under driften av bygg, må dette tas i betraktning. Det kan være behov for ny vurdering av brannkrav.",
     // 5. Revisjonshistorikk
     revisjon: "",
     // 6. Litteraturhenvisninger
@@ -7452,28 +7453,38 @@ const Konsept = () => {
                       Utførelses- og driftsfasen
                     </span>
                   </AccordionTrigger>
-                  <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
-                    <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">4.1 Utførelsesfasen</Label>
-                      <div>
-                        <Label className="text-xs font-medium mb-1 block">Krav til utførelse</Label>
-                        <Textarea 
-                          value={formData.utfoerelse}
-                          onChange={(e) => setFormData({...formData, utfoerelse: e.target.value})}
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">4.2 Driftsfasen</Label>
-                      <div>
-                        <Label className="text-xs font-medium mb-1 block">Krav til drift og vedlikehold</Label>
-                        <Textarea 
-                          value={formData.drift}
-                          onChange={(e) => setFormData({...formData, drift: e.target.value})}
-                        />
-                      </div>
-                    </div>
-                  </AccordionContent>
+                   <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
+                     <div className="space-y-2">
+                       <Label className="text-xs text-muted-foreground">4.1 Utførelsesfasen</Label>
+                       <div>
+                         <Label className="text-xs font-medium mb-1 block">Til innkjøpsfasen</Label>
+                         <Textarea 
+                           value={formData.utfoerelsInnkjop}
+                           onChange={(e) => setFormData({...formData, utfoerelsInnkjop: e.target.value})}
+                           rows={3}
+                         />
+                       </div>
+                       <div>
+                         <Label className="text-xs font-medium mb-1 block">Til utførelsesfasen</Label>
+                         <Textarea 
+                           value={formData.utfoerelse}
+                           onChange={(e) => setFormData({...formData, utfoerelse: e.target.value})}
+                           rows={4}
+                         />
+                       </div>
+                     </div>
+                     <div className="space-y-2">
+                       <Label className="text-xs text-muted-foreground">4.2 Driftsfasen</Label>
+                       <div>
+                         <Label className="text-xs font-medium mb-1 block">Krav til drift og vedlikehold</Label>
+                         <Textarea 
+                           value={formData.drift}
+                           onChange={(e) => setFormData({...formData, drift: e.target.value})}
+                           rows={4}
+                         />
+                       </div>
+                     </div>
+                   </AccordionContent>
                 </AccordionItem>
                 )}
 

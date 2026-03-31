@@ -3826,17 +3826,17 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         
         <h3 className="font-semibold mb-2">4.1 Utførelsesfasen</h3>
         <p className="ml-4 mb-1 font-semibold">Til innkjøpsfasen</p>
-        <p className="ml-4 mb-3">
-          Materialer og produkter skal tilfredsstille dokumentasjonskrav i <em>VTEK §2</em>. Det henvises også til <em>321.028 Brannsikkerhet. Dokumentasjon av utførelse</em> [9].
+        <p className="ml-4 mb-3" style={{ whiteSpace: "pre-wrap" }}>
+          {formData.utfoerelsInnkjop || "Materialer og produkter skal tilfredsstille dokumentasjonskrav i VTEK §2. Det henvises også til 321.028 Brannsikkerhet. Dokumentasjon av utførelse [9]."}
         </p>
         <p className="ml-4 mb-1 font-semibold">Til utførelsesfasen</p>
-        <p className="ml-4 mb-3">
-          Midlertidige branntekniske tiltak i utførelsesfasen, for eksempel endringer i rømningssituasjon, og atkomst for redningsmannskap, behandles som et kapittel i en egen SHA-plan ift. krav i <em>byggherreforskriften</em> [10]. Ansvar for etablering og ajourføring av SHA-planen ligger til SHA-koordinator for prosjekteringsfasen og utførelsesfasen.
+        <p className="ml-4 mb-3" style={{ whiteSpace: "pre-wrap" }}>
+          {formData.utfoerelse || "Midlertidige branntekniske tiltak i utførelsesfasen, for eksempel endringer i rømningssituasjon, og atkomst for redningsmannskap, behandles som et kapittel i en egen SHA-plan ift. krav i byggherreforskriften [10]. Ansvar for etablering og ajourføring av SHA-planen ligger til SHA-koordinator for prosjekteringsfasen og utførelsesfasen."}
         </p>
 
         <h3 className="font-semibold mb-2">4.2 Driftsfasen</h3>
-        <p className="ml-4 mb-3">
-          Det henvises til <em>Brann- og eksplosjonsvernloven</em> [5] og <em>forskrift om brannforebygging</em> [11] for krav som gjelder under driftsfasen. Dersom forutsetninger som er lagt til grunn endres under driften av bygg, må dette tas i betraktning. Det kan være behov for ny vurdering av brannkrav.
+        <p className="ml-4 mb-3" style={{ whiteSpace: "pre-wrap" }}>
+          {formData.drift || "Det henvises til Brann- og eksplosjonsvernloven [5] og forskrift om brannforebygging [11] for krav som gjelder under driftsfasen. Dersom forutsetninger som er lagt til grunn endres under driften av bygg, må dette tas i betraktning. Det kan være behov for ny vurdering av brannkrav."}
         </p>
       </section>
 
