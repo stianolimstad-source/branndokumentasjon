@@ -3680,6 +3680,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     </tr>
                   </>
                 )}
+              </>
+            )}
             {formData.manuellSlokking && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
