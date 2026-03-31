@@ -7397,6 +7397,14 @@ const Konsept = () => {
                           />
                           <Label htmlFor="harUniversalnokkel" className="text-sm font-medium">Krav til universalnøkkel / nøkkelskap</Label>
                         </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="stortAntallPersonerSlokke"
+                            checked={formData.stortAntallPersonerSlokke}
+                            onCheckedChange={(checked) => setFormData({...formData, stortAntallPersonerSlokke: checked === true})}
+                          />
+                          <Label htmlFor="stortAntallPersonerSlokke" className="text-sm font-medium">Stort antall personer – tilgjengelig atkomst for brannvesenet</Label>
+                        </div>
                       </div>
                       <div className="mb-3">
                         <Label className="text-xs font-medium mb-1 block">Tilrettelegging for rednings- og slokkemannskap</Label>
