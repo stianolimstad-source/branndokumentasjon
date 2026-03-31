@@ -3433,6 +3433,36 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
             )}
+            {formData.romningsveiSvalgang && (
+              <>
+              <tr className="bg-blue-50">
+                <td className="border border-gray-400 p-2 font-bold" colSpan={3}>Svalganger og altanganger som rømningsvei</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top font-medium">Generelt</td>
+                <td className="border border-gray-400 p-2">
+                  Svalgang er en utvendig atkomstvei over bakkeplan langs fasade som er overbygd eller inntrukket. Dersom atkomstveien ikke er overbygd (øverste etasje) kalles den altangang. Svalgang og altangang kan være rømningsvei eller del av rømningsvei dersom følgende ytelser er oppfylt:
+                </td>
+                <td className="border border-gray-400 p-2 align-top">-</td>
+              </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 align-top font-medium">Preaksepterte ytelser</td>
+                <td className="border border-gray-400 p-2">
+                  <ul className="list-disc ml-4 space-y-1">
+                    <li>Med mindre branncellene også har direkte utgang til sikkert sted, må svalgang og altangang utføres slik at de tilfredsstiller forutsetningene om to uavhengige rømningsveier. Svalgang og altangang må derfor ha minst to trapper til terreng, en i hver ende. Avstanden mellom trappene må ikke være over 60 meter.</li>
+                    <li>Svalgang som er lengre enn 30 meter må oppdeles med branncellebegrensende bygningsdeler med innbyrdes avstand på maksimum 30 meter for å begrense den horisontale brannspredningen.</li>
+                    <li>I byggverk i brannklasse 1 hvor det er tilrettelagt for bruk av vindu som rømningsvei, er det tilstrekkelig med én trapp. Dette gjelder under forutsetning av at avstanden fra dør i branncelle til trappen er maksimalt 15 meter, og at det ikke må rømmes forbi uklassifisert vindu i annen branncelle.</li>
+                    <li>Svalgangen må være mest mulig åpen slik at røyk- og branngasser kan unnslippe. Om den åpne delen er 50 prosent av den totale «veggflaten», antas dette å være tilfredsstillende. Det er den øverste delen av veggflatene som må være åpen. Åpning i rekkverk er ikke å anse som åpent areal.</li>
+                    <li>Gulvet i svalgang og altangang må være utført som branncellebegrensende konstruksjon med overflate D<sub>fl</sub>-s1 (G). Kledning på vegg og tak må være som for rømningsvei. Overflaten kan være B-s3,d0 (Ut 1). I byggverk med mer enn to etasjer må rekkverk og øvrige konstruksjoner bestå av ubrennbare eller begrenset brennbare materialer, det vil si klasse A2-s1,d0.</li>
+                    <li>Svalgang og altangang må være minimum 1,20 meter bred for at den skal fungere som flammeskjerm.</li>
+                    <li>Dekke og takutstikk over svalgang må utføres horisontalt og tett (mot for eksempel oppforet tak eller kaldt loft) slik at røyk- og branngasser kan slippe uhindret ut til det fri.</li>
+                    <li>Trappene må være beskyttet mot strålevarme fra en eventuell brann i byggverket. Derfor må enten trapperomveggene som vender mot byggverket eller byggverkets yttervegg mot trappen og 5,0 meter til hver side for denne, være utført som branncellebegrensende konstruksjon.</li>
+                  </ul>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+              </>
+            )}
             {formData.romningsvei && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
