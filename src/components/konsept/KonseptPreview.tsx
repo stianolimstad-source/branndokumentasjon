@@ -3869,7 +3869,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       {documentType === "tilstandsvurdering" && (
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
-        <h2 className="font-bold mb-3">3. Revisjonshistorikk</h2>
+        <h2 id="preview-kap5" className="font-bold mb-3">3. Revisjonshistorikk</h2>
         <p className="ml-4">{formData.revisjon || "[Revisjonslogg]"}</p>
       </section>
 
