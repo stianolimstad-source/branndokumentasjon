@@ -3577,6 +3577,18 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <TilstandTableRow data={formData.tilstandsvurderinger["3_11"]} sectionLabel="3.11 Rømningsvei" />
             )}
 
+          </tbody>
+        </table>
+      </section>
+      <PageFooter pageNum={pageKap3f} />
+      </div>
+
+      {/* Side 3.12-3.14 */}
+      <div className={pageStyle} style={pageWidth}>
+      <section className="mb-6">
+        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
+        <table className="w-full border-collapse border border-gray-400 text-xs">
+          <tbody>
             {/* 3.12 §11-15 Tilrettelegging for redning av husdyr */}
             <tr id="preview-3-12" className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.12 &nbsp;&nbsp; {isBF85 ? <>Tilrettelegging for redning av husdyr <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-15)</span></> : "§11-15 Tilrettelegging for redning av husdyr"}</td>
