@@ -902,9 +902,8 @@ const Konsept = () => {
     }
   }, [formData.brannklasse, formData.risikoklasse, formData.prosjekteringsmetode, beregnetBrannklasseResult.brannklasse]);
 
-  // Automatisk generering av litteraturhenvisninger
-  useEffect(() => {
-    if (isViewMode) return;
+  // Bygg dynamisk litteraturliste basert på konseptets innstillinger
+  const genererLitteraturRefs = () => {
     const documentType = window.location.pathname.includes("tilstandsvurdering") ? "tilstandsvurdering" : "brannkonsept";
     const isBF85 = formData.regelverk === "BF85";
     const refs: string[] = [];
@@ -953,9 +952,17 @@ const Konsept = () => {
         refs.push("NS 3901:2023 – Krav til risikovurdering av brann i byggverk (brannteknisk analyse)");
       }
     }
-    const unique = [...new Set(refs)];
-    const newLitteratur = unique.join("\n");
-    setFormData(prev => ({ ...prev, litteratur: newLitteratur }));
+    return [...new Set(refs)].join("\n");
+  };
+
+  // Sett litteratur kun ved første lasting (når feltet er tomt)
+  useEffect(() => {
+    if (isViewMode) return;
+    if (!formData.litteratur) {
+      const newLitteratur = genererLitteraturRefs();
+      setFormData(prev => ({ ...prev, litteratur: newLitteratur }));
+    }
+  }, [isViewMode]);
   }, [
     isViewMode, formData.regelverk, formData.tilretteleggingLedd1a, formData.tilretteleggingLedd1b,
     formData.brannseksjonTiltak, formData.tilretteleggingLedd2a, formData.alarmValg,
