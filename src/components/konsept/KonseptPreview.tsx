@@ -3069,6 +3069,17 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
             )}
+            {/* Lavt byggverk - én rømningsretning §11-13(4) */}
+            {formData.lavtByggverkEnRomningsretning && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Én rømningsretning (lavt byggverk)</td>
+                <td className="border border-gray-400 p-2">
+                  I lave byggverk beregnet for virksomhet i risikoklasse 1, 2, 3 og 4 kan utgangen fra branncelle enten føre til sikkert sted, eller til rømningsvei som bare har én rømningsretning, forutsatt at hver branncelle har vinduer som er utformet og tilrettelagt for sikker rømning.
+                  <p className="mt-2 text-xs italic">Preaksepterte ytelser angitt for rømningsvindu under tredje ledd, må være oppfylt.</p>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
             {/* Lavt byggverk med vinduer for rømning */}
             {formData.lavtByggverkVinduerRomning && (
               <tr>
