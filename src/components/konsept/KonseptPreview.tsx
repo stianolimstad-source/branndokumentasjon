@@ -3539,7 +3539,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Generelt</td>
                   <td className="border border-gray-400 p-2">
-                    Byggverk beregnet for husdyrhold skal ha tilfredsstillende rømningsforhold og tilrettelegging for。redning av husdyr ved brann.
+                    Byggverk beregnet for husdyrhold skal ha tilfredsstillende rømningsforhold og tilrettelegging for redning av husdyr ved brann.
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
