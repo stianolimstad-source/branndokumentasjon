@@ -3103,22 +3103,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
             )}
-            {/* Dør-krav til rømningsvei */}
-            {(formData.dorerTilbakerømning || formData.dorerNattlaser || formData.dorerLiteAntallPersoner || formData.dorerStromforsyningBKL1 || formData.dorerStromforsyningBKL2 || formData.dorerStromforsyningBKL3) && (
-              <tr>
-                <td className="border border-gray-400 p-2 align-top">Dører</td>
-                <td className="border border-gray-400 p-2">
-                  <ul className="list-disc list-inside text-sm space-y-1">
-                    {formData.dorerTilbakerømning && <li>Låsesystem skal tillate tilbakerømning (retur gjennom dør etter passering).</li>}
-                    {formData.dorerNattlaser && <li>Nattlåser benyttes. Dører med nattlås skal kunne åpnes med én håndgrepsbevegelse uten bruk av nøkkel ved rømning.</li>}
-                    {formData.dorerLiteAntallPersoner && <li>Rom med færre enn 10 personer: Dør kan slå mot rømningsretningen.</li>}
-                    {formData.dorerStromforsyningBKL1 && <li>Elektriske låsesystemer i BKL1 skal ha reservestrømforsyning (UPS) i minst 30 minutter.</li>}
-                    {(formData.dorerStromforsyningBKL2 || formData.dorerStromforsyningBKL3) && <li>Elektriske låsesystemer i BKL2/BKL3 skal ha reservestrømforsyning (UPS) i minst 60 minutter.</li>}
-                  </ul>
-                </td>
-                <td className="border border-gray-400 p-2 align-top">ARK / RIE</td>
-              </tr>
-            )}
             
             {/* Rømningsvindu - § 11-13 (3) */}
             {formData.romningsvinduRelevant && (() => {
