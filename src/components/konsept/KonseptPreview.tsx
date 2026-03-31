@@ -3875,57 +3875,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <section className="mb-6" style={{ breakBefore: "page" }}>
         <h2 id="preview-kap6" className="font-bold mb-3">6. Litteraturhenvisninger</h2>
         <ul className="ml-4 list-disc list-inside">
-          {(() => {
-            const refs: string[] = [];
-            refs.push("TEK17 – Forskrift om tekniske krav til byggverk (Byggteknisk forskrift)");
-            refs.push("VTEK17 – Veiledning om tekniske krav til byggverk");
-            refs.push("NS 3901:2023 – Krav til risikovurdering av brann i byggverk");
-            // Sprinkler / slokkeanlegg
-            if (formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b || formData.brannseksjonTiltak === "sprinkler") {
-              refs.push("NS-EN 16925:2018+AC:2020 – Boligsprinkleranlegg – Prosjektering, installasjon og vedlikehold");
-              refs.push("NS-EN 12845:2015+A1:2019 – Faste brannslokkesystemer – Automatiske sprinklersystemer");
-            }
-            // Brannalarm
-            if (formData.tilretteleggingLedd2a || formData.alarmValg === "brannalarm" || formData.brannseksjonTiltak === "brannalarm") {
-              refs.push("NS 3960:2019 – Brannalarmanlegg – Prosjektering, installering, drift og vedlikehold");
-              refs.push("NS-EN 54 (serien) – Brannalarmsystemer");
-            }
-            // Røykvarsler
-            if (formData.tilretteleggingLedd2b || formData.alarmValg === "roykvarsler") {
-              refs.push("NS 3960:2019 – Brannalarmanlegg – Prosjektering, installering, drift og vedlikehold");
-            }
-            // Ledesystem
-            if (formData.tilretteleggingLedd3) {
-              refs.push("NS-EN 1838:2013 – Nødbelysning");
-              refs.push("NS 3926:2022 – Visuelle ledesystemer for rømning i bygninger");
-            }
-            // Røykventilasjon
-            if (formData.brannseksjonTiltak === "roykventilasjon" || formData.roykventilasjonRelevant) {
-              refs.push("NS-EN 12101-2:2017 – Røyk- og varmeventilasjonssystemer");
-            }
-            // Brannmotstand / bæreevne
-            refs.push("NS-EN 13501-2:2016 – Brannklassifisering av byggevarer og bygningsdeler – Del 2: Klassifisering ved brannmotstandsprøving");
-            // Overflater/kledninger
-            refs.push("NS-EN 13501-1:2019 – Brannklassifisering av byggevarer og bygningsdeler – Del 1: Klassifisering ved prøving av reaksjon på brann");
-            // Rømningsvei/dører
-            refs.push("NS-EN 1125:2008 – Bygningsbeslag – Panikkbeslag for nødutganger");
-            refs.push("NS-EN 179:2008 – Bygningsbeslag – Nødutgangsbeslag for rømningsveier");
-            // Brannenergi
-            if (formData.brannseksjonBrannenergi || formData.seksjoneringsvegBrannenergi) {
-              refs.push("NS-EN 1991-1-2:2002+NA:2008 – Eurokode 1: Laster på konstruksjoner – Del 1-2: Allmenne laster – Brannpåvirkning");
-            }
-            // Tilrettelegging for slokking
-            if (formData.slokkingRelevant || formData.brannvesenInnsats) {
-              refs.push("NS 3910:2020 – Brannvesen – Innsatsmuligheter");
-            }
-            // Prosjekteringsmetode analyse
-            if (formData.prosjekteringsmetode === "Analyse" || formData.prosjekteringsmetode === "Kombinasjon") {
-              refs.push("NS 3901:2023 – Krav til risikovurdering av brann i byggverk (brannteknisk analyse)");
-            }
-            // Deduplicate
-            const unique = [...new Set(refs)];
-            return unique.map((ref, i) => <li key={i}>{ref}</li>);
-          })()}
+          {(formData.litteratur || "").split("\n").filter((r: string) => r.trim()).map((ref: string, i: number) => (
+            <li key={i}>{ref}</li>
+          ))}
         </ul>
       </section>
 
@@ -3974,37 +3926,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <section className="mb-6" style={{ breakBefore: "page" }}>
         <h2 id="preview-kap6" className="font-bold mb-3">4. Litteraturhenvisninger</h2>
         <ul className="ml-4 list-disc list-inside">
-          {(() => {
-            const refs: string[] = [];
-            if (isBF85) {
-              refs.push("Byggeforskrift 1985 (BF85) – Del 3 Brannvern");
-            } else {
-              refs.push("TEK17 – Forskrift om tekniske krav til byggverk (Byggteknisk forskrift)");
-              refs.push("VTEK17 – Veiledning om tekniske krav til byggverk");
-            }
-            refs.push("NS 3424:2012 – Tilstandsanalyse av byggverk – Innhold og gjennomføring");
-            refs.push("NS 3901:2023 – Krav til risikovurdering av brann i byggverk");
-            // Sprinkler
-            if (formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b || formData.bf85_sprinkler_installert || formData.brannseksjonTiltak === "sprinkler") {
-              refs.push("NS-EN 16925:2018+AC:2020 – Boligsprinkleranlegg – Prosjektering, installasjon og vedlikehold");
-              refs.push("NS-EN 12845:2015+A1:2019 – Faste brannslokkesystemer – Automatiske sprinklersystemer");
-            }
-            // Brannalarm
-            if (formData.tilretteleggingLedd2a || formData.alarmValg === "brannalarm" || formData.bf85_16_brannalarmanlegg) {
-              refs.push("NS 3960:2019 – Brannalarmanlegg – Prosjektering, installering, drift og vedlikehold");
-              refs.push("NS-EN 54 (serien) – Brannalarmsystemer");
-            }
-            // Ledesystem
-            if (formData.tilretteleggingLedd3) {
-              refs.push("NS-EN 1838:2013 – Nødbelysning");
-              refs.push("NS 3926:2022 – Visuelle ledesystemer for rømning i bygninger");
-            }
-            // Brannmotstand
-            refs.push("NS-EN 13501-2:2016 – Brannklassifisering av byggevarer og bygningsdeler – Del 2: Klassifisering ved brannmotstandsprøving");
-            refs.push("NS-EN 13501-1:2019 – Brannklassifisering av byggevarer og bygningsdeler – Del 1: Klassifisering ved prøving av reaksjon på brann");
-            const unique = [...new Set(refs)];
-            return unique.map((ref, i) => <li key={i}>{ref}</li>);
-          })()}
+          {(formData.litteratur || "").split("\n").filter((r: string) => r.trim()).map((ref: string, i: number) => (
+            <li key={i}>{ref}</li>
+          ))}
         </ul>
       </section>
 

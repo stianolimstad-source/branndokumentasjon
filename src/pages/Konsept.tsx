@@ -902,6 +902,68 @@ const Konsept = () => {
     }
   }, [formData.brannklasse, formData.risikoklasse, formData.prosjekteringsmetode, beregnetBrannklasseResult.brannklasse]);
 
+  // Automatisk generering av litteraturhenvisninger
+  useEffect(() => {
+    if (isViewMode) return;
+    const documentType = window.location.pathname.includes("tilstandsvurdering") ? "tilstandsvurdering" : "brannkonsept";
+    const isBF85 = formData.regelverk === "BF85";
+    const refs: string[] = [];
+
+    if (documentType === "tilstandsvurdering") {
+      if (isBF85) {
+        refs.push("Byggeforskrift 1985 (BF85) – Del 3 Brannvern");
+      } else {
+        refs.push("TEK17 – Forskrift om tekniske krav til byggverk (Byggteknisk forskrift)");
+        refs.push("VTEK17 – Veiledning om tekniske krav til byggverk");
+      }
+      refs.push("NS 3901:2023 – Krav til risikovurdering av brann i byggverk");
+    } else {
+      refs.push("TEK17 – Forskrift om tekniske krav til byggverk (Byggteknisk forskrift)");
+      refs.push("VTEK17 – Veiledning om tekniske krav til byggverk");
+      refs.push("NS 3901:2023 – Krav til risikovurdering av brann i byggverk");
+      if (formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b || formData.brannseksjonTiltak === "sprinkler") {
+        refs.push("NS-EN 16925:2018+AC:2020 – Boligsprinkleranlegg – Prosjektering, installasjon og vedlikehold");
+        refs.push("NS-EN 12845:2015+A1:2019 – Faste brannslokkesystemer – Automatiske sprinklersystemer");
+      }
+      if (formData.tilretteleggingLedd2a || formData.alarmValg === "brannalarm" || formData.brannseksjonTiltak === "brannalarm") {
+        refs.push("NS 3960:2019 – Brannalarmanlegg – Prosjektering, installering, drift og vedlikehold");
+        refs.push("NS-EN 54 (serien) – Brannalarmsystemer");
+      }
+      if (formData.tilretteleggingLedd2b || formData.alarmValg === "roykvarsler") {
+        refs.push("NS 3960:2019 – Brannalarmanlegg – Prosjektering, installering, drift og vedlikehold");
+      }
+      if (formData.tilretteleggingLedd3) {
+        refs.push("NS-EN 1838:2013 – Nødbelysning");
+        refs.push("NS 3926:2022 – Visuelle ledesystemer for rømning i bygninger");
+      }
+      if (formData.brannseksjonTiltak === "roykventilasjon" || formData.ventilasjonRelevant) {
+        refs.push("NS-EN 12101-2:2017 – Røyk- og varmeventilasjonssystemer");
+      }
+      refs.push("NS-EN 13501-2:2016 – Brannklassifisering av byggevarer og bygningsdeler – Del 2: Klassifisering ved brannmotstandsprøving");
+      refs.push("NS-EN 13501-1:2019 – Brannklassifisering av byggevarer og bygningsdeler – Del 1: Klassifisering ved prøving av reaksjon på brann");
+      refs.push("NS-EN 1125:2008 – Bygningsbeslag – Panikkbeslag for nødutganger");
+      refs.push("NS-EN 179:2008 – Bygningsbeslag – Nødutgangsbeslag for rømningsveier");
+      if (formData.brannseksjonBrannenergi || formData.seksjoneringsvegBrannenergi) {
+        refs.push("NS-EN 1991-1-2:2002+NA:2008 – Eurokode 1: Laster på konstruksjoner – Del 1-2: Allmenne laster – Brannpåvirkning");
+      }
+      if (formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) {
+        refs.push("NS 3910:2020 – Brannvesen – Innsatsmuligheter");
+      }
+      if (formData.prosjekteringsmetode === "analyse" || formData.prosjekteringsmetode === "blanding") {
+        refs.push("NS 3901:2023 – Krav til risikovurdering av brann i byggverk (brannteknisk analyse)");
+      }
+    }
+    const unique = [...new Set(refs)];
+    const newLitteratur = unique.join("\n");
+    setFormData(prev => ({ ...prev, litteratur: newLitteratur }));
+  }, [
+    isViewMode, formData.regelverk, formData.tilretteleggingLedd1a, formData.tilretteleggingLedd1b,
+    formData.brannseksjonTiltak, formData.tilretteleggingLedd2a, formData.alarmValg,
+    formData.tilretteleggingLedd2b, formData.tilretteleggingLedd3, formData.ventilasjonRelevant,
+    formData.brannseksjonBrannenergi, formData.seksjoneringsvegBrannenergi,
+    formData.prosjekteringsmetode,
+  ]);
+
   const erBrannklasseOverstyrt = beregnetBrannklasseResult.brannklasse && formData.brannklasse !== beregnetBrannklasseResult.brannklasse;
 
   const loadConcept = async (id: string) => {
@@ -7638,10 +7700,11 @@ const Konsept = () => {
                   </div>
                   <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
                     <div>
-                      <Label className="text-xs font-medium mb-1 block">TEK17, VTEK17, NS 3901 osv.</Label>
+                      <Label className="text-xs font-medium mb-1 block">Litteraturhenvisninger (én per linje, oppdateres automatisk basert på konseptet)</Label>
                       <Textarea 
-                        value={formData.litteratur || "TEK17 - Forskrift om tekniske krav til byggverk\nVTEK17 - Veiledning til teknisk forskrift\nNS 3901 - Krav til risikovurdering av brann i byggverk"}
+                        value={formData.litteratur}
                         onChange={(e) => setFormData({...formData, litteratur: e.target.value})}
+                        rows={Math.max(6, (formData.litteratur || "").split("\n").length + 1)}
                       />
                     </div>
                   </AccordionContent>
