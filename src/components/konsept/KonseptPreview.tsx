@@ -1224,13 +1224,26 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
                   if (g && maksAreal !== null && !erPakrevd) {
                     return (
-                      <tr>
-                        <td className="border border-gray-400 p-2 align-top">Generelt</td>
-                        <td className="border border-gray-400 p-2">
-                          Bruttoarealet ({arealNum} m²) er innenfor tillatt areal uten brannseksjonering ({maksAreal === Infinity ? "ubegrenset" : `${maksAreal} m²`}). Det er derfor ikke krav til brannseksjonering for dette byggverket.
-                        </td>
-                        <td className="border border-gray-400 p-2 align-top">RIBr</td>
-                      </tr>
+                      <>
+                        <tr>
+                          <td className="border border-gray-400 p-2 align-top">Generelt</td>
+                          <td className="border border-gray-400 p-2">
+                            Bruttoarealet ({arealNum} m²) er innenfor tillatt areal uten brannseksjonering ({maksAreal === Infinity ? "ubegrenset" : `${maksAreal} m²`}). Det er derfor ikke krav til brannseksjonering for dette byggverket.
+                          </td>
+                          <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                        </tr>
+                        {formData.innvendigHjorne === "ja" && (
+                          <tr>
+                            <td className="border border-gray-400 p-2 align-top">Innvendig hjørne</td>
+                            <td className="border border-gray-400 p-2">
+                              {formData.innvendigHjorneAlternativ === "alt1"
+                                ? "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal seksjoneringsveggen forlenges minimum 8,0 meter forbi innvendig hjørne (jf. VTEK § 11-7, figur 1a, alternativ 1)."
+                                : "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal seksjoneringsveggen forlenges minimum 5,0 meter på hver side av innvendig hjørne (jf. VTEK § 11-7, figur 1a, alternativ 2)."}
+                            </td>
+                            <td className="border border-gray-400 p-2 align-top">RIBr / ARK</td>
+                          </tr>
+                        )}
+                      </>
                     );
                   }
 
