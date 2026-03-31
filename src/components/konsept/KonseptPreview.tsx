@@ -3749,6 +3749,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
+            {formData.romningsvinduRelevant && (
             <tr>
               <td className="border border-gray-400 p-2 align-top">Vindu/balkong som rømningsvei</td>
               <td className="border border-gray-400 p-2">
@@ -3756,6 +3757,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
+            )}
             <tr>
               <td className="border border-gray-400 p-2 align-top">Stort antall personer</td>
               <td className="border border-gray-400 p-2">
