@@ -2807,15 +2807,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
           </tbody>
         </table>
-      </section>
-      <PageFooter pageNum={pageKap3d2} />
-      </div>
 
-      {/* Side 3.8-3.9 */}
-      <div className={pageStyle} style={pageWidth}>
-      <section className="mb-6">
-        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
-        <table className="w-full border-collapse border border-gray-400 text-xs">
+        <table className="w-full border-collapse border border-gray-400 text-xs mt-4">
           <tbody>
             {/* 3.8 §11-11 Generelle krav om rømning */}
             <tr id="preview-3-8" className="bg-blue-100">
