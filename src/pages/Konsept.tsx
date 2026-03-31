@@ -7700,10 +7700,11 @@ const Konsept = () => {
                   </div>
                   <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
                     <div>
-                      <Label className="text-xs font-medium mb-1 block">TEK17, VTEK17, NS 3901 osv.</Label>
+                      <Label className="text-xs font-medium mb-1 block">Litteraturhenvisninger (én per linje, oppdateres automatisk basert på konseptet)</Label>
                       <Textarea 
-                        value={formData.litteratur || "TEK17 - Forskrift om tekniske krav til byggverk\nVTEK17 - Veiledning til teknisk forskrift\nNS 3901 - Krav til risikovurdering av brann i byggverk"}
+                        value={formData.litteratur}
                         onChange={(e) => setFormData({...formData, litteratur: e.target.value})}
+                        rows={Math.max(6, (formData.litteratur || "").split("\n").length + 1)}
                       />
                     </div>
                   </AccordionContent>
