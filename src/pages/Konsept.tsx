@@ -1346,6 +1346,7 @@ const Konsept = () => {
         // Tilstandsgrader (egen side, kun for tilstandsvurdering)
         ...(documentType === "tilstandsvurdering" ? [{
           properties: {},
+          footers: wordFooter,
           children: [
             new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Tilstandsgrader", bold: true })] }),
             new Paragraph({
@@ -1420,6 +1421,7 @@ const Konsept = () => {
         // Innholdsfortegnelse (egen side)
         {
           properties: {},
+          footers: wordFooter,
           children: [
             new Paragraph({
               text: documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT",
@@ -1493,6 +1495,7 @@ const Konsept = () => {
         },
         {
           properties: {},
+          footers: wordFooter,
           children: [
             // 1. Innledning
             new Paragraph({
@@ -1594,6 +1597,7 @@ const Konsept = () => {
         },
         {
           properties: {},
+          footers: wordFooter,
           children: [
             ...(documentType === "tilstandsvurdering" ? [
               // Tilstandsvurdering: 1.3 Bygningsinfo, 1.4 Grunnlagsdokumenter, 1.5 Forutsetninger, 1.6 Tilleggskrav
@@ -1822,6 +1826,7 @@ const Konsept = () => {
         },
         {
           properties: {},
+          footers: wordFooter,
           children: [
             // 3. Branntekniske ytelseskrav
             new Paragraph({
@@ -1921,6 +1926,7 @@ const Konsept = () => {
         // Litteraturhenvisninger - egen side
         {
           properties: {},
+          footers: wordFooter,
           children: [
             new Paragraph({
               children: [new TextRun({ text: `${documentType === "tilstandsvurdering" ? "4" : "6"}. Litteraturhenvisninger`, bold: true, size: 28 })],
