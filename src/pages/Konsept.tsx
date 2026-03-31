@@ -7379,7 +7379,8 @@ const Konsept = () => {
                         <Textarea 
                           value={formData.redningsmannskap}
                           onChange={(e) => setFormData({...formData, redningsmannskap: e.target.value})}
-                        />
+                         />
+                      </div>
                       {/* Info om automatiske krav */}
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
@@ -7391,7 +7392,6 @@ const Konsept = () => {
                           <li>Maksimalt 50 m slangeutlegg fra nærmeste brannskille</li>
                           <li>Tydelig merking av branntekniske installasjoner</li>
                         </ul>
-                      </div>
                       </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('redningsmannskap-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
