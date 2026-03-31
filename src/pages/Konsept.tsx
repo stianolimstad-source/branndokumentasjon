@@ -1835,12 +1835,18 @@ const Konsept = () => {
             }),
             // Tabell 3 - 3-column structure matching preview
             await buildChapter3Table(formData),
-
+          ],
+        },
+        // 4. Utførelses- og driftsfasen + 5. Revisjonshistorikk - egen side
+        {
+          properties: {},
+          footers: wordFooter,
+          children: [
             // 4. Utførelses- og driftsfasen (kun for brannkonsept)
             ...(documentType !== "tilstandsvurdering" ? [
             new Paragraph({
               children: [new TextRun({ text: "4. Utførelses- og driftsfasen", bold: true, size: 28 })],
-              spacing: { before: 400, after: 200 },
+              spacing: { before: 200, after: 200 },
             }),
             new Paragraph({
               children: [new TextRun({ text: "4.1 Utførelsesfasen", bold: true, size: 24 })],
