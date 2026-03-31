@@ -705,8 +705,10 @@ const Konsept = () => {
     slokkeHandslukker: false,
     redningsmannskap: "",
     redningsmannskapKommentar: "",
-    byggOver23m: false, // Bygget er over 23 meter
-    slangeutlegg50m: false, // Alle deler av etasje nås med 50m slangeutlegg
+    byggOver23m: false,
+    slangeutlegg50m: true,
+    harRadiokommunikasjon: false,
+    harUniversalnokkel: false,
     eksplosjonKommentar: "",
     // 4. Utførelses- og driftsfasen
     utfoerelse: "",
