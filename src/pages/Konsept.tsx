@@ -717,6 +717,7 @@ const Konsept = () => {
     utfoerelse: "Midlertidige branntekniske tiltak i utførelsesfasen, for eksempel endringer i rømningssituasjon, og atkomst for redningsmannskap, behandles som et kapittel i en egen SHA-plan ift. krav i byggherreforskriften. Ansvar for etablering og ajourføring av SHA-planen ligger til SHA-koordinator for prosjekteringsfasen og utførelsesfasen.",
     drift: "Det henvises til Brann- og eksplosjonsvernloven og forskrift om brannforebygging for krav som gjelder under driftsfasen. Dersom forutsetninger som er lagt til grunn endres under driften av bygg, må dette tas i betraktning. Det kan være behov for ny vurdering av brannkrav.",
     // 5. Revisjonshistorikk
+    revisjoner: [{ nummer: "0", dato: new Date().toISOString().split('T')[0], prosjekterende: "", ks: "", kommentar: "Første utgave" }] as { nummer: string; dato: string; prosjekterende: string; ks: string; kommentar: string }[],
     revisjon: "",
     // 6. Litteraturhenvisninger
     litteratur: "",
@@ -7535,15 +7536,91 @@ const Konsept = () => {
                       <Eye className="h-3.5 w-3.5" />
                     </button>
                   </div>
-                  <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
-                    <div>
-                      <Label className="text-xs font-medium mb-1 block">Revisjonslogg</Label>
-                      <Textarea 
-                        value={formData.revisjon}
-                        onChange={(e) => setFormData({...formData, revisjon: e.target.value})}
-                      />
-                    </div>
-                  </AccordionContent>
+                   <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
+                     <div className="space-y-3">
+                       <div className="flex items-center justify-between">
+                         <Label className="text-sm font-medium">Revisjonslogg</Label>
+                         <Button
+                           type="button"
+                           variant="outline"
+                           size="sm"
+                           onClick={() => {
+                             const revisjoner = [...(formData.revisjoner || [])];
+                             const nextNum = String(revisjoner.length);
+                             revisjoner.push({ nummer: nextNum, dato: new Date().toISOString().split('T')[0], prosjekterende: "", ks: "", kommentar: "" });
+                             setFormData({ ...formData, revisjoner });
+                           }}
+                         >
+                           <Plus className="h-3.5 w-3.5 mr-1" /> Legg til revisjon
+                         </Button>
+                       </div>
+                       <div className="border rounded-lg overflow-hidden">
+                         <table className="w-full text-xs">
+                           <thead>
+                             <tr className="bg-muted/50">
+                               <th className="px-2 py-1.5 text-left font-medium w-16">Rev.</th>
+                               <th className="px-2 py-1.5 text-left font-medium w-28">Dato</th>
+                               <th className="px-2 py-1.5 text-left font-medium">Prosjekterende</th>
+                               <th className="px-2 py-1.5 text-left font-medium">KS</th>
+                               <th className="px-2 py-1.5 text-left font-medium">Kommentar</th>
+                               <th className="px-2 py-1.5 w-10"></th>
+                             </tr>
+                           </thead>
+                           <tbody>
+                             {(formData.revisjoner || []).map((rev: any, idx: number) => (
+                               <tr key={idx} className="border-t">
+                                 <td className="px-2 py-1">
+                                   <Input className="h-7 text-xs" value={rev.nummer} onChange={(e) => {
+                                     const revisjoner = [...formData.revisjoner];
+                                     revisjoner[idx] = { ...rev, nummer: e.target.value };
+                                     setFormData({ ...formData, revisjoner });
+                                   }} />
+                                 </td>
+                                 <td className="px-2 py-1">
+                                   <Input type="date" className="h-7 text-xs" value={rev.dato} onChange={(e) => {
+                                     const revisjoner = [...formData.revisjoner];
+                                     revisjoner[idx] = { ...rev, dato: e.target.value };
+                                     setFormData({ ...formData, revisjoner });
+                                   }} />
+                                 </td>
+                                 <td className="px-2 py-1">
+                                   <Input className="h-7 text-xs" value={rev.prosjekterende} onChange={(e) => {
+                                     const revisjoner = [...formData.revisjoner];
+                                     revisjoner[idx] = { ...rev, prosjekterende: e.target.value };
+                                     setFormData({ ...formData, revisjoner });
+                                   }} placeholder="Navn/initialer" />
+                                 </td>
+                                 <td className="px-2 py-1">
+                                   <Input className="h-7 text-xs" value={rev.ks} onChange={(e) => {
+                                     const revisjoner = [...formData.revisjoner];
+                                     revisjoner[idx] = { ...rev, ks: e.target.value };
+                                     setFormData({ ...formData, revisjoner });
+                                   }} placeholder="Navn/initialer" />
+                                 </td>
+                                 <td className="px-2 py-1">
+                                   <Input className="h-7 text-xs" value={rev.kommentar} onChange={(e) => {
+                                     const revisjoner = [...formData.revisjoner];
+                                     revisjoner[idx] = { ...rev, kommentar: e.target.value };
+                                     setFormData({ ...formData, revisjoner });
+                                   }} placeholder="Beskrivelse" />
+                                 </td>
+                                 <td className="px-2 py-1">
+                                   {idx > 0 && (
+                                     <Button type="button" variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => {
+                                       const revisjoner = formData.revisjoner.filter((_: any, i: number) => i !== idx);
+                                       setFormData({ ...formData, revisjoner });
+                                     }}>
+                                       <X className="h-3.5 w-3.5" />
+                                     </Button>
+                                   )}
+                                 </td>
+                               </tr>
+                             ))}
+                           </tbody>
+                         </table>
+                       </div>
+                     </div>
+                   </AccordionContent>
                 </AccordionItem>
 
                 {/* Kapittel 6: Litteraturhenvisninger */}
