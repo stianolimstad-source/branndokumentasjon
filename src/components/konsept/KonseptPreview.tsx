@@ -3607,6 +3607,52 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">RIV</td>
             </tr>
+            {(() => {
+              const alleRK = formData.bygningsdeler?.length
+                ? [...new Set(formData.bygningsdeler.map((d: any) => d.risikoklasse).filter(Boolean))]
+                : formData.risikoklasse ? [formData.risikoklasse] : [];
+              const harRK356 = alleRK.some((rk: string) => ["RK3","RK5","RK6"].includes(rk));
+              const harRK124 = alleRK.some((rk: string) => ["RK1","RK2","RK4"].includes(rk));
+              const harRK4 = alleRK.includes("RK4");
+              return (
+                <>
+                  {harRK356 && (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Brannslange</td>
+                      <td className="border border-gray-400 p-2">
+                        Byggverk i risikoklasse {["RK3","RK5","RK6"].filter(rk => alleRK.includes(rk)).map(rk => rk.replace("RK","")).join(", ")} hvor det er trykkvann, må ha brannslange. Dersom det ikke er tilgang på tilstrekkelig mengde vann, må byggverket ha håndslokkeapparater.
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIV</td>
+                    </tr>
+                  )}
+                  {harRK124 && (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Håndslokker</td>
+                      <td className="border border-gray-400 p-2">
+                        Byggverk i risikoklasse {["RK1","RK2","RK4"].filter(rk => alleRK.includes(rk)).map(rk => rk.replace("RK","")).join(", ")} må ha enten håndslokkeapparat eller egnet brannslange som rekker inn i alle rom.
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIV</td>
+                    </tr>
+                  )}
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Håndslokkeapparat</td>
+                    <td className="border border-gray-400 p-2">
+                      Håndslokkeapparater kan være pulverapparater på minimum 6 kg med ABC-pulver, eller skum- og vannapparater på minimum 9 liter eller på minimum 6 liter og med effektivitetsklasse minst 21A etter NS-EN 3-7:2004+A1:2007.
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIV</td>
+                  </tr>
+                  {harRK4 && (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Bolig</td>
+                      <td className="border border-gray-400 p-2">
+                        I bolig kan det benyttes formstabil brannslange med innvendig diameter på minimum 10 mm.
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIV</td>
+                    </tr>
+                  )}
+                </>
+              );
+            })()}
             {formData.manuellSlokking && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
