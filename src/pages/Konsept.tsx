@@ -7152,15 +7152,75 @@ const Konsept = () => {
                           : formData.risikoklasse ? [formData.risikoklasse] : [];
                         const harRK356 = alleRK.some((rk: string) => ["RK3","RK5","RK6"].includes(rk));
                         const harRK124 = alleRK.some((rk: string) => ["RK1","RK2","RK4"].includes(rk));
-                        const kravListe: string[] = ["Generelle krav til manuell slokking"];
+                        const kravListe: string[] = [];
+                        
+                        // Type utstyr
                         if (harRK356) kravListe.push(`Brannslange (krav for RK ${["RK3","RK5","RK6"].filter(rk => alleRK.includes(rk)).map(rk => rk.replace("RK","")).join(", ")})`);
                         if (harRK124) kravListe.push(`Håndslokkeapparat (krav for RK ${["RK1","RK2","RK4"].filter(rk => alleRK.includes(rk)).map(rk => rk.replace("RK","")).join(", ")})`);
+                        
+                        // Generelle krav som alltid gjelder
+                        const generelleKrav: string[] = [
+                          "Manuelt slokkeutstyr skal dekke alle rom i bygget",
+                          "Slokkeutstyret skal være lett tilgjengelig for bruk i en tidlig fase av brannen",
+                          "Plassering skal være tydelig merket med skilt",
+                          "Skiltene skal være etterlysende (fotoluminiscerende) eller belyst med nødlys",
+                          "Tilvisningsskilt for slokkeutstyr skal stå på tvers av ferdselsretningen",
+                          "For materiell som krever bruksanvisning, skal denne finnes på eller ved materiellet"
+                        ];
+                        
+                        // Brannslange-spesifikke krav
+                        const brannslangekrav: string[] = [];
+                        if (formData.slokkeBrannslange) {
+                          brannslangekrav.push("Brannslange maks 30 meter ved fullt uttrekk");
+                          brannslangekrav.push("Brannslangeskap skal ikke plasseres i trapperom");
+                          brannslangekrav.push("Ref. NS-EN 671-1:2012 – Slangetromler med formstabil slange");
+                        }
+                        
+                        // Håndslokker-spesifikke krav
+                        const handslokkerkrav: string[] = [];
+                        if (formData.slokkeHandslukker) {
+                          handslokkerkrav.push("Håndslokker min. 6 kg ABC-pulver eller 9 liter skum/vann (NS-EN 3-7)");
+                          handslokkerkrav.push(`Dekningsradius normalt 15 m${alleRK.includes("RK1") ? " (kan økes til 25 m for RK1)" : ""}`);
+                        }
+
                         return (
-                          <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
-                            <p className="font-semibold text-foreground">✓ Følgende krav er automatisk satt basert på risikoklasse:</p>
-                            <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                              {kravListe.map((k, i) => <li key={i}>{k}</li>)}
-                            </ul>
+                          <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-2">
+                            <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                            
+                            {kravListe.length > 0 && (
+                              <div>
+                                <p className="font-medium text-foreground/90 mb-0.5">Type slokkeutstyr:</p>
+                                <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                                  {kravListe.map((k, i) => <li key={i}>{k}</li>)}
+                                </ul>
+                              </div>
+                            )}
+                            
+                            <div>
+                              <p className="font-medium text-foreground/90 mb-0.5">Generelle krav:</p>
+                              <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                                {generelleKrav.map((k, i) => <li key={`g${i}`}>{k}</li>)}
+                              </ul>
+                            </div>
+                            
+                            {brannslangekrav.length > 0 && (
+                              <div>
+                                <p className="font-medium text-foreground/90 mb-0.5">Brannslange-krav:</p>
+                                <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                                  {brannslangekrav.map((k, i) => <li key={`b${i}`}>{k}</li>)}
+                                </ul>
+                              </div>
+                            )}
+                            
+                            {handslokkerkrav.length > 0 && (
+                              <div>
+                                <p className="font-medium text-foreground/90 mb-0.5">Håndslokker-krav:</p>
+                                <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                                  {handslokkerkrav.map((k, i) => <li key={`h${i}`}>{k}</li>)}
+                                </ul>
+                              </div>
+                            )}
+                            
                             <p className="text-foreground/60 mt-1">Du kan endre valgene med knappene ovenfor.</p>
                           </div>
                         );
