@@ -3646,6 +3646,40 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </>
               );
             })()}
+            {(formData.slokkeBrannslange || formData.slokkeHandslukker) && (
+              <>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Antall og dekningsområde</td>
+                  <td className="border border-gray-400 p-2">
+                    Antall og dekningsområde av brannslanger og håndslokkeapparater må være slik at alle rom i hele byggverket dekkes.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIV</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Plassering</td>
+                  <td className="border border-gray-400 p-2">
+                    Brannslokkeutstyr må være plassert slik at brukerne lett kan finne fram til det og kunne ha mulighet til å slokke branntilløp i startfasen før det utvikler seg til en større brann. Plasseringen må vurderes i hvert enkelt tilfelle ut fra virksomheten og behovet for rask slokkeinnsats for å ivareta liv, helse og materielle verdier.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIV</td>
+                </tr>
+                {formData.slokkeBrannslange && (
+                  <>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Brannslange i trapperom</td>
+                      <td className="border border-gray-400 p-2">
+                        Brannslangeskap må ikke plasseres i trapperom. Dører som blir stående i åpen stilling på grunn av at brannslanger trekkes gjennom, kan føre til at røyk og branngasser sprer seg til resten av byggverket.
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIV</td>
+                    </tr>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Slangelengde</td>
+                      <td className="border border-gray-400 p-2">
+                        Brannslange må ikke være lengre enn 30 meter ved fullt uttrekk.
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIV</td>
+                    </tr>
+                  </>
+                )}
             {formData.manuellSlokking && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
