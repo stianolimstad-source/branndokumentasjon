@@ -2854,8 +2854,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </tbody>
         </table>
       </section>
-      <PageFooter pageNum={pageKap3e} />
-      </div>
+      <PageFooter pageNum={pageKap3d2} />
 
       {/* Side 3.9 */}
       <div className={pageStyle} style={pageWidth}>
