@@ -690,6 +690,7 @@ const Konsept = () => {
     romningsveiFriBreddeTrapp: false,
     romningsveiFlereTrapper: false,
     romningsveiKorridorOver30m: false,
+    romningsveiPanikkbeslag: false,
     romningsveiSvalgang: false,
     romningsveiSvalgangOver30m: false,
     romningsvei: "",
