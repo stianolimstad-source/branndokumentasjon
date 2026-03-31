@@ -246,8 +246,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p className="ml-4">3.9 Tiltak for å påvirke rømnings- og redningstider</p>
               <p className="ml-4">3.10 Utgang fra branncelle</p>
               <p className="ml-4">3.11 Rømningsvei</p>
-              <p className="ml-4">3.12 Tilrettelegging for manuell slokking</p>
-              <p className="ml-4">3.13 Tilrettelegging for rednings- og slokkemannskap</p>
+              <p className="ml-4">3.12 Tilrettelegging for redning av husdyr</p>
+              <p className="ml-4">3.13 Tilrettelegging for manuell slokking</p>
+              <p className="ml-4">3.14 Tilrettelegging for rednings- og slokkemannskap</p>
               <p><span className="font-bold">4.</span> Revisjonshistorikk</p>
               <p><span className="font-bold">5.</span> Litteraturhenvisninger</p>
             </>
@@ -275,8 +276,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p className="ml-4">3.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider</p>
               <p className="ml-4">3.10 § 11-13 Utgang fra branncelle</p>
               <p className="ml-4">3.11 § 11-14 Rømningsvei</p>
-              <p className="ml-4">3.12 § 11-16 Tilrettelegging for manuell slokking</p>
-              <p className="ml-4">3.13 § 11-17 Tilrettelegging for rednings- og slokkemannskap</p>
+              <p className="ml-4">3.12 § 11-15 Tilrettelegging for redning av husdyr</p>
+              <p className="ml-4">3.13 § 11-16 Tilrettelegging for manuell slokking</p>
+              <p className="ml-4">3.14 § 11-17 Tilrettelegging for rednings- og slokkemannskap</p>
               <p><span className="font-bold">4.</span> Utførelses- og driftsfasen</p>
               <p className="ml-4">4.1 Utførelsesfasen</p>
               <p className="ml-4">4.2 Driftsfasen</p>
@@ -3523,9 +3525,60 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <TilstandTableRow data={formData.tilstandsvurderinger["3_11"]} sectionLabel="3.11 Rømningsvei" />
             )}
 
+            {/* 3.12 §11-15 Tilrettelegging for redning av husdyr */}
+            <tr id="preview-3-12" className="bg-blue-100">
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.12 &nbsp;&nbsp; {isBF85 ? <>Tilrettelegging for redning av husdyr <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-15)</span></> : "§11-15 Tilrettelegging for redning av husdyr"}</td>
+            </tr>
+            {formData.husdyrRedningRelevant ? (
+              <>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                  <th className="border border-gray-400 p-2 text-left">Løsning</th>
+                  <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Generelt</td>
+                  <td className="border border-gray-400 p-2">
+                    Byggverk beregnet for husdyrhold skal ha tilfredsstillende rømningsforhold og tilrettelegging for redning av husdyr ved brann.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Utganger</td>
+                  <td className="border border-gray-400 p-2">
+                    Husdyrrom må ha minst to utganger til det fri. Dørene i disse utgangene må ha en fri bredde på minst 1,0 m og en fri høyde på minst 1,6 m.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Rømningsvei</td>
+                  <td className="border border-gray-400 p-2">
+                    Lengden på rømningsvei fra husdyrrom til terreng i det fri må ikke overstige 30 m.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+                {formData.husdyrRedningKommentar && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Kommentar</td>
+                    <td className="border border-gray-400 p-2 italic">{formData.husdyrRedningKommentar}</td>
+                    <td className="border border-gray-400 p-2 align-top">-</td>
+                  </tr>
+                )}
+              </>
+            ) : (
+              <tr>
+                <td className="border border-gray-400 p-2" colSpan={3} style={{fontStyle: 'italic'}}>
+                  Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.
+                </td>
+              </tr>
+            )}
+            {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_12"] && (
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_12"]} sectionLabel="3.12 Redning av husdyr" />
+            )}
+
             {/* 3.13 §11-16 Manuell slokking */}
             <tr id="preview-3-13" className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.12 &nbsp;&nbsp; {isBF85 ? <>Slokkingsredskap og slokkingsvann (Kap. 30:93/31–39) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-16 Tilrettelegging for manuell slokking)</span></> : "§11-16 Tilrettelegging for manuell slokking"}</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.13 &nbsp;&nbsp; {isBF85 ? <>Slokkingsredskap og slokkingsvann (Kap. 30:93/31–39) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-16 Tilrettelegging for manuell slokking)</span></> : "§11-16 Tilrettelegging for manuell slokking"}</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
@@ -3557,7 +3610,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {/* 3.14 §11-17 Tilrettelegging for slokkemannskap */}
             <tr id="preview-3-14" className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.13 &nbsp;&nbsp; {isBF85 ? <>Atkomst for brannvesenet (Kap. 30:92/94/95) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-17 Tilrettelegging for slokkemannskap)</span></> : "§11-17 Tilrettelegging for slokkemannskap"}</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.14 &nbsp;&nbsp; {isBF85 ? <>Atkomst for brannvesenet (Kap. 30:92/94/95) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-17 Tilrettelegging for slokkemannskap)</span></> : "§11-17 Tilrettelegging for slokkemannskap"}</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
