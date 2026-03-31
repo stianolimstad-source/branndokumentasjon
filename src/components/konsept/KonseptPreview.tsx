@@ -145,7 +145,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       {/* Sammendrag - egen side */}
       {hasSammendrag && (
         <div className={pageStyle} style={pageWidth}>
-          <h2 className="font-bold mb-3">Sammendrag</h2>
+          <h2 id="preview-sammendrag" className="font-bold mb-3">Sammendrag</h2>
           <p className="whitespace-pre-wrap text-xs">{formData.sammendrag}</p>
           <PageFooter pageNum={2} />
         </div>
