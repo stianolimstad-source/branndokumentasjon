@@ -3601,7 +3601,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             </tr>
             <tr>
               <td className="border border-gray-400 p-2 align-top">Generelt</td>
-              <td className="border border-gray-400 p-2">Byggverk skal være tilrettelagt for effektiv manuell slokking av brann.</td>
+              <td className="border border-gray-400 p-2">
+                <p>Byggverk skal være tilrettelagt for effektiv manuell slokking av brann.</p>
+                <p className="mt-2">I eller på alle byggverk der brann kan oppstå, skal det være manuelt brannslokkeutstyr for effektiv slokkeinnsats i startfasen av brannen. Dette kommer i tillegg til et eventuelt automatisk brannslokkeanlegg.</p>
+              </td>
               <td className="border border-gray-400 p-2 align-top">RIV</td>
             </tr>
             {formData.manuellSlokking && (
