@@ -686,6 +686,8 @@ const Konsept = () => {
     romningsveiTrappeValg: "", // én trapp / sammenfallende / flere trapper
     romningsveiSengeliggende: false,
     romningsveiSamtidigRomning: false,
+    romningsveiIngenInnsnevring: false,
+    romningsveiFriBreddeTrapp: false,
     romningsveiFlereTrapper: false,
     romningsveiKorridorOver30m: false,
     romningsveiSvalgang: false,
