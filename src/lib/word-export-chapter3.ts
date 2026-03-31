@@ -1058,6 +1058,17 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.utgangBranncelleKommentar) {
     rows.push(contentRow("Kommentar", formData.utgangBranncelleKommentar, "-"));
   }
+  if (formData.sporadiskOpphold) {
+    rows.push(contentRowMultiLine("Branncelle for sporadisk personopphold", [
+      "Fra brannceller som bare er beregnet for sporadisk personopphold kan utgang gå gjennom annen branncelle.",
+      "",
+      "Med branncelle som bare er beregnet for sporadisk opphold, menes branncelle der personer oppholder seg av og til i kortere tid. Dette kan for eksempel være lagerrom og tekniske rom uten faste arbeidsplasser.",
+      "",
+      "Maksimal avstand fra et hvilket som helst sted i denne branncellen til sikkert sted eller til nærmeste rømningsvei, må være som angitt i tabell 1.",
+      "",
+      "For å ivareta generelle krav om tilrettelegging for rask og sikker rømning, jf. § 11-11, må fluktveien være oversiktlig og ha god belysning og merking. Det må heller ikke foregå brannfarlig aktivitet i nabobranncellen det skal rømmes gjennom.",
+    ], "ARK"));
+  }
   rows.push(...await tilstandRow(formData, "3_10", "3.10 Utgang fra branncelle"));
 
   // ===== 3.11 Rømningsvei =====
