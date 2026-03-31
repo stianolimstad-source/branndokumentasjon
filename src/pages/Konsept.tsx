@@ -7380,6 +7380,18 @@ const Konsept = () => {
                           value={formData.redningsmannskap}
                           onChange={(e) => setFormData({...formData, redningsmannskap: e.target.value})}
                         />
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          <li>Tilgjengelighet for brannvesenets høyderedskap (bygg inntil 8 etasjer)</li>
+                          <li>Kjørbar atkomst til hovedinngang og angrepsvei</li>
+                          <li>Krav til universalnøkkel ved mer enn 50 rom</li>
+                          <li>Radiokommunikasjon for rednings- og slokkemannskap</li>
+                          <li>Maksimalt 50 m slangeutlegg fra nærmeste brannskille</li>
+                          <li>Tydelig merking av branntekniske installasjoner</li>
+                        </ul>
+                      </div>
                       </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('redningsmannskap-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
