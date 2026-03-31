@@ -3794,13 +3794,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </tbody>
         </table>
       </section>
-      <PageFooter pageNum={7 + extraPages} />
-      </div>
-      
-
 
       {documentType !== "tilstandsvurdering" && (
-      <div className={pageStyle} style={pageWidth}>
+      <>
       <section className="mb-6">
         <h2 id="preview-kap4" className="font-bold mb-3" style={{ color: "#00a3e0" }}>4. Utførelses- og driftsfasen</h2>
         
