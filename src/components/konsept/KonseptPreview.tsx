@@ -3224,6 +3224,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               const alleRK = formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0
                 ? [...new Set(formData.bygningsdeler.map((d: any) => d.risikoklasse).filter(Boolean))]
                 : formData.risikoklasse ? [formData.risikoklasse] : [];
+              const harRK3 = alleRK.includes("RK3");
               const harRK5 = alleRK.includes("RK5");
               const harRK6 = alleRK.includes("RK6");
               
