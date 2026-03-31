@@ -416,7 +416,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         </>
         )}
       </section>
-      <PageFooter pageNum={3 + extraPages} />
+      <PageFooter pageNum={pageKap1} />
       </div>
 
       {/* Kapittel 2 / Kap 1 forts. - egen side */}
