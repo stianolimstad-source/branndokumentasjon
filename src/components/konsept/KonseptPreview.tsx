@@ -2684,6 +2684,18 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <TilstandTableRow data={formData.tilstandsvurderinger["3_6"]} sectionLabel="3.6 Materialer og produkter" />
             )}
 
+          </tbody>
+        </table>
+      </section>
+      <PageFooter pageNum={pageKap3d} />
+      </div>
+
+      {/* Side 3.7 */}
+      <div className={pageStyle} style={pageWidth}>
+      <section className="mb-6">
+        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
+        <table className="w-full border-collapse border border-gray-400 text-xs">
+          <tbody>
             {/* 3.7 §11-10 Tekniske installasjoner */}
             <tr id="preview-3-7" className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.7 &nbsp;&nbsp; {isBF85 ? <>Ventilasjon og installasjoner (Kap. 47) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-10 Tekniske installasjoner)</span></> : "§11-10 Tekniske installasjoner"}</td>
