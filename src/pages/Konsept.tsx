@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Flame, ArrowLeft, FileDown, Download, Save, LogIn, X, Plus, AlertTriangle, ChevronDown, ChevronRight, Eye } from "lucide-react";
+import { Flame, ArrowLeft, FileDown, Download, Save, LogIn, X, Plus, AlertTriangle, ChevronDown, ChevronRight, Eye, RefreshCw } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
@@ -902,9 +902,8 @@ const Konsept = () => {
     }
   }, [formData.brannklasse, formData.risikoklasse, formData.prosjekteringsmetode, beregnetBrannklasseResult.brannklasse]);
 
-  // Automatisk generering av litteraturhenvisninger
-  useEffect(() => {
-    if (isViewMode) return;
+  // Bygg dynamisk litteraturliste basert på konseptets innstillinger
+  const genererLitteraturRefs = () => {
     const documentType = window.location.pathname.includes("tilstandsvurdering") ? "tilstandsvurdering" : "brannkonsept";
     const isBF85 = formData.regelverk === "BF85";
     const refs: string[] = [];
@@ -953,16 +952,19 @@ const Konsept = () => {
         refs.push("NS 3901:2023 – Krav til risikovurdering av brann i byggverk (brannteknisk analyse)");
       }
     }
-    const unique = [...new Set(refs)];
-    const newLitteratur = unique.join("\n");
-    setFormData(prev => ({ ...prev, litteratur: newLitteratur }));
-  }, [
-    isViewMode, formData.regelverk, formData.tilretteleggingLedd1a, formData.tilretteleggingLedd1b,
-    formData.brannseksjonTiltak, formData.tilretteleggingLedd2a, formData.alarmValg,
-    formData.tilretteleggingLedd2b, formData.tilretteleggingLedd3, formData.ventilasjonRelevant,
-    formData.brannseksjonBrannenergi, formData.seksjoneringsvegBrannenergi,
-    formData.prosjekteringsmetode,
-  ]);
+    return [...new Set(refs)].join("\n");
+  };
+
+  // Sett litteratur kun ved første lasting (når feltet er tomt)
+  useEffect(() => {
+    if (isViewMode) return;
+    if (!formData.litteratur) {
+      const newLitteratur = genererLitteraturRefs();
+      setFormData(prev => ({ ...prev, litteratur: newLitteratur }));
+    }
+  }, [isViewMode]);
+
+
 
   const erBrannklasseOverstyrt = beregnetBrannklasseResult.brannklasse && formData.brannklasse !== beregnetBrannklasseResult.brannklasse;
 
@@ -7700,7 +7702,19 @@ const Konsept = () => {
                   </div>
                   <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
                     <div>
-                      <Label className="text-xs font-medium mb-1 block">Litteraturhenvisninger (én per linje, oppdateres automatisk basert på konseptet)</Label>
+                      <div className="flex items-center justify-between mb-1">
+                        <Label className="text-xs font-medium">Litteraturhenvisninger (én per linje)</Label>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs"
+                          onClick={() => setFormData({...formData, litteratur: genererLitteraturRefs()})}
+                        >
+                          <RefreshCw className="h-3 w-3 mr-1" />
+                          Oppdater fra konsept
+                        </Button>
+                      </div>
                       <Textarea 
                         value={formData.litteratur}
                         onChange={(e) => setFormData({...formData, litteratur: e.target.value})}
