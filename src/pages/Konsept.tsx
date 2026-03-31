@@ -7453,28 +7453,38 @@ const Konsept = () => {
                       Utførelses- og driftsfasen
                     </span>
                   </AccordionTrigger>
-                  <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
-                    <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">4.1 Utførelsesfasen</Label>
-                      <div>
-                        <Label className="text-xs font-medium mb-1 block">Krav til utførelse</Label>
-                        <Textarea 
-                          value={formData.utfoerelse}
-                          onChange={(e) => setFormData({...formData, utfoerelse: e.target.value})}
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">4.2 Driftsfasen</Label>
-                      <div>
-                        <Label className="text-xs font-medium mb-1 block">Krav til drift og vedlikehold</Label>
-                        <Textarea 
-                          value={formData.drift}
-                          onChange={(e) => setFormData({...formData, drift: e.target.value})}
-                        />
-                      </div>
-                    </div>
-                  </AccordionContent>
+                   <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
+                     <div className="space-y-2">
+                       <Label className="text-xs text-muted-foreground">4.1 Utførelsesfasen</Label>
+                       <div>
+                         <Label className="text-xs font-medium mb-1 block">Til innkjøpsfasen</Label>
+                         <Textarea 
+                           value={formData.utfoerelsInnkjop}
+                           onChange={(e) => setFormData({...formData, utfoerelsInnkjop: e.target.value})}
+                           rows={3}
+                         />
+                       </div>
+                       <div>
+                         <Label className="text-xs font-medium mb-1 block">Til utførelsesfasen</Label>
+                         <Textarea 
+                           value={formData.utfoerelse}
+                           onChange={(e) => setFormData({...formData, utfoerelse: e.target.value})}
+                           rows={4}
+                         />
+                       </div>
+                     </div>
+                     <div className="space-y-2">
+                       <Label className="text-xs text-muted-foreground">4.2 Driftsfasen</Label>
+                       <div>
+                         <Label className="text-xs font-medium mb-1 block">Krav til drift og vedlikehold</Label>
+                         <Textarea 
+                           value={formData.drift}
+                           onChange={(e) => setFormData({...formData, drift: e.target.value})}
+                           rows={4}
+                         />
+                       </div>
+                     </div>
+                   </AccordionContent>
                 </AccordionItem>
                 )}
 
