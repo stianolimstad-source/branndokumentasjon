@@ -1337,6 +1337,7 @@ const Konsept = () => {
         // Sammendrag (egen side)
         ...(formData.sammendrag ? [{
           properties: {},
+          footers: wordFooter,
           children: [
             new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Sammendrag" })] }),
             new Paragraph({ spacing: { after: 300 }, children: [new TextRun({ text: formData.sammendrag, size: 22 })] }),
