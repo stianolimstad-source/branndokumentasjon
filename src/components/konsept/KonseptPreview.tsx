@@ -3848,7 +3848,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
       {/* 6. Litteraturhenvisninger */}
       <section className="mb-6">
-        <h2 className="font-bold mb-3">6. Litteraturhenvisninger</h2>
+        <h2 id="preview-kap6" className="font-bold mb-3">6. Litteraturhenvisninger</h2>
         <ul className="ml-4 list-disc list-inside">
           <li>TEK17 - Forskrift om tekniske krav til byggverk</li>
           <li>VTEK17 - Veiledning til teknisk forskrift</li>
