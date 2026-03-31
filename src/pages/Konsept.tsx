@@ -18,7 +18,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { Link, useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, ImageRun, ShadingType } from "docx";
+import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, ImageRun, ShadingType, Footer, PageNumber } from "docx";
 import { saveAs } from "file-saver";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useCanDownload } from "@/hooks/useCanDownload";
@@ -1318,6 +1318,8 @@ const Konsept = () => {
       spacing: { before: 200 },
     }));
 
+    const wordFooter = { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ children: [PageNumber.CURRENT], size: 16, color: "888888" })] })] }) };
+
     const doc = new Document({
       styles: {
         default: {
@@ -1329,11 +1331,13 @@ const Konsept = () => {
       sections: [
         {
           properties: {},
+          footers: wordFooter,
           children: coverPageChildren,
         },
         // Sammendrag (egen side)
         ...(formData.sammendrag ? [{
           properties: {},
+          footers: wordFooter,
           children: [
             new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Sammendrag" })] }),
             new Paragraph({ spacing: { after: 300 }, children: [new TextRun({ text: formData.sammendrag, size: 22 })] }),
@@ -1342,6 +1346,7 @@ const Konsept = () => {
         // Tilstandsgrader (egen side, kun for tilstandsvurdering)
         ...(documentType === "tilstandsvurdering" ? [{
           properties: {},
+          footers: wordFooter,
           children: [
             new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Tilstandsgrader", bold: true })] }),
             new Paragraph({
@@ -1416,6 +1421,7 @@ const Konsept = () => {
         // Innholdsfortegnelse (egen side)
         {
           properties: {},
+          footers: wordFooter,
           children: [
             new Paragraph({
               text: documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT",
@@ -1489,6 +1495,7 @@ const Konsept = () => {
         },
         {
           properties: {},
+          footers: wordFooter,
           children: [
             // 1. Innledning
             new Paragraph({
@@ -1590,6 +1597,7 @@ const Konsept = () => {
         },
         {
           properties: {},
+          footers: wordFooter,
           children: [
             ...(documentType === "tilstandsvurdering" ? [
               // Tilstandsvurdering: 1.3 Bygningsinfo, 1.4 Grunnlagsdokumenter, 1.5 Forutsetninger, 1.6 Tilleggskrav
@@ -1818,6 +1826,7 @@ const Konsept = () => {
         },
         {
           properties: {},
+          footers: wordFooter,
           children: [
             // 3. Branntekniske ytelseskrav
             new Paragraph({
@@ -1917,6 +1926,7 @@ const Konsept = () => {
         // Litteraturhenvisninger - egen side
         {
           properties: {},
+          footers: wordFooter,
           children: [
             new Paragraph({
               children: [new TextRun({ text: `${documentType === "tilstandsvurdering" ? "4" : "6"}. Litteraturhenvisninger`, bold: true, size: 28 })],
