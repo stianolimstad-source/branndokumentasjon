@@ -936,7 +936,7 @@ const Konsept = () => {
         refs.push("NS-EN 1838:2013 – Nødbelysning");
         refs.push("NS 3926:2022 – Visuelle ledesystemer for rømning i bygninger");
       }
-      if (formData.brannseksjonTiltak === "roykventilasjon" || formData.roykventilasjonRelevant) {
+      if (formData.brannseksjonTiltak === "roykventilasjon" || formData.ventilasjonRelevant) {
         refs.push("NS-EN 12101-2:2017 – Røyk- og varmeventilasjonssystemer");
       }
       refs.push("NS-EN 13501-2:2016 – Brannklassifisering av byggevarer og bygningsdeler – Del 2: Klassifisering ved brannmotstandsprøving");
