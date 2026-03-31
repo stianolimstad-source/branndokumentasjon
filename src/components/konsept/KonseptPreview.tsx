@@ -295,7 +295,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <div className={pageStyle} style={pageWidth}>
       {/* 1. Innledning */}
       <section className="mb-6">
-        <h2 className="font-bold mb-3">1. Innledning</h2>
+        <h2 id="preview-kap1" className="font-bold mb-3">1. Innledning</h2>
         
         <h3 className="font-semibold mb-2">1.1 Informasjon om tiltaket</h3>
         <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
