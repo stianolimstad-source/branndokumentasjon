@@ -5930,6 +5930,16 @@ const Konsept = () => {
                           </div>
                         </>
                       )}
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          <li>Krav til innvendige overflater og kledninger basert på brannklasse</li>
+                          <li>Særkrav for rømningsveier (In1, K1-A)</li>
+                          <li>Krav til isolasjon og sandwichelementer</li>
+                          <li>Tabell 1A/1B for produktegenskaper</li>
+                        </ul>
+                      </div>
                       
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('materialer-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
