@@ -6962,7 +6962,8 @@ const Konsept = () => {
                         <Textarea 
                           value={formData.utgangBranncelle}
                           onChange={(e) => setFormData({...formData, utgangBranncelle: e.target.value})}
-                        />
+                         />
+                      </div>
                       {/* Info om automatiske krav */}
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
@@ -6972,7 +6973,6 @@ const Konsept = () => {
                           <li>Krav til dører i branncellebegrensende vegger</li>
                           <li>Vinduer som rømningsvei (der relevant)</li>
                         </ul>
-                      </div>
                       </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('utgang-branncelle-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
