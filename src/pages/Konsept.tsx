@@ -6963,6 +6963,16 @@ const Konsept = () => {
                           value={formData.utgangBranncelle}
                           onChange={(e) => setFormData({...formData, utgangBranncelle: e.target.value})}
                         />
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          <li>Krav til utgang fra branncelle basert på risikoklasse og brannklasse</li>
+                          <li>Antall utganger og avstand til utgang</li>
+                          <li>Krav til dører i branncellebegrensende vegger</li>
+                          <li>Vinduer som rømningsvei (der relevant)</li>
+                        </ul>
+                      </div>
                       </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('utgang-branncelle-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
