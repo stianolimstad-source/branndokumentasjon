@@ -2772,7 +2772,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </tbody>
         </table>
       </section>
-      <PageFooter pageNum={pageKap3b} />
+      <PageFooter pageNum={pageKap3d} />
       </div>
 
       {/* Side 3 av Kap 3: 3.8-3.14 */}
