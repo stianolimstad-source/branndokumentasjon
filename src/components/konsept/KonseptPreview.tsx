@@ -414,9 +414,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
         {isTilstand ? (
-          <h2 className="font-bold mb-3">2. Grunnlag og forutsetninger</h2>
-        ) : (
-          <h2 className="font-bold mb-3">2. Grunnlag og forutsetninger for brannteknisk prosjektering</h2>
+           <h2 id="preview-kap2" className="font-bold mb-3">2. Grunnlag og forutsetninger</h2>
+         ) : (
+           <h2 id="preview-kap2" className="font-bold mb-3">2. Grunnlag og forutsetninger for brannteknisk prosjektering</h2>
         )}
         
         <h3 className="font-semibold mb-2">{isTilstand ? "2.1 Bygningsinformasjon" : "2.1 Grunnlagsdokumenter"}</h3>
