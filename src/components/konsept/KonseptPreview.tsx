@@ -3731,6 +3731,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">RIBr</td>
             </tr>
+            {formData.byggOver23m && (
             <tr>
               <td className="border border-gray-400 p-2 align-top">Tilgjengelighet for høyderedskap</td>
               <td className="border border-gray-400 p-2">
@@ -3739,6 +3740,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
+            )}
             <tr>
               <td className="border border-gray-400 p-2 align-top">Kjørbar atkomst</td>
               <td className="border border-gray-400 p-2">
@@ -3761,6 +3763,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
+            {formData.harUniversalnokkel && (
             <tr>
               <td className="border border-gray-400 p-2 align-top">Universalnøkkel</td>
               <td className="border border-gray-400 p-2">
@@ -3768,6 +3771,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
+            )}
+            {formData.harRadiokommunikasjon && (
             <tr>
               <td className="border border-gray-400 p-2 align-top">Radiokommunikasjon</td>
               <td className="border border-gray-400 p-2">
@@ -3775,6 +3780,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">RIE</td>
             </tr>
+            )}
+            {formData.slangeutlegg50m && (
             <tr>
               <td className="border border-gray-400 p-2 align-top">Slangeutlegg</td>
               <td className="border border-gray-400 p-2">
@@ -3782,6 +3789,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
+            )}
             {formData.redningsmannskap && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
