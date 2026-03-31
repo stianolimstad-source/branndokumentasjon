@@ -690,6 +690,7 @@ const Konsept = () => {
     romningsveiFriBreddeTrapp: false,
     romningsveiFlereTrapper: false,
     romningsveiKorridorOver30m: false,
+    romningsveiPanikkbeslag: false,
     romningsveiSvalgang: false,
     romningsveiSvalgangOver30m: false,
     romningsvei: "",
@@ -6986,6 +6987,18 @@ const Konsept = () => {
                         />
                         <Label htmlFor="romningsveiKorridorOver30m" className="text-xs cursor-pointer">
                           Rømningskorridor er lengre enn 30 meter
+                        </Label>
+                      </div>
+
+                      {/* Panikkbeslag */}
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                        <Checkbox 
+                          id="romningsveiPanikkbeslag"
+                          checked={formData.romningsveiPanikkbeslag}
+                          onCheckedChange={(checked) => setFormData({...formData, romningsveiPanikkbeslag: checked === true})}
+                        />
+                        <Label htmlFor="romningsveiPanikkbeslag" className="text-xs cursor-pointer">
+                          Krav til panikkbeslag er relevant (RK5/RK6/skoler)
                         </Label>
                       </div>
 

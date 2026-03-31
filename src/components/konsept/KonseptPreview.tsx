@@ -3496,6 +3496,15 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </tr>
               );
             })()}
+            {formData.romningsveiPanikkbeslag && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top font-medium">Panikkbeslag</td>
+                <td className="border border-gray-400 p-2">
+                  Dør i rømningsvei i byggverk i risikoklasse 5 og 6 må være utført for sikker rømning ved at døren må kunne åpnes manuelt med ett grep og uten bruk av nøkkel, jf. figur 6.
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
             {formData.romningsvei && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
