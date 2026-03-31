@@ -1320,6 +1320,14 @@ const Konsept = () => {
 
     const wordFooter = { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ children: [PageNumber.CURRENT], size: 16, color: "888888" })] })] }) };
 
+    // A4 page with narrower margins for wider content area (matching preview)
+    const pageProperties = {
+      page: {
+        size: { width: 11906, height: 16838 }, // A4
+        margin: { top: 1134, right: 1134, bottom: 1134, left: 1134 }, // ~2cm margins (narrower than default ~2.5cm)
+      },
+    };
+
     const doc = new Document({
       styles: {
         default: {
@@ -1330,13 +1338,13 @@ const Konsept = () => {
       },
       sections: [
         {
-          properties: {},
+          properties: pageProperties,
           footers: wordFooter,
           children: coverPageChildren,
         },
         // Sammendrag (egen side)
         ...(formData.sammendrag ? [{
-          properties: {},
+          properties: pageProperties,
           footers: wordFooter,
           children: [
             new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Sammendrag" })] }),
@@ -1345,7 +1353,7 @@ const Konsept = () => {
         }] : []),
         // Tilstandsgrader (egen side, kun for tilstandsvurdering)
         ...(documentType === "tilstandsvurdering" ? [{
-          properties: {},
+          properties: pageProperties,
           footers: wordFooter,
           children: [
             new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Tilstandsgrader", bold: true })] }),
@@ -1420,7 +1428,7 @@ const Konsept = () => {
         }] : []),
         // Innholdsfortegnelse (egen side)
         {
-          properties: {},
+          properties: pageProperties,
           footers: wordFooter,
           children: [
             new Paragraph({
@@ -1494,7 +1502,7 @@ const Konsept = () => {
           ],
         },
         {
-          properties: {},
+          properties: pageProperties,
           footers: wordFooter,
           children: [
             // 1. Innledning
@@ -1596,7 +1604,7 @@ const Konsept = () => {
           ],
         },
         {
-          properties: {},
+          properties: pageProperties,
           footers: wordFooter,
           children: [
             ...(documentType === "tilstandsvurdering" ? [
@@ -1825,7 +1833,7 @@ const Konsept = () => {
           ],
         },
         {
-          properties: {},
+          properties: pageProperties,
           footers: wordFooter,
           children: [
             // 3. Branntekniske ytelseskrav
@@ -1839,7 +1847,7 @@ const Konsept = () => {
         },
         // 4. Utførelses- og driftsfasen + 5. Revisjonshistorikk - egen side
         {
-          properties: {},
+          properties: pageProperties,
           footers: wordFooter,
           children: [
             // 4. Utførelses- og driftsfasen (kun for brannkonsept)
@@ -1931,7 +1939,7 @@ const Konsept = () => {
         },
         // Litteraturhenvisninger - egen side
         {
-          properties: {},
+          properties: pageProperties,
           footers: wordFooter,
           children: [
             new Paragraph({
