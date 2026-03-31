@@ -681,14 +681,15 @@ const Konsept = () => {
     romningsvinduHarStige: false, // Stige montert til vindu
     romningsvinduHarBalkong: false, // Utgang til balkong
     // 3.11 Rømningsvei
-    romningsveiRomMaks20: false, // Rom i rømningsvei maks 20 m²
-    romningsveiRom50E30: false, // Oppholdsrom inntil 50 m² med E30
-    romningsveiSengeliggende: false, // Transport av sengeliggende
-    romningsveiSamtidigRomning: false, // Samtidig rømning fra flere etasjer
-    romningsveiFlereTrapper: false, // Rømning mot flere trapperom
-    romningsveiKorridorOver30m: false, // Korridor over 30 meter
-    romningsveiSvalgang: false, // Svalgang relevant
-    romningsveiSvalgangOver30m: false, // Svalgang over 30 meter
+    romningsveiRomMaks20: false, // Rom i rømningsvei inntil 20 m²
+    romningsveiRom50E30: false, // Oppholdsrom inntil 50 m²
+    romningsveiTrappeValg: "", // én trapp / sammenfallende / flere trapper
+    romningsveiSengeliggende: false,
+    romningsveiSamtidigRomning: false,
+    romningsveiFlereTrapper: false,
+    romningsveiKorridorOver30m: false,
+    romningsveiSvalgang: false,
+    romningsveiSvalgangOver30m: false,
     romningsvei: "",
     romningsveiKommentar: "",
     // 3.12 §11-15 Tilrettelegging for redning av husdyr
