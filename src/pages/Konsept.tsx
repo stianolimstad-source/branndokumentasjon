@@ -950,6 +950,15 @@ const Konsept = () => {
             loadedContent.baereevneUnntak = [];
           }
         }
+        // Fyll inn standardtekster for kap 4 hvis tomme
+        const kap4Defaults = {
+          utfoerelsInnkjop: "Materialer og produkter skal tilfredsstille dokumentasjonskrav i VTEK §2. Det henvises også til 321.028 Brannsikkerhet. Dokumentasjon av utførelse.",
+          utfoerelse: "Midlertidige branntekniske tiltak i utførelsesfasen, for eksempel endringer i rømningssituasjon, og atkomst for redningsmannskap, behandles som et kapittel i en egen SHA-plan ift. krav i byggherreforskriften. Ansvar for etablering og ajourføring av SHA-planen ligger til SHA-koordinator for prosjekteringsfasen og utførelsesfasen.",
+          drift: "Det henvises til Brann- og eksplosjonsvernloven og forskrift om brannforebygging for krav som gjelder under driftsfasen. Dersom forutsetninger som er lagt til grunn endres under driften av bygg, må dette tas i betraktning. Det kan være behov for ny vurdering av brannkrav.",
+        };
+        for (const [key, val] of Object.entries(kap4Defaults)) {
+          if (!loadedContent[key]) loadedContent[key] = val;
+        }
         setFormData({ ...formData, ...loadedContent });
         // Load document type if saved
         if (loadedContent.documentType) {
