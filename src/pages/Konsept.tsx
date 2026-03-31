@@ -6590,7 +6590,37 @@ const Konsept = () => {
                             Leiligheter har kun tilgang til ett trapperom
                           </Label>
                         </div>
-                      )}
+                        )}
+
+                      {/* Lavt byggverk - én rømningsretning §11-13(4) */}
+                      {(() => {
+                        const rks = ["RK1", "RK2", "RK3", "RK4"];
+                        const isLavt = rks.includes(formData.risikoklasse) || formData.bygningsdeler.some(b => rks.includes(b.risikoklasse));
+                        if (!isLavt) return null;
+                        return (
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-2 p-2 bg-muted rounded">
+                              <Checkbox 
+                                id="lavtByggverkEnRomningsretning"
+                                checked={formData.lavtByggverkEnRomningsretning}
+                                onCheckedChange={(checked) => setFormData({...formData, lavtByggverkEnRomningsretning: checked as boolean})}
+                              />
+                              <Label htmlFor="lavtByggverkEnRomningsretning" className="text-sm cursor-pointer">
+                                Lavt byggverk (under 9 m til møne) – én rømningsretning
+                              </Label>
+                            </div>
+                            {formData.lavtByggverkEnRomningsretning && (
+                              <Alert className="ml-6 border-orange-300 bg-orange-50 dark:bg-orange-950/30">
+                                <AlertTriangle className="h-4 w-4 text-orange-600" />
+                                <AlertTitle className="text-orange-800 dark:text-orange-300 text-xs font-semibold">Krav til rømningsvindu</AlertTitle>
+                                <AlertDescription className="text-orange-700 dark:text-orange-400 text-xs">
+                                  Preaksepterte ytelser angitt for rømningsvindu under tredje ledd, må være oppfylt. Hver branncelle må ha vinduer som er utformet og tilrettelagt for sikker rømning.
+                                </AlertDescription>
+                              </Alert>
+                            )}
+                          </div>
+                        );
+                      })()}
                       
                       <div className="pt-2 border-t">
                         <div className="flex items-center space-x-2">
