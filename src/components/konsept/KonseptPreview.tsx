@@ -3140,7 +3140,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </tbody>
         </table>
       </section>
-      <PageFooter pageNum={pageKap3e} />
+      <PageFooter pageNum={pageKap3e2} />
       </div>
 
       {/* Side 3.10-3.11 */}
