@@ -7084,30 +7084,30 @@ const Konsept = () => {
                         <Label className="text-base font-extrabold text-foreground">3.13 § 11-16 Manuell slokking</Label>
                       </div>
                       {(() => {
-                        const rk = parseInt(formData.risikoklasse.replace(/\D/g, ''), 10);
-                        const isRK356 = [3, 5, 6].includes(rk);
-                        const isRK124 = [1, 2, 4].includes(rk);
+                        const alleRK = formData.bygningsdeler?.length
+                          ? [...new Set(formData.bygningsdeler.map((d: any) => d.risikoklasse).filter(Boolean))]
+                          : formData.risikoklasse ? [formData.risikoklasse] : [];
+                        const isRK356 = alleRK.some((rk: string) => ["RK3","RK5","RK6"].includes(rk));
+                        const isRK124 = alleRK.some((rk: string) => ["RK1","RK2","RK4"].includes(rk));
+                        
+                        const kravTekst = isRK356 
+                          ? "Krav: Brannslange (RK 3, 5, 6). Håndslokkeapparater kan benyttes i tillegg."
+                          : isRK124
+                            ? "Krav: Håndslokkeapparat eller brannslange (RK 1, 2, 4). Du kan også velge brannslange."
+                            : "Velg slokkeutstyr for bygget.";
                         
                         return (
                           <>
-                            <div className="text-xs text-muted-foreground mb-2">
-                              {isRK356 
-                                ? "Risikoklasse 3, 5 eller 6 krever brannslange. Du kan også legge til håndslokkeapparater."
-                                : isRK124
-                                  ? "Risikoklasse 1, 2 eller 4 krever håndslokkeapparat eller brannslange. Du kan velge å legge til brannslange."
-                                  : "Velg risikoklasse for å se automatiske krav. Du kan også manuelt velge utstyrstyper nedenfor."
-                              }
-                            </div>
+                            <div className="text-xs text-muted-foreground mb-2">{kravTekst}</div>
                             <div className="flex flex-col gap-2 p-2 bg-muted/50 rounded mb-2">
                               <div className="flex items-center gap-2">
                                 <Checkbox 
                                   id="slokkeBrannslange"
-                                  checked={isRK356 || formData.slokkeBrannslange}
-                                  disabled={isRK356}
+                                  checked={formData.slokkeBrannslange}
                                   onCheckedChange={(checked) => setFormData({...formData, slokkeBrannslange: checked === true})}
                                 />
-                                <Label htmlFor="slokkeBrannslange" className={`text-xs cursor-pointer ${isRK356 ? 'text-muted-foreground' : ''}`}>
-                                  Brannslange {isRK356 && "(påkrevd for RK 3, 5, 6)"}
+                                <Label htmlFor="slokkeBrannslange" className="text-xs cursor-pointer">
+                                  Brannslange {isRK356 && "(krav for RK 3, 5, 6)"}
                                 </Label>
                               </div>
                               <div className="flex items-center gap-2">
@@ -7117,7 +7117,7 @@ const Konsept = () => {
                                   onCheckedChange={(checked) => setFormData({...formData, slokkeHandslukker: checked === true})}
                                 />
                                 <Label htmlFor="slokkeHandslukker" className="text-xs cursor-pointer">
-                                  Håndslokkeapparat {isRK124 && !isRK356 && "(minimum for RK 1, 2, 4)"}
+                                  Håndslokkeapparat {isRK124 && "(krav for RK 1, 2, 4)"}
                                 </Label>
                               </div>
                             </div>
