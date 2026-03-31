@@ -3874,7 +3874,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </section>
 
       <section className="mb-6">
-        <h2 className="font-bold mb-3">4. Litteraturhenvisninger</h2>
+        <h2 id="preview-kap6" className="font-bold mb-3">4. Litteraturhenvisninger</h2>
         <ul className="ml-4 list-disc list-inside">
           {isBF85 ? (
             <>
