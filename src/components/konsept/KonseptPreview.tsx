@@ -3731,6 +3731,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">RIBr</td>
             </tr>
+            {formData.byggOver23m && (
             <tr>
               <td className="border border-gray-400 p-2 align-top">Tilgjengelighet for høyderedskap</td>
               <td className="border border-gray-400 p-2">
@@ -3739,6 +3740,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
+            )}
             <tr>
               <td className="border border-gray-400 p-2 align-top">Kjørbar atkomst</td>
               <td className="border border-gray-400 p-2">
