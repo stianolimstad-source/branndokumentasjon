@@ -7003,6 +7003,7 @@ const Konsept = () => {
                             <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
                               <li>Generelle krav til rømningsvei</li>
                               <li>Fri bredde i rømningsvei: min. {bredde} ({erBredRK ? `RK${[harRK3 && "3", harRK5 && "5", harRK6 && "6"].filter(Boolean).join("/")}` : rk || "RK1/2/4"})</li>
+                              <li>Hovedatkomst tilrettelagt for sikker rømning</li>
                             </ul>
                           </div>
                         );
