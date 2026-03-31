@@ -3898,7 +3898,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <p className="ml-4">{formData.fravik}</p>
         </section>
       )}
-      <PageFooter pageNum={5 + extraPages} />
+      <PageFooter pageNum={pageKap3} />
       </div>
 
       {/* Litteraturhenvisninger - egen side */}
