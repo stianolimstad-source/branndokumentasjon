@@ -946,10 +946,10 @@ const Konsept = () => {
       if (formData.brannseksjonBrannenergi || formData.seksjoneringsvegBrannenergi) {
         refs.push("NS-EN 1991-1-2:2002+NA:2008 – Eurokode 1: Laster på konstruksjoner – Del 1-2: Allmenne laster – Brannpåvirkning");
       }
-      if (formData.slokkingRelevant || formData.brannvesenInnsats) {
+      if (formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) {
         refs.push("NS 3910:2020 – Brannvesen – Innsatsmuligheter");
       }
-      if (formData.prosjekteringsmetode === "Analyse" || formData.prosjekteringsmetode === "Kombinasjon") {
+      if (formData.prosjekteringsmetode === "analyse" || formData.prosjekteringsmetode === "blanding") {
         refs.push("NS 3901:2023 – Krav til risikovurdering av brann i byggverk (brannteknisk analyse)");
       }
     }
