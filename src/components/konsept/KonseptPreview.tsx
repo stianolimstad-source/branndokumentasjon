@@ -3307,6 +3307,65 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">-</td>
             </tr>
+            {formData.romningsveiRomMaks20 && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top font-medium">Rom i rømningsvei inntil 20 m²</td>
+                <td className="border border-gray-400 p-2">
+                  <ul className="list-disc ml-4 space-y-1">
+                    <li>Rom for resepsjon, vaktrom og lignende med areal inntil 20 m² kan ligge i rømningsvei, forutsatt at rommet ikke reduserer fri bredde eller hindrer fri rømning.</li>
+                    <li>Rommet må ikke inneholde brennbart materiale utover vanlig møblering.</li>
+                  </ul>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
+            {formData.romningsveiRom50E30 && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top font-medium">Oppholdsrom inntil 50 m²</td>
+                <td className="border border-gray-400 p-2">
+                  <ul className="list-disc ml-4 space-y-1">
+                    <li>Oppholdsrom med areal inntil 50 m² kan ha åpning mot rømningsvei når rommet har automatisk slokkeanlegg og åpningen kan lukkes med dør med brannmotstand minimum E 30.</li>
+                  </ul>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
+            {formData.romningsveiTrappeValg === "en_trapp" && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top font-medium">Én trapp</td>
+                <td className="border border-gray-400 p-2">
+                  <ul className="list-disc ml-4 space-y-1">
+                    <li>Det er tilstrekkelig med én trapp når forholdene tilsier at rømning kan skje på en sikker måte uten alternativ rømningsvei.</li>
+                    <li>Gangavstand fra dør i branncelle til nærmeste trapperom eller utgang skal ikke overstige 15 m.</li>
+                  </ul>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
+            {formData.romningsveiTrappeValg === "sammenfallende" && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top font-medium">Sammenfallende rømningsretning</td>
+                <td className="border border-gray-400 p-2">
+                  <ul className="list-disc ml-4 space-y-1">
+                    <li>Gangavstand i sammenfallende rømningsretning fra dør i branncelle til det punkt hvor rømning kan skje i to uavhengige retninger, skal ikke overstige 15 m.</li>
+                    <li>Fra dette punktet skal gangavstand til nærmeste trapperom eller utgang til det fri ikke overstige 30 m.</li>
+                  </ul>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
+            {formData.romningsveiTrappeValg === "flere_trapper" && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top font-medium">Flere trapper og utganger</td>
+                <td className="border border-gray-400 p-2">
+                  <ul className="list-disc ml-4 space-y-1">
+                    <li>Bygget har flere trapperom og utganger slik at rømning kan skje i minst to uavhengige retninger.</li>
+                    <li>Gangavstand fra dør i branncelle til nærmeste trapperom eller utgang til det fri skal ikke overstige 30 m.</li>
+                  </ul>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
             {formData.romningsvei && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
