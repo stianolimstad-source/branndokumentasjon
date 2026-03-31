@@ -1318,6 +1318,8 @@ const Konsept = () => {
       spacing: { before: 200 },
     }));
 
+    const wordFooter = { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ children: [PageNumber.CURRENT], size: 16, color: "888888" })] })] }) };
+
     const doc = new Document({
       styles: {
         default: {
