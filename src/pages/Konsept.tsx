@@ -6915,6 +6915,29 @@ const Konsept = () => {
                         </select>
                       </div>
 
+                      {/* Bekreftelse på krav inkludert i rapporten */}
+                      {(() => {
+                        const rk = formData.risikoklasse || "";
+                        const harRK3 = rk === "RK3" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK3");
+                        const harRK5 = rk === "RK5" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK5");
+                        const harRK6 = rk === "RK6" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK6");
+                        const erBredRK = harRK3 || harRK5 || harRK6;
+                        const bredde = erBredRK ? "1,16 m" : "0,86 m";
+                        const trappeLabel = formData.romningsveiTrappeValg === "en_trapp" ? "Én trapp" : formData.romningsveiTrappeValg === "sammenfallende" ? "Sammenfallende rømningsretning" : formData.romningsveiTrappeValg === "flere_trapper" ? "Flere trapper og utganger" : null;
+                        return (
+                          <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                            <p className="font-semibold text-foreground">✓ Følgende krav er inkludert i rapporten:</p>
+                            <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                              <li>Generelle krav til rømningsvei</li>
+                              {formData.romningsveiRomMaks20 && <li>Rom i rømningsvei inntil 20 m²</li>}
+                              {formData.romningsveiRom50E30 && <li>Oppholdsrom inntil 50 m²</li>}
+                              {trappeLabel && <li>{trappeLabel}</li>}
+                              <li>Fri bredde i rømningsvei: min. {bredde} ({erBredRK ? `RK${[harRK3 && "3", harRK5 && "5", harRK6 && "6"].filter(Boolean).join("/")}` : rk || "RK1/2/4"})</li>
+                            </ul>
+                          </div>
+                        );
+                      })()}
+
 
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Rømningsveier beskrives</Label>
