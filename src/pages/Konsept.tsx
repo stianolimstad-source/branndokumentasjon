@@ -7702,7 +7702,19 @@ const Konsept = () => {
                   </div>
                   <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
                     <div>
-                      <Label className="text-xs font-medium mb-1 block">Litteraturhenvisninger (én per linje, oppdateres automatisk basert på konseptet)</Label>
+                      <div className="flex items-center justify-between mb-1">
+                        <Label className="text-xs font-medium">Litteraturhenvisninger (én per linje)</Label>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs"
+                          onClick={() => setFormData({...formData, litteratur: genererLitteraturRefs()})}
+                        >
+                          <RefreshCw className="h-3 w-3 mr-1" />
+                          Oppdater fra konsept
+                        </Button>
+                      </div>
                       <Textarea 
                         value={formData.litteratur}
                         onChange={(e) => setFormData({...formData, litteratur: e.target.value})}
