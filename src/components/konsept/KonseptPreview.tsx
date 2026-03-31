@@ -100,8 +100,17 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   const hasSammendrag = !!formData.sammendrag;
   const isTilstand = documentType === "tilstandsvurdering";
   const isBF85 = isTilstand && formData.regelverk === "BF85";
-  const extraPages = (hasSammendrag ? 1 : 0) + (isTilstand ? 1 : 0);
-  const totalPages = 6 + extraPages;
+  // Page numbering: sequential
+  let pageCounter = 1;
+  const pageForside = pageCounter++;
+  const pageSammendrag = hasSammendrag ? pageCounter++ : 0;
+  const pageTilstandsgrader = isTilstand ? pageCounter++ : 0;
+  const pageInnhold = pageCounter++;
+  const pageKap1 = pageCounter++;
+  const pageKap2 = pageCounter++;
+  const pageKap3 = pageCounter++; // Kap 3 (+4+5 for brannkonsept, +revisjon for tilstand)
+  const pageLitteratur = pageCounter++;
+  const totalPages = pageCounter - 1;
   // Section prefix for chapter 3 (brannkonsept) → chapter 2 (tilstandsvurdering)
   const sp = "3";
 
