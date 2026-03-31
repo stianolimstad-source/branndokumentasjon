@@ -2775,7 +2775,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <PageFooter pageNum={pageKap3d} />
       </div>
 
-      {/* Side 3 av Kap 3: 3.8-3.14 */}
+      {/* Side 3.8-3.9 */}
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
         <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
