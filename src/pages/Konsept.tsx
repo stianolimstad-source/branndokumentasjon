@@ -6132,7 +6132,8 @@ const Konsept = () => {
                         <Textarea 
                           value={formData.romningSikkerhet}
                           onChange={(e) => setFormData({...formData, romningSikkerhet: e.target.value})}
-                        />
+                         />
+                      </div>
                       {/* Info om automatiske krav */}
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
@@ -6141,7 +6142,6 @@ const Konsept = () => {
                           <li>Krav til tidlig varsling og tilstrekkelig rømningstid</li>
                           <li>Krav til rømningsveier med tilstrekkelig kapasitet</li>
                         </ul>
-                      </div>
                       </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('romning-sikkerhet-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
