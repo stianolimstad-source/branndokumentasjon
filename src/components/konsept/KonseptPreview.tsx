@@ -3822,7 +3822,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       {documentType !== "tilstandsvurdering" && (
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
-        <h2 className="font-bold mb-3" style={{ color: "#00a3e0" }}>4. Utførelses- og driftsfasen</h2>
+        <h2 id="preview-kap4" className="font-bold mb-3" style={{ color: "#00a3e0" }}>4. Utførelses- og driftsfasen</h2>
         
         <h3 className="font-semibold mb-2">4.1 Utførelsesfasen</h3>
         <p className="ml-4 mb-1 font-semibold">Til innkjøpsfasen</p>
