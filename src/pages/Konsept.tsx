@@ -1344,7 +1344,7 @@ const Konsept = () => {
         },
         // Sammendrag (egen side)
         ...(formData.sammendrag ? [{
-          properties: {},
+          properties: pageProperties,
           footers: wordFooter,
           children: [
             new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Sammendrag" })] }),
@@ -1353,7 +1353,7 @@ const Konsept = () => {
         }] : []),
         // Tilstandsgrader (egen side, kun for tilstandsvurdering)
         ...(documentType === "tilstandsvurdering" ? [{
-          properties: {},
+          properties: pageProperties,
           footers: wordFooter,
           children: [
             new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Tilstandsgrader", bold: true })] }),
@@ -1428,7 +1428,7 @@ const Konsept = () => {
         }] : []),
         // Innholdsfortegnelse (egen side)
         {
-          properties: {},
+          properties: pageProperties,
           footers: wordFooter,
           children: [
             new Paragraph({
@@ -1502,7 +1502,7 @@ const Konsept = () => {
           ],
         },
         {
-          properties: {},
+          properties: pageProperties,
           footers: wordFooter,
           children: [
             // 1. Innledning
@@ -1604,7 +1604,7 @@ const Konsept = () => {
           ],
         },
         {
-          properties: {},
+          properties: pageProperties,
           footers: wordFooter,
           children: [
             ...(documentType === "tilstandsvurdering" ? [
@@ -1833,7 +1833,7 @@ const Konsept = () => {
           ],
         },
         {
-          properties: {},
+          properties: pageProperties,
           footers: wordFooter,
           children: [
             // 3. Branntekniske ytelseskrav
@@ -1847,7 +1847,7 @@ const Konsept = () => {
         },
         // 4. Utførelses- og driftsfasen + 5. Revisjonshistorikk - egen side
         {
-          properties: {},
+          properties: pageProperties,
           footers: wordFooter,
           children: [
             // 4. Utførelses- og driftsfasen (kun for brannkonsept)
@@ -1939,7 +1939,7 @@ const Konsept = () => {
         },
         // Litteraturhenvisninger - egen side
         {
-          properties: {},
+          properties: pageProperties,
           footers: wordFooter,
           children: [
             new Paragraph({
