@@ -3822,7 +3822,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       {documentType !== "tilstandsvurdering" && (
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
-        <h2 className="font-bold mb-3" style={{ color: "#00a3e0" }}>4. Utførelses- og driftsfasen</h2>
+        <h2 id="preview-kap4" className="font-bold mb-3" style={{ color: "#00a3e0" }}>4. Utførelses- og driftsfasen</h2>
         
         <h3 className="font-semibold mb-2">4.1 Utførelsesfasen</h3>
         <p className="ml-4 mb-1 font-semibold">Til innkjøpsfasen</p>
@@ -3842,13 +3842,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
       {/* 5. Revisjonshistorikk */}
       <section className="mb-6">
-        <h2 className="font-bold mb-3">5. Revisjonshistorikk</h2>
+        <h2 id="preview-kap5" className="font-bold mb-3">5. Revisjonshistorikk</h2>
         <p className="ml-4">{formData.revisjon || "[Revisjonslogg]"}</p>
       </section>
 
       {/* 6. Litteraturhenvisninger */}
       <section className="mb-6">
-        <h2 className="font-bold mb-3">6. Litteraturhenvisninger</h2>
+        <h2 id="preview-kap6" className="font-bold mb-3">6. Litteraturhenvisninger</h2>
         <ul className="ml-4 list-disc list-inside">
           <li>TEK17 - Forskrift om tekniske krav til byggverk</li>
           <li>VTEK17 - Veiledning til teknisk forskrift</li>
@@ -3869,12 +3869,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       {documentType === "tilstandsvurdering" && (
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
-        <h2 className="font-bold mb-3">3. Revisjonshistorikk</h2>
+        <h2 id="preview-kap5" className="font-bold mb-3">3. Revisjonshistorikk</h2>
         <p className="ml-4">{formData.revisjon || "[Revisjonslogg]"}</p>
       </section>
 
       <section className="mb-6">
-        <h2 className="font-bold mb-3">4. Litteraturhenvisninger</h2>
+        <h2 id="preview-kap6" className="font-bold mb-3">4. Litteraturhenvisninger</h2>
         <ul className="ml-4 list-disc list-inside">
           {isBF85 ? (
             <>
