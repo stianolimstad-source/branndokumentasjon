@@ -3828,6 +3828,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </tbody>
         </table>
       </section>
+      <PageFooter pageNum={pageKap3c} />
+      </div>
+
+      {/* Kap 4+5 (brannkonsept) eller revisjon (tilstand) - egen side */}
+      <div className={pageStyle} style={pageWidth}>
 
       {documentType !== "tilstandsvurdering" && (
       <>
