@@ -3289,12 +3289,17 @@ const Konsept = () => {
 
                 {/* Kapittel 3: Branntekniske ytelseskrav */}
                 <AccordionItem value="kap3" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
-                  <AccordionTrigger className="text-lg font-bold bg-blue-50 hover:bg-blue-100 px-4 py-3 text-blue-800">
-                    <span className="flex items-center gap-3">
-                      <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">3</span>
-                      Branntekniske ytelseskrav
-                    </span>
-                  </AccordionTrigger>
+                  <div className="flex items-center bg-blue-50 hover:bg-blue-100 px-4 py-3">
+                    <AccordionTrigger className="text-lg font-bold text-blue-800 flex-1 p-0 hover:no-underline">
+                      <span className="flex items-center gap-3">
+                        <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">3</span>
+                        Branntekniske ytelseskrav
+                      </span>
+                    </AccordionTrigger>
+                    <button type="button" onClick={(e) => { e.stopPropagation(); document.getElementById('preview-kap3')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="p-1.5 ml-2 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors" title="Gå til i forhåndsvisning">
+                      <Eye className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                   <AccordionContent className="space-y-3 pt-4 px-4 pb-4">
                     <div className="flex justify-end mb-2">
                       <Button
