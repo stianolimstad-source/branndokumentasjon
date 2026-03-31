@@ -1052,12 +1052,6 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     "Fra en branncelle skal det minst være én utgang til sikkert sted, eller utganger til to uavhengige rømningsveier.",
     "-"
   ));
-  if (formData.utgangBranncelle) {
-    rows.push(contentRow("Utganger", formData.utgangBranncelle, "ARK"));
-  }
-  if (formData.utgangBranncelleKommentar) {
-    rows.push(contentRow("Kommentar", formData.utgangBranncelleKommentar, "-"));
-  }
   if (formData.sporadiskOpphold) {
     rows.push(contentRowMultiLine("Branncelle for sporadisk personopphold", [
       "Fra brannceller som bare er beregnet for sporadisk personopphold kan utgang gå gjennom annen branncelle.",
@@ -1068,6 +1062,12 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
       "",
       "For å ivareta generelle krav om tilrettelegging for rask og sikker rømning, jf. § 11-11, må fluktveien være oversiktlig og ha god belysning og merking. Det må heller ikke foregå brannfarlig aktivitet i nabobranncellen det skal rømmes gjennom.",
     ], "ARK"));
+  }
+  if (formData.utgangBranncelle) {
+    rows.push(contentRow("Utganger", formData.utgangBranncelle, "ARK"));
+  }
+  if (formData.utgangBranncelleKommentar) {
+    rows.push(contentRow("Kommentar", formData.utgangBranncelleKommentar, "-"));
   }
   rows.push(...await tilstandRow(formData, "3_10", "3.10 Utgang fra branncelle"));
 
