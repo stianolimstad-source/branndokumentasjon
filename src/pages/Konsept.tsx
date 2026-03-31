@@ -6965,6 +6965,19 @@ const Konsept = () => {
                         </Label>
                       </div>
 
+                      {/* Svalgang/altangang */}
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                        <Checkbox 
+                          id="romningsveiSvalgang"
+                          checked={formData.romningsveiSvalgang}
+                          onCheckedChange={(checked) => setFormData({...formData, romningsveiSvalgang: checked === true})}
+                        />
+                        <Label htmlFor="romningsveiSvalgang" className="text-xs cursor-pointer">
+                          Svalgang/altangang som rømningsvei er relevant
+                        </Label>
+                      </div>
+
+                      {/* Bekreftelse på automatiske krav inkludert i rapporten */}
                       {(() => {
                         const rk = formData.risikoklasse || "";
                         const harRK3 = rk === "RK3" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK3");
