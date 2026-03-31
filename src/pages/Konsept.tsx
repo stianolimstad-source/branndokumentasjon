@@ -6658,6 +6658,17 @@ const Konsept = () => {
                       </div>
                       </>)}
 
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          {(formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) && <li>Krav til automatisk slokkeanlegg basert på risikoklasse</li>}
+                          {formData.tilretteleggingLedd2a && <li>Brannalarmanlegg med automatisk beregnet kategori</li>}
+                          {formData.alarmValg === "roykvarsler" && <li>Seriekoblede røykvarslere med batteribackup</li>}
+                          <li>Alarmkrav tilpasset bygningstype og risikoklasse</li>
+                          <li>Ledesystem og nødlys basert på risikoklasse</li>
+                        </ul>
+                      </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('tilrettelegging-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="tilrettelegging-kommentar" className={formData.tilretteleggingKommentar ? "" : "hidden"}>
