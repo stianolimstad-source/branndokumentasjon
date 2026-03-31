@@ -6798,6 +6798,21 @@ const Konsept = () => {
                           </div>
                         )}
                       </div>
+
+                      {/* Sporadisk personopphold */}
+                      <div className="pt-2 border-t">
+                        <div className="flex items-center space-x-2 p-2 bg-muted rounded">
+                          <Checkbox 
+                            id="sporadiskOpphold"
+                            checked={formData.sporadiskOpphold}
+                            onCheckedChange={(checked) => setFormData({...formData, sporadiskOpphold: checked as boolean})}
+                          />
+                          <Label htmlFor="sporadiskOpphold" className="text-sm cursor-pointer">
+                            Rom for sporadisk personopphold er relevant
+                          </Label>
+                        </div>
+                      </div>
+
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Utganger beskrives</Label>
                         <Textarea 
