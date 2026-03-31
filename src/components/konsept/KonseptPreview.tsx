@@ -628,7 +628,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </>
         )}
       </section>
-      <PageFooter pageNum={4 + extraPages} />
+      <PageFooter pageNum={pageKap2} />
       </div>
       <div className={pageStyle} style={pageWidth}>
       {/* Branntekniske ytelseskrav */}
