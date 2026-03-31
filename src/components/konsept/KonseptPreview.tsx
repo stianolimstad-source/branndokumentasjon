@@ -3546,14 +3546,28 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Utganger</td>
                   <td className="border border-gray-400 p-2">
-                    Husdyrrom må ha minst to utganger til det fri. Dørene i disse utgangene må ha en fri bredde på minst 1,0 m og en fri høyde på minst 1,6 m.
+                    Husdyrrom må ha minst to utganger uavhengig av størrelsen på rommet. Én av utgangene kan gå via annen branncelle eller annet rom.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Fri bredde</td>
+                  <td className="border border-gray-400 p-2">
+                    Utganger eller rømningsveier må ha fri bredde på minimum 1,6 meter fra rom for okse, ku og hest, og minimum 1,0 meter fra rom for gris, sau og geit.
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Rømningsvei</td>
                   <td className="border border-gray-400 p-2">
-                    Lengden på rømningsvei fra husdyrrom til terreng i det fri må ikke overstige 30 m.
+                    Avstand fra et hvert oppholdssted til nærmeste utgang i husdyrrom må ikke være mer enn 30 meter.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Dør i yttervegg</td>
+                  <td className="border border-gray-400 p-2">
+                    Utadslående dør i yttervegg som er utgang eller rømningsvei må ikke kunne blokkeres av snø eller is. Takoverbygg, snøfangere på tak og lignende vil kunne forhindre dette.
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
