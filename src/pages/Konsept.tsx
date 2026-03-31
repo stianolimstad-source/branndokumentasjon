@@ -7145,6 +7145,26 @@ const Konsept = () => {
                           </>
                         );
                       })()}
+                      {/* Bekreftelse på automatiske krav */}
+                      {(() => {
+                        const alleRK = formData.bygningsdeler?.length
+                          ? [...new Set(formData.bygningsdeler.map((d: any) => d.risikoklasse).filter(Boolean))]
+                          : formData.risikoklasse ? [formData.risikoklasse] : [];
+                        const harRK356 = alleRK.some((rk: string) => ["RK3","RK5","RK6"].includes(rk));
+                        const harRK124 = alleRK.some((rk: string) => ["RK1","RK2","RK4"].includes(rk));
+                        const kravListe: string[] = ["Generelle krav til manuell slokking"];
+                        if (harRK356) kravListe.push(`Brannslange (krav for RK ${["RK3","RK5","RK6"].filter(rk => alleRK.includes(rk)).map(rk => rk.replace("RK","")).join(", ")})`);
+                        if (harRK124) kravListe.push(`Håndslokkeapparat (krav for RK ${["RK1","RK2","RK4"].filter(rk => alleRK.includes(rk)).map(rk => rk.replace("RK","")).join(", ")})`);
+                        return (
+                          <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                            <p className="font-semibold text-foreground">✓ Følgende krav er automatisk satt basert på risikoklasse:</p>
+                            <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                              {kravListe.map((k, i) => <li key={i}>{k}</li>)}
+                            </ul>
+                            <p className="text-foreground/60 mt-1">Du kan endre valgene med knappene ovenfor.</p>
+                          </div>
+                        );
+                      })()}
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Slokkeutstyr beskrives</Label>
                         <Textarea 
