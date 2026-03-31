@@ -3307,29 +3307,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">-</td>
             </tr>
-            {(() => {
-              const rk = formData.risikoklasse || "";
-              const harRK3 = rk === "RK3" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK3");
-              const harRK5 = rk === "RK5" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK5");
-              const harRK6 = rk === "RK6" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK6");
-              const erBredRK = harRK3 || harRK5 || harRK6;
-              return (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top font-medium">Fri bredde i rømningsvei</td>
-                  <td className="border border-gray-400 p-2">
-                    <ul className="list-disc ml-4 space-y-1">
-                      <li>Samlet fri bredde i rømningsvei må minimum være 1 cm per person, men uansett minst som angitt nedenfor. For dimensjonerende persontall vises til § 11-13 Tabell 3.</li>
-                      {erBredRK ? (
-                        <li>I byggverk i risikoklasse {[harRK3 && "3", harRK5 && "5", harRK6 && "6"].filter(Boolean).join(", ")} må fri bredde i rømningsvei være minimum 1,16 meter.{harRK6 ? " Unntak gjelder boliger i risikoklasse 6 i samsvar med § 11-2 Tabell 1, hvor fri bredde kan være minimum 0,86 meter." : ""}</li>
-                      ) : (
-                        <li>I byggverk i risikoklasse 1, 2 og 4 må fri bredde i rømningsvei være minimum 0,86 meter.</li>
-                      )}
-                    </ul>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                </tr>
-              );
-            })()}
             {formData.romningsveiRomMaks20 && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top font-medium">Rom i rømningsvei inntil 20 m²</td>
@@ -3389,6 +3366,29 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
             )}
+            {(() => {
+              const rk = formData.risikoklasse || "";
+              const harRK3 = rk === "RK3" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK3");
+              const harRK5 = rk === "RK5" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK5");
+              const harRK6 = rk === "RK6" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK6");
+              const erBredRK = harRK3 || harRK5 || harRK6;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Fri bredde i rømningsvei</td>
+                  <td className="border border-gray-400 p-2">
+                    <ul className="list-disc ml-4 space-y-1">
+                      <li>Samlet fri bredde i rømningsvei må minimum være 1 cm per person, men uansett minst som angitt nedenfor. For dimensjonerende persontall vises til § 11-13 Tabell 3.</li>
+                      {erBredRK ? (
+                        <li>I byggverk i risikoklasse {[harRK3 && "3", harRK5 && "5", harRK6 && "6"].filter(Boolean).join(", ")} må fri bredde i rømningsvei være minimum 1,16 meter.{harRK6 ? " Unntak gjelder boliger i risikoklasse 6 i samsvar med § 11-2 Tabell 1, hvor fri bredde kan være minimum 0,86 meter." : ""}</li>
+                      ) : (
+                        <li>I byggverk i risikoklasse 1, 2 og 4 må fri bredde i rømningsvei være minimum 0,86 meter.</li>
+                      )}
+                    </ul>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              );
+            })()}
             {formData.romningsvei && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
