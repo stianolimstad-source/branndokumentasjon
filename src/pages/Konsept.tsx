@@ -4090,6 +4090,15 @@ const Konsept = () => {
                         </div>
                       </div>
 
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          <li>Brannseksjoneringskrav basert på bygningstype og brannbelastning</li>
+                          <li>Krav til seksjoneringsvegger (brannvegg) med riktig brannmotstand</li>
+                          <li>Areal- og brannbelastningsgrenser for oppdeling</li>
+                        </ul>
+                      </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('brannseksjoner-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="brannseksjoner-kommentar" className={formData.brannseksjonerKommentar ? "" : "hidden"}>
