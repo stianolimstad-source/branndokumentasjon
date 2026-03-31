@@ -7363,38 +7363,38 @@ const Konsept = () => {
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.14 § 11-17 Tilrettelegging for slokkemannskap</Label>
                       </div>
-                      <div className="space-y-3 mb-3">
-                        <div className="flex items-center justify-between p-2 border border-border rounded">
-                          <Label htmlFor="byggOver23m" className="text-sm font-medium">Øverste gulv er høyere enn 23 meter over terreng</Label>
-                          <Switch
+                      <div className="space-y-2 mb-3">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
                             id="byggOver23m"
                             checked={formData.byggOver23m}
-                            onCheckedChange={(checked) => setFormData({...formData, byggOver23m: checked})}
+                            onCheckedChange={(checked) => setFormData({...formData, byggOver23m: checked === true})}
                           />
+                          <Label htmlFor="byggOver23m" className="text-sm font-medium">Øverste gulv er høyere enn 23 meter over terreng</Label>
                         </div>
-                        <div className="flex items-center justify-between p-2 border border-border rounded">
-                          <Label htmlFor="slangeutlegg50m" className="text-sm font-medium">Alle deler av etasje kan nås med maks 50 m slangeutlegg</Label>
-                          <Switch
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
                             id="slangeutlegg50m"
                             checked={formData.slangeutlegg50m}
-                            onCheckedChange={(checked) => setFormData({...formData, slangeutlegg50m: checked})}
+                            onCheckedChange={(checked) => setFormData({...formData, slangeutlegg50m: checked === true})}
                           />
+                          <Label htmlFor="slangeutlegg50m" className="text-sm font-medium">Alle deler av etasje kan nås med maks 50 m slangeutlegg</Label>
                         </div>
-                        <div className="flex items-center justify-between p-2 border border-border rounded">
-                          <Label htmlFor="harRadiokommunikasjon" className="text-sm font-medium">Krav til radiokommunikasjon for nødetater</Label>
-                          <Switch
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
                             id="harRadiokommunikasjon"
                             checked={formData.harRadiokommunikasjon}
-                            onCheckedChange={(checked) => setFormData({...formData, harRadiokommunikasjon: checked})}
+                            onCheckedChange={(checked) => setFormData({...formData, harRadiokommunikasjon: checked === true})}
                           />
+                          <Label htmlFor="harRadiokommunikasjon" className="text-sm font-medium">Krav til radiokommunikasjon for nødetater</Label>
                         </div>
-                        <div className="flex items-center justify-between p-2 border border-border rounded">
-                          <Label htmlFor="harUniversalnokkel" className="text-sm font-medium">Krav til universalnøkkel / nøkkelskap</Label>
-                          <Switch
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
                             id="harUniversalnokkel"
                             checked={formData.harUniversalnokkel}
-                            onCheckedChange={(checked) => setFormData({...formData, harUniversalnokkel: checked})}
+                            onCheckedChange={(checked) => setFormData({...formData, harUniversalnokkel: checked === true})}
                           />
+                          <Label htmlFor="harUniversalnokkel" className="text-sm font-medium">Krav til universalnøkkel / nøkkelskap</Label>
                         </div>
                       </div>
                       <div className="mb-3">
