@@ -7419,7 +7419,6 @@ const Konsept = () => {
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
                           <li>Generelle krav til plassering, utforming og merking</li>
                           <li>Kjørbar atkomst til hovedinngang og angrepsvei</li>
-                          <li>Stort antall personer (RK5/RK6) – tilgjengelig atkomst for brannvesenet</li>
                           {formData.romningsvinduRelevant && (
                             <li>Vindu/balkong som rømningsvei – tilgjengelighet for høyderedskap (basert på valg i kap. 3.10)</li>
                           )}
