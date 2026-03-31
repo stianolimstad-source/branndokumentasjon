@@ -3872,7 +3872,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </section>
 
       {/* 6. Litteraturhenvisninger */}
-      <section className="mb-6">
+      <section className="mb-6" style={{ breakBefore: "page" }}>
         <h2 id="preview-kap6" className="font-bold mb-3">6. Litteraturhenvisninger</h2>
         <ul className="ml-4 list-disc list-inside">
           {(() => {
@@ -3971,7 +3971,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         )}
       </section>
 
-      <section className="mb-6">
+      <section className="mb-6" style={{ breakBefore: "page" }}>
         <h2 id="preview-kap6" className="font-bold mb-3">4. Litteraturhenvisninger</h2>
         <ul className="ml-4 list-disc list-inside">
           {(() => {
