@@ -7178,6 +7178,17 @@ const Konsept = () => {
                         <Label htmlFor="husdyrRedningRelevant" className="text-xs cursor-pointer">
                           Bygget er beregnet for husdyrhold (driftsbygning med husdyrrom)
                         </Label>
+                      {/* Info om automatiske krav */}
+                      {formData.husdyrRedningRelevant && (
+                        <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                          <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                          <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                            <li>Krav til rømningsveier for husdyr</li>
+                            <li>Branncelleinndeling for husdyrrom</li>
+                            <li>Varsling ved brann i driftsbygninger</li>
+                          </ul>
+                        </div>
+                      )}
                       </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('husdyr-redning-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
