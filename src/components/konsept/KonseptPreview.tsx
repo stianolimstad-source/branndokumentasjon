@@ -148,7 +148,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         )}
         <p className="mt-4 text-xs text-gray-400">{new Date().toLocaleDateString("nb-NO", { year: "numeric", month: "long", day: "numeric" })}</p>
         </div>
-        <PageFooter pageNum={1} />
+        <PageFooter pageNum={pageForside} />
       </div>
 
       {/* Sammendrag - egen side */}
