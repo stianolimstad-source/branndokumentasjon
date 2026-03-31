@@ -1063,6 +1063,49 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
       "For å ivareta generelle krav om tilrettelegging for rask og sikker rømning, jf. § 11-11, må fluktveien være oversiktlig og ha god belysning og merking. Det må heller ikke foregå brannfarlig aktivitet i nabobranncellen det skal rømmes gjennom.",
     ], "ARK"));
   }
+  // Dør-krav til rømningsvei - alltid med
+  {
+    const alleRK: string[] = formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0
+      ? [...new Set(formData.bygningsdeler.map((d: any) => d.risikoklasse).filter(Boolean))] as string[]
+      : formData.risikoklasse ? [formData.risikoklasse] : [];
+    const harRK5 = alleRK.includes("RK5");
+    const harRK6 = alleRK.includes("RK6");
+    const bk = formData.brannklasse || "";
+    const erBKL1 = bk === "BKL1";
+    const erBKL2ellerBKL3 = bk === "BKL2" || bk === "BKL3";
+
+    const lines: string[] = [
+      "• Åpningskraft for dører til rømningsvei må være maksimalt 67 Newton dersom det ikke følger andre krav av § 12-13.",
+    ];
+    if (harRK5 && alleRK.some(rk => rk !== "RK5")) {
+      lines.push("• Dør til rømningsvei i byggverk i risikoklasse 1, 2, 3, 4 og 6 må ha fri bredde minimum 0,86 meter. Unntak gjelder for fritidsbolig med én boenhet.");
+      lines.push("• Dør til rømningsvei i byggverk i risikoklasse 5 må ha fri bredde minimum 1,16 meter.");
+    } else if (harRK5) {
+      lines.push("• Dør til rømningsvei i byggverk i risikoklasse 5 må ha fri bredde minimum 1,16 meter.");
+    } else {
+      lines.push("• Dør til rømningsvei i byggverk i risikoklasse 1, 2, 3, 4 og 6 må ha fri bredde minimum 0,86 meter. Unntak gjelder for fritidsbolig med én boenhet.");
+    }
+    if (harRK6) {
+      lines.push("• I byggverk hvor det er nødvendig med transport i seng, må dørbredden tilpasses dette.");
+    }
+    lines.push(
+      "• Samlet fri bredde på dører fra branncelle til rømningsvei bestemmes ut fra det antall personer som branncellen er beregnet for, jf. femte ledd.",
+      "• Dør til rømningsvei må ha fri høyde på minimum 2,0 meter. Unntak gjelder for fritidsbolig med én boenhet.",
+      "• Dør til rømningsvei må lett kunne åpnes slik at den er enkel å bruke for alle personer.",
+      "• Selvlukkende dør, benevnt C [S], kan settes i åpen stilling ved hjelp av elektromagnetiske holdere som utløses og lukker døren ved brannalarm. Døren må kunne åpnes igjen med dørautomatikk eller manuelt med åpningskraft i samsvar med § 12-13.",
+      "• Dør til rømningsvei må ha et låsesystem som gjør det mulig å vende tilbake dersom rømningsveien skulle være blokkert, med mindre andre tiltak gir tilsvarende sikkerhet.",
+      "• Dør til rømningsvei kan være låst når byggverket har brannalarmanlegg og låsesystemet åpnes automatisk ved alarm. I tillegg må det være tydelig merket knapp for manuell åpning av døren. Det kan aksepteres inntil 10 sekunder tidsforsinkelse på den manuelle åpningsmekanismen.",
+      "• Nattlåser må utføres slik at de ikke kommer i strid med kravene til sikker rømning.",
+      "• Dør til rømningsvei fra branncelle beregnet for et lite antall personer kan slå mot rømningsretning. Med et lite antall personer menes inntil 10. Brannceller med et lite antall personer kan for eksempel være boenhet, sykerom, hotellrom, og mindre kontorlokaler og salgslokaler.",
+      "• Utadslående dør i yttervegg som er utgang eller rømningsvei, må ikke kunne blokkeres av snø eller is. Takoverbygg, snøfangere på tak og lignende vil kunne forhindre dette.",
+    );
+    if (erBKL1) {
+      lines.push("• Avbruddsfri strømforsyning må fungere i minst 30 minutter i byggverk i brannklasse 1.");
+    } else if (erBKL2ellerBKL3) {
+      lines.push("• Avbruddsfri strømforsyning må fungere i minst 60 minutter i byggverk i brannklasse 2 og 3.");
+    }
+    rows.push(contentRowMultiLine("Dører til rømningsvei", lines, "ARK / RIE"));
+  }
   if (formData.utgangBranncelle) {
     rows.push(contentRow("Utganger", formData.utgangBranncelle, "ARK"));
   }
