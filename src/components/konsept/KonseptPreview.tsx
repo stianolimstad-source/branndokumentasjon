@@ -3452,6 +3452,18 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
             )}
+            {formData.romningsveiKorridorOver30m && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top font-medium">Korridor lengre enn 30 meter</td>
+                <td className="border border-gray-400 p-2">
+                  <ul className="list-disc ml-4 space-y-1">
+                    <li>Rømningsvei som har to rømningsretninger, skal deles opp i hensiktsmessige enheter slik at røyk og branngasser ikke blokkerer begge rømningsretningene.</li>
+                    <li>Korridor som er lengre enn 30 meter må deles med bygningsdel og dør minst klasse E 30-CS<sub>a</sub> [F 30S] med innbyrdes avstand på høyst 30 meter.</li>
+                  </ul>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
             {formData.romningsvei && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>

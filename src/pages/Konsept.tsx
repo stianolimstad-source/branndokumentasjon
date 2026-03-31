@@ -6977,6 +6977,18 @@ const Konsept = () => {
                         </Label>
                       </div>
 
+                      {/* Korridor lengre enn 30 meter */}
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                        <Checkbox 
+                          id="romningsveiKorridorOver30m"
+                          checked={formData.romningsveiKorridorOver30m}
+                          onCheckedChange={(checked) => setFormData({...formData, romningsveiKorridorOver30m: checked === true})}
+                        />
+                        <Label htmlFor="romningsveiKorridorOver30m" className="text-xs cursor-pointer">
+                          Rømningskorridor er lengre enn 30 meter
+                        </Label>
+                      </div>
+
                       {/* Bekreftelse på automatiske krav inkludert i rapporten */}
                       {(() => {
                         const rk = formData.risikoklasse || "";
