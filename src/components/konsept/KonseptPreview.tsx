@@ -3731,6 +3731,57 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">RIBr</td>
             </tr>
+            <tr>
+              <td className="border border-gray-400 p-2 align-top">Tilgjengelighet for høyderedskap</td>
+              <td className="border border-gray-400 p-2">
+                <p>Byggverk inntil 8 etasjer må ha tilgjengelighet for brannvesenets høyderedskap (brannbil utstyrt med maskinstige eller snorkel) slik at alle etasjer og brannseksjoner kan nås.</p>
+                <p className="mt-1">For å oppnå tilgjengelighet må øverste gulv ikke være høyere enn 23 meter over laveste punkt på oppstillingsplasser for brannvesenets høyderedskap. I lave byggverk kan det tilrettelegges for bruk av bærbare stiger.</p>
+              </td>
+              <td className="border border-gray-400 p-2 align-top">ARK</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-400 p-2 align-top">Kjørbar atkomst</td>
+              <td className="border border-gray-400 p-2">
+                <p>Det må være tilrettelagt for kjørbar atkomst helt fram til hovedinngangen og brannvesenets angrepsvei i bygget.</p>
+                <p className="mt-1">For mindre byggverk i risikoklasse 4 og brannklasse 1 kan det aksepteres avstand på inntil 50 meter.</p>
+              </td>
+              <td className="border border-gray-400 p-2 align-top">ARK</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-400 p-2 align-top">Vindu/balkong som rømningsvei</td>
+              <td className="border border-gray-400 p-2">
+                <p>I byggverk hvor vindu eller balkong utgjør en av rømningsveiene, må det være tilgjengelighet for brannvesenets høyderedskap i samsvar med ytelser angitt i § 11-13.</p>
+              </td>
+              <td className="border border-gray-400 p-2 align-top">ARK</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-400 p-2 align-top">Stort antall personer</td>
+              <td className="border border-gray-400 p-2">
+                <p>I byggverk med et stort antall personer (vanligvis risikoklasse 5 og 6), må atkomsten som forutsettes benyttet for rednings- og slokkeinnsats, lett kunne åpnes av brannvesenet.</p>
+              </td>
+              <td className="border border-gray-400 p-2 align-top">ARK</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-400 p-2 align-top">Universalnøkkel</td>
+              <td className="border border-gray-400 p-2">
+                <p>I byggverk hvor brannvesenet vil måtte søke gjennom et større antall rom (mer enn 50 rom), må inngangsdør og dører til de enkelte rommene lett kunne åpnes ved hjelp av universalnøkkel som plasseres slik at den er lett tilgjengelig for brannvesenet.</p>
+              </td>
+              <td className="border border-gray-400 p-2 align-top">ARK</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-400 p-2 align-top">Radiokommunikasjon</td>
+              <td className="border border-gray-400 p-2">
+                <p>For å sikre radiokommunikasjon for rednings- og slokkemannskap, må det i byggverk uten tilfredsstillende innvendig radiodekning og hvor det kan bli behov for redningsinnsats, tilrettelegges med teknisk installasjon slik at rednings- og slokkemannskap kan benytte eget samband.</p>
+              </td>
+              <td className="border border-gray-400 p-2 align-top">RIE</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-400 p-2 align-top">Slangeutlegg</td>
+              <td className="border border-gray-400 p-2">
+                <p>Alle deler av en etasje må kunne nås med maksimalt 50 m slangeutlegg. Avstand regnes fra nærmeste brannskille.</p>
+              </td>
+              <td className="border border-gray-400 p-2 align-top">ARK</td>
+            </tr>
             {formData.redningsmannskap && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
