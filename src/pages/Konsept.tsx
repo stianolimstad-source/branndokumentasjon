@@ -6917,7 +6917,54 @@ const Konsept = () => {
                         </select>
                       </div>
 
-                      {/* Bekreftelse på automatiske krav inkludert i rapporten */}
+                      {/* Transport av sengeliggende */}
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                        <Checkbox 
+                          id="romningsveiSengeliggende"
+                          checked={formData.romningsveiSengeliggende}
+                          onCheckedChange={(checked) => setFormData({...formData, romningsveiSengeliggende: checked === true})}
+                        />
+                        <Label htmlFor="romningsveiSengeliggende" className="text-xs cursor-pointer">
+                          Transport av sengeliggende personer er relevant
+                        </Label>
+                      </div>
+
+                      {/* Samtidig rømning fra flere etasjer */}
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                        <Checkbox 
+                          id="romningsveiSamtidigRomning"
+                          checked={formData.romningsveiSamtidigRomning}
+                          onCheckedChange={(checked) => setFormData({...formData, romningsveiSamtidigRomning: checked === true})}
+                        />
+                        <Label htmlFor="romningsveiSamtidigRomning" className="text-xs cursor-pointer">
+                          Samtidig rømning fra flere etasjer
+                        </Label>
+                      </div>
+
+                      {/* Ingen innsnevring */}
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                        <Checkbox 
+                          id="romningsveiIngenInnsnevring"
+                          checked={formData.romningsveiIngenInnsnevring}
+                          onCheckedChange={(checked) => setFormData({...formData, romningsveiIngenInnsnevring: checked === true})}
+                        />
+                        <Label htmlFor="romningsveiIngenInnsnevring" className="text-xs cursor-pointer">
+                          Krav om ingen innsnevring i rømningsvei
+                        </Label>
+                      </div>
+
+                      {/* Fri bredde i trapp */}
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                        <Checkbox 
+                          id="romningsveiFriBreddeTrapp"
+                          checked={formData.romningsveiFriBreddeTrapp}
+                          onCheckedChange={(checked) => setFormData({...formData, romningsveiFriBreddeTrapp: checked === true})}
+                        />
+                        <Label htmlFor="romningsveiFriBreddeTrapp" className="text-xs cursor-pointer">
+                          Fri bredde i trapp (§ 12-14)
+                        </Label>
+                      </div>
+
                       {(() => {
                         const rk = formData.risikoklasse || "";
                         const harRK3 = rk === "RK3" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK3");
