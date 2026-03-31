@@ -6813,7 +6813,23 @@ const Konsept = () => {
                         </div>
                       </div>
 
-
+                      {/* Bekreftelse dørkrav */}
+                      {(() => {
+                        const rk = formData.risikoklasse || "";
+                        const bk = formData.brannklasse || "";
+                        const harRK5 = rk === "RK5" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK5");
+                        const bredde = harRK5 ? "1,16 m (RK5)" : "0,86 m";
+                        const strøm = bk === "BKL1" ? "30 min (BKL1)" : (bk === "BKL2" || bk === "BKL3") ? `60 min (${bk})` : null;
+                        return (
+                          <div className="p-3 bg-primary/5 border border-primary/20 rounded-md text-xs text-muted-foreground space-y-1">
+                            <p className="font-medium text-foreground text-sm">✓ Dørkrav til rømningsvei inkludert i rapporten</p>
+                            <p>Fri bredde: minimum {bredde}</p>
+                            <p>Fri høyde: minimum 2,0 m</p>
+                            <p>Åpningskraft: maks 67 N</p>
+                            {strøm && <p>Avbruddsfri strømforsyning: minst {strøm}</p>}
+                          </div>
+                        );
+                      })()}
 
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Utganger beskrives</Label>
