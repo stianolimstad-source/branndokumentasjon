@@ -3464,6 +3464,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
             )}
+            <tr>
+              <td className="border border-gray-400 p-2 align-top font-medium">Hovedatkomst</td>
+              <td className="border border-gray-400 p-2">
+                Hovedatkomst til byggverk eller del av byggverk for større personantall, skal være tilrettelagt for sikker rømning.
+              </td>
+              <td className="border border-gray-400 p-2 align-top">ARK</td>
+            </tr>
             {formData.romningsvei && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
