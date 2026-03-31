@@ -3842,7 +3842,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
       {/* 5. Revisjonshistorikk */}
       <section className="mb-6">
-        <h2 className="font-bold mb-3">5. Revisjonshistorikk</h2>
+        <h2 id="preview-kap5" className="font-bold mb-3">5. Revisjonshistorikk</h2>
         <p className="ml-4">{formData.revisjon || "[Revisjonslogg]"}</p>
       </section>
 
