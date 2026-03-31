@@ -3678,6 +3678,17 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       </td>
                       <td className="border border-gray-400 p-2 align-top">RIV</td>
                     </tr>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Merking av slokkeutstyr</td>
+                      <td className="border border-gray-400 p-2">
+                        <p>Stedene hvor manuelt slokkeutstyr er plassert, skal være tydelig markert med skilt.</p>
+                        <p className="mt-1">Skiltene må være etterlysende (fotoluminiscerende) eller belyst med nødlys.</p>
+                        <p className="mt-1">Tilvisningsskilt for slokkeutstyr må stå på tvers av ferdselsretningen.</p>
+                        <p className="mt-1">For materiell som krever bruksanvisning, må denne finnes på eller ved materiellet, også på de mest aktuelle fremmedspråk.</p>
+                        <p className="mt-2 text-xs">Plasseringen av brannslokkeutstyret skal være tydelig merket med mindre det bare er beregnet for personer i én bruksenhet og personene må forventes å være godt kjent med plasseringen.</p>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                    </tr>
                   </>
                 )}
               </>
