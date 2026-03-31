@@ -6094,6 +6094,17 @@ const Konsept = () => {
                           </div>
                         </>
                       )}
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          {formData.ventilasjonRelevant && <li>Ventilasjonsanlegg: brannspjeld, kanaler gjennom brannskiller, røykventilasjon</li>}
+                          {formData.vannAvlopRelevant && <li>Vann- og avløpsrør: gjennomføringer og branntetting</li>}
+                          {formData.rorIsolasjonRelevant && <li>Rør- og kanalisolasjon: 20%-regel og krav for rømningsveier/sjakter</li>}
+                          {formData.elektriskRelevant && <li>Elektriske installasjoner: kabler i hulrom, sjakter og brannmotstand</li>}
+                          {!formData.ventilasjonRelevant && !formData.vannAvlopRelevant && !formData.rorIsolasjonRelevant && !formData.elektriskRelevant && <li>Velg relevante tekniske installasjoner ovenfor</li>}
+                        </ul>
+                      </div>
                       
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('installasjoner-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
