@@ -3895,7 +3895,32 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <div className={pageStyle} style={pageWidth}>
       <section className="mb-6">
         <h2 id="preview-kap5" className="font-bold mb-3">3. Revisjonshistorikk</h2>
-        <p className="ml-4">{formData.revisjon || "[Revisjonslogg]"}</p>
+        {formData.revisjoner && formData.revisjoner.length > 0 ? (
+          <table className="w-full border-collapse border border-gray-400 text-xs ml-0">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border border-gray-400 p-1.5 text-left font-semibold w-12">Rev.</th>
+                <th className="border border-gray-400 p-1.5 text-left font-semibold w-24">Dato</th>
+                <th className="border border-gray-400 p-1.5 text-left font-semibold">Prosjekterende</th>
+                <th className="border border-gray-400 p-1.5 text-left font-semibold">KS</th>
+                <th className="border border-gray-400 p-1.5 text-left font-semibold">Kommentar</th>
+              </tr>
+            </thead>
+            <tbody>
+              {formData.revisjoner.map((rev: any, idx: number) => (
+                <tr key={idx}>
+                  <td className="border border-gray-400 p-1.5">{rev.nummer}</td>
+                  <td className="border border-gray-400 p-1.5">{rev.dato}</td>
+                  <td className="border border-gray-400 p-1.5">{rev.prosjekterende || "—"}</td>
+                  <td className="border border-gray-400 p-1.5">{rev.ks || "—"}</td>
+                  <td className="border border-gray-400 p-1.5">{rev.kommentar || "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="ml-4">{formData.revisjon || "[Revisjonslogg]"}</p>
+        )}
       </section>
 
       <section className="mb-6">
