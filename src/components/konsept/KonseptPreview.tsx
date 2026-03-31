@@ -113,7 +113,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   const pageKap3c = pageCounter++; // 3.5
   const pageKap3d = pageCounter++; // 3.6-3.7
   const pageKap3e = pageCounter++; // 3.8-3.9
-  const pageKap3f = pageCounter++; // 3.10-3.11
+  const pageKap3f = pageCounter++; // 3.10
+  const pageKap3f2 = pageCounter++; // 3.11
   const pageKap3g = pageCounter++; // 3.12-3.14
   const pageKap4 = pageCounter++; // Kap 4+5 (brannkonsept) or revisjon (tilstand)
   const pageLitteratur = pageCounter++;
