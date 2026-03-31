@@ -3389,6 +3389,50 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </tr>
               );
             })()}
+            {formData.romningsveiSengeliggende && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top font-medium">Transport av sengeliggende</td>
+                <td className="border border-gray-400 p-2">
+                  <ul className="list-disc ml-4 space-y-1">
+                    <li>I byggverk hvor det er nødvendig med transport av sengeliggende personer, må bredden av rømningsveien tilpasses dette.</li>
+                  </ul>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
+            {formData.romningsveiSamtidigRomning && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top font-medium">Samtidig rømning fra flere etasjer</td>
+                <td className="border border-gray-400 p-2">
+                  <ul className="list-disc ml-4 space-y-1">
+                    <li>I byggverk med flere etasjer må rømningsveiene dimensjoneres for samtidig rømning fra to etasjer. Det må dimensjoneres for de to etasjene som ligger over hverandre og til sammen har det største persontallet. Persontallet settes lik det største antallet personer som branncellen er beregnet for.</li>
+                  </ul>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
+            {formData.romningsveiIngenInnsnevring && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top font-medium">Ingen innsnevring</td>
+                <td className="border border-gray-400 p-2">
+                  <ul className="list-disc ml-4 space-y-1">
+                    <li>Rømningsvei må ikke ha innsnevring. Rekkverk, håndløper mv. i rømningsvei kan stikke inntil 10 cm ut fra vegg uten at den frie bredden må økes.</li>
+                  </ul>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
+            {formData.romningsveiFriBreddeTrapp && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top font-medium">Fri bredde i trapp</td>
+                <td className="border border-gray-400 p-2">
+                  <ul className="list-disc ml-4 space-y-1">
+                    <li>Fri bredde i trapp må være som for rømningsvei generelt, men minimum som angitt i § 12-14.</li>
+                  </ul>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
             {formData.romningsvei && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
