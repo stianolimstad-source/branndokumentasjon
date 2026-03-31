@@ -963,13 +963,8 @@ const Konsept = () => {
       setFormData(prev => ({ ...prev, litteratur: newLitteratur }));
     }
   }, [isViewMode]);
-  }, [
-    isViewMode, formData.regelverk, formData.tilretteleggingLedd1a, formData.tilretteleggingLedd1b,
-    formData.brannseksjonTiltak, formData.tilretteleggingLedd2a, formData.alarmValg,
-    formData.tilretteleggingLedd2b, formData.tilretteleggingLedd3, formData.ventilasjonRelevant,
-    formData.brannseksjonBrannenergi, formData.seksjoneringsvegBrannenergi,
-    formData.prosjekteringsmetode,
-  ]);
+
+
 
   const erBrannklasseOverstyrt = beregnetBrannklasseResult.brannklasse && formData.brannklasse !== beregnetBrannklasseResult.brannklasse;
 
