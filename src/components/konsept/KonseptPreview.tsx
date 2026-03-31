@@ -246,8 +246,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p className="ml-4">3.9 Tiltak for å påvirke rømnings- og redningstider</p>
               <p className="ml-4">3.10 Utgang fra branncelle</p>
               <p className="ml-4">3.11 Rømningsvei</p>
-              <p className="ml-4">3.12 Tilrettelegging for manuell slokking</p>
-              <p className="ml-4">3.13 Tilrettelegging for rednings- og slokkemannskap</p>
+              <p className="ml-4">3.12 Tilrettelegging for redning av husdyr</p>
+              <p className="ml-4">3.13 Tilrettelegging for manuell slokking</p>
+              <p className="ml-4">3.14 Tilrettelegging for rednings- og slokkemannskap</p>
               <p><span className="font-bold">4.</span> Revisjonshistorikk</p>
               <p><span className="font-bold">5.</span> Litteraturhenvisninger</p>
             </>
