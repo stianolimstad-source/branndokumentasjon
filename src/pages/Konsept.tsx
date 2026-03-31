@@ -7178,6 +7178,7 @@ const Konsept = () => {
                         <Label htmlFor="husdyrRedningRelevant" className="text-xs cursor-pointer">
                           Bygget er beregnet for husdyrhold (driftsbygning med husdyrrom)
                         </Label>
+                      </div>
                       {/* Info om automatiske krav */}
                       {formData.husdyrRedningRelevant && (
                         <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
@@ -7189,7 +7190,6 @@ const Konsept = () => {
                           </ul>
                         </div>
                       )}
-                      </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('husdyr-redning-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="husdyr-redning-kommentar" className={formData.husdyrRedningKommentar ? "" : "hidden"}>
