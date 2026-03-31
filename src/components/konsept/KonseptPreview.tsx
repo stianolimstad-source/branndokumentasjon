@@ -3219,22 +3219,60 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
             )}
-            {/* Dør-krav til rømningsvei */}
-            {(formData.dorerTilbakerømning || formData.dorerNattlaser || formData.dorerLiteAntallPersoner || formData.dorerStromforsyningBKL1 || formData.dorerStromforsyningBKL2 || formData.dorerStromforsyningBKL3) && (
-              <tr>
-                <td className="border border-gray-400 p-2 align-top">Dører</td>
-                <td className="border border-gray-400 p-2">
-                  <ul className="list-disc list-inside text-sm space-y-1">
-                    {formData.dorerTilbakerømning && <li>Låsesystem skal tillate tilbakerømning (retur gjennom dør etter passering).</li>}
-                    {formData.dorerNattlaser && <li>Nattlåser benyttes. Dører med nattlås skal kunne åpnes med én håndgrepsbevegelse uten bruk av nøkkel ved rømning.</li>}
-                    {formData.dorerLiteAntallPersoner && <li>Rom med færre enn 10 personer: Dør kan slå mot rømningsretningen.</li>}
-                    {formData.dorerStromforsyningBKL1 && <li>Elektriske låsesystemer i BKL1 skal ha reservestrømforsyning (UPS) i minst 30 minutter.</li>}
-                    {(formData.dorerStromforsyningBKL2 || formData.dorerStromforsyningBKL3) && <li>Elektriske låsesystemer i BKL2/BKL3 skal ha reservestrømforsyning (UPS) i minst 60 minutter.</li>}
-                  </ul>
-                </td>
-                <td className="border border-gray-400 p-2 align-top">ARK / RIE</td>
-              </tr>
-            )}
+            {/* Dør-krav til rømningsvei - alltid vist */}
+            {(() => {
+              const alleRK = formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0
+                ? [...new Set(formData.bygningsdeler.map((d: any) => d.risikoklasse).filter(Boolean))]
+                : formData.risikoklasse ? [formData.risikoklasse] : [];
+              const harRK5 = alleRK.includes("RK5");
+              const harRK6 = alleRK.includes("RK6");
+              
+              const bk = formData.brannklasse || "";
+              const erBKL1 = bk === "BKL1";
+              const erBKL2ellerBKL3 = bk === "BKL2" || bk === "BKL3";
+              const strømTid = erBKL1 ? "30 minutter" : erBKL2ellerBKL3 ? "60 minutter" : null;
+              const strømBKL = erBKL1 ? "brannklasse 1" : erBKL2ellerBKL3 ? "brannklasse 2 og 3" : null;
+
+              // Bredde basert på risikoklasse
+              let breddeTekst = "Dør til rømningsvei i byggverk i risikoklasse 1, 2, 3, 4 og 6 må ha fri bredde minimum 0,86 meter. Unntak gjelder for fritidsbolig med én boenhet.";
+              if (harRK5) {
+                breddeTekst = "Dør til rømningsvei i byggverk i risikoklasse 5 må ha fri bredde minimum 1,16 meter.";
+              }
+              if (harRK6) {
+                breddeTekst = "Dør til rømningsvei i byggverk i risikoklasse 1, 2, 3, 4 og 6 må ha fri bredde minimum 0,86 meter. Unntak gjelder for fritidsbolig med én boenhet. Dør til rømningsvei i byggverk i risikoklasse 5 må ha fri bredde minimum 1,16 meter.";
+              }
+              if (harRK5 && !harRK6) {
+                breddeTekst = "Dør til rømningsvei i byggverk i risikoklasse 5 må ha fri bredde minimum 1,16 meter.";
+              }
+              // If both RK5 and other RKs
+              if (harRK5 && alleRK.some((rk: string) => !["RK5"].includes(rk))) {
+                breddeTekst = "Dør til rømningsvei i byggverk i risikoklasse 1, 2, 3, 4 og 6 må ha fri bredde minimum 0,86 meter. Unntak gjelder for fritidsbolig med én boenhet. Dør til rømningsvei i byggverk i risikoklasse 5 må ha fri bredde minimum 1,16 meter.";
+              }
+
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Dører til rømningsvei</td>
+                  <td className="border border-gray-400 p-2">
+                    <ul className="list-disc list-inside text-sm space-y-1">
+                      <li>Åpningskraft for dører til rømningsvei må være maksimalt 67 Newton dersom det ikke følger andre krav av § 12-13.</li>
+                      <li>{breddeTekst}</li>
+                      {(harRK6) && <li>I byggverk hvor det er nødvendig med transport i seng, må dørbredden tilpasses dette.</li>}
+                      <li>Samlet fri bredde på dører fra branncelle til rømningsvei bestemmes ut fra det antall personer som branncellen er beregnet for, jf. femte ledd.</li>
+                      <li>Dør til rømningsvei må ha fri høyde på minimum 2,0 meter. Unntak gjelder for fritidsbolig med én boenhet.</li>
+                      <li>Dør til rømningsvei må lett kunne åpnes slik at den er enkel å bruke for alle personer.</li>
+                      <li>Selvlukkende dør, benevnt C [S], kan settes i åpen stilling ved hjelp av elektromagnetiske holdere som utløses og lukker døren ved brannalarm. Døren må kunne åpnes igjen med dørautomatikk eller manuelt med åpningskraft i samsvar med § 12-13.</li>
+                      <li>Dør til rømningsvei må ha et låsesystem som gjør det mulig å vende tilbake dersom rømningsveien skulle være blokkert, med mindre andre tiltak gir tilsvarende sikkerhet.</li>
+                      <li>Dør til rømningsvei kan være låst når byggverket har brannalarmanlegg og låsesystemet åpnes automatisk ved alarm. I tillegg må det være tydelig merket knapp for manuell åpning av døren. Det kan aksepteres inntil 10 sekunder tidsforsinkelse på den manuelle åpningsmekanismen.</li>
+                      <li>Nattlåser må utføres slik at de ikke kommer i strid med kravene til sikker rømning.</li>
+                      <li>Dør til rømningsvei fra branncelle beregnet for et lite antall personer kan slå mot rømningsretning. Med et lite antall personer menes inntil 10. Brannceller med et lite antall personer kan for eksempel være boenhet, sykerom, hotellrom, og mindre kontorlokaler og salgslokaler.</li>
+                      <li>Utadslående dør i yttervegg som er utgang eller rømningsvei, må ikke kunne blokkeres av snø eller is. Takoverbygg, snøfangere på tak og lignende vil kunne forhindre dette.</li>
+                      {strømTid && <li>Avbruddsfri strømforsyning må fungere i minst {strømTid} i byggverk i {strømBKL}.</li>}
+                    </ul>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK / RIE</td>
+                </tr>
+              );
+            })()}
             {formData.utgangBranncelle && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Utganger</td>
