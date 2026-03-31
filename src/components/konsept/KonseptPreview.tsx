@@ -100,8 +100,17 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   const hasSammendrag = !!formData.sammendrag;
   const isTilstand = documentType === "tilstandsvurdering";
   const isBF85 = isTilstand && formData.regelverk === "BF85";
-  const extraPages = (hasSammendrag ? 1 : 0) + (isTilstand ? 1 : 0);
-  const totalPages = isTilstand ? 7 + extraPages : 8 + extraPages;
+  // Page numbering: sequential
+  let pageCounter = 1;
+  const pageForside = pageCounter++;
+  const pageSammendrag = hasSammendrag ? pageCounter++ : 0;
+  const pageTilstandsgrader = isTilstand ? pageCounter++ : 0;
+  const pageInnhold = pageCounter++;
+  const pageKap1 = pageCounter++;
+  const pageKap2 = pageCounter++;
+  const pageKap3 = pageCounter++; // Kap 3 (+4+5 for brannkonsept, +revisjon for tilstand)
+  const pageLitteratur = pageCounter++;
+  const totalPages = pageCounter - 1;
   // Section prefix for chapter 3 (brannkonsept) → chapter 2 (tilstandsvurdering)
   const sp = "3";
 
@@ -139,7 +148,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         )}
         <p className="mt-4 text-xs text-gray-400">{new Date().toLocaleDateString("nb-NO", { year: "numeric", month: "long", day: "numeric" })}</p>
         </div>
-        <PageFooter pageNum={1} />
+        <PageFooter pageNum={pageForside} />
       </div>
 
       {/* Sammendrag - egen side */}
@@ -147,7 +156,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         <div className={pageStyle} style={pageWidth}>
           <h2 id="preview-sammendrag" className="font-bold mb-3">Sammendrag</h2>
           <p className="whitespace-pre-wrap text-xs">{formData.sammendrag}</p>
-          <PageFooter pageNum={2} />
+          <PageFooter pageNum={pageSammendrag} />
         </div>
       )}
 
@@ -210,7 +219,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
             </tbody>
           </table>
-          <PageFooter pageNum={2 + extraPages} />
+          <PageFooter pageNum={pageTilstandsgrader} />
         </div>
       )}
 
@@ -288,7 +297,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           )}
         </div>
       </section>
-      <PageFooter pageNum={2 + extraPages} />
+      <PageFooter pageNum={pageInnhold} />
       </div>
 
       {/* Kapittel 1 - egen side */}
@@ -407,7 +416,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         </>
         )}
       </section>
-      <PageFooter pageNum={3 + extraPages} />
+      <PageFooter pageNum={pageKap1} />
       </div>
 
       {/* Kapittel 2 / Kap 1 forts. - egen side */}
@@ -619,7 +628,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </>
         )}
       </section>
-      <PageFooter pageNum={4 + extraPages} />
+      <PageFooter pageNum={pageKap2} />
       </div>
       <div className={pageStyle} style={pageWidth}>
       {/* Branntekniske ytelseskrav */}
@@ -1366,16 +1375,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <TilstandTableRow data={formData.tilstandsvurderinger["3_4"]} sectionLabel={isBF85 ? "2.4 Brannteknisk oppdeling" : "3.4 Brannseksjoner"} />
             )}
 
-          </tbody>
-        </table>
-      </section>
-      <PageFooter pageNum={5 + extraPages} />
-      </div>
-      <div className={pageStyle} style={pageWidth}>
-      <section className="mb-6">
-        <h2 className="font-bold mb-3">{sp}. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} (forts.)</h2>
-        <table className="w-full border-collapse border border-gray-400 text-xs">
-          <tbody>
             {/* 3.5 §11-8 Brannceller */}
             <tr id="preview-3-5" className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.5 &nbsp;&nbsp; {isBF85 ? <>Branncelleinndeling (Kap. 30:63–65) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-8 Brannceller)</span></> : "§11-8 Brannceller"}</td>
@@ -2731,16 +2730,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <TilstandTableRow data={formData.tilstandsvurderinger["3_7"]} sectionLabel="3.7 Tekniske installasjoner" />
             )}
 
-          </tbody>
-        </table>
-      </section>
-      <PageFooter pageNum={6 + extraPages} />
-      </div>
-      <div className={pageStyle} style={pageWidth}>
-      <section className="mb-6">
-        <h2 className="font-bold mb-3">{sp}. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} (forts.)</h2>
-        <table className="w-full border-collapse border border-gray-400 text-xs">
-          <tbody>
             {/* 3.8 §11-11 Generelle krav om rømning */}
             <tr id="preview-3-8" className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.8 &nbsp;&nbsp; {isBF85 ? <>Rømningsvei – generelle krav (Kap. 30:7) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-11 Generelle krav om rømning og redning)</span></> : "§11-11 Generelle krav om rømning og redning"}</td>
@@ -3814,13 +3803,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </tbody>
         </table>
       </section>
-      <PageFooter pageNum={7 + extraPages} />
-      </div>
-      
-
 
       {documentType !== "tilstandsvurdering" && (
-      <div className={pageStyle} style={pageWidth}>
+      <>
       <section className="mb-6">
         <h2 id="preview-kap4" className="font-bold mb-3" style={{ color: "#00a3e0" }}>4. Utførelses- og driftsfasen</h2>
         
@@ -3870,29 +3855,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <p className="ml-4">{formData.revisjon || "[Revisjonslogg]"}</p>
         )}
       </section>
-
-      {/* 6. Litteraturhenvisninger */}
-      <section className="mb-6" style={{ breakBefore: "page" }}>
-        <h2 id="preview-kap6" className="font-bold mb-3">6. Litteraturhenvisninger</h2>
-        <ul className="ml-4 list-disc list-inside">
-          {(formData.litteratur || "").split("\n").filter((r: string) => r.trim()).map((ref: string, i: number) => (
-            <li key={i}>{ref}</li>
-          ))}
-        </ul>
-      </section>
-
-      {formData.fravik && (
-        <section className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
-          <h2 className="font-bold mb-3">Fravik og kompenserende tiltak</h2>
-          <p className="ml-4">{formData.fravik}</p>
-        </section>
-      )}
-      <PageFooter pageNum={totalPages} />
-      </div>
+      </>
       )}
 
       {documentType === "tilstandsvurdering" && (
-      <div className={pageStyle} style={pageWidth}>
+      <>
       <section className="mb-6">
         <h2 id="preview-kap5" className="font-bold mb-3">3. Revisjonshistorikk</h2>
         {formData.revisjoner && formData.revisjoner.length > 0 ? (
@@ -3922,15 +3889,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <p className="ml-4">{formData.revisjon || "[Revisjonslogg]"}</p>
         )}
       </section>
-
-      <section className="mb-6" style={{ breakBefore: "page" }}>
-        <h2 id="preview-kap6" className="font-bold mb-3">4. Litteraturhenvisninger</h2>
-        <ul className="ml-4 list-disc list-inside">
-          {(formData.litteratur || "").split("\n").filter((r: string) => r.trim()).map((ref: string, i: number) => (
-            <li key={i}>{ref}</li>
-          ))}
-        </ul>
-      </section>
+      </>
+      )}
 
       {formData.fravik && (
         <section className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
@@ -3938,9 +3898,21 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <p className="ml-4">{formData.fravik}</p>
         </section>
       )}
-      <PageFooter pageNum={totalPages} />
+      <PageFooter pageNum={pageKap3} />
       </div>
-      )}
+
+      {/* Litteraturhenvisninger - egen side */}
+      <div className={pageStyle} style={pageWidth}>
+      <section className="mb-6">
+        <h2 id="preview-kap6" className="font-bold mb-3">{isTilstand ? "4" : "6"}. Litteraturhenvisninger</h2>
+        <ul className="ml-4 list-disc list-inside">
+          {(formData.litteratur || "").split("\n").filter((r: string) => r.trim()).map((ref: string, i: number) => (
+            <li key={i}>{ref}</li>
+          ))}
+        </ul>
+      </section>
+      <PageFooter pageNum={pageLitteratur} />
+      </div>
     </div>
   );
 };
