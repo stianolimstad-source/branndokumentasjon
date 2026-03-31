@@ -3360,6 +3360,15 @@ const Konsept = () => {
                           </p>
                         </div>
                       )}
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          <li>Brannmotstandskrav for bærende konstruksjoner basert på {formData.regelverk === "BF85" ? `bygningsbrannklasse ${formData.bygningsbrannklasse || "(ikke angitt)"}` : `brannklasse ${formData.brannklasse || "(ikke angitt)"}`}</li>
+                          <li>Krav til bærende hovedsystem, sekundære bærende deler, trapperom og heissjakt</li>
+                          {formData.regelverk !== "BF85" && formData.baereevneUnntak?.length > 0 && <li>Unntak iht. VTEK § 11-4 (automatisk beregnet)</li>}
+                        </ul>
+                      </div>
                       <div className="flex items-center space-x-2">
                         <Checkbox
                           id="balkongRelevant"
@@ -3473,6 +3482,15 @@ const Konsept = () => {
                           </p>
                         </div>
                       )}
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          <li>Vurdering av eksplosjonsfare basert på valgt relevans</li>
+                          {formData.eksplosjonRelevant === "relevant" && <li>Preaksepterte ytelser iht. VTEK § 11-5 (egen branncelle, trykkavlastningsflate, mm.)</li>}
+                          {formData.eksplosjonRelevant === "ikke_relevant" && <li>Standardtekst om at eksplosjonsfare ikke er relevant for tiltaket</li>}
+                        </ul>
+                      </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('eksplosjon-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="eksplosjon-kommentar" className={formData.eksplosjonKommentar ? "" : "hidden"}>
@@ -3680,7 +3698,15 @@ const Konsept = () => {
                           )}
                         </>
                       )}
-                      
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          <li>Avstandskrav mellom byggverk basert på bygningshøyde og avstand til nabobygg</li>
+                          <li>Automatisk beregning av minsteavstand og krav til brannvegg/branncellevegg</li>
+                          <li>Krav til yttervegger og vinduer/åpninger mot nabobygg</li>
+                        </ul>
+                      </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('brannspredning-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="brannspredning-kommentar" className={formData.brannspredningKommentar ? "" : "hidden"}>
@@ -4064,6 +4090,15 @@ const Konsept = () => {
                         </div>
                       </div>
 
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          <li>Brannseksjoneringskrav basert på bygningstype og brannbelastning</li>
+                          <li>Krav til seksjoneringsvegger (brannvegg) med riktig brannmotstand</li>
+                          <li>Areal- og brannbelastningsgrenser for oppdeling</li>
+                        </ul>
+                      </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('brannseksjoner-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="brannseksjoner-kommentar" className={formData.brannseksjonerKommentar ? "" : "hidden"}>
@@ -5667,6 +5702,16 @@ const Konsept = () => {
                       </div>
 
 
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          <li>Branncellekrav basert på valgte branncelle-typer</li>
+                          <li>Brannmotstand for branncellebegrensende konstruksjoner</li>
+                          <li>Dørkrav i branncellebegrensende vegger</li>
+                          <li>Krav til gjennomføringer og branntetting</li>
+                        </ul>
+                      </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('brannceller-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="brannceller-kommentar" className={formData.branncellerKommentar ? "" : "hidden"}>
@@ -5885,6 +5930,16 @@ const Konsept = () => {
                           </div>
                         </>
                       )}
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          <li>Krav til innvendige overflater og kledninger basert på brannklasse</li>
+                          <li>Særkrav for rømningsveier (In1, K1-A)</li>
+                          <li>Krav til isolasjon og sandwichelementer</li>
+                          <li>Tabell 1A/1B for produktegenskaper</li>
+                        </ul>
+                      </div>
                       
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('materialer-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
@@ -6039,6 +6094,17 @@ const Konsept = () => {
                           </div>
                         </>
                       )}
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          {formData.ventilasjonRelevant && <li>Ventilasjonsanlegg: brannspjeld, kanaler gjennom brannskiller, røykventilasjon</li>}
+                          {formData.vannAvlopRelevant && <li>Vann- og avløpsrør: gjennomføringer og branntetting</li>}
+                          {formData.rorIsolasjonRelevant && <li>Rør- og kanalisolasjon: 20%-regel og krav for rømningsveier/sjakter</li>}
+                          {formData.elektriskRelevant && <li>Elektriske installasjoner: kabler i hulrom, sjakter og brannmotstand</li>}
+                          {!formData.ventilasjonRelevant && !formData.vannAvlopRelevant && !formData.rorIsolasjonRelevant && !formData.elektriskRelevant && <li>Velg relevante tekniske installasjoner ovenfor</li>}
+                        </ul>
+                      </div>
                       
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('installasjoner-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
@@ -6067,6 +6133,15 @@ const Konsept = () => {
                           value={formData.romningSikkerhet}
                           onChange={(e) => setFormData({...formData, romningSikkerhet: e.target.value})}
                         />
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          <li>Generelle krav til rømning og evakuering</li>
+                          <li>Krav til tidlig varsling og tilstrekkelig rømningstid</li>
+                          <li>Krav til rømningsveier med tilstrekkelig kapasitet</li>
+                        </ul>
+                      </div>
                       </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('romning-sikkerhet-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
@@ -6583,6 +6658,17 @@ const Konsept = () => {
                       </div>
                       </>)}
 
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          {(formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) && <li>Krav til automatisk slokkeanlegg basert på risikoklasse</li>}
+                          {formData.tilretteleggingLedd2a && <li>Brannalarmanlegg med automatisk beregnet kategori</li>}
+                          {formData.alarmValg === "roykvarsler" && <li>Seriekoblede røykvarslere med batteribackup</li>}
+                          <li>Alarmkrav tilpasset bygningstype og risikoklasse</li>
+                          <li>Ledesystem og nødlys basert på risikoklasse</li>
+                        </ul>
+                      </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('tilrettelegging-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="tilrettelegging-kommentar" className={formData.tilretteleggingKommentar ? "" : "hidden"}>
@@ -6877,6 +6963,16 @@ const Konsept = () => {
                           value={formData.utgangBranncelle}
                           onChange={(e) => setFormData({...formData, utgangBranncelle: e.target.value})}
                         />
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          <li>Krav til utgang fra branncelle basert på risikoklasse og brannklasse</li>
+                          <li>Antall utganger og avstand til utgang</li>
+                          <li>Krav til dører i branncellebegrensende vegger</li>
+                          <li>Vinduer som rømningsvei (der relevant)</li>
+                        </ul>
+                      </div>
                       </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('utgang-branncelle-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
@@ -7082,6 +7178,17 @@ const Konsept = () => {
                         <Label htmlFor="husdyrRedningRelevant" className="text-xs cursor-pointer">
                           Bygget er beregnet for husdyrhold (driftsbygning med husdyrrom)
                         </Label>
+                      {/* Info om automatiske krav */}
+                      {formData.husdyrRedningRelevant && (
+                        <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                          <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                          <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                            <li>Krav til rømningsveier for husdyr</li>
+                            <li>Branncelleinndeling for husdyrrom</li>
+                            <li>Varsling ved brann i driftsbygninger</li>
+                          </ul>
+                        </div>
+                      )}
                       </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('husdyr-redning-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
@@ -7273,6 +7380,18 @@ const Konsept = () => {
                           value={formData.redningsmannskap}
                           onChange={(e) => setFormData({...formData, redningsmannskap: e.target.value})}
                         />
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          <li>Tilgjengelighet for brannvesenets høyderedskap (bygg inntil 8 etasjer)</li>
+                          <li>Kjørbar atkomst til hovedinngang og angrepsvei</li>
+                          <li>Krav til universalnøkkel ved mer enn 50 rom</li>
+                          <li>Radiokommunikasjon for rednings- og slokkemannskap</li>
+                          <li>Maksimalt 50 m slangeutlegg fra nærmeste brannskille</li>
+                          <li>Tydelig merking av branntekniske installasjoner</li>
+                        </ul>
+                      </div>
                       </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('redningsmannskap-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
