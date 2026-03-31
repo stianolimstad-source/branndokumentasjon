@@ -6990,6 +6990,18 @@ const Konsept = () => {
                         </Label>
                       </div>
 
+                      {/* Panikkbeslag */}
+                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                        <Checkbox 
+                          id="romningsveiPanikkbeslag"
+                          checked={formData.romningsveiPanikkbeslag}
+                          onCheckedChange={(checked) => setFormData({...formData, romningsveiPanikkbeslag: checked === true})}
+                        />
+                        <Label htmlFor="romningsveiPanikkbeslag" className="text-xs cursor-pointer">
+                          Krav til panikkbeslag er relevant (RK5/RK6/skoler)
+                        </Label>
+                      </div>
+
                       {/* Bekreftelse på automatiske krav inkludert i rapporten */}
                       {(() => {
                         const rk = formData.risikoklasse || "";
