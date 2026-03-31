@@ -6132,7 +6132,8 @@ const Konsept = () => {
                         <Textarea 
                           value={formData.romningSikkerhet}
                           onChange={(e) => setFormData({...formData, romningSikkerhet: e.target.value})}
-                        />
+                         />
+                      </div>
                       {/* Info om automatiske krav */}
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
@@ -6141,7 +6142,6 @@ const Konsept = () => {
                           <li>Krav til tidlig varsling og tilstrekkelig rømningstid</li>
                           <li>Krav til rømningsveier med tilstrekkelig kapasitet</li>
                         </ul>
-                      </div>
                       </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('romning-sikkerhet-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
@@ -6962,7 +6962,8 @@ const Konsept = () => {
                         <Textarea 
                           value={formData.utgangBranncelle}
                           onChange={(e) => setFormData({...formData, utgangBranncelle: e.target.value})}
-                        />
+                         />
+                      </div>
                       {/* Info om automatiske krav */}
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
@@ -6972,7 +6973,6 @@ const Konsept = () => {
                           <li>Krav til dører i branncellebegrensende vegger</li>
                           <li>Vinduer som rømningsvei (der relevant)</li>
                         </ul>
-                      </div>
                       </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('utgang-branncelle-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
@@ -7178,6 +7178,7 @@ const Konsept = () => {
                         <Label htmlFor="husdyrRedningRelevant" className="text-xs cursor-pointer">
                           Bygget er beregnet for husdyrhold (driftsbygning med husdyrrom)
                         </Label>
+                      </div>
                       {/* Info om automatiske krav */}
                       {formData.husdyrRedningRelevant && (
                         <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
@@ -7189,7 +7190,6 @@ const Konsept = () => {
                           </ul>
                         </div>
                       )}
-                      </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('husdyr-redning-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="husdyr-redning-kommentar" className={formData.husdyrRedningKommentar ? "" : "hidden"}>
@@ -7379,7 +7379,8 @@ const Konsept = () => {
                         <Textarea 
                           value={formData.redningsmannskap}
                           onChange={(e) => setFormData({...formData, redningsmannskap: e.target.value})}
-                        />
+                         />
+                      </div>
                       {/* Info om automatiske krav */}
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
@@ -7391,7 +7392,6 @@ const Konsept = () => {
                           <li>Maksimalt 50 m slangeutlegg fra nærmeste brannskille</li>
                           <li>Tydelig merking av branntekniske installasjoner</li>
                         </ul>
-                      </div>
                       </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('redningsmannskap-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
