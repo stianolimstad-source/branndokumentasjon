@@ -660,6 +660,7 @@ const Konsept = () => {
     boenhetKunEttTrapperom: false,
     branncelleFlereEtasjer: false,
     lavtByggverkVinduerRomning: false,
+    lavtByggverkEnRomningsretning: false,
     branncelleStortAntallPersoner: false,
     stortAntallUnder600: false,
     stortAntallOver600: false,
