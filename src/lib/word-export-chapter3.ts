@@ -397,6 +397,13 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
 
   if (g && maksAreal !== null && !erPakrevd) {
     rows.push(contentRow("Seksjonering", `Bruttoarealet (${arealNum} m²) er innenfor tillatt areal uten brannseksjonering (${maksAreal === Infinity ? "ubegrenset" : maksAreal + " m²"}). Det er derfor ikke krav til brannseksjonering for dette byggverket.`, "RIBr"));
+    if (formData.innvendigHjorne === "ja") {
+      rows.push(contentRow("Innvendig hjørne",
+        formData.innvendigHjorneAlternativ === "alt1"
+          ? "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal seksjoneringsveggen forlenges minimum 8,0 meter forbi innvendig hjørne (jf. VTEK § 11-7, figur 1a, alternativ 1)."
+          : "For å hindre brannsmitte fra vegg til vegg i innvendige hjørner skal seksjoneringsveggen forlenges minimum 5,0 meter på hver side av innvendig hjørne (jf. VTEK § 11-7, figur 1a, alternativ 2).",
+        "RIBr / ARK"));
+    }
   } else {
     rows.push(contentRow("Generelt", "Byggverk skal deles opp i brannseksjoner for å sikre liv og helse der rømning og redning kan ta lang tid, hindre urimelig store økonomiske eller materielle tap, og bidra til at en brann, med påregnelig slokkeinnsats, begrenses til den brannseksjonen der den startet.", "RIBr"));
 
