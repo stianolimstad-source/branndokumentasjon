@@ -3842,7 +3842,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
       {/* 5. Revisjonshistorikk */}
       <section className="mb-6">
-        <h2 id="preview-kap5" className="font-bold mb-3">{documentType === "tilstandsvurdering" ? "3" : "5"}. Revisjonshistorikk</h2>
+        <h2 id="preview-kap5" className="font-bold mb-3">5. Revisjonshistorikk</h2>
         {formData.revisjoner && formData.revisjoner.length > 0 ? (
           <table className="w-full border-collapse border border-gray-400 text-xs ml-0">
             <thead>
