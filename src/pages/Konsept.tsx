@@ -661,6 +661,7 @@ const Konsept = () => {
     branncelleFlereEtasjer: false,
     lavtByggverkVinduerRomning: false,
     lavtByggverkEnRomningsretning: false,
+    sporadiskOpphold: false,
     branncelleStortAntallPersoner: false,
     stortAntallUnder600: false,
     stortAntallOver600: false,
