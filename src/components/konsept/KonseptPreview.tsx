@@ -110,9 +110,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   const pageKap2 = pageCounter++;
   const pageKap3a = pageCounter++; // 3.1-3.2
   const pageKap3b = pageCounter++; // 3.3-3.4
-  const pageKap3c = pageCounter++; // 3.5
-  const pageKap3d = pageCounter++; // 3.6-3.7
-  const pageKap3e = pageCounter++; // 3.8-3.9
+  const pageKap3c = pageCounter++; // 3.5 (del 1)
+  const pageKap3c2 = pageCounter++; // 3.5 (del 2)
+  const pageKap3d = pageCounter++; // 3.6
+  const pageKap3d2 = pageCounter++; // 3.7
+  const pageKap3e = pageCounter++; // 3.8
+  const pageKap3e2 = pageCounter++; // 3.9
   const pageKap3f = pageCounter++; // 3.10
   const pageKap3f2 = pageCounter++; // 3.11
   const pageKap3f3 = pageCounter++; // 3.11 (forts.)
