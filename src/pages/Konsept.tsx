@@ -3482,6 +3482,15 @@ const Konsept = () => {
                           </p>
                         </div>
                       )}
+                      {/* Info om automatiske krav */}
+                      <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
+                        <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                          <li>Vurdering av eksplosjonsfare basert på valgt relevans</li>
+                          {formData.eksplosjonRelevant === "relevant" && <li>Preaksepterte ytelser iht. VTEK § 11-5 (egen branncelle, trykkavlastningsflate, mm.)</li>}
+                          {formData.eksplosjonRelevant === "ikke_relevant" && <li>Standardtekst om at eksplosjonsfare ikke er relevant for tiltaket</li>}
+                        </ul>
+                      </div>
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('eksplosjon-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="eksplosjon-kommentar" className={formData.eksplosjonKommentar ? "" : "hidden"}>
