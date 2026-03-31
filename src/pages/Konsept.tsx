@@ -710,6 +710,7 @@ const Konsept = () => {
     slangeutlegg50m: true,
     harRadiokommunikasjon: false,
     harUniversalnokkel: false,
+    stortAntallPersonerSlokke: false,
     eksplosjonKommentar: "",
     // 4. Utførelses- og driftsfasen
     utfoerelse: "",
@@ -7396,6 +7397,14 @@ const Konsept = () => {
                           />
                           <Label htmlFor="harUniversalnokkel" className="text-sm font-medium">Krav til universalnøkkel / nøkkelskap</Label>
                         </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="stortAntallPersonerSlokke"
+                            checked={formData.stortAntallPersonerSlokke}
+                            onCheckedChange={(checked) => setFormData({...formData, stortAntallPersonerSlokke: checked === true})}
+                          />
+                          <Label htmlFor="stortAntallPersonerSlokke" className="text-sm font-medium">Stort antall personer – tilgjengelig atkomst for brannvesenet</Label>
+                        </div>
                       </div>
                       <div className="mb-3">
                         <Label className="text-xs font-medium mb-1 block">Tilrettelegging for rednings- og slokkemannskap</Label>
@@ -7410,7 +7419,6 @@ const Konsept = () => {
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
                           <li>Generelle krav til plassering, utforming og merking</li>
                           <li>Kjørbar atkomst til hovedinngang og angrepsvei</li>
-                          <li>Stort antall personer (RK5/RK6) – tilgjengelig atkomst for brannvesenet</li>
                           {formData.romningsvinduRelevant && (
                             <li>Vindu/balkong som rømningsvei – tilgjengelighet for høyderedskap (basert på valg i kap. 3.10)</li>
                           )}

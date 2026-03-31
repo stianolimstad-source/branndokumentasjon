@@ -3758,6 +3758,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
             )}
+            {formData.stortAntallPersonerSlokke && (
             <tr>
               <td className="border border-gray-400 p-2 align-top">Stort antall personer</td>
               <td className="border border-gray-400 p-2">
@@ -3765,6 +3766,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
+            )}
             {formData.harUniversalnokkel && (
             <tr>
               <td className="border border-gray-400 p-2 align-top">Universalnøkkel</td>
