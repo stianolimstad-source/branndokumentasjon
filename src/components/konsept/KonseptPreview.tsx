@@ -2267,7 +2267,18 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_5"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_5"]} sectionLabel="3.5 Brannceller" />
             )}
+          </tbody>
+        </table>
+      </section>
+      <PageFooter pageNum={pageKap3c} />
+      </div>
 
+      {/* Side 3.6-3.7 */}
+      <div className={pageStyle} style={pageWidth}>
+      <section className="mb-6">
+        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
+        <table className="w-full border-collapse border border-gray-400 text-xs">
+          <tbody>
             {/* 3.6 §11-9 Materialer og produkter */}
             <tr id="preview-3-6" className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.6 &nbsp;&nbsp; {isBF85 ? <>Kledninger og overflater for vegger og tak (:42) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-9 Materialer og produkters egenskaper ved brann)</span></> : "§11-9 Materialer og produkters egenskaper ved brann"}</td>
