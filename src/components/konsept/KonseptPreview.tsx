@@ -3500,6 +3500,26 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
             )}
+          </tbody>
+        </table>
+      </section>
+      <PageFooter pageNum={pageKap3f2} />
+      </div>
+
+      {/* Side 3.11 (forts.) */}
+      <div className={pageStyle} style={pageWidth}>
+      <section className="mb-6">
+        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
+        <table className="w-full border-collapse border border-gray-400 text-xs">
+          <tbody>
+            <tr className="bg-blue-100">
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.11 &nbsp;&nbsp; {isBF85 ? <>Trapperom og heissjakt (Kap. 30:7/30:41) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-14 Rømningsvei)</span></> : "§11-14 Rømningsvei"} <span style={{ fontWeight: 'normal', fontStyle: 'italic' }}>(forts.)</span></td>
+            </tr>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+              <th className="border border-gray-400 p-2 text-left">Løsning</th>
+              <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
+            </tr>
             {formData.romningsveiSvalgang && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top font-medium">Svalganger og altanganger som rømningsvei</td>
