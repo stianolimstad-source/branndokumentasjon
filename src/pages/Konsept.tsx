@@ -6821,12 +6821,27 @@ const Konsept = () => {
                         const bredde = harRK5 ? "1,16 m (RK5)" : "0,86 m";
                         const strøm = bk === "BKL1" ? "30 min (BKL1)" : (bk === "BKL2" || bk === "BKL3") ? `60 min (${bk})` : null;
                         return (
-                          <div className="p-3 bg-primary/5 border border-primary/20 rounded-md text-xs text-muted-foreground space-y-1">
+                          <div className="p-3 bg-primary/5 border border-primary/20 rounded-md text-xs text-muted-foreground space-y-2">
                             <p className="font-medium text-foreground text-sm">✓ Dørkrav til rømningsvei inkludert i rapporten</p>
                             <p>Fri bredde: minimum {bredde}</p>
                             <p>Fri høyde: minimum 2,0 m</p>
                             <p>Åpningskraft: maks 67 N</p>
                             {strøm && <p>Avbruddsfri strømforsyning: minst {strøm}</p>}
+                            <div className="pt-2 border-t border-primary/10 space-y-1">
+                              <p className="font-medium text-foreground text-xs">Valgfrie krav:</p>
+                              <div className="flex items-center space-x-2">
+                                <Checkbox id="dorerTilbakerømning" checked={formData.dorerTilbakerømning} onCheckedChange={(checked) => setFormData({...formData, dorerTilbakerømning: checked as boolean})} />
+                                <Label htmlFor="dorerTilbakerømning" className="text-xs cursor-pointer">Låsesystem skal tillate tilbakerømning</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Checkbox id="dorerNattlaser" checked={formData.dorerNattlaser} onCheckedChange={(checked) => setFormData({...formData, dorerNattlaser: checked as boolean})} />
+                                <Label htmlFor="dorerNattlaser" className="text-xs cursor-pointer">Nattlåser er relevant</Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Checkbox id="dorerLiteAntallPersoner" checked={formData.dorerLiteAntallPersoner} onCheckedChange={(checked) => setFormData({...formData, dorerLiteAntallPersoner: checked as boolean})} />
+                                <Label htmlFor="dorerLiteAntallPersoner" className="text-xs cursor-pointer">Dør kan slå mot rømningsretning (lite antall personer)</Label>
+                              </div>
+                            </div>
                           </div>
                         );
                       })()}
