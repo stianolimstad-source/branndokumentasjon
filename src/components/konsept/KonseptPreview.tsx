@@ -3625,6 +3625,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                           : <>Det er prosjektert med brannslange i bygget. Brannslange skal rekke inn i alle rom.</>
                         }
                         {harRK4 && <p className="mt-2">I bolig kan det benyttes formstabil brannslange med innvendig diameter på minimum 10 mm.</p>}
+                        <p className="mt-2 text-xs">Ref. NS-EN 671-1:2012 Faste brannslokkesystemer – Slangesystemer – Del 1: Slangetromler med formstabil slange</p>
                       </td>
                       <td className="border border-gray-400 p-2 align-top">RIV</td>
                     </tr>
