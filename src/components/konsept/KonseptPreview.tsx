@@ -3926,37 +3926,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <section className="mb-6" style={{ breakBefore: "page" }}>
         <h2 id="preview-kap6" className="font-bold mb-3">4. Litteraturhenvisninger</h2>
         <ul className="ml-4 list-disc list-inside">
-          {(() => {
-            const refs: string[] = [];
-            if (isBF85) {
-              refs.push("Byggeforskrift 1985 (BF85) – Del 3 Brannvern");
-            } else {
-              refs.push("TEK17 – Forskrift om tekniske krav til byggverk (Byggteknisk forskrift)");
-              refs.push("VTEK17 – Veiledning om tekniske krav til byggverk");
-            }
-            refs.push("NS 3424:2012 – Tilstandsanalyse av byggverk – Innhold og gjennomføring");
-            refs.push("NS 3901:2023 – Krav til risikovurdering av brann i byggverk");
-            // Sprinkler
-            if (formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b || formData.bf85_sprinkler_installert || formData.brannseksjonTiltak === "sprinkler") {
-              refs.push("NS-EN 16925:2018+AC:2020 – Boligsprinkleranlegg – Prosjektering, installasjon og vedlikehold");
-              refs.push("NS-EN 12845:2015+A1:2019 – Faste brannslokkesystemer – Automatiske sprinklersystemer");
-            }
-            // Brannalarm
-            if (formData.tilretteleggingLedd2a || formData.alarmValg === "brannalarm" || formData.bf85_16_brannalarmanlegg) {
-              refs.push("NS 3960:2019 – Brannalarmanlegg – Prosjektering, installering, drift og vedlikehold");
-              refs.push("NS-EN 54 (serien) – Brannalarmsystemer");
-            }
-            // Ledesystem
-            if (formData.tilretteleggingLedd3) {
-              refs.push("NS-EN 1838:2013 – Nødbelysning");
-              refs.push("NS 3926:2022 – Visuelle ledesystemer for rømning i bygninger");
-            }
-            // Brannmotstand
-            refs.push("NS-EN 13501-2:2016 – Brannklassifisering av byggevarer og bygningsdeler – Del 2: Klassifisering ved brannmotstandsprøving");
-            refs.push("NS-EN 13501-1:2019 – Brannklassifisering av byggevarer og bygningsdeler – Del 1: Klassifisering ved prøving av reaksjon på brann");
-            const unique = [...new Set(refs)];
-            return unique.map((ref, i) => <li key={i}>{ref}</li>);
-          })()}
+          {(formData.litteratur || "").split("\n").filter((r: string) => r.trim()).map((ref: string, i: number) => (
+            <li key={i}>{ref}</li>
+          ))}
         </ul>
       </section>
 
