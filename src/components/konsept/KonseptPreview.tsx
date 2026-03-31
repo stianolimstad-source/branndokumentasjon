@@ -2721,16 +2721,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <TilstandTableRow data={formData.tilstandsvurderinger["3_7"]} sectionLabel="3.7 Tekniske installasjoner" />
             )}
 
-          </tbody>
-        </table>
-      </section>
-      <PageFooter pageNum={6 + extraPages} />
-      </div>
-      <div className={pageStyle} style={pageWidth}>
-      <section className="mb-6">
-        <h2 className="font-bold mb-3">{sp}. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} (forts.)</h2>
-        <table className="w-full border-collapse border border-gray-400 text-xs">
-          <tbody>
             {/* 3.8 §11-11 Generelle krav om rømning */}
             <tr id="preview-3-8" className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.8 &nbsp;&nbsp; {isBF85 ? <>Rømningsvei – generelle krav (Kap. 30:7) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-11 Generelle krav om rømning og redning)</span></> : "§11-11 Generelle krav om rømning og redning"}</td>
