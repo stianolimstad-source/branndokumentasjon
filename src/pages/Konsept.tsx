@@ -4319,7 +4319,6 @@ const Konsept = () => {
                         if (maksAreal === Infinity || maksAreal === 0) return false;
                         return arealNum > maksAreal;
                       })())) && (
-                      })() && (
                       <div>
                         <Label className="text-xs font-medium mb-2 block">Dører og vinduer i {formData.regelverk === "BF85" ? "brannvegg" : "seksjoneringsvegg"}</Label>
                         <div className="border rounded-md p-2 space-y-2 bg-muted/30">
