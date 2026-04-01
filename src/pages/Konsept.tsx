@@ -513,6 +513,13 @@ const Konsept = () => {
     tiltaksklasse: "",
     tiltaksklasseBegrunnelse: "",
     avgrensning: "",
+    // KS-status
+    ksEgenkontrollStatus: "" as "" | "ok" | "ikke_utfort",
+    ksEgenkontrollDato: "",
+    ksEgenkontrollUtfortAv: "",
+    ksSidemannskontrollStatus: "" as "" | "ok" | "ikke_utfort",
+    ksSidemannskontrollDato: "",
+    ksSidemannskontrollUtfortAv: "",
     // 2. Grunnlag og forutsetninger
     grunnlagsdokumenter: [] as Array<{navn: string, utarbeidetAv: string, dato: string}>,
     harFlereRisikoklasser: false, // Nytt felt for å aktivere flere risikoklasser
