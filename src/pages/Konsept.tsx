@@ -4727,11 +4727,11 @@ const Konsept = () => {
                         ) : (
                           <div className="border rounded-md p-2 space-y-2 bg-muted/30">
                             {[
-                              { id: "heis_roykventileres_8", label: "1. I byggverk med inntil 8 etasjer må heissjakten røykventileres, eller det må etableres luftsluse (mellomliggende rom) utført som egen, ventilert branncelle, mellom heissjakten og tilstøtende rom." },
-                              { id: "heis_roykventileres_over8", label: "2. Heissjakt i byggverk med mer enn 8 etasjer må røykventileres og i tillegg utføres med luftsluse som beskrevet i nr. 1." },
-                              { id: "heis_dor_brannmotstand", label: "3. Dør må ha samme brannmotstand som veggen den står i, med unntak som gitt i nr. 4 og 5." },
-                              { id: "heis_dor_ei60", label: "4. I heissjakt med brannmotstand EI 60 kan det benyttes heisdør minst E 90 [F 90]. Heisdør kan utføres uten klasse Sₐ." },
-                              { id: "heis_dor_luftsluse", label: "5. Brannmotstand for dør fra tilstøtende rom til luftsluse som beskrevet i nr. 1 og 2 må være minst EI 30-Sₐ." },
+                              { id: "heis_roykventileres_8", label: "I byggverk med inntil 8 etasjer må heissjakten røykventileres, eller det må etableres luftsluse (mellomliggende rom) utført som egen, ventilert branncelle, mellom heissjakten og tilstøtende rom." },
+                              { id: "heis_roykventileres_over8", label: "Heissjakt i byggverk med mer enn 8 etasjer må røykventileres og i tillegg utføres med luftsluse som beskrevet i nr. 1." },
+                              { id: "heis_dor_brannmotstand", label: "Dør må ha samme brannmotstand som veggen den står i, med unntak som gitt i nr. 4 og 5." },
+                              { id: "heis_dor_ei60", label: "I heissjakt med brannmotstand EI 60 kan det benyttes heisdør minst E 90 [F 90]. Heisdør kan utføres uten klasse Sₐ." },
+                              { id: "heis_dor_luftsluse", label: "Brannmotstand for dør fra tilstøtende rom til luftsluse som beskrevet i nr. 1 og 2 må være minst EI 30-Sₐ." },
                             ].filter((krav) => {
                               const etasjerNum = parseInt(formData.etasjer || '0', 10);
                               if (krav.id === "heis_roykventileres_over8" && etasjerNum <= 8) return false;

@@ -1813,7 +1813,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2">
                     <div className="space-y-1">
                       {activeKrav.map((k: { id: string; text: string; num: number }) => (
-                        <div key={k.id}>{k.num}. {k.text}</div>
+                        <div key={k.id}>{k.text}</div>
                       ))}
                     </div>
                   </td>
