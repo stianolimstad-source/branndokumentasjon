@@ -761,7 +761,7 @@ const Konsept = () => {
   }, [conceptId, user]);
 
   // Automatisk beregning av brannklasse
-  const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal);
+  const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.erRKL6Boligbygning);
 
   // Automatisk beregning av brannklasse – skip i view-modus (data er allerede lagret)
   useEffect(() => {
