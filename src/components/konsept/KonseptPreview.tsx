@@ -2134,14 +2134,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
             )}
 
-            <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.5 &nbsp;&nbsp; {isBF85 ? <>Branncelleinndeling <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(forts.)</span></> : "§11-8 Brannceller"} <span style={{ fontWeight: 'normal', fontStyle: 'italic' }}>(forts.)</span></td>
-            </tr>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
-              <th className="border border-gray-400 p-2 text-left">Løsning</th>
-              <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
-            </tr>
+
+
             {/* Garasje - BF85 krav */}
             {formData.garasjeRelevant && formData.regelverk === "BF85" && (formData.garasjeBF85Krav || []).length > 0 && (() => {
               const bf85Labels: Record<string, string> = {
