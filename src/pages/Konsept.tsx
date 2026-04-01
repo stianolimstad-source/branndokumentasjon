@@ -1597,6 +1597,39 @@ const Konsept = () => {
               }),
               new Paragraph({ text: "• TEK17 - Forskrift om tekniske krav til byggverk", spacing: { after: 50 } }),
               new Paragraph({ text: "• VTEK17 - Veiledning til teknisk forskrift", spacing: { after: 100 } }),
+              new Paragraph({
+                children: [new TextRun({ text: "1.6 Kvalitetssikring (KS)", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
+                  new TableRow({
+                    children: [
+                      createTableCell("Type", true, 25),
+                      createTableCell("Status", true, 25),
+                      createTableCell("Dato", true, 25),
+                      createTableCell("Utført av", true, 25),
+                    ],
+                  }),
+                  new TableRow({
+                    children: [
+                      createTableCell("Egenkontroll", true, 25),
+                      createTableCell(formData.ksEgenkontrollStatus === "ok" ? "Utført" : formData.ksEgenkontrollStatus === "ikke_utfort" ? "Ikke utført" : "[Angis]"),
+                      createTableCell(formData.ksEgenkontrollDato ? formData.ksEgenkontrollDato.split('-').reverse().join('.') : "[Angis]"),
+                      createTableCell(formData.ksEgenkontrollUtfortAv || "[Angis]"),
+                    ],
+                  }),
+                  new TableRow({
+                    children: [
+                      createTableCell("Sidemannskontroll", true, 25),
+                      createTableCell(formData.ksSidemannskontrollStatus === "ok" ? "Utført" : formData.ksSidemannskontrollStatus === "ikke_utfort" ? "Ikke utført" : "[Angis]"),
+                      createTableCell(formData.ksSidemannskontrollDato ? formData.ksSidemannskontrollDato.split('-').reverse().join('.') : "[Angis]"),
+                      createTableCell(formData.ksSidemannskontrollUtfortAv || "[Angis]"),
+                    ],
+                  }),
+                ],
+              }),
             ] : [
               // Tilstandsvurdering: 1.2 Avgrensning
               new Paragraph({
@@ -1606,6 +1639,39 @@ const Konsept = () => {
               new Paragraph({
                 text: formData.avgrensning || "[Avgrensning beskrives]",
                 spacing: { after: 100 },
+              }),
+              new Paragraph({
+                children: [new TextRun({ text: "1.3 Kvalitetssikring (KS)", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
+                  new TableRow({
+                    children: [
+                      createTableCell("Type", true, 25),
+                      createTableCell("Status", true, 25),
+                      createTableCell("Dato", true, 25),
+                      createTableCell("Utført av", true, 25),
+                    ],
+                  }),
+                  new TableRow({
+                    children: [
+                      createTableCell("Egenkontroll", true, 25),
+                      createTableCell(formData.ksEgenkontrollStatus === "ok" ? "Utført" : formData.ksEgenkontrollStatus === "ikke_utfort" ? "Ikke utført" : "[Angis]"),
+                      createTableCell(formData.ksEgenkontrollDato ? formData.ksEgenkontrollDato.split('-').reverse().join('.') : "[Angis]"),
+                      createTableCell(formData.ksEgenkontrollUtfortAv || "[Angis]"),
+                    ],
+                  }),
+                  new TableRow({
+                    children: [
+                      createTableCell("Sidemannskontroll", true, 25),
+                      createTableCell(formData.ksSidemannskontrollStatus === "ok" ? "Utført" : formData.ksSidemannskontrollStatus === "ikke_utfort" ? "Ikke utført" : "[Angis]"),
+                      createTableCell(formData.ksSidemannskontrollDato ? formData.ksSidemannskontrollDato.split('-').reverse().join('.') : "[Angis]"),
+                      createTableCell(formData.ksSidemannskontrollUtfortAv || "[Angis]"),
+                    ],
+                  }),
+                ],
               }),
             ]),
           ],
