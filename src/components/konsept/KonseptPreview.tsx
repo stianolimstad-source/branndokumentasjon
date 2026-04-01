@@ -1377,6 +1377,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                         <ul className="list-disc list-inside space-y-1 text-sm">
                           <li>Seksjoneringsveggen må ha brannmotstand minst {(() => {
                             if (erPakrevdInstitusjon && !erPakrevdAreal) {
+                              const bkl = formData.brannklasse;
+                              if (bkl === "BKL1") return "REI 90-M A2-s1,d0 [A 90]";
                               return "REI 120-M A2-s1,d0 [A 120]";
                             }
                             const bkl = formData.brannklasse;
