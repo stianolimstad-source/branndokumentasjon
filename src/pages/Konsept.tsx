@@ -5987,7 +5987,8 @@ const Konsept = () => {
                           )}
                         </div>
                       </div>
-                      )}
+
+
 
 
                       {/* Info om automatiske krav */}
