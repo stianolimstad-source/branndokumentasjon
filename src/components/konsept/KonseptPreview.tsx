@@ -979,18 +979,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_2"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_2"]} sectionLabel="3.2 Sikkerhet ved eksplosjon" />
             )}
-          </tbody>
-        </table>
-      </section>
-      <PageFooter pageNum={pageKap3a} />
-      </div>
 
-      {/* Side 3.3-3.4 */}
-      <div>
-      <section className="mb-6">
-        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
-        <table className="w-full border-collapse border border-gray-400 text-xs">
-          <tbody>
             {/* 3.3 §11-6 / BF85 :32 Brannspredning mellom byggverk */}
             <tr id="preview-3-3" className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
