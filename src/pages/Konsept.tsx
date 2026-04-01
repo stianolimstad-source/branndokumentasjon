@@ -336,11 +336,14 @@ const getBaereevneTekst = (brannklasse: string, risikoklasse: string, etasjer: s
     anvendteUnntak.push("unntak4");
   }
 
-  const tekst = `Bærende hovedsystem: ${k.hovedsystem}
-Sekundære, bærende bygningsdeler, etasjeskillere og takkonstruksjoner som ikke er del av hovedbæresystem eller stabiliserende: ${k.sekundaer}
-Trappeløp: ${k.trappeloep}
-Bærende bygningsdeler under øverste kjeller: ${k.kjeller}
-Utvendig trappeløp, beskyttet mot flammepåvirkning og strålevarme: ${k.utvendig}`;
+  const lines = [
+    `Bærende hovedsystem: ${k.hovedsystem}`,
+    `Sekundære, bærende bygningsdeler, etasjeskillere og takkonstruksjoner som ikke er del av hovedbæresystem eller stabiliserende: ${k.sekundaer}`,
+  ];
+  if (toggles?.trappeloep) lines.push(`Trappeløp: ${k.trappeloep}`);
+  if (toggles?.kjeller) lines.push(`Bærende bygningsdeler under øverste kjeller: ${k.kjeller}`);
+  if (toggles?.utvendig) lines.push(`Utvendig trappeløp, beskyttet mot flammepåvirkning og strålevarme: ${k.utvendig}`);
+  const tekst = lines.join('\n');
   
   return { tekst, anvendteUnntak };
 };
