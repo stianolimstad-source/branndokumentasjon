@@ -157,18 +157,23 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         </div>
         <PageFooter pageNum={pageForside} />
       </div>
+      <hr style={{ border: "none", borderTop: "2px solid #e5e7eb", margin: "32px 0" }} />
 
       {/* Sammendrag - egen side */}
       {hasSammendrag && (
+        <>
         <div>
           <h2 id="preview-sammendrag" className="font-bold mb-3">Sammendrag</h2>
           <p className="whitespace-pre-wrap text-xs">{formData.sammendrag}</p>
           <PageFooter pageNum={pageSammendrag} />
         </div>
+        <hr style={{ border: "none", borderTop: "2px solid #e5e7eb", margin: "32px 0" }} />
+        </>
       )}
 
       {/* Tilstandsgrader - egen side (kun for tilstandsvurdering) */}
       {isTilstand && (
+        <>
         <div>
           <h2 className="font-bold mb-3">Tilstandsgrader</h2>
           <p className="text-xs mb-4 whitespace-pre-wrap">
@@ -228,6 +233,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </table>
           <PageFooter pageNum={pageTilstandsgrader} />
         </div>
+        <hr style={{ border: "none", borderTop: "2px solid #e5e7eb", margin: "32px 0" }} />
+        </>
       )}
 
       {/* Innholdsfortegnelse - egen side */}
@@ -308,6 +315,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </section>
       <PageFooter pageNum={pageInnhold} />
       </div>
+      <hr style={{ border: "none", borderTop: "2px solid #e5e7eb", margin: "32px 0" }} />
 
       {/* Kapittel 1 - egen side */}
       <div>
@@ -467,6 +475,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </section>
       <PageFooter pageNum={pageKap1} />
       </div>
+      <hr style={{ border: "none", borderTop: "2px solid #e5e7eb", margin: "32px 0" }} />
 
       {/* Kapittel 2 / Kap 1 forts. - egen side */}
       <div>
@@ -679,6 +688,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </section>
       <PageFooter pageNum={pageKap2} />
       </div>
+      <hr style={{ border: "none", borderTop: "2px solid #e5e7eb", margin: "32px 0" }} />
       <div>
       {/* Branntekniske ytelseskrav */}
       <section className="mb-6">
@@ -3842,6 +3852,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </section>
       <PageFooter pageNum={pageKap3g} />
       </div>
+      <hr style={{ border: "none", borderTop: "2px solid #e5e7eb", margin: "32px 0" }} />
 
       {/* Kap 4+5 (brannkonsept) eller revisjon (tilstand) - egen side */}
       <div>
@@ -3942,6 +3953,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       )}
       <PageFooter pageNum={pageKap4} />
       </div>
+      <hr style={{ border: "none", borderTop: "2px solid #e5e7eb", margin: "32px 0" }} />
 
       {/* Litteraturhenvisninger - egen side */}
       <div>
