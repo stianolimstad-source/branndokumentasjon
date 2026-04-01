@@ -3928,47 +3928,51 @@ const Konsept = () => {
                             />
                           </div>
 
-                          <div>
-                            <Label className="text-xs font-medium mb-1 block">Bygningshøyde (meter)</Label>
-                            <Input 
-                              type="number"
-                              step="0.1"
-                              value={formData.bygningshoyde}
-                              onChange={(e) => setFormData({...formData, bygningshoyde: e.target.value})}
-                              placeholder="Angi høyde i meter..."
-                            />
-                          </div>
-                          
-                          {parseFloat(formData.bygningshoyde) > 9 && parseFloat(formData.avstandNabobygg || "0") < 8 && (
-                            <div className="p-3 bg-orange-50 border border-orange-200 rounded-md">
-                              <p className="text-sm font-medium text-orange-800 mb-2">Bygning over 9 meter med avstand under 8 m - krav til brannvegg</p>
-                              <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
-                              <Select 
-                                value={formData.spesifikkBrannenergi} 
-                                onValueChange={(value) => setFormData({...formData, spesifikkBrannenergi: value})}
-                              >
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Velg brannenergi..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="inntil400">Inntil 400 MJ/m² → REI 120-M A2-s1,d0</SelectItem>
-                                  <SelectItem value="400-600">400-600 MJ/m² → REI 180-M A2-s1,d0</SelectItem>
-                                  <SelectItem value="600-800">600-800 MJ/m² → REI 240-M A2-s1,d0</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          )}
-                          
-                          {parseFloat(formData.bygningshoyde) > 9 && parseFloat(formData.avstandNabobygg || "0") >= 8 && (
-                            <div className="p-3 bg-green-50 border border-green-200 rounded-md">
-                              <p className="text-sm font-medium text-green-800">Avstand til nabobygg er 8 meter eller mer – krav til brannvegg gjelder ikke. Branncellevegg benyttes.</p>
+                          {parseFloat(formData.avstandNabobygg) >= 8 && (
+                            <div className="p-3 bg-green-50 border border-green-200 rounded-md dark:bg-green-950 dark:border-green-800">
+                              <p className="text-sm font-medium text-green-800 dark:text-green-200">Avstand til nabobygg er 8 meter eller mer – krav til brannvegg gjelder ikke.</p>
                             </div>
                           )}
 
-                          {parseFloat(formData.bygningshoyde) > 0 && parseFloat(formData.bygningshoyde) <= 9 && (
-                            <div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-                              <p className="text-sm font-medium text-blue-800">Bygning under eller lik 9 meter - krav til branncellevegg</p>
-                            </div>
+                          {parseFloat(formData.avstandNabobygg) > 0 && parseFloat(formData.avstandNabobygg) < 8 && (
+                            <>
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Bygningshøyde (meter)</Label>
+                                <Input 
+                                  type="number"
+                                  step="0.1"
+                                  value={formData.bygningshoyde}
+                                  onChange={(e) => setFormData({...formData, bygningshoyde: e.target.value})}
+                                  placeholder="Angi høyde i meter..."
+                                />
+                              </div>
+
+                              {parseFloat(formData.bygningshoyde) > 9 && (
+                                <div className="p-3 bg-orange-50 border border-orange-200 rounded-md dark:bg-orange-950 dark:border-orange-800">
+                                  <p className="text-sm font-medium text-orange-800 dark:text-orange-200 mb-2">Bygning over 9 meter med avstand under 8 m - krav til brannvegg</p>
+                                  <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
+                                  <Select 
+                                    value={formData.spesifikkBrannenergi} 
+                                    onValueChange={(value) => setFormData({...formData, spesifikkBrannenergi: value})}
+                                  >
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Velg brannenergi..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="inntil400">Inntil 400 MJ/m² → REI 120-M A2-s1,d0</SelectItem>
+                                      <SelectItem value="400-600">400-600 MJ/m² → REI 180-M A2-s1,d0</SelectItem>
+                                      <SelectItem value="600-800">600-800 MJ/m² → REI 240-M A2-s1,d0</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                              )}
+
+                              {parseFloat(formData.bygningshoyde) > 0 && parseFloat(formData.bygningshoyde) <= 9 && (
+                                <div className="p-3 bg-blue-50 border border-blue-200 rounded-md dark:bg-blue-950 dark:border-blue-800">
+                                  <p className="text-sm font-medium text-blue-800 dark:text-blue-200">Bygning under eller lik 9 meter med avstand under 8 m - krav til branncellevegg</p>
+                                </div>
+                              )}
+                            </>
                           )}
                         </>
                       )}
