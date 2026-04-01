@@ -1641,25 +1641,19 @@ const Konsept = () => {
                 rows: [
                   new TableRow({
                     children: [
-                      createTableCell("Type", true, 25),
-                      createTableCell("Status", true, 25),
-                      createTableCell("Dato", true, 25),
-                      createTableCell("Utført av", true, 25),
+                      createTableCell("Type", true, 50),
+                      createTableCell("Utført av", true, 50),
                     ],
                   }),
                   new TableRow({
                     children: [
-                      createTableCell("Egenkontroll", true, 25),
-                      createTableCell(formData.ksEgenkontrollStatus === "ok" ? "Utført" : formData.ksEgenkontrollStatus === "ikke_utfort" ? "Ikke utført" : "[Angis]"),
-                      createTableCell(formData.ksEgenkontrollDato ? formData.ksEgenkontrollDato.split('-').reverse().join('.') : "[Angis]"),
+                      createTableCell("Egenkontroll", true, 50),
                       createTableCell(formData.ksEgenkontrollUtfortAv || "[Angis]"),
                     ],
                   }),
                   new TableRow({
                     children: [
-                      createTableCell("Sidemannskontroll", true, 25),
-                      createTableCell(formData.ksSidemannskontrollStatus === "ok" ? "Utført" : formData.ksSidemannskontrollStatus === "ikke_utfort" ? "Ikke utført" : "[Angis]"),
-                      createTableCell(formData.ksSidemannskontrollDato ? formData.ksSidemannskontrollDato.split('-').reverse().join('.') : "[Angis]"),
+                      createTableCell("Sidemannskontroll", true, 50),
                       createTableCell(formData.ksSidemannskontrollUtfortAv || "[Angis]"),
                     ],
                   }),
