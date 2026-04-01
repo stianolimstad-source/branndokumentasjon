@@ -132,10 +132,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   );
 
   return (
-    <div className="space-y-8 py-4">
+    <div className="bg-white text-black rounded-lg shadow-md border border-gray-200 mx-auto p-10" style={{ maxWidth: '210mm', fontFamily: 'Verdana, Geneva, sans-serif' }}>
       {/* Forside */}
-      <div className={pageStyle} style={pageWidth}>
-        <div className="flex flex-col items-center justify-center pt-8 pb-8" style={{ minHeight: '260mm' }}>
+      <div>
+        <div className="flex flex-col items-center justify-center pt-8 pb-8">
         {logoUrl && (
           <div className="mb-8">
             <img src={logoUrl} alt="Firmalogo" className="max-h-64 max-w-[600px] object-contain" />
