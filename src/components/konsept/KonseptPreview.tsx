@@ -173,6 +173,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
       {/* Tilstandsgrader - egen side (kun for tilstandsvurdering) */}
       {isTilstand && (
+        <>
         <div>
           <h2 className="font-bold mb-3">Tilstandsgrader</h2>
           <p className="text-xs mb-4 whitespace-pre-wrap">
@@ -232,7 +233,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </table>
           <PageFooter pageNum={pageTilstandsgrader} />
         </div>
-      <hr style={{ border: "none", borderTop: "2px solid #e5e7eb", margin: "32px 0" }} />
+        <hr style={{ border: "none", borderTop: "2px solid #e5e7eb", margin: "32px 0" }} />
+        </>
       )}
 
       {/* Innholdsfortegnelse - egen side */}
