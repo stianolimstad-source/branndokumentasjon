@@ -160,7 +160,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
       {/* Sammendrag - egen side */}
       {hasSammendrag && (
-        <div className={pageStyle} style={pageWidth}>
+        <div>
           <h2 id="preview-sammendrag" className="font-bold mb-3">Sammendrag</h2>
           <p className="whitespace-pre-wrap text-xs">{formData.sammendrag}</p>
           <PageFooter pageNum={pageSammendrag} />
@@ -169,7 +169,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
       {/* Tilstandsgrader - egen side (kun for tilstandsvurdering) */}
       {isTilstand && (
-        <div className={pageStyle} style={pageWidth}>
+        <div>
           <h2 className="font-bold mb-3">Tilstandsgrader</h2>
           <p className="text-xs mb-4 whitespace-pre-wrap">
             {"Ved tilstandsvurdering bruker man tilstandsgrader for å prioritere mangler med tanke på oppfølging. Tabellen nedenfor gir oversikt over grader for bruk i brannteknisk tilstandsanalyse. Graderingen er tilpasset tilstandsgradering i NS 3424, slik at den branntekniske tilstandsanalysen kan integreres i flerfaglig teknisk analyse av bygningen.\n\nDenne rapporten er basert på en NS 3424 nivå 1 tilstandsvurdering."}
@@ -231,7 +231,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       )}
 
       {/* Innholdsfortegnelse - egen side */}
-      <div className={pageStyle} style={pageWidth}>
+      <div>
         <h2 className="text-xl font-bold text-center mb-6 pb-4">
           {isTilstand ? "TILSTANDSVURDERING" : "BRANNKONSEPT"}
         </h2>
@@ -310,7 +310,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
 
       {/* Kapittel 1 - egen side */}
-      <div className={pageStyle} style={pageWidth}>
+      <div>
       {/* 1. Innledning */}
       <section className="mb-6">
         <h2 id="preview-kap1" className="font-bold mb-3">1. Innledning</h2>
@@ -469,7 +469,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
 
       {/* Kapittel 2 / Kap 1 forts. - egen side */}
-      <div className={pageStyle} style={pageWidth}>
+      <div>
       <section className="mb-6">
         {isTilstand ? (
            <h2 id="preview-kap2" className="font-bold mb-3">2. Grunnlag og forutsetninger</h2>
@@ -679,7 +679,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </section>
       <PageFooter pageNum={pageKap2} />
       </div>
-      <div className={pageStyle} style={pageWidth}>
+      <div>
       {/* Branntekniske ytelseskrav */}
       <section className="mb-6">
         <h2 id="preview-kap3" className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"}</h2>
@@ -986,7 +986,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
 
       {/* Side 3.3-3.4 */}
-      <div className={pageStyle} style={pageWidth}>
+      <div>
       <section className="mb-6">
         <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
         <table className="w-full border-collapse border border-gray-400 text-xs">
@@ -1462,7 +1462,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
 
       {/* Side 3.5 */}
-      <div className={pageStyle} style={pageWidth}>
+      <div>
       <section className="mb-6">
         <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
         <table className="w-full border-collapse border border-gray-400 text-xs">
@@ -2162,7 +2162,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
 
       {/* Side 3.5 (forts.) */}
-      <div className={pageStyle} style={pageWidth}>
+      <div>
       <section className="mb-6">
         <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
         <table className="w-full border-collapse border border-gray-400 text-xs">
@@ -2309,7 +2309,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
 
       {/* Side 3.6-3.7 */}
-      <div className={pageStyle} style={pageWidth}>
+      <div>
       <section className="mb-6">
         <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
         <table className="w-full border-collapse border border-gray-400 text-xs">
@@ -2701,7 +2701,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
 
       {/* Side 3.7 */}
-      <div className={pageStyle} style={pageWidth}>
+      <div>
       <section className="mb-6">
         <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
         <table className="w-full border-collapse border border-gray-400 text-xs">
@@ -2869,7 +2869,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
 
       {/* Side 3.9 */}
-      <div className={pageStyle} style={pageWidth}>
+      <div>
       <section className="mb-6">
         <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
         <table className="w-full border-collapse border border-gray-400 text-xs">
@@ -3147,7 +3147,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
 
       {/* Side 3.10-3.11 */}
-      <div className={pageStyle} style={pageWidth}>
+      <div>
       <section className="mb-6">
         <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
         <table className="w-full border-collapse border border-gray-400 text-xs">
@@ -3403,7 +3403,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
 
       {/* Side 3.11 */}
-      <div className={pageStyle} style={pageWidth}>
+      <div>
       <section className="mb-6">
         <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
         <table className="w-full border-collapse border border-gray-400 text-xs">
@@ -3557,7 +3557,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
 
       {/* Side 3.11 (forts.) */}
-      <div className={pageStyle} style={pageWidth}>
+      <div>
       <section className="mb-6">
         <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
         <table className="w-full border-collapse border border-gray-400 text-xs">
@@ -3668,7 +3668,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
 
       {/* Side 3.12-3.14 */}
-      <div className={pageStyle} style={pageWidth}>
+      <div>
       <section className="mb-6">
         <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
         <table className="w-full border-collapse border border-gray-400 text-xs">
@@ -3966,7 +3966,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
 
       {/* Kap 4+5 (brannkonsept) eller revisjon (tilstand) - egen side */}
-      <div className={pageStyle} style={pageWidth}>
+      <div>
 
       {documentType !== "tilstandsvurdering" && (
       <>
@@ -4066,7 +4066,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       </div>
 
       {/* Litteraturhenvisninger - egen side */}
-      <div className={pageStyle} style={pageWidth}>
+      <div>
       <section className="mb-6">
         <h2 id="preview-kap6" className="font-bold mb-3">{isTilstand ? "4" : "6"}. Litteraturhenvisninger</h2>
         <ul className="ml-4 list-disc list-inside">
