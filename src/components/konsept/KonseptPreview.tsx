@@ -1380,6 +1380,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                           <li>Seksjoneringsveggens avslutning mot tak og fasade må være utformet og utført for å hindre brannspredning mellom ulike seksjoner. Størst sikkerhet mot brannspredning oppnås ved å føre seksjoneringsveggen over takflaten og utenfor vegglivet, tilsvarende som for brannvegger, jf. § 11-6.</li>
                           <li>Der seksjoner ligger inntil hverandre i et innvendig hjørne, må det treffes særskilte tiltak for å hindre brannspredning, jf. figur 1a og 1b.</li>
                           <li>Seksjoneringsveggen må ha brannmotstand minst {(() => {
+                            if (erPakrevdInstitusjon && !erPakrevdAreal) {
+                              return "REI 120-M A2-s1,d0 [A 120]";
+                            }
                             const bkl = formData.brannklasse;
                             const be = formData.seksjoneringsvegBrannenergi;
                             const tabell: Record<string, Record<string, string>> = {
