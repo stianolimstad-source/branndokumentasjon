@@ -60,6 +60,7 @@ const App = () => (
             <Route path="/verktoy/roykventilasjon" element={<RoykventilasjonPage />} />
             
             <Route path="/auth" element={<Auth />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/mine-prosjekter" element={<MineProsjekter />} />
             <Route path="/prosjekt/:id" element={<ProsjektDetalj />} />
             <Route path="/mine-oppgaver" element={<MineOppgaver />} />
