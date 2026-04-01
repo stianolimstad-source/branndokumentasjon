@@ -3101,6 +3101,21 @@ const Konsept = () => {
                                 </Select>
                               </div>
                             )}
+                            {/* RKL6: Spørsmål om boligbygning */}
+                            {formData.risikoklasse === "RK6" && parseInt(formData.etasjer, 10) <= 2 && (
+                              <div className="col-span-2 p-3 bg-amber-50 border border-amber-200 rounded-md">
+                                <div className="flex items-start gap-2">
+                                  <Checkbox
+                                    id="erRKL6Boligbygning"
+                                    checked={formData.erRKL6Boligbygning}
+                                    onCheckedChange={(checked) => setFormData({...formData, erRKL6Boligbygning: checked === true})}
+                                  />
+                                  <Label htmlFor="erRKL6Boligbygning" className="text-xs text-amber-700 cursor-pointer">
+                                    Er dette en boligbygning? (Boligbygning i RK6 med inntil 2 etasjer kan oppføres i BKL1, jf. VTEK § 11-3, preakseptert ytelse nr. 7)
+                                  </Label>
+                                </div>
+                              </div>
+                            )}
                             {formData.brannklasseUnntak && (
                               <div className="col-span-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
                                 <Label className="text-xs font-medium mb-1 block text-blue-700">
