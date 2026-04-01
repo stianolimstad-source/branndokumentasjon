@@ -66,7 +66,9 @@ export function enablePreviewAutoRefresh() {
 
   window.addEventListener("blur", markIdle);
   window.addEventListener("pagehide", markIdle);
-  window.addEventListener("focus", refreshIfStale);
+  window.addEventListener("focus", () => {
+    refreshIfStale();
+  });
   window.addEventListener("pageshow", (event) => {
     if ((event as PageTransitionEvent).persisted) {
       refreshIfStale();
