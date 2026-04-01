@@ -157,7 +157,7 @@ const branncelleTyperListe = [
 
 // Funksjon for å beregne brannklasse basert på risikoklasse og antall etasjer
 // Inkluderer preaksepterte ytelser/unntak fra VTEK § 11-3
-const getBrannklasse = (risikoklasse: string, etasjer: string, harTerrengTilgang: string, areal: string): { brannklasse: string; brannklasseUnntak: string | null } => {
+const getBrannklasse = (risikoklasse: string, etasjer: string, harTerrengTilgang: string, areal: string, erRKL6Boligbygning?: boolean): { brannklasse: string; brannklasseUnntak: string | null } => {
   const rk = parseInt(risikoklasse.replace(/\D/g, ''), 10);
   const floors = parseInt(etasjer, 10);
   const arealNum = parseFloat(areal) || 0;
