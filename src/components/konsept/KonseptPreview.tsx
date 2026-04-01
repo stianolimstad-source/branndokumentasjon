@@ -417,6 +417,32 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <li>TEK17 - Forskrift om tekniske krav til byggverk</li>
           <li>VTEK17 - Veiledning til teknisk forskrift</li>
         </ul>
+
+        <h3 className="font-semibold mb-2">1.6 Kvalitetssikring (KS)</h3>
+        <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-400 p-2 text-left">Type</th>
+              <th className="border border-gray-400 p-2 text-left">Status</th>
+              <th className="border border-gray-400 p-2 text-left">Dato</th>
+              <th className="border border-gray-400 p-2 text-left">Utført av</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="border border-gray-400 p-2 font-semibold">Egenkontroll</td>
+              <td className="border border-gray-400 p-2">{formData.ksEgenkontrollStatus === "ok" ? "Utført" : formData.ksEgenkontrollStatus === "ikke_utfort" ? "Ikke utført" : "[Angis]"}</td>
+              <td className="border border-gray-400 p-2">{formData.ksEgenkontrollDato ? formData.ksEgenkontrollDato.split('-').reverse().join('.') : "[Angis]"}</td>
+              <td className="border border-gray-400 p-2">{formData.ksEgenkontrollUtfortAv || "[Angis]"}</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-400 p-2 font-semibold">Sidemannskontroll</td>
+              <td className="border border-gray-400 p-2">{formData.ksSidemannskontrollStatus === "ok" ? "Utført" : formData.ksSidemannskontrollStatus === "ikke_utfort" ? "Ikke utført" : "[Angis]"}</td>
+              <td className="border border-gray-400 p-2">{formData.ksSidemannskontrollDato ? formData.ksSidemannskontrollDato.split('-').reverse().join('.') : "[Angis]"}</td>
+              <td className="border border-gray-400 p-2">{formData.ksSidemannskontrollUtfortAv || "[Angis]"}</td>
+            </tr>
+          </tbody>
+        </table>
         </>
         )}
 
@@ -424,6 +450,32 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         <>
         <h3 className="font-semibold mb-2">1.2 Avgrensning av vurderingen</h3>
         <p className="ml-4 mb-3">{formData.avgrensning || "[Avgrensning beskrives]"}</p>
+
+        <h3 className="font-semibold mb-2">1.3 Kvalitetssikring (KS)</h3>
+        <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-400 p-2 text-left">Type</th>
+              <th className="border border-gray-400 p-2 text-left">Status</th>
+              <th className="border border-gray-400 p-2 text-left">Dato</th>
+              <th className="border border-gray-400 p-2 text-left">Utført av</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="border border-gray-400 p-2 font-semibold">Egenkontroll</td>
+              <td className="border border-gray-400 p-2">{formData.ksEgenkontrollStatus === "ok" ? "Utført" : formData.ksEgenkontrollStatus === "ikke_utfort" ? "Ikke utført" : "[Angis]"}</td>
+              <td className="border border-gray-400 p-2">{formData.ksEgenkontrollDato ? formData.ksEgenkontrollDato.split('-').reverse().join('.') : "[Angis]"}</td>
+              <td className="border border-gray-400 p-2">{formData.ksEgenkontrollUtfortAv || "[Angis]"}</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-400 p-2 font-semibold">Sidemannskontroll</td>
+              <td className="border border-gray-400 p-2">{formData.ksSidemannskontrollStatus === "ok" ? "Utført" : formData.ksSidemannskontrollStatus === "ikke_utfort" ? "Ikke utført" : "[Angis]"}</td>
+              <td className="border border-gray-400 p-2">{formData.ksSidemannskontrollDato ? formData.ksSidemannskontrollDato.split('-').reverse().join('.') : "[Angis]"}</td>
+              <td className="border border-gray-400 p-2">{formData.ksSidemannskontrollUtfortAv || "[Angis]"}</td>
+            </tr>
+          </tbody>
+        </table>
         </>
         )}
       </section>
