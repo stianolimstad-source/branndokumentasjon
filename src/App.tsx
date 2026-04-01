@@ -31,6 +31,7 @@ import MinProfil from "./pages/MinProfil";
 import Sikkerhetsrutiner from "./pages/Sikkerhetsrutiner";
 import Eksempelkatalog from "./pages/Eksempelkatalog";
 import BranntekniskeKonstruksjoner from "./pages/eksempelkatalog/BranntekniskeKonstruksjoner";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
