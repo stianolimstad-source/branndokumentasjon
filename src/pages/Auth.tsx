@@ -121,7 +121,7 @@ const Auth = () => {
     } else {
       toast({
         title: 'Konto opprettet!',
-        description: 'Du er nå logget inn.',
+        description: 'Vi har sendt deg en bekreftelsesmail. Sjekk innboksen din (og spam-mappen) og klikk på lenken for å bekrefte kontoen din.',
       });
     }
   };
