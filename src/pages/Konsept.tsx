@@ -4293,7 +4293,15 @@ const Konsept = () => {
                       </div>
                       )}
 
-                      {/* Dører og vinduer i seksjoneringsveggen */}
+                      {/* Dører og vinduer i seksjoneringsveggen - kun når seksjonering er påkrevd */}
+                      {formData.areal && formData.brannseksjonBrannenergi && formData.brannseksjonTiltak && (() => {
+                        const arealNum = parseFloat(formData.areal) || 0;
+                        const g = seksjoneringsGrenser[formData.brannseksjonBrannenergi];
+                        if (!g) return false;
+                        const maksAreal = g[formData.brannseksjonTiltak as keyof typeof g];
+                        if (maksAreal === Infinity || maksAreal === 0) return false;
+                        return arealNum > maksAreal;
+                      })() && (
                       <div>
                         <Label className="text-xs font-medium mb-2 block">Dører og vinduer i {formData.regelverk === "BF85" ? "brannvegg" : "seksjoneringsvegg"}</Label>
                         <div className="border rounded-md p-2 space-y-2 bg-muted/30">
