@@ -1296,8 +1296,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   const g = brannenergi ? grenser[brannenergi] : null;
                   const maksAreal = g ? (g[tiltak as keyof typeof g] ?? g.normalt) : null;
                   const erPakrevd = g && maksAreal !== null && maksAreal !== Infinity && arealNum > maksAreal;
+                  const erPakrevdInstitusjon = formData.risikoklasse === "RK6" && formData.erSykehusPleieinstitusjon;
 
-                  if (g && maksAreal !== null && !erPakrevd) {
+                  if (g && maksAreal !== null && !erPakrevd && !erPakrevdInstitusjon) {
                     return (
                       <>
                         <tr>
