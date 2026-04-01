@@ -187,7 +187,7 @@ const getBrannklasse = (risikoklasse: string, etasjer: string, harTerrengTilgang
   }
 
   // Preakseptert ytelse nr. 7: Boligbygning i risikoklasse 6 i to etasjer kan oppføres i brannklasse 1.
-  if (rk === 6 && floors === 2) {
+  if (rk === 6 && floors <= 2 && erRKL6Boligbygning) {
     return { 
       brannklasse: "BKL1", 
       brannklasseUnntak: "Boligbygning i risikoklasse 6 i to etasjer kan oppføres i brannklasse 1 (jf. VTEK § 11-3, preakseptert ytelse nr. 7)."
