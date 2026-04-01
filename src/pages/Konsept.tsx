@@ -157,7 +157,7 @@ const branncelleTyperListe = [
 
 // Funksjon for å beregne brannklasse basert på risikoklasse og antall etasjer
 // Inkluderer preaksepterte ytelser/unntak fra VTEK § 11-3
-const getBrannklasse = (risikoklasse: string, etasjer: string, harTerrengTilgang: string, areal: string): { brannklasse: string; brannklasseUnntak: string | null } => {
+const getBrannklasse = (risikoklasse: string, etasjer: string, harTerrengTilgang: string, areal: string, erRKL6Boligbygning?: boolean): { brannklasse: string; brannklasseUnntak: string | null } => {
   const rk = parseInt(risikoklasse.replace(/\D/g, ''), 10);
   const floors = parseInt(etasjer, 10);
   const arealNum = parseFloat(areal) || 0;
@@ -187,7 +187,7 @@ const getBrannklasse = (risikoklasse: string, etasjer: string, harTerrengTilgang
   }
 
   // Preakseptert ytelse nr. 7: Boligbygning i risikoklasse 6 i to etasjer kan oppføres i brannklasse 1.
-  if (rk === 6 && floors === 2) {
+  if (rk === 6 && floors <= 2 && erRKL6Boligbygning) {
     return { 
       brannklasse: "BKL1", 
       brannklasseUnntak: "Boligbygning i risikoklasse 6 i to etasjer kan oppføres i brannklasse 1 (jf. VTEK § 11-3, preakseptert ytelse nr. 7)."
@@ -529,6 +529,7 @@ const Konsept = () => {
     brannklasseBegrunnelse: "", // Begrunnelse hvis manuelt overstyrt
     brannklasseUnntak: "", // Automatisk unntak-tekst for brannklasse
     harTerrengTilgang: "", // "ja" eller "nei" - for unntak RK4
+    erRKL6Boligbygning: false, // RKL6: er det boligbygning (unntak BKL1 ved ≤2 etasjer)
     baeresystem: "",
     tilleggskrav: "",
     // 3. Branntekniske ytelseskrav
@@ -760,7 +761,7 @@ const Konsept = () => {
   }, [conceptId, user]);
 
   // Automatisk beregning av brannklasse
-  const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal);
+  const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.erRKL6Boligbygning);
 
   // Automatisk beregning av brannklasse – skip i view-modus (data er allerede lagret)
   useEffect(() => {
@@ -773,7 +774,7 @@ const Konsept = () => {
         brannklasseBegrunnelse: "",
       }));
     }
-  }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal]);
+  }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.erRKL6Boligbygning]);
 
   // Automatisk aktivering av ledesystem basert på TEK17 § 11-14
   // Boligbygg (RK4) med 3+ etasjer, skoler (RK3), RK5, RK6, og store kontorer/offentlige bygg
@@ -3098,6 +3099,21 @@ const Konsept = () => {
                                     <SelectItem value="nei">Nei - ikke alle boenheter har direkte terreng-tilgang</SelectItem>
                                   </SelectContent>
                                 </Select>
+                              </div>
+                            )}
+                            {/* RKL6: Spørsmål om boligbygning */}
+                            {formData.risikoklasse === "RK6" && parseInt(formData.etasjer, 10) <= 2 && (
+                              <div className="col-span-2 p-3 bg-amber-50 border border-amber-200 rounded-md">
+                                <div className="flex items-start gap-2">
+                                  <Checkbox
+                                    id="erRKL6Boligbygning"
+                                    checked={formData.erRKL6Boligbygning}
+                                    onCheckedChange={(checked) => setFormData({...formData, erRKL6Boligbygning: checked === true})}
+                                  />
+                                  <Label htmlFor="erRKL6Boligbygning" className="text-xs text-amber-700 cursor-pointer">
+                                    Er dette en boligbygning? (Boligbygning i RK6 med inntil 2 etasjer kan oppføres i BKL1, jf. VTEK § 11-3, preakseptert ytelse nr. 7)
+                                  </Label>
+                                </div>
                               </div>
                             )}
                             {formData.brannklasseUnntak && (
