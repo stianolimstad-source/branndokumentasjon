@@ -1352,22 +1352,27 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   const arealNum = parseFloat(formData.areal) || 0;
                   const brannenergi = formData.brannseksjonBrannenergi;
                   const tiltak = formData.brannseksjonTiltak || "normalt";
-                  if (!brannenergi || arealNum <= 0) return null;
                   const grenser: Record<string, { normalt: number; brannalarm: number; sprinkler: number; roykventilasjon: number }> = {
                     "over400": { normalt: 800, brannalarm: 1200, sprinkler: 5000, roykventilasjon: 0 },
                     "50-400": { normalt: 1200, brannalarm: 1800, sprinkler: 10000, roykventilasjon: 4000 },
                     "under50": { normalt: 1800, brannalarm: 2700, sprinkler: Infinity, roykventilasjon: 10000 },
                   };
-                  const g = grenser[brannenergi];
-                  if (!g) return null;
-                  const maksAreal = g[tiltak as keyof typeof g] ?? g.normalt;
-                  if (maksAreal === Infinity) return null;
-                  if (arealNum <= maksAreal && maksAreal !== 0) return null;
+                  const g = brannenergi ? grenser[brannenergi] : null;
+                  const maksAreal = g ? (g[tiltak as keyof typeof g] ?? g.normalt) : null;
+                  const erPakrevdAreal = g && maksAreal !== null && maksAreal !== Infinity && arealNum > maksAreal;
+                  const erPakrevdInstitusjon = formData.risikoklasse === "RK6" && formData.erSykehusPleieinstitusjon;
+                  
+                  if (!erPakrevdAreal && !erPakrevdInstitusjon) return null;
+                  
+                  const intro = erPakrevdAreal
+                    ? `Brannseksjonering er påkrevd da bruttoarealet (${arealNum} m²) overskrider tillatt areal uten seksjonering. Seksjoneringsveggen skal oppfylle følgende preaksepterte ytelser:`
+                    : "Brannseksjonering er påkrevd for dette byggverket. Seksjoneringsveggen skal oppfylle følgende preaksepterte ytelser:";
+                  
                   return (
                     <tr>
                       <td className="border border-gray-400 p-2 align-top">Seksjoneringsveggen</td>
                       <td className="border border-gray-400 p-2">
-                        <p className="mb-1">Brannseksjonering er påkrevd da bruttoarealet ({arealNum} m²) overskrider tillatt areal uten seksjonering. Seksjoneringsveggen skal oppfylle følgende preaksepterte ytelser:</p>
+                        <p className="mb-1">{intro}</p>
                         <ul className="list-disc list-inside space-y-1 text-sm">
                           <li>Takkonstruksjonen må ikke være kontinuerlig over seksjoneringsveggen på en slik måte at en kollaps på den ene siden medfører reduksjon av konstruksjonens bæreevne og brannmotstand på den andre siden.</li>
                           <li>Konstruksjoner som ligger inntil seksjoneringsveggen må kunne bevege seg fritt ved temperaturendringer, uten at veggens branntekniske egenskaper reduseres.</li>
