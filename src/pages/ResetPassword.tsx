@@ -42,6 +42,27 @@ const ResetPassword = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  const getResetErrorMessage = (message: string) => {
+    const normalizedMessage = message.toLowerCase();
+
+    if (
+      normalizedMessage.includes('different from the old password') ||
+      normalizedMessage.includes('same password')
+    ) {
+      return 'Det nye passordet må være forskjellig fra det gamle. For å teste flyten må du bruke et annet midlertidig passord.';
+    }
+
+    if (
+      normalizedMessage.includes('session') ||
+      normalizedMessage.includes('expired') ||
+      normalizedMessage.includes('invalid')
+    ) {
+      return 'Denne lenken er utløpt eller ugyldig. Be om en ny tilbakestillingslenke.';
+    }
+
+    return 'Kunne ikke oppdatere passordet. Prøv igjen.';
+  };
+
   const handleReset = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -70,16 +91,17 @@ const ResetPassword = () => {
     if (error) {
       toast({
         title: 'Feil',
-        description: 'Kunne ikke oppdatere passordet. Prøv igjen.',
+        description: getResetErrorMessage(error.message),
         variant: 'destructive',
       });
-    } else {
-      toast({
-        title: 'Passord oppdatert!',
-        description: 'Du kan nå logge inn med ditt nye passord.',
-      });
-      navigate('/');
+      return;
     }
+
+    toast({
+      title: 'Passord oppdatert!',
+      description: 'Du kan nå logge inn med ditt nye passord.',
+    });
+    navigate('/');
   };
 
   if (checking) {
@@ -116,7 +138,7 @@ const ResetPassword = () => {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Nytt passord</CardTitle>
           <CardDescription>
-            Skriv inn ditt nye passord nedenfor.
+            Skriv inn ditt nye passord nedenfor. Det må være forskjellig fra det forrige.
           </CardDescription>
         </CardHeader>
         <CardContent>
