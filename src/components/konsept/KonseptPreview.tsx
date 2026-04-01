@@ -95,8 +95,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   const branncelleTyper = Array.isArray(formData.branncelleTyper) ? formData.branncelleTyper : [];
   const baereevneUnntak = Array.isArray(formData.baereevneUnntak) ? formData.baereevneUnntak : [];
 
-  const pageStyle = "bg-white text-black p-10 rounded-lg shadow-md text-sm border border-gray-200 mx-auto relative";
-  const pageWidth = { maxWidth: '210mm', minHeight: '297mm', paddingBottom: '40px', fontFamily: 'Verdana, Geneva, sans-serif' };
+  const pageStyle = "bg-white text-black text-sm mx-auto";
+  const pageWidth = { maxWidth: '210mm', fontFamily: 'Verdana, Geneva, sans-serif' };
   const hasSammendrag = !!formData.sammendrag;
   const isTilstand = documentType === "tilstandsvurdering";
   const isBF85 = isTilstand && formData.regelverk === "BF85";
