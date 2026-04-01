@@ -277,7 +277,7 @@ const seksjoneringPreaksepterteYtelser = [
 ];
 
 // Funksjon for å generere bæreevne og stabilitet tekst basert på brannklasse, med unntak
-const getBaereevneTekst = (brannklasse: string, risikoklasse: string, etasjer: string): { tekst: string; anvendteUnntak: string[] } => {
+const getBaereevneTekst = (brannklasse: string, risikoklasse: string, etasjer: string, toggles?: { trappeloep: boolean; kjeller: boolean; utvendig: boolean }): { tekst: string; anvendteUnntak: string[] } => {
   const bkl = parseInt(brannklasse.replace(/\D/g, ''), 10);
   const rk = parseInt(risikoklasse.replace(/\D/g, ''), 10);
   const floors = parseInt(etasjer, 10);
@@ -336,11 +336,14 @@ const getBaereevneTekst = (brannklasse: string, risikoklasse: string, etasjer: s
     anvendteUnntak.push("unntak4");
   }
 
-  const tekst = `Bærende hovedsystem: ${k.hovedsystem}
-Sekundære, bærende bygningsdeler, etasjeskillere og takkonstruksjoner som ikke er del av hovedbæresystem eller stabiliserende: ${k.sekundaer}
-Trappeløp: ${k.trappeloep}
-Bærende bygningsdeler under øverste kjeller: ${k.kjeller}
-Utvendig trappeløp, beskyttet mot flammepåvirkning og strålevarme: ${k.utvendig}`;
+  const lines = [
+    `Bærende hovedsystem: ${k.hovedsystem}`,
+    `Sekundære, bærende bygningsdeler, etasjeskillere og takkonstruksjoner som ikke er del av hovedbæresystem eller stabiliserende: ${k.sekundaer}`,
+  ];
+  if (toggles?.trappeloep) lines.push(`Trappeløp: ${k.trappeloep}`);
+  if (toggles?.kjeller) lines.push(`Bærende bygningsdeler under øverste kjeller: ${k.kjeller}`);
+  if (toggles?.utvendig) lines.push(`Utvendig trappeløp, beskyttet mot flammepåvirkning og strålevarme: ${k.utvendig}`);
+  const tekst = lines.join('\n');
   
   return { tekst, anvendteUnntak };
 };
@@ -533,6 +536,9 @@ const Konsept = () => {
     baereevneUnntak: [] as string[],
     baereevneKommentar: "",
     balkongRelevant: false,
+    trappeloepRelevant: false,
+    kjellerRelevant: false,
+    utvendigTrapperRelevant: false,
     eksplosjonRelevant: "", // "relevant" eller "ikke_relevant"
     eksplosjonBeskrivelse: "", // Beskrivelse av rom og type eksplosjonsfare
     eksplosjon: "",
@@ -863,7 +869,8 @@ const Konsept = () => {
       return;
     }
     // TEK17 and others
-    const result = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer);
+    const toggles = { trappeloep: formData.trappeloepRelevant, kjeller: formData.kjellerRelevant, utvendig: formData.utvendigTrapperRelevant };
+    const result = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer, toggles);
     if (result.tekst) {
       setFormData(prev => ({ 
         ...prev, 
@@ -871,7 +878,7 @@ const Konsept = () => {
         baereevneUnntak: result.anvendteUnntak
       }));
     }
-  }, [formData.brannklasse, formData.risikoklasse, formData.etasjer, formData.regelverk, formData.bygningsbrannklasse]);
+  }, [formData.brannklasse, formData.risikoklasse, formData.etasjer, formData.regelverk, formData.bygningsbrannklasse, formData.trappeloepRelevant, formData.kjellerRelevant, formData.utvendigTrapperRelevant]);
 
   // Automatisk BF85 røykventilasjonskrav basert på etasjer
   useEffect(() => {
@@ -3530,13 +3537,42 @@ const Konsept = () => {
                             ? "Krav til bærende konstruksjoner (automatisk basert på bygningsbrannklasse — kan redigeres)"
                             : "Krav til bærende konstruksjoner (automatisk basert på brannklasse — kan redigeres)"}
                         </Label>
+                        {formData.regelverk !== "BF85" && (
+                          <div className="flex flex-wrap gap-4 mb-2">
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id="trappeloepRelevant"
+                                checked={formData.trappeloepRelevant}
+                                onCheckedChange={(checked) => setFormData({...formData, trappeloepRelevant: checked as boolean})}
+                              />
+                              <Label htmlFor="trappeloepRelevant" className="text-xs cursor-pointer">Trappeløp</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id="kjellerRelevant"
+                                checked={formData.kjellerRelevant}
+                                onCheckedChange={(checked) => setFormData({...formData, kjellerRelevant: checked as boolean})}
+                              />
+                              <Label htmlFor="kjellerRelevant" className="text-xs cursor-pointer">Bærende bygningsdeler under øverste kjeller</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id="utvendigTrapperRelevant"
+                                checked={formData.utvendigTrapperRelevant}
+                                onCheckedChange={(checked) => setFormData({...formData, utvendigTrapperRelevant: checked as boolean})}
+                              />
+                              <Label htmlFor="utvendigTrapperRelevant" className="text-xs cursor-pointer">Utvendige trapper</Label>
+                            </div>
+                          </div>
+                        )}
                         <Textarea 
                           value={formData.baereevne}
                           onChange={(e) => setFormData({...formData, baereevne: e.target.value})}
                           className="min-h-[140px]"
                         />
                         {formData.regelverk !== "BF85" && formData.baereevne && formData.brannklasse && (() => {
-                          const auto = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer);
+                          const toggles = { trappeloep: formData.trappeloepRelevant, kjeller: formData.kjellerRelevant, utvendig: formData.utvendigTrapperRelevant };
+                          const auto = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer, toggles);
                           return auto.tekst && formData.baereevne !== auto.tekst;
                         })() && (
                           <div className="flex items-start gap-2 mt-2 p-2 border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 rounded-md">
