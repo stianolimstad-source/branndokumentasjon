@@ -1801,7 +1801,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 heis_dor_ei60: "I heissjakt med brannmotstand EI 60 kan det benyttes heisdør minst E 90 [F 90]. Heisdør kan utføres uten klasse Sₐ.",
                 heis_dor_luftsluse: "Brannmotstand for dør fra tilstøtende rom til luftsluse som beskrevet i nr. 1 og 2 må være minst EI 30-Sₐ.",
               };
+              const etasjerNum = parseInt(formData.etasjer || '0', 10);
               const activeKrav = formData.heissjaktkrav
+                .filter((id: string) => !(id === "heis_roykventileres_over8" && etasjerNum <= 8))
                 .map((id: string, idx: number) => ({ id, text: heisKravMap[id], num: idx + 1 }))
                 .filter((k: { text: string }) => k.text);
               if (activeKrav.length === 0) return null;
