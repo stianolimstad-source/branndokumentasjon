@@ -1,7 +1,7 @@
-const PREVIEW_IDLE_THRESHOLD_MS = 30 * 1000;
-const MIN_REFRESH_GAP_MS = 10 * 1000;
-const HEARTBEAT_INTERVAL_MS = 15 * 1000;
-const WAKE_DRIFT_THRESHOLD_MS = 45 * 1000;
+const PREVIEW_IDLE_THRESHOLD_MS = 5 * 60 * 1000;  // 5 minutes
+const MIN_REFRESH_GAP_MS = 2 * 60 * 1000;         // 2 minutes
+const HEARTBEAT_INTERVAL_MS = 60 * 1000;           // 1 minute
+const WAKE_DRIFT_THRESHOLD_MS = 5 * 60 * 1000;    // 5 minutes
 const LAST_REFRESH_KEY = "__lovable_preview_last_refresh__";
 const REFRESH_PARAM = "__preview_refresh";
 
