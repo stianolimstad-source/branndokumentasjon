@@ -562,6 +562,7 @@ const Konsept = () => {
     innvendigHjorneAlternativ: "alt1" as "alt1" | "alt2", // alt1 = 8m, alt2 = 5m+5m
     seksjonDorRelevant: false,
     seksjonVinduRelevant: false,
+    erSykehusPleieinstitusjon: false, // RKL6: krav til vertikal seksjonering for sykehus/sykehjem/pleieinstitusjoner
     brannseksjoner: "",
     brannseksjonerKommentar: "",
     brannceller: "",
@@ -4158,6 +4159,22 @@ const Konsept = () => {
                               })()}
                             </div>
                           )}
+                        </div>
+                      )}
+
+                      {/* RKL6: Toggle for sykehus/pleieinstitusjon (vertikal seksjonering) */}
+                      {formData.regelverk !== "BF85" && formData.risikoklasse === "RK6" && (
+                        <div className="flex items-start gap-2 p-3 border rounded-md bg-muted/30">
+                          <Checkbox
+                            id="erSykehusPleieinstitusjon"
+                            checked={formData.erSykehusPleieinstitusjon}
+                            onCheckedChange={(checked) => setFormData({...formData, erSykehusPleieinstitusjon: !!checked})}
+                          />
+                          <label htmlFor="erSykehusPleieinstitusjon" className="text-xs cursor-pointer leading-snug">
+                            <span className="font-medium">Bygget er beregnet for sykehus, sykehjem eller andre pleieinstitusjoner</span>
+                            <br />
+                            <span className="text-muted-foreground">Dersom dette er huket av, gjelder krav om vertikal oppdeling i minst to brannseksjoner (jf. VTEK § 11-7).</span>
+                          </label>
                         </div>
                       )}
 
