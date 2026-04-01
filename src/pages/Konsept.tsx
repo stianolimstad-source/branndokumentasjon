@@ -4696,65 +4696,64 @@ const Konsept = () => {
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-2 block">Krav til heissjakt</Label>
-                        {formData.regelverk === "BF85" ? (
-                          <>
-                            <div className="mb-2 p-2 bg-accent/50 rounded text-xs">
-                              <span className="font-medium">BF85 heissjakt-krav</span>
-                              <span className="text-muted-foreground ml-1">(Kap. 30:33/30:65)</span>
-                            </div>
-                            <div className="border rounded-md p-2 space-y-2 bg-muted/30">
-                              {[
-                                { id: "bf85_heis_ventilasjon", label: "1. Heissjakt skal være ventilert med naturlig avtrekk, mekanisk avtrekk eller frisklufttilførsel." },
-                                { id: "bf85_heis_dor_brannmotstand", label: "2. Dør til heis må ha samme brannmotstand som veggen den står i, eller F 90 (E 90)." },
-                                { id: "bf85_heis_dor_luftsluse", label: "3. Brannmotstand for dør fra tilstøtende rom til luftsluse må minst være B 30 (EI 30 Sₐ)." },
-                              ].map((krav) => (
-                                <div key={krav.id} className="flex items-start space-x-2">
-                                  <Checkbox
-                                    id={`heis-${krav.id}`}
-                                    checked={formData.heissjaktkrav.includes(krav.id)}
-                                    onCheckedChange={(checked) => {
-                                      if (checked) {
-                                        setFormData({...formData, heissjaktkrav: [...formData.heissjaktkrav, krav.id]});
-                                      } else {
-                                        setFormData({...formData, heissjaktkrav: formData.heissjaktkrav.filter(k => k !== krav.id)});
-                                      }
-                                    }}
-                                  />
-                                  <label htmlFor={`heis-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                        {(() => {
+                          const getHeissjaktkravOriginalTekst = () => {
+                            if (formData.regelverk === "BF85") {
+                              return [
+                                "1. Heissjakt skal være ventilert med naturlig avtrekk, mekanisk avtrekk eller frisklufttilførsel:\n   - Naturlig avtrekk: Kanaltverrsnitt 50 cm² pr. m² sjaktareal\n   - Mekanisk avtrekk: 30 m³/h pr. m² sjaktareal\n   - Frisklufttilførsel: 50 cm² pr. m² sjaktareal",
+                                "2. Dør til heis må ha samme brannmotstand som veggen den står i, eller F 90 (E 90).",
+                                "3. Brannmotstand for dør fra tilstøtende rom til luftsluse må minst være B 30 (EI 30 Sₐ).",
+                              ].join("\n\n");
+                            }
+                            const etasjerNum = parseInt(formData.etasjer || '0', 10);
+                            const kravListe = [
+                              "1. I byggverk med inntil 8 etasjer må heissjakten røykventileres, eller det må etableres luftsluse (mellomliggende rom) utført som egen, ventilert branncelle, mellom heissjakten og tilstøtende rom.",
+                            ];
+                            if (etasjerNum > 8) {
+                              kravListe.push("2. Heissjakt i byggverk med mer enn 8 etasjer må røykventileres og i tillegg utføres med luftsluse som beskrevet i nr. 1.");
+                            }
+                            const offset = kravListe.length;
+                            kravListe.push(`${offset + 1}. Dør må ha samme brannmotstand som veggen den står i, med unntak som gitt i nr. ${offset + 2} og ${offset + 3}.`);
+                            kravListe.push(`${offset + 2}. I heissjakt med brannmotstand EI 60 kan det benyttes heisdør minst E 90 [F 90]. Heisdør kan utføres uten klasse Sₐ.`);
+                            kravListe.push(`${offset + 3}. Brannmotstand for dør fra tilstøtende rom til luftsluse som beskrevet i nr. 1${etasjerNum > 8 ? " og 2" : ""} må være minst EI 30-Sₐ.`);
+                            return kravListe.join("\n\n");
+                          };
+
+                          const originalTekst = getHeissjaktkravOriginalTekst();
+
+                          // Auto-populate if empty
+                          if (!formData.heissjaktkravTekst && originalTekst) {
+                            setTimeout(() => setFormData({...formData, heissjaktkravTekst: originalTekst}), 0);
+                          }
+
+                          return (
+                            <div className="relative">
+                              {formData.regelverk === "BF85" && (
+                                <div className="mb-2 p-2 bg-accent/50 rounded text-xs">
+                                  <span className="font-medium">BF85 heissjakt-krav</span>
+                                  <span className="text-muted-foreground ml-1">(Kap. 30:33/30:65)</span>
                                 </div>
-                              ))}
-                            </div>
-                          </>
-                        ) : (
-                          <div className="border rounded-md p-2 space-y-2 bg-muted/30">
-                            {[
-                              { id: "heis_roykventileres_8", label: "1. I byggverk med inntil 8 etasjer må heissjakten røykventileres, eller det må etableres luftsluse (mellomliggende rom) utført som egen, ventilert branncelle, mellom heissjakten og tilstøtende rom." },
-                              { id: "heis_roykventileres_over8", label: "2. Heissjakt i byggverk med mer enn 8 etasjer må røykventileres og i tillegg utføres med luftsluse som beskrevet i nr. 1." },
-                              { id: "heis_dor_brannmotstand", label: "3. Dør må ha samme brannmotstand som veggen den står i, med unntak som gitt i nr. 4 og 5." },
-                              { id: "heis_dor_ei60", label: "4. I heissjakt med brannmotstand EI 60 kan det benyttes heisdør minst E 90 [F 90]. Heisdør kan utføres uten klasse Sₐ." },
-                              { id: "heis_dor_luftsluse", label: "5. Brannmotstand for dør fra tilstøtende rom til luftsluse som beskrevet i nr. 1 og 2 må være minst EI 30-Sₐ." },
-                            ].filter((krav) => {
-                              const etasjerNum = parseInt(formData.etasjer || '0', 10);
-                              if (krav.id === "heis_roykventileres_over8" && etasjerNum <= 8) return false;
-                              return true;
-                            }).map((krav) => (
-                              <div key={krav.id} className="flex items-start space-x-2">
-                                <Checkbox
-                                  id={`heis-${krav.id}`}
-                                  checked={formData.heissjaktkrav.includes(krav.id)}
-                                  onCheckedChange={(checked) => {
-                                    if (checked) {
-                                      setFormData({...formData, heissjaktkrav: [...formData.heissjaktkrav, krav.id]});
-                                    } else {
-                                      setFormData({...formData, heissjaktkrav: formData.heissjaktkrav.filter(k => k !== krav.id)});
-                                    }
-                                  }}
+                              )}
+                              <div className="relative">
+                                <Textarea
+                                  value={formData.heissjaktkravTekst || ""}
+                                  onChange={(e) => setFormData({...formData, heissjaktkravTekst: e.target.value})}
+                                  className="min-h-[160px] text-xs pr-2"
+                                  placeholder="Krav til heissjakt..."
                                 />
-                                <label htmlFor={`heis-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  className="absolute top-1 right-1 text-[10px] h-6 px-2"
+                                  onClick={() => setFormData({...formData, heissjaktkravTekst: originalTekst})}
+                                >
+                                  Sett original tekst
+                                </Button>
                               </div>
-                            ))}
-                          </div>
-                        )}
+                            </div>
+                          );
+                        })()}
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-2 block">Krav til trapperom</Label>
