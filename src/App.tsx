@@ -31,6 +31,7 @@ import MinProfil from "./pages/MinProfil";
 import Sikkerhetsrutiner from "./pages/Sikkerhetsrutiner";
 import Eksempelkatalog from "./pages/Eksempelkatalog";
 import BranntekniskeKonstruksjoner from "./pages/eksempelkatalog/BranntekniskeKonstruksjoner";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -59,6 +60,7 @@ const App = () => (
             <Route path="/verktoy/roykventilasjon" element={<RoykventilasjonPage />} />
             
             <Route path="/auth" element={<Auth />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/mine-prosjekter" element={<MineProsjekter />} />
             <Route path="/prosjekt/:id" element={<ProsjektDetalj />} />
             <Route path="/mine-oppgaver" element={<MineOppgaver />} />
