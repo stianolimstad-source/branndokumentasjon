@@ -161,12 +161,14 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
       {/* Sammendrag - egen side */}
       {hasSammendrag && (
+        <>
         <div>
           <h2 id="preview-sammendrag" className="font-bold mb-3">Sammendrag</h2>
           <p className="whitespace-pre-wrap text-xs">{formData.sammendrag}</p>
           <PageFooter pageNum={pageSammendrag} />
         </div>
-      <hr style={{ border: "none", borderTop: "2px solid #e5e7eb", margin: "32px 0" }} />
+        <hr style={{ border: "none", borderTop: "2px solid #e5e7eb", margin: "32px 0" }} />
+        </>
       )}
 
       {/* Tilstandsgrader - egen side (kun for tilstandsvurdering) */}
