@@ -774,7 +774,7 @@ const Konsept = () => {
         brannklasseBegrunnelse: "",
       }));
     }
-  }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal]);
+  }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.erRKL6Boligbygning]);
 
   // Automatisk aktivering av ledesystem basert på TEK17 § 11-14
   // Boligbygg (RK4) med 3+ etasjer, skoler (RK3), RK5, RK6, og store kontorer/offentlige bygg
