@@ -979,18 +979,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_2"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_2"]} sectionLabel="3.2 Sikkerhet ved eksplosjon" />
             )}
-          </tbody>
-        </table>
-      </section>
-      <PageFooter pageNum={pageKap3a} />
-      </div>
 
-      {/* Side 3.3-3.4 */}
-      <div>
-      <section className="mb-6">
-        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
-        <table className="w-full border-collapse border border-gray-400 text-xs">
-          <tbody>
             {/* 3.3 §11-6 / BF85 :32 Brannspredning mellom byggverk */}
             <tr id="preview-3-3" className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
@@ -1455,18 +1444,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_4"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_4"]} sectionLabel={isBF85 ? "2.4 Brannteknisk oppdeling" : "3.4 Brannseksjoner"} />
             )}
-          </tbody>
-        </table>
-      </section>
-      <PageFooter pageNum={pageKap3b} />
-      </div>
 
-      {/* Side 3.5 */}
-      <div>
-      <section className="mb-6">
-        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
-        <table className="w-full border-collapse border border-gray-400 text-xs">
-          <tbody>
             {/* 3.5 §11-8 Brannceller */}
             <tr id="preview-3-5" className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.5 &nbsp;&nbsp; {isBF85 ? <>Branncelleinndeling (Kap. 30:63–65) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-8 Brannceller)</span></> : "§11-8 Brannceller"}</td>
@@ -2155,26 +2133,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">RIBr</td>
               </tr>
             )}
-          </tbody>
-        </table>
-      </section>
-      <PageFooter pageNum={pageKap3c} />
-      </div>
 
-      {/* Side 3.5 (forts.) */}
-      <div>
-      <section className="mb-6">
-        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
-        <table className="w-full border-collapse border border-gray-400 text-xs">
-          <tbody>
-            <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.5 &nbsp;&nbsp; {isBF85 ? <>Branncelleinndeling <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(forts.)</span></> : "§11-8 Brannceller"} <span style={{ fontWeight: 'normal', fontStyle: 'italic' }}>(forts.)</span></td>
-            </tr>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
-              <th className="border border-gray-400 p-2 text-left">Løsning</th>
-              <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
-            </tr>
+
+
             {/* Garasje - BF85 krav */}
             {formData.garasjeRelevant && formData.regelverk === "BF85" && (formData.garasjeBF85Krav || []).length > 0 && (() => {
               const bf85Labels: Record<string, string> = {
@@ -2302,18 +2263,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_5"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_5"]} sectionLabel="3.5 Brannceller" />
             )}
-          </tbody>
-        </table>
-      </section>
-      <PageFooter pageNum={pageKap3c2} />
-      </div>
 
-      {/* Side 3.6-3.7 */}
-      <div>
-      <section className="mb-6">
-        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
-        <table className="w-full border-collapse border border-gray-400 text-xs">
-          <tbody>
             {/* 3.6 §11-9 Materialer og produkter */}
             <tr id="preview-3-6" className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.6 &nbsp;&nbsp; {isBF85 ? <>Kledninger og overflater for vegger og tak (:42) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-9 Materialer og produkters egenskaper ved brann)</span></> : "§11-9 Materialer og produkters egenskaper ved brann"}</td>
@@ -2694,18 +2644,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <TilstandTableRow data={formData.tilstandsvurderinger["3_6"]} sectionLabel="3.6 Materialer og produkter" />
             )}
 
-          </tbody>
-        </table>
-      </section>
-      <PageFooter pageNum={pageKap3d} />
-      </div>
 
-      {/* Side 3.7 */}
-      <div>
-      <section className="mb-6">
-        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
-        <table className="w-full border-collapse border border-gray-400 text-xs">
-          <tbody>
             {/* 3.7 §11-10 Tekniske installasjoner */}
             <tr id="preview-3-7" className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.7 &nbsp;&nbsp; {isBF85 ? <>Ventilasjon og installasjoner (Kap. 47) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-10 Tekniske installasjoner)</span></> : "§11-10 Tekniske installasjoner"}</td>
@@ -2862,18 +2801,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <TilstandTableRow data={formData.tilstandsvurderinger["3_8"]} sectionLabel="3.8 Rømning og redning" />
             )}
 
-          </tbody>
-        </table>
-      </section>
-      <PageFooter pageNum={pageKap3d2} />
-      </div>
 
-      {/* Side 3.9 */}
-      <div>
-      <section className="mb-6">
-        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
-        <table className="w-full border-collapse border border-gray-400 text-xs">
-          <tbody>
             {/* 3.9 §11-12 Tilrettelegging for rømning */}
             <tr id="preview-3-9" className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.9 &nbsp;&nbsp; {isBF85 ? <>Brannalarmanlegg og røykvarsler (Kap. 31–39) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-12 Tiltak for å påvirke rømnings- og redningstider)</span></> : "§11-12 Tilrettelegging for rømning og redning"}</td>
@@ -3140,18 +3068,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <TilstandTableRow data={formData.tilstandsvurderinger["3_9"]} sectionLabel="3.9 Tilrettelegging for rømning" />
             )}
 
-          </tbody>
-        </table>
-      </section>
-      <PageFooter pageNum={pageKap3e2} />
-      </div>
 
-      {/* Side 3.10-3.11 */}
-      <div>
-      <section className="mb-6">
-        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
-        <table className="w-full border-collapse border border-gray-400 text-xs">
-          <tbody>
             {/* 3.10 §11-13 Utgang fra branncelle */}
             <tr id="preview-3-10" className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.10 &nbsp;&nbsp; {isBF85 ? <>Utganger og rømningsveier fra branncelle (Kap. 30:71–73) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-13 Utgang fra branncelle)</span></> : "§11-13 Utgang fra branncelle"}</td>
@@ -3396,18 +3313,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <TilstandTableRow data={formData.tilstandsvurderinger["3_10"]} sectionLabel="3.10 Utgang fra branncelle" />
             )}
 
-          </tbody>
-        </table>
-      </section>
-      <PageFooter pageNum={pageKap3f} />
-      </div>
 
-      {/* Side 3.11 */}
-      <div>
-      <section className="mb-6">
-        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
-        <table className="w-full border-collapse border border-gray-400 text-xs">
-          <tbody>
             {/* 3.11 §11-14 Rømningsvei */}
             <tr id="preview-3-11" className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.11 &nbsp;&nbsp; {isBF85 ? <>Trapperom og heissjakt (Kap. 30:7/30:41) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-14 Rømningsvei)</span></> : "§11-14 Rømningsvei"}</td>
@@ -3550,26 +3456,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
             )}
-          </tbody>
-        </table>
-      </section>
-      <PageFooter pageNum={pageKap3f2} />
-      </div>
 
-      {/* Side 3.11 (forts.) */}
-      <div>
-      <section className="mb-6">
-        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
-        <table className="w-full border-collapse border border-gray-400 text-xs">
-          <tbody>
-            <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.11 &nbsp;&nbsp; {isBF85 ? <>Trapperom og heissjakt (Kap. 30:7/30:41) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-14 Rømningsvei)</span></> : "§11-14 Rømningsvei"} <span style={{ fontWeight: 'normal', fontStyle: 'italic' }}>(forts.)</span></td>
-            </tr>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
-              <th className="border border-gray-400 p-2 text-left">Løsning</th>
-              <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
-            </tr>
+
+
             {formData.romningsveiSvalgang && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top font-medium">Svalganger og altanganger som rømningsvei</td>
@@ -3661,18 +3550,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <TilstandTableRow data={formData.tilstandsvurderinger["3_11"]} sectionLabel="3.11 Rømningsvei" />
             )}
 
-          </tbody>
-        </table>
-      </section>
-      <PageFooter pageNum={pageKap3f3} />
-      </div>
 
-      {/* Side 3.12-3.14 */}
-      <div>
-      <section className="mb-6">
-        <h2 className="font-bold mb-3">3. {isTilstand ? "Brannteknisk tilstandsvurdering" : "Beskrivelse av branntekniske ytelseskrav"} <span className="font-normal text-gray-500">(forts.)</span></h2>
-        <table className="w-full border-collapse border border-gray-400 text-xs">
-          <tbody>
             {/* 3.12 §11-15 Tilrettelegging for redning av husdyr */}
             <tr id="preview-3-12" className="bg-blue-100">
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.12 &nbsp;&nbsp; {isBF85 ? <>Tilrettelegging for redning av husdyr <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-15)</span></> : "§11-15 Tilrettelegging for redning av husdyr"}</td>
