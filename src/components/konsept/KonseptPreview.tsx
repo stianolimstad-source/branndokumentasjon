@@ -3457,14 +3457,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
             )}
 
-            <tr className="bg-blue-100">
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.11 &nbsp;&nbsp; {isBF85 ? <>Trapperom og heissjakt (Kap. 30:7/30:41) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-14 Rømningsvei)</span></> : "§11-14 Rømningsvei"} <span style={{ fontWeight: 'normal', fontStyle: 'italic' }}>(forts.)</span></td>
-            </tr>
-            <tr className="bg-gray-100">
-              <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
-              <th className="border border-gray-400 p-2 text-left">Løsning</th>
-              <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
-            </tr>
+
+
             {formData.romningsveiSvalgang && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top font-medium">Svalganger og altanganger som rømningsvei</td>
