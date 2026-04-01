@@ -1,5 +1,7 @@
-const PREVIEW_IDLE_THRESHOLD_MS = 2 * 60 * 1000;
-const MIN_REFRESH_GAP_MS = 15 * 1000;
+const PREVIEW_IDLE_THRESHOLD_MS = 30 * 1000;
+const MIN_REFRESH_GAP_MS = 10 * 1000;
+const HEARTBEAT_INTERVAL_MS = 15 * 1000;
+const WAKE_DRIFT_THRESHOLD_MS = 45 * 1000;
 const LAST_REFRESH_KEY = "__lovable_preview_last_refresh__";
 const REFRESH_PARAM = "__preview_refresh";
 
@@ -30,19 +32,20 @@ export function enablePreviewAutoRefresh() {
   if (typeof window === "undefined" || !isPreviewHost()) return;
 
   let idleStartedAt = Date.now();
+  let heartbeatAt = Date.now();
 
   const markIdle = () => {
     idleStartedAt = Date.now();
   };
 
-  const refreshIfStale = () => {
+  const refreshIfStale = (force = false) => {
     if (document.visibilityState !== "visible") return;
 
     const now = Date.now();
     const idleFor = now - idleStartedAt;
     const lastRefreshAt = readLastRefreshAt();
 
-    if (idleFor < PREVIEW_IDLE_THRESHOLD_MS) return;
+    if (!force && idleFor < PREVIEW_IDLE_THRESHOLD_MS) return;
     if (now - lastRefreshAt < MIN_REFRESH_GAP_MS) return;
 
     writeLastRefreshAt(now);
@@ -63,10 +66,30 @@ export function enablePreviewAutoRefresh() {
 
   window.addEventListener("blur", markIdle);
   window.addEventListener("pagehide", markIdle);
-  window.addEventListener("focus", refreshIfStale);
+  window.addEventListener("focus", () => {
+    refreshIfStale();
+  });
   window.addEventListener("pageshow", (event) => {
     if ((event as PageTransitionEvent).persisted) {
       refreshIfStale();
     }
   });
+
+  const heartbeatId = window.setInterval(() => {
+    const now = Date.now();
+    const drift = now - heartbeatAt;
+    heartbeatAt = now;
+
+    if (drift >= WAKE_DRIFT_THRESHOLD_MS) {
+      refreshIfStale(true);
+    }
+  }, HEARTBEAT_INTERVAL_MS);
+
+  window.addEventListener(
+    "beforeunload",
+    () => {
+      window.clearInterval(heartbeatId);
+    },
+    { once: true },
+  );
 }
