@@ -536,6 +536,9 @@ const Konsept = () => {
     baereevneUnntak: [] as string[],
     baereevneKommentar: "",
     balkongRelevant: false,
+    trappeloepRelevant: false,
+    kjellerRelevant: false,
+    utvendigTrapperRelevant: false,
     eksplosjonRelevant: "", // "relevant" eller "ikke_relevant"
     eksplosjonBeskrivelse: "", // Beskrivelse av rom og type eksplosjonsfare
     eksplosjon: "",
