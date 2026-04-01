@@ -562,6 +562,7 @@ const Konsept = () => {
     innvendigHjorneAlternativ: "alt1" as "alt1" | "alt2", // alt1 = 8m, alt2 = 5m+5m
     seksjonDorRelevant: false,
     seksjonVinduRelevant: false,
+    erSykehusPleieinstitusjon: false, // RKL6: krav til vertikal seksjonering for sykehus/sykehjem/pleieinstitusjoner
     brannseksjoner: "",
     brannseksjonerKommentar: "",
     brannceller: "",
