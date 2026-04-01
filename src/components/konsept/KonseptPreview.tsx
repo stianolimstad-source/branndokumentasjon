@@ -452,22 +452,16 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <thead>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left">Type</th>
-              <th className="border border-gray-400 p-2 text-left">Status</th>
-              <th className="border border-gray-400 p-2 text-left">Dato</th>
               <th className="border border-gray-400 p-2 text-left">Utført av</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td className="border border-gray-400 p-2 font-semibold">Egenkontroll</td>
-              <td className="border border-gray-400 p-2">{formData.ksEgenkontrollStatus === "ok" ? "Utført" : formData.ksEgenkontrollStatus === "ikke_utfort" ? "Ikke utført" : "[Angis]"}</td>
-              <td className="border border-gray-400 p-2">{formData.ksEgenkontrollDato ? formData.ksEgenkontrollDato.split('-').reverse().join('.') : "[Angis]"}</td>
               <td className="border border-gray-400 p-2">{formData.ksEgenkontrollUtfortAv || "[Angis]"}</td>
             </tr>
             <tr>
               <td className="border border-gray-400 p-2 font-semibold">Sidemannskontroll</td>
-              <td className="border border-gray-400 p-2">{formData.ksSidemannskontrollStatus === "ok" ? "Utført" : formData.ksSidemannskontrollStatus === "ikke_utfort" ? "Ikke utført" : "[Angis]"}</td>
-              <td className="border border-gray-400 p-2">{formData.ksSidemannskontrollDato ? formData.ksSidemannskontrollDato.split('-').reverse().join('.') : "[Angis]"}</td>
               <td className="border border-gray-400 p-2">{formData.ksSidemannskontrollUtfortAv || "[Angis]"}</td>
             </tr>
           </tbody>
