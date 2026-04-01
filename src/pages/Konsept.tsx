@@ -1454,6 +1454,7 @@ const Konsept = () => {
               new Paragraph({ children: [new TextRun({ text: "1. Innledning", bold: true, size: 22 })], spacing: { after: 50 } }),
               new Paragraph({ text: "    1.1 Informasjon om tiltaket", spacing: { after: 30 } }),
               new Paragraph({ text: "    1.2 Avgrensning av vurderingen", spacing: { after: 30 } }),
+              new Paragraph({ text: "    1.3 Kvalitetssikring (KS)", spacing: { after: 30 } }),
               new Paragraph({ text: "    1.3 Bygningsinformasjon", spacing: { after: 30 } }),
               new Paragraph({ text: "    1.4 Grunnlagsdokumenter", spacing: { after: 30 } }),
               new Paragraph({ text: "    1.5 Branntekniske forutsetninger", spacing: { after: 30 } }),
