@@ -577,6 +577,7 @@ const Konsept = () => {
     heissjaktkrav: [] as string[],
     heissjaktkravTekst: "",
     trapperomKrav: [] as string[],
+    trapperomIkkeDirekteTilFri: false,
     trapperomBeskrivelse: "",
     interntrappBeskrivelse: "",
     roykKontrollKrav: [] as string[],
