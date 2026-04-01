@@ -277,7 +277,7 @@ const seksjoneringPreaksepterteYtelser = [
 ];
 
 // Funksjon for å generere bæreevne og stabilitet tekst basert på brannklasse, med unntak
-const getBaereevneTekst = (brannklasse: string, risikoklasse: string, etasjer: string): { tekst: string; anvendteUnntak: string[] } => {
+const getBaereevneTekst = (brannklasse: string, risikoklasse: string, etasjer: string, toggles?: { trappeloep: boolean; kjeller: boolean; utvendig: boolean }): { tekst: string; anvendteUnntak: string[] } => {
   const bkl = parseInt(brannklasse.replace(/\D/g, ''), 10);
   const rk = parseInt(risikoklasse.replace(/\D/g, ''), 10);
   const floors = parseInt(etasjer, 10);
