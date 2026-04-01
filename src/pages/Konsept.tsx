@@ -5282,6 +5282,29 @@ const Konsept = () => {
                             { id: "tr_roykspredning", label: "7. Det må treffes tiltak for å begrense eller hindre røykspredning til trapperom Tr 2 og Tr 3 i samsvar med preaksepterte ytelser under G. Røykkontroll." },
                           ];
 
+                          const getTrapperomKravOriginalTekst = () => {
+                            const filteredKrav = trapperomKravListe.filter((krav) => {
+                              if (krav.id === "tr_romningsvei_videre" || krav.id === "tr_mellomliggende_rom") {
+                                return formData.trapperomIkkeDirekteTilFri;
+                              }
+                              if (trType) {
+                                if (krav.id === "tr1_dor_bruksenhet") return trType === "Tr 1";
+                                if (krav.id === "tr2_eget_rom") return trType === "Tr 2";
+                                if (krav.id === "tr3_mellomliggende") return trType === "Tr 3";
+                                if (krav.id === "tr_roykspredning") return trType === "Tr 2" || trType === "Tr 3";
+                              }
+                              return true;
+                            });
+                            return filteredKrav.map(k => k.label).join("\n\n");
+                          };
+
+                          const trapperomOriginalTekst = getTrapperomKravOriginalTekst();
+
+                          // Auto-populate if empty
+                          if (!formData.trapperomKravTekst && trapperomOriginalTekst) {
+                            setTimeout(() => setFormData({...formData, trapperomKravTekst: trapperomOriginalTekst}), 0);
+                          }
+
                           return (
                             <>
                               {trType ? (
@@ -5295,47 +5318,13 @@ const Konsept = () => {
                                   Angi risikoklasse og antall etasjer for å bestemme trapperomtype.
                                 </div>
                               )}
-                              <div className="border rounded-md p-2 space-y-2 bg-muted/30">
-                                {trapperomKravListe
-                                  .filter((krav) => {
-                                    // Punkt 2 og 3 vises kun hvis trapperommet ikke leder direkte til det fri
-                                    if (krav.id === "tr_romningsvei_videre" || krav.id === "tr_mellomliggende_rom") {
-                                      return formData.trapperomIkkeDirekteTilFri;
-                                    }
-                                    // Filtrer Tr-spesifikke krav basert på automatisk bestemt trapperomtype
-                                    if (trType) {
-                                      if (krav.id === "tr1_dor_bruksenhet") return trType === "Tr 1";
-                                      if (krav.id === "tr2_eget_rom") return trType === "Tr 2";
-                                      if (krav.id === "tr3_mellomliggende") return trType === "Tr 3";
-                                      if (krav.id === "tr_roykspredning") return trType === "Tr 2" || trType === "Tr 3";
-                                    }
-                                    return true;
-                                  })
-                                  .map((krav) => (
-                                  <div key={krav.id} className="flex items-start space-x-2">
-                                    <Checkbox
-                                      id={`tr-${krav.id}`}
-                                      checked={formData.trapperomKrav.includes(krav.id)}
-                                      onCheckedChange={(checked) => {
-                                        if (checked) {
-                                          setFormData({...formData, trapperomKrav: [...formData.trapperomKrav, krav.id]});
-                                        } else {
-                                          setFormData({...formData, trapperomKrav: formData.trapperomKrav.filter((k: string) => k !== krav.id)});
-                                        }
-                                      }}
-                                    />
-                                    <label htmlFor={`tr-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
-                                  </div>
-                                ))}
-                              </div>
                               {/* Spørsmål om trapperom som ikke leder direkte til det fri */}
-                              <div className="mt-2 flex items-start space-x-2 p-2 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700 rounded">
+                              <div className="mb-2 flex items-start space-x-2 p-2 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700 rounded">
                                 <Checkbox
                                   id="trapperom-ikke-direkte-fri"
                                   checked={formData.trapperomIkkeDirekteTilFri}
                                   onCheckedChange={(checked) => {
-                                    const newFormData = {...formData, trapperomIkkeDirekteTilFri: !!checked};
-                                    // Fjern punkt 2 og 3 fra valgte krav hvis man fjerner haken
+                                    const newFormData = {...formData, trapperomIkkeDirekteTilFri: !!checked, trapperomKravTekst: ""};
                                     if (!checked) {
                                       newFormData.trapperomKrav = formData.trapperomKrav.filter(
                                         (k: string) => k !== "tr_romningsvei_videre" && k !== "tr_mellomliggende_rom"
@@ -5348,6 +5337,23 @@ const Konsept = () => {
                                   Bygget har trapperom som ikke leder direkte til det fri
                                 </label>
                               </div>
+                              <div className="flex justify-end mb-1">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-[10px] h-6 px-2"
+                                  onClick={() => setFormData({...formData, trapperomKravTekst: trapperomOriginalTekst})}
+                                >
+                                  Sett original tekst
+                                </Button>
+                              </div>
+                              <Textarea
+                                value={formData.trapperomKravTekst || ""}
+                                onChange={(e) => setFormData({...formData, trapperomKravTekst: e.target.value})}
+                                className="min-h-[200px] text-xs"
+                                placeholder="Krav til trapperom..."
+                              />
                               <div className="mt-3 border-t pt-3">
                                 <Label className="text-xs font-medium mb-1 block">Interntrapp (ikke del av rømningsvei)</Label>
                                 <p className="text-xs text-muted-foreground mb-1">Beskriv eventuelle interntrapper som kun benyttes internt og ikke trenger å følge Tr-klassen.</p>
