@@ -5301,6 +5301,13 @@ const Konsept = () => {
                                     if (krav.id === "tr_romningsvei_videre" || krav.id === "tr_mellomliggende_rom") {
                                       return formData.trapperomIkkeDirekteTilFri;
                                     }
+                                    // Filtrer Tr-spesifikke krav basert på automatisk bestemt trapperomtype
+                                    if (trType) {
+                                      if (krav.id === "tr1_dor_bruksenhet") return trType === "Tr 1";
+                                      if (krav.id === "tr2_eget_rom") return trType === "Tr 2";
+                                      if (krav.id === "tr3_mellomliggende") return trType === "Tr 3";
+                                      if (krav.id === "tr_roykspredning") return trType === "Tr 2" || trType === "Tr 3";
+                                    }
                                     return true;
                                   })
                                   .map((krav) => (
