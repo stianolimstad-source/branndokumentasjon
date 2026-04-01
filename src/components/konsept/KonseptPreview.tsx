@@ -125,11 +125,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   // Section prefix for chapter 3 (brannkonsept) → chapter 2 (tilstandsvurdering)
   const sp = "3";
 
-  const PageFooter = ({ pageNum }: { pageNum: number }) => (
-    <div className="absolute bottom-4 left-0 right-0 flex justify-center">
-      <span className="text-xs text-gray-400">Side {pageNum} av {totalPages}</span>
-    </div>
-  );
+  const PageFooter = ({ pageNum }: { pageNum: number }) => null;
 
   return (
     <div className="bg-white text-black rounded-lg shadow-md border border-gray-200 mx-auto p-10" style={{ maxWidth: '210mm', fontFamily: 'Verdana, Geneva, sans-serif' }}>
