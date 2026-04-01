@@ -169,7 +169,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           <p className="whitespace-pre-wrap text-xs">{formData.sammendrag}</p>
           <PageFooter pageNum={pageSammendrag} />
         </div>
-          </>
       )}
 
       {/* Tilstandsgrader - egen side (kun for tilstandsvurdering) */}
