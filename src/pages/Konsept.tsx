@@ -513,6 +513,13 @@ const Konsept = () => {
     tiltaksklasse: "",
     tiltaksklasseBegrunnelse: "",
     avgrensning: "",
+    // KS-status
+    ksEgenkontrollStatus: "" as "" | "ok" | "ikke_utfort",
+    ksEgenkontrollDato: "",
+    ksEgenkontrollUtfortAv: "",
+    ksSidemannskontrollStatus: "" as "" | "ok" | "ikke_utfort",
+    ksSidemannskontrollDato: "",
+    ksSidemannskontrollUtfortAv: "",
     // 2. Grunnlag og forutsetninger
     grunnlagsdokumenter: [] as Array<{navn: string, utarbeidetAv: string, dato: string}>,
     harFlereRisikoklasser: false, // Nytt felt for å aktivere flere risikoklasser
@@ -1447,6 +1454,7 @@ const Konsept = () => {
               new Paragraph({ children: [new TextRun({ text: "1. Innledning", bold: true, size: 22 })], spacing: { after: 50 } }),
               new Paragraph({ text: "    1.1 Informasjon om tiltaket", spacing: { after: 30 } }),
               new Paragraph({ text: "    1.2 Avgrensning av vurderingen", spacing: { after: 30 } }),
+              new Paragraph({ text: "    1.3 Kvalitetssikring (KS)", spacing: { after: 30 } }),
               new Paragraph({ text: "    1.3 Bygningsinformasjon", spacing: { after: 30 } }),
               new Paragraph({ text: "    1.4 Grunnlagsdokumenter", spacing: { after: 30 } }),
               new Paragraph({ text: "    1.5 Branntekniske forutsetninger", spacing: { after: 30 } }),
@@ -1473,7 +1481,8 @@ const Konsept = () => {
               new Paragraph({ text: "    1.2 Ansvarsoppgave i henhold til byggesaksforskriften (SAK 10)", spacing: { after: 30 } }),
               new Paragraph({ text: "    1.3 Prosjekteringsmetode", spacing: { after: 30 } }),
               new Paragraph({ text: "    1.4 Avgrensning av tiltak", spacing: { after: 30 } }),
-              new Paragraph({ text: "    1.5 Gjeldende regelverk", spacing: { after: 50 } }),
+              new Paragraph({ text: "    1.5 Gjeldende regelverk", spacing: { after: 30 } }),
+              new Paragraph({ text: "    1.6 Kvalitetssikring (KS)", spacing: { after: 50 } }),
               new Paragraph({ children: [new TextRun({ text: "2. Grunnlag og forutsetninger for brannteknisk prosjektering", bold: true, size: 22 })], spacing: { after: 50 } }),
               new Paragraph({ text: "    2.1 Grunnlagsdokumenter", spacing: { after: 30 } }),
               new Paragraph({ text: "    2.2 Beskrivelse av bygning og branntekniske forutsetninger", spacing: { after: 30 } }),
@@ -1590,6 +1599,39 @@ const Konsept = () => {
               }),
               new Paragraph({ text: "• TEK17 - Forskrift om tekniske krav til byggverk", spacing: { after: 50 } }),
               new Paragraph({ text: "• VTEK17 - Veiledning til teknisk forskrift", spacing: { after: 100 } }),
+              new Paragraph({
+                children: [new TextRun({ text: "1.6 Kvalitetssikring (KS)", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
+                  new TableRow({
+                    children: [
+                      createTableCell("Type", true, 25),
+                      createTableCell("Status", true, 25),
+                      createTableCell("Dato", true, 25),
+                      createTableCell("Utført av", true, 25),
+                    ],
+                  }),
+                  new TableRow({
+                    children: [
+                      createTableCell("Egenkontroll", true, 25),
+                      createTableCell(formData.ksEgenkontrollStatus === "ok" ? "Utført" : formData.ksEgenkontrollStatus === "ikke_utfort" ? "Ikke utført" : "[Angis]"),
+                      createTableCell(formData.ksEgenkontrollDato ? formData.ksEgenkontrollDato.split('-').reverse().join('.') : "[Angis]"),
+                      createTableCell(formData.ksEgenkontrollUtfortAv || "[Angis]"),
+                    ],
+                  }),
+                  new TableRow({
+                    children: [
+                      createTableCell("Sidemannskontroll", true, 25),
+                      createTableCell(formData.ksSidemannskontrollStatus === "ok" ? "Utført" : formData.ksSidemannskontrollStatus === "ikke_utfort" ? "Ikke utført" : "[Angis]"),
+                      createTableCell(formData.ksSidemannskontrollDato ? formData.ksSidemannskontrollDato.split('-').reverse().join('.') : "[Angis]"),
+                      createTableCell(formData.ksSidemannskontrollUtfortAv || "[Angis]"),
+                    ],
+                  }),
+                ],
+              }),
             ] : [
               // Tilstandsvurdering: 1.2 Avgrensning
               new Paragraph({
@@ -1599,6 +1641,39 @@ const Konsept = () => {
               new Paragraph({
                 text: formData.avgrensning || "[Avgrensning beskrives]",
                 spacing: { after: 100 },
+              }),
+              new Paragraph({
+                children: [new TextRun({ text: "1.3 Kvalitetssikring (KS)", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
+                  new TableRow({
+                    children: [
+                      createTableCell("Type", true, 25),
+                      createTableCell("Status", true, 25),
+                      createTableCell("Dato", true, 25),
+                      createTableCell("Utført av", true, 25),
+                    ],
+                  }),
+                  new TableRow({
+                    children: [
+                      createTableCell("Egenkontroll", true, 25),
+                      createTableCell(formData.ksEgenkontrollStatus === "ok" ? "Utført" : formData.ksEgenkontrollStatus === "ikke_utfort" ? "Ikke utført" : "[Angis]"),
+                      createTableCell(formData.ksEgenkontrollDato ? formData.ksEgenkontrollDato.split('-').reverse().join('.') : "[Angis]"),
+                      createTableCell(formData.ksEgenkontrollUtfortAv || "[Angis]"),
+                    ],
+                  }),
+                  new TableRow({
+                    children: [
+                      createTableCell("Sidemannskontroll", true, 25),
+                      createTableCell(formData.ksSidemannskontrollStatus === "ok" ? "Utført" : formData.ksSidemannskontrollStatus === "ikke_utfort" ? "Ikke utført" : "[Angis]"),
+                      createTableCell(formData.ksSidemannskontrollDato ? formData.ksSidemannskontrollDato.split('-').reverse().join('.') : "[Angis]"),
+                      createTableCell(formData.ksSidemannskontrollUtfortAv || "[Angis]"),
+                    ],
+                  }),
+                ],
               }),
             ]),
           ],
@@ -2517,6 +2592,78 @@ const Konsept = () => {
                       </div>
                     </div>
                     )}
+                    {/* KS-status */}
+                    <div className="space-y-2">
+                      <Label className="text-xs text-muted-foreground">
+                        {documentType === "tilstandsvurdering" ? "1.3" : "1.6"} Kvalitetssikring (KS)
+                      </Label>
+                      <div className="space-y-3 p-3 border border-border/60 rounded-lg bg-muted/20">
+                        <p className="text-xs font-semibold">Egenkontroll</p>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Status</Label>
+                            <Select
+                              value={formData.ksEgenkontrollStatus}
+                              onValueChange={(value) => setFormData({...formData, ksEgenkontrollStatus: value as "" | "ok" | "ikke_utfort"})}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Velg" /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="ok">Utført</SelectItem>
+                                <SelectItem value="ikke_utfort">Ikke utført</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Dato</Label>
+                            <Input
+                              type="date"
+                              value={formData.ksEgenkontrollDato}
+                              onChange={(e) => setFormData({...formData, ksEgenkontrollDato: e.target.value})}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Utført av</Label>
+                            <Input
+                              value={formData.ksEgenkontrollUtfortAv}
+                              onChange={(e) => setFormData({...formData, ksEgenkontrollUtfortAv: e.target.value})}
+                              placeholder="Navn"
+                            />
+                          </div>
+                        </div>
+                        <p className="text-xs font-semibold pt-2">Sidemannskontroll</p>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Status</Label>
+                            <Select
+                              value={formData.ksSidemannskontrollStatus}
+                              onValueChange={(value) => setFormData({...formData, ksSidemannskontrollStatus: value as "" | "ok" | "ikke_utfort"})}
+                            >
+                              <SelectTrigger><SelectValue placeholder="Velg" /></SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="ok">Utført</SelectItem>
+                                <SelectItem value="ikke_utfort">Ikke utført</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Dato</Label>
+                            <Input
+                              type="date"
+                              value={formData.ksSidemannskontrollDato}
+                              onChange={(e) => setFormData({...formData, ksSidemannskontrollDato: e.target.value})}
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Utført av</Label>
+                            <Input
+                              value={formData.ksSidemannskontrollUtfortAv}
+                              onChange={(e) => setFormData({...formData, ksSidemannskontrollUtfortAv: e.target.value})}
+                              placeholder="Navn"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </AccordionContent>
                 </AccordionItem>
 
