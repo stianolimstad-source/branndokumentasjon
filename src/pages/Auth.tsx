@@ -76,6 +76,39 @@ const Auth = () => {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateEmail(email)) {
+      toast({
+        title: 'Ugyldig e-post',
+        description: 'Vennligst skriv inn en gyldig e-postadresse.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setIsLoading(false);
+
+    if (error) {
+      toast({
+        title: 'Feil',
+        description: 'Kunne ikke sende tilbakestillingsmail. Prøv igjen.',
+        variant: 'destructive',
+      });
+    } else {
+      toast({
+        title: 'E-post sendt!',
+        description: 'Sjekk innboksen din for en lenke til å tilbakestille passordet.',
+      });
+      setIsForgotPassword(false);
+    }
+  };
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
 
