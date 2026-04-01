@@ -869,7 +869,8 @@ const Konsept = () => {
       return;
     }
     // TEK17 and others
-    const result = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer);
+    const toggles = { trappeloep: formData.trappeloepRelevant, kjeller: formData.kjellerRelevant, utvendig: formData.utvendigTrapperRelevant };
+    const result = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer, toggles);
     if (result.tekst) {
       setFormData(prev => ({ 
         ...prev, 
@@ -877,7 +878,7 @@ const Konsept = () => {
         baereevneUnntak: result.anvendteUnntak
       }));
     }
-  }, [formData.brannklasse, formData.risikoklasse, formData.etasjer, formData.regelverk, formData.bygningsbrannklasse]);
+  }, [formData.brannklasse, formData.risikoklasse, formData.etasjer, formData.regelverk, formData.bygningsbrannklasse, formData.trappeloepRelevant, formData.kjellerRelevant, formData.utvendigTrapperRelevant]);
 
   // Automatisk BF85 røykventilasjonskrav basert på etasjer
   useEffect(() => {
