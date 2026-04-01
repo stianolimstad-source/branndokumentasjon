@@ -4375,6 +4375,7 @@ const Konsept = () => {
                           )}
                         </div>
                       </div>
+                      )}
 
                       {/* Info om automatiske krav */}
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
