@@ -3537,13 +3537,42 @@ const Konsept = () => {
                             ? "Krav til bærende konstruksjoner (automatisk basert på bygningsbrannklasse — kan redigeres)"
                             : "Krav til bærende konstruksjoner (automatisk basert på brannklasse — kan redigeres)"}
                         </Label>
+                        {formData.regelverk !== "BF85" && (
+                          <div className="flex flex-wrap gap-4 mb-2">
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id="trappeloepRelevant"
+                                checked={formData.trappeloepRelevant}
+                                onCheckedChange={(checked) => setFormData({...formData, trappeloepRelevant: checked as boolean})}
+                              />
+                              <Label htmlFor="trappeloepRelevant" className="text-xs cursor-pointer">Trappeløp</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id="kjellerRelevant"
+                                checked={formData.kjellerRelevant}
+                                onCheckedChange={(checked) => setFormData({...formData, kjellerRelevant: checked as boolean})}
+                              />
+                              <Label htmlFor="kjellerRelevant" className="text-xs cursor-pointer">Bærende bygningsdeler under øverste kjeller</Label>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id="utvendigTrapperRelevant"
+                                checked={formData.utvendigTrapperRelevant}
+                                onCheckedChange={(checked) => setFormData({...formData, utvendigTrapperRelevant: checked as boolean})}
+                              />
+                              <Label htmlFor="utvendigTrapperRelevant" className="text-xs cursor-pointer">Utvendige trapper</Label>
+                            </div>
+                          </div>
+                        )}
                         <Textarea 
                           value={formData.baereevne}
                           onChange={(e) => setFormData({...formData, baereevne: e.target.value})}
                           className="min-h-[140px]"
                         />
                         {formData.regelverk !== "BF85" && formData.baereevne && formData.brannklasse && (() => {
-                          const auto = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer);
+                          const toggles = { trappeloep: formData.trappeloepRelevant, kjeller: formData.kjellerRelevant, utvendig: formData.utvendigTrapperRelevant };
+                          const auto = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer, toggles);
                           return auto.tekst && formData.baereevne !== auto.tekst;
                         })() && (
                           <div className="flex items-start gap-2 mt-2 p-2 border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 rounded-md">
