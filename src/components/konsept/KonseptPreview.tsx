@@ -280,6 +280,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p className="ml-4">1.3 Prosjekteringsmetode</p>
               <p className="ml-4">1.4 Avgrensning av tiltak</p>
               <p className="ml-4">1.5 Gjeldende regelverk</p>
+              <p className="ml-4">1.6 Kvalitetssikring (KS)</p>
               <p><span className="font-bold">2.</span> Grunnlag og forutsetninger for brannteknisk prosjektering</p>
               <p className="ml-4">2.1 Grunnlagsdokumenter</p>
               <p className="ml-4">2.2 Beskrivelse av bygning og branntekniske forutsetninger</p>
