@@ -4732,7 +4732,11 @@ const Konsept = () => {
                               { id: "heis_dor_brannmotstand", label: "3. Dør må ha samme brannmotstand som veggen den står i, med unntak som gitt i nr. 4 og 5." },
                               { id: "heis_dor_ei60", label: "4. I heissjakt med brannmotstand EI 60 kan det benyttes heisdør minst E 90 [F 90]. Heisdør kan utføres uten klasse Sₐ." },
                               { id: "heis_dor_luftsluse", label: "5. Brannmotstand for dør fra tilstøtende rom til luftsluse som beskrevet i nr. 1 og 2 må være minst EI 30-Sₐ." },
-                            ].map((krav) => (
+                            ].filter((krav) => {
+                              const etasjerNum = parseInt(formData.etasjer || '0', 10);
+                              if (krav.id === "heis_roykventileres_over8" && etasjerNum <= 8) return false;
+                              return true;
+                            }).map((krav) => (
                               <div key={krav.id} className="flex items-start space-x-2">
                                 <Checkbox
                                   id={`heis-${krav.id}`}
