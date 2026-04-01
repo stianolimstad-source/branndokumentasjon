@@ -4727,30 +4727,30 @@ const Konsept = () => {
                           }
 
                           return (
-                            <div className="relative">
+                            <div>
                               {formData.regelverk === "BF85" && (
                                 <div className="mb-2 p-2 bg-accent/50 rounded text-xs">
                                   <span className="font-medium">BF85 heissjakt-krav</span>
                                   <span className="text-muted-foreground ml-1">(Kap. 30:33/30:65)</span>
                                 </div>
                               )}
-                              <div className="relative">
-                                <Textarea
-                                  value={formData.heissjaktkravTekst || ""}
-                                  onChange={(e) => setFormData({...formData, heissjaktkravTekst: e.target.value})}
-                                  className="min-h-[160px] text-xs pr-2"
-                                  placeholder="Krav til heissjakt..."
-                                />
+                              <div className="flex justify-end mb-1">
                                 <Button
                                   type="button"
                                   variant="outline"
                                   size="sm"
-                                  className="absolute top-1 right-1 text-[10px] h-6 px-2"
+                                  className="text-[10px] h-6 px-2"
                                   onClick={() => setFormData({...formData, heissjaktkravTekst: originalTekst})}
                                 >
                                   Sett original tekst
                                 </Button>
                               </div>
+                              <Textarea
+                                value={formData.heissjaktkravTekst || ""}
+                                onChange={(e) => setFormData({...formData, heissjaktkravTekst: e.target.value})}
+                                className="min-h-[160px] text-xs"
+                                placeholder="Krav til heissjakt..."
+                              />
                             </div>
                           );
                         })()}
