@@ -575,6 +575,7 @@ const Konsept = () => {
     dorPlasseringer: [] as string[],
     vinduskravRelevant: false,
     heissjaktkrav: [] as string[],
+    heissjaktkravTekst: "",
     trapperomKrav: [] as string[],
     trapperomBeskrivelse: "",
     interntrappBeskrivelse: "",
