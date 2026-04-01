@@ -529,6 +529,7 @@ const Konsept = () => {
     brannklasseBegrunnelse: "", // Begrunnelse hvis manuelt overstyrt
     brannklasseUnntak: "", // Automatisk unntak-tekst for brannklasse
     harTerrengTilgang: "", // "ja" eller "nei" - for unntak RK4
+    erRKL6Boligbygning: false, // RKL6: er det boligbygning (unntak BKL1 ved ≤2 etasjer)
     baeresystem: "",
     tilleggskrav: "",
     // 3. Branntekniske ytelseskrav
