@@ -232,7 +232,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </table>
           <PageFooter pageNum={pageTilstandsgrader} />
         </div>
-          </>
       )}
 
       {/* Innholdsfortegnelse - egen side */}
