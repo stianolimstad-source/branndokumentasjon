@@ -577,6 +577,7 @@ const Konsept = () => {
     heissjaktkrav: [] as string[],
     heissjaktkravTekst: "",
     trapperomKrav: [] as string[],
+    trapperomIkkeDirekteTilFri: false,
     trapperomBeskrivelse: "",
     interntrappBeskrivelse: "",
     roykKontrollKrav: [] as string[],
@@ -5294,7 +5295,15 @@ const Konsept = () => {
                                 </div>
                               )}
                               <div className="border rounded-md p-2 space-y-2 bg-muted/30">
-                                {trapperomKravListe.map((krav) => (
+                                {trapperomKravListe
+                                  .filter((krav) => {
+                                    // Punkt 2 og 3 vises kun hvis trapperommet ikke leder direkte til det fri
+                                    if (krav.id === "tr_romningsvei_videre" || krav.id === "tr_mellomliggende_rom") {
+                                      return formData.trapperomIkkeDirekteTilFri;
+                                    }
+                                    return true;
+                                  })
+                                  .map((krav) => (
                                   <div key={krav.id} className="flex items-start space-x-2">
                                     <Checkbox
                                       id={`tr-${krav.id}`}
@@ -5310,6 +5319,26 @@ const Konsept = () => {
                                     <label htmlFor={`tr-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
                                   </div>
                                 ))}
+                              </div>
+                              {/* Spørsmål om trapperom som ikke leder direkte til det fri */}
+                              <div className="mt-2 flex items-start space-x-2 p-2 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700 rounded">
+                                <Checkbox
+                                  id="trapperom-ikke-direkte-fri"
+                                  checked={formData.trapperomIkkeDirekteTilFri}
+                                  onCheckedChange={(checked) => {
+                                    const newFormData = {...formData, trapperomIkkeDirekteTilFri: !!checked};
+                                    // Fjern punkt 2 og 3 fra valgte krav hvis man fjerner haken
+                                    if (!checked) {
+                                      newFormData.trapperomKrav = formData.trapperomKrav.filter(
+                                        (k: string) => k !== "tr_romningsvei_videre" && k !== "tr_mellomliggende_rom"
+                                      );
+                                    }
+                                    setFormData(newFormData);
+                                  }}
+                                />
+                                <label htmlFor="trapperom-ikke-direkte-fri" className="text-xs leading-tight cursor-pointer text-amber-800 dark:text-amber-300">
+                                  Bygget har trapperom som ikke leder direkte til det fri
+                                </label>
                               </div>
                               <div className="mt-3 border-t pt-3">
                                 <Label className="text-xs font-medium mb-1 block">Interntrapp (ikke del av rømningsvei)</Label>
