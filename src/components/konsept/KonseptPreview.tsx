@@ -1330,6 +1330,16 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     </tr>
                   );
                 })()}
+                {/* RKL6 vertikal seksjonering for sykehus/pleieinstitusjon */}
+                {formData.risikoklasse === "RK6" && formData.erSykehusPleieinstitusjon && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Vertikal oppdeling</td>
+                    <td className="border border-gray-400 p-2">
+                      Byggverk i risikoklasse 6 beregnet for sykehus, sykehjem og andre pleieinstitusjoner må deles vertikalt i minst to brannseksjoner (jf. VTEK § 11-7).
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                )}
                 {formData.brannseksjoner && (
                   <tr>
                     <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
