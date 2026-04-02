@@ -2526,14 +2526,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2 align-top">RIBr</td>
                 </tr>
                 {/* Innvendige overflater og kledninger – noter */}
-                {(formData.matNote1 || formData.matNote2 || formData.matNote3 || formData.matNote4) && (
+                {(formData.matNote2 || formData.matNote3 || formData.matNote4) && (
                   <tr>
                     <td className="border border-gray-400 p-2 align-top">Innvendige overflater og kledninger</td>
                     <td className="border border-gray-400 p-2">
                       <ol className="list-disc ml-4 space-y-1 text-sm">
-                        {formData.matNote1 && (
-                          <li>Overflater og kledninger er tilfredsstillende når det benyttes produkter med egenskaper som angitt i tabell 1A og 1B, med unntak gitt i nr. 3 og 4.</li>
-                        )}
                         {formData.matNote2 && (
                           <li>Overflater i hulrom betraktes på samme måte som innvendig overflate og må ha minst like gode branntekniske egenskaper.</li>
                         )}
