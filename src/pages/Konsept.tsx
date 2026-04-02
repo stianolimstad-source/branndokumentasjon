@@ -5869,7 +5869,7 @@ const Konsept = () => {
                                           id={`garasje-areal-${opt.value}`}
                                           name="garasjeAreal"
                                           checked={formData.garasjeAreal === opt.value}
-                                          onChange={() => setFormData({...formData, garasjeAreal: opt.value as any, garasjeBruksenhet: ""})}
+                                          onChange={() => setFormData({...formData, garasjeAreal: opt.value as any, garasjeBruksenhet: "", garasjeKravTekst: ""})}
                                           className="w-3 h-3"
                                         />
                                         <label htmlFor={`garasje-areal-${opt.value}`} className="text-xs cursor-pointer">{opt.label}</label>
