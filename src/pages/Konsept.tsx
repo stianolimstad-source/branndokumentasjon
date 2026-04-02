@@ -5945,15 +5945,7 @@ const Konsept = () => {
                               )}
 
                               {/* Auto-genererte krav - redigerbar */}
-                              {formData.garasjeAreal && (formData.garasjeAreal !== "under_50" || formData.garasjeBruksenhet) && (() => {
-                                const krav = getGarasjeKrav(formData.garasjePlassering, formData.garasjeAreal, formData.garasjeBruksenhet, formData.brannklasse || "");
-                                if (krav.length === 0) return null;
-                                const garasjeOriginalTekst = krav.map(k => `${k.kategori}: ${k.tekst}`).join("\n\n");
-                                
-                                if (!formData.garasjeKravTekst && garasjeOriginalTekst) {
-                                  setTimeout(() => setFormData({...formData, garasjeKravTekst: garasjeOriginalTekst}), 0);
-                                }
-                                
+                              {garasjeKravErKomplett && garasjeKravListe.length > 0 && (() => {
                                 return (
                                   <div className="mt-2 space-y-2">
                                     <div className="flex justify-between items-center">
