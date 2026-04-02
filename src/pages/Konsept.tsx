@@ -5529,19 +5529,55 @@ const Konsept = () => {
                         </div>
                       </div>
                       <div>
-                        <Label className="text-xs font-medium mb-2 block">Brannspredning via vinduer</Label>
+                        <Label className="text-xs font-medium mb-2 block">Horisontal brannspredning</Label>
                         <div className="border rounded-md p-2 space-y-2 bg-muted/30">
                           <div className="flex items-center gap-2">
                             <Checkbox
                               id="vinduBrannspredningRelevant"
                               checked={formData.vinduBrannspredningRelevant}
                               onCheckedChange={(checked) => 
-                                setFormData({...formData, vinduBrannspredningRelevant: !!checked, vinduBrannspredningKrav: !!checked ? formData.vinduBrannspredningKrav : []})
+                                setFormData({...formData, vinduBrannspredningRelevant: !!checked, vinduBrannspredningKrav: !!checked ? formData.vinduBrannspredningKrav : [], vinduMotRomningsvei: false})
                               }
                             />
                             <label htmlFor="vinduBrannspredningRelevant" className="text-xs cursor-pointer font-medium">Horisontal brannspredning er relevant</label>
                           </div>
-                          {formData.vinduBrannspredningRelevant && (
+                          {formData.vinduBrannspredningRelevant && (() => {
+                            const rk = formData.harFlereRisikoklasser
+                              ? (formData.bygningsdeler || []).map((d: any) => d.risikoklasse).filter(Boolean)[0] || ""
+                              : formData.risikoklasse || "";
+                            const etasjerNum = parseInt(formData.etasjer, 10) || 0;
+                            const erRK6 = rk === "RK6";
+                            const erRK4MedHeis = rk === "RK4" && etasjerNum > 1;
+                            const harSprinklerHorisontal = erRK6 || erRK4MedHeis || formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b;
+                            const bklNum = formData.harFlereRisikoklasser
+                              ? (() => { const nums = (formData.bygningsdeler || []).map((d: any) => parseInt((d.brannklasse || "").replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n)); return nums.length > 0 ? Math.max(...nums) : 0; })()
+                              : parseInt((formData.brannklasse || "").replace(/\D/g, ''), 10) || 0;
+                            const ewKrav = bklNum === 1 ? "EW 30" : "EW 60";
+
+                            if (harSprinklerHorisontal && formData.regelverk !== "BF85") {
+                              return (
+                                <div className="pl-4 space-y-3 border-l-2 border-primary/20 ml-2">
+                                  <div className="p-2 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded text-xs text-green-800 dark:text-green-200">
+                                    <span className="font-medium">✓ Ivaretatt:</span> Byggverket har krav om automatisk sprinkleranlegg ({erRK6 ? "RK 6" : "RK 4 med krav om heis"}). Horisontal brannspredning via vinduer er ivaretatt, med unntak for vinduer mot rømningsvei.
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Checkbox
+                                      id="vinduMotRomningsvei"
+                                      checked={formData.vinduMotRomningsvei}
+                                      onCheckedChange={(checked) => setFormData({...formData, vinduMotRomningsvei: !!checked})}
+                                    />
+                                    <label htmlFor="vinduMotRomningsvei" className="text-xs cursor-pointer font-medium">Bygget har vinduer mot rømningsvei</label>
+                                  </div>
+                                  {formData.vinduMotRomningsvei && (
+                                    <div className="p-2 bg-accent/50 rounded text-xs">
+                                      → Vinduer mot utvendig rømningsvei skal ha brannmotstand <span className="font-semibold">{ewKrav}</span> (brannklasse {bklNum === 1 ? "1" : "2 og 3"}).
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            }
+
+                            return (
                             <div className="pl-4 space-y-3 border-l-2 border-primary/20 ml-2">
                               {(formData.regelverk === "BF85" ? [
                                 { id: "vv_brannmotstand_vegg", label: "1. Vinduer skal ha samme brannklasse som veggen de står i." },
@@ -5591,10 +5627,10 @@ const Konsept = () => {
                                       <div className="pl-6 space-y-2">
                                         {formData.horisontaltParallelleVinduer.map((vindu: { avstand: string }, idx: number) => {
                                           const avstand = parseFloat(vindu.avstand);
-                                          const bklNum = formData.harFlereRisikoklasser
+                                          const bklNumLocal = formData.harFlereRisikoklasser
                                             ? (() => { const nums = (formData.bygningsdeler || []).map((d: any) => parseInt((d.brannklasse || "").replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n)); return nums.length > 0 ? Math.max(...nums) : 0; })()
                                             : parseInt((formData.brannklasse || "").replace(/\D/g, ''), 10) || 0;
-                                          const erBKL1 = bklNum === 1;
+                                          const erBKL1 = bklNumLocal === 1;
                                           let krav = "";
                                           if (!isNaN(avstand)) {
                                             if (avstand < 3.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
@@ -5657,10 +5693,10 @@ const Konsept = () => {
                                       <div className="pl-6 space-y-2">
                                         {formData.horisontaltHjorneVinduer.map((vindu: { avstand: string }, idx: number) => {
                                           const avstand = parseFloat(vindu.avstand);
-                                          const bklNum = formData.harFlereRisikoklasser
+                                          const bklNumLocal = formData.harFlereRisikoklasser
                                             ? (() => { const nums = (formData.bygningsdeler || []).map((d: any) => parseInt((d.brannklasse || "").replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n)); return nums.length > 0 ? Math.max(...nums) : 0; })()
                                             : parseInt((formData.brannklasse || "").replace(/\D/g, ''), 10) || 0;
-                                          const erBKL1 = bklNum === 1;
+                                          const erBKL1 = bklNumLocal === 1;
                                           let krav = "";
                                           if (!isNaN(avstand)) {
                                             if (avstand < 2.0) krav = erBKL1 ? "Ett vindu EI 30 eller begge EI 15" : "Ett vindu EI 60 eller begge EI 30";
