@@ -6530,26 +6530,30 @@ const Konsept = () => {
                                     Kjøkken boenheter - EI 15 A2-s1,d0
                                   </label>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  <Checkbox
-                                    id="ventKrav7"
-                                    checked={formData.ventKrav7}
-                                    onCheckedChange={(checked) => setFormData({...formData, ventKrav7: !!checked})}
-                                  />
-                                  <label htmlFor="ventKrav7" className="text-xs cursor-pointer">
-                                    Småhus - avtrekk stål/aluminium
-                                  </label>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  <Checkbox
-                                    id="ventKrav8"
-                                    checked={formData.ventKrav8}
-                                    onCheckedChange={(checked) => setFormData({...formData, ventKrav8: !!checked})}
-                                  />
-                                  <label htmlFor="ventKrav8" className="text-xs cursor-pointer">
-                                    Småhus - kanal klasse E
-                                  </label>
-                                </div>
+                                {(formData.risikoklasse === "RK4" || (formData.risikoklasse === "RK6" && (formData.bygningstype || "").toLowerCase().includes("bolig"))) && (
+                                  <>
+                                    <div className="flex items-center gap-2">
+                                      <Checkbox
+                                        id="ventKrav7"
+                                        checked={formData.ventKrav7}
+                                        onCheckedChange={(checked) => setFormData({...formData, ventKrav7: !!checked})}
+                                      />
+                                      <label htmlFor="ventKrav7" className="text-xs cursor-pointer">
+                                        Småhus - avtrekk stål/aluminium
+                                      </label>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Checkbox
+                                        id="ventKrav8"
+                                        checked={formData.ventKrav8}
+                                        onCheckedChange={(checked) => setFormData({...formData, ventKrav8: !!checked})}
+                                      />
+                                      <label htmlFor="ventKrav8" className="text-xs cursor-pointer">
+                                        Småhus - kanal klasse E
+                                      </label>
+                                    </div>
+                                  </>
+                                )}
                                 <div className="flex items-center gap-2">
                                   <Checkbox
                                     id="ventKrav9"
