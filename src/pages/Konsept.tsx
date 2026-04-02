@@ -6355,16 +6355,6 @@ const Konsept = () => {
                             <Label className="text-xs font-medium">Innvendige overflater og kledninger – velg relevante bestemmelser</Label>
                             <div className="flex items-start gap-2">
                               <Checkbox
-                                id="matNote1"
-                                checked={formData.matNote1}
-                                onCheckedChange={(checked) => setFormData({...formData, matNote1: !!checked})}
-                              />
-                              <label htmlFor="matNote1" className="text-xs cursor-pointer leading-relaxed">
-                                Overflater og kledninger er tilfredsstillende når det benyttes produkter med egenskaper som angitt i tabell 1A og 1B, med unntak gitt i nr. 3 og 4.
-                              </label>
-                            </div>
-                            <div className="flex items-start gap-2">
-                              <Checkbox
                                 id="matNote2"
                                 checked={formData.matNote2}
                                 onCheckedChange={(checked) => setFormData({...formData, matNote2: !!checked})}
