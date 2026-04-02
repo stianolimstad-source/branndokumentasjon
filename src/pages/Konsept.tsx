@@ -5462,8 +5462,19 @@ const Konsept = () => {
                             />
                             <label htmlFor="vertikalBrannspredningRelevant" className="text-xs cursor-pointer font-medium">Vertikal brannspredning er relevant</label>
                           </div>
-                          {formData.vertikalBrannspredningRelevant && (
+                          {formData.vertikalBrannspredningRelevant && (() => {
+                            const harSprinklerKrav = formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b;
+                            // Auto-add vb_sprinkler when sprinkler is required
+                            if (harSprinklerKrav && formData.regelverk !== "BF85" && !formData.vertikalBrannspredningKrav.includes("vb_sprinkler")) {
+                              setTimeout(() => setFormData({...formData, vertikalBrannspredningKrav: [...formData.vertikalBrannspredningKrav, "vb_sprinkler"]}), 0);
+                            }
+                            return (
                             <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
+                              {harSprinklerKrav && formData.regelverk !== "BF85" && (
+                                <div className="p-2 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded text-xs text-green-800 dark:text-green-200">
+                                  <span className="font-medium">✓ Ivaretatt:</span> Byggverket har krav om automatisk sprinkleranlegg ({formData.tilretteleggingLedd1b ? "RK 6" : "RK 4 med krav om heis"}), og krav til vertikal brannspredning er dermed ivaretatt.
+                                </div>
+                              )}
                               {(formData.regelverk === "BF85" ? [
                                 { id: "vb_kjolesone", label: "1. Kjølesone mellom vinduer i ulike etasjer skal være minst 1,2 meter og utført med brannmotstand minst E 30." },
                               ] : [
@@ -5476,6 +5487,7 @@ const Konsept = () => {
                                   <Checkbox
                                     id={`vb-${krav.id}`}
                                     checked={formData.vertikalBrannspredningKrav.includes(krav.id)}
+                                    disabled={krav.id === "vb_sprinkler" && harSprinklerKrav}
                                     onCheckedChange={(checked) => {
                                       if (checked) {
                                         setFormData({...formData, vertikalBrannspredningKrav: [...formData.vertikalBrannspredningKrav, krav.id]});
@@ -5484,7 +5496,7 @@ const Konsept = () => {
                                       }
                                     }}
                                   />
-                                  <label htmlFor={`vb-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                                  <label htmlFor={`vb-${krav.id}`} className={`text-xs leading-tight cursor-pointer ${krav.id === "vb_sprinkler" && harSprinklerKrav ? "text-green-700 dark:text-green-300 font-medium" : ""}`}>{krav.label}</label>
                                 </div>
                               ))}
                               {formData.regelverk !== "BF85" && (
@@ -5504,7 +5516,8 @@ const Konsept = () => {
                                 </div>
                               )}
                             </div>
-                          )}
+                            );
+                          })()}
                         </div>
                       </div>
                       <div>
