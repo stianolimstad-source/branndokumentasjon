@@ -5832,13 +5832,13 @@ const Konsept = () => {
                         <Label className="text-xs font-medium mb-2 block">Garasje</Label>
                         <div className="border rounded-md p-2 space-y-3 bg-muted/30">
                           <div className="flex items-center gap-2">
-                            <Checkbox
-                              id="garasjeRelevant"
-                              checked={formData.garasjeRelevant}
-                              onCheckedChange={(checked) => 
-                                setFormData({...formData, garasjeRelevant: !!checked, garasjePlassering: "", garasjeAreal: "", garasjeBruksenhet: ""})
-                              }
-                            />
+                              <Checkbox
+                                id="garasjeRelevant"
+                                checked={formData.garasjeRelevant}
+                                onCheckedChange={(checked) => 
+                                  setFormData({...formData, garasjeRelevant: !!checked, garasjePlassering: "", garasjeAreal: "", garasjeBruksenhet: "", garasjeKravTekst: ""})
+                                }
+                              />
                             <label htmlFor="garasjeRelevant" className="text-xs cursor-pointer font-medium">Garasje er relevant for tiltaket</label>
                           </div>
                           {formData.garasjeRelevant && formData.regelverk === "BF85" && (
