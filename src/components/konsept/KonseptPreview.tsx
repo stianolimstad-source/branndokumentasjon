@@ -2548,7 +2548,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 {/* Innvendige overflater og kledninger – øvrige noter */}
                 {formData.matNote4 && (
                   <tr>
-                    <td className="border border-gray-400 p-2 align-top">Innvendige overflater og kledninger</td>
+                    <td className="border border-gray-400 p-2 align-top">Innvendige overflater og kledninger (generelt)</td>
                     <td className="border border-gray-400 p-2 text-sm">
                       Selv om sikkerhet ved brann dokumenteres ved analyse, må innvendige overflater på vegger og i himlinger ha minst klasse D-s2,d0 [In 2]. Lavere ytelse kan gi uakseptabelt bidrag til brannutviklingen. Dette kan utgjøre en fare for personsikkerheten. En meget rask brannutvikling kan også medføre at automatiske slokkeanlegg ikke har den effekten som er forutsatt.
                     </td>
