@@ -882,15 +882,17 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
 
   // Sub-section: Taktekning
   rows.push(graySubSectionHeaderRow("Taktekning"));
-  rows.push(contentRowMultiLine("Taktekning", [
+  const isSmahusRelevant = formData.risikoklasse === "RK4" || 
+    (formData.risikoklasse === "RK6" && (formData.bygningstype || "").toLowerCase().includes("bolig"));
+  const taktekningLines = [
     "Taktekning kan bidra til brannspredning i et byggverk og mellom ulike byggverk.",
     "",
-    "Preaksepterte ytelser:",
-    "1. Taktekning må tilfredsstille klasse BROOF(t2) [Ta].",
-    "2. Teglstein, betongtakstein, skifertak og metallplater kan uten ytterligere dokumentasjon antas å tilfredsstille klasse BROOF(t2) [Ta].",
-    "3. For småhus kan taktekning være uklassifisert der avstanden mellom de enkelte byggverk er minst 8 m.",
-    "4. Ett-sjikts tak av duk og folie må tilfredsstille klasse B-s3,d0 (Ut1).",
-  ], "ARK"));
+    "Taktekning må tilfredsstille klasse BROOF(t2) [Ta].",
+    "Teglstein, betongtakstein, skifertak og metallplater kan uten ytterligere dokumentasjon antas å tilfredsstille klasse BROOF(t2) [Ta].",
+    ...(isSmahusRelevant ? ["For småhus kan taktekning være uklassifisert der avstanden mellom de enkelte byggverk er minst 8 m."] : []),
+    "Ett-sjikts tak av duk og folie må tilfredsstille klasse B-s3,d0 (Ut1).",
+  ];
+  rows.push(contentRowMultiLine("Taktekning", taktekningLines, "ARK"));
 
   // Nedforet himling i rømningsvei
   const himlingNotes: string[] = [];

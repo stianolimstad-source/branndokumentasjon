@@ -2675,14 +2675,23 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Taktekning</td>
                   <td className="border border-gray-400 p-2">
-                    <p className="mb-2">Taktekning kan bidra til brannspredning i et byggverk og mellom ulike byggverk.</p>
-                    <p className="font-medium mb-1">Preaksepterte ytelser</p>
-                    <ol className="list-decimal list-inside space-y-1">
-                      <li>Taktekning må tilfredsstille klasse <span className="text-red-600 font-medium">B<sub>ROOF</sub>(t2) [Ta]</span>.</li>
-                      <li>Teglstein, betongtakstein, skifertak og metallplater kan uten ytterligere dokumentasjon antas å tilfredsstille klasse B<sub>ROOF</sub>(t2) [Ta].</li>
-                      <li>For småhus kan taktekning være uklassifisert der avstanden mellom de enkelte byggverk er minst 8 m.</li>
-                      <li>Ett-sjikts tak av duk og folie må tilfredsstille klasse <span className="text-red-600 font-medium">B-s3,d0 (Ut1)</span>.</li>
-                    </ol>
+                    {(() => {
+                      const isSmahusRelevant = formData.risikoklasse === "RK4" || 
+                        (formData.risikoklasse === "RK6" && (formData.bygningstype || "").toLowerCase().includes("bolig"));
+                      return (
+                        <>
+                          <p className="mb-2">Taktekning kan bidra til brannspredning i et byggverk og mellom ulike byggverk.</p>
+                          <ul className="list-disc list-inside space-y-1">
+                            <li>Taktekning må tilfredsstille klasse <span className="text-red-600 font-medium">B<sub>ROOF</sub>(t2) [Ta]</span>.</li>
+                            <li>Teglstein, betongtakstein, skifertak og metallplater kan uten ytterligere dokumentasjon antas å tilfredsstille klasse B<sub>ROOF</sub>(t2) [Ta].</li>
+                            {isSmahusRelevant && (
+                              <li>For småhus kan taktekning være uklassifisert der avstanden mellom de enkelte byggverk er minst 8 m.</li>
+                            )}
+                            <li>Ett-sjikts tak av duk og folie må tilfredsstille klasse <span className="text-red-600 font-medium">B-s3,d0 (Ut1)</span>.</li>
+                          </ul>
+                        </>
+                      );
+                    })()}
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
