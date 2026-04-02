@@ -768,7 +768,12 @@ const Konsept = () => {
 
   // Automatisk beregning av brannklasse
   const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.erRKL6Boligbygning);
-
+  const garasjeKravErKomplett = formData.garasjeAreal && (formData.garasjeAreal !== "under_50" || formData.garasjeBruksenhet);
+  const garasjeKravListe = garasjeKravErKomplett
+    ? getGarasjeKrav(formData.garasjePlassering, formData.garasjeAreal, formData.garasjeBruksenhet, formData.brannklasse || "")
+    : [];
+  const garasjeOriginalTekst = garasjeKravListe.map((k) => `${k.kategori}: ${k.tekst}`).join("\n\n");
+ 
   // Automatisk beregning av brannklasse – skip i view-modus (data er allerede lagret)
   useEffect(() => {
     if (isViewMode) return;
@@ -781,6 +786,41 @@ const Konsept = () => {
       }));
     }
   }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.erRKL6Boligbygning]);
+
+  useEffect(() => {
+    if (!formData.garasjeRelevant || !garasjeOriginalTekst) return;
+
+    setFormData((prev) => {
+      const currentText = prev.garasjeKravTekst || "";
+
+      if (!currentText) {
+        return { ...prev, garasjeKravTekst: garasjeOriginalTekst };
+      }
+
+      const shouldUpgradeLegacyGarageText =
+        prev.garasjeAreal === "under_50" &&
+        prev.garasjeBruksenhet === "annen" &&
+        !currentText.includes("samme krav som brannceller generelt") &&
+        (
+          currentText.includes("Garasje med bruttoareal til og med 50 m² må ha avstand minimum 2,0 meter til byggverk i annen bruksenhet, eller byggverkene må være skilt med bygningsdeler med brannmotstand minst") ||
+          currentText.includes("Andre garasjer med bruttoareal til og med 50 m² må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst")
+        );
+
+      if (shouldUpgradeLegacyGarageText) {
+        return { ...prev, garasjeKravTekst: garasjeOriginalTekst };
+      }
+
+      return prev;
+    });
+  }, [
+    formData.garasjeRelevant,
+    formData.garasjePlassering,
+    formData.garasjeAreal,
+    formData.garasjeBruksenhet,
+    formData.brannklasse,
+    formData.garasjeKravTekst,
+    garasjeOriginalTekst,
+  ]);
 
   // Automatisk aktivering av ledesystem basert på TEK17 § 11-14
   // Boligbygg (RK4) med 3+ etasjer, skoler (RK3), RK5, RK6, og store kontorer/offentlige bygg
@@ -5792,13 +5832,13 @@ const Konsept = () => {
                         <Label className="text-xs font-medium mb-2 block">Garasje</Label>
                         <div className="border rounded-md p-2 space-y-3 bg-muted/30">
                           <div className="flex items-center gap-2">
-                            <Checkbox
-                              id="garasjeRelevant"
-                              checked={formData.garasjeRelevant}
-                              onCheckedChange={(checked) => 
-                                setFormData({...formData, garasjeRelevant: !!checked, garasjePlassering: "", garasjeAreal: "", garasjeBruksenhet: ""})
-                              }
-                            />
+                              <Checkbox
+                                id="garasjeRelevant"
+                                checked={formData.garasjeRelevant}
+                                onCheckedChange={(checked) => 
+                                  setFormData({...formData, garasjeRelevant: !!checked, garasjePlassering: "", garasjeAreal: "", garasjeBruksenhet: "", garasjeKravTekst: ""})
+                                }
+                              />
                             <label htmlFor="garasjeRelevant" className="text-xs cursor-pointer font-medium">Garasje er relevant for tiltaket</label>
                           </div>
                           {formData.garasjeRelevant && formData.regelverk === "BF85" && (
@@ -5905,15 +5945,7 @@ const Konsept = () => {
                               )}
 
                               {/* Auto-genererte krav - redigerbar */}
-                              {formData.garasjeAreal && (formData.garasjeAreal !== "under_50" || formData.garasjeBruksenhet) && (() => {
-                                const krav = getGarasjeKrav(formData.garasjePlassering, formData.garasjeAreal, formData.garasjeBruksenhet, formData.brannklasse || "");
-                                if (krav.length === 0) return null;
-                                const garasjeOriginalTekst = krav.map(k => `${k.kategori}: ${k.tekst}`).join("\n\n");
-                                
-                                if (!formData.garasjeKravTekst && garasjeOriginalTekst) {
-                                  setTimeout(() => setFormData({...formData, garasjeKravTekst: garasjeOriginalTekst}), 0);
-                                }
-                                
+                              {garasjeKravErKomplett && garasjeKravListe.length > 0 && (() => {
                                 return (
                                   <div className="mt-2 space-y-2">
                                     <div className="flex justify-between items-center">
