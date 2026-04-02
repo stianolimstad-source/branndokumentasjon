@@ -769,8 +769,13 @@ const Konsept = () => {
   // Automatisk beregning av brannklasse
   const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.erRKL6Boligbygning);
   const garasjeKravErKomplett = formData.garasjeAreal && (formData.garasjeAreal !== "under_50" || formData.garasjeBruksenhet);
+  const erBoligForGarasje = (() => {
+    const rk = formData.risikoklasse;
+    const harBoligDel = formData.bygningsdeler?.some((d: any) => ["RK4", "RK6"].includes(d.risikoklasse));
+    return rk === "RK4" || rk === "RK6" || !!harBoligDel;
+  })();
   const garasjeKravListe = garasjeKravErKomplett
-    ? getGarasjeKrav(formData.garasjePlassering, formData.garasjeAreal, formData.garasjeBruksenhet, formData.brannklasse || "")
+    ? getGarasjeKrav(formData.garasjePlassering, formData.garasjeAreal, formData.garasjeBruksenhet, formData.brannklasse || "", erBoligForGarasje)
     : [];
   const garasjeOriginalTekst = garasjeKravListe.map((k) => `${k.kategori}: ${k.tekst}`).join("\n\n");
  
