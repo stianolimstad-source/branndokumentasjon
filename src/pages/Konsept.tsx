@@ -5743,6 +5743,7 @@ const Konsept = () => {
                                 </div>
                               </div>
                               )}
+                            </div>
                             );
                           })()}
                         </div>
