@@ -1896,6 +1896,28 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 );
               }
 
+              // If trapperomKravTekst exists, show it directly
+              if (formData.trapperomKravTekst) {
+                const trType = (() => {
+                  const rk = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
+                  const trapperomTypeMap: Record<number, { lav: string; hoy: string }> = {
+                    1: { lav: "Tr 1", hoy: "Tr 3" }, 2: { lav: "Tr 1", hoy: "Tr 3" },
+                    3: { lav: "Tr 2", hoy: "Tr 3" }, 4: { lav: "Tr 1", hoy: "Tr 3" },
+                    5: { lav: "Tr 2", hoy: "Tr 3" }, 6: { lav: "Tr 2", hoy: "Tr 3" },
+                  };
+                  return rk >= 1 && rk <= 6 && floors > 0
+                    ? (floors <= 8 ? trapperomTypeMap[rk].lav : trapperomTypeMap[rk].hoy)
+                    : null;
+                })();
+                return (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Krav til trapperom{trType && ` (${trType})`}</td>
+                    <td className="border border-gray-400 p-2 whitespace-pre-wrap">{formData.trapperomKravTekst}</td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                );
+              }
+
               // Manual BF85 or TEK17 trapperomKrav
               if (!formData.trapperomKrav || formData.trapperomKrav.length === 0) return null;
 
