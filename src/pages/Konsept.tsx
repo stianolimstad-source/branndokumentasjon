@@ -5844,7 +5844,7 @@ const Konsept = () => {
                                         id={`garasje-plassering-${opt.value}`}
                                         name="garasjePlassering"
                                         checked={formData.garasjePlassering === opt.value}
-                                        onChange={() => setFormData({...formData, garasjePlassering: opt.value as any, garasjeBruksenhet: ""})}
+                                        onChange={() => setFormData({...formData, garasjePlassering: opt.value as any, garasjeBruksenhet: "", garasjeKravTekst: ""})}
                                         className="w-3 h-3"
                                       />
                                       <label htmlFor={`garasje-plassering-${opt.value}`} className="text-xs cursor-pointer">{opt.label}</label>
@@ -5869,7 +5869,7 @@ const Konsept = () => {
                                           id={`garasje-areal-${opt.value}`}
                                           name="garasjeAreal"
                                           checked={formData.garasjeAreal === opt.value}
-                                          onChange={() => setFormData({...formData, garasjeAreal: opt.value as any, garasjeBruksenhet: ""})}
+                                          onChange={() => setFormData({...formData, garasjeAreal: opt.value as any, garasjeBruksenhet: "", garasjeKravTekst: ""})}
                                           className="w-3 h-3"
                                         />
                                         <label htmlFor={`garasje-areal-${opt.value}`} className="text-xs cursor-pointer">{opt.label}</label>
@@ -5894,7 +5894,7 @@ const Konsept = () => {
                                           id={`garasje-bruksenhet-${opt.value}`}
                                           name="garasjeBruksenhet"
                                           checked={formData.garasjeBruksenhet === opt.value}
-                                          onChange={() => setFormData({...formData, garasjeBruksenhet: opt.value as any})}
+                                          onChange={() => setFormData({...formData, garasjeBruksenhet: opt.value as any, garasjeKravTekst: ""})}
                                           className="w-3 h-3"
                                         />
                                         <label htmlFor={`garasje-bruksenhet-${opt.value}`} className="text-xs cursor-pointer">{opt.label}</label>
