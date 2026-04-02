@@ -903,40 +903,41 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
 
   // Sub-section: Isolasjon
+  const hasSandwich = formData.isolasjonSandwich === "relevant";
+  const hasBrennbar = formData.isolasjonBrennbar === "relevant";
+  const hasAnyIsolasjon = hasSandwich || hasBrennbar;
   const isolasjonLines = [
     "Isolasjonsmaterialer kan bidra til brannspredning og røykutvikling i et byggverk.",
     "",
-    "Preaksepterte ytelser:",
-    "1. Isolasjon må tilfredsstille klasse A2-s1,d0 med mindre annet er angitt i nr. 2 til 9.",
+    `Isolasjon må tilfredsstille klasse A2-s1,d0${hasAnyIsolasjon ? " med mindre annet er angitt nedenfor." : "."}`,
   ];
-  if (formData.isolasjonSandwich === "relevant") {
+  if (hasSandwich) {
     isolasjonLines.push(
-      "2. Produkter (sandwichelementer) som tilfredsstiller klasse B-s1,d0 eller Eurefic-klasse A, kan benyttes i byggverk i risikoklasse 1–4 i brannklasse 1 og i industri- og lagerbygninger i brannklasse 2. For tak gjelder nr. 6 og 7.",
-      "3. Produkter (sandwichelementer) som tilfredsstiller klasse D-s2,d0 eller Eurefic-klasse E, kan benyttes i industri- og lagerbygninger i brannklasse 1. For tak gjelder nr. 6 og 7.",
-      "4. Produkter (sandwichelementer) som ikke tilfredsstiller A2-s1,d0 må være beskyttet av kledning K₂10 A2-s1,d0 [K1-A] mot rømningsveier.",
-      "5. Produkter (sandwichelementer) for små kjøle- og fryserom i risikoklasse 4 kan ha uspesifisert ytelse.",
+      "",
+      "Produkter (sandwichelementer) som tilfredsstiller klasse B-s1,d0 eller Eurefic-klasse A, kan benyttes i byggverk i risikoklasse 1–4 i brannklasse 1 og i industri- og lagerbygninger i brannklasse 2.",
+      "Produkter (sandwichelementer) som tilfredsstiller klasse D-s2,d0 eller Eurefic-klasse E, kan benyttes i industri- og lagerbygninger i brannklasse 1.",
+      "Produkter (sandwichelementer) som ikke tilfredsstiller A2-s1,d0 må være beskyttet av kledning K₂10 A2-s1,d0 [K1-A] mot rømningsveier.",
+      "Produkter (sandwichelementer) for små kjøle- og fryserom i risikoklasse 4 kan ha uspesifisert ytelse.",
     );
   }
-  if (formData.isolasjonBrennbar === "relevant") {
+  if (hasBrennbar) {
     isolasjonLines.push(
-      "6. Brennbar isolasjon kan benyttes på oversiden av etasjeskiller mot oppforet tak eller loft som bare kan benyttes som lager, forutsatt at",
-      "   1. etasjeskilleren mot oppforet tak eller loft er branncellebegrensende bygningsdel dimensjonert for tosidig brannpåkjenning",
-      "   2. takkonstruksjonen over etasjeskilleren ikke har avgjørende betydning for byggverkets stabilitet i rømningsfasen",
       "",
-      "7. Brennbar isolasjon kan benyttes i isolerte takflater forutsatt at",
-      "   1. isolasjonen legges på et bærende underlag som tilfredsstiller klasse A2-s1,d0 og som har dokumentert bæreevne under brann (R-klasse i samsvar med § 11–4)",
-      "   2. det bærende underlaget beskytter isolasjonen mot varmepåkjenning fra undersiden (for eksempel betongdekke). I brannklasse 1 og 2 kan alternativt den brennbare isolasjonen beskyttes på undersiden av isolasjon av klasse A2-s1,d0 med tilstrekkelig tykkelse til å isolere mot varmepåkjenning.",
-      "   3. den brennbare isolasjonen er beskyttet på oversiden av isolasjon med tykkelse 30 mm og som tilfredsstiller klasse A2-s1,d0. Alternativt til beskyttelse på oversiden kan den brennbare isolasjonen oppdeles i arealer på inntil 400 m².",
+      "Brennbar isolasjon kan benyttes på oversiden av etasjeskiller mot oppforet tak eller loft som bare kan benyttes som lager, forutsatt at",
+      "   - etasjeskilleren mot oppforet tak eller loft er branncellebegrensende bygningsdel dimensjonert for tosidig brannpåkjenning",
+      "   - takkonstruksjonen over etasjeskilleren ikke har avgjørende betydning for byggverkets stabilitet i rømningsfasen",
       "",
-      "8. Brennbar isolasjon kan benyttes som utvendig tilleggsisolering av yttervegger med unntak for i byggverk i brannklasse 3 og i byggverk i risikoklasse 6 forutsatt at",
-      "   1. det benyttes isolasjonssystemer som er dokumentert ved prøving etter SP Fire 105: Large scale testing of facade systems (1994) eller tilsvarende. Med isolasjonssystemer menes systemer som består av isolasjon og fasademateriale som monteres på et eksisterende underlag.",
-      "   2. fasademateriale og isolasjon må være prøvet som en enhet. Underlaget må ha branntekniske egenskaper som minst tilsvarer det som ble benyttet ved prøving.",
+      "Brennbar isolasjon kan benyttes i isolerte takflater forutsatt at",
+      "   - isolasjonen legges på et bærende underlag som tilfredsstiller klasse A2-s1,d0 og som har dokumentert bæreevne under brann (R-klasse i samsvar med § 11–4)",
+      "   - det bærende underlaget beskytter isolasjonen mot varmepåkjenning fra undersiden (for eksempel betongdekke). I brannklasse 1 og 2 kan alternativt den brennbare isolasjonen beskyttes på undersiden av isolasjon av klasse A2-s1,d0 med tilstrekkelig tykkelse til å isolere mot varmepåkjenning.",
+      "   - den brennbare isolasjonen er beskyttet på oversiden av isolasjon med tykkelse 30 mm og som tilfredsstiller klasse A2-s1,d0. Alternativt til beskyttelse på oversiden kan den brennbare isolasjonen oppdeles i arealer på inntil 400 m².",
       "",
-      "9. Brennbar isolasjon basert på cellulose- eller tekstilfiber og lignende kan benyttes i byggverk i brannklasse 1, og boliger inntil 3 etasjer. Isolasjonen må tilfredsstille Euroklasse E, eller være i samsvar med NT Fire 035: Building products: Flammability and smouldering resistance of loose-fill thermal insulation (1988). Isolasjonen kan være utildekket i kaldt uinnredet loft og oppforet tak.",
+      "Brennbar isolasjon kan benyttes som utvendig tilleggsisolering av yttervegger med unntak for i byggverk i brannklasse 3 og i byggverk i risikoklasse 6 forutsatt at",
+      "   - det benyttes isolasjonssystemer som er dokumentert ved prøving etter SP Fire 105: Large scale testing of facade systems (1994) eller tilsvarende. Med isolasjonssystemer menes systemer som består av isolasjon og fasademateriale som monteres på et eksisterende underlag.",
+      "   - fasademateriale og isolasjon må være prøvet som en enhet. Underlaget må ha branntekniske egenskaper som minst tilsvarer det som ble benyttet ved prøving.",
+      "",
+      "Brennbar isolasjon basert på cellulose- eller tekstilfiber og lignende kan benyttes i byggverk i brannklasse 1, og boliger inntil 3 etasjer. Isolasjonen må tilfredsstille Euroklasse E, eller være i samsvar med NT Fire 035: Building products: Flammability and smouldering resistance of loose-fill thermal insulation (1988). Isolasjonen kan være utildekket i kaldt uinnredet loft og oppforet tak.",
     );
-  }
-  if (formData.isolasjonSandwich === "ikke_relevant" && formData.isolasjonBrennbar === "ikke_relevant") {
-    isolasjonLines.push("", "Det er ikke planlagt bruk av sandwichelementer eller brennbar isolasjon i tiltaket. Kun hovedkravet om A2-s1,d0 gjelder.");
   }
   rows.push(contentRowMultiLine("Isolasjon", isolasjonLines, "ARK"));
 
