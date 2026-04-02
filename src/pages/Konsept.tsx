@@ -5419,7 +5419,7 @@ const Konsept = () => {
                               { id: "royk_overbygde_garder", label: "6. Overbygde gårder og gater må ha røykventilasjon for å hindre røykspredning mellom ulike brannceller som ligger ut mot den overbygde gården." },
                             ];
                             
-                            const roykOriginalTekst = roykKravListe.map(k => k.label).join("\n");
+                            const roykOriginalTekst = roykKravListe.map(k => k.label).join("\n\n");
                             
                             if (!formData.roykKontrollKravTekst && roykOriginalTekst) {
                               setTimeout(() => setFormData({...formData, roykKontrollKravTekst: roykOriginalTekst}), 0);
