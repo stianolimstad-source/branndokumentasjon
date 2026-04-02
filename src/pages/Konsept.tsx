@@ -771,8 +771,13 @@ const Konsept = () => {
   const garasjeKravErKomplett = formData.garasjeAreal && (formData.garasjeAreal !== "under_50" || formData.garasjeBruksenhet);
   const erBoligForGarasje = (() => {
     const rk = formData.risikoklasse;
-    const harBoligDel = formData.bygningsdeler?.some((d: any) => ["RK4", "RK6"].includes(d.risikoklasse));
-    return rk === "RK4" || rk === "RK6" || !!harBoligDel;
+    if (rk === "RK4") return true;
+    if (rk === "RK6" && formData.erRKL6Boligbygning) return true;
+    // Check bygningsdeler for multi-RK buildings
+    const harBoligDel = formData.bygningsdeler?.some((d: any) => 
+      d.risikoklasse === "RK4" || (d.risikoklasse === "RK6" && formData.erRKL6Boligbygning)
+    );
+    return !!harBoligDel;
   })();
   const garasjeKravListe = garasjeKravErKomplett
     ? getGarasjeKrav(formData.garasjePlassering, formData.garasjeAreal, formData.garasjeBruksenhet, formData.brannklasse || "", erBoligForGarasje)
