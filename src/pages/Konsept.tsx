@@ -587,6 +587,7 @@ const Konsept = () => {
     vertikalBrannspredningKrav: [] as string[],
     vinduBrannspredningRelevant: false,
     vinduBrannspredningKrav: [] as string[],
+    vinduMotRomningsvei: false,
     horisontaltPlasseringer: [] as string[],
     horisontaltParallelleVinduer: [] as { avstand: string }[],
     horisontaltHjorneVinduer: [] as { avstand: string }[],
