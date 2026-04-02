@@ -598,6 +598,7 @@ const Konsept = () => {
     garasjeAreal: "" as "" | "under_50" | "50_400" | "over_400",
     garasjeBruksenhet: "" as "" | "samme" | "annen",
     garasjeBF85Krav: [] as string[],
+    garasjeKravTekst: "",
     brensellagringRelevant: false,
     brenselType: "" as "" | "fyringsparafin" | "lett_fyringsolje" | "begge",
     brenselMengde: "" as string,
