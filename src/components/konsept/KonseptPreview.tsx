@@ -2258,15 +2258,21 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </tr>
               );
             })()}
-            {/* Garasje - TEK17 automatisk genererte krav */}
-            {formData.garasjeRelevant && formData.regelverk !== "BF85" && formData.garasjePlassering && formData.garasjeAreal && 
-             (formData.garasjeAreal !== "under_50" || formData.garasjeBruksenhet) && (() => {
-              const krav = getGarasjeKrav(formData.garasjePlassering, formData.garasjeAreal, formData.garasjeBruksenhet, formData.brannklasse || "");
-              // Group by kategori
-              const grouped: Record<string, { tekst: string; ansvar: string }[]> = {};
-              krav.forEach(k => {
-                if (!grouped[k.kategori]) grouped[k.kategori] = [];
-                grouped[k.kategori].push({ tekst: k.tekst, ansvar: k.ansvar });
+            {/* Garasje - TEK17 redigerbar tekst */}
+            {formData.garasjeRelevant && formData.regelverk !== "BF85" && formData.garasjeKravTekst && (() => {
+              const lines = (formData.garasjeKravTekst as string).split("\n").filter((l: string) => l.trim());
+              // Group by kategori prefix
+              const grouped: Record<string, string[]> = {};
+              lines.forEach((line: string) => {
+                const match = line.match(/^(.+?):\s*(.+)$/);
+                if (match) {
+                  const [, kategori, tekst] = match;
+                  if (!grouped[kategori]) grouped[kategori] = [];
+                  grouped[kategori].push(tekst);
+                } else {
+                  if (!grouped["Garasje"]) grouped["Garasje"] = [];
+                  grouped["Garasje"].push(line);
+                }
               });
               return Object.entries(grouped).map(([kategori, items]) => (
                 <tr key={kategori}>
@@ -2274,11 +2280,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2">
                     <div className="space-y-1">
                       {items.map((item, i) => (
-                        <div key={i}>{items.length > 1 ? `${i + 1}. ` : ""}{item.tekst}</div>
+                        <div key={i}>{items.length > 1 ? `${i + 1}. ` : ""}{item}</div>
                       ))}
                     </div>
                   </td>
-                  <td className="border border-gray-400 p-2 align-top">{items[0].ansvar}</td>
+                  <td className="border border-gray-400 p-2 align-top">ARK / RIBr</td>
                 </tr>
               ));
             })()}
