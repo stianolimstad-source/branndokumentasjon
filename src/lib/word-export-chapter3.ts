@@ -814,7 +814,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   // Innvendige overflater og kledninger – øvrig
   if (formData.matNote4) {
     rows.push(contentRow(
-      "Innvendige overflater og kledninger",
+      "Innvendige overflater og kledninger (generelt)",
       "Selv om sikkerhet ved brann dokumenteres ved analyse, må innvendige overflater på vegger og i himlinger ha minst klasse D-s2,d0 [In 2]. Lavere ytelse kan gi uakseptabelt bidrag til brannutviklingen. Dette kan utgjøre en fare for personsikkerheten. En meget rask brannutvikling kan også medføre at automatiske slokkeanlegg ikke har den effekten som er forutsatt.",
       "RIBr"
     ));
