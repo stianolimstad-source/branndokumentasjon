@@ -5463,7 +5463,12 @@ const Konsept = () => {
                             <label htmlFor="vertikalBrannspredningRelevant" className="text-xs cursor-pointer font-medium">Vertikal brannspredning er relevant</label>
                           </div>
                           {formData.vertikalBrannspredningRelevant && (() => {
-                            const harSprinklerKrav = formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b;
+                            // Sjekk om sprinkler er påkrevd basert på risikoklasse
+                            const rk = formData.risikoklasse;
+                            const etasjerNum = parseInt(formData.etasjer, 10) || 0;
+                            const erRK6 = rk === "RK6";
+                            const erRK4MedHeis = rk === "RK4" && etasjerNum > 1;
+                            const harSprinklerKrav = erRK6 || erRK4MedHeis || formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b;
                             // Auto-add vb_sprinkler when sprinkler is required
                             if (harSprinklerKrav && formData.regelverk !== "BF85" && !formData.vertikalBrannspredningKrav.includes("vb_sprinkler")) {
                               setTimeout(() => setFormData({...formData, vertikalBrannspredningKrav: [...formData.vertikalBrannspredningKrav, "vb_sprinkler"]}), 0);
@@ -5472,7 +5477,7 @@ const Konsept = () => {
                             <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
                               {harSprinklerKrav && formData.regelverk !== "BF85" && (
                                 <div className="p-2 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded text-xs text-green-800 dark:text-green-200">
-                                  <span className="font-medium">✓ Ivaretatt:</span> Byggverket har krav om automatisk sprinkleranlegg ({formData.tilretteleggingLedd1b ? "RK 6" : "RK 4 med krav om heis"}), og krav til vertikal brannspredning er dermed ivaretatt.
+                                  <span className="font-medium">✓ Ivaretatt:</span> Byggverket har krav om automatisk sprinkleranlegg ({erRK6 ? "RK 6" : "RK 4 med krav om heis"}), og krav til vertikal brannspredning er dermed ivaretatt.
                                 </div>
                               )}
                               {(formData.regelverk === "BF85" ? [
