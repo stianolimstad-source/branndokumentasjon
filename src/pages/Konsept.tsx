@@ -5419,31 +5419,7 @@ const Konsept = () => {
                               { id: "royk_overbygde_garder", label: "6. Overbygde gårder og gater må ha røykventilasjon for å hindre røykspredning mellom ulike brannceller som ligger ut mot den overbygde gården." },
                             ];
                             
-                            const etasjer = parseInt(formData.etasjer, 10) || 0;
-                            const trType = (() => {
-                              const rk = parseInt(formData.risikoklasse, 10) || 0;
-                              if (etasjer <= 4 && rk <= 4) return "Tr1";
-                              if (etasjer <= 8) return "Tr2";
-                              return "Tr3";
-                            })();
-                            
-                            let relevantKrav: typeof roykKravListe = [];
-                            if (etasjer > 2) {
-                              relevantKrav.push(roykKravListe[0]);
-                              if (trType === "Tr1" || trType === "Tr2") {
-                                relevantKrav.push(roykKravListe[1]);
-                                relevantKrav.push(roykKravListe[2]);
-                              }
-                              if (trType === "Tr2") {
-                                relevantKrav.push(roykKravListe[3]);
-                              }
-                              if (trType === "Tr3") {
-                                relevantKrav.push(roykKravListe[4]);
-                              }
-                            }
-                            relevantKrav.push(roykKravListe[5]);
-                            
-                            const roykOriginalTekst = relevantKrav.map(k => k.label).join("\n");
+                            const roykOriginalTekst = roykKravListe.map(k => k.label).join("\n");
                             
                             if (!formData.roykKontrollKravTekst && roykOriginalTekst) {
                               setTimeout(() => setFormData({...formData, roykKontrollKravTekst: roykOriginalTekst}), 0);
