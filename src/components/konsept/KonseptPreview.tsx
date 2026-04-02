@@ -2525,22 +2525,32 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIBr</td>
                 </tr>
-                {/* Innvendige overflater og kledninger – noter */}
-                {(formData.matNote2 || formData.matNote3 || formData.matNote4) && (
+                {/* Overflater i hulrom */}
+                {formData.matNote2 && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Overflater i hulrom</td>
+                    <td className="border border-gray-400 p-2 text-sm">
+                      Overflater i hulrom betraktes på samme måte som innvendig overflate og må ha minst like gode branntekniske egenskaper.
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                )}
+                {/* Rom med brannfarlig virksomhet */}
+                {formData.matNote3 && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Rom med brannfarlig virksomhet</td>
+                    <td className="border border-gray-400 p-2 text-sm">
+                      Rom med brannfarlig virksomhet må ha kledning som tilfredsstiller klasse K<sub>2</sub>10 A2-s1,d0 [K1-A]. Eksempel på rom med brannfarlig virksomhet er rom hvor det oppbevares fyrverkeri, brannfarlig væske kategori 1 og 2, eller rom hvor det utføres varme arbeider som sveising, sliping samt rom hvor det arbeides med åpen varme.
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                )}
+                {/* Innvendige overflater og kledninger – øvrige noter */}
+                {formData.matNote4 && (
                   <tr>
                     <td className="border border-gray-400 p-2 align-top">Innvendige overflater og kledninger</td>
-                    <td className="border border-gray-400 p-2">
-                      <ol className="list-disc ml-4 space-y-1 text-sm">
-                        {formData.matNote2 && (
-                          <li>Overflater i hulrom betraktes på samme måte som innvendig overflate og må ha minst like gode branntekniske egenskaper.</li>
-                        )}
-                        {formData.matNote3 && (
-                          <li>Rom med brannfarlig virksomhet må ha kledning som tilfredsstiller klasse K<sub>2</sub>10 A2-s1,d0 [K1-A]. Eksempel på rom med brannfarlig virksomhet er rom hvor det oppbevares fyrverkeri, brannfarlig væske kategori 1 og 2, eller rom hvor det utføres varme arbeider som sveising, sliping samt rom hvor det arbeides med åpen varme.</li>
-                        )}
-                        {formData.matNote4 && (
-                          <li>Selv om sikkerhet ved brann dokumenteres ved analyse, må innvendige overflater på vegger og i himlinger ha minst klasse D-s2,d0 [In 2]. Lavere ytelse kan gi uakseptabelt bidrag til brannutviklingen. Dette kan utgjøre en fare for personsikkerheten. En meget rask brannutvikling kan også medføre at automatiske slokkeanlegg ikke har den effekten som er forutsatt.</li>
-                        )}
-                      </ol>
+                    <td className="border border-gray-400 p-2 text-sm">
+                      Selv om sikkerhet ved brann dokumenteres ved analyse, må innvendige overflater på vegger og i himlinger ha minst klasse D-s2,d0 [In 2]. Lavere ytelse kan gi uakseptabelt bidrag til brannutviklingen. Dette kan utgjøre en fare for personsikkerheten. En meget rask brannutvikling kan også medføre at automatiske slokkeanlegg ikke har den effekten som er forutsatt.
                     </td>
                     <td className="border border-gray-400 p-2 align-top">RIBr</td>
                   </tr>
