@@ -2718,19 +2718,43 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     {(() => {
                       const hasSandwich = formData.isolasjonSandwich === "relevant";
                       const hasBrennbar = formData.isolasjonBrennbar === "relevant";
-                      const hasAny = hasSandwich || hasBrennbar;
+                      const rk = formData.risikoklasse || "";
+                      const bkl = formData.brannklasse || "";
+                      const bygType = (formData.bygningstype || "").toLowerCase();
+                      const isIndustri = bygType.includes("industri") || bygType.includes("lager");
+                      const isBoligType = bygType.includes("bolig");
+
+                      // Sandwich filtering
+                      const sandwichBsd = hasSandwich && (
+                        (["RK1","RK2","RK3","RK4"].includes(rk) && bkl === "BKL1") ||
+                        (isIndustri && bkl === "BKL2")
+                      );
+                      const sandwichDsd = hasSandwich && isIndustri && bkl === "BKL1";
+                      const sandwichBeskyttelse = hasSandwich;
+                      const sandwichKjole = hasSandwich && rk === "RK4";
+
+                      // Brennbar filtering
+                      const brennbarUtvendig = hasBrennbar && bkl !== "BKL3" && rk !== "RK6";
+                      const brennbarCellulose = hasBrennbar && (bkl === "BKL1" || rk === "RK4" || (rk === "RK6" && isBoligType));
+
+                      const hasFilteredItems = sandwichBsd || sandwichDsd || sandwichBeskyttelse || sandwichKjole || hasBrennbar;
+
                       return (
                         <>
                           <p className="mb-2">Isolasjonsmaterialer kan bidra til brannspredning og røykutvikling i et byggverk.</p>
                           <ul className="list-disc list-inside space-y-2 text-sm">
-                            <li>Isolasjon må tilfredsstille klasse <span className="text-red-600 font-medium">A2-s1,d0</span>{hasAny ? " med mindre annet er angitt nedenfor." : "."}</li>
-                            {hasSandwich && (
-                              <>
-                                <li>Produkter (sandwichelementer) som tilfredsstiller klasse B-s1,d0 eller Eurefic-klasse A, kan benyttes i byggverk i risikoklasse 1–4 i brannklasse 1 og i industri- og lagerbygninger i brannklasse 2.</li>
-                                <li>Produkter (sandwichelementer) som tilfredsstiller klasse D-s2,d0 eller Eurefic-klasse E, kan benyttes i industri- og lagerbygninger i brannklasse 1.</li>
-                                <li>Produkter (sandwichelementer) som ikke tilfredsstiller A2-s1,d0 må være beskyttet av kledning K<sub>2</sub>10 A2-s1,d0 [K1-A] mot rømningsveier.</li>
-                                <li>Produkter (sandwichelementer) for små kjøle- og fryserom i risikoklasse 4 kan ha uspesifisert ytelse.</li>
-                              </>
+                            <li>Isolasjon må tilfredsstille klasse <span className="text-red-600 font-medium">A2-s1,d0</span>{hasFilteredItems ? " med mindre annet er angitt nedenfor." : "."}</li>
+                            {sandwichBsd && (
+                              <li>Produkter (sandwichelementer) som tilfredsstiller klasse B-s1,d0 eller Eurefic-klasse A, kan benyttes i byggverk i risikoklasse 1–4 i brannklasse 1{isIndustri && bkl === "BKL2" ? " og i industri- og lagerbygninger i brannklasse 2" : ""}.</li>
+                            )}
+                            {sandwichDsd && (
+                              <li>Produkter (sandwichelementer) som tilfredsstiller klasse D-s2,d0 eller Eurefic-klasse E, kan benyttes i industri- og lagerbygninger i brannklasse 1.</li>
+                            )}
+                            {sandwichBeskyttelse && (
+                              <li>Produkter (sandwichelementer) som ikke tilfredsstiller A2-s1,d0 må være beskyttet av kledning K<sub>2</sub>10 A2-s1,d0 [K1-A] mot rømningsveier.</li>
+                            )}
+                            {sandwichKjole && (
+                              <li>Produkter (sandwichelementer) for små kjøle- og fryserom i risikoklasse 4 kan ha uspesifisert ytelse.</li>
                             )}
                             {hasBrennbar && (
                               <>
@@ -2743,17 +2767,21 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                                 <li>Brennbar isolasjon kan benyttes i isolerte takflater forutsatt at
                                   <ul className="list-disc ml-6 mt-1 space-y-1">
                                     <li>isolasjonen legges på et bærende underlag som tilfredsstiller klasse A2-s1,d0 og som har dokumentert bæreevne under brann (R-klasse i samsvar med § 11–4)</li>
-                                    <li>det bærende underlaget beskytter isolasjonen mot varmepåkjenning fra undersiden (for eksempel betongdekke). I brannklasse 1 og 2 kan alternativt den brennbare isolasjonen beskyttes på undersiden av isolasjon av klasse A2-s1,d0 med tilstrekkelig tykkelse til å isolere mot varmepåkjenning.</li>
+                                    <li>det bærende underlaget beskytter isolasjonen mot varmepåkjenning fra undersiden (for eksempel betongdekke){bkl === "BKL1" || bkl === "BKL2" ? " I brannklasse 1 og 2 kan alternativt den brennbare isolasjonen beskyttes på undersiden av isolasjon av klasse A2-s1,d0 med tilstrekkelig tykkelse til å isolere mot varmepåkjenning." : ""}</li>
                                     <li>den brennbare isolasjonen er beskyttet på oversiden av isolasjon med tykkelse 30 mm og som tilfredsstiller klasse A2-s1,d0. Alternativt til beskyttelse på oversiden kan den brennbare isolasjonen oppdeles i arealer på inntil 400 m².</li>
                                   </ul>
                                 </li>
-                                <li>Brennbar isolasjon kan benyttes som utvendig tilleggsisolering av yttervegger med unntak for i byggverk i brannklasse 3 og i byggverk i risikoklasse 6 forutsatt at
-                                  <ul className="list-disc ml-6 mt-1 space-y-1">
-                                    <li>det benyttes isolasjonssystemer som er dokumentert ved prøving etter <em>SP Fire 105: Large scale testing of facade systems (1994)</em> eller tilsvarende. Med isolasjonssystemer menes systemer som består av isolasjon og fasademateriale som monteres på et eksisterende underlag.</li>
-                                    <li>fasademateriale og isolasjon må være prøvet som en enhet. Underlaget må ha branntekniske egenskaper som minst tilsvarer det som ble benyttet ved prøving.</li>
-                                  </ul>
-                                </li>
-                                <li>Brennbar isolasjon basert på cellulose- eller tekstilfiber og lignende kan benyttes i byggverk i brannklasse 1, og boliger inntil 3 etasjer. Isolasjonen må tilfredsstille Euroklasse E, eller være i samsvar med <em>NT Fire 035: Building products: Flammability and smouldering resistance of loose-fill thermal insulation (1988)</em>. Isolasjonen kan være utildekket i kaldt uinnredet loft og oppforet tak.</li>
+                                {brennbarUtvendig && (
+                                  <li>Brennbar isolasjon kan benyttes som utvendig tilleggsisolering av yttervegger forutsatt at
+                                    <ul className="list-disc ml-6 mt-1 space-y-1">
+                                      <li>det benyttes isolasjonssystemer som er dokumentert ved prøving etter <em>SP Fire 105: Large scale testing of facade systems (1994)</em> eller tilsvarende.</li>
+                                      <li>fasademateriale og isolasjon må være prøvet som en enhet. Underlaget må ha branntekniske egenskaper som minst tilsvarer det som ble benyttet ved prøving.</li>
+                                    </ul>
+                                  </li>
+                                )}
+                                {brennbarCellulose && (
+                                  <li>Brennbar isolasjon basert på cellulose- eller tekstilfiber og lignende kan benyttes i byggverk i brannklasse 1{rk === "RK4" || (rk === "RK6" && isBoligType) ? ", og boliger inntil 3 etasjer" : ""}. Isolasjonen må tilfredsstille Euroklasse E, eller være i samsvar med <em>NT Fire 035</em>. Isolasjonen kan være utildekket i kaldt uinnredet loft og oppforet tak.</li>
+                                )}
                               </>
                             )}
                           </ul>
