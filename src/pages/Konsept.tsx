@@ -6159,7 +6159,7 @@ const Konsept = () => {
                                             id={`brensel-type-${opt.value}`}
                                             name="brenselType"
                                             checked={formData.brenselType === opt.value}
-                                            onChange={() => setFormData({...formData, brenselType: opt.value as any})}
+                                            onChange={() => setFormData({...formData, brenselType: opt.value as any, brenselMengde: ""})}
                                             className="w-3 h-3"
                                           />
                                           <label htmlFor={`brensel-type-${opt.value}`} className="text-xs cursor-pointer">{opt.label}</label>
@@ -6169,14 +6169,30 @@ const Konsept = () => {
                                   </div>
                                   {formData.brenselType && (
                                     <div>
-                                      <Label className="text-xs font-medium mb-1 block">Mengde (liter)</Label>
-                                      <Input
-                                        type="number"
-                                        value={formData.brenselMengde}
-                                        onChange={(e) => setFormData({...formData, brenselMengde: e.target.value})}
-                                        placeholder="Oppgi antall liter..."
-                                        className="w-40 h-7 text-xs"
-                                      />
+                                      <Label className="text-xs font-medium mb-1 block">Maksimalt antall liter</Label>
+                                      <Select value={formData.brenselMengde} onValueChange={(v) => setFormData({...formData, brenselMengde: v})}>
+                                        <SelectTrigger className="w-64 h-7 text-xs">
+                                          <SelectValue placeholder="Velg mengde..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {formData.brenselType === "fyringsparafin" && (
+                                            <>
+                                              <SelectItem value="1650">Inntil 1 650 liter</SelectItem>
+                                              <SelectItem value="4000">Inntil 4 000 liter</SelectItem>
+                                              <SelectItem value="10000">Inntil 10 000 liter</SelectItem>
+                                            </>
+                                          )}
+                                          {formData.brenselType === "lett_fyringsolje" && (
+                                            <>
+                                              <SelectItem value="4000">Inntil 4 000 liter</SelectItem>
+                                              <SelectItem value="10000">Inntil 10 000 liter</SelectItem>
+                                            </>
+                                          )}
+                                          {formData.brenselType === "begge" && (
+                                            <SelectItem value="6000">Inntil 6 000 liter</SelectItem>
+                                          )}
+                                        </SelectContent>
+                                      </Select>
                                     </div>
                                   )}
                                   {formData.brenselType && formData.brenselMengde && (() => {
