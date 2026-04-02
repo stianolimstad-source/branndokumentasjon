@@ -6444,10 +6444,13 @@ const Konsept = () => {
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                          <li>Krav til innvendige overflater og kledninger basert på brannklasse</li>
-                          <li>Særkrav for rømningsveier (In1, K1-A)</li>
+                          <li>Generelle krav til materialer og produkters egenskaper ved brann</li>
+                          <li>Krav til innvendige overflater og kledninger basert på {formData.risikoklasse === "RK6" ? "risikoklasse 6 (strengeste nivå)" : `brannklasse ${formData.brannklasse || "(ikke angitt)"}`}</li>
+                          <li>Særkrav for overflater og kledninger i rømningsveier</li>
+                          <li>Utvendige overflater tilpasset brannklasse og risikoklasse</li>
+                          <li>Kledningskrav basert på {formData.risikoklasse === "RK6" ? "risikoklasse 6" : `brannklasse ${formData.brannklasse || "(ikke angitt)"}`}</li>
+                          <li>Taktekning{(formData.risikoklasse === "RK4" || (formData.risikoklasse === "RK6" && (formData.bygningstype || "").toLowerCase().includes("bolig"))) ? " inkl. småhus-unntak" : ""}</li>
                           <li>Krav til isolasjon og sandwichelementer</li>
-                          <li>Tabell 1A/1B for produktegenskaper</li>
                         </ul>
                       </div>
                       
