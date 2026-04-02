@@ -598,6 +598,7 @@ const Konsept = () => {
     garasjeAreal: "" as "" | "under_50" | "50_400" | "over_400",
     garasjeBruksenhet: "" as "" | "samme" | "annen",
     garasjeBF85Krav: [] as string[],
+    garasjeKravTekst: "",
     brensellagringRelevant: false,
     brenselType: "" as "" | "fyringsparafin" | "lett_fyringsolje" | "begge",
     brenselMengde: "" as string,
@@ -5903,18 +5904,36 @@ const Konsept = () => {
                                 </div>
                               )}
 
-                              {/* Auto-genererte krav */}
+                              {/* Auto-genererte krav - redigerbar */}
                               {formData.garasjeAreal && (formData.garasjeAreal !== "under_50" || formData.garasjeBruksenhet) && (() => {
                                 const krav = getGarasjeKrav(formData.garasjePlassering, formData.garasjeAreal, formData.garasjeBruksenhet, formData.brannklasse || "");
                                 if (krav.length === 0) return null;
+                                const garasjeOriginalTekst = krav.map(k => `${k.kategori}: ${k.tekst}`).join("\n\n");
+                                
+                                if (!formData.garasjeKravTekst && garasjeOriginalTekst) {
+                                  setTimeout(() => setFormData({...formData, garasjeKravTekst: garasjeOriginalTekst}), 0);
+                                }
+                                
                                 return (
-                                  <div className="mt-2 p-2 bg-muted/50 rounded border space-y-2">
-                                    <Label className="text-xs font-semibold block">Automatisk bestemte krav:</Label>
-                                    {krav.map((k, i) => (
-                                      <div key={i} className="text-xs leading-tight">
-                                        <span className="font-medium">{k.kategori}:</span> {k.tekst}
-                                      </div>
-                                    ))}
+                                  <div className="mt-2 space-y-2">
+                                    <div className="flex justify-between items-center">
+                                      <Label className="text-xs font-semibold">Krav:</Label>
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        className="text-[10px] h-6 px-2"
+                                        onClick={() => setFormData({...formData, garasjeKravTekst: garasjeOriginalTekst})}
+                                      >
+                                        Sett original tekst
+                                      </Button>
+                                    </div>
+                                    <Textarea
+                                      value={formData.garasjeKravTekst || ""}
+                                      onChange={(e) => setFormData({...formData, garasjeKravTekst: e.target.value})}
+                                      className="min-h-[120px] text-xs"
+                                      placeholder="Garasjekrav..."
+                                    />
                                   </div>
                                 );
                               })()}
