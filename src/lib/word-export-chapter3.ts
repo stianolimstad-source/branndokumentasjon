@@ -844,15 +844,19 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   // Sub-section: Utvendige overflater
   rows.push(graySubSectionHeaderRow("Utvendige overflater"));
   rows.push(contentRow("Overflater på ytterkledning", formData.brannklasse === "BKL1" ? "D-s3,d0 [Ut 2]" : "B-s3,d0 [Ut 1]", "ARK"));
-  const utvOverflaterLines = [
-    "Preaksepterte ytelser:",
-    "1. Utvendige overflater er tilfredsstillende når det benyttes produkter med egenskaper som angitt i tabell 1A og 1B, med unntak gitt i nr. 2 til 4.",
-    "2. Yttervegg i byggverk i brannklasse 2 og 3 kan ha utvendig overflate som tilfredsstiller klasse D-s3,d0 [Ut 2], når enten",
-    "   1. ytterveggen er utformet slik at den hindrer brannspredning i fasaden, eller",
-    "   2. byggverket er i risikoklasse 1, 2 og 4 og har inntil fire etasjer, og det er liten fare for brannspredning til og fra nabobyggverk.",
-    "3. Overflater i hulrom i ytterveggkonstruksjoner betraktes på samme måte som utvendig overflate og må ha minst like gode branntekniske egenskaper.",
-    "4. Byggverk i brannklasse 1 og boliger inntil 3 etasjer kan ha uklassifiserte overflater i hulrom.",
-  ];
+  const utvOverflaterLines: string[] = [];
+  if (formData.brannklasse === "BKL2" || formData.brannklasse === "BKL3") {
+    const subPoints = ["ytterveggen er utformet slik at den hindrer brannspredning i fasaden"];
+    if (["RK1", "RK2", "RK4"].includes(formData.risikoklasse)) {
+      subPoints.push("byggverket har inntil fire etasjer, og det er liten fare for brannspredning til og fra nabobyggverk");
+    }
+    utvOverflaterLines.push(`Yttervegg kan ha utvendig overflate som tilfredsstiller klasse D-s3,d0 [Ut 2], når enten ${subPoints.join(", eller ")}.`);
+  }
+  utvOverflaterLines.push("Overflater i hulrom i ytterveggkonstruksjoner betraktes på samme måte som utvendig overflate og må ha minst like gode branntekniske egenskaper.");
+  if (formData.brannklasse === "BKL1" || formData.risikoklasse === "RK4") {
+    const boligTekst = formData.risikoklasse === "RK4" ? " og boliger" : "";
+    utvOverflaterLines.push(`Byggverk i brannklasse 1${boligTekst} inntil 3 etasjer kan ha uklassifiserte overflater i hulrom.`);
+  }
   rows.push(contentRowMultiLine("Utvendige overflater", utvOverflaterLines, "ARK"));
 
   // Sub-section: Kledninger
