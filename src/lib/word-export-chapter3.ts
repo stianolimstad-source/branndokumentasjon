@@ -978,14 +978,13 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
 
   if (formData.ventilasjonRelevant) {
     const ventLines = [
-      "Preaksepterte ytelser:",
-      "1. Ventilasjonskanal som føres gjennom en brannskillende bygningsdel, må utføres slik at bygningsdelens brannmotstand blir opprettholdt.",
-      "2. Innfesting og oppheng for kanaler og ventilasjonsutstyr må utføres slik at forutsatt funksjonstid og brannmotstand blir opprettholdt.",
-      "3. Avtrekk fra komfyr må føres i egen kanal.",
-      "4. Ventilasjonsanlegg må utføres i materialer som tilfredsstiller klasse A2-s1,d0.",
+      "Ventilasjonskanal som føres gjennom en brannskillende bygningsdel, må utføres slik at bygningsdelens brannmotstand blir opprettholdt.",
+      "Innfesting og oppheng for kanaler og ventilasjonsutstyr må utføres slik at forutsatt funksjonstid og brannmotstand blir opprettholdt.",
+      "Avtrekk fra komfyr må føres i egen kanal.",
+      "Ventilasjonsanlegg må utføres i materialer som tilfredsstiller klasse A2-s1,d0.",
     ];
     if (formData.ventKrav9) {
-      ventLines.push("5. Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.");
+      ventLines.push("Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.");
     }
     rows.push(contentRowMultiLine("Ventilasjonsanlegg", ventLines, "RIV"));
   }

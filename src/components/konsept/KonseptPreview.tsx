@@ -2836,14 +2836,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <tr>
                       <td className="border border-gray-400 p-2 align-top">Ventilasjonsanlegg</td>
                       <td className="border border-gray-400 p-2">
-                        <p className="font-medium mb-1">Preaksepterte ytelser</p>
-                        <ol className="list-decimal ml-4 space-y-2">
+                        <ul className="list-disc ml-4 space-y-2">
                           <li>Ventilasjonskanal som føres gjennom en brannskillende bygningsdel, må utføres slik at bygningsdelens brannmotstand blir opprettholdt.</li>
                           <li>Innfesting og oppheng for kanaler og ventilasjonsutstyr må utføres slik at forutsatt funksjonstid og brannmotstand blir opprettholdt.</li>
                           <li>Avtrekk fra komfyr må føres i egen kanal.</li>
                           <li>Ventilasjonsanlegg må utføres i materialer som tilfredsstiller klasse <span className="text-red-600 font-medium">A2-s1,d0</span>.</li>
                           {formData.ventKrav9 && <li>Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.</li>}
-                        </ol>
+                        </ul>
                       </td>
                       <td className="border border-gray-400 p-2 align-top">RIV</td>
                     </tr>
