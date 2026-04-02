@@ -985,8 +985,9 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     ];
     if (formData.ventKrav5) ventLines.push("Avtrekkskanal fra storkjøkken og frityrkoker må ha brannmotstand minst EI 30 A2-s1,d0.");
     if (formData.ventKrav6) ventLines.push("Avtrekkskanal fra kjøkken i boenhet må ha brannmotstand minst EI 15 A2-s1,d0.");
-    if (formData.ventKrav7) ventLines.push("I småhus kan avtrekk fra komfyr føres i kanal av stål eller aluminium.");
-    if (formData.ventKrav8) ventLines.push("I småhus kan kanal som tilfredsstiller klasse E benyttes.");
+    const isBoligVent = formData.risikoklasse === "RK4" || (formData.risikoklasse === "RK6" && (formData.bygningstype || "").toLowerCase().includes("bolig"));
+    if (formData.ventKrav7 && isBoligVent) ventLines.push("I småhus kan avtrekk fra komfyr føres i kanal av stål eller aluminium.");
+    if (formData.ventKrav8 && isBoligVent) ventLines.push("I småhus kan kanal som tilfredsstiller klasse E benyttes.");
     if (formData.ventKrav9) {
       ventLines.push("Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.");
     }
