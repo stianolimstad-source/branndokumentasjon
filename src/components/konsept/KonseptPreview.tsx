@@ -2615,9 +2615,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2">
                     <ul className="list-disc ml-4 space-y-2 text-sm">
                       {(formData.brannklasse === "BKL2" || formData.brannklasse === "BKL3") && (
-                        <li>Yttervegg kan ha utvendig overflate som tilfredsstiller klasse <span className="text-red-600 font-medium">D-s3,d0 [Ut 2]</span>, når enten
+                        <li>Yttervegg kan ha utvendig overflate som tilfredsstiller klasse <span className="text-red-600 font-medium">D-s3,d0 [Ut 2]</span>, når{(formData.risikoklasse === "RK1" || formData.risikoklasse === "RK2" || formData.risikoklasse === "RK4") ? " enten" : ""}
                           <ul className="list-disc ml-6 mt-1 space-y-1">
-                            <li>ytterveggen er utformet slik at den hindrer brannspredning i fasaden, eller</li>
+                            <li>ytterveggen er utformet slik at den hindrer brannspredning i fasaden{(formData.risikoklasse === "RK1" || formData.risikoklasse === "RK2" || formData.risikoklasse === "RK4") ? ", eller" : "."}</li>
                             {(formData.risikoklasse === "RK1" || formData.risikoklasse === "RK2" || formData.risikoklasse === "RK4") && (
                               <li>byggverket har inntil fire etasjer, og det er liten fare for brannspredning til og fra nabobyggverk.</li>
                             )}

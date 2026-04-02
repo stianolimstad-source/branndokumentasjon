@@ -846,11 +846,12 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   rows.push(contentRow("Overflater på ytterkledning", formData.brannklasse === "BKL1" ? "D-s3,d0 [Ut 2]" : "B-s3,d0 [Ut 1]", "ARK"));
   const utvOverflaterLines: string[] = [];
   if (formData.brannklasse === "BKL2" || formData.brannklasse === "BKL3") {
-    const subPoints = ["ytterveggen er utformet slik at den hindrer brannspredning i fasaden"];
-    if (["RK1", "RK2", "RK4"].includes(formData.risikoklasse)) {
-      subPoints.push("byggverket har inntil fire etasjer, og det er liten fare for brannspredning til og fra nabobyggverk");
+    const hasEtasjeUnntak = ["RK1", "RK2", "RK4"].includes(formData.risikoklasse);
+    if (hasEtasjeUnntak) {
+      utvOverflaterLines.push("Yttervegg kan ha utvendig overflate som tilfredsstiller klasse D-s3,d0 [Ut 2], når enten ytterveggen er utformet slik at den hindrer brannspredning i fasaden, eller byggverket har inntil fire etasjer, og det er liten fare for brannspredning til og fra nabobyggverk.");
+    } else {
+      utvOverflaterLines.push("Yttervegg kan ha utvendig overflate som tilfredsstiller klasse D-s3,d0 [Ut 2], når ytterveggen er utformet slik at den hindrer brannspredning i fasaden.");
     }
-    utvOverflaterLines.push(`Yttervegg kan ha utvendig overflate som tilfredsstiller klasse D-s3,d0 [Ut 2], når enten ${subPoints.join(", eller ")}.`);
   }
   utvOverflaterLines.push("Overflater i hulrom i ytterveggkonstruksjoner betraktes på samme måte som utvendig overflate og må ha minst like gode branntekniske egenskaper.");
   if (formData.brannklasse === "BKL1" || formData.risikoklasse === "RK4") {
