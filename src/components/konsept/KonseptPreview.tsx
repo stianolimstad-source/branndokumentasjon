@@ -2100,9 +2100,40 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </tr>
               );
             })()}
-            {/* Brannspredning via vinduer */}
+            {/* Horisontal brannspredning */}
             {formData.vinduBrannspredningRelevant && (() => {
               const isBF85 = formData.regelverk === "BF85";
+              
+              // Check sprinkler requirement
+              const rk = formData.harFlereRisikoklasser
+                ? (formData.bygningsdeler || []).map((d: any) => d.risikoklasse).filter(Boolean)[0] || ""
+                : formData.risikoklasse || "";
+              const etasjerNum = parseInt(formData.etasjer, 10) || 0;
+              const erRK6 = rk === "RK6";
+              const erRK4MedHeis = rk === "RK4" && etasjerNum > 1;
+              const harSprinklerKrav = !isBF85 && (erRK6 || erRK4MedHeis || formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b);
+
+              if (harSprinklerKrav) {
+                const bklNum = formData.harFlereRisikoklasser
+                  ? (() => { const nums = (formData.bygningsdeler || []).map((d: any) => parseInt((d.brannklasse || "").replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n)); return nums.length > 0 ? Math.max(...nums) : 0; })()
+                  : parseInt((formData.brannklasse || "").replace(/\D/g, ''), 10) || 0;
+                const ewKrav = bklNum === 1 ? "EW 30" : "EW 60";
+                return (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Horisontal brannspredning</td>
+                    <td className="border border-gray-400 p-2">
+                      <div className="space-y-1">
+                        <div>Byggverket har krav om automatisk sprinkleranlegg. Krav til horisontal brannspredning via vinduer er dermed ivaretatt gjennom sprinkleranlegget.</div>
+                        {formData.vinduMotRomningsvei && (
+                          <div className="mt-2">Vinduer mot utvendig rømningsvei skal ha brannmotstand {ewKrav} (brannklasse {bklNum === 1 ? "1" : "2 og 3"}).</div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                );
+              }
+
               const vvKravMap: Record<string, string> = isBF85 ? {
                 vv_brannmotstand_vegg: "Vinduer skal ha samme brannklasse som veggen de står i.",
               } : {
@@ -2116,7 +2147,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 .map((id: string, idx: number) => ({ id, text: vvKravMap[id], num: idx + 1 }))
                 .filter((k: { text: string }) => k.text);
               
-              // Calculate distance-based requirements for each placement type
               const plasseringer = formData.horisontaltPlasseringer || [];
               const bklNum = formData.harFlereRisikoklasser
                 ? (() => {
