@@ -582,6 +582,7 @@ const Konsept = () => {
     trapperomBeskrivelse: "",
     interntrappBeskrivelse: "",
     roykKontrollKrav: [] as string[],
+    roykKontrollKravTekst: "",
     vertikalBrannspredningRelevant: false,
     vertikalBrannspredningKrav: [] as string[],
     vinduBrannspredningRelevant: false,
