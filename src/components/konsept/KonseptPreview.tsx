@@ -2045,6 +2045,25 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             })()}
             {/* Vertikal brannspredning */}
             {formData.vertikalBrannspredningRelevant && (() => {
+              // Check if sprinkler is required based on risk class
+              const rk = formData.risikoklasse;
+              const etasjerNum = parseInt(formData.etasjer, 10) || 0;
+              const erRK6 = rk === "RK6";
+              const erRK4MedHeis = rk === "RK4" && etasjerNum > 1;
+              const harSprinklerKrav = (erRK6 || erRK4MedHeis || formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) && formData.regelverk !== "BF85";
+
+              if (harSprinklerKrav) {
+                return (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Vertikal brannspredning</td>
+                    <td className="border border-gray-400 p-2">
+                      Byggverket har krav om automatisk sprinkleranlegg, og krav til vertikal brannspredning er dermed ivaretatt.
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                );
+              }
+
               const vbKravMap: Record<string, string> = formData.regelverk === "BF85" ? {
                 vb_kjolesone: "Kjølesone mellom vinduer i ulike etasjer skal være minst 1,2 meter og utført med brannmotstand minst E 30.",
               } : {
@@ -2054,10 +2073,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 vb_sprinkler: "Byggverket har automatisk sprinkleranlegg.",
                 vb_takfot: "Med mindre byggverket har automatisk sprinkleranlegg, må takfoten – i hele lengden – utføres som branncellebegrensende konstruksjon for brannpåvirkning nedenfra.",
               };
-              const selectedKrav = (formData.vertikalBrannspredningKrav || [])
-                .map((id: string) => vbKravMap[id])
-                .filter(Boolean);
-              // Split into main items (1-4) and takfot (item 2)
               const mainItems = (formData.vertikalBrannspredningKrav || [])
                 .filter((id: string) => id !== "vb_takfot")
                 .map((id: string) => vbKravMap[id])
