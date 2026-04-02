@@ -6159,7 +6159,7 @@ const Konsept = () => {
                                             id={`brensel-type-${opt.value}`}
                                             name="brenselType"
                                             checked={formData.brenselType === opt.value}
-                                            onChange={() => setFormData({...formData, brenselType: opt.value as any})}
+                                            onChange={() => setFormData({...formData, brenselType: opt.value as any, brenselMengde: ""})}
                                             className="w-3 h-3"
                                           />
                                           <label htmlFor={`brensel-type-${opt.value}`} className="text-xs cursor-pointer">{opt.label}</label>
