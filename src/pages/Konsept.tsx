@@ -5475,50 +5475,52 @@ const Konsept = () => {
                             }
                             return (
                             <div className="pl-4 space-y-2 border-l-2 border-primary/20 ml-2">
-                              {harSprinklerKrav && formData.regelverk !== "BF85" && (
+                              {harSprinklerKrav && formData.regelverk !== "BF85" ? (
                                 <div className="p-2 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded text-xs text-green-800 dark:text-green-200">
-                                  <span className="font-medium">✓ Ivaretatt:</span> Byggverket har krav om automatisk sprinkleranlegg ({erRK6 ? "RK 6" : "RK 4 med krav om heis"}), og krav til vertikal brannspredning er dermed ivaretatt.
+                                  <span className="font-medium">✓ Ivaretatt:</span> Byggverket har krav om automatisk sprinkleranlegg ({erRK6 ? "RK 6" : "RK 4 med krav om heis"}), og krav til vertikal brannspredning er dermed ivaretatt gjennom sprinkleranlegget.
                                 </div>
-                              )}
-                              {(formData.regelverk === "BF85" ? [
-                                { id: "vb_kjolesone", label: "1. Kjølesone mellom vinduer i ulike etasjer skal være minst 1,2 meter og utført med brannmotstand minst E 30." },
-                              ] : [
-                                { id: "vb_kjolesone", label: "1. Kjølesone (vertikal avstand) mellom vinduer er minst lik høyden til underliggende vindu og utført med brannmotstand minst E 30." },
-                                { id: "vb_fasade_e30", label: "2. Annenhver etasje er utført med fasade minst E 30." },
-                                { id: "vb_inntrukne", label: "3. Inntrukne fasadepartier er på minimum 1,2 meter, eller utkragede bygningsdeler med samme brannmotstand som etasjeskiller er minimum 1,2 meter ut fra fasadelivet." },
-                                { id: "vb_sprinkler", label: "4. Byggverket har automatisk sprinkleranlegg." },
-                              ]).map((krav) => (
-                                <div key={krav.id} className="flex items-start gap-2">
-                                  <Checkbox
-                                    id={`vb-${krav.id}`}
-                                    checked={formData.vertikalBrannspredningKrav.includes(krav.id)}
-                                    disabled={krav.id === "vb_sprinkler" && harSprinklerKrav}
-                                    onCheckedChange={(checked) => {
-                                      if (checked) {
-                                        setFormData({...formData, vertikalBrannspredningKrav: [...formData.vertikalBrannspredningKrav, krav.id]});
-                                      } else {
-                                        setFormData({...formData, vertikalBrannspredningKrav: formData.vertikalBrannspredningKrav.filter((k: string) => k !== krav.id)});
-                                      }
-                                    }}
-                                  />
-                                  <label htmlFor={`vb-${krav.id}`} className={`text-xs leading-tight cursor-pointer ${krav.id === "vb_sprinkler" && harSprinklerKrav ? "text-green-700 dark:text-green-300 font-medium" : ""}`}>{krav.label}</label>
-                                </div>
-                              ))}
-                              {formData.regelverk !== "BF85" && (
-                                <div className="flex items-start gap-2 mt-2 pt-2 border-t border-muted">
-                                  <Checkbox
-                                    id="vb_takfot"
-                                    checked={formData.vertikalBrannspredningKrav.includes("vb_takfot")}
-                                    onCheckedChange={(checked) => {
-                                      if (checked) {
-                                        setFormData({...formData, vertikalBrannspredningKrav: [...formData.vertikalBrannspredningKrav, "vb_takfot"]});
-                                      } else {
-                                        setFormData({...formData, vertikalBrannspredningKrav: formData.vertikalBrannspredningKrav.filter((k: string) => k !== "vb_takfot")});
-                                      }
-                                    }}
-                                  />
-                                  <label htmlFor="vb_takfot" className="text-xs leading-tight cursor-pointer">Med mindre byggverket har automatisk sprinkleranlegg, må takfoten – i hele lengden – utføres som branncellebegrensende konstruksjon for brannpåvirkning nedenfra.</label>
-                                </div>
+                              ) : (
+                                <>
+                                  {(formData.regelverk === "BF85" ? [
+                                    { id: "vb_kjolesone", label: "1. Kjølesone mellom vinduer i ulike etasjer skal være minst 1,2 meter og utført med brannmotstand minst E 30." },
+                                  ] : [
+                                    { id: "vb_kjolesone", label: "1. Kjølesone (vertikal avstand) mellom vinduer er minst lik høyden til underliggende vindu og utført med brannmotstand minst E 30." },
+                                    { id: "vb_fasade_e30", label: "2. Annenhver etasje er utført med fasade minst E 30." },
+                                    { id: "vb_inntrukne", label: "3. Inntrukne fasadepartier er på minimum 1,2 meter, eller utkragede bygningsdeler med samme brannmotstand som etasjeskiller er minimum 1,2 meter ut fra fasadelivet." },
+                                    { id: "vb_sprinkler", label: "4. Byggverket har automatisk sprinkleranlegg." },
+                                  ]).map((krav) => (
+                                    <div key={krav.id} className="flex items-start gap-2">
+                                      <Checkbox
+                                        id={`vb-${krav.id}`}
+                                        checked={formData.vertikalBrannspredningKrav.includes(krav.id)}
+                                        onCheckedChange={(checked) => {
+                                          if (checked) {
+                                            setFormData({...formData, vertikalBrannspredningKrav: [...formData.vertikalBrannspredningKrav, krav.id]});
+                                          } else {
+                                            setFormData({...formData, vertikalBrannspredningKrav: formData.vertikalBrannspredningKrav.filter((k: string) => k !== krav.id)});
+                                          }
+                                        }}
+                                      />
+                                      <label htmlFor={`vb-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
+                                    </div>
+                                  ))}
+                                  {formData.regelverk !== "BF85" && (
+                                    <div className="flex items-start gap-2 mt-2 pt-2 border-t border-muted">
+                                      <Checkbox
+                                        id="vb_takfot"
+                                        checked={formData.vertikalBrannspredningKrav.includes("vb_takfot")}
+                                        onCheckedChange={(checked) => {
+                                          if (checked) {
+                                            setFormData({...formData, vertikalBrannspredningKrav: [...formData.vertikalBrannspredningKrav, "vb_takfot"]});
+                                          } else {
+                                            setFormData({...formData, vertikalBrannspredningKrav: formData.vertikalBrannspredningKrav.filter((k: string) => k !== "vb_takfot")});
+                                          }
+                                        }}
+                                      />
+                                      <label htmlFor="vb_takfot" className="text-xs leading-tight cursor-pointer">Med mindre byggverket har automatisk sprinkleranlegg, må takfoten – i hele lengden – utføres som branncellebegrensende konstruksjon for brannpåvirkning nedenfra.</label>
+                                    </div>
+                                  )}
+                                </>
                               )}
                             </div>
                             );
