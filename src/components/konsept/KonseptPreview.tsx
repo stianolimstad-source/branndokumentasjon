@@ -2201,18 +2201,39 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               );
             })()}
             {/* Brannceller over flere plan */}
-            {formData.branncellerFlerePlanRelevant && (
-              <tr>
-                <td className="border border-gray-400 p-2 align-top">Brannceller over flere plan</td>
-                <td className="border border-gray-400 p-2">
-                  {formData.regelverk === "BF85"
-                    ? "Brannceller kan ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte."
-                    : "Brannceller i risikoklasse 1, 2, 4 og 5 kan ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte."
-                  }
-                </td>
-                <td className="border border-gray-400 p-2 align-top">RIBr</td>
-              </tr>
-            )}
+            {formData.branncellerFlerePlanRelevant && (() => {
+              const rkList = formData.harFlereRisikoklasser
+                ? (formData.bygningsdeler || []).map((d: any) => parseInt((d.risikoklasse || "").replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n))
+                : [parseInt((formData.risikoklasse || "").replace(/\D/g, ''), 10)].filter((n) => !isNaN(n));
+              const harUgyldigRK = rkList.some((rk: number) => rk === 3 || rk === 6);
+              const ugyldigeRK = rkList.filter((rk: number) => rk === 3 || rk === 6);
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Brannceller over flere plan</td>
+                  <td className="border border-gray-400 p-2">
+                    <div className="space-y-2">
+                      <div>
+                        {formData.regelverk === "BF85"
+                          ? "Brannceller kan ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte."
+                          : "Brannceller i risikoklasse 1, 2, 4 og 5 kan ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte."
+                        }
+                      </div>
+                      {harUgyldigRK && formData.regelverk !== "BF85" && (
+                        <div className="text-red-600 font-medium">
+                          ⚠ Fravik: Preakseptert ytelse for brannceller over flere plan gjelder kun risikoklasse 1, 2, 4 og 5. Prosjektet inneholder risikoklasse {ugyldigeRK.map((rk: number) => `RK ${rk}`).join(" og ")}, som ikke dekkes av denne ytelsen. Dette er et fravik som må dokumenteres.
+                        </div>
+                      )}
+                      {harUgyldigRK && formData.regelverk === "BF85" && (
+                        <div className="text-red-600 font-medium">
+                          ⚠ Fravik: Krav til brannceller over flere plan gjelder ikke for {ugyldigeRK.flatMap((rk: number) => rk === 3 ? ["skole", "barnehage"] : ["sykehjem", "sykehus", "omsorgshjem"]).join(", ")}. Dette er et fravik som må dokumenteres.
+                        </div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                </tr>
+              );
+            })()}
 
 
 
