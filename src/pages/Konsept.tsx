@@ -582,6 +582,7 @@ const Konsept = () => {
     trapperomBeskrivelse: "",
     interntrappBeskrivelse: "",
     roykKontrollKrav: [] as string[],
+    roykKontrollKravTekst: "",
     vertikalBrannspredningRelevant: false,
     vertikalBrannspredningKrav: [] as string[],
     vinduBrannspredningRelevant: false,
@@ -5408,29 +5409,68 @@ const Konsept = () => {
                                 )}
                               </>
                             );
-                          })() : [
-                            { id: "royk_romningsvei", label: "1. Trapperom som er rømningsvei i byggverk med flere enn to etasjer, må røykventileres." },
-                            { id: "royk_luke_vindu", label: "2. I byggverk med inntil 8 etasjer med trapperom Tr 1 eller Tr 2, jf. § 11-13 Tabell 2, er det tilstrekkelig med luke eller vindu med fri åpning minimum 1,0 m² øverst i trapperommet." },
-                            { id: "royk_manuell_bryter", label: "3. Luke eller vindu skal kunne åpnes manuelt med bryter fra inngangsplanet." },
-                            { id: "royk_mekanisk_ventilasjon", label: "4. Mellomliggende rom knyttet til Tr 2 må ha mekanisk balansert ventilasjon." },
-                            { id: "royk_tr3_trykksetting", label: "5. I byggverk med mer enn 8 etasjer med trapperom Tr 3, jf. § 11-13 Tabell 2, må det mellomliggende rommet være åpent mot det fri, eller trapperommet må trykksettes og det mellomliggende rommet må ha trykkavlastning (røykventilasjon)." },
-                            { id: "royk_overbygde_garder", label: "6. Overbygde gårder og gater må ha røykventilasjon for å hindre røykspredning mellom ulike brannceller som ligger ut mot den overbygde gården." },
-                          ].map((krav) => (
-                            <div key={krav.id} className="flex items-start space-x-2">
-                              <Checkbox
-                                id={`royk-${krav.id}`}
-                                checked={formData.roykKontrollKrav.includes(krav.id)}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    setFormData({...formData, roykKontrollKrav: [...formData.roykKontrollKrav, krav.id]});
-                                  } else {
-                                    setFormData({...formData, roykKontrollKrav: formData.roykKontrollKrav.filter((k: string) => k !== krav.id)});
-                                  }
-                                }}
-                              />
-                              <label htmlFor={`royk-${krav.id}`} className="text-xs leading-tight cursor-pointer">{krav.label}</label>
-                            </div>
-                          ))}
+                          })() : (() => {
+                            const roykKravListe = [
+                              { id: "royk_romningsvei", label: "1. Trapperom som er rømningsvei i byggverk med flere enn to etasjer, må røykventileres." },
+                              { id: "royk_luke_vindu", label: "2. I byggverk med inntil 8 etasjer med trapperom Tr 1 eller Tr 2, jf. § 11-13 Tabell 2, er det tilstrekkelig med luke eller vindu med fri åpning minimum 1,0 m² øverst i trapperommet." },
+                              { id: "royk_manuell_bryter", label: "3. Luke eller vindu skal kunne åpnes manuelt med bryter fra inngangsplanet." },
+                              { id: "royk_mekanisk_ventilasjon", label: "4. Mellomliggende rom knyttet til Tr 2 må ha mekanisk balansert ventilasjon." },
+                              { id: "royk_tr3_trykksetting", label: "5. I byggverk med mer enn 8 etasjer med trapperom Tr 3, jf. § 11-13 Tabell 2, må det mellomliggende rommet være åpent mot det fri, eller trapperommet må trykksettes og det mellomliggende rommet må ha trykkavlastning (røykventilasjon)." },
+                              { id: "royk_overbygde_garder", label: "6. Overbygde gårder og gater må ha røykventilasjon for å hindre røykspredning mellom ulike brannceller som ligger ut mot den overbygde gården." },
+                            ];
+                            
+                            const etasjer = parseInt(formData.etasjer, 10) || 0;
+                            const trType = (() => {
+                              const rk = parseInt(formData.risikoklasse, 10) || 0;
+                              if (etasjer <= 4 && rk <= 4) return "Tr1";
+                              if (etasjer <= 8) return "Tr2";
+                              return "Tr3";
+                            })();
+                            
+                            let relevantKrav: typeof roykKravListe = [];
+                            if (etasjer > 2) {
+                              relevantKrav.push(roykKravListe[0]);
+                              if (trType === "Tr1" || trType === "Tr2") {
+                                relevantKrav.push(roykKravListe[1]);
+                                relevantKrav.push(roykKravListe[2]);
+                              }
+                              if (trType === "Tr2") {
+                                relevantKrav.push(roykKravListe[3]);
+                              }
+                              if (trType === "Tr3") {
+                                relevantKrav.push(roykKravListe[4]);
+                              }
+                            }
+                            relevantKrav.push(roykKravListe[5]);
+                            
+                            const roykOriginalTekst = relevantKrav.map(k => k.label).join("\n");
+                            
+                            if (!formData.roykKontrollKravTekst && roykOriginalTekst) {
+                              setTimeout(() => setFormData({...formData, roykKontrollKravTekst: roykOriginalTekst}), 0);
+                            }
+                            
+                            return (
+                              <>
+                                <div className="flex justify-end">
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-[10px] h-6 px-2"
+                                    onClick={() => setFormData({...formData, roykKontrollKravTekst: roykOriginalTekst})}
+                                  >
+                                    Sett original tekst
+                                  </Button>
+                                </div>
+                                <Textarea
+                                  value={formData.roykKontrollKravTekst || ""}
+                                  onChange={(e) => setFormData({...formData, roykKontrollKravTekst: e.target.value})}
+                                  className="min-h-[180px] text-xs"
+                                  placeholder="Krav til røykkontroll..."
+                                />
+                              </>
+                            );
+                          })()}
                         </div>
                       </div>
                       <div>

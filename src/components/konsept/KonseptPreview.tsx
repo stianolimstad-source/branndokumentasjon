@@ -1995,40 +1995,53 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
             )}
             {/* Røykkontroll */}
-            {formData.roykKontrollKrav && formData.roykKontrollKrav.length > 0 && (() => {
-              const roykKravMap: Record<string, string> = {
-                royk_romningsvei: "Trapperom som er rømningsvei i byggverk med flere enn to etasjer, må røykventileres.",
-                royk_luke_vindu: "I byggverk med inntil 8 etasjer med trapperom Tr 1 eller Tr 2, jf. § 11-13 Tabell 2, er det tilstrekkelig med luke eller vindu med fri åpning minimum 1,0 m² øverst i trapperommet.",
-                royk_manuell_bryter: "Luke eller vindu skal kunne åpnes manuelt med bryter fra inngangsplanet.",
-                royk_mekanisk_ventilasjon: "Mellomliggende rom knyttet til Tr 2 må ha mekanisk balansert ventilasjon.",
-                royk_tr3_trykksetting: "I byggverk med mer enn 8 etasjer med trapperom Tr 3, jf. § 11-13 Tabell 2, må det mellomliggende rommet være åpent mot det fri, eller trapperommet må trykksettes og det mellomliggende rommet må ha trykkavlastning (røykventilasjon).",
-                royk_overbygde_garder: "Overbygde gårder og gater må ha røykventilasjon for å hindre røykspredning mellom ulike brannceller som ligger ut mot den overbygde gården.",
-                // BF85 §:78 – dynamic based on floor count
-                bf85_royk_brannventilasjon: (() => {
-                  const etasjer = parseInt(formData.etasjer, 10) || 0;
-                  if (etasjer > 8) {
-                    return "I bygning med flere enn 2 etasjer skal trapperom ha brannventilasjon. Bygningen har over 8 etasjer og skal ha en røyksjakt som er skilt fra loft i minst A 30 og som har et tverrsnitt på minst 1 m². Sjakten skal gå 20 cm over takflaten.";
-                  }
-                  return "I bygning med flere enn 2 etasjer skal trapperom ha brannventilasjon. For bygninger med inntil 8 etasjer kan brannventilasjonen skje gjennom vindu i trapperom.";
-                })(),
-              };
-              const activeKrav = formData.roykKontrollKrav
-                .map((id: string, idx: number) => ({ id, text: roykKravMap[id], num: idx + 1 }))
-                .filter((k: { text: string }) => k.text);
-              if (activeKrav.length === 0) return null;
-              return (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">{formData.regelverk === "BF85" ? "Brannventilasjon (Røykventilasjon)" : "Røykkontroll"}</td>
-                  <td className="border border-gray-400 p-2">
-                    <div className="space-y-1">
-                      {activeKrav.map((k: { id: string; text: string; num: number }) => (
-                        <div key={k.id}>{k.num}. {k.text}</div>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">ARK/RIV</td>
-                </tr>
-              );
+            {(() => {
+              // New textarea-based approach
+              if (formData.roykKontrollKravTekst) {
+                return (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">{formData.regelverk === "BF85" ? "Brannventilasjon (Røykventilasjon)" : "Røykkontroll"}</td>
+                    <td className="border border-gray-400 p-2 whitespace-pre-wrap">{formData.roykKontrollKravTekst}</td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIV</td>
+                  </tr>
+                );
+              }
+              // Legacy checkbox-based approach
+              if (formData.roykKontrollKrav && formData.roykKontrollKrav.length > 0) {
+                const roykKravMap: Record<string, string> = {
+                  royk_romningsvei: "Trapperom som er rømningsvei i byggverk med flere enn to etasjer, må røykventileres.",
+                  royk_luke_vindu: "I byggverk med inntil 8 etasjer med trapperom Tr 1 eller Tr 2, jf. § 11-13 Tabell 2, er det tilstrekkelig med luke eller vindu med fri åpning minimum 1,0 m² øverst i trapperommet.",
+                  royk_manuell_bryter: "Luke eller vindu skal kunne åpnes manuelt med bryter fra inngangsplanet.",
+                  royk_mekanisk_ventilasjon: "Mellomliggende rom knyttet til Tr 2 må ha mekanisk balansert ventilasjon.",
+                  royk_tr3_trykksetting: "I byggverk med mer enn 8 etasjer med trapperom Tr 3, jf. § 11-13 Tabell 2, må det mellomliggende rommet være åpent mot det fri, eller trapperommet må trykksettes og det mellomliggende rommet må ha trykkavlastning (røykventilasjon).",
+                  royk_overbygde_garder: "Overbygde gårder og gater må ha røykventilasjon for å hindre røykspredning mellom ulike brannceller som ligger ut mot den overbygde gården.",
+                  bf85_royk_brannventilasjon: (() => {
+                    const etasjer = parseInt(formData.etasjer, 10) || 0;
+                    if (etasjer > 8) {
+                      return "I bygning med flere enn 2 etasjer skal trapperom ha brannventilasjon. Bygningen har over 8 etasjer og skal ha en røyksjakt som er skilt fra loft i minst A 30 og som har et tverrsnitt på minst 1 m². Sjakten skal gå 20 cm over takflaten.";
+                    }
+                    return "I bygning med flere enn 2 etasjer skal trapperom ha brannventilasjon. For bygninger med inntil 8 etasjer kan brannventilasjonen skje gjennom vindu i trapperom.";
+                  })(),
+                };
+                const activeKrav = formData.roykKontrollKrav
+                  .map((id: string, idx: number) => ({ id, text: roykKravMap[id], num: idx + 1 }))
+                  .filter((k: { text: string }) => k.text);
+                if (activeKrav.length === 0) return null;
+                return (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">{formData.regelverk === "BF85" ? "Brannventilasjon (Røykventilasjon)" : "Røykkontroll"}</td>
+                    <td className="border border-gray-400 p-2">
+                      <div className="space-y-1">
+                        {activeKrav.map((k: { id: string; text: string; num: number }) => (
+                          <div key={k.id}>{k.num}. {k.text}</div>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIV</td>
+                  </tr>
+                );
+              }
+              return null;
             })()}
             {/* Vertikal brannspredning */}
             {formData.vertikalBrannspredningRelevant && (() => {
