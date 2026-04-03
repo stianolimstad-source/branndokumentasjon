@@ -7961,12 +7961,8 @@ const Konsept = () => {
                         <div className="p-2 bg-muted/50 rounded space-y-2">
                           <Label className="text-xs font-medium block">Hvilke dyr skal det prosjekteres for?</Label>
                           {[
-                            { value: "storfe", label: "Storfe (okse, ku)" },
-                            { value: "hest", label: "Hest" },
-                            { value: "gris", label: "Gris" },
-                            { value: "sau", label: "Sau" },
-                            { value: "geit", label: "Geit" },
-                            { value: "fjorfe", label: "Fjørfe" },
+                            { value: "storfe_hest", label: "Storfe og hest (fri bredde min. 1,6 m)" },
+                            { value: "gris_sau_geit", label: "Gris, sau og geit (fri bredde min. 1,0 m)" },
                           ].map((dyr) => {
                             const valgte: string[] = Array.isArray(formData.husdyrTyper) ? formData.husdyrTyper : [];
                             const checked = valgte.includes(dyr.value);
