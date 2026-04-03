@@ -6699,14 +6699,30 @@ const Konsept = () => {
                               
                               // Trapperom info
                               const trappeInfo: string[] = [];
+                              if (formData.regelverk === "BF85") {
+                                // BF85 trapperom from trapperomKrav
+                                if (formData.trapperomKrav.includes("bf85_tr_aapent") || formData.trapperomKrav.includes("bf85_bolig_2_aapne") || formData.trapperomKrav.includes("bf85_bolig_aapent_brannvesen")) trappeInfo.push("Tr1 (åpent trapperom)");
+                                if (formData.trapperomKrav.includes("bf85_tr_lukket") || formData.trapperomKrav.includes("bf85_bolig_lukket") || formData.trapperomKrav.includes("bf85_bolig_2_branntrygge")) trappeInfo.push("Tr2 (lukket trapperom)");
+                                if (formData.trapperomKrav.includes("bf85_tr_roykfritt") || formData.trapperomKrav.includes("bf85_bolig_roykfritt")) trappeInfo.push("Tr3 (røykfritt trapperom)");
+                              } else {
+                                // TEK17 - auto-determined trapperom type
+                                const rk = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
+                                const fl = parseInt(formData.etasjer || '0', 10);
+                                const trMap: Record<number, { lav: string; hoy: string }> = {
+                                  1: { lav: "Tr1", hoy: "Tr3" }, 2: { lav: "Tr1", hoy: "Tr3" },
+                                  3: { lav: "Tr2", hoy: "Tr3" }, 4: { lav: "Tr1", hoy: "Tr3" },
+                                  5: { lav: "Tr2", hoy: "Tr3" }, 6: { lav: "Tr2", hoy: "Tr3" },
+                                };
+                                if (rk >= 1 && rk <= 6 && fl > 0) {
+                                  const trT = fl <= 8 ? trMap[rk].lav : trMap[rk].hoy;
+                                  if (trT === "Tr1") trappeInfo.push("Tr1 (åpent trapperom)");
+                                  else if (trT === "Tr2") trappeInfo.push("Tr2 (lukket trapperom)");
+                                  else if (trT === "Tr3") trappeInfo.push("Tr3 (røykfritt trapperom)");
+                                }
+                              }
                               if (formData.trapperomBeskrivelse) {
                                 lines.push(formData.trapperomBeskrivelse);
-                              }
-                              // Build trapperom type list
-                              if (formData.trapperomKrav.includes("branncelle_trapperom_tr1") || formData.trapperomKrav.includes("bf85_tr_aapent")) trappeInfo.push("Tr1 (åpent trapperom)");
-                              if (formData.trapperomKrav.includes("korridor_trapperom_tr2") || formData.trapperomKrav.includes("bf85_tr_lukket")) trappeInfo.push("Tr2 (lukket trapperom)");
-                              if (formData.trapperomKrav.includes("mellomliggende_trapperom_tr3") || formData.trapperomKrav.includes("bf85_tr_roykfritt")) trappeInfo.push("Tr3 (røykfritt trapperom)");
-                              if (!formData.trapperomBeskrivelse && trappeInfo.length > 0) {
+                              } else if (trappeInfo.length > 0) {
                                 lines.push(`Trapperom er utført som ${trappeInfo.join(" og ")}.`);
                               }
                               
