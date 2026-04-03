@@ -530,6 +530,7 @@ const Konsept = () => {
     brannklasseUnntak: "", // Automatisk unntak-tekst for brannklasse
     harTerrengTilgang: "", // "ja" eller "nei" - for unntak RK4
     erRKL6Boligbygning: false, // RKL6: er det boligbygning (unntak BKL1 ved ≤2 etasjer)
+    universellUtforming: false, // Om bygget skal være universelt utformet
     baeresystem: "",
     tilleggskrav: "",
     // 3. Branntekniske ytelseskrav
@@ -3612,6 +3613,19 @@ const Konsept = () => {
                       )}
                     </div>
                     )}
+                    <div className="space-y-2">
+                      <Label className="text-xs text-muted-foreground">Universell utforming</Label>
+                      <div className="flex items-start gap-2">
+                        <Checkbox
+                          id="universellUtforming"
+                          checked={formData.universellUtforming}
+                          onCheckedChange={(checked) => setFormData({...formData, universellUtforming: checked === true})}
+                        />
+                        <Label htmlFor="universellUtforming" className="text-xs cursor-pointer leading-relaxed">
+                          Bygget skal være universelt utformet (åpningskraft dører maks 30 N, jf. § 12-13). Dersom ikke, gjelder maks 67 N.
+                        </Label>
+                      </div>
+                    </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.4 Tilleggskrav</Label>
                       <div>
@@ -7647,7 +7661,7 @@ const Konsept = () => {
                             <p className="font-medium text-foreground text-sm">✓ Dørkrav til rømningsvei inkludert i rapporten</p>
                             <p>Fri bredde: minimum {bredde}</p>
                             <p>Fri høyde: minimum 2,0 m</p>
-                            <p><p>Åpningskraft: maks 30 N</p></p>
+                            <p>Åpningskraft: maks {formData.universellUtforming ? "30 N (universell utforming)" : "67 N"}</p>
                             {strøm && <p>Avbruddsfri strømforsyning: minst {strøm}</p>}
                             <div className="pt-2 border-t border-primary/10 space-y-1">
                               <p className="font-medium text-foreground text-xs">Valgfrie krav:</p>
@@ -7845,7 +7859,7 @@ const Konsept = () => {
                               <li>Generelle krav til rømningsvei</li>
                               <li>Fri bredde i rømningsvei: min. {bredde} ({erBredRK ? `RK${[harRK3 && "3", harRK5 && "5", harRK6 && "6"].filter(Boolean).join("/")}` : rk || "RK1/2/4"})</li>
                               <li>Hovedatkomst tilrettelagt for sikker rømning</li>
-                              <li>Dørkrav i rømningsvei: fri bredde min. {bredde}, høyde min. 2,0 m, <li>Dørkrav i rømningsvei: fri bredde min. {bredde}, høyde min. 2,0 m, åpningskraft maks 30 N, UPS</li></li>
+                              <li>Dørkrav i rømningsvei: fri bredde min. {bredde}, høyde min. 2,0 m, åpningskraft maks {formData.universellUtforming ? "30 N" : "67 N"}, UPS</li>
                             </ul>
                           </div>
                         );
