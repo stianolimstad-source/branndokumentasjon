@@ -7773,7 +7773,7 @@ const Konsept = () => {
                         <Label className="text-xs font-medium block">Trapper og rømningsretninger</Label>
                         {(() => {
                           const rk = formData.risikoklasse || "";
-                          const erBolig = rk === "RK4" || (rk === "RK6" && formData.erRKL6Boligbygning) || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK4" || (d.risikoklasse === "RK6" && formData.erRKL6Boligbygning));
+                          const erBolig = rk === "RK4" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK4");
                           const options = [
                             ...(erBolig ? [{ value: "en_trapp", label: "Tilstrekkelig med én trapp (bolig med brannvesen som sekundær rømning)" }] : []),
                             { value: "sammenfallende", label: "Sammenfallende rømningsretning" },
