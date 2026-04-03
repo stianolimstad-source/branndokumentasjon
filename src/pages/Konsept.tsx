@@ -681,6 +681,7 @@ const Konsept = () => {
     lavtByggverkVinduerRomning: false,
     lavtByggverkEnRomningsretning: false,
     sporadiskOpphold: false,
+    takterrasseRelevant: false, // Takterrasse beregnet for personopphold
     branncelleStortAntallPersoner: false,
     stortAntallUnder600: false,
     stortAntallOver600: false,
