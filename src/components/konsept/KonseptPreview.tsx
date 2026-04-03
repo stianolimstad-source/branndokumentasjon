@@ -3422,15 +3422,23 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               const strømBKL = erBKL1 ? "brannklasse 1" : erBKL2ellerBKL3 ? "brannklasse 2 og 3" : null;
 
               // Bredde basert på risikoklasse – dører følger samme krav som fri bredde i rømningsvei
-              const erBredDørRK = harRK3 || harRK5 || harRK6;
-              const smalRKer = alleRK.filter((rk: string) => ["RK1", "RK2", "RK4"].includes(rk));
-              const bredeRKer = alleRK.filter((rk: string) => ["RK3", "RK5", "RK6"].includes(rk));
+              // RK6 bolig har unntak: 0,86 m (som RK1/2/4)
+              const erRK6Bolig = harRK6 && formData.erRKL6Boligbygning;
+              const erBredDørRK = harRK3 || harRK5 || (harRK6 && !erRK6Bolig);
+              const smalRKer = alleRK.filter((rk: string) => {
+                if (rk === "RK6") return erRK6Bolig;
+                return ["RK1", "RK2", "RK4"].includes(rk);
+              });
+              const bredeRKer = alleRK.filter((rk: string) => {
+                if (rk === "RK6") return !erRK6Bolig;
+                return ["RK3", "RK5"].includes(rk);
+              });
               
               let breddeTekst = "";
               if (smalRKer.length > 0 && bredeRKer.length > 0) {
-                breddeTekst = `I byggverk i risikoklasse ${smalRKer.map(r => r.replace("RK", "")).join(", ")} må fri bredde på dør til rømningsvei være minimum 0,86 meter. I byggverk i risikoklasse ${bredeRKer.map(r => r.replace("RK", "")).join(", ")} må fri bredde på dør til rømningsvei være minimum 1,16 meter.${harRK6 ? " Unntak gjelder boliger i risikoklasse 6 i samsvar med § 11-2 Tabell 1, hvor fri bredde kan være minimum 0,86 meter." : ""}`;
+                breddeTekst = `I byggverk i risikoklasse ${smalRKer.map(r => r.replace("RK", "")).join(", ")} må fri bredde på dør til rømningsvei være minimum 0,86 meter. I byggverk i risikoklasse ${bredeRKer.map(r => r.replace("RK", "")).join(", ")} må fri bredde på dør til rømningsvei være minimum 1,16 meter.`;
               } else if (bredeRKer.length > 0) {
-                breddeTekst = `I byggverk i risikoklasse ${bredeRKer.map(r => r.replace("RK", "")).join(", ")} må fri bredde på dør til rømningsvei være minimum 1,16 meter.${harRK6 ? " Unntak gjelder boliger i risikoklasse 6 i samsvar med § 11-2 Tabell 1, hvor fri bredde kan være minimum 0,86 meter." : ""}`;
+                breddeTekst = `I byggverk i risikoklasse ${bredeRKer.map(r => r.replace("RK", "")).join(", ")} må fri bredde på dør til rømningsvei være minimum 1,16 meter.`;
               } else {
                 breddeTekst = `I byggverk i risikoklasse ${smalRKer.map(r => r.replace("RK", "")).join(", ")} må fri bredde på dør til rømningsvei være minimum 0,86 meter.`;
               }
@@ -3558,7 +3566,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               const harRK3 = rk === "RK3" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK3");
               const harRK5 = rk === "RK5" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK5");
               const harRK6 = rk === "RK6" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK6");
-              const erBredRK = harRK3 || harRK5 || harRK6;
+              const erRK6Bolig = harRK6 && formData.erRKL6Boligbygning;
+              const erBredRK = harRK3 || harRK5 || (harRK6 && !erRK6Bolig);
               return (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top font-medium">Fri bredde i rømningsvei</td>
@@ -3566,9 +3575,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <ul className="list-disc ml-4 space-y-1">
                       <li>Samlet fri bredde i rømningsvei må minimum være 1 cm per person, men uansett minst som angitt nedenfor. For dimensjonerende persontall vises til § 11-13 Tabell 3.</li>
                       {erBredRK ? (
-                        <li>I byggverk i risikoklasse {[harRK3 && "3", harRK5 && "5", harRK6 && "6"].filter(Boolean).join(", ")} må fri bredde i rømningsvei være minimum 1,16 meter.{harRK6 ? " Unntak gjelder boliger i risikoklasse 6 i samsvar med § 11-2 Tabell 1, hvor fri bredde kan være minimum 0,86 meter." : ""}</li>
+                        <li>I byggverk i risikoklasse {[harRK3 && "3", harRK5 && "5", (harRK6 && !erRK6Bolig) && "6"].filter(Boolean).join(", ")} må fri bredde i rømningsvei være minimum 1,16 meter.{erRK6Bolig ? " Unntak gjelder boliger i risikoklasse 6 i samsvar med § 11-2 Tabell 1, hvor fri bredde kan være minimum 0,86 meter." : ""}</li>
                       ) : (
-                        <li>I byggverk i risikoklasse 1, 2 og 4 må fri bredde i rømningsvei være minimum 0,86 meter.</li>
+                        <li>I byggverk i risikoklasse {["1", "2", "4", erRK6Bolig && "6"].filter(Boolean).join(", ")} må fri bredde i rømningsvei være minimum 0,86 meter.</li>
                       )}
                     </ul>
                   </td>
@@ -3664,6 +3673,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {(() => {
               const rk = formData.risikoklasse || "";
               const harRK5 = rk === "RK5" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK5");
+              const harRK6 = rk === "RK6" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK6");
+              const erRK6IkkeBolig = harRK6 && !formData.erRKL6Boligbygning;
+              const bredde = (harRK5 || erRK6IkkeBolig) ? "1,16 meter" : "0,86 meter";
               const bk = formData.brannklasse || "";
               const strømTid = bk === "BKL1" ? "30 minutter" : (bk === "BKL2" || bk === "BKL3") ? "60 minutter" : null;
               return (
@@ -3673,7 +3685,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <p className="mb-2">Dør til rømningsvei skal prosjekteres og utføres slik at den sikrer rask rømning og slik at det ikke oppstår fare for oppstuving. Følgende krav må minst være oppfylt:</p>
                     <ul className="list-disc ml-4 space-y-1">
                       <li>Åpningskraft for dører til rømningsvei må være maksimalt 67 Newton dersom det ikke følger andre krav av § 12-13.</li>
-                      <li>Dør til rømningsvei må ha fri bredde minimum {harRK5 ? "1,16 meter (RK5)" : "0,86 meter"}.</li>
+                      <li>Dør til rømningsvei må ha fri bredde minimum {bredde}.</li>
                       <li>Dør til rømningsvei må ha fri høyde på minimum 2,0 meter.</li>
                       <li>Dør til rømningsvei må lett kunne åpnes slik at den er enkel å bruke for alle personer.</li>
                       <li>Selvlukkende dør, benevnt C [S], kan settes i åpen stilling ved hjelp av elektromagnetiske holdere som utløses og lukker døren ved brannalarm. Døren må kunne åpnes igjen med dørautomatikk eller manuelt med åpningskraft i samsvar med § 12-13.</li>
