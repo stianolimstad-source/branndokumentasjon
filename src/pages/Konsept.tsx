@@ -6265,6 +6265,13 @@ const Konsept = () => {
                         </div>
                       </div>
 
+  // Automatisk aktivering av merking av installasjoner (alltid påkrevd)
+  useEffect(() => {
+    if (isViewMode) return;
+    if (!formData.tilretteleggingLedd5) {
+      setFormData(prev => ({ ...prev, tilretteleggingLedd5: true }));
+    }
+  }, []);
 
 
 
