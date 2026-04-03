@@ -3271,7 +3271,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2 align-top">Trapperom<br/><span className="text-xs text-muted-foreground">§ 11-13 (2)</span></td>
                   <td className="border border-gray-400 p-2">
                     <ul className="list-disc ml-4 space-y-1 text-sm">
-                      <li>Byggverk må ha minst to trapperom som angitt i tabell 2. For risikoklasse {rkNum} med {etasjer} etasjer kreves {trType}.</li>
+                      <li>Byggverk må ha minst to trapperom. For risikoklasse {rkNum} med {etasjer} etasjer kreves {trType}.</li>
                       {(rkNum === 2) && (
                         <li>Unntak gjelder parkeringshus og garasje i risikoklasse 2 med inntil 8 etasjer, som må ha minst to trapperom Tr 2 dersom det ikke er utgang fra hver etasje til sikkert sted.</li>
                       )}
