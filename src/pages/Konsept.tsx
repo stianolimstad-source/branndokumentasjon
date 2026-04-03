@@ -7954,6 +7954,38 @@ const Konsept = () => {
                           Bygget er beregnet for husdyrhold (driftsbygning med husdyrrom)
                         </Label>
                       </div>
+
+                      {/* Valg av dyretyper */}
+                      {formData.husdyrRedningRelevant && (
+                        <div className="p-2 bg-muted/50 rounded space-y-2">
+                          <Label className="text-xs font-medium block">Hvilke dyr skal det prosjekteres for?</Label>
+                          {[
+                            { value: "storfe", label: "Storfe (okse, ku)" },
+                            { value: "hest", label: "Hest" },
+                            { value: "gris", label: "Gris" },
+                            { value: "sau", label: "Sau" },
+                            { value: "geit", label: "Geit" },
+                            { value: "fjorfe", label: "Fjørfe" },
+                          ].map((dyr) => {
+                            const valgte: string[] = Array.isArray(formData.husdyrTyper) ? formData.husdyrTyper : [];
+                            const checked = valgte.includes(dyr.value);
+                            return (
+                              <div key={dyr.value} className="flex items-center gap-2">
+                                <Checkbox
+                                  id={`husdyr-${dyr.value}`}
+                                  checked={checked}
+                                  onCheckedChange={(c) => {
+                                    const newValg = c ? [...valgte, dyr.value] : valgte.filter(v => v !== dyr.value);
+                                    setFormData({...formData, husdyrTyper: newValg});
+                                  }}
+                                />
+                                <Label htmlFor={`husdyr-${dyr.value}`} className="text-xs cursor-pointer">{dyr.label}</Label>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
                       {/* Info om automatiske krav */}
                       {formData.husdyrRedningRelevant && (
                         <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
@@ -7962,6 +7994,15 @@ const Konsept = () => {
                             <li>Krav til rømningsveier for husdyr</li>
                             <li>Branncelleinndeling for husdyrrom</li>
                             <li>Varsling ved brann i driftsbygninger</li>
+                            {(() => {
+                              const typer: string[] = Array.isArray(formData.husdyrTyper) ? formData.husdyrTyper : [];
+                              const harStore = typer.some(t => ["storfe", "hest"].includes(t));
+                              const harSmaa = typer.some(t => ["gris", "sau", "geit"].includes(t));
+                              return (<>
+                                {harStore && <li>Fri bredde min. 1,6 m (storfe/hest)</li>}
+                                {harSmaa && <li>Fri bredde min. 1,0 m (gris/sau/geit)</li>}
+                              </>);
+                            })()}
                           </ul>
                         </div>
                       )}
