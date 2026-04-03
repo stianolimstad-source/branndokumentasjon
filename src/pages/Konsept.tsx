@@ -922,6 +922,15 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.etasjer, formData.bygningsdeler]);
 
+  // Automatisk aktivering av høyderedskap basert på etasjeantall
+  useEffect(() => {
+    if (isViewMode) return;
+    const etasjer = parseInt(formData.etasjer, 10) || 0;
+    if (etasjer > 0 && etasjer <= 8) {
+      setFormData(prev => ({ ...prev, hoyderedskapRelevant: true }));
+    }
+  }, [formData.etasjer]);
+
 
   useEffect(() => {
     if (isViewMode) return;
