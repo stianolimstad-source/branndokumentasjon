@@ -2874,10 +2874,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                             <ul className="list-disc ml-6 mt-1 space-y-1">
                               <li>Isolasjon på rør og kanaler i rømningsveier må minst tilfredsstille klasse <span className="text-red-600 font-medium">B<sub>L</sub>-s1,d0 [PI]</span>. Unntak gjelder isolasjon på enkeltstående rør eller kanal med ytre diameter til og med 200 mm som minst må tilfredsstille klasse <span className="text-red-600 font-medium">C<sub>L</sub>-s3,d0 [PII]</span>.</li>
                               <li>Isolasjon på rør og kanaler som er lagt i sjakt, i hulrom og bak nedforet himling med branncellebegrensende funksjon, må minst tilfredsstille klasse <span className="text-red-600 font-medium">C<sub>L</sub>-s3,d0 [PII]</span>.</li>
-                              {(["RK3","RK5","RK6"].includes(formData.risikoklasse) || ["BKL2","BKL3"].includes(formData.brpiannklasse)) && (
+                              {(["RK3","RK5","RK6"].includes(formData.risikoklasse) || ["BKL2","BKL3"].includes(formData.brannklasse)) && (
                                 <li>Øvrig isolasjon på rør og kanaler må minst tilfredsstille klasse <span className="text-red-600 font-medium">C<sub>L</sub>-s3,d0 [PII]</span>.</li>
                               )}
-                              {(["RK1","RK2","RK4"].includes(formData.risikoklasse) && formData.brpiannklasse === "BKL1") && (
+                              {(["RK1","RK2","RK4"].includes(formData.risikoklasse) && formData.brannklasse === "BKL1") && (
                                 <li>Øvrig isolasjon på rør og kanaler må minst tilfredsstille klasse <span className="text-red-600 font-medium">D<sub>L</sub>-s3,d0 [PIII]</span>.</li>
                               )}
                             </ul>
