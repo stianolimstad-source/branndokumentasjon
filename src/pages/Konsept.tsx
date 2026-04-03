@@ -7845,7 +7845,7 @@ const Konsept = () => {
                               <li>Generelle krav til rømningsvei</li>
                               <li>Fri bredde i rømningsvei: min. {bredde} ({erBredRK ? `RK${[harRK3 && "3", harRK5 && "5", harRK6 && "6"].filter(Boolean).join("/")}` : rk || "RK1/2/4"})</li>
                               <li>Hovedatkomst tilrettelagt for sikker rømning</li>
-                              <li>Dørkrav i rømningsvei: fri bredde min. {bredde}, høyde min. 2,0 m, åpningskraft maks 67 N, UPS</li>
+                              <li>Dørkrav i rømningsvei: fri bredde min. {bredde}, høyde min. 2,0 m, <li>Dørkrav i rømningsvei: fri bredde min. {bredde}, høyde min. 2,0 m, åpningskraft maks 30 N, UPS</li></li>
                             </ul>
                           </div>
                         );
