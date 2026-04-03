@@ -6857,7 +6857,13 @@ const Konsept = () => {
                             <strong>Automatisk brannslokkeanlegg (RK4):</strong> Byggverk eller del av byggverk i risikoklasse 4 hvor det kreves heis, skal ha automatisk brannslokkeanlegg. Deler av et byggverk med og uten automatisk brannslokkeanlegg skal være ulike brannseksjoner.
                           </Label>
                         </div>
-                      )}
+                        )}
+                        {!formData.tilretteleggingLedd1a && (formData.risikoklasse === "RK4" || formData.bygningsdeler.some(b => b.risikoklasse === "RK4")) && parseInt(formData.etasjer || '0', 10) > 1 && (
+                          <div className="ml-6 p-3 border border-destructive/50 rounded-lg bg-destructive/10">
+                            <p className="text-xs font-semibold text-destructive">
+                              ⚠️ Fravik: Automatisk brannslokkeanlegg er påkrevd for byggverk i risikoklasse 4 hvor det kreves heis (jf. TEK17 § 11-12, første ledd bokstav a). Ved å fjerne dette kravet må det dokumenteres som et fravik fra preaksepterte ytelser.
+                            </p>
+                          </div>
                       {formData.tilretteleggingLedd1a && (
                         <div className="ml-6 p-3 bg-muted/50 border border-border rounded space-y-2">
                           <Label className="text-xs font-medium block mb-1">Utdypende krav for RK4:</Label>
