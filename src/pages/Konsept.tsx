@@ -682,6 +682,7 @@ const Konsept = () => {
     lavtByggverkEnRomningsretning: false,
     sporadiskOpphold: false,
     takterrasseRelevant: false, // Takterrasse beregnet for personopphold
+    tilstrekkeligeUtgangerUtenToTrapperom: false, // Bekreftelse at utganger er tilstrekkelige uten to trapperom
     branncelleStortAntallPersoner: false,
     stortAntallUnder600: false,
     stortAntallOver600: false,
@@ -7655,6 +7656,16 @@ const Konsept = () => {
                         />
                         <Label htmlFor="takterrasseRelevant" className="text-sm cursor-pointer">
                           Takterrasse beregnet for personopphold er relevant
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2 p-2 bg-muted rounded mt-2">
+                        <Checkbox 
+                          id="tilstrekkeligeUtgangerUtenToTrapperom"
+                          checked={formData.tilstrekkeligeUtgangerUtenToTrapperom}
+                          onCheckedChange={(checked) => setFormData({...formData, tilstrekkeligeUtgangerUtenToTrapperom: checked as boolean})}
+                        />
+                        <Label htmlFor="tilstrekkeligeUtgangerUtenToTrapperom" className="text-sm cursor-pointer">
+                          Utgangene er tilstrekkelige uten krav om to trapperom (f.eks. direkte tilgang til det fri i begge plan)
                         </Label>
                       </div>
                       </div>
