@@ -3456,6 +3456,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       <li>Dør til rømningsvei må lett kunne åpnes slik at den er enkel å bruke for alle personer.</li>
                        <li>Selvlukkende dør, benevnt C [S], kan settes i åpen stilling ved hjelp av elektromagnetiske holdere som utløses og lukker døren ved brannalarm. Døren må kunne åpnes igjen med dørautomatikk eller manuelt med åpningskraft i samsvar med § 12-13.</li>
                        {(() => {
+                         if (!formData.universellUtforming) return null;
                          const bt = (formData.bygningstype || "").toLowerCase();
                          const erBolig = bt.includes("bolig") || bt.includes("enebolig") || bt.includes("rekkehus") || bt.includes("kjedehus") || bt.includes("leilighet") || (formData.risikoklasse === "RK4");
                          if (!erBolig) return <li>Alle selvlukkende dører til og i rømningsvei skal ha dørautomatikk for å sikre at åpningskraften ikke overstiger 30 N.</li>;
