@@ -3658,7 +3658,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <td className="border border-gray-400 p-2 align-top font-medium">Én trapp</td>
                     <td className="border border-gray-400 p-2">
                       <ul className="list-disc ml-4 space-y-1">
-                        <li>Det er tilstrekkelig med én trapp når forholdene tilsier at rømning kan skje på en sikker måte uten alternativ rømningsvei.</li>
+                        <li>For boligbygninger kan det være tilstrekkelig med én trapp der brannvesenet utgjør sekundær rømningsvei.</li>
                         <li>Gangavstand fra dør i branncelle til nærmeste trapperom eller utgang skal ikke overstige 15 m.</li>
                       </ul>
                     </td>
