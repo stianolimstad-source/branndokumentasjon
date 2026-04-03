@@ -8220,7 +8220,7 @@ const Konsept = () => {
                             checked={formData.harUniversalnokkel}
                             onCheckedChange={(checked) => setFormData({...formData, harUniversalnokkel: checked === true})}
                           />
-                          <Label htmlFor="harUniversalnokkel" className="text-sm font-medium">Krav til universalnøkkel / nøkkelskap</Label>
+                          <Label htmlFor="harUniversalnokkel" className="text-sm font-medium">Bygget har mer enn 50 rom (krav til universalnøkkel / nøkkelskap)</Label>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Checkbox
