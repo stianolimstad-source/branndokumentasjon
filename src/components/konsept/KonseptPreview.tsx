@@ -3673,6 +3673,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {(() => {
               const rk = formData.risikoklasse || "";
               const harRK5 = rk === "RK5" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK5");
+              const harRK6 = rk === "RK6" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK6");
+              const erRK6IkkeBolig = harRK6 && !formData.erRKL6Boligbygning;
+              const bredde = (harRK5 || erRK6IkkeBolig) ? "1,16 meter" : "0,86 meter";
               const bk = formData.brannklasse || "";
               const strømTid = bk === "BKL1" ? "30 minutter" : (bk === "BKL2" || bk === "BKL3") ? "60 minutter" : null;
               return (
@@ -3682,7 +3685,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <p className="mb-2">Dør til rømningsvei skal prosjekteres og utføres slik at den sikrer rask rømning og slik at det ikke oppstår fare for oppstuving. Følgende krav må minst være oppfylt:</p>
                     <ul className="list-disc ml-4 space-y-1">
                       <li>Åpningskraft for dører til rømningsvei må være maksimalt 67 Newton dersom det ikke følger andre krav av § 12-13.</li>
-                      <li>Dør til rømningsvei må ha fri bredde minimum {harRK5 ? "1,16 meter (RK5)" : "0,86 meter"}.</li>
+                      <li>Dør til rømningsvei må ha fri bredde minimum {bredde}.</li>
                       <li>Dør til rømningsvei må ha fri høyde på minimum 2,0 meter.</li>
                       <li>Dør til rømningsvei må lett kunne åpnes slik at den er enkel å bruke for alle personer.</li>
                       <li>Selvlukkende dør, benevnt C [S], kan settes i åpen stilling ved hjelp av elektromagnetiske holdere som utløses og lukker døren ved brannalarm. Døren må kunne åpnes igjen med dørautomatikk eller manuelt med åpningskraft i samsvar med § 12-13.</li>
