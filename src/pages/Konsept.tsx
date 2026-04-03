@@ -704,7 +704,7 @@ const Konsept = () => {
     // 3.11 Rømningsvei
     romningsveiRomMaks20: false, // Rom i rømningsvei inntil 20 m²
     romningsveiRom50E30: false, // Oppholdsrom inntil 50 m²
-    romningsveiTrappeValg: "", // én trapp / sammenfallende / flere trapper
+    romningsveiTrappeValg: [] as string[], // én trapp / sammenfallende / flere trapper
     romningsveiSengeliggende: false,
     romningsveiSamtidigRomning: false,
     romningsveiIngenInnsnevring: false,
