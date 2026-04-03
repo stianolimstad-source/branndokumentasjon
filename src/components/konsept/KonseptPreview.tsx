@@ -2855,12 +2855,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <tr>
                       <td className="border border-gray-400 p-2 align-top">Vann- og avløpsrør</td>
                       <td className="border border-gray-400 p-2">
-                        <p className="font-medium mb-1">Preaksepterte ytelser</p>
-                        <ol className="list-decimal ml-4 space-y-2">
+                        <ul className="list-disc ml-4 space-y-2">
                           <li>Rørgjennomføringer i brannskillende konstruksjoner må ha dokumentert brannmotstand.</li>
                           <li>Plastrør med ytre diameter til og med 32 mm kan føres gjennom murte eller støpte konstruksjoner.</li>
                           <li>Støpejernrør med ytre diameter til og med 110 mm kan føres gjennom murte eller støpte konstruksjoner.</li>
-                        </ol>
+                        </ul>
                       </td>
                       <td className="border border-gray-400 p-2 align-top">RIV</td>
                     </tr>
