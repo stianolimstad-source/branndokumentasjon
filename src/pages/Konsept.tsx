@@ -718,6 +718,7 @@ const Konsept = () => {
     romningsveiKommentar: "",
     // 3.12 §11-15 Tilrettelegging for redning av husdyr
     husdyrRedningRelevant: false,
+    husdyrTyper: [] as string[],
     husdyrRedningKommentar: "",
     manuellSlokking: "",
     manuellSlokkingKommentar: "",
