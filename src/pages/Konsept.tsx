@@ -7665,7 +7665,7 @@ const Konsept = () => {
                           onCheckedChange={(checked) => setFormData({...formData, tilstrekkeligeUtgangerUtenToTrapperom: checked as boolean})}
                         />
                         <Label htmlFor="tilstrekkeligeUtgangerUtenToTrapperom" className="text-sm cursor-pointer">
-                          Utgangene er tilstrekkelige uten krav om to trapperom (f.eks. direkte tilgang til det fri i begge plan)
+                          Utgangene er tilstrekkelige uten krav om to trapperom (f.eks. direkte tilgang til det fri i flere plan)
                         </Label>
                       </div>
                       </div>
