@@ -3469,12 +3469,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* Sporadisk personopphold §11-13(6) */}
             {formData.sporadiskOpphold && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Branncelle for sporadisk personopphold</td>
+                <td className="border border-gray-400 p-2 align-top font-medium">Branncelle for sporadisk personopphold</td>
                 <td className="border border-gray-400 p-2">
                   <p>Fra brannceller som bare er beregnet for sporadisk personopphold kan utgang gå gjennom annen branncelle.</p>
-                  <p className="mt-2 text-sm">Med branncelle som bare er beregnet for sporadisk opphold, menes branncelle der personer oppholder seg av og til i kortere tid. Dette kan for eksempel være lagerrom og tekniske rom uten faste arbeidsplasser.</p>
-                  <p className="mt-2 text-sm">Maksimal avstand fra et hvilket som helst sted i denne branncellen til sikkert sted eller til nærmeste rømningsvei, må være som angitt i tabell 1.</p>
-                  <p className="mt-2 text-sm">For å ivareta generelle krav om tilrettelegging for rask og sikker rømning, jf. § 11-11, må fluktveien være oversiktlig og ha god belysning og merking. Det må heller ikke foregå brannfarlig aktivitet i nabobranncellen det skal rømmes gjennom.</p>
+                  <p className="mt-2">Med branncelle som bare er beregnet for sporadisk opphold, menes branncelle der personer oppholder seg av og til i kortere tid. Dette kan for eksempel være lagerrom og tekniske rom uten faste arbeidsplasser.</p>
+                  <p className="mt-2">Maksimal avstand fra et hvilket som helst sted i denne branncellen til sikkert sted eller til nærmeste rømningsvei, må være som angitt i tabell 1.</p>
+                  <p className="mt-2">For å ivareta generelle krav om tilrettelegging for rask og sikker rømning, jf. § 11-11, må fluktveien være oversiktlig og ha god belysning og merking. Det må heller ikke foregå brannfarlig aktivitet i nabobranncellen det skal rømmes gjennom.</p>
                 </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
