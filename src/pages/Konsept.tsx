@@ -6711,14 +6711,7 @@ const Konsept = () => {
                                 }
                               }
                               
-                              // Dørplasseringer
-                              const dorInfo: string[] = [];
-                              if (formData.dorPlasseringer.includes("branncelle_trapperom_tr1")) dorInfo.push("branncelle til trapperom Tr1");
-                              if (formData.dorPlasseringer.includes("korridor_trapperom_tr2")) dorInfo.push("korridor til trapperom Tr2");
-                              if (formData.dorPlasseringer.includes("mellomliggende_trapperom_tr3")) dorInfo.push("mellomliggende rom til trapperom Tr3");
-                              if (dorInfo.length > 0) {
-                                lines.push(`Dører i rømningsvei er plassert mellom ${dorInfo.join(", ")}.`);
-                              }
+                              
                               
                               // Rømningsvei trappvalg
                               if (formData.romningsveiTrappeValg === "en_trapp") {
