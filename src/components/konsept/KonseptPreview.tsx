@@ -3306,9 +3306,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* Takterrasse - § 11-13 (5) */}
             {formData.takterrasseRelevant && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Takterrasse<br/><span className="text-xs text-muted-foreground">§ 11-13 (5)</span></td>
+                <td className="border border-gray-400 p-2 align-top font-medium">Takterrasse<br/><span className="text-xs text-muted-foreground">§ 11-13 (5)</span></td>
                 <td className="border border-gray-400 p-2">
-                  <p className="text-sm">Takterrasse beregnet for personopphold må ha utganger minst tilsvarende brannceller i byggverket. Utgangene må ha tilstrekkelig bredde for det dimensjonerende persontallet.</p>
+                  Takterrasse beregnet for personopphold må ha utganger minst tilsvarende brannceller i byggverket. Utgangene må ha tilstrekkelig bredde for det dimensjonerende persontallet.
                 </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
