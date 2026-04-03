@@ -4097,12 +4097,22 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">RIBr</td>
             </tr>
-            {formData.byggOver23m && (
+            {formData.hoyderedskapRelevant && !formData.byggOver23m && (
             <tr>
-              <td className="border border-gray-400 p-2 align-top">Tilgjengelighet for høyderedskap</td>
+              <td className="border border-gray-400 p-2 align-top font-medium">Tilgjengelighet for høyderedskap</td>
               <td className="border border-gray-400 p-2">
                 <p>Byggverk inntil 8 etasjer må ha tilgjengelighet for brannvesenets høyderedskap (brannbil utstyrt med maskinstige eller snorkel) slik at alle etasjer og brannseksjoner kan nås.</p>
-                <p className="mt-1">For å oppnå tilgjengelighet må øverste gulv ikke være høyere enn 23 meter over laveste punkt på oppstillingsplasser for brannvesenets høyderedskap. I lave byggverk kan det tilrettelegges for bruk av bærbare stiger.</p>
+                <p className="mt-1">I lave byggverk kan det tilrettelegges for bruk av bærbare stiger.</p>
+              </td>
+              <td className="border border-gray-400 p-2 align-top">ARK</td>
+            </tr>
+            )}
+            {formData.byggOver23m && (
+            <tr>
+              <td className="border border-gray-400 p-2 align-top font-medium">Tilgjengelighet for høyderedskap</td>
+              <td className="border border-gray-400 p-2">
+                <p>Øverste gulv må ikke være høyere enn 23 meter over laveste punkt på oppstillingsplasser for brannvesenets høyderedskap.</p>
+                <p className="mt-1">Det må tilrettelegges for brannvesenets høyderedskap (brannbil utstyrt med maskinstige eller snorkel) slik at alle etasjer og brannseksjoner kan nås.</p>
               </td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>

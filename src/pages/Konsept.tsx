@@ -728,6 +728,7 @@ const Konsept = () => {
     redningsmannskap: "",
     redningsmannskapKommentar: "",
     byggOver23m: false,
+    hoyderedskapRelevant: false,
     slangeutlegg50m: true,
     harRadiokommunikasjon: false,
     harUniversalnokkel: false,
