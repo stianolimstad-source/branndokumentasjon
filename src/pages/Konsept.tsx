@@ -895,6 +895,28 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.bygningsdeler]);
 
+  // Automatisk aktivering av slokkeanlegg for RK6 og RK4 med heis
+  useEffect(() => {
+    if (isViewMode) return;
+    const alleRK = formData.bygningsdeler?.length
+      ? [...new Set(formData.bygningsdeler.map((d: any) => d.risikoklasse).filter(Boolean))]
+      : formData.risikoklasse ? [formData.risikoklasse] : [];
+    const etasjerNum = parseInt(formData.etasjer || '0', 10);
+    const erRK4MedHeis = alleRK.includes("RK4") && etasjerNum > 1;
+    const erRK6 = alleRK.includes("RK6");
+    
+    const updates: any = {};
+    if (erRK4MedHeis && !formData.tilretteleggingLedd1a) {
+      updates.tilretteleggingLedd1a = true;
+    }
+    if (erRK6 && !formData.tilretteleggingLedd1b) {
+      updates.tilretteleggingLedd1b = true;
+    }
+    if (Object.keys(updates).length > 0) {
+      setFormData(prev => ({ ...prev, ...updates }));
+    }
+  }, [formData.risikoklasse, formData.etasjer, formData.bygningsdeler]);
+
 
   useEffect(() => {
     if (isViewMode) return;
