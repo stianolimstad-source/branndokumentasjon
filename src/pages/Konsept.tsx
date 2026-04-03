@@ -8174,6 +8174,14 @@ const Konsept = () => {
                       <div className="space-y-2 mb-3">
                         <div className="flex items-center space-x-2">
                           <Checkbox
+                            id="hoyderedskapRelevant"
+                            checked={formData.hoyderedskapRelevant}
+                            onCheckedChange={(checked) => setFormData({...formData, hoyderedskapRelevant: checked === true})}
+                          />
+                          <Label htmlFor="hoyderedskapRelevant" className="text-sm font-medium">Tilgjengelighet for høyderedskap (inntil 8 etasjer)</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
                             id="byggOver23m"
                             checked={formData.byggOver23m}
                             onCheckedChange={(checked) => setFormData({...formData, byggOver23m: checked === true})}
