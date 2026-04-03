@@ -3268,9 +3268,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
               return (
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Trapperom<br/><span className="text-xs text-muted-foreground">§ 11-13 (2)</span></td>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Trapperom<br/><span className="text-xs text-muted-foreground">§ 11-13 (2)</span></td>
                   <td className="border border-gray-400 p-2">
-                    <ul className="list-disc ml-4 space-y-1 text-sm">
+                    <ul className="list-disc ml-4 space-y-1">
                       {formData.tilstrekkeligeUtgangerUtenToTrapperom ? (
                         <li>For risikoklasse {rkNum} med {etasjer} etasjer kreves {trType}. Det er bekreftet at utgangene er tilstrekkelige uten krav om to trapperom, da deler av bygget har direkte tilgang til det fri.</li>
                       ) : (
