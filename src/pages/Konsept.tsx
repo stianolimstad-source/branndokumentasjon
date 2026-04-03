@@ -7647,7 +7647,7 @@ const Konsept = () => {
                             <p className="font-medium text-foreground text-sm">✓ Dørkrav til rømningsvei inkludert i rapporten</p>
                             <p>Fri bredde: minimum {bredde}</p>
                             <p>Fri høyde: minimum 2,0 m</p>
-                            <p>Åpningskraft: maks 67 N</p>
+                            <p><p>Åpningskraft: maks 30 N</p></p>
                             {strøm && <p>Avbruddsfri strømforsyning: minst {strøm}</p>}
                             <div className="pt-2 border-t border-primary/10 space-y-1">
                               <p className="font-medium text-foreground text-xs">Valgfrie krav:</p>
