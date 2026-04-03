@@ -3249,6 +3249,66 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">-</td>
             </tr>
+            {/* Krav til trapperom - § 11-13 (2) - automatisk basert på RK og etasjer */}
+            {(() => {
+              const rk = formData.risikoklasse || "";
+              const rkNum = parseInt(rk.replace(/\D/g, ''), 10);
+              const etasjer = parseInt(formData.etasjer || "0", 10);
+              if (!rkNum || !etasjer || etasjer < 2) return null;
+
+              const getTrapperomType = (rk: number, etasjer: number) => {
+                if (etasjer <= 8) {
+                  if (rk === 1 || rk === 2 || rk === 4) return "Tr 1";
+                  if (rk === 3 || rk === 5 || rk === 6) return "Tr 2";
+                }
+                return "Tr 3";
+              };
+
+              const trType = getTrapperomType(rkNum, etasjer);
+
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Trapperom<br/><span className="text-xs text-muted-foreground">§ 11-13 (2)</span></td>
+                  <td className="border border-gray-400 p-2">
+                    <ul className="list-disc ml-4 space-y-1 text-sm">
+                      <li>Byggverk må ha minst to trapperom som angitt i tabell 2. For risikoklasse {rkNum} med {etasjer} etasjer kreves {trType}.</li>
+                      {(rkNum === 2) && (
+                        <li>Unntak gjelder parkeringshus og garasje i risikoklasse 2 med inntil 8 etasjer, som må ha minst to trapperom Tr 2 dersom det ikke er utgang fra hver etasje til sikkert sted.</li>
+                      )}
+                      {(rkNum === 1 || rkNum === 2 || rkNum === 4) && etasjer <= 8 && (
+                        <li>I byggverk med to trapperom Tr 1 må trappene være uavhengige av hverandre. Det må være separat atkomst til hvert av trapperommene fra alle de tilknyttede branncellene.</li>
+                      )}
+                    </ul>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              );
+            })()}
+            {/* RK6 - maks 7m avstand § 11-13 (4) */}
+            {(() => {
+              const rk = formData.risikoklasse || "";
+              const harRK6 = rk === "RK6" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK6");
+              if (!harRK6) return null;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Avstand til trapperom/utgang<br/><span className="text-xs text-muted-foreground">§ 11-13 (4)</span></td>
+                  <td className="border border-gray-400 p-2">
+                    <p className="text-sm">I byggverk i risikoklasse 6 må dører fra branncelle ligge mellom trapperommene eller utgangene. Unntak gjelder når avstand til nærmeste trapperom eller utgang er mindre enn 7,0 meter, jf. figur 4.</p>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              );
+            })()}
+            {/* Takterrasse - § 11-13 (5) */}
+            {formData.takterrasseRelevant && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Takterrasse<br/><span className="text-xs text-muted-foreground">§ 11-13 (5)</span></td>
+                <td className="border border-gray-400 p-2">
+                  <p className="text-sm">Takterrasse beregnet for personopphold må ha utganger minst tilsvarende brannceller i byggverket. Utgangene må ha tilstrekkelig bredde for det dimensjonerende persontallet.</p>
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
             {/* Boenhet kun ett trapperom - §11-13 (2) */}
             {formData.boenhetKunEttTrapperom && (
               <tr>
