@@ -7358,6 +7358,13 @@ const Konsept = () => {
                             )}
                           </div>
                         )}
+                        {!formData.tilretteleggingLedd5 && (
+                          <div className="ml-6 p-3 border border-destructive/50 rounded-lg bg-destructive/10">
+                            <p className="text-xs font-semibold text-destructive">
+                              ⚠️ Fravik: Merking av branntekniske installasjoner er alltid påkrevd (jf. TEK17 § 11-14, femte ledd). Ved å fjerne dette kravet må det dokumenteres som et fravik fra preaksepterte ytelser.
+                            </p>
+                          </div>
+                        )}
                       </div>
                       </>)}
 
