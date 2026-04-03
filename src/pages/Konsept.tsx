@@ -1054,6 +1054,30 @@ const Konsept = () => {
     }
   }, [isViewMode]);
 
+  // Automatisk aktivering av brannalarmanlegg (alle bygg unntatt de som kvalifiserer for røykvarslere)
+  useEffect(() => {
+    if (isViewMode) return;
+    const rk = formData.risikoklasse;
+    const areal = parseFloat(formData.areal) || 0;
+    const bygningstype = (formData.bygningstype || "").toLowerCase();
+    
+    // Unntak: bygg som kan bruke røykvarslere i stedet
+    const erRK2IndustriLager = rk === "RK2" && areal <= 1200 && 
+      (bygningstype.includes("industri") || bygningstype.includes("lager"));
+    const erRK2Kontor = rk === "RK2" && areal <= 1200 && bygningstype.includes("kontor");
+    const erRK4Bolig = rk === "RK4" && 
+      (bygningstype.includes("enebolig") || bygningstype.includes("rekkehus") || 
+       bygningstype.includes("kjedehus") || bygningstype.includes("fritidsbolig") ||
+       bygningstype.includes("bolig"));
+    const erRK5Liten = rk === "RK5" && areal <= 600;
+    
+    const kanVelgeRoykvarsler = erRK2IndustriLager || erRK2Kontor || erRK4Bolig || erRK5Liten;
+    
+    // Auto-sett brannalarmanlegg for alle bygg som IKKE kvalifiserer for røykvarslere
+    if (!kanVelgeRoykvarsler && rk && ["RK2","RK3","RK4","RK5","RK6"].includes(rk) && !formData.tilretteleggingLedd2a) {
+      setFormData(prev => ({ ...prev, tilretteleggingLedd2a: true, alarmValg: "brannalarm" }));
+    }
+  }, [formData.risikoklasse, formData.areal, formData.bygningstype]);
 
 
   const erBrannklasseOverstyrt = beregnetBrannklasseResult.brannklasse && formData.brannklasse !== beregnetBrannklasseResult.brannklasse;
