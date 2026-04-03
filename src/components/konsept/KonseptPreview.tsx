@@ -3440,7 +3440,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       const persontall = Math.floor(areal / factor);
                       return <p><strong>Beregnet persontall:</strong> {persontall} personer ({areal} m² / {factor} m²/pers)</p>;
                     })()}
-                    <ul className="list-disc list-inside space-y-2 mt-2">
+                    <ul className="list-disc ml-4 space-y-1 mt-2">
                       <li>Antall personer i en branncelle uten faste sitteplasser bestemmes av tabell 3.{formData.persontallKategori === 'salgslokaler' && <> I salgslokale legges alle de områder som er tilgjengelig for publikum til grunn for dimensjonering av fri bredde. Det gjøres ikke fradrag for inventar.</>}</li>
                       <li>Samlet fri bredde i utgangene bestemmes ut fra det antall personer branncellen er beregnet for. Dessuten gjelder:
                         <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
