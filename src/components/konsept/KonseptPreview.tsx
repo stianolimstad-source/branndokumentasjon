@@ -3518,9 +3518,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
               return (
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Dører til rømningsvei</td>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Dører til rømningsvei</td>
                   <td className="border border-gray-400 p-2">
-                    <ul className="list-disc list-inside text-sm space-y-1">
+                    <ul className="list-disc ml-4 space-y-1">
                        <li>Dører som er beregnet for manuell åpning til og i atkomst- og rømningsveier, skal kunne åpnes med åpningskraft på maksimum {formData.universellUtforming ? "30 N" : "67 N"}.</li>
                       <li>{breddeTekst}</li>
                       {(harRK6) && <li>I byggverk hvor det er nødvendig med transport i seng, må dørbredden tilpasses dette.</li>}
