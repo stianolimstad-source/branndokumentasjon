@@ -996,22 +996,20 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
 
   if (formData.vannAvlopRelevant) {
     rows.push(contentRowMultiLine("Vann- og avløpsrør", [
-      "Preaksepterte ytelser:",
-      "1. Rørgjennomføringer i brannskillende konstruksjoner må ha dokumentert brannmotstand.",
-      "2. Plastrør med ytre diameter til og med 32 mm kan føres gjennom murte eller støpte konstruksjoner.",
-      "3. Støpejernrør med ytre diameter til og med 110 mm kan føres gjennom murte eller støpte konstruksjoner.",
+      "Rørgjennomføringer i brannskillende konstruksjoner må ha dokumentert brannmotstand.",
+      "Plastrør med ytre diameter til og med 32 mm kan føres gjennom murte eller støpte konstruksjoner.",
+      "Støpejernrør med ytre diameter til og med 110 mm kan føres gjennom murte eller støpte konstruksjoner.",
     ], "RIV"));
   }
 
   if (formData.rorIsolasjonRelevant) {
     rows.push(contentRowMultiLine("Rør- og kanalisolasjon", [
-      "Preaksepterte ytelser:",
-      "1. Dersom den samlede eksponerte overflaten av isolasjonen på rør og kanaler utgjør mer enn 20 prosent av tilgrensende vegg- eller himlingsflate, må isolasjonen tilfredsstille klasse A2L-s1,d0 [ubrennbar eller begrenset brennbar] eller ha minst samme klasse som de tilgrensende overflatene.",
-      "2. Dersom den samlede eksponerte overflaten av isolasjonen utgjør mindre enn 20 prosent av tilgrensende vegg- eller himlingsflate, gjelder følgende:",
-      "   1. Isolasjon på rør og kanaler i rømningsveier må minst tilfredsstille klasse BL-s1,d0 [PI]. Unntak gjelder isolasjon på enkeltstående rør eller kanal med ytre diameter til og med 200 mm som minst må tilfredsstille klasse CL-s3,d0 [PII].",
-      "   2. Isolasjon på rør og kanaler som er lagt i sjakt, i hulrom og bak nedforet himling med branncellebegrensende funksjon, må minst tilfredsstille klasse CL-s3,d0 [PII].",
-      "   3. Øvrig isolasjon på rør og kanaler i byggverk i risikoklasse 3, 5 og 6, og i byggverk i brannklasse 2 og 3 må minst tilfredsstille klasse CL-s3,d0 [PII].",
-      "   4. Øvrig isolasjon på rør og kanaler i byggverk i risikoklasse 1, 2 og 4 i brannklasse 1 må minst tilfredsstille klasse DL-s3,d0 [PIII].",
+      "Dersom den samlede eksponerte overflaten av isolasjonen på rør og kanaler utgjør mer enn 20 prosent av tilgrensende vegg- eller himlingsflate, må isolasjonen tilfredsstille klasse A2L-s1,d0 [ubrennbar eller begrenset brennbar] eller ha minst samme klasse som de tilgrensende overflatene.",
+      "Dersom den samlede eksponerte overflaten av isolasjonen utgjør mindre enn 20 prosent av tilgrensende vegg- eller himlingsflate, gjelder følgende:",
+      "   Isolasjon på rør og kanaler i rømningsveier må minst tilfredsstille klasse BL-s1,d0 [PI]. Unntak gjelder isolasjon på enkeltstående rør eller kanal med ytre diameter til og med 200 mm som minst må tilfredsstille klasse CL-s3,d0 [PII].",
+      "   Isolasjon på rør og kanaler som er lagt i sjakt, i hulrom og bak nedforet himling med branncellebegrensende funksjon, må minst tilfredsstille klasse CL-s3,d0 [PII].",
+      "   Øvrig isolasjon på rør og kanaler i byggverk i risikoklasse 3, 5 og 6, og i byggverk i brannklasse 2 og 3 må minst tilfredsstille klasse CL-s3,d0 [PII].",
+      "   Øvrig isolasjon på rør og kanaler i byggverk i risikoklasse 1, 2 og 4 i brannklasse 1 må minst tilfredsstille klasse DL-s3,d0 [PIII].",
       "",
       "Den flaten der rør eller kanal er innfestet, regnes som tilgrensede vegg- eller himlingsflate. For vertikale rør og kanaler er det veggflaten som skal legges til grunn.",
     ], "RIV"));
@@ -1019,13 +1017,12 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
 
   if (formData.elektriskRelevant) {
     rows.push(contentRowMultiLine("Elektriske installasjoner", [
-      "Preaksepterte ytelser:",
-      "1. Kabler må ikke legges over nedforet himling eller i hulrom i rømningsvei med mindre ett av følgende punkter er oppfylt:",
-      "   1. kablene representerer liten brannenergi, det vil si mindre enn ca. 50 MJ/løpemeter hulrom",
-      "   2. kablene er ført i egen sjakt med sjaktvegger som har brannmotstand tilsvarende branncellebegrensende bygningsdel",
-      "   3. himlingen har brannmotstand tilsvarende branncellebegrensende bygningsdel",
-      "   4. hulrommet er sprinklet.",
-      "2. Kabler som utgjør liten brannenergi, det vil si mindre enn ca. 50 MJ/løpemeter korridor eller hulrom, kan føres ubeskyttet gjennom rømningsvei. Dette er et spesifikt unntak som gjelder kabler, og kan ikke brukes som begrunnelse for andre fravik fra preaksepterte ytelser.",
+      "Kabler må ikke legges over nedforet himling eller i hulrom i rømningsvei med mindre ett av følgende punkter er oppfylt:",
+      "   kablene representerer liten brannenergi, det vil si mindre enn ca. 50 MJ/løpemeter hulrom",
+      "   kablene er ført i egen sjakt med sjaktvegger som har brannmotstand tilsvarende branncellebegrensende bygningsdel",
+      "   himlingen har brannmotstand tilsvarende branncellebegrensende bygningsdel",
+      "   hulrommet er sprinklet.",
+      "Kabler som utgjør liten brannenergi, det vil si mindre enn ca. 50 MJ/løpemeter korridor eller hulrom, kan føres ubeskyttet gjennom rømningsvei. Dette er et spesifikt unntak som gjelder kabler, og kan ikke brukes som begrunnelse for andre fravik fra preaksepterte ytelser.",
     ], "RIE"));
   }
 
