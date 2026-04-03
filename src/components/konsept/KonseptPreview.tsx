@@ -3592,6 +3592,51 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </tr>
               );
             })()}
+            {/* Maksimal lengde på fluktvei */}
+            {(() => {
+              const rk = formData.risikoklasse || "";
+              const rkNum = parseInt(rk.replace(/\D/g, ''), 10);
+              const harFlereRK = formData.bygningsdeler && formData.bygningsdeler.length > 0;
+              
+              const getLengde = (rkVal: number) => {
+                if (rkVal === 1 || rkVal === 2) return 50;
+                if (rkVal === 3 || rkVal === 5) return 30;
+                if (rkVal === 6) return 25;
+                return null;
+              };
+
+              if (harFlereRK) {
+                const alleRK = [rkNum, ...(formData.bygningsdeler || []).map((d: any) => parseInt((d.risikoklasse || "").replace(/\D/g, ''), 10))].filter(Boolean);
+                const unikeRK = [...new Set(alleRK)];
+                const lengder = unikeRK.map(r => ({ rk: r, lengde: getLengde(r) })).filter(l => l.lengde !== null);
+                if (lengder.length === 0) return null;
+                return (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top font-medium">Maksimal lengde på fluktvei</td>
+                    <td className="border border-gray-400 p-2">
+                      <ul className="list-disc ml-4 space-y-1">
+                        {lengder.map((l, i) => (
+                          <li key={i}>Risikoklasse {l.rk}: Maksimal lengde på fluktvei er {l.lengde} meter.</li>
+                        ))}
+                      </ul>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
+                );
+              }
+
+              const lengde = getLengde(rkNum);
+              if (!lengde) return null;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Maksimal lengde på fluktvei</td>
+                  <td className="border border-gray-400 p-2">
+                    <p className="text-sm">Maksimal lengde på fluktvei er {lengde} meter for byggverk i risikoklasse {rkNum}.</p>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              );
+            })()}
             {formData.romningsveiSengeliggende && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top font-medium">Transport av sengeliggende</td>
