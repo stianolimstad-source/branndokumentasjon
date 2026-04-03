@@ -3549,7 +3549,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             })()}
             {formData.utgangBranncelle && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Utganger</td>
+                <td className="border border-gray-400 p-2 align-top font-medium">Utganger</td>
                 <td className="border border-gray-400 p-2">{formData.utgangBranncelle}</td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
