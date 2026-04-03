@@ -6564,6 +6564,12 @@ const Konsept = () => {
                                     Brannspjeld i seksjoneringsvegg
                                   </label>
                                 </div>
+                                {(formData.erSykehusPleieinstitusjon || isSeksjoneringRequired(formData.brannseksjonAreal, formData.brannseksjonBrannenergi, formData.brannseksjonTiltak)) && (
+                                  <div className="flex items-center gap-2 p-2 mt-1 border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 rounded text-xs text-amber-700 dark:text-amber-400">
+                                    <AlertTriangle className="h-4 w-4 flex-shrink-0 text-amber-600" />
+                                    <span>Ventilasjonskanaler gjennom seksjonering kontrollert?</span>
+                                  </div>
+                                )}
                               </div>
                             )}
                           </div>
