@@ -3422,15 +3422,23 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               const strømBKL = erBKL1 ? "brannklasse 1" : erBKL2ellerBKL3 ? "brannklasse 2 og 3" : null;
 
               // Bredde basert på risikoklasse – dører følger samme krav som fri bredde i rømningsvei
-              const erBredDørRK = harRK3 || harRK5 || harRK6;
-              const smalRKer = alleRK.filter((rk: string) => ["RK1", "RK2", "RK4"].includes(rk));
-              const bredeRKer = alleRK.filter((rk: string) => ["RK3", "RK5", "RK6"].includes(rk));
+              // RK6 bolig har unntak: 0,86 m (som RK1/2/4)
+              const erRK6Bolig = harRK6 && formData.erRKL6Boligbygning;
+              const erBredDørRK = harRK3 || harRK5 || (harRK6 && !erRK6Bolig);
+              const smalRKer = alleRK.filter((rk: string) => {
+                if (rk === "RK6") return erRK6Bolig;
+                return ["RK1", "RK2", "RK4"].includes(rk);
+              });
+              const bredeRKer = alleRK.filter((rk: string) => {
+                if (rk === "RK6") return !erRK6Bolig;
+                return ["RK3", "RK5"].includes(rk);
+              });
               
               let breddeTekst = "";
               if (smalRKer.length > 0 && bredeRKer.length > 0) {
-                breddeTekst = `I byggverk i risikoklasse ${smalRKer.map(r => r.replace("RK", "")).join(", ")} må fri bredde på dør til rømningsvei være minimum 0,86 meter. I byggverk i risikoklasse ${bredeRKer.map(r => r.replace("RK", "")).join(", ")} må fri bredde på dør til rømningsvei være minimum 1,16 meter.${harRK6 ? " Unntak gjelder boliger i risikoklasse 6 i samsvar med § 11-2 Tabell 1, hvor fri bredde kan være minimum 0,86 meter." : ""}`;
+                breddeTekst = `I byggverk i risikoklasse ${smalRKer.map(r => r.replace("RK", "")).join(", ")} må fri bredde på dør til rømningsvei være minimum 0,86 meter. I byggverk i risikoklasse ${bredeRKer.map(r => r.replace("RK", "")).join(", ")} må fri bredde på dør til rømningsvei være minimum 1,16 meter.`;
               } else if (bredeRKer.length > 0) {
-                breddeTekst = `I byggverk i risikoklasse ${bredeRKer.map(r => r.replace("RK", "")).join(", ")} må fri bredde på dør til rømningsvei være minimum 1,16 meter.${harRK6 ? " Unntak gjelder boliger i risikoklasse 6 i samsvar med § 11-2 Tabell 1, hvor fri bredde kan være minimum 0,86 meter." : ""}`;
+                breddeTekst = `I byggverk i risikoklasse ${bredeRKer.map(r => r.replace("RK", "")).join(", ")} må fri bredde på dør til rømningsvei være minimum 1,16 meter.`;
               } else {
                 breddeTekst = `I byggverk i risikoklasse ${smalRKer.map(r => r.replace("RK", "")).join(", ")} må fri bredde på dør til rømningsvei være minimum 0,86 meter.`;
               }
