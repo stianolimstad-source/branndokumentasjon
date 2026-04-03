@@ -728,6 +728,7 @@ const Konsept = () => {
     redningsmannskap: "",
     redningsmannskapKommentar: "",
     byggOver23m: false,
+    hoyderedskapRelevant: false,
     slangeutlegg50m: true,
     harRadiokommunikasjon: false,
     harUniversalnokkel: false,
@@ -8172,6 +8173,14 @@ const Konsept = () => {
                         <Label className="text-base font-extrabold text-foreground">3.14 § 11-17 Tilrettelegging for slokkemannskap</Label>
                       </div>
                       <div className="space-y-2 mb-3">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="hoyderedskapRelevant"
+                            checked={formData.hoyderedskapRelevant}
+                            onCheckedChange={(checked) => setFormData({...formData, hoyderedskapRelevant: checked === true})}
+                          />
+                          <Label htmlFor="hoyderedskapRelevant" className="text-sm font-medium">Tilgjengelighet for høyderedskap (inntil 8 etasjer)</Label>
+                        </div>
                         <div className="flex items-center space-x-2">
                           <Checkbox
                             id="byggOver23m"
