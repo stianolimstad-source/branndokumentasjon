@@ -3454,7 +3454,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       <li>Samlet fri bredde på dører fra branncelle til rømningsvei bestemmes ut fra det antall personer som branncellen er beregnet for, jf. femte ledd.</li>
                       <li>Dør til rømningsvei må ha fri høyde på minimum 2,0 meter. Unntak gjelder for fritidsbolig med én boenhet.</li>
                       <li>Dør til rømningsvei må lett kunne åpnes slik at den er enkel å bruke for alle personer.</li>
-                      <li>Selvlukkende dør, benevnt C [S], kan settes i åpen stilling ved hjelp av elektromagnetiske holdere som utløses og lukker døren ved brannalarm. Døren må kunne åpnes igjen med dørautomatikk eller manuelt med åpningskraft i samsvar med § 12-13.</li>
+                       <li>Selvlukkende dør, benevnt C [S], kan settes i åpen stilling ved hjelp av elektromagnetiske holdere som utløses og lukker døren ved brannalarm. Døren må kunne åpnes igjen med dørautomatikk eller manuelt med åpningskraft i samsvar med § 12-13.</li>
+                       {(() => {
+                         const bt = (formData.bygningstype || "").toLowerCase();
+                         const erBolig = bt.includes("bolig") || bt.includes("enebolig") || bt.includes("rekkehus") || bt.includes("kjedehus") || bt.includes("leilighet") || (formData.risikoklasse === "RK4");
+                         if (!erBolig) return <li>Alle selvlukkende dører til og i rømningsvei skal ha dørautomatikk for å sikre at åpningskraften ikke overstiger 30 N.</li>;
+                         return null;
+                       })()}
                       {formData.dorerTilbakerømning && <li>Dør til rømningsvei må ha et låsesystem som gjør det mulig å vende tilbake dersom rømningsveien skulle være blokkert, med mindre andre tiltak gir tilsvarende sikkerhet.</li>}
                       <li>Dør til rømningsvei kan være låst når byggverket har brannalarmanlegg og låsesystemet åpnes automatisk ved alarm. I tillegg må det være tydelig merket knapp for manuell åpning av døren. Det kan aksepteres inntil 10 sekunder tidsforsinkelse på den manuelle åpningsmekanismen.</li>
                       {formData.dorerNattlaser && <li>Nattlåser må utføres slik at de ikke kommer i strid med kravene til sikker rømning.</li>}
@@ -3688,7 +3694,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       <li>Dør til rømningsvei må ha fri bredde minimum {bredde}.</li>
                       <li>Dør til rømningsvei må ha fri høyde på minimum 2,0 meter.</li>
                       <li>Dør til rømningsvei må lett kunne åpnes slik at den er enkel å bruke for alle personer.</li>
-                      <li>Selvlukkende dør, benevnt C [S], kan settes i åpen stilling ved hjelp av elektromagnetiske holdere som utløses og lukker døren ved brannalarm. Døren må kunne åpnes igjen med dørautomatikk eller manuelt med åpningskraft i samsvar med § 12-13.</li>
+                       <li>Selvlukkende dør, benevnt C [S], kan settes i åpen stilling ved hjelp av elektromagnetiske holdere som utløses og lukker døren ved brannalarm. Døren må kunne åpnes igjen med dørautomatikk eller manuelt med åpningskraft i samsvar med § 12-13.</li>
+                       {(() => {
+                         const bt = (formData.bygningstype || "").toLowerCase();
+                         const erBoligBygg = bt.includes("bolig") || bt.includes("enebolig") || bt.includes("rekkehus") || bt.includes("kjedehus") || bt.includes("leilighet") || (formData.risikoklasse === "RK4");
+                         if (!erBoligBygg) return <li>Alle selvlukkende dører til og i rømningsvei skal ha dørautomatikk for å sikre at åpningskraften ikke overstiger 30 N.</li>;
+                         return null;
+                       })()}
                       <li>Utadslående dør i yttervegg som er utgang eller rømningsvei, må ikke kunne blokkeres av snø eller is. Takoverbygg, snøfangere på tak og lignende vil kunne forhindre dette.</li>
                       {strømTid && (
                         <li>Avbruddsfri strømforsyning må fungere i minst {strømTid} i byggverk i {bk === "BKL1" ? "brannklasse 1" : `brannklasse ${bk.replace("BKL", "")}`}.</li>
