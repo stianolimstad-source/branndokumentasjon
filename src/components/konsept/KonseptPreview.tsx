@@ -3399,8 +3399,15 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                         <li>Forskriftens krav til automatisk slokkeanlegg i byggverk i risikoklasse 4 anses oppfylt når det installeres automatisk sprinkleranlegg i samsvar med § 11-12 første ledd bokstav a.</li>
                       )}
                     </ul>
-                    {formData.romningsvinduHoyde && <p className="mt-2"><strong>Høyde over terreng:</strong> {formData.romningsvinduHoyde} m</p>}
-                    {formData.romningsvinduGulvAvstand && <p><strong>Avstand fra gulv til underkant vindu:</strong> {formData.romningsvinduGulvAvstand} m</p>}
+                    {formData.romningsvinduHoyde && (
+                      <p className="mt-2"><strong>Høyde over terreng (underkant vindu):</strong> {
+                        formData.romningsvinduHoyde === "2.0" ? "≤ 2,0 meter" :
+                        formData.romningsvinduHoyde === "5.0" ? "≤ 5,0 meter" :
+                        formData.romningsvinduHoyde === "7.5" ? "≤ 7,5 meter (med fastmontert stige med ryggbøyler)" :
+                        formData.romningsvinduHoyde === "over_7.5" ? "Over 7,5 meter (krever atkomst til utvendig trapp)" :
+                        formData.romningsvinduHoyde + " m"
+                      }</p>
+                    )}
                     {(formData.romningsvinduHarStige || formData.romningsvinduHarBalkong) && (
                       <div className="mt-1">
                         <ul className="list-disc list-inside">
