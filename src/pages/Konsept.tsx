@@ -7461,6 +7461,13 @@ const Konsept = () => {
                       })()}
 
 
+                       {(() => {
+                        const alleRK = formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0
+                          ? [...new Set(formData.bygningsdeler.map((d: any) => d.risikoklasse).filter(Boolean))]
+                          : formData.risikoklasse ? [formData.risikoklasse] : [];
+                        const kunRK1234 = alleRK.length > 0 && alleRK.every((rk: string) => ["RK1","RK2","RK3","RK4"].includes(rk));
+                        if (!kunRK1234) return null;
+                        return (
                       <div className="pt-2 border-t">
                         <div className="flex items-center space-x-2">
                           <Checkbox 
