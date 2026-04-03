@@ -3295,9 +3295,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               if (!harRK6) return null;
               return (
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Avstand til trapperom/utgang<br/><span className="text-xs text-muted-foreground">§ 11-13 (4)</span></td>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Avstand til trapperom/utgang<br/><span className="text-xs text-muted-foreground">§ 11-13 (4)</span></td>
                   <td className="border border-gray-400 p-2">
-                    <p className="text-sm">I byggverk i risikoklasse 6 må dører fra branncelle ligge mellom trapperommene eller utgangene. Unntak gjelder når avstand til nærmeste trapperom eller utgang er mindre enn 7,0 meter.</p>
+                    I byggverk i risikoklasse 6 må dører fra branncelle ligge mellom trapperommene eller utgangene. Unntak gjelder når avstand til nærmeste trapperom eller utgang er mindre enn 7,0 meter.
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
