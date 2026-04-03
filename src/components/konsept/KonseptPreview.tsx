@@ -3369,11 +3369,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               const erBolig = harRK4;
               return (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Rømningsvindu<br/><span className="text-xs text-muted-foreground">§ 11-13 (3)</span></td>
+                <td className="border border-gray-400 p-2 align-top font-medium">Rømningsvindu<br/><span className="text-xs text-muted-foreground">§ 11-13 (3)</span></td>
                 <td className="border border-gray-400 p-2">
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-2">
                     <p>Brannceller som består av flere etasjer, eller har mellometasje, skal ha minst én utgang fra hver etasje. I byggverk i risikoklasse {alleRK.map((rk: string) => rk.replace("RK","")).join(", ")} kan utgangen fra disse planene, utenom inngangsplanet, være vindu som er tilrettelagt for sikker rømning.</p>
-                    <ul className="list-disc list-inside space-y-1">
+                    <ul className="list-disc ml-4 space-y-1">
                       {harRK124 && (
                         <li>I byggverk i risikoklasse {["RK1","RK2","RK4"].filter(rk => alleRK.includes(rk)).map(rk => rk.replace("RK","")).join(", ")} kan utgangen være rømningsvindu som har underkant til og med 5,0 meter over planert terreng, eller til og med 7,5 meter over planert terreng dersom det er atkomst til fastmontert stige med ryggbøyler. Ved større høyder må det være atkomst fra rømningsvindu til utvendig trapp. Stige eller trapp må ha avstand minimum 2,0 meter fra vindu, eller være skjermet mot flammer og strålevarme.</li>
                       )}
