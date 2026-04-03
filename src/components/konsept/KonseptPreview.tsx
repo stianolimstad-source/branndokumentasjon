@@ -3347,7 +3347,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* Lavt byggverk med vinduer for rømning */}
             {formData.lavtByggverkVinduerRomning && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Vinduer for rømning</td>
+                <td className="border border-gray-400 p-2 align-top font-medium">Vinduer for rømning</td>
                 <td className="border border-gray-400 p-2">
                   Lavt byggverk (RK 1–4) med vinduer som sikrer rømning. Vindu kan benyttes som alternativ rømningsvei i etasjer med gulv inntil 5,0 m over planert terreng.
                 </td>
