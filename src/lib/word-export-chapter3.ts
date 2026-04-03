@@ -996,10 +996,9 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
 
   if (formData.vannAvlopRelevant) {
     rows.push(contentRowMultiLine("Vann- og avløpsrør", [
-      "Preaksepterte ytelser:",
-      "1. Rørgjennomføringer i brannskillende konstruksjoner må ha dokumentert brannmotstand.",
-      "2. Plastrør med ytre diameter til og med 32 mm kan føres gjennom murte eller støpte konstruksjoner.",
-      "3. Støpejernrør med ytre diameter til og med 110 mm kan føres gjennom murte eller støpte konstruksjoner.",
+      "Rørgjennomføringer i brannskillende konstruksjoner må ha dokumentert brannmotstand.",
+      "Plastrør med ytre diameter til og med 32 mm kan føres gjennom murte eller støpte konstruksjoner.",
+      "Støpejernrør med ytre diameter til og med 110 mm kan føres gjennom murte eller støpte konstruksjoner.",
     ], "RIV"));
   }
 
