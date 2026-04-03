@@ -3889,13 +3889,42 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Fri bredde</td>
-                  <td className="border border-gray-400 p-2">
-                    Utganger eller rømningsveier må ha fri bredde på minimum 1,6 meter fra rom for okse, ku og hest, og minimum 1,0 meter fra rom for gris, sau og geit.
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                </tr>
+                {(() => {
+                  const typer: string[] = Array.isArray(formData.husdyrTyper) ? formData.husdyrTyper : [];
+                  const harStore = typer.some(t => ["storfe", "hest"].includes(t));
+                  const harSmaa = typer.some(t => ["gris", "sau", "geit"].includes(t));
+                  const storeDyr = typer.filter(t => ["storfe", "hest"].includes(t)).map(t => t === "storfe" ? "okse, ku" : "hest").join(", ");
+                  const smaaDyr = typer.filter(t => ["gris", "sau", "geit"].includes(t)).join(", ");
+                  if (!harStore && !harSmaa) return (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top font-medium">Fri bredde</td>
+                      <td className="border border-gray-400 p-2">
+                        Utganger eller rømningsveier må ha fri bredde på minimum 1,6 meter fra rom for okse, ku og hest, og minimum 1,0 meter fra rom for gris, sau og geit.
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">ARK</td>
+                    </tr>
+                  );
+                  return (<>
+                    {harStore && (
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top font-medium">Fri bredde</td>
+                        <td className="border border-gray-400 p-2">
+                          Utganger eller rømningsveier må ha fri bredde på minimum 1,6 meter fra rom for {storeDyr}.
+                        </td>
+                        <td className="border border-gray-400 p-2 align-top">ARK</td>
+                      </tr>
+                    )}
+                    {harSmaa && (
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top font-medium">{harStore ? "" : "Fri bredde"}</td>
+                        <td className="border border-gray-400 p-2">
+                          Utganger eller rømningsveier må ha fri bredde på minimum 1,0 meter fra rom for {smaaDyr}.
+                        </td>
+                        <td className="border border-gray-400 p-2 align-top">ARK</td>
+                      </tr>
+                    )}
+                  </>);
+                })()}
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Rømningsvei</td>
                   <td className="border border-gray-400 p-2">
