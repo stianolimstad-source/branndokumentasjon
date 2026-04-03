@@ -3243,7 +3243,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
             <tr>
-              <td className="border border-gray-400 p-2 align-top">Generelt</td>
+              <td className="border border-gray-400 p-2 align-top font-medium">Generelt</td>
               <td className="border border-gray-400 p-2">
                 Fra en branncelle skal det minst være én utgang til sikkert sted, eller utganger til to uavhengige rømningsveier, eller én utgang til rømningsvei som har to alternative rømningsretninger som fører videre til uavhengige rømningsveier eller sikre steder.
               </td>
