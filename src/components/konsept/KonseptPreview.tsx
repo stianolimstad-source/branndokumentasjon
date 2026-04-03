@@ -3326,7 +3326,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* Brannceller over flere etasjer */}
             {formData.branncelleFlereEtasjer && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Branncelle over flere etasjer</td>
+                <td className="border border-gray-400 p-2 align-top font-medium">Branncelle over flere etasjer</td>
                 <td className="border border-gray-400 p-2">
                   Brannceller som strekker seg over flere etasjer eller har mellometasje skal ha utganger som sikrer rømning fra alle plan.
                 </td>
