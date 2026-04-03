@@ -7473,31 +7473,20 @@ const Konsept = () => {
                           </Label>
                         </div>
                         {formData.romningsvinduRelevant && (
-                          <div className="mt-3 ml-6 space-y-3 p-3 bg-muted/30 rounded-md">
-                            <div className="grid grid-cols-2 gap-3">
-                              <div>
-                                <Label className="text-xs font-medium mb-1 block">Høyde over terreng (meter)</Label>
-                                <Input 
-                                  type="number"
-                                  step="0.1"
-                                  min="0"
-                                  placeholder="f.eks. 3.5"
-                                  value={formData.romningsvinduHoyde}
-                                  onChange={(e) => setFormData({...formData, romningsvinduHoyde: e.target.value})}
-                                />
-                              </div>
-                              <div>
-                                <Label className="text-xs font-medium mb-1 block">Avstand gulv til underkant vindu (meter)</Label>
-                                <Input 
-                                  type="number"
-                                  step="0.1"
-                                  min="0"
-                                  max="1.2"
-                                  placeholder="maks 1.0"
-                                  value={formData.romningsvinduGulvAvstand}
-                                  onChange={(e) => setFormData({...formData, romningsvinduGulvAvstand: e.target.value})}
-                                />
-                              </div>
+                           <div className="mt-3 ml-6 space-y-3 p-3 bg-muted/30 rounded-md">
+                            <div>
+                              <Label className="text-xs font-medium mb-1 block">Høyde over terreng (underkant vindu)</Label>
+                              <Select value={formData.romningsvinduHoyde} onValueChange={(val) => setFormData({...formData, romningsvinduHoyde: val})}>
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Velg høyde" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="2.0">≤ 2,0 meter</SelectItem>
+                                  <SelectItem value="5.0">≤ 5,0 meter</SelectItem>
+                                  <SelectItem value="7.5">≤ 7,5 meter (med stige)</SelectItem>
+                                  <SelectItem value="over_7.5">Over 7,5 meter (utvendig trapp)</SelectItem>
+                                </SelectContent>
+                              </Select>
                             </div>
                             <div className="flex flex-col space-y-2">
                               <div className="flex items-center space-x-2">
