@@ -1079,6 +1079,14 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.areal, formData.bygningstype]);
 
+  // Automatisk aktivering av merking av installasjoner (alltid påkrevd)
+  useEffect(() => {
+    if (isViewMode) return;
+    if (!formData.tilretteleggingLedd5) {
+      setFormData(prev => ({ ...prev, tilretteleggingLedd5: true }));
+    }
+  }, []);
+
 
   const erBrannklasseOverstyrt = beregnetBrannklasseResult.brannklasse && formData.brannklasse !== beregnetBrannklasseResult.brannklasse;
 
