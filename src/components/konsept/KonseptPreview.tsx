@@ -3604,7 +3604,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <tr>
                   <td className="border border-gray-400 p-2 align-top font-medium">Maksimal lengde på fluktvei</td>
                   <td className="border border-gray-400 p-2">
-                    <p className="text-sm">Maksimal lengde på fluktvei er {lengde} meter for byggverk i risikoklasse {rkNum}.</p>
+                    Maksimal lengde på fluktvei er {lengde} meter for byggverk i risikoklasse {rkNum}.
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
