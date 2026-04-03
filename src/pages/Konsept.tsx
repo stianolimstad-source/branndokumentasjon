@@ -6687,10 +6687,74 @@ const Konsept = () => {
                         <Label className="text-base font-extrabold text-foreground">3.8 § 11-11 Rømning og redning</Label>
                       </div>
                       <div>
-                        <Label className="text-xs font-medium mb-1 block">Generell beskrivelse av evakuering</Label>
+                        <div className="flex items-center justify-between mb-1">
+                          <Label className="text-xs font-medium block">Generell beskrivelse av evakuering</Label>
+                          {!isViewMode && (
+                            <Button type="button" variant="outline" size="sm" className="text-xs gap-1" onClick={() => {
+                              const lines: string[] = [];
+                              const type = formData.bygningstype || "bygget";
+                              const etasjer = formData.etasjer || "ukjent antall";
+                              
+                              lines.push(`${type} har ${etasjer} etasje${parseInt(formData.etasjer) > 1 ? "r" : ""}.`);
+                              
+                              // Trapperom info
+                              if (formData.trapperomBeskrivelse) {
+                                lines.push(formData.trapperomBeskrivelse);
+                              } else {
+                                // Build from trapperomKrav
+                                const trappeInfo: string[] = [];
+                                if (formData.trapperomKrav.includes("branncelle_trapperom_tr1") || formData.trapperomKrav.includes("bf85_tr_aapent")) trappeInfo.push("Tr1 (åpent trapperom)");
+                                if (formData.trapperomKrav.includes("korridor_trapperom_tr2") || formData.trapperomKrav.includes("bf85_tr_lukket")) trappeInfo.push("Tr2 (lukket trapperom)");
+                                if (formData.trapperomKrav.includes("mellomliggende_trapperom_tr3") || formData.trapperomKrav.includes("bf85_tr_roykfritt")) trappeInfo.push("Tr3 (røykfritt trapperom)");
+                                if (trappeInfo.length > 0) {
+                                  lines.push(`Trapperom er utført som ${trappeInfo.join(" og ")}.`);
+                                }
+                              }
+                              
+                              // Dørplasseringer
+                              const dorInfo: string[] = [];
+                              if (formData.dorPlasseringer.includes("branncelle_trapperom_tr1")) dorInfo.push("branncelle til trapperom Tr1");
+                              if (formData.dorPlasseringer.includes("korridor_trapperom_tr2")) dorInfo.push("korridor til trapperom Tr2");
+                              if (formData.dorPlasseringer.includes("mellomliggende_trapperom_tr3")) dorInfo.push("mellomliggende rom til trapperom Tr3");
+                              if (dorInfo.length > 0) {
+                                lines.push(`Dører i rømningsvei er plassert mellom ${dorInfo.join(", ")}.`);
+                              }
+                              
+                              // Rømningsvei trappvalg
+                              if (formData.romningsveiTrappeValg === "en_trapp") {
+                                lines.push("Bygget har én trapp. Maksimal avstand til nærmeste utgang er 15 m.");
+                              } else if (formData.romningsveiTrappeValg === "sammenfallende") {
+                                lines.push("Bygget har sammenfallende rømningsretninger. Maksimal avstand er 15 m i felles del.");
+                              } else if (formData.romningsveiTrappeValg === "flere_trapper") {
+                                lines.push("Bygget har flere trapper og utganger. Maksimal avstand til nærmeste utgang er 30 m.");
+                              }
+                              
+                              // Seksjonering
+                              const harSeksjonering = formData.erSykehusPleieinstitusjon || 
+                                (formData.brannseksjonBrannenergi && formData.brannseksjonTiltak && 
+                                  (() => { const a = parseFloat(formData.areal) || 0; const g = ({"over400":{normalt:800,brannalarm:1200,sprinkler:5000},"50-400":{normalt:1200,brannalarm:1800,sprinkler:10000},"under50":{normalt:1800,brannalarm:2700,sprinkler:10000}} as any)[formData.brannseksjonBrannenergi]; return g && a > (g[formData.brannseksjonTiltak] ?? g.normalt); })());
+                              if (harSeksjonering) {
+                                lines.push("Bygget er oppdelt med seksjoneringsvegg(er). Evakuering kan foregå innenfor hver brannseksjon uavhengig av brann i tilstøtende seksjon.");
+                              }
+                              
+                              // Evakueringsstrategi
+                              if (formData.erSykehusPleieinstitusjon || formData.risikoklasse === "RK6") {
+                                lines.push("Evakueringsstrategi er basert på horisontal forflytning til sikker sone bak seksjoneringsvegg, med mulighet for videre evakuering til det fri ved behov.");
+                              } else {
+                                lines.push("Evakuering skjer via rømningsveier til det fri.");
+                              }
+                              
+                              setFormData({...formData, romningSikkerhet: lines.join("\n\n")});
+                            }}>
+                              <Sparkles className="h-3 w-3" />
+                              Generer tekst
+                            </Button>
+                          )}
+                        </div>
                         <Textarea 
                           value={formData.romningSikkerhet}
                           onChange={(e) => setFormData({...formData, romningSikkerhet: e.target.value})}
+                          rows={8}
                          />
                       </div>
                       {/* Info om automatiske krav */}
