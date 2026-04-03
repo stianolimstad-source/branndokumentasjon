@@ -7639,7 +7639,8 @@ const Konsept = () => {
                         const rk = formData.risikoklasse || "";
                         const bk = formData.brannklasse || "";
                         const harRK5 = rk === "RK5" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK5");
-                        const bredde = harRK5 ? "1,16 m (RK5)" : "0,86 m";
+                        const erRK6IkkeBolig = (rk === "RK6" && !formData.erRKL6Boligbygning) || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK6" && !formData.erRKL6Boligbygning);
+                        const bredde = (harRK5 || erRK6IkkeBolig) ? "1,16 m" : "0,86 m";
                         const strøm = bk === "BKL1" ? "30 min (BKL1)" : (bk === "BKL2" || bk === "BKL3") ? `60 min (${bk})` : null;
                         return (
                           <div className="p-3 bg-primary/5 border border-primary/20 rounded-md text-xs text-muted-foreground space-y-2">
