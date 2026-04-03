@@ -3443,7 +3443,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <ul className="list-disc ml-4 space-y-1 mt-2">
                       <li>Antall personer i en branncelle uten faste sitteplasser bestemmes av tabell 3.{formData.persontallKategori === 'salgslokaler' && <> I salgslokale legges alle de områder som er tilgjengelig for publikum til grunn for dimensjonering av fri bredde. Det gjøres ikke fradrag for inventar.</>}</li>
                       <li>Samlet fri bredde i utgangene bestemmes ut fra det antall personer branncellen er beregnet for. Dessuten gjelder:
-                        <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
+                        <ul className="list-disc ml-8 mt-1 space-y-1">
                           <li>Utgangene må være hensiktsmessig fordelt i lokalet.</li>
                           <li>For dimensjoneringen av fri bredde benyttes 1 cm per person.</li>
                         </ul>
