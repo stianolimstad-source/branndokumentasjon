@@ -7646,7 +7646,17 @@ const Konsept = () => {
                           <Label htmlFor="sporadiskOpphold" className="text-sm cursor-pointer">
                             Rom for sporadisk personopphold er relevant
                           </Label>
-                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2 p-2 bg-muted rounded mt-2">
+                        <Checkbox 
+                          id="takterrasseRelevant"
+                          checked={formData.takterrasseRelevant}
+                          onCheckedChange={(checked) => setFormData({...formData, takterrasseRelevant: checked as boolean})}
+                        />
+                        <Label htmlFor="takterrasseRelevant" className="text-sm cursor-pointer">
+                          Takterrasse beregnet for personopphold er relevant
+                        </Label>
+                      </div>
                       </div>
 
                       {/* Bekreftelse dørkrav */}
