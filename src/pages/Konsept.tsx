@@ -895,6 +895,28 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.bygningsdeler]);
 
+  // Automatisk aktivering av slokkeanlegg for RK6 og RK4 med heis
+  useEffect(() => {
+    if (isViewMode) return;
+    const alleRK = formData.bygningsdeler?.length
+      ? [...new Set(formData.bygningsdeler.map((d: any) => d.risikoklasse).filter(Boolean))]
+      : formData.risikoklasse ? [formData.risikoklasse] : [];
+    const etasjerNum = parseInt(formData.etasjer || '0', 10);
+    const erRK4MedHeis = alleRK.includes("RK4") && etasjerNum > 1;
+    const erRK6 = alleRK.includes("RK6");
+    
+    const updates: any = {};
+    if (erRK4MedHeis && !formData.tilretteleggingLedd1a) {
+      updates.tilretteleggingLedd1a = true;
+    }
+    if (erRK6 && !formData.tilretteleggingLedd1b) {
+      updates.tilretteleggingLedd1b = true;
+    }
+    if (Object.keys(updates).length > 0) {
+      setFormData(prev => ({ ...prev, ...updates }));
+    }
+  }, [formData.risikoklasse, formData.etasjer, formData.bygningsdeler]);
+
 
   useEffect(() => {
     if (isViewMode) return;
@@ -6835,7 +6857,14 @@ const Konsept = () => {
                             <strong>Automatisk brannslokkeanlegg (RK4):</strong> Byggverk eller del av byggverk i risikoklasse 4 hvor det kreves heis, skal ha automatisk brannslokkeanlegg. Deler av et byggverk med og uten automatisk brannslokkeanlegg skal være ulike brannseksjoner.
                           </Label>
                         </div>
-                      )}
+                        )}
+                        {!formData.tilretteleggingLedd1a && (formData.risikoklasse === "RK4" || formData.bygningsdeler.some(b => b.risikoklasse === "RK4")) && parseInt(formData.etasjer || '0', 10) > 1 && (
+                          <div className="ml-6 p-3 border border-destructive/50 rounded-lg bg-destructive/10">
+                            <p className="text-xs font-semibold text-destructive">
+                              ⚠️ Fravik: Automatisk brannslokkeanlegg er påkrevd for byggverk i risikoklasse 4 hvor det kreves heis (jf. TEK17 § 11-12, første ledd bokstav a). Ved å fjerne dette kravet må det dokumenteres som et fravik fra preaksepterte ytelser.
+                            </p>
+                          </div>
+                        )}
                       {formData.tilretteleggingLedd1a && (
                         <div className="ml-6 p-3 bg-muted/50 border border-border rounded space-y-2">
                           <Label className="text-xs font-medium block mb-1">Utdypende krav for RK4:</Label>
@@ -6871,6 +6900,13 @@ const Konsept = () => {
                                 <li>Dersom byggverket også har virksomhet i andre risikoklasser, må deler av byggverket med og uten automatisk sprinkleranlegg være ulike brannseksjoner.</li>
                                 <li>Dersom virksomhet i ulike risikoklasser ikke kan oppdeles i brannseksjoner, må hele byggverket ha automatisk sprinkleranlegg.</li>
                               </ol>
+                            </div>
+                          )}
+                          {!formData.tilretteleggingLedd1b && (
+                            <div className="ml-6 p-3 border border-destructive/50 rounded-lg bg-destructive/10">
+                              <p className="text-xs font-semibold text-destructive">
+                                ⚠️ Fravik: Automatisk brannslokkeanlegg er påkrevd for alle byggverk i risikoklasse 6 (jf. TEK17 § 11-12, første ledd bokstav b). Ved å fjerne dette kravet må det dokumenteres som et fravik fra preaksepterte ytelser.
+                              </p>
                             </div>
                           )}
                         </div>
