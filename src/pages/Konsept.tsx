@@ -7768,16 +7768,27 @@ const Konsept = () => {
                       {/* Antall trapper og rømningsretninger */}
                       <div className="p-2 bg-muted/50 rounded space-y-2">
                         <Label className="text-xs font-medium block">Trapper og rømningsretninger</Label>
-                        <select
-                          className="w-full border rounded px-2 py-1 text-xs bg-background text-foreground"
-                          value={formData.romningsveiTrappeValg || ""}
-                          onChange={(e) => setFormData({...formData, romningsveiTrappeValg: e.target.value})}
-                        >
-                          <option value="">Velg...</option>
-                          <option value="en_trapp">Tilstrekkelig med én trapp</option>
-                          <option value="sammenfallende">Sammenfallende rømningsretning</option>
-                          <option value="flere_trapper">Flere trapper og utganger</option>
-                        </select>
+                        {[
+                          { value: "en_trapp", label: "Tilstrekkelig med én trapp" },
+                          { value: "sammenfallende", label: "Sammenfallende rømningsretning" },
+                          { value: "flere_trapper", label: "Flere trapper og utganger" },
+                        ].map((opt) => {
+                          const valg: string[] = Array.isArray(formData.romningsveiTrappeValg) ? formData.romningsveiTrappeValg : (formData.romningsveiTrappeValg ? [formData.romningsveiTrappeValg] : []);
+                          const checked = valg.includes(opt.value);
+                          return (
+                            <div key={opt.value} className="flex items-center gap-2">
+                              <Checkbox
+                                id={`trappevalg-${opt.value}`}
+                                checked={checked}
+                                onCheckedChange={(c) => {
+                                  const newValg = c ? [...valg, opt.value] : valg.filter(v => v !== opt.value);
+                                  setFormData({...formData, romningsveiTrappeValg: newValg});
+                                }}
+                              />
+                              <Label htmlFor={`trappevalg-${opt.value}`} className="text-xs cursor-pointer">{opt.label}</Label>
+                            </div>
+                          );
+                        })}
                       </div>
 
                       {/* Transport av sengeliggende */}
