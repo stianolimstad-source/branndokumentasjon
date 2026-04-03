@@ -3650,42 +3650,47 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
             )}
-            {formData.romningsveiTrappeValg === "en_trapp" && (
-              <tr>
-                <td className="border border-gray-400 p-2 align-top font-medium">Én trapp</td>
-                <td className="border border-gray-400 p-2">
-                  <ul className="list-disc ml-4 space-y-1">
-                    <li>Det er tilstrekkelig med én trapp når forholdene tilsier at rømning kan skje på en sikker måte uten alternativ rømningsvei.</li>
-                    <li>Gangavstand fra dør i branncelle til nærmeste trapperom eller utgang skal ikke overstige 15 m.</li>
-                  </ul>
-                </td>
-                <td className="border border-gray-400 p-2 align-top">ARK</td>
-              </tr>
-            )}
-            {formData.romningsveiTrappeValg === "sammenfallende" && (
-              <tr>
-                <td className="border border-gray-400 p-2 align-top font-medium">Sammenfallende rømningsretning</td>
-                <td className="border border-gray-400 p-2">
-                  <ul className="list-disc ml-4 space-y-1">
-                    <li>Gangavstand i sammenfallende rømningsretning fra dør i branncelle til det punkt hvor rømning kan skje i to uavhengige retninger, skal ikke overstige 15 m.</li>
-                    <li>Fra dette punktet skal gangavstand til nærmeste trapperom eller utgang til det fri ikke overstige 30 m.</li>
-                  </ul>
-                </td>
-                <td className="border border-gray-400 p-2 align-top">ARK</td>
-              </tr>
-            )}
-            {formData.romningsveiTrappeValg === "flere_trapper" && (
-              <tr>
-                <td className="border border-gray-400 p-2 align-top font-medium">Flere trapper og utganger</td>
-                <td className="border border-gray-400 p-2">
-                  <ul className="list-disc ml-4 space-y-1">
-                    <li>Bygget har flere trapperom og utganger slik at rømning kan skje i minst to uavhengige retninger.</li>
-                    <li>Gangavstand fra dør i branncelle til nærmeste trapperom eller utgang til det fri skal ikke overstige 30 m.</li>
-                  </ul>
-                </td>
-                <td className="border border-gray-400 p-2 align-top">ARK</td>
-              </tr>
-            )}
+            {(() => {
+              const tv: string[] = Array.isArray(formData.romningsveiTrappeValg) ? formData.romningsveiTrappeValg : (formData.romningsveiTrappeValg ? [formData.romningsveiTrappeValg] : []);
+              return (<>
+                {tv.includes("en_trapp") && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top font-medium">Én trapp</td>
+                    <td className="border border-gray-400 p-2">
+                      <ul className="list-disc ml-4 space-y-1">
+                        <li>Det er tilstrekkelig med én trapp når forholdene tilsier at rømning kan skje på en sikker måte uten alternativ rømningsvei.</li>
+                        <li>Gangavstand fra dør i branncelle til nærmeste trapperom eller utgang skal ikke overstige 15 m.</li>
+                      </ul>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
+                )}
+                {tv.includes("sammenfallende") && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top font-medium">Sammenfallende rømningsretning</td>
+                    <td className="border border-gray-400 p-2">
+                      <ul className="list-disc ml-4 space-y-1">
+                        <li>Gangavstand i sammenfallende rømningsretning fra dør i branncelle til det punkt hvor rømning kan skje i to uavhengige retninger, skal ikke overstige 15 m.</li>
+                        <li>Fra dette punktet skal gangavstand til nærmeste trapperom eller utgang til det fri ikke overstige 30 m.</li>
+                      </ul>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
+                )}
+                {tv.includes("flere_trapper") && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top font-medium">Flere trapper og utganger</td>
+                    <td className="border border-gray-400 p-2">
+                      <ul className="list-disc ml-4 space-y-1">
+                        <li>Bygget har flere trapperom og utganger slik at rømning kan skje i minst to uavhengige retninger.</li>
+                        <li>Gangavstand fra dør i branncelle til nærmeste trapperom eller utgang til det fri skal ikke overstige 30 m.</li>
+                      </ul>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
+                )}
+              </>);
+            })()}
             {(() => {
               const rk = formData.risikoklasse || "";
               const harRK3 = rk === "RK3" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK3");

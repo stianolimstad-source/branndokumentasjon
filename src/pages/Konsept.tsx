@@ -6795,11 +6795,14 @@ const Konsept = () => {
                               }
                               
                               // Rømningsvei trappvalg
-                              if (formData.romningsveiTrappeValg === "en_trapp") {
+                              const trappeValgArr: string[] = Array.isArray(formData.romningsveiTrappeValg) ? formData.romningsveiTrappeValg : (formData.romningsveiTrappeValg ? [formData.romningsveiTrappeValg] : []);
+                              if (trappeValgArr.includes("en_trapp")) {
                                 lines.push("Bygget har én trapp. Maksimal avstand til nærmeste utgang er 15 m.");
-                              } else if (formData.romningsveiTrappeValg === "sammenfallende") {
+                              }
+                              if (trappeValgArr.includes("sammenfallende")) {
                                 lines.push("Bygget har sammenfallende rømningsretninger. Maksimal avstand er 15 m i felles del.");
-                              } else if (formData.romningsveiTrappeValg === "flere_trapper") {
+                              }
+                              if (trappeValgArr.includes("flere_trapper")) {
                                 lines.push("Bygget har flere trapper og utganger. Maksimal avstand til nærmeste utgang er 30 m.");
                               }
                               
