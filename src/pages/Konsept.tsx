@@ -6864,6 +6864,7 @@ const Konsept = () => {
                               ⚠️ Fravik: Automatisk brannslokkeanlegg er påkrevd for byggverk i risikoklasse 4 hvor det kreves heis (jf. TEK17 § 11-12, første ledd bokstav a). Ved å fjerne dette kravet må det dokumenteres som et fravik fra preaksepterte ytelser.
                             </p>
                           </div>
+                        )}
                       {formData.tilretteleggingLedd1a && (
                         <div className="ml-6 p-3 bg-muted/50 border border-border rounded space-y-2">
                           <Label className="text-xs font-medium block mb-1">Utdypende krav for RK4:</Label>
