@@ -3587,6 +3587,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <td className="border border-gray-400 p-2 align-top font-medium">Maksimal lengde på fluktvei</td>
                     <td className="border border-gray-400 p-2">
                       <ul className="list-disc ml-4 space-y-1">
+
                         {lengder.map((l, i) => (
                           <li key={i}>Risikoklasse {l.rk}: Maksimal lengde på fluktvei er {l.lengde} meter.</li>
                         ))}
