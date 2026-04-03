@@ -3427,9 +3427,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* Stort antall personer */}
             {formData.branncelleStortAntallPersoner && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Branncelle for stort antall personer</td>
+                <td className="border border-gray-400 p-2 align-top font-medium">Branncelle for stort antall personer</td>
                 <td className="border border-gray-400 p-2">
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-2">
                     <p>Branncelle beregnet for stort antall personer.</p>
                     {formData.persontallAreal && formData.persontallKategori && (() => {
                       const arealPerPerson: Record<string, number> = {
