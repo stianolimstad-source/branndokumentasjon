@@ -7889,8 +7889,10 @@ const Konsept = () => {
                         const harRK3 = rk === "RK3" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK3");
                         const harRK5 = rk === "RK5" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK5");
                         const harRK6 = rk === "RK6" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK6");
+                        const harRK4 = rk === "RK4" || formData.bygningsdeler?.some((d: any) => d.risikoklasse === "RK4");
                         const erBredRK = harRK3 || harRK5 || harRK6;
                         const bredde = erBredRK ? "1,16 m" : "0,86 m";
+                        const bk = formData.brannklasse || "";
                         return (
                           <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                             <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
@@ -7898,7 +7900,16 @@ const Konsept = () => {
                               <li>Generelle krav til rømningsvei</li>
                               <li>Fri bredde i rømningsvei: min. {bredde} ({erBredRK ? `RK${[harRK3 && "3", harRK5 && "5", harRK6 && "6"].filter(Boolean).join("/")}` : rk || "RK1/2/4"})</li>
                               <li>Hovedatkomst tilrettelagt for sikker rømning</li>
-                              <li>Dørkrav i rømningsvei: fri bredde min. {bredde}, høyde min. 2,0 m, åpningskraft maks {formData.universellUtforming ? "30 N" : "67 N"}, UPS</li>
+                              <li>Dørkrav i rømningsvei: fri bredde min. {bredde}, høyde min. 2,0 m, åpningskraft maks {formData.universellUtforming ? "30 N" : "67 N"}</li>
+                              {(bk === "BKL2" || bk === "BKL3") && <li>Avbruddsfri strømforsyning (UPS) for {bk === "BKL2" ? "60 min (BKL2)" : "60 min (BKL3)"}</li>}
+                              {bk === "BKL1" && <li>Avbruddsfri strømforsyning (UPS) for 30 min (BKL1)</li>}
+                              {formData.romningsveiRomMaks20 && <li>Krav til rom i rømningsvei inntil 20 m²</li>}
+                              {formData.romningsveiRom50E30 && <li>Krav til oppholdsrom inntil 50 m² i rømningsvei</li>}
+                              {formData.romningsveiSvalgang && <li>Krav til svalgang/altangang som rømningsvei</li>}
+                              {formData.romningsveiKorridorOver30m && <li>Krav til seksjonering av korridor over 30 m (E 30-CSa)</li>}
+                              {formData.romningsveiPanikkbeslag && <li>Krav til panikkbeslag</li>}
+                              {formData.romningsveiFriBreddeTrapp && <li>Fri bredde i trapp (§ 12-14)</li>}
+                              {formData.romningsveiIngenInnsnevring && <li>Krav om ingen innsnevring i rømningsvei</li>}
                             </ul>
                           </div>
                         );
