@@ -7993,11 +7993,9 @@ const Konsept = () => {
                             <li>Varsling ved brann i driftsbygninger</li>
                             {(() => {
                               const typer: string[] = Array.isArray(formData.husdyrTyper) ? formData.husdyrTyper : [];
-                              const harStore = typer.some(t => ["storfe", "hest"].includes(t));
-                              const harSmaa = typer.some(t => ["gris", "sau", "geit"].includes(t));
                               return (<>
-                                {harStore && <li>Fri bredde min. 1,6 m (storfe/hest)</li>}
-                                {harSmaa && <li>Fri bredde min. 1,0 m (gris/sau/geit)</li>}
+                                {typer.includes("storfe_hest") && <li>Fri bredde min. 1,6 m (storfe og hest)</li>}
+                                {typer.includes("gris_sau_geit") && <li>Fri bredde min. 1,0 m (gris, sau og geit)</li>}
                               </>);
                             })()}
                           </ul>
