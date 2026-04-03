@@ -3360,6 +3360,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               const alleRK = formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0
                 ? [...new Set(formData.bygningsdeler.map((d: any) => d.risikoklasse).filter(Boolean))]
                 : formData.risikoklasse ? [formData.risikoklasse] : [];
+              const kunRK1234 = alleRK.length > 0 && alleRK.every((rk: string) => ["RK1","RK2","RK3","RK4"].includes(rk));
+              if (!kunRK1234) return null;
               const harRK124 = alleRK.some((rk: string) => ["RK1","RK2","RK4"].includes(rk));
               const harRK3 = alleRK.includes("RK3");
               const harRK123 = alleRK.some((rk: string) => ["RK1","RK2","RK3"].includes(rk));
