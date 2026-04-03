@@ -6698,20 +6698,17 @@ const Konsept = () => {
                               lines.push(`${type} har ${etasjer} etasje${parseInt(formData.etasjer) > 1 ? "r" : ""}.`);
                               
                               // Trapperom info
+                              const trappeInfo: string[] = [];
                               if (formData.trapperomBeskrivelse) {
                                 lines.push(formData.trapperomBeskrivelse);
-                              } else {
-                                // Build from trapperomKrav
-                                const trappeInfo: string[] = [];
-                                if (formData.trapperomKrav.includes("branncelle_trapperom_tr1") || formData.trapperomKrav.includes("bf85_tr_aapent")) trappeInfo.push("Tr1 (åpent trapperom)");
-                                if (formData.trapperomKrav.includes("korridor_trapperom_tr2") || formData.trapperomKrav.includes("bf85_tr_lukket")) trappeInfo.push("Tr2 (lukket trapperom)");
-                                if (formData.trapperomKrav.includes("mellomliggende_trapperom_tr3") || formData.trapperomKrav.includes("bf85_tr_roykfritt")) trappeInfo.push("Tr3 (røykfritt trapperom)");
-                                if (trappeInfo.length > 0) {
-                                  lines.push(`Trapperom er utført som ${trappeInfo.join(" og ")}.`);
-                                }
                               }
-                              
-                              
+                              // Build trapperom type list
+                              if (formData.trapperomKrav.includes("branncelle_trapperom_tr1") || formData.trapperomKrav.includes("bf85_tr_aapent")) trappeInfo.push("Tr1 (åpent trapperom)");
+                              if (formData.trapperomKrav.includes("korridor_trapperom_tr2") || formData.trapperomKrav.includes("bf85_tr_lukket")) trappeInfo.push("Tr2 (lukket trapperom)");
+                              if (formData.trapperomKrav.includes("mellomliggende_trapperom_tr3") || formData.trapperomKrav.includes("bf85_tr_roykfritt")) trappeInfo.push("Tr3 (røykfritt trapperom)");
+                              if (!formData.trapperomBeskrivelse && trappeInfo.length > 0) {
+                                lines.push(`Trapperom er utført som ${trappeInfo.join(" og ")}.`);
+                              }
                               
                               // Rømningsvei trappvalg
                               if (formData.romningsveiTrappeValg === "en_trapp") {
@@ -6730,11 +6727,12 @@ const Konsept = () => {
                                 lines.push("Bygget er oppdelt med seksjoneringsvegg(er). Evakuering kan foregå innenfor hver brannseksjon uavhengig av brann i tilstøtende seksjon.");
                               }
                               
-                              // Evakueringsstrategi
+                              // Evakueringsstrategi med trapperomtype
+                              const trappeTypeTekst = trappeInfo.length > 0 ? ` via ${trappeInfo.join(" / ")}` : "";
                               if (formData.erSykehusPleieinstitusjon || formData.risikoklasse === "RK6") {
-                                lines.push("Evakueringsstrategi er basert på horisontal forflytning til sikker sone bak seksjoneringsvegg, med mulighet for videre evakuering til det fri ved behov.");
+                                lines.push(`Evakueringsstrategi er basert på horisontal forflytning til sikker sone bak seksjoneringsvegg, med mulighet for videre evakuering${trappeTypeTekst} til det fri ved behov.`);
                               } else {
-                                lines.push("Evakuering skjer via rømningsveier til det fri.");
+                                lines.push(`Evakuering skjer${trappeTypeTekst} via rømningsveier til det fri.`);
                               }
                               
                               setFormData({...formData, romningSikkerhet: lines.join("\n\n")});
