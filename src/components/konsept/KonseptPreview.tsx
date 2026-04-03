@@ -3448,7 +3448,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2 align-top">Dører til rømningsvei</td>
                   <td className="border border-gray-400 p-2">
                     <ul className="list-disc list-inside text-sm space-y-1">
-                      <li>Åpningskraft for dører til rømningsvei må være maksimalt 67 Newton dersom det ikke følger andre krav av § 12-13.</li>
+                       <li>Dører som er beregnet for manuell åpning til og i atkomst- og rømningsveier, skal kunne åpnes med åpningskraft på maksimum 30 N.</li>
                       <li>{breddeTekst}</li>
                       {(harRK6) && <li>I byggverk hvor det er nødvendig med transport i seng, må dørbredden tilpasses dette.</li>}
                       <li>Samlet fri bredde på dører fra branncelle til rømningsvei bestemmes ut fra det antall personer som branncellen er beregnet for, jf. femte ledd.</li>
@@ -3684,7 +3684,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2">
                     <p className="mb-2">Dør til rømningsvei skal prosjekteres og utføres slik at den sikrer rask rømning og slik at det ikke oppstår fare for oppstuving. Følgende krav må minst være oppfylt:</p>
                     <ul className="list-disc ml-4 space-y-1">
-                      <li>Åpningskraft for dører til rømningsvei må være maksimalt 67 Newton dersom det ikke følger andre krav av § 12-13.</li>
+                      <li>Dører som er beregnet for manuell åpning til og i atkomst- og rømningsveier, skal kunne åpnes med åpningskraft på maksimum 30 N.</li>
                       <li>Dør til rømningsvei må ha fri bredde minimum {bredde}.</li>
                       <li>Dør til rømningsvei må ha fri høyde på minimum 2,0 meter.</li>
                       <li>Dør til rømningsvei må lett kunne åpnes slik at den er enkel å bruke for alle personer.</li>
