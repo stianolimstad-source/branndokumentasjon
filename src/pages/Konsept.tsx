@@ -6902,6 +6902,13 @@ const Konsept = () => {
                               </ol>
                             </div>
                           )}
+                          {!formData.tilretteleggingLedd1b && (
+                            <div className="ml-6 p-3 border border-destructive/50 rounded-lg bg-destructive/10">
+                              <p className="text-xs font-semibold text-destructive">
+                                ⚠️ Fravik: Automatisk brannslokkeanlegg er påkrevd for alle byggverk i risikoklasse 6 (jf. TEK17 § 11-12, første ledd bokstav b). Ved å fjerne dette kravet må det dokumenteres som et fravik fra preaksepterte ytelser.
+                              </p>
+                            </div>
+                          )}
                         </div>
                       )}
 
