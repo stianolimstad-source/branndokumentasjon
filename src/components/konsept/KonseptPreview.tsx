@@ -3412,7 +3412,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     )}
                     {(formData.romningsvinduHarStige || formData.romningsvinduHarBalkong) && (
                       <div className="mt-1">
-                        <ul className="list-disc list-inside">
+                        <ul className="list-disc ml-4">
                           {formData.romningsvinduHarStige && <li>Fastmontert stige med ryggbøyler er montert til rømningsvindu.</li>}
                           {formData.romningsvinduHarBalkong && <li>Utgang til balkong er tilgjengelig som alternativ rømningsvei.</li>}
                         </ul>
