@@ -3243,7 +3243,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
             <tr>
-              <td className="border border-gray-400 p-2 align-top">Generelt</td>
+              <td className="border border-gray-400 p-2 align-top font-medium">Generelt</td>
               <td className="border border-gray-400 p-2">
                 Fra en branncelle skal det minst være én utgang til sikkert sted, eller utganger til to uavhengige rømningsveier, eller én utgang til rømningsvei som har to alternative rømningsretninger som fører videre til uavhengige rømningsveier eller sikre steder.
               </td>
@@ -3268,9 +3268,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
               return (
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Trapperom<br/><span className="text-xs text-muted-foreground">§ 11-13 (2)</span></td>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Trapperom<br/><span className="text-xs text-muted-foreground">§ 11-13 (2)</span></td>
                   <td className="border border-gray-400 p-2">
-                    <ul className="list-disc ml-4 space-y-1 text-sm">
+                    <ul className="list-disc ml-4 space-y-1">
                       {formData.tilstrekkeligeUtgangerUtenToTrapperom ? (
                         <li>For risikoklasse {rkNum} med {etasjer} etasjer kreves {trType}. Det er bekreftet at utgangene er tilstrekkelige uten krav om to trapperom, da deler av bygget har direkte tilgang til det fri.</li>
                       ) : (
@@ -3295,9 +3295,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               if (!harRK6) return null;
               return (
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Avstand til trapperom/utgang<br/><span className="text-xs text-muted-foreground">§ 11-13 (4)</span></td>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Avstand til trapperom/utgang<br/><span className="text-xs text-muted-foreground">§ 11-13 (4)</span></td>
                   <td className="border border-gray-400 p-2">
-                    <p className="text-sm">I byggverk i risikoklasse 6 må dører fra branncelle ligge mellom trapperommene eller utgangene. Unntak gjelder når avstand til nærmeste trapperom eller utgang er mindre enn 7,0 meter.</p>
+                    I byggverk i risikoklasse 6 må dører fra branncelle ligge mellom trapperommene eller utgangene. Unntak gjelder når avstand til nærmeste trapperom eller utgang er mindre enn 7,0 meter.
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
@@ -3306,9 +3306,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* Takterrasse - § 11-13 (5) */}
             {formData.takterrasseRelevant && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Takterrasse<br/><span className="text-xs text-muted-foreground">§ 11-13 (5)</span></td>
+                <td className="border border-gray-400 p-2 align-top font-medium">Takterrasse<br/><span className="text-xs text-muted-foreground">§ 11-13 (5)</span></td>
                 <td className="border border-gray-400 p-2">
-                  <p className="text-sm">Takterrasse beregnet for personopphold må ha utganger minst tilsvarende brannceller i byggverket. Utgangene må ha tilstrekkelig bredde for det dimensjonerende persontallet.</p>
+                  Takterrasse beregnet for personopphold må ha utganger minst tilsvarende brannceller i byggverket. Utgangene må ha tilstrekkelig bredde for det dimensjonerende persontallet.
                 </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
@@ -3316,7 +3316,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* Boenhet kun ett trapperom - §11-13 (2) */}
             {formData.boenhetKunEttTrapperom && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Utgang fra branncelle (leiligheter)</td>
+                <td className="border border-gray-400 p-2 align-top font-medium">Utgang fra branncelle (leiligheter)</td>
                 <td className="border border-gray-400 p-2">
                   Brannceller i byggverk i risikoklasse 4 med inntil 8 etasjer kan ha utgang til ett trapperom utført som rømningsvei. Dette forutsetter at hver boenhet har minst ett vindu eller balkong som er tilgjengelig for rednings- og slokkeinnsats, jf. § 11–17.
                 </td>
@@ -3326,7 +3326,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* Brannceller over flere etasjer */}
             {formData.branncelleFlereEtasjer && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Branncelle over flere etasjer</td>
+                <td className="border border-gray-400 p-2 align-top font-medium">Branncelle over flere etasjer</td>
                 <td className="border border-gray-400 p-2">
                   Brannceller som strekker seg over flere etasjer eller har mellometasje skal ha utganger som sikrer rømning fra alle plan.
                 </td>
@@ -3336,7 +3336,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* Lavt byggverk - én rømningsretning §11-13(4) */}
             {formData.lavtByggverkEnRomningsretning && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Én rømningsretning (lavt byggverk)</td>
+                <td className="border border-gray-400 p-2 align-top font-medium">Én rømningsretning (lavt byggverk)</td>
                 <td className="border border-gray-400 p-2">
                   I lave byggverk beregnet for virksomhet i risikoklasse 1, 2, 3 og 4 kan utgangen fra branncelle enten føre til sikkert sted, eller til rømningsvei som bare har én rømningsretning, forutsatt at hver branncelle har vinduer som er utformet og tilrettelagt for sikker rømning.
                   <p className="mt-2 text-xs italic">Preaksepterte ytelser angitt for rømningsvindu under tredje ledd, må være oppfylt.</p>
@@ -3347,7 +3347,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* Lavt byggverk med vinduer for rømning */}
             {formData.lavtByggverkVinduerRomning && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Vinduer for rømning</td>
+                <td className="border border-gray-400 p-2 align-top font-medium">Vinduer for rømning</td>
                 <td className="border border-gray-400 p-2">
                   Lavt byggverk (RK 1–4) med vinduer som sikrer rømning. Vindu kan benyttes som alternativ rømningsvei i etasjer med gulv inntil 5,0 m over planert terreng.
                 </td>
@@ -3369,11 +3369,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               const erBolig = harRK4;
               return (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Rømningsvindu<br/><span className="text-xs text-muted-foreground">§ 11-13 (3)</span></td>
+                <td className="border border-gray-400 p-2 align-top font-medium">Rømningsvindu<br/><span className="text-xs text-muted-foreground">§ 11-13 (3)</span></td>
                 <td className="border border-gray-400 p-2">
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-2">
                     <p>Brannceller som består av flere etasjer, eller har mellometasje, skal ha minst én utgang fra hver etasje. I byggverk i risikoklasse {alleRK.map((rk: string) => rk.replace("RK","")).join(", ")} kan utgangen fra disse planene, utenom inngangsplanet, være vindu som er tilrettelagt for sikker rømning.</p>
-                    <ul className="list-disc list-inside space-y-1">
+                    <ul className="list-disc ml-4 space-y-1">
                       {harRK124 && (
                         <li>I byggverk i risikoklasse {["RK1","RK2","RK4"].filter(rk => alleRK.includes(rk)).map(rk => rk.replace("RK","")).join(", ")} kan utgangen være rømningsvindu som har underkant til og med 5,0 meter over planert terreng, eller til og med 7,5 meter over planert terreng dersom det er atkomst til fastmontert stige med ryggbøyler. Ved større høyder må det være atkomst fra rømningsvindu til utvendig trapp. Stige eller trapp må ha avstand minimum 2,0 meter fra vindu, eller være skjermet mot flammer og strålevarme.</li>
                       )}
@@ -3412,7 +3412,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     )}
                     {(formData.romningsvinduHarStige || formData.romningsvinduHarBalkong) && (
                       <div className="mt-1">
-                        <ul className="list-disc list-inside">
+                        <ul className="list-disc ml-4">
                           {formData.romningsvinduHarStige && <li>Fastmontert stige med ryggbøyler er montert til rømningsvindu.</li>}
                           {formData.romningsvinduHarBalkong && <li>Utgang til balkong er tilgjengelig som alternativ rømningsvei.</li>}
                         </ul>
@@ -3427,9 +3427,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* Stort antall personer */}
             {formData.branncelleStortAntallPersoner && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Branncelle for stort antall personer</td>
+                <td className="border border-gray-400 p-2 align-top font-medium">Branncelle for stort antall personer</td>
                 <td className="border border-gray-400 p-2">
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-2">
                     <p>Branncelle beregnet for stort antall personer.</p>
                     {formData.persontallAreal && formData.persontallKategori && (() => {
                       const arealPerPerson: Record<string, number> = {
@@ -3440,10 +3440,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       const persontall = Math.floor(areal / factor);
                       return <p><strong>Beregnet persontall:</strong> {persontall} personer ({areal} m² / {factor} m²/pers)</p>;
                     })()}
-                    <ul className="list-disc list-inside space-y-2 mt-2">
+                    <ul className="list-disc ml-4 space-y-1 mt-2">
                       <li>Antall personer i en branncelle uten faste sitteplasser bestemmes av tabell 3.{formData.persontallKategori === 'salgslokaler' && <> I salgslokale legges alle de områder som er tilgjengelig for publikum til grunn for dimensjonering av fri bredde. Det gjøres ikke fradrag for inventar.</>}</li>
                       <li>Samlet fri bredde i utgangene bestemmes ut fra det antall personer branncellen er beregnet for. Dessuten gjelder:
-                        <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
+                        <ul className="list-disc ml-8 mt-1 space-y-1">
                           <li>Utgangene må være hensiktsmessig fordelt i lokalet.</li>
                           <li>For dimensjoneringen av fri bredde benyttes 1 cm per person.</li>
                         </ul>
@@ -3469,12 +3469,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* Sporadisk personopphold §11-13(6) */}
             {formData.sporadiskOpphold && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Branncelle for sporadisk personopphold</td>
+                <td className="border border-gray-400 p-2 align-top font-medium">Branncelle for sporadisk personopphold</td>
                 <td className="border border-gray-400 p-2">
                   <p>Fra brannceller som bare er beregnet for sporadisk personopphold kan utgang gå gjennom annen branncelle.</p>
-                  <p className="mt-2 text-sm">Med branncelle som bare er beregnet for sporadisk opphold, menes branncelle der personer oppholder seg av og til i kortere tid. Dette kan for eksempel være lagerrom og tekniske rom uten faste arbeidsplasser.</p>
-                  <p className="mt-2 text-sm">Maksimal avstand fra et hvilket som helst sted i denne branncellen til sikkert sted eller til nærmeste rømningsvei, må være som angitt i tabell 1.</p>
-                  <p className="mt-2 text-sm">For å ivareta generelle krav om tilrettelegging for rask og sikker rømning, jf. § 11-11, må fluktveien være oversiktlig og ha god belysning og merking. Det må heller ikke foregå brannfarlig aktivitet i nabobranncellen det skal rømmes gjennom.</p>
+                  <p className="mt-2">Med branncelle som bare er beregnet for sporadisk opphold, menes branncelle der personer oppholder seg av og til i kortere tid. Dette kan for eksempel være lagerrom og tekniske rom uten faste arbeidsplasser.</p>
+                  <p className="mt-2">Maksimal avstand fra et hvilket som helst sted i denne branncellen til sikkert sted eller til nærmeste rømningsvei, må være som angitt i tabell 1.</p>
+                  <p className="mt-2">For å ivareta generelle krav om tilrettelegging for rask og sikker rømning, jf. § 11-11, må fluktveien være oversiktlig og ha god belysning og merking. Det må heller ikke foregå brannfarlig aktivitet i nabobranncellen det skal rømmes gjennom.</p>
                 </td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
@@ -3518,9 +3518,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
               return (
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Dører til rømningsvei</td>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Dører til rømningsvei</td>
                   <td className="border border-gray-400 p-2">
-                    <ul className="list-disc list-inside text-sm space-y-1">
+                    <ul className="list-disc ml-4 space-y-1">
                        <li>Dører som er beregnet for manuell åpning til og i atkomst- og rømningsveier, skal kunne åpnes med åpningskraft på maksimum {formData.universellUtforming ? "30 N" : "67 N"}.</li>
                       <li>{breddeTekst}</li>
                       {(harRK6) && <li>I byggverk hvor det er nødvendig med transport i seng, må dørbredden tilpasses dette.</li>}
@@ -3549,7 +3549,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             })()}
             {formData.utgangBranncelle && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top">Utganger</td>
+                <td className="border border-gray-400 p-2 align-top font-medium">Utganger</td>
                 <td className="border border-gray-400 p-2">{formData.utgangBranncelle}</td>
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
@@ -3587,6 +3587,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <td className="border border-gray-400 p-2 align-top font-medium">Maksimal lengde på fluktvei</td>
                     <td className="border border-gray-400 p-2">
                       <ul className="list-disc ml-4 space-y-1">
+
                         {lengder.map((l, i) => (
                           <li key={i}>Risikoklasse {l.rk}: Maksimal lengde på fluktvei er {l.lengde} meter.</li>
                         ))}
@@ -3603,7 +3604,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <tr>
                   <td className="border border-gray-400 p-2 align-top font-medium">Maksimal lengde på fluktvei</td>
                   <td className="border border-gray-400 p-2">
-                    <p className="text-sm">Maksimal lengde på fluktvei er {lengde} meter for byggverk i risikoklasse {rkNum}.</p>
+                    Maksimal lengde på fluktvei er {lengde} meter for byggverk i risikoklasse {rkNum}.
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
