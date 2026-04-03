@@ -682,6 +682,7 @@ const Konsept = () => {
     lavtByggverkEnRomningsretning: false,
     sporadiskOpphold: false,
     takterrasseRelevant: false, // Takterrasse beregnet for personopphold
+    tilstrekkeligeUtgangerUtenToTrapperom: false, // Bekreftelse at utganger er tilstrekkelige uten to trapperom
     branncelleStortAntallPersoner: false,
     stortAntallUnder600: false,
     stortAntallOver600: false,
