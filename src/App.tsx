@@ -28,6 +28,7 @@ import GruppeDetalj from "./pages/GruppeDetalj";
 import KSGjennomgang from "./pages/KSGjennomgang";
 import KvalitativAnalyse from "./pages/fraviksdokumentasjon/KvalitativAnalyse";
 import MinProfil from "./pages/MinProfil";
+import Dashboard from "./pages/Dashboard";
 import Sikkerhetsrutiner from "./pages/Sikkerhetsrutiner";
 import Eksempelkatalog from "./pages/Eksempelkatalog";
 import BranntekniskeKonstruksjoner from "./pages/eksempelkatalog/BranntekniskeKonstruksjoner";
@@ -59,6 +60,7 @@ const App = () => (
             <Route path="/verktoy/brannareal" element={<Brannareal />} />
             <Route path="/verktoy/roykventilasjon" element={<RoykventilasjonPage />} />
             
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/mine-prosjekter" element={<MineProsjekter />} />
