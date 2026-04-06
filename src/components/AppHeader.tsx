@@ -77,6 +77,10 @@ const AppHeader = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56 z-50 bg-popover">
+                    <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                      <LayoutDashboard className="h-4 w-4 mr-2" />
+                      Dashboard
+                    </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/mine-prosjekter")}>
                       <FolderOpen className="h-4 w-4 mr-2" />
                       Mine prosjekter

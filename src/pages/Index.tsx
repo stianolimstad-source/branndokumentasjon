@@ -56,17 +56,32 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-subtle overflow-x-hidden">
 
-      {/* Hero Section */}
+      {/* Hero / Dashboard Section */}
       <section className="container mx-auto px-4 py-16">
-        <div className="max-w-3xl mx-auto text-center space-y-4">
-          <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-balance">
-            Ditt komplette branntekniske dokumentasjonsverktøy
-          </h2>
-          <p className="text-base sm:text-xl text-muted-foreground">
-            Komplett verktøykasse for konsepter, vurderinger og beregninger. 
-            Spar tid og forbedre kvaliteten på dine leveranser.
-          </p>
-        </div>
+        {user ? (
+          <div className="max-w-6xl mx-auto space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl sm:text-3xl font-bold">Velkommen tilbake</h2>
+              <Link to="/dashboard">
+                <Button variant="outline" size="sm">
+                  <LayoutDashboard className="h-4 w-4 mr-2" />
+                  Fullt dashboard
+                </Button>
+              </Link>
+            </div>
+            <DashboardPanel />
+          </div>
+        ) : (
+          <div className="max-w-3xl mx-auto text-center space-y-4">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-balance">
+              Ditt komplette branntekniske dokumentasjonsverktøy
+            </h2>
+            <p className="text-base sm:text-xl text-muted-foreground">
+              Komplett verktøykasse for konsepter, vurderinger og beregninger. 
+              Spar tid og forbedre kvaliteten på dine leveranser.
+            </p>
+          </div>
+        )}
       </section>
 
       {/* Features Grid */}
