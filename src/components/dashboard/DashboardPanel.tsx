@@ -72,54 +72,6 @@ const DashboardPanel = () => {
 
   return (
     <div className="space-y-6">
-      {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-              <FolderOpen className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.totalProjects}</p>
-              <p className="text-xs text-muted-foreground">Prosjekter</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-              <FileText className="h-5 w-5 text-primary" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.totalConcepts}</p>
-              <p className="text-xs text-muted-foreground">Konsepter</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10">
-              <ClipboardCheck className="h-5 w-5 text-amber-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.pendingTasks}</p>
-              <p className="text-xs text-muted-foreground">Ventende oppgaver</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10">
-              <TrendingUp className="h-5 w-5 text-green-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{stats.completedTasks}</p>
-              <p className="text-xs text-muted-foreground">Fullførte oppgaver</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* Quick lists */}
       <div className="grid md:grid-cols-3 gap-6">
         {/* Recent projects */}
