@@ -947,6 +947,19 @@ const Konsept = () => {
     if (erRK6 && !formData.tilretteleggingLedd1b) {
       updates.tilretteleggingLedd1b = true;
     }
+    
+    // Auto-sett brannseksjonTiltak basert på krav til sprinkler/alarm
+    // Sprinkler prioriteres over brannalarm når begge er påkrevd
+    const harSprinklerKrav = erRK6 || erRK4MedHeis;
+    const rk = formData.risikoklasse;
+    const harAlarmKrav = rk && ["RK2","RK3","RK4","RK5","RK6"].includes(rk);
+    
+    if (harSprinklerKrav && formData.brannseksjonTiltak !== "sprinkler") {
+      updates.brannseksjonTiltak = "sprinkler";
+    } else if (!harSprinklerKrav && harAlarmKrav && !formData.brannseksjonTiltak) {
+      updates.brannseksjonTiltak = "brannalarm";
+    }
+    
     if (Object.keys(updates).length > 0) {
       setFormData(prev => ({ ...prev, ...updates }));
     }
