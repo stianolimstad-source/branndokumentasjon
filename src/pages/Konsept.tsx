@@ -626,6 +626,7 @@ const Konsept = () => {
     himlingNote2: true, // Overflater over himling som rømningsvei
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
     isolasjonBrennbar: "ikke_relevant" as "relevant" | "ikke_relevant",
+    ytterkledningDKrav: false, // D-krav på ytterkledning (tiltak for å hindre brannspredning i fasade)
     bf85_511: false, // :511 Generelt
     bf85_512: false, // :512 Ikke-bærende ytterveggers brannmotstand
     bf85_513: false, // :513 Yttervegger i B-konstruksjon
