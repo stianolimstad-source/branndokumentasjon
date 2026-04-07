@@ -35,6 +35,7 @@ const MineProsjekter = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Project | null>(null);
   
   const [newProject, setNewProject] = useState({
     name: "",
