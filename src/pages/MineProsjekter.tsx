@@ -2,11 +2,12 @@ import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, FolderOpen, Search, Building } from "lucide-react";
+import { Plus, FolderOpen, Search, Trash2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -34,6 +35,7 @@ const MineProsjekter = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Project | null>(null);
   
   const [newProject, setNewProject] = useState({
     name: "",
@@ -133,6 +135,18 @@ const MineProsjekter = () => {
     setIsCreating(false);
   };
 
+  const handleDeleteProject = async () => {
+    if (!deleteTarget) return;
+    const { error } = await supabase.from('projects').delete().eq('id', deleteTarget.id);
+    if (error) {
+      toast({ title: "Feil", description: "Kunne ikke slette prosjektet", variant: "destructive" });
+    } else {
+      toast({ title: "Slettet", description: `"${deleteTarget.name}" er slettet` });
+      setProjects((prev) => prev.filter((p) => p.id !== deleteTarget.id));
+    }
+    setDeleteTarget(null);
+  };
+
   if (loading) {
     return <div className="min-h-screen bg-gradient-subtle flex items-center justify-center"><p className="text-muted-foreground">Laster...</p></div>;
   }
@@ -217,7 +231,19 @@ const MineProsjekter = () => {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {filteredProjects.map((project) => (
                 <Link key={project.id} to={`/prosjekt/${project.id}`} className="block group">
-                  <Card className="shadow-soft hover:shadow-medium transition-all overflow-hidden h-full">
+                  <Card className="shadow-soft hover:shadow-medium transition-all overflow-hidden h-full relative">
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-2 right-2 z-10 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setDeleteTarget(project);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                     <div className="aspect-[4/3] overflow-hidden">
                       <img
                         src={project.image_url || getDefaultBuildingImage(bygningstyper[project.id])}
@@ -238,6 +264,23 @@ const MineProsjekter = () => {
           )}
         </div>
       </section>
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Er du sikker?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Dette vil permanent slette prosjektet «{deleteTarget?.name}» og alle tilhørende dokumenter. Denne handlingen kan ikke angres.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Avbryt</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteProject} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Slett prosjekt
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
