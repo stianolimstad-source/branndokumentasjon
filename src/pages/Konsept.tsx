@@ -626,6 +626,7 @@ const Konsept = () => {
     himlingNote2: true, // Overflater over himling som rømningsvei
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
     isolasjonBrennbar: "ikke_relevant" as "relevant" | "ikke_relevant",
+    ytterkledningDKrav: false, // D-krav på ytterkledning (tiltak for å hindre brannspredning i fasade)
     bf85_511: false, // :511 Generelt
     bf85_512: false, // :512 Ikke-bærende ytterveggers brannmotstand
     bf85_513: false, // :513 Yttervegger i B-konstruksjon
@@ -6571,6 +6572,23 @@ const Konsept = () => {
                               </label>
                             </div>
                           </div>
+
+                          {/* Ytterkledning D-krav */}
+                          {(formData.brannklasse === "BKL2" || formData.brannklasse === "BKL3") && (
+                          <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                            <Label className="text-xs font-medium">Utvendig kledning</Label>
+                            <div className="flex items-start gap-2">
+                              <Checkbox
+                                id="ytterkledningDKrav"
+                                checked={formData.ytterkledningDKrav}
+                                onCheckedChange={(checked) => setFormData({...formData, ytterkledningDKrav: !!checked})}
+                              />
+                              <label htmlFor="ytterkledningDKrav" className="text-xs cursor-pointer leading-relaxed">
+                                Det gjøres tiltak for å ivareta D-s3,d0 [Ut 2] krav på ytterkledning (yttervegg utformet slik at den hindrer brannspredning i fasaden)
+                              </label>
+                            </div>
+                          </div>
+                          )}
 
                           {/* Isolasjon-valg */}
                           <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
