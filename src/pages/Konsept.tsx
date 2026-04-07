@@ -799,7 +799,7 @@ const Konsept = () => {
           }
         });
     }
-  }, [selectedProjectId, conceptId, user]);
+  }, [selectedProjectId, conceptId, user, authorInfo]);
 
   // Automatisk beregning av brannklasse
   const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.erRKL6Boligbygning);
