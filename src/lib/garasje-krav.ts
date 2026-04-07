@@ -47,20 +47,20 @@ export function getGarasjeKrav(
       krav.push({ kategori: "Brannskille", tekst: "Garasjer med større bruttoareal enn 400 m² må være skilt fra resten av byggverket med bygningsdeler med brannmotstand minst EI 90 A2-s1,d0 [A 90].", ansvar: "ARK" });
     }
 
-    // Mellomrom
-    const mellomromGenerell = erBolig
-      ? "For å hindre spredning av eksos og røyk må det være et mellomliggende rom mellom garasje og rømningsvei, og mellom garasje og oppholdsrom (boligrom, husdyrrom og lignende)."
-      : "For å hindre spredning av eksos og røyk må det være et mellomliggende rom mellom garasje og rømningsvei, og mellom garasje og oppholdsrom.";
-    krav.push({ kategori: "Mellomrom", tekst: mellomromGenerell, ansvar: "ARK" });
+    // Mellomrom – for garasje over 400 m² dekkes dette av brannsluse-kravene
+    if (areal !== "over_400") {
+      const mellomromGenerell = erBolig
+        ? "For å hindre spredning av eksos og røyk må det være et mellomliggende rom mellom garasje og rømningsvei, og mellom garasje og oppholdsrom (boligrom, husdyrrom og lignende)."
+        : "For å hindre spredning av eksos og røyk må det være et mellomliggende rom mellom garasje og rømningsvei, og mellom garasje og oppholdsrom.";
+      krav.push({ kategori: "Mellomrom", tekst: mellomromGenerell, ansvar: "ARK" });
 
-    if (areal === "under_50") {
-      if (erBolig) {
-        krav.push({ kategori: "Mellomrom", tekst: "I bolig med garasje med bruttoareal mindre enn 50 m² kan mellomliggende rom være vaskerom, bod og lignende.", ansvar: "ARK" });
+      if (areal === "under_50") {
+        if (erBolig) {
+          krav.push({ kategori: "Mellomrom", tekst: "I bolig med garasje med bruttoareal mindre enn 50 m² kan mellomliggende rom være vaskerom, bod og lignende.", ansvar: "ARK" });
+        }
+      } else if (areal === "50_400") {
+        krav.push({ kategori: "Mellomrom", tekst: `For garasje med bruttoareal over 50 m² til og med 400 m² må mellomliggende rom utføres som egen branncelle med brannmotstand minst ${motstand}.`, ansvar: "ARK" });
       }
-    } else if (areal === "50_400") {
-      krav.push({ kategori: "Mellomrom", tekst: `For garasje med bruttoareal over 50 m² til og med 400 m² må mellomliggende rom utføres som egen branncelle med brannmotstand minst ${motstand}.`, ansvar: "ARK" });
-    } else if (areal === "over_400") {
-      krav.push({ kategori: "Mellomrom", tekst: "For garasje over 400 m² må mellomliggende rom utføres som brannsluse.", ansvar: "ARK" });
     }
 
     krav.push({ kategori: "Ventilasjon", tekst: "Mellomliggende rom eller garasje må være ventilert slik at brann- og røykgasser fra garasjen ikke kommer inn i andre rom i byggverket.", ansvar: "ARK / RIV" });
