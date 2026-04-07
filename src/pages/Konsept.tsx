@@ -592,6 +592,7 @@ const Konsept = () => {
     interntrappBeskrivelse: "",
     roykKontrollKrav: [] as string[],
     roykKontrollKravTekst: "",
+    harOverbygdeGarder: false,
     vertikalBrannspredningRelevant: false,
     vertikalBrannspredningKrav: [] as string[],
     vinduBrannspredningRelevant: false,
