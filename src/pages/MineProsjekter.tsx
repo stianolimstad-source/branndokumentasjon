@@ -231,7 +231,19 @@ const MineProsjekter = () => {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {filteredProjects.map((project) => (
                 <Link key={project.id} to={`/prosjekt/${project.id}`} className="block group">
-                  <Card className="shadow-soft hover:shadow-medium transition-all overflow-hidden h-full">
+                  <Card className="shadow-soft hover:shadow-medium transition-all overflow-hidden h-full relative">
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-2 right-2 z-10 h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setDeleteTarget(project);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                     <div className="aspect-[4/3] overflow-hidden">
                       <img
                         src={project.image_url || getDefaultBuildingImage(bygningstyper[project.id])}
@@ -252,6 +264,23 @@ const MineProsjekter = () => {
           )}
         </div>
       </section>
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Er du sikker?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Dette vil permanent slette prosjektet «{deleteTarget?.name}» og alle tilhørende dokumenter. Denne handlingen kan ikke angres.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Avbryt</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteProject} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Slett prosjekt
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
