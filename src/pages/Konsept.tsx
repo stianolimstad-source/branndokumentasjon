@@ -738,6 +738,8 @@ const Konsept = () => {
     slokkeHandslukker: false,
     redningsmannskap: "",
     redningsmannskapKommentar: "",
+    kjoreveiKrav: "Følgende legges til grunn ved utforming av kjørevei for kjøretøy:\n- Kjørebredde, minst: 4,0 meter\n- Stigningsforhold, maksimalt: 1:8 (12,5 %)\n- Fri kjørehøyde, minst: 4 meter\n- Svingradius, ytterkant vei, minst: 12 meter\n- Akseltrykk, minst: 10 tonn\n- Boggitrykk, minst: 16 tonn",
+    oppstillingsplassKrav: "Følgende legges til grunn ved utforming av oppstillingsplasser for høyderedskaper:\n- Bredde på oppstillingsplass, minst: 7 meter\n- Lengde på oppstillingsplass, minst: 12 meter\n- Stigningsforhold på oppstillingsplass, maksimalt: 3,5 %\n- Punktbelastning støtteben: Maks. jordtrykk u/markplate 11,7 kg/cm²",
     byggOver23m: false,
     hoyderedskapRelevant: false,
     slangeutlegg50m: true,
@@ -8364,6 +8366,24 @@ const Konsept = () => {
                           onChange={(e) => setFormData({...formData, redningsmannskap: e.target.value})}
                          />
                       </div>
+                      <div className="mb-3">
+                        <Label className="text-xs font-medium mb-1 block">Krav til utforming av kjørevei for kjøretøy</Label>
+                        <Textarea
+                          value={formData.kjoreveiKrav ?? "Følgende legges til grunn ved utforming av kjørevei for kjøretøy:\n- Kjørebredde, minst: 4,0 meter\n- Stigningsforhold, maksimalt: 1:8 (12,5 %)\n- Fri kjørehøyde, minst: 4 meter\n- Svingradius, ytterkant vei, minst: 12 meter\n- Akseltrykk, minst: 10 tonn\n- Boggitrykk, minst: 16 tonn"}
+                          onChange={(e) => setFormData({...formData, kjoreveiKrav: e.target.value})}
+                          rows={8}
+                        />
+                      </div>
+                      {(formData.hoyderedskapRelevant || formData.byggOver23m) && (
+                      <div className="mb-3">
+                        <Label className="text-xs font-medium mb-1 block">Krav til utforming av oppstillingsplasser for høyderedskaper</Label>
+                        <Textarea
+                          value={formData.oppstillingsplassKrav ?? "Følgende legges til grunn ved utforming av oppstillingsplasser for høyderedskaper:\n- Bredde på oppstillingsplass, minst: 7 meter\n- Lengde på oppstillingsplass, minst: 12 meter\n- Stigningsforhold på oppstillingsplass, maksimalt: 3,5 %\n- Punktbelastning støtteben: Maks. jordtrykk u/markplate 11,7 kg/cm²"}
+                          onChange={(e) => setFormData({...formData, oppstillingsplassKrav: e.target.value})}
+                          rows={6}
+                        />
+                      </div>
+                      )}
                       {/* Info om automatiske krav */}
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>

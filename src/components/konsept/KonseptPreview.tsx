@@ -4179,6 +4179,26 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
             )}
+            {(() => {
+              const kjoreveiTekst = formData.kjoreveiKrav ?? "Følgende legges til grunn ved utforming av kjørevei for kjøretøy:\n- Kjørebredde, minst: 4,0 meter\n- Stigningsforhold, maksimalt: 1:8 (12,5 %)\n- Fri kjørehøyde, minst: 4 meter\n- Svingradius, ytterkant vei, minst: 12 meter\n- Akseltrykk, minst: 10 tonn\n- Boggitrykk, minst: 16 tonn";
+              return kjoreveiTekst ? (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Utforming av kjørevei</td>
+                  <td className="border border-gray-400 p-2 whitespace-pre-line">{kjoreveiTekst}</td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              ) : null;
+            })()}
+            {(formData.hoyderedskapRelevant || formData.byggOver23m) && (() => {
+              const oppstillingsTekst = formData.oppstillingsplassKrav ?? "Følgende legges til grunn ved utforming av oppstillingsplasser for høyderedskaper:\n- Bredde på oppstillingsplass, minst: 7 meter\n- Lengde på oppstillingsplass, minst: 12 meter\n- Stigningsforhold på oppstillingsplass, maksimalt: 3,5 %\n- Punktbelastning støtteben: Maks. jordtrykk u/markplate 11,7 kg/cm²";
+              return oppstillingsTekst ? (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Utforming av oppstillingsplasser</td>
+                  <td className="border border-gray-400 p-2 whitespace-pre-line">{oppstillingsTekst}</td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              ) : null;
+            })()}
             {formData.redningsmannskap && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
