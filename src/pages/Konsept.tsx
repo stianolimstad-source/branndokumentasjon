@@ -474,6 +474,7 @@ const Konsept = () => {
         prosjektnavn: prev.prosjektnavn || newProjectData.name,
         adresse: prev.adresse || newProjectData.address || "",
         tiltaksbeskrivelse: prev.tiltaksbeskrivelse || newProjectData.description || "",
+        proRibr: prev.proRibr || authorInfo?.company || "",
       }));
       setNewProjectData({ name: "", description: "", address: "" });
       setIsCreateProjectOpen(false);
@@ -793,11 +794,12 @@ const Konsept = () => {
               prosjektnavn: prev.prosjektnavn || data.name || "",
               adresse: prev.adresse || data.address || "",
               tiltaksbeskrivelse: prev.tiltaksbeskrivelse || data.description || "",
+              proRibr: prev.proRibr || authorInfo?.company || "",
             }));
           }
         });
     }
-  }, [selectedProjectId, conceptId, user]);
+  }, [selectedProjectId, conceptId, user, authorInfo]);
 
   // Automatisk beregning av brannklasse
   const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.erRKL6Boligbygning);
