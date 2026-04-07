@@ -8045,8 +8045,8 @@ const Konsept = () => {
                               {formData.romningsveiSvalgang && <li>Krav til svalgang/altangang som rømningsvei</li>}
                               {formData.romningsveiKorridorOver30m && <li>Krav til seksjonering av korridor over 30 m (E 30-CSa)</li>}
                               {formData.romningsveiPanikkbeslag && <li>Krav til panikkbeslag</li>}
-                              {formData.romningsveiFriBreddeTrapp && <li>Fri bredde i trapp (§ 12-14)</li>}
-                              {formData.romningsveiIngenInnsnevring && <li>Krav om ingen innsnevring i rømningsvei</li>}
+                              <li>Fri bredde i trapp: min. {bredde}</li>
+                              <li>Krav om ingen innsnevring i rømningsvei</li>
                             </ul>
                           </div>
                         );
