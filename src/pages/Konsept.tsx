@@ -692,6 +692,8 @@ const Konsept = () => {
     sporadiskOpphold: false,
     takterrasseRelevant: false, // Takterrasse beregnet for personopphold
     tilstrekkeligeUtgangerUtenToTrapperom: false, // Bekreftelse at utganger er tilstrekkelige uten to trapperom
+    brannvesenTilgangRK4: true, // For RK4: brannvesenet har tilgang til alle leiligheter
+    rk4TrapperomTekst: "", // Redigerbar tekst for RK4 trapperom-krav
     branncelleStortAntallPersoner: false,
     stortAntallUnder600: false,
     stortAntallOver600: false,
