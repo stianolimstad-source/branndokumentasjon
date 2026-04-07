@@ -2498,7 +2498,8 @@ const Konsept = () => {
 
                           const aktiveTiltak: string[] = [];
                           if (formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b || formData.tilretteleggingLedd1c) aktiveTiltak.push("automatisk slokkeanlegg");
-                          if (formData.tilretteleggingLedd2a) aktiveTiltak.push("brannalarmanlegg");
+                          if (formData.tilretteleggingLedd2a || formData.alarmValg === "brannalarm" || formData.brannseksjonTiltak === "brannalarm") aktiveTiltak.push("brannalarmanlegg");
+                          if (formData.tilretteleggingLedd2b || formData.alarmValg === "roykvarsler") aktiveTiltak.push("røykvarslere");
                           if (formData.brannalarmTalevarsling) aktiveTiltak.push("talevarsling");
                           if (formData.tilretteleggingLedd3) aktiveTiltak.push("ledesystem");
 
