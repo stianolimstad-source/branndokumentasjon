@@ -6573,6 +6573,23 @@ const Konsept = () => {
                             </div>
                           </div>
 
+                          {/* Ytterkledning D-krav */}
+                          {(formData.brannklasse === "BKL2" || formData.brannklasse === "BKL3") && (
+                          <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                            <Label className="text-xs font-medium">Utvendig kledning</Label>
+                            <div className="flex items-start gap-2">
+                              <Checkbox
+                                id="ytterkledningDKrav"
+                                checked={formData.ytterkledningDKrav}
+                                onCheckedChange={(checked) => setFormData({...formData, ytterkledningDKrav: !!checked})}
+                              />
+                              <label htmlFor="ytterkledningDKrav" className="text-xs cursor-pointer leading-relaxed">
+                                Det gjøres tiltak for å ivareta D-s3,d0 [Ut 2] krav på ytterkledning (yttervegg utformet slik at den hindrer brannspredning i fasaden)
+                              </label>
+                            </div>
+                          </div>
+                          )}
+
                           {/* Isolasjon-valg */}
                           <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
                             <Label className="text-xs font-medium">Isolasjon</Label>
