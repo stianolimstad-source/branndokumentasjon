@@ -155,7 +155,7 @@ const DashboardPanel = () => {
         <Card>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">Siste konsepter</CardTitle>
+              <CardTitle className="text-base">Siste dokumenter</CardTitle>
               <Link to="/mine-prosjekter">
                 <Button variant="ghost" size="sm" className="text-xs h-7">
                   Se alle <ArrowRight className="h-3 w-3 ml-1" />
