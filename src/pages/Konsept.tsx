@@ -473,6 +473,7 @@ const Konsept = () => {
         ...prev,
         prosjektnavn: prev.prosjektnavn || newProjectData.name,
         adresse: prev.adresse || newProjectData.address || "",
+        tiltaksbeskrivelse: prev.tiltaksbeskrivelse || newProjectData.description || "",
       }));
       setNewProjectData({ name: "", description: "", address: "" });
       setIsCreateProjectOpen(false);
@@ -782,7 +783,7 @@ const Konsept = () => {
     if (selectedProjectId && !conceptId && user) {
       supabase
         .from('projects')
-        .select('name, address')
+        .select('name, address, description')
         .eq('id', selectedProjectId)
         .single()
         .then(({ data }) => {
@@ -791,6 +792,7 @@ const Konsept = () => {
               ...prev,
               prosjektnavn: prev.prosjektnavn || data.name || "",
               adresse: prev.adresse || data.address || "",
+              tiltaksbeskrivelse: prev.tiltaksbeskrivelse || data.description || "",
             }));
           }
         });
