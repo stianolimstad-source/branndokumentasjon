@@ -468,6 +468,12 @@ const Konsept = () => {
     } else if (data) {
       toast({ title: "Prosjekt opprettet", description: `"${newProjectData.name}" er nå opprettet` });
       setSelectedProjectId(data.id);
+      // Pre-fill prosjektnavn and adresse from the newly created project
+      setFormData(prev => ({
+        ...prev,
+        prosjektnavn: prev.prosjektnavn || newProjectData.name,
+        adresse: prev.adresse || newProjectData.address || "",
+      }));
       setNewProjectData({ name: "", description: "", address: "" });
       setIsCreateProjectOpen(false);
       searchParams.delete("new");
@@ -770,6 +776,26 @@ const Konsept = () => {
       loadConcept(conceptId);
     }
   }, [conceptId, user]);
+
+  // Pre-fill prosjektnavn and adresse from selected project (only for new concepts)
+  useEffect(() => {
+    if (selectedProjectId && !conceptId && user) {
+      supabase
+        .from('projects')
+        .select('name, address')
+        .eq('id', selectedProjectId)
+        .single()
+        .then(({ data }) => {
+          if (data) {
+            setFormData(prev => ({
+              ...prev,
+              prosjektnavn: prev.prosjektnavn || data.name || "",
+              adresse: prev.adresse || data.address || "",
+            }));
+          }
+        });
+    }
+  }, [selectedProjectId, conceptId, user]);
 
   // Automatisk beregning av brannklasse
   const beregnetBrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.erRKL6Boligbygning);
