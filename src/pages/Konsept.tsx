@@ -592,6 +592,7 @@ const Konsept = () => {
     interntrappBeskrivelse: "",
     roykKontrollKrav: [] as string[],
     roykKontrollKravTekst: "",
+    harOverbygdeGarder: false,
     vertikalBrannspredningRelevant: false,
     vertikalBrannspredningKrav: [] as string[],
     vinduBrannspredningRelevant: false,
@@ -972,6 +973,14 @@ const Konsept = () => {
       setFormData(prev => ({ ...prev, trapperomKravTekst: "" }));
     }
   }, [formData.risikoklasse, formData.etasjer]);
+
+  // Reset røykkontroll-tekst når etasjer endres (punkt 5 filtreres)
+  useEffect(() => {
+    if (isViewMode) return;
+    if (formData.roykKontrollKravTekst && formData.regelverk !== "BF85") {
+      setFormData(prev => ({ ...prev, roykKontrollKravTekst: "" }));
+    }
+  }, [formData.etasjer]);
 
   // Automatisk aktivering av høyderedskap basert på etasjeantall
   useEffect(() => {
@@ -5595,16 +5604,23 @@ const Konsept = () => {
                               </>
                             );
                           })() : (() => {
-                            const roykKravListe = [
-                              { id: "royk_romningsvei", label: "1. Trapperom som er rømningsvei i byggverk med flere enn to etasjer, må røykventileres." },
-                              { id: "royk_luke_vindu", label: "2. I byggverk med inntil 8 etasjer med trapperom Tr 1 eller Tr 2, jf. § 11-13 Tabell 2, er det tilstrekkelig med luke eller vindu med fri åpning minimum 1,0 m² øverst i trapperommet." },
-                              { id: "royk_manuell_bryter", label: "3. Luke eller vindu skal kunne åpnes manuelt med bryter fra inngangsplanet." },
-                              { id: "royk_mekanisk_ventilasjon", label: "4. Mellomliggende rom knyttet til Tr 2 må ha mekanisk balansert ventilasjon." },
-                              { id: "royk_tr3_trykksetting", label: "5. I byggverk med mer enn 8 etasjer med trapperom Tr 3, jf. § 11-13 Tabell 2, må det mellomliggende rommet være åpent mot det fri, eller trapperommet må trykksettes og det mellomliggende rommet må ha trykkavlastning (røykventilasjon)." },
-                              { id: "royk_overbygde_garder", label: "6. Overbygde gårder og gater må ha røykventilasjon for å hindre røykspredning mellom ulike brannceller som ligger ut mot den overbygde gården." },
+                            const etasjerNum = parseInt(formData.etasjer, 10) || 0;
+                            const alleRoykKrav = [
+                              { id: "royk_romningsvei", label: "Trapperom som er rømningsvei i byggverk med flere enn to etasjer, må røykventileres." },
+                              { id: "royk_luke_vindu", label: "I byggverk med inntil 8 etasjer med trapperom Tr 1 eller Tr 2, jf. § 11-13 Tabell 2, er det tilstrekkelig med luke eller vindu med fri åpning minimum 1,0 m² øverst i trapperommet." },
+                              { id: "royk_manuell_bryter", label: "Luke eller vindu skal kunne åpnes manuelt med bryter fra inngangsplanet." },
+                              { id: "royk_mekanisk_ventilasjon", label: "Mellomliggende rom knyttet til Tr 2 må ha mekanisk balansert ventilasjon." },
+                              { id: "royk_tr3_trykksetting", label: "I byggverk med mer enn 8 etasjer med trapperom Tr 3, jf. § 11-13 Tabell 2, må det mellomliggende rommet være åpent mot det fri, eller trapperommet må trykksettes og det mellomliggende rommet må ha trykkavlastning (røykventilasjon).", minEtasjer: 9 },
+                              { id: "royk_overbygde_garder", label: "Overbygde gårder og gater må ha røykventilasjon for å hindre røykspredning mellom ulike brannceller som ligger ut mot den overbygde gården.", requiresToggle: true },
                             ];
                             
-                            const roykOriginalTekst = roykKravListe.map(k => k.label).join("\n\n");
+                            const filtrerteKrav = alleRoykKrav.filter(k => {
+                              if (k.minEtasjer && etasjerNum < k.minEtasjer) return false;
+                              if (k.requiresToggle && !formData.harOverbygdeGarder) return false;
+                              return true;
+                            });
+                            
+                            const roykOriginalTekst = filtrerteKrav.map((k, i) => `${i + 1}. ${k.label}`).join("\n\n");
                             
                             if (!formData.roykKontrollKravTekst && roykOriginalTekst) {
                               setTimeout(() => setFormData({...formData, roykKontrollKravTekst: roykOriginalTekst}), 0);
@@ -5612,7 +5628,18 @@ const Konsept = () => {
                             
                             return (
                               <>
-                                <div className="flex justify-end">
+                                <div className="flex items-center justify-between mb-2">
+                                  <div className="flex items-center gap-2">
+                                    <Checkbox
+                                      id="har-overbygde-garder"
+                                      checked={formData.harOverbygdeGarder}
+                                      onCheckedChange={(checked) => {
+                                        const updated = {...formData, harOverbygdeGarder: !!checked, roykKontrollKravTekst: ""};
+                                        setFormData(updated);
+                                      }}
+                                    />
+                                    <label htmlFor="har-overbygde-garder" className="text-xs cursor-pointer">Overbygde gårder/gater</label>
+                                  </div>
                                   <Button
                                     type="button"
                                     variant="outline"
