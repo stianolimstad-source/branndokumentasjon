@@ -7982,29 +7982,7 @@ const Konsept = () => {
                         </Label>
                       </div>
 
-                      {/* Ingen innsnevring */}
-                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-                        <Checkbox 
-                          id="romningsveiIngenInnsnevring"
-                          checked={formData.romningsveiIngenInnsnevring}
-                          onCheckedChange={(checked) => setFormData({...formData, romningsveiIngenInnsnevring: checked === true})}
-                        />
-                        <Label htmlFor="romningsveiIngenInnsnevring" className="text-xs cursor-pointer">
-                          Krav om ingen innsnevring i rømningsvei
-                        </Label>
-                      </div>
-
-                      {/* Fri bredde i trapp */}
-                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-                        <Checkbox 
-                          id="romningsveiFriBreddeTrapp"
-                          checked={formData.romningsveiFriBreddeTrapp}
-                          onCheckedChange={(checked) => setFormData({...formData, romningsveiFriBreddeTrapp: checked === true})}
-                        />
-                        <Label htmlFor="romningsveiFriBreddeTrapp" className="text-xs cursor-pointer">
-                          Fri bredde i trapp (§ 12-14)
-                        </Label>
-                      </div>
+                      {/* Ingen innsnevring og fri bredde i trapp er alltid inkludert - ingen knapper nødvendig */}
 
                       {/* Svalgang/altangang */}
                       <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
