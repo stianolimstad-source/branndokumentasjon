@@ -974,6 +974,14 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.etasjer]);
 
+  // Reset røykkontroll-tekst når etasjer endres (punkt 5 filtreres)
+  useEffect(() => {
+    if (isViewMode) return;
+    if (formData.roykKontrollKravTekst && formData.regelverk !== "BF85") {
+      setFormData(prev => ({ ...prev, roykKontrollKravTekst: "" }));
+    }
+  }, [formData.etasjer]);
+
   // Automatisk aktivering av høyderedskap basert på etasjeantall
   useEffect(() => {
     if (isViewMode) return;
