@@ -4185,7 +4185,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Utforming av kjørevei</td>
                   <td className="border border-gray-400 p-2 whitespace-pre-line">{kjoreveiTekst}</td>
-                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  <td className="border border-gray-400 p-2 align-top">LARK</td>
                 </tr>
               ) : null;
             })()}
@@ -4195,7 +4195,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Utforming av oppstillingsplasser</td>
                   <td className="border border-gray-400 p-2 whitespace-pre-line">{oppstillingsTekst}</td>
-                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  <td className="border border-gray-400 p-2 align-top">LARK</td>
                 </tr>
               ) : null;
             })()}
