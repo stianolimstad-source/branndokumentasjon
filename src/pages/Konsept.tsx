@@ -863,7 +863,6 @@ const Konsept = () => {
     formData.garasjeAreal,
     formData.garasjeBruksenhet,
     formData.brannklasse,
-    formData.garasjeKravTekst,
     garasjeOriginalTekst,
     erBoligForGarasje,
   ]);
