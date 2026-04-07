@@ -2632,7 +2632,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                         </li>
                       )}
                       <li>Overflater i hulrom i ytterveggkonstruksjoner betraktes på samme måte som utvendig overflate og må ha minst like gode branntekniske egenskaper.</li>
-                      {(formData.brannklasse === "BKL1" || formData.risikoklasse === "RK4") && (
+                      {(formData.brannklasse === "BKL1" || formData.risikoklasse === "RK4") && parseInt(formData.etasjer) <= 3 && (
                         <li>Byggverk i brannklasse 1{formData.risikoklasse === "RK4" ? " og boliger" : ""} inntil 3 etasjer kan ha uklassifiserte overflater i hulrom.</li>
                       )}
                     </ul>
