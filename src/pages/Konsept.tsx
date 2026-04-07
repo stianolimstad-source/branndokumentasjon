@@ -7568,7 +7568,7 @@ const Konsept = () => {
                             onCheckedChange={(checked) => setFormData({...formData, romningsvinduRelevant: checked as boolean})}
                           />
                           <Label htmlFor="romningsvinduRelevant" className="text-sm cursor-pointer font-medium">
-                            Evakuering via vindu er relevant
+                            Evakuering via vindu er relevant (gjelder ikke rømning via brannvesenets høydemateriell)
                           </Label>
                         </div>
                         {formData.romningsvinduRelevant && (
