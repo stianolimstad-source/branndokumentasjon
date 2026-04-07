@@ -7982,29 +7982,7 @@ const Konsept = () => {
                         </Label>
                       </div>
 
-                      {/* Ingen innsnevring */}
-                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-                        <Checkbox 
-                          id="romningsveiIngenInnsnevring"
-                          checked={formData.romningsveiIngenInnsnevring}
-                          onCheckedChange={(checked) => setFormData({...formData, romningsveiIngenInnsnevring: checked === true})}
-                        />
-                        <Label htmlFor="romningsveiIngenInnsnevring" className="text-xs cursor-pointer">
-                          Krav om ingen innsnevring i rømningsvei
-                        </Label>
-                      </div>
-
-                      {/* Fri bredde i trapp */}
-                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-                        <Checkbox 
-                          id="romningsveiFriBreddeTrapp"
-                          checked={formData.romningsveiFriBreddeTrapp}
-                          onCheckedChange={(checked) => setFormData({...formData, romningsveiFriBreddeTrapp: checked === true})}
-                        />
-                        <Label htmlFor="romningsveiFriBreddeTrapp" className="text-xs cursor-pointer">
-                          Fri bredde i trapp (§ 12-14)
-                        </Label>
-                      </div>
+                      {/* Ingen innsnevring og fri bredde i trapp er alltid inkludert - ingen knapper nødvendig */}
 
                       {/* Svalgang/altangang */}
                       <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
@@ -8067,8 +8045,8 @@ const Konsept = () => {
                               {formData.romningsveiSvalgang && <li>Krav til svalgang/altangang som rømningsvei</li>}
                               {formData.romningsveiKorridorOver30m && <li>Krav til seksjonering av korridor over 30 m (E 30-CSa)</li>}
                               {formData.romningsveiPanikkbeslag && <li>Krav til panikkbeslag</li>}
-                              {formData.romningsveiFriBreddeTrapp && <li>Fri bredde i trapp (§ 12-14)</li>}
-                              {formData.romningsveiIngenInnsnevring && <li>Krav om ingen innsnevring i rømningsvei</li>}
+                              <li>Fri bredde i trapp: min. {bredde}</li>
+                              <li>Krav om ingen innsnevring i rømningsvei</li>
                             </ul>
                           </div>
                         );

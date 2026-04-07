@@ -3741,28 +3741,33 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
             )}
-            {formData.romningsveiIngenInnsnevring && (
-              <tr>
-                <td className="border border-gray-400 p-2 align-top font-medium">Ingen innsnevring</td>
-                <td className="border border-gray-400 p-2">
-                  <ul className="list-disc ml-4 space-y-1">
-                    <li>Rømningsvei må ikke ha innsnevring. Rekkverk, håndløper mv. i rømningsvei kan stikke inntil 10 cm ut fra vegg uten at den frie bredden må økes.</li>
-                  </ul>
-                </td>
-                <td className="border border-gray-400 p-2 align-top">ARK</td>
-              </tr>
-            )}
-            {formData.romningsveiFriBreddeTrapp && (
-              <tr>
-                <td className="border border-gray-400 p-2 align-top font-medium">Fri bredde i trapp</td>
-                <td className="border border-gray-400 p-2">
-                  <ul className="list-disc ml-4 space-y-1">
-                    <li>Fri bredde i trapp må være som for rømningsvei generelt, men minimum som angitt i § 12-14.</li>
-                  </ul>
-                </td>
-                <td className="border border-gray-400 p-2 align-top">ARK</td>
-              </tr>
-            )}
+            {(() => {
+              const rk = formData.risikoklasse || "";
+              const harBredRK = rk === "RK3" || rk === "RK5" || rk === "RK6" || formData.bygningsdeler?.some((d: any) => ["RK3","RK5","RK6"].includes(d.risikoklasse));
+              const breddeKrav = harBredRK ? "1,16 m" : "0,86 m";
+              return (
+                <>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top font-medium">Ingen innsnevring</td>
+                    <td className="border border-gray-400 p-2">
+                      <ul className="list-disc ml-4 space-y-1">
+                        <li>Rømningsvei må ikke ha innsnevring. Rekkverk, håndløper mv. i rømningsvei kan stikke inntil 10 cm ut fra vegg uten at den frie bredden må økes.</li>
+                      </ul>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top font-medium">Fri bredde i trapp</td>
+                    <td className="border border-gray-400 p-2">
+                      <ul className="list-disc ml-4 space-y-1">
+                        <li>Fri bredde i trapp skal være minimum {breddeKrav}, tilsvarende kravet til fri bredde i rømningsvei.</li>
+                      </ul>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
+                </>
+              );
+            })()}
 
 
 
