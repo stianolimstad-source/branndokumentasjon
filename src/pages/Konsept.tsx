@@ -793,6 +793,7 @@ const Konsept = () => {
               prosjektnavn: prev.prosjektnavn || data.name || "",
               adresse: prev.adresse || data.address || "",
               tiltaksbeskrivelse: prev.tiltaksbeskrivelse || data.description || "",
+              proRibr: prev.proRibr || authorInfo?.company || "",
             }));
           }
         });
