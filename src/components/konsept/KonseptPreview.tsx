@@ -4111,7 +4111,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <td className="border border-gray-400 p-2 align-top font-medium">Tilgjengelighet for høyderedskap</td>
               <td className="border border-gray-400 p-2">
                 <p>Byggverk inntil 8 etasjer må ha tilgjengelighet for brannvesenets høyderedskap (brannbil utstyrt med maskinstige eller snorkel) slik at alle etasjer og brannseksjoner kan nås.</p>
-                <p className="mt-1">I lave byggverk kan det tilrettelegges for bruk av bærbare stiger.</p>
+                {parseInt(formData.etasjer) <= 3 && (
+                  <p className="mt-1">I lave byggverk kan det tilrettelegges for bruk av bærbare stiger.</p>
+                )}
               </td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
