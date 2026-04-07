@@ -782,7 +782,7 @@ const Konsept = () => {
     if (selectedProjectId && !conceptId && user) {
       supabase
         .from('projects')
-        .select('name, address')
+        .select('name, address, description')
         .eq('id', selectedProjectId)
         .single()
         .then(({ data }) => {
@@ -791,6 +791,7 @@ const Konsept = () => {
               ...prev,
               prosjektnavn: prev.prosjektnavn || data.name || "",
               adresse: prev.adresse || data.address || "",
+              tiltaksbeskrivelse: prev.tiltaksbeskrivelse || data.description || "",
             }));
           }
         });
