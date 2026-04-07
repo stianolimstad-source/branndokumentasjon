@@ -2618,7 +2618,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Utvendige overflater</td>
+                  <td className="border border-gray-400 p-2 align-top">Overflater i hulrom</td>
                   <td className="border border-gray-400 p-2">
                     <ul className="list-disc ml-4 space-y-2 text-sm">
                       {(formData.brannklasse === "BKL2" || formData.brannklasse === "BKL3") && !formData.ytterkledningDKrav && (
