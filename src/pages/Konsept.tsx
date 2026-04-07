@@ -965,6 +965,14 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.etasjer, formData.bygningsdeler]);
 
+  // Reset trapperom kravtekst when RK or etasjer changes so it regenerates for the correct type
+  useEffect(() => {
+    if (isViewMode) return;
+    if (formData.trapperomKravTekst) {
+      setFormData(prev => ({ ...prev, trapperomKravTekst: "" }));
+    }
+  }, [formData.risikoklasse, formData.etasjer]);
+
   // Automatisk aktivering av høyderedskap basert på etasjeantall
   useEffect(() => {
     if (isViewMode) return;
