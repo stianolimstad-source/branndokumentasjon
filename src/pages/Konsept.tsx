@@ -7748,16 +7748,23 @@ const Konsept = () => {
                           Takterrasse beregnet for personopphold er relevant
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-2 p-2 bg-muted rounded mt-2">
-                        <Checkbox 
-                          id="tilstrekkeligeUtgangerUtenToTrapperom"
-                          checked={formData.tilstrekkeligeUtgangerUtenToTrapperom}
-                          onCheckedChange={(checked) => setFormData({...formData, tilstrekkeligeUtgangerUtenToTrapperom: checked as boolean})}
-                        />
-                        <Label htmlFor="tilstrekkeligeUtgangerUtenToTrapperom" className="text-sm cursor-pointer">
-                          Utgangene er tilstrekkelige uten krav om to trapperom (f.eks. direkte tilgang til det fri i flere plan)
-                        </Label>
-                      </div>
+                      {(() => {
+                        const rk = formData.risikoklasse || "";
+                        const isRK4 = rk === "RK4";
+                        if (isRK4) return null;
+                        return (
+                          <div className="flex items-center space-x-2 p-2 bg-muted rounded mt-2">
+                            <Checkbox 
+                              id="tilstrekkeligeUtgangerUtenToTrapperom"
+                              checked={formData.tilstrekkeligeUtgangerUtenToTrapperom}
+                              onCheckedChange={(checked) => setFormData({...formData, tilstrekkeligeUtgangerUtenToTrapperom: checked as boolean})}
+                            />
+                            <Label htmlFor="tilstrekkeligeUtgangerUtenToTrapperom" className="text-sm cursor-pointer">
+                              Utgangene er tilstrekkelige uten krav om to trapperom (f.eks. direkte tilgang til det fri i flere plan)
+                            </Label>
+                          </div>
+                        );
+                      })()}
                       </div>
 
                       {/* Bekreftelse dørkrav */}

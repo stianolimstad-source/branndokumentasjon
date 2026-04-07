@@ -3271,7 +3271,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2 align-top font-medium">Trapperom<br/><span className="text-xs text-muted-foreground">§ 11-13 (2)</span></td>
                   <td className="border border-gray-400 p-2">
                     <ul className="list-disc ml-4 space-y-1">
-                      {formData.tilstrekkeligeUtgangerUtenToTrapperom ? (
+                      {rkNum === 4 ? (
+                        <li>For risikoklasse {rkNum} med {etasjer} etasjer kreves {trType}. Det er tilstrekkelig med ett trapperom så lenge brannvesenet har tilkomst til hver boenhet med høydemateriell.</li>
+                      ) : formData.tilstrekkeligeUtgangerUtenToTrapperom ? (
                         <li>For risikoklasse {rkNum} med {etasjer} etasjer kreves {trType}. Det er bekreftet at utgangene er tilstrekkelige uten krav om to trapperom, da deler av bygget har direkte tilgang til det fri.</li>
                       ) : (
                         <li>Byggverk må ha minst to trapperom. For risikoklasse {rkNum} med {etasjer} etasjer kreves {trType}.</li>
@@ -3279,7 +3281,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       {(rkNum === 2) && !formData.tilstrekkeligeUtgangerUtenToTrapperom && (
                         <li>Unntak gjelder parkeringshus og garasje i risikoklasse 2 med inntil 8 etasjer, som må ha minst to trapperom Tr 2 dersom det ikke er utgang fra hver etasje til sikkert sted.</li>
                       )}
-                      {(rkNum === 1 || rkNum === 2 || rkNum === 4) && etasjer <= 8 && !formData.tilstrekkeligeUtgangerUtenToTrapperom && (
+                      {(rkNum === 1 || rkNum === 2) && etasjer <= 8 && !formData.tilstrekkeligeUtgangerUtenToTrapperom && (
                         <li>I byggverk med to trapperom Tr 1 må trappene være uavhengige av hverandre. Det må være separat atkomst til hvert av trapperommene fra alle de tilknyttede branncellene.</li>
                       )}
                     </ul>
