@@ -135,6 +135,18 @@ const MineProsjekter = () => {
     setIsCreating(false);
   };
 
+  const handleDeleteProject = async () => {
+    if (!deleteTarget) return;
+    const { error } = await supabase.from('projects').delete().eq('id', deleteTarget.id);
+    if (error) {
+      toast({ title: "Feil", description: "Kunne ikke slette prosjektet", variant: "destructive" });
+    } else {
+      toast({ title: "Slettet", description: `"${deleteTarget.name}" er slettet` });
+      setProjects((prev) => prev.filter((p) => p.id !== deleteTarget.id));
+    }
+    setDeleteTarget(null);
+  };
+
   if (loading) {
     return <div className="min-h-screen bg-gradient-subtle flex items-center justify-center"><p className="text-muted-foreground">Laster...</p></div>;
   }
