@@ -965,6 +965,14 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.etasjer, formData.bygningsdeler]);
 
+  // Reset trapperom kravtekst when RK or etasjer changes so it regenerates for the correct type
+  useEffect(() => {
+    if (isViewMode) return;
+    if (formData.trapperomKravTekst) {
+      setFormData(prev => ({ ...prev, trapperomKravTekst: "" }));
+    }
+  }, [formData.risikoklasse, formData.etasjer]);
+
   // Automatisk aktivering av høyderedskap basert på etasjeantall
   useEffect(() => {
     if (isViewMode) return;
@@ -5477,8 +5485,9 @@ const Konsept = () => {
 
                           const trapperomOriginalTekst = getTrapperomKravOriginalTekst();
 
-                          // Auto-populate if empty
-                          if (!formData.trapperomKravTekst && trapperomOriginalTekst) {
+                          // Auto-populate when empty, or auto-update when trapperom type changes
+                          // by checking if the current text matches any previously auto-generated text
+                          if (trapperomOriginalTekst && !formData.trapperomKravTekst) {
                             setTimeout(() => setFormData({...formData, trapperomKravTekst: trapperomOriginalTekst}), 0);
                           }
 
