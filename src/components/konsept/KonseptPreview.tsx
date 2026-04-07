@@ -3272,7 +3272,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2">
                     <ul className="list-disc ml-4 space-y-1">
                       {rkNum === 4 ? (
-                        <li>For risikoklasse {rkNum} med {etasjer} etasjer kreves {trType}. Det er tilstrekkelig med ett trapperom så lenge brannvesenet har tilkomst til hver boenhet med høydemateriell.</li>
+                        <li style={{whiteSpace: 'pre-wrap'}}>{formData.rk4TrapperomTekst || (formData.brannvesenTilgangRK4 !== false 
+                          ? `For risikoklasse ${rkNum} med ${etasjer} etasjer kreves ${trType}. Det er tilstrekkelig med ett trapperom da brannvesenet har tilkomst til hver boenhet med høydemateriell.`
+                          : `For risikoklasse ${rkNum} med ${etasjer} etasjer kreves ${trType}. Brannvesenet har ikke tilkomst til alle boenheter med høydemateriell. Byggverket må derfor ha minst to trapperom med separat atkomst fra alle tilknyttede brannceller.`)}</li>
                       ) : formData.tilstrekkeligeUtgangerUtenToTrapperom ? (
                         <li>For risikoklasse {rkNum} med {etasjer} etasjer kreves {trType}. Det er bekreftet at utgangene er tilstrekkelige uten krav om to trapperom, da deler av bygget har direkte tilgang til det fri.</li>
                       ) : (

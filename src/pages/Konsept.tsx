@@ -7753,7 +7753,68 @@ const Konsept = () => {
                       {(() => {
                         const rk = formData.risikoklasse || "";
                         const isRK4 = rk === "RK4";
-                        if (isRK4) return null;
+                        const etasjerNum = parseInt(formData.etasjer) || 1;
+                        
+                        if (isRK4) {
+                          // For RK4: checkbox for brannvesen-tilgang + redigerbar tekstboks
+                          const getTrapperomType = (e: number) => {
+                            if (e <= 4) return "Tr 1";
+                            if (e <= 8) return "Tr 2";
+                            return "Tr 3";
+                          };
+                          const trType = getTrapperomType(etasjerNum);
+                          
+                          const generateRK4Text = (tilgang: boolean) => {
+                            if (tilgang) {
+                              return `For risikoklasse 4 med ${etasjerNum} etasjer kreves ${trType}. Det er tilstrekkelig med ett trapperom da brannvesenet har tilkomst til hver boenhet med høydemateriell.`;
+                            } else {
+                              return `For risikoklasse 4 med ${etasjerNum} etasjer kreves ${trType}. Brannvesenet har ikke tilkomst til alle boenheter med høydemateriell. Byggverket må derfor ha minst to trapperom med separat atkomst fra alle tilknyttede brannceller.`;
+                            }
+                          };
+
+                          return (
+                            <>
+                              <div className="flex items-center space-x-2 p-2 bg-muted rounded mt-2">
+                                <Checkbox 
+                                  id="brannvesenTilgangRK4"
+                                  checked={formData.brannvesenTilgangRK4}
+                                  onCheckedChange={(checked) => {
+                                    const tilgang = checked as boolean;
+                                    setFormData({
+                                      ...formData, 
+                                      brannvesenTilgangRK4: tilgang,
+                                      rk4TrapperomTekst: generateRK4Text(tilgang)
+                                    });
+                                  }}
+                                />
+                                <Label htmlFor="brannvesenTilgangRK4" className="text-sm cursor-pointer">
+                                  Brannvesenet har tilkomst til alle boenheter med høydemateriell
+                                </Label>
+                              </div>
+                              <div className="mt-2">
+                                <div className="flex items-center justify-between mb-1">
+                                  <Label className="text-xs text-muted-foreground">Trapperom-krav (redigerbar)</Label>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 text-xs"
+                                    onClick={() => setFormData({...formData, rk4TrapperomTekst: generateRK4Text(formData.brannvesenTilgangRK4)})}
+                                  >
+                                    Sett original tekst
+                                  </Button>
+                                </div>
+                                <Textarea
+                                  value={formData.rk4TrapperomTekst || generateRK4Text(formData.brannvesenTilgangRK4)}
+                                  onChange={(e) => setFormData({...formData, rk4TrapperomTekst: e.target.value})}
+                                  rows={3}
+                                  className="text-sm"
+                                />
+                              </div>
+                            </>
+                          );
+                        }
+                        
                         return (
                           <div className="flex items-center space-x-2 p-2 bg-muted rounded mt-2">
                             <Checkbox 
