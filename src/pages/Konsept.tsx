@@ -738,6 +738,8 @@ const Konsept = () => {
     slokkeHandslukker: false,
     redningsmannskap: "",
     redningsmannskapKommentar: "",
+    kjoreveiKrav: "Følgende legges til grunn ved utforming av kjørevei for kjøretøy:\n- Kjørebredde, minst: 4,0 meter\n- Stigningsforhold, maksimalt: 1:8 (12,5 %)\n- Fri kjørehøyde, minst: 4 meter\n- Svingradius, ytterkant vei, minst: 12 meter\n- Akseltrykk, minst: 10 tonn\n- Boggitrykk, minst: 16 tonn",
+    oppstillingsplassKrav: "Følgende legges til grunn ved utforming av oppstillingsplasser for høyderedskaper:\n- Bredde på oppstillingsplass, minst: 7 meter\n- Lengde på oppstillingsplass, minst: 12 meter\n- Stigningsforhold på oppstillingsplass, maksimalt: 3,5 %\n- Punktbelastning støtteben: Maks. jordtrykk u/markplate 11,7 kg/cm²",
     byggOver23m: false,
     hoyderedskapRelevant: false,
     slangeutlegg50m: true,
