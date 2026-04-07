@@ -474,6 +474,7 @@ const Konsept = () => {
         prosjektnavn: prev.prosjektnavn || newProjectData.name,
         adresse: prev.adresse || newProjectData.address || "",
         tiltaksbeskrivelse: prev.tiltaksbeskrivelse || newProjectData.description || "",
+        proRibr: prev.proRibr || authorInfo?.company || "",
       }));
       setNewProjectData({ name: "", description: "", address: "" });
       setIsCreateProjectOpen(false);
