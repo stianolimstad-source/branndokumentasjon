@@ -468,6 +468,12 @@ const Konsept = () => {
     } else if (data) {
       toast({ title: "Prosjekt opprettet", description: `"${newProjectData.name}" er nå opprettet` });
       setSelectedProjectId(data.id);
+      // Pre-fill prosjektnavn and adresse from the newly created project
+      setFormData(prev => ({
+        ...prev,
+        prosjektnavn: prev.prosjektnavn || newProjectData.name,
+        adresse: prev.adresse || newProjectData.address || "",
+      }));
       setNewProjectData({ name: "", description: "", address: "" });
       setIsCreateProjectOpen(false);
       searchParams.delete("new");
