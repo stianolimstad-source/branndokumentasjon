@@ -799,19 +799,32 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </tr>
                 <tr className="bg-gray-100">
                   <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
-                  <th className="border border-gray-400 p-2 text-left">Løsning</th>
+                  {(() => {
+                    const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
+                    const alleDeler = [
+                      { id: 'del1', navn: formData.bygningstype || 'Bygningsdel 1', brannklasse: del1Bkl, index: 1 },
+                      ...bygningsdeler.map((del: any, i: number) => ({
+                        id: del.id || `del${i+2}`,
+                        navn: del.navn || del.bygningstype || `Bygningsdel ${i + 2}`,
+                        brannklasse: del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse,
+                        index: i + 2,
+                      }))
+                    ];
+                    return alleDeler.map(del => (
+                      <th key={del.id} className="border border-gray-400 p-2 text-left text-xs">
+                        Bygningsdel {del.index}<br/>{del.navn}<br/>({del.brannklasse})
+                      </th>
+                    ));
+                  })()}
                   <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
                 </tr>
                 {(() => {
-                  // Build all parts: Bygningsdel 1 + additional bygningsdeler
                   const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
                   const alleDeler = [
-                    { id: 'del1', navn: formData.bygningstype || 'Bygningsdel 1', brannklasse: del1Bkl, index: 1 },
+                    { id: 'del1', brannklasse: del1Bkl },
                     ...bygningsdeler.map((del: any, i: number) => ({
                       id: del.id || `del${i+2}`,
-                      navn: del.navn || del.bygningstype || `Bygningsdel ${i + 2}`,
                       brannklasse: del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse,
-                      index: i + 2,
                     }))
                   ];
                   const maxBkl = Math.max(...alleDeler.map(d => parseInt(d.brannklasse?.replace("BKL", "") || "1")));
@@ -826,73 +839,48 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     "4": { hovedsystem: "R 120 A2-s1,d0", sekundaer: "R 90 A2-s1,d0", etasjeskiller: "R 90 A2-s1,d0", trappeløp: "R 60 A2-s1,d0", utvendig: "A2-s1,d0", kjeller: "R 120 A2-s1,d0", tak: "R 90 A2-s1,d0" },
                   };
 
-                  return (
-                    <>
-                      <tr>
-                        <td className="border border-gray-400 p-2">Generelt</td>
-                        <td className="border border-gray-400 p-2">
-                          <p>{genereltTekst}</p>
-                          {formData.balkongRelevant && (
-                            <p className="mt-2">Balkonger, utkragede bygningsdeler og lignende må ha forsvarlig innfesting for å hindre nedfall som kan skade rednings- og slokkemannskapene og deres materiell under førsteinnsatsen. Tyngre bygningsdeler, som for eksempel balkonger, må forankres i byggverkets hovedbæresystem.</p>
-                          )}
-                        </td>
+                  const rows = [
+                    { label: "Generelt", key: null },
+                    { label: "Bærende hovedsystem", key: "hovedsystem" },
+                    { label: "Sekundære, bærende bygningsdeler", key: "sekundaer" },
+                    { label: "Etasjeskiller", key: "etasjeskiller" },
+                    { label: "Trappeløp", key: "trappeløp" },
+                    { label: "Utvendig trapp", key: "utvendig" },
+                    { label: "Plan under øverste kjeller", key: "kjeller" },
+                    { label: "Takkonstruksjon", key: "tak" },
+                  ];
+
+                  return rows.map((row, idx) => {
+                    if (row.key === null) {
+                      return (
+                        <tr key={idx}>
+                          <td className="border border-gray-400 p-2">Generelt</td>
+                          <td className="border border-gray-400 p-2" colSpan={alleDeler.length}>
+                            <p>{genereltTekst}</p>
+                            {formData.balkongRelevant && (
+                              <p className="mt-2">Balkonger, utkragede bygningsdeler og lignende må ha forsvarlig innfesting for å hindre nedfall som kan skade rednings- og slokkemannskapene og deres materiell under førsteinnsatsen. Tyngre bygningsdeler, som for eksempel balkonger, må forankres i byggverkets hovedbæresystem.</p>
+                            )}
+                          </td>
+                          <td className="border border-gray-400 p-2">RIB</td>
+                        </tr>
+                      );
+                    }
+                    return (
+                      <tr key={idx}>
+                        <td className="border border-gray-400 p-2">{row.label}</td>
+                        {alleDeler.map(del => {
+                          const bklNum = del.brannklasse?.replace("BKL", "") || "1";
+                          const delKrav = krav[bklNum] || krav["1"];
+                          return (
+                            <td key={del.id} className="border border-gray-400 p-2 text-red-600 font-medium">
+                              {delKrav[row.key as keyof typeof delKrav]}
+                            </td>
+                          );
+                        })}
                         <td className="border border-gray-400 p-2">RIB</td>
                       </tr>
-                      <tr className="bg-blue-50">
-                        <td className="border border-gray-400 p-2 font-semibold" colSpan={3}>
-                          Krav per bygningsdel:
-                        </td>
-                      </tr>
-                      {alleDeler.map((del) => {
-                        const bklNum = del.brannklasse?.replace("BKL", "") || "1";
-                        const delKrav = krav[bklNum] || krav["1"];
-                        return (
-                          <React.Fragment key={del.id}>
-                            <tr className="bg-blue-100">
-                              <td className="border border-gray-400 p-2 font-semibold" colSpan={3}>
-                                Bygningsdel {del.index} – {del.navn} ({del.brannklasse})
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="border border-gray-400 p-2">Bærende hovedsystem</td>
-                              <td className="border border-gray-400 p-2 text-red-600 font-medium">{delKrav.hovedsystem}</td>
-                              <td className="border border-gray-400 p-2">RIB</td>
-                            </tr>
-                            <tr>
-                              <td className="border border-gray-400 p-2">Sekundære, bærende bygningsdeler</td>
-                              <td className="border border-gray-400 p-2 text-red-600 font-medium">{delKrav.sekundaer}</td>
-                              <td className="border border-gray-400 p-2">RIB</td>
-                            </tr>
-                            <tr>
-                              <td className="border border-gray-400 p-2">Etasjeskiller</td>
-                              <td className="border border-gray-400 p-2 text-red-600 font-medium">{delKrav.etasjeskiller}</td>
-                              <td className="border border-gray-400 p-2">RIB</td>
-                            </tr>
-                            <tr>
-                              <td className="border border-gray-400 p-2">Trappeløp</td>
-                              <td className="border border-gray-400 p-2 text-red-600 font-medium">{delKrav.trappeløp}</td>
-                              <td className="border border-gray-400 p-2">RIB</td>
-                            </tr>
-                            <tr>
-                              <td className="border border-gray-400 p-2">Utvendig trapp</td>
-                              <td className="border border-gray-400 p-2 text-red-600 font-medium">{delKrav.utvendig}</td>
-                              <td className="border border-gray-400 p-2">RIB</td>
-                            </tr>
-                            <tr>
-                              <td className="border border-gray-400 p-2">Plan under øverste kjeller</td>
-                              <td className="border border-gray-400 p-2 text-red-600 font-medium">{delKrav.kjeller}</td>
-                              <td className="border border-gray-400 p-2">RIB</td>
-                            </tr>
-                            <tr>
-                              <td className="border border-gray-400 p-2">Takkonstruksjon</td>
-                              <td className="border border-gray-400 p-2 text-red-600 font-medium">{delKrav.tak}</td>
-                              <td className="border border-gray-400 p-2">RIB</td>
-                            </tr>
-                          </React.Fragment>
-                        );
-                      })}
-                    </>
-                  );
+                    );
+                  });
                 })()}
                 {formData.baereevneKommentar && (
                   <tr>
