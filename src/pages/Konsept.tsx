@@ -3593,7 +3593,7 @@ const Konsept = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">2.4 Tilleggskrav</Label>
+                      <Label className="text-xs text-muted-foreground">2.3 Tilleggskrav</Label>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Eventuelle tilleggskrav fra tiltakshaver, myndigheter eller bruker</Label>
                         <Textarea 
