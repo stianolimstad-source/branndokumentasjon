@@ -527,6 +527,7 @@ const Konsept = () => {
     tiltaksklasseBegrunnelse: "",
     avgrensning: "",
     avgrensningBilde: "" as string,
+    avgrensningBildeBreddeProsent: 100,
     // KS-status
     ksEgenkontrollUtfortAv: "",
     ksSidemannskontrollUtfortAv: "",
@@ -1436,7 +1437,7 @@ const Konsept = () => {
     );
   };
 
-  const renderPreview = () => <KonseptPreview formData={formData} logoUrl={logoUrl} authorInfo={authorInfo} documentType={documentType} />;
+  const renderPreview = () => <KonseptPreview formData={{...formData, onUpdateField: (field: string, value: any) => setFormData(prev => ({...prev, [field]: value}))}} logoUrl={logoUrl} authorInfo={authorInfo} documentType={documentType} />;
 
   const exportToWord = async () => {
     const tableBorders = {
@@ -1510,7 +1511,7 @@ const Konsept = () => {
           const img = new Image();
           await new Promise<void>((resolve) => {
             img.onload = () => {
-              const maxWidth = 450;
+              const maxWidth = 450 * ((formData.avgrensningBildeBreddeProsent || 100) / 100);
               const ratio = img.naturalWidth / img.naturalHeight;
               const w = Math.min(img.naturalWidth, maxWidth);
               avgrensningImageData = { buffer, width: w, height: Math.round(w / ratio) };

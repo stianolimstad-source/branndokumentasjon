@@ -411,7 +411,28 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         <p className="ml-4 mb-3">{formData.avgrensning || "[Avgrensning beskrives]"}</p>
         {formData.avgrensningBilde && (
           <div className="ml-4 mb-3">
-            <img src={formData.avgrensningBilde} alt="Tiltaksavgrensning" className="max-h-80 w-auto border border-border rounded" />
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-xs text-muted-foreground">Bildestørrelse:</span>
+              <input
+                type="range"
+                min={20}
+                max={100}
+                value={formData.avgrensningBildeBreddeProsent || 100}
+                onChange={(e) => {
+                  if (formData.onUpdateField) {
+                    formData.onUpdateField("avgrensningBildeBreddeProsent", Number(e.target.value));
+                  }
+                }}
+                className="w-32 h-1.5 accent-primary"
+              />
+              <span className="text-xs text-muted-foreground">{formData.avgrensningBildeBreddeProsent || 100}%</span>
+            </div>
+            <img
+              src={formData.avgrensningBilde}
+              alt="Tiltaksavgrensning"
+              style={{ width: `${formData.avgrensningBildeBreddeProsent || 100}%` }}
+              className="border border-border rounded"
+            />
             <p className="text-xs italic text-muted-foreground mt-1">Figur: Tiltaksavgrensning</p>
           </div>
         )}
