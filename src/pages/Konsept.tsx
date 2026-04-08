@@ -1500,6 +1500,29 @@ const Konsept = () => {
       } catch {}
     }
 
+    // Load avgrensning image if present
+    let avgrensningImageData: { buffer: ArrayBuffer; width: number; height: number } | null = null;
+    if (formData.avgrensningBilde) {
+      try {
+        const res = await fetch(formData.avgrensningBilde);
+        if (res.ok) {
+          const buffer = await res.arrayBuffer();
+          const img = new Image();
+          await new Promise<void>((resolve) => {
+            img.onload = () => {
+              const maxWidth = 450;
+              const ratio = img.naturalWidth / img.naturalHeight;
+              const w = Math.min(img.naturalWidth, maxWidth);
+              avgrensningImageData = { buffer, width: w, height: Math.round(w / ratio) };
+              resolve();
+            };
+            img.onerror = () => resolve();
+            img.src = formData.avgrensningBilde;
+          });
+        }
+      } catch {}
+    }
+
     // Build cover page elements
     const coverPageChildren: Paragraph[] = [];
     
