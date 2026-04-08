@@ -3221,6 +3221,19 @@ const Konsept = () => {
                       )}
                     </div>
                     )}
+                    <div className="space-y-2 mt-2">
+                      <Label className="text-xs font-medium">Universell utforming</Label>
+                      <div className="flex items-start gap-2">
+                        <Checkbox
+                          id="universellUtforming"
+                          checked={formData.universellUtforming}
+                          onCheckedChange={(checked) => setFormData({...formData, universellUtforming: checked === true})}
+                        />
+                        <Label htmlFor="universellUtforming" className="text-xs cursor-pointer leading-relaxed">
+                          Bygget skal være universelt utformet (åpningskraft dører maks 30 N, jf. § 12-13). Dersom ikke, gjelder maks 67 N.
+                        </Label>
+                      </div>
+                    </div>
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.2 Grunnlagsdokumenter</Label>
@@ -3577,19 +3590,6 @@ const Konsept = () => {
                         )}
                         </>
                         )}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">Universell utforming</Label>
-                      <div className="flex items-start gap-2">
-                        <Checkbox
-                          id="universellUtforming"
-                          checked={formData.universellUtforming}
-                          onCheckedChange={(checked) => setFormData({...formData, universellUtforming: checked === true})}
-                        />
-                        <Label htmlFor="universellUtforming" className="text-xs cursor-pointer leading-relaxed">
-                          Bygget skal være universelt utformet (åpningskraft dører maks 30 N, jf. § 12-13). Dersom ikke, gjelder maks 67 N.
-                        </Label>
                       </div>
                     </div>
                     <div className="space-y-2">
