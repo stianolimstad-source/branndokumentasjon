@@ -589,6 +589,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <th className="border border-gray-400 p-2 text-left">Risikoklasse</th>
                     <th className="border border-gray-400 p-2 text-left">Brannklasse</th>
                     <th className="border border-gray-400 p-2 text-left">Brannenergi</th>
+                    <th className="border border-gray-400 p-2 text-left">Univ. utforming</th>
                   </tr>
                 </thead>
                 <tbody>
