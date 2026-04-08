@@ -2971,10 +2971,9 @@ const Konsept = () => {
                             onChange={(e) => {
                               const checked = e.target.checked;
                               if (checked && formData.bygningsdeler.length === 0) {
-                                // Opprett 2 bygningsdeler automatisk
-                                const del1 = { id: crypto.randomUUID(), navn: "Bygningsdel 1", bygningstype: "", risikoklasse: "", brannklasse: "", brannklasseUnntak: "", harTerrengTilgang: "", areal: "", etasjer: formData.etasjer || "", spesifikkBrannenergi: "" };
+                                // Hovedbygget i 2.1 er Bygningsdel 1, opprett kun Bygningsdel 2
                                 const del2 = { id: crypto.randomUUID(), navn: "Bygningsdel 2", bygningstype: "", risikoklasse: "", brannklasse: "", brannklasseUnntak: "", harTerrengTilgang: "", areal: "", etasjer: formData.etasjer || "", spesifikkBrannenergi: "" };
-                                setFormData({...formData, harFlereRisikoklasser: true, bygningsdeler: [del1, del2]});
+                                setFormData({...formData, harFlereRisikoklasser: true, bygningsdeler: [del2]});
                               } else {
                                 setFormData({...formData, harFlereRisikoklasser: checked});
                               }
@@ -2999,7 +2998,7 @@ const Konsept = () => {
                               return (
                                 <div key={del.id} className="p-4 border rounded-lg bg-background space-y-3">
                                   <div className="flex items-center justify-between">
-                                    <Label className="text-sm font-semibold">Bygningsdel {index + 1}</Label>
+                                    <Label className="text-sm font-semibold">Bygningsdel {index + 2}</Label>
                                     <Button type="button" variant="ghost" size="sm" onClick={() => { const updated = formData.bygningsdeler.filter((_, i) => i !== index); setFormData({...formData, bygningsdeler: updated}); }}><X className="h-4 w-4" /></Button>
                                   </div>
                                   <div>
