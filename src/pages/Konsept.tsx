@@ -496,6 +496,7 @@ const Konsept = () => {
     areal: string;
     etasjer: string;
     spesifikkBrannenergi: string;
+    universellUtforming?: boolean;
   };
 
   const [allKap3Open, setAllKap3Open] = useState<boolean | undefined>(undefined);
@@ -3010,6 +3011,18 @@ const Konsept = () => {
                             </div>
                           );
                         })()}
+                        {formData.harFlereRisikoklasser && (
+                          <div className="flex items-start gap-2 mt-2">
+                            <Checkbox
+                              id="universellUtformingDel1"
+                              checked={formData.universellUtforming}
+                              onCheckedChange={(checked) => setFormData({...formData, universellUtforming: checked === true})}
+                            />
+                            <Label htmlFor="universellUtformingDel1" className="text-xs cursor-pointer leading-relaxed">
+                              Universell utforming (åpningskraft dører maks 30 N, jf. § 12-13)
+                            </Label>
+                          </div>
+                        )}
                         </div>
                         
                         {/* Bygningsdeler - vises under 2.1 når flere risikoklasser er valgt */}
@@ -3137,11 +3150,21 @@ const Konsept = () => {
                                       <SelectContent><SelectItem value="over400">Over 400 MJ/m²</SelectItem><SelectItem value="50-400">50-400 MJ/m²</SelectItem><SelectItem value="under50">Under 50 MJ/m²</SelectItem></SelectContent>
                                     </Select>
                                   </div>
+                                  <div className="flex items-start gap-2">
+                                    <Checkbox
+                                      id={`universellUtformingDel${index + 2}`}
+                                      checked={del.universellUtforming || false}
+                                      onCheckedChange={(checked) => { const updated = [...formData.bygningsdeler]; updated[index] = {...updated[index], universellUtforming: checked === true}; setFormData({...formData, bygningsdeler: updated}); }}
+                                    />
+                                    <Label htmlFor={`universellUtformingDel${index + 2}`} className="text-xs cursor-pointer leading-relaxed">
+                                      Universell utforming (åpningskraft dører maks 30 N, jf. § 12-13)
+                                    </Label>
+                                  </div>
                                 </div>
                               );
                             })}
                             
-                            <Button type="button" variant="outline" size="sm" onClick={() => { const newDel = { id: crypto.randomUUID(), navn: "", bygningstype: "", risikoklasse: "", brannklasse: "", brannklasseUnntak: "", harTerrengTilgang: "", areal: "", etasjer: formData.etasjer || "", spesifikkBrannenergi: "" }; setFormData({...formData, bygningsdeler: [...formData.bygningsdeler, newDel]}); }}>
+                            <Button type="button" variant="outline" size="sm" onClick={() => { const newDel = { id: crypto.randomUUID(), navn: "", bygningstype: "", risikoklasse: "", brannklasse: "", brannklasseUnntak: "", harTerrengTilgang: "", areal: "", etasjer: formData.etasjer || "", spesifikkBrannenergi: "", universellUtforming: false }; setFormData({...formData, bygningsdeler: [...formData.bygningsdeler, newDel]}); }}>
                               <Plus className="h-4 w-4 mr-1" /> Legg til bygningsdel
                             </Button>
 
@@ -3221,6 +3244,7 @@ const Konsept = () => {
                       )}
                     </div>
                     )}
+                    {!formData.harFlereRisikoklasser && (
                     <div className="space-y-2 mt-2">
                       <Label className="text-xs font-medium">Universell utforming</Label>
                       <div className="flex items-start gap-2">
@@ -3234,6 +3258,7 @@ const Konsept = () => {
                         </Label>
                       </div>
                     </div>
+                    )}
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.2 Grunnlagsdokumenter</Label>
