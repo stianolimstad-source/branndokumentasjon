@@ -1511,7 +1511,7 @@ const Konsept = () => {
           const img = new Image();
           await new Promise<void>((resolve) => {
             img.onload = () => {
-              const maxWidth = 450;
+              const maxWidth = 450 * ((formData.avgrensningBildeBreddeProsent || 100) / 100);
               const ratio = img.naturalWidth / img.naturalHeight;
               const w = Math.min(img.naturalWidth, maxWidth);
               avgrensningImageData = { buffer, width: w, height: Math.round(w / ratio) };
