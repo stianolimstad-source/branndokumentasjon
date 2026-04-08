@@ -528,6 +528,7 @@ const Konsept = () => {
     avgrensning: "",
     avgrensningBilde: "" as string,
     avgrensningBildeBreddeProsent: 100,
+    gjeldendeRegelverk: "• TEK17 - Forskrift om tekniske krav til byggverk\n• VTEK17 - Veiledning til teknisk forskrift",
     // KS-status
     ksEgenkontrollUtfortAv: "",
     ksSidemannskontrollUtfortAv: "",
