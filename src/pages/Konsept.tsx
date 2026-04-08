@@ -3574,7 +3574,8 @@ const Konsept = () => {
                                   brannklasseUnntak: "",
                                   harTerrengTilgang: "",
                                   areal: "",
-                                  etasjer: formData.etasjer || "", // Arv antall etasjer fra hovedskjema
+                                  etasjer: formData.etasjer || "",
+                                  spesifikkBrannenergi: "",
                                 };
                                 setFormData({
                                   ...formData,
