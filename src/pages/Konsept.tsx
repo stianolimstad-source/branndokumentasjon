@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Flame, ArrowLeft, FileDown, Download, Save, LogIn, X, Plus, AlertTriangle, ChevronDown, ChevronRight, Eye, RefreshCw, Sparkles } from "lucide-react";
+import { Flame, ArrowLeft, FileDown, Download, Save, LogIn, X, Plus, AlertTriangle, ChevronDown, ChevronRight, Eye, RefreshCw, Sparkles, Upload } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
@@ -526,6 +526,7 @@ const Konsept = () => {
     tiltaksklasse: "",
     tiltaksklasseBegrunnelse: "",
     avgrensning: "",
+    avgrensningBilde: "" as string,
     // KS-status
     ksEgenkontrollUtfortAv: "",
     ksSidemannskontrollUtfortAv: "",
@@ -1499,6 +1500,29 @@ const Konsept = () => {
       } catch {}
     }
 
+    // Load avgrensning image if present
+    let avgrensningImageData: { buffer: ArrayBuffer; width: number; height: number } | null = null;
+    if (formData.avgrensningBilde) {
+      try {
+        const res = await fetch(formData.avgrensningBilde);
+        if (res.ok) {
+          const buffer = await res.arrayBuffer();
+          const img = new Image();
+          await new Promise<void>((resolve) => {
+            img.onload = () => {
+              const maxWidth = 450;
+              const ratio = img.naturalWidth / img.naturalHeight;
+              const w = Math.min(img.naturalWidth, maxWidth);
+              avgrensningImageData = { buffer, width: w, height: Math.round(w / ratio) };
+              resolve();
+            };
+            img.onerror = () => resolve();
+            img.src = formData.avgrensningBilde;
+          });
+        }
+      } catch {}
+    }
+
     // Build cover page elements
     const coverPageChildren: Paragraph[] = [];
     
@@ -1829,6 +1853,18 @@ const Konsept = () => {
                 text: formData.avgrensning || "[Avgrensning beskrives]",
                 spacing: { after: 100 },
               }),
+              ...(avgrensningImageData ? [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [new ImageRun({ data: avgrensningImageData.buffer, transformation: { width: avgrensningImageData.width, height: avgrensningImageData.height }, type: "png" })],
+                  spacing: { after: 50 },
+                }),
+                new Paragraph({
+                  children: [new TextRun({ text: "Figur: Tiltaksavgrensning", italics: true, size: 18 })],
+                  alignment: AlignmentType.CENTER,
+                  spacing: { after: 100 },
+                }),
+              ] : []),
               new Paragraph({
                 children: [new TextRun({ text: "1.5 Gjeldende regelverk", bold: true, size: 24 })],
                 spacing: { before: 200, after: 100 },
@@ -2814,6 +2850,41 @@ const Konsept = () => {
                           value={formData.avgrensning}
                           onChange={(e) => setFormData({...formData, avgrensning: e.target.value})}
                         />
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Tegning av tiltaksavgrensning (valgfritt)</Label>
+                        {formData.avgrensningBilde ? (
+                          <div className="relative border border-border rounded-lg overflow-hidden">
+                            <img src={formData.avgrensningBilde} alt="Tiltaksavgrensning" className="max-h-64 w-auto mx-auto" />
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              className="absolute top-2 right-2"
+                              onClick={() => setFormData({...formData, avgrensningBilde: ""})}
+                            >
+                              Fjern
+                            </Button>
+                          </div>
+                        ) : (
+                          <label className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                            <Upload className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm text-muted-foreground">Last opp bilde</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                const reader = new FileReader();
+                                reader.onload = (ev) => {
+                                  setFormData({...formData, avgrensningBilde: ev.target?.result as string});
+                                };
+                                reader.readAsDataURL(file);
+                              }}
+                            />
+                          </label>
+                        )}
                       </div>
                     </div>
                     )}
