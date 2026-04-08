@@ -3010,6 +3010,18 @@ const Konsept = () => {
                             </div>
                           );
                         })()}
+                        {formData.harFlereRisikoklasser && (
+                          <div className="flex items-start gap-2 mt-2">
+                            <Checkbox
+                              id="universellUtformingDel1"
+                              checked={formData.universellUtforming}
+                              onCheckedChange={(checked) => setFormData({...formData, universellUtforming: checked === true})}
+                            />
+                            <Label htmlFor="universellUtformingDel1" className="text-xs cursor-pointer leading-relaxed">
+                              Universell utforming (åpningskraft dører maks 30 N, jf. § 12-13)
+                            </Label>
+                          </div>
+                        )}
                         </div>
                         
                         {/* Bygningsdeler - vises under 2.1 når flere risikoklasser er valgt */}
