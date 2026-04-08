@@ -3164,7 +3164,7 @@ const Konsept = () => {
                               );
                             })}
                             
-                            <Button type="button" variant="outline" size="sm" onClick={() => { const newDel = { id: crypto.randomUUID(), navn: "", bygningstype: "", risikoklasse: "", brannklasse: "", brannklasseUnntak: "", harTerrengTilgang: "", areal: "", etasjer: formData.etasjer || "", spesifikkBrannenergi: "" }; setFormData({...formData, bygningsdeler: [...formData.bygningsdeler, newDel]}); }}>
+                            <Button type="button" variant="outline" size="sm" onClick={() => { const newDel = { id: crypto.randomUUID(), navn: "", bygningstype: "", risikoklasse: "", brannklasse: "", brannklasseUnntak: "", harTerrengTilgang: "", areal: "", etasjer: formData.etasjer || "", spesifikkBrannenergi: "", universellUtforming: false }; setFormData({...formData, bygningsdeler: [...formData.bygningsdeler, newDel]}); }}>
                               <Plus className="h-4 w-4 mr-1" /> Legg til bygningsdel
                             </Button>
 
