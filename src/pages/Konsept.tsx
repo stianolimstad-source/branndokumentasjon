@@ -2819,6 +2819,33 @@ const Konsept = () => {
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.1 Bygningsinformasjon</Label>
                       <div className="space-y-3">
+                        {/* Toggle for flere risikoklasser - under 2.1 */}
+                        <div className="flex items-center gap-2 p-3 bg-muted/30 border rounded-md">
+                          <input
+                            type="checkbox"
+                            id="harFlereRisikoklasser"
+                            checked={formData.harFlereRisikoklasser}
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              if (checked && formData.bygningsdeler.length === 0) {
+                                const del2 = { id: crypto.randomUUID(), navn: "Bygningsdel 2", bygningstype: "", risikoklasse: "", brannklasse: "", brannklasseUnntak: "", harTerrengTilgang: "", areal: "", etasjer: formData.etasjer || "", spesifikkBrannenergi: "" };
+                                setFormData({...formData, harFlereRisikoklasser: true, bygningsdeler: [del2]});
+                              } else {
+                                setFormData({...formData, harFlereRisikoklasser: checked});
+                              }
+                            }}
+                            className="h-4 w-4"
+                          />
+                          <Label htmlFor="harFlereRisikoklasser" className="text-sm cursor-pointer">
+                            Tiltaket/bygget har flere risikoklasser eller brannklasser
+                          </Label>
+                        </div>
+
+                        {/* Bygningsdel 1 - wrapping card when multiple parts active */}
+                        {formData.harFlereRisikoklasser && (
+                          <Label className="text-sm font-semibold">Bygningsdel 1</Label>
+                        )}
+                        <div className={formData.harFlereRisikoklasser ? "p-4 border rounded-lg bg-background space-y-3" : "space-y-3"}>
                         <div>
                           <Label className="text-xs font-medium mb-1 block">Bygningstype</Label>
                           {documentType === "tilstandsvurdering" && formData.regelverk === "BF85" ? (
@@ -2944,7 +2971,6 @@ const Konsept = () => {
                             />
                           </div>
                         </div>
-                        {!formData.harFlereRisikoklasser && (
                         <div>
                           <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
                           <Select 
@@ -2961,8 +2987,7 @@ const Konsept = () => {
                             </SelectContent>
                           </Select>
                         </div>
-                        )}
-                        {/* Toggle for flere risikoklasser - under 2.1 */}
+                        </div>
                         <div className="flex items-center gap-2 p-3 bg-muted/30 border rounded-md">
                           <input
                             type="checkbox"
