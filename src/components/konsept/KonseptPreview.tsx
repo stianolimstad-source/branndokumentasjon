@@ -547,31 +547,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           </>
         ) : (
           <>
-          {/* For brannkonsept: original kap 2 structure */}
-          {grunnlagsdokumenter.length > 0 ? (
-            <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="border border-gray-400 p-2 text-left">Dokument</th>
-                  <th className="border border-gray-400 p-2 text-left">Utarbeidet av / firma</th>
-                  <th className="border border-gray-400 p-2 text-left">Datert</th>
-                </tr>
-              </thead>
-              <tbody>
-                {grunnlagsdokumenter.map((doc: any, index: number) => (
-                  <tr key={index}>
-                    <td className="border border-gray-400 p-2">{doc.navn || "-"}</td>
-                    <td className="border border-gray-400 p-2">{doc.utarbeidetAv || "-"}</td>
-                    <td className="border border-gray-400 p-2">{doc.dato ? doc.dato.split('-').reverse().join('.') : "-"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <p className="ml-4 mb-3">[Liste over tegninger og dokumenter]</p>
-          )}
-
-          <h3 className="font-semibold mb-2">2.2 Beskrivelse av bygning og branntekniske forutsetninger</h3>
+          {/* For brannkonsept: bygningsinfo som 2.1, grunnlagsdokumenter som 2.2 */}
           {isBF85 ? (
             <>
               <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
@@ -616,7 +592,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   </tr>
                 </thead>
                 <tbody>
-                  {/* Bygningsdel 1 from main formData */}
                   {(() => {
                     const del1Brannklasse = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
                     const del1BrannenergiLabel = formData.brannseksjonBrannenergi === "over400" ? "Over 400 MJ/m²" 
@@ -635,7 +610,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       </tr>
                     );
                   })()}
-                  {/* Bygningsdel 2+ */}
                   {bygningsdeler.map((del: any, index: number) => {
                     const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
                     const brannenergiLabel = del.spesifikkBrannenergi === "over400" ? "Over 400 MJ/m²" 
@@ -705,6 +679,30 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </tr>
               </tbody>
             </table>
+          )}
+
+          <h3 className="font-semibold mb-2">2.2 Grunnlagsdokumenter</h3>
+          {grunnlagsdokumenter.length > 0 ? (
+            <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-400 p-2 text-left">Dokument</th>
+                  <th className="border border-gray-400 p-2 text-left">Utarbeidet av / firma</th>
+                  <th className="border border-gray-400 p-2 text-left">Datert</th>
+                </tr>
+              </thead>
+              <tbody>
+                {grunnlagsdokumenter.map((doc: any, index: number) => (
+                  <tr key={index}>
+                    <td className="border border-gray-400 p-2">{doc.navn || "-"}</td>
+                    <td className="border border-gray-400 p-2">{doc.utarbeidetAv || "-"}</td>
+                    <td className="border border-gray-400 p-2">{doc.dato ? doc.dato.split('-').reverse().join('.') : "-"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="ml-4 mb-3">[Liste over tegninger og dokumenter]</p>
           )}
 
           <h3 className="font-semibold mb-2">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</h3>
