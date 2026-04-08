@@ -2816,6 +2816,41 @@ const Konsept = () => {
                           onChange={(e) => setFormData({...formData, avgrensning: e.target.value})}
                         />
                       </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Tegning av tiltaksavgrensning (valgfritt)</Label>
+                        {formData.avgrensningBilde ? (
+                          <div className="relative border border-border rounded-lg overflow-hidden">
+                            <img src={formData.avgrensningBilde} alt="Tiltaksavgrensning" className="max-h-64 w-auto mx-auto" />
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              className="absolute top-2 right-2"
+                              onClick={() => setFormData({...formData, avgrensningBilde: ""})}
+                            >
+                              Fjern
+                            </Button>
+                          </div>
+                        ) : (
+                          <label className="flex items-center justify-center gap-2 p-4 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                            <Upload className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm text-muted-foreground">Last opp bilde</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                const reader = new FileReader();
+                                reader.onload = (ev) => {
+                                  setFormData({...formData, avgrensningBilde: ev.target?.result as string});
+                                };
+                                reader.readAsDataURL(file);
+                              }}
+                            />
+                          </label>
+                        )}
+                      </div>
                     </div>
                     )}
                     {/* KS-status */}

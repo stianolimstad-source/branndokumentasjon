@@ -409,6 +409,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
         <h3 className="font-semibold mb-2">1.4 Avgrensning av tiltak</h3>
         <p className="ml-4 mb-3">{formData.avgrensning || "[Avgrensning beskrives]"}</p>
+        {formData.avgrensningBilde && (
+          <div className="ml-4 mb-3">
+            <img src={formData.avgrensningBilde} alt="Tiltaksavgrensning" className="max-h-80 w-auto border border-border rounded" />
+            <p className="text-xs italic text-muted-foreground mt-1">Figur: Tiltaksavgrensning</p>
+          </div>
+        )}
 
         <h3 className="font-semibold mb-2">1.5 Gjeldende regelverk</h3>
         <ul className="ml-4 mb-3 list-disc list-inside">
