@@ -644,7 +644,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       : "-";
                     return (
                       <tr key={del.id || index}>
-                        <td className="border border-gray-400 p-2">{del.navn || `Bygningsdel ${index + 2}`}</td>
+                        <td className="border border-gray-400 p-2">{`Bygningsdel ${index + 2}`}</td>
                         <td className="border border-gray-400 p-2">{del.bygningstype || "-"}</td>
                         <td className="border border-gray-400 p-2">{del.areal ? `${del.areal} m²` : "-"}</td>
                         <td className="border border-gray-400 p-2">{del.etasjer || "-"}</td>
