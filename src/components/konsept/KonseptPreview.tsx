@@ -799,32 +799,18 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </tr>
                 <tr className="bg-gray-100">
                   <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
-                  {(() => {
-                    const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
-                    const alleDeler = [
-                      { id: 'del1', navn: formData.bygningstype || 'Bygningsdel 1', brannklasse: del1Bkl, index: 1 },
-                      ...bygningsdeler.map((del: any, i: number) => ({
-                        id: del.id || `del${i+2}`,
-                        navn: del.navn || del.bygningstype || `Bygningsdel ${i + 2}`,
-                        brannklasse: del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse,
-                        index: i + 2,
-                      }))
-                    ];
-                    return alleDeler.map(del => (
-                      <th key={del.id} className="border border-gray-400 p-2 text-left text-xs">
-                        Bygningsdel {del.index}<br/>{del.navn}<br/>({del.brannklasse})
-                      </th>
-                    ));
-                  })()}
+                  <th className="border border-gray-400 p-2 text-left">Løsning</th>
                   <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
                 </tr>
                 {(() => {
                   const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
                   const alleDeler = [
-                    { id: 'del1', brannklasse: del1Bkl },
+                    { id: 'del1', navn: formData.bygningstype || 'Bygningsdel 1', brannklasse: del1Bkl, index: 1 },
                     ...bygningsdeler.map((del: any, i: number) => ({
                       id: del.id || `del${i+2}`,
+                      navn: del.navn || del.bygningstype || `Bygningsdel ${i + 2}`,
                       brannklasse: del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse,
+                      index: i + 2,
                     }))
                   ];
                   const maxBkl = Math.max(...alleDeler.map(d => parseInt(d.brannklasse?.replace("BKL", "") || "1")));
@@ -840,7 +826,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   };
 
                   const rows = [
-                    { label: "Generelt", key: null },
                     { label: "Bærende hovedsystem", key: "hovedsystem" },
                     { label: "Sekundære, bærende bygningsdeler", key: "sekundaer" },
                     { label: "Etasjeskiller", key: "etasjeskiller" },
@@ -850,37 +835,39 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     { label: "Takkonstruksjon", key: "tak" },
                   ];
 
-                  return rows.map((row, idx) => {
-                    if (row.key === null) {
-                      return (
+                  return (
+                    <>
+                      <tr>
+                        <td className="border border-gray-400 p-2">Generelt</td>
+                        <td className="border border-gray-400 p-2">
+                          <p>{genereltTekst}</p>
+                          {formData.balkongRelevant && (
+                            <p className="mt-2">Balkonger, utkragede bygningsdeler og lignende må ha forsvarlig innfesting for å hindre nedfall som kan skade rednings- og slokkemannskapene og deres materiell under førsteinnsatsen. Tyngre bygningsdeler, som for eksempel balkonger, må forankres i byggverkets hovedbæresystem.</p>
+                          )}
+                        </td>
+                        <td className="border border-gray-400 p-2">RIB</td>
+                      </tr>
+                      {rows.map((row, idx) => (
                         <tr key={idx}>
-                          <td className="border border-gray-400 p-2">Generelt</td>
-                          <td className="border border-gray-400 p-2" colSpan={alleDeler.length}>
-                            <p>{genereltTekst}</p>
-                            {formData.balkongRelevant && (
-                              <p className="mt-2">Balkonger, utkragede bygningsdeler og lignende må ha forsvarlig innfesting for å hindre nedfall som kan skade rednings- og slokkemannskapene og deres materiell under førsteinnsatsen. Tyngre bygningsdeler, som for eksempel balkonger, må forankres i byggverkets hovedbæresystem.</p>
-                            )}
+                          <td className="border border-gray-400 p-2">{row.label}</td>
+                          <td className="border border-gray-400 p-2">
+                            {alleDeler.map((del, delIdx) => {
+                              const bklNum = del.brannklasse?.replace("BKL", "") || "1";
+                              const delKrav = krav[bklNum] || krav["1"];
+                              const verdi = delKrav[row.key as keyof typeof delKrav];
+                              return (
+                                <p key={del.id} className={delIdx > 0 ? "mt-1" : ""}>
+                                  <span className="font-medium">Bygningsdel {del.index} ({del.navn}, {del.brannklasse}):</span>{" "}
+                                  <span className="text-red-600 font-medium">{verdi}</span>
+                                </p>
+                              );
+                            })}
                           </td>
                           <td className="border border-gray-400 p-2">RIB</td>
                         </tr>
-                      );
-                    }
-                    return (
-                      <tr key={idx}>
-                        <td className="border border-gray-400 p-2">{row.label}</td>
-                        {alleDeler.map(del => {
-                          const bklNum = del.brannklasse?.replace("BKL", "") || "1";
-                          const delKrav = krav[bklNum] || krav["1"];
-                          return (
-                            <td key={del.id} className="border border-gray-400 p-2 text-red-600 font-medium">
-                              {delKrav[row.key as keyof typeof delKrav]}
-                            </td>
-                          );
-                        })}
-                        <td className="border border-gray-400 p-2">RIB</td>
-                      </tr>
-                    );
-                  });
+                      ))}
+                    </>
+                  );
                 })()}
                 {formData.baereevneKommentar && (
                   <tr>
