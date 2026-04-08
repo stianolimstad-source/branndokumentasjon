@@ -528,6 +528,7 @@ const Konsept = () => {
     avgrensning: "",
     avgrensningBilde: "" as string,
     avgrensningBildeBreddeProsent: 100,
+    gjeldendeRegelverk: "• TEK17 - Forskrift om tekniske krav til byggverk\n• VTEK17 - Veiledning til teknisk forskrift",
     // KS-status
     ksEgenkontrollUtfortAv: "",
     ksSidemannskontrollUtfortAv: "",
@@ -1870,8 +1871,9 @@ const Konsept = () => {
                 children: [new TextRun({ text: "1.5 Gjeldende regelverk", bold: true, size: 24 })],
                 spacing: { before: 200, after: 100 },
               }),
-              new Paragraph({ text: "• TEK17 - Forskrift om tekniske krav til byggverk", spacing: { after: 50 } }),
-              new Paragraph({ text: "• VTEK17 - Veiledning til teknisk forskrift", spacing: { after: 100 } }),
+              ...(formData.gjeldendeRegelverk || "• TEK17 - Forskrift om tekniske krav til byggverk\n• VTEK17 - Veiledning til teknisk forskrift").split('\n').filter((l: string) => l.trim()).map((line: string) =>
+                new Paragraph({ text: line, spacing: { after: 50 } })
+              ),
               new Paragraph({
                 children: [new TextRun({ text: "1.6 Kvalitetssikring (KS)", bold: true, size: 24 })],
                 spacing: { before: 200, after: 100 },
@@ -2886,6 +2888,20 @@ const Konsept = () => {
                             />
                           </label>
                         )}
+                      </div>
+                    </div>
+                    )}
+                    {documentType !== "tilstandsvurdering" && (
+                    <div className="space-y-2">
+                      <Label className="text-xs text-muted-foreground">1.5 Gjeldende regelverk</Label>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Regelverk som gjelder for prosjektet</Label>
+                        <Textarea
+                          value={formData.gjeldendeRegelverk}
+                          onChange={(e) => setFormData({...formData, gjeldendeRegelverk: e.target.value})}
+                          placeholder="• TEK17 - Forskrift om tekniske krav til byggverk&#10;• VTEK17 - Veiledning til teknisk forskrift"
+                          rows={4}
+                        />
                       </div>
                     </div>
                     )}
