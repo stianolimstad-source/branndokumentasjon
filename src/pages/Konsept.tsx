@@ -495,6 +495,7 @@ const Konsept = () => {
     harTerrengTilgang: string;
     areal: string;
     etasjer: string;
+    spesifikkBrannenergi: string;
   };
 
   const [allKap3Open, setAllKap3Open] = useState<boolean | undefined>(undefined);
@@ -2943,6 +2944,7 @@ const Konsept = () => {
                             />
                           </div>
                         </div>
+                        {!formData.harFlereRisikoklasser && (
                         <div>
                           <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
                           <Select 
@@ -2959,6 +2961,7 @@ const Konsept = () => {
                             </SelectContent>
                           </Select>
                         </div>
+                        )}
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -3555,6 +3558,27 @@ const Konsept = () => {
                                       <p className="text-xs text-blue-600">{delBrannklasseResult.brannklasseUnntak}</p>
                                     </div>
                                   )}
+
+                                  <div>
+                                    <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
+                                    <Select 
+                                      value={del.spesifikkBrannenergi || ""}
+                                      onValueChange={(value) => {
+                                        const updated = [...formData.bygningsdeler];
+                                        updated[index] = {...updated[index], spesifikkBrannenergi: value};
+                                        setFormData({...formData, bygningsdeler: updated});
+                                      }}
+                                    >
+                                      <SelectTrigger>
+                                        <SelectValue placeholder="Velg brannenergi..." />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="over400">Over 400 MJ/m²</SelectItem>
+                                        <SelectItem value="50-400">50-400 MJ/m²</SelectItem>
+                                        <SelectItem value="under50">Under 50 MJ/m²</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
                                 </div>
                               );
                             })}
@@ -3573,7 +3597,8 @@ const Konsept = () => {
                                   brannklasseUnntak: "",
                                   harTerrengTilgang: "",
                                   areal: "",
-                                  etasjer: formData.etasjer || "", // Arv antall etasjer fra hovedskjema
+                                  etasjer: formData.etasjer || "",
+                                  spesifikkBrannenergi: "",
                                 };
                                 setFormData({
                                   ...formData,
