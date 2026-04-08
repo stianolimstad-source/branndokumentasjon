@@ -477,7 +477,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
            <h2 id="preview-kap2" className="font-bold mb-3">2. Grunnlag og forutsetninger for brannteknisk prosjektering</h2>
         )}
         
-        <h3 className="font-semibold mb-2">{isTilstand ? "2.1 Bygningsinformasjon" : "2.1 Grunnlagsdokumenter"}</h3>
+        <h3 className="font-semibold mb-2">{isTilstand ? "2.1 Bygningsinformasjon" : "2.1 Beskrivelse av bygning og branntekniske forutsetninger"}</h3>
         {isTilstand ? (
           <>
           {/* For tilstandsvurdering: bygningsinfo først */}
