@@ -3211,14 +3211,20 @@ const Konsept = () => {
                             {formData.bygningsdeler.length > 0 && (
                               <div className="p-3 bg-green-50 border border-green-200 rounded-md">
                                 <Label className="text-xs font-medium mb-1 block text-green-700">Oppsummering</Label>
-                                <p className="text-xs text-green-700">
+                                <div className="text-xs text-green-700 space-y-1">
                                   {(() => {
-                                    const risikoklasser = formData.bygningsdeler.map(d => d.risikoklasse).filter(Boolean);
-                                    const brannklasser = formData.bygningsdeler.map(d => { const result = getBrannklasse(d.risikoklasse, d.etasjer, d.harTerrengTilgang, d.areal); return d.brannklasse || result.brannklasse; }).filter(Boolean);
-                                    const hoyesteBrannklasse = brannklasser.reduce((max, bkl) => { const num = parseInt(bkl.replace(/\D/g, ''), 10); const maxNum = parseInt(max.replace(/\D/g, ''), 10) || 0; return num > maxNum ? bkl : max; }, "BKL1");
-                                    return `Risikoklasser: ${[...new Set(risikoklasser)].join(", ") || "Ikke angitt"} | Høyeste brannklasse: ${hoyesteBrannklasse}`;
+                                    const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
+                                    const lines = [
+                                      `Bygningsdel 1: ${formData.bygningstype || "Ikke angitt"} – ${formData.risikoklasse || "?"} / ${del1Bkl || "?"}`,
+                                      ...formData.bygningsdeler.map((d, i) => {
+                                        const bkl = d.brannklasse || getBrannklasse(d.risikoklasse, d.etasjer, d.harTerrengTilgang, d.areal).brannklasse;
+                                        return `Bygningsdel ${i + 2}: ${d.bygningstype || d.navn || "Ikke angitt"} – ${d.risikoklasse || "?"} / ${bkl || "?"}`;
+                                      })
+                                    ];
+                                    return lines.map((line, i) => <p key={i}>{line}</p>);
                                   })()}
-                                </p>
+                                  <p className="font-medium mt-1">Tiltaksklasse: {autoTiltaksklasse || "Ikke beregnet"}</p>
+                                </div>
                               </div>
                             )}
                           </div>
