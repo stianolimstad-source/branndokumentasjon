@@ -608,6 +608,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                         <td className="border border-gray-400 p-2">{formData.risikoklasse || "-"}</td>
                         <td className="border border-gray-400 p-2">{del1Brannklasse || "-"}</td>
                         <td className="border border-gray-400 p-2">{del1BrannenergiLabel}</td>
+                        <td className="border border-gray-400 p-2">{formData.universellUtforming ? "Ja" : "Nei"}</td>
                       </tr>
                     );
                   })()}
