@@ -1871,8 +1871,9 @@ const Konsept = () => {
                 children: [new TextRun({ text: "1.5 Gjeldende regelverk", bold: true, size: 24 })],
                 spacing: { before: 200, after: 100 },
               }),
-              new Paragraph({ text: "• TEK17 - Forskrift om tekniske krav til byggverk", spacing: { after: 50 } }),
-              new Paragraph({ text: "• VTEK17 - Veiledning til teknisk forskrift", spacing: { after: 100 } }),
+              ...(formData.gjeldendeRegelverk || "• TEK17 - Forskrift om tekniske krav til byggverk\n• VTEK17 - Veiledning til teknisk forskrift").split('\n').filter((l: string) => l.trim()).map((line: string) =>
+                new Paragraph({ text: line, spacing: { after: 50 } })
+              ),
               new Paragraph({
                 children: [new TextRun({ text: "1.6 Kvalitetssikring (KS)", bold: true, size: 24 })],
                 spacing: { before: 200, after: 100 },
