@@ -2961,7 +2961,7 @@ const Konsept = () => {
                             />
                           </div>
                           <div>
-                            <Label className="text-xs font-medium mb-1 block">Antall etasjer</Label>
+                            <Label className="text-xs font-medium mb-1 block">Antall etasjer <span className="text-muted-foreground font-normal ml-1">(totalt)</span></Label>
                             <Input 
                               value={formData.etasjer}
                               onChange={(e) => {
