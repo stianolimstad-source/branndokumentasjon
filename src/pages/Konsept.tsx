@@ -1087,7 +1087,7 @@ const Konsept = () => {
     if (nyTiltaksklasse && !formData.tiltaksklasse) {
       setFormData(prev => ({ ...prev, tiltaksklasse: nyTiltaksklasse }));
     }
-  }, [formData.brannklasse, formData.risikoklasse, formData.prosjekteringsmetode, beregnetBrannklasseResult.brannklasse]);
+  }, [formData.brannklasse, formData.risikoklasse, formData.prosjekteringsmetode, beregnetBrannklasseResult.brannklasse, formData.harFlereRisikoklasser, formData.bygningsdeler]);
 
   // Bygg dynamisk litteraturliste basert på konseptets innstillinger
   const genererLitteraturRefs = () => {
