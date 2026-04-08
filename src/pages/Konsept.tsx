@@ -3746,6 +3746,44 @@ const Konsept = () => {
                           onChange={(e) => setFormData({...formData, baereevne: e.target.value})}
                           className="min-h-[140px]"
                         />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="mt-1 text-xs"
+                          onClick={() => {
+                            if (formData.regelverk === "BF85") {
+                              if (!formData.bygningsbrannklasse) return;
+                              const bf85Result = getBaereevneTekstBF85(formData.bygningsbrannklasse);
+                              if (bf85Result.tekst) {
+                                setFormData(prev => ({ ...prev, baereevne: bf85Result.tekst, baereevneUnntak: [] }));
+                              }
+                              return;
+                            }
+                            const toggles = { trappeloep: formData.trappeloepRelevant, kjeller: formData.kjellerRelevant, utvendig: formData.utvendigTrapperRelevant };
+                            const harFlere = formData.bygningsdeler && formData.bygningsdeler.length > 0;
+                            if (harFlere) {
+                              const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
+                              const del1Result = getBaereevneTekst(del1Bkl, formData.risikoklasse, formData.etasjer, toggles);
+                              const sections = [`[Bygningsdel 1 – ${formData.bygningstype || 'Bygningsdel 1'} (${del1Bkl})]\n${del1Result.tekst}`];
+                              const alleUnntak = [...del1Result.anvendteUnntak];
+                              formData.bygningsdeler.forEach((del: any, i: number) => {
+                                const delBkl = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+                                const delResult = getBaereevneTekst(delBkl, del.risikoklasse, del.etasjer || formData.etasjer, toggles);
+                                sections.push(`[Bygningsdel ${i + 2} – ${del.navn || del.bygningstype || `Bygningsdel ${i + 2}`} (${delBkl})]\n${delResult.tekst}`);
+                                alleUnntak.push(...delResult.anvendteUnntak);
+                              });
+                              setFormData(prev => ({ ...prev, baereevne: sections.join('\n\n'), baereevneUnntak: [...new Set(alleUnntak)] }));
+                            } else {
+                              const result = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer, toggles);
+                              if (result.tekst) {
+                                setFormData(prev => ({ ...prev, baereevne: result.tekst, baereevneUnntak: result.anvendteUnntak }));
+                              }
+                            }
+                          }}
+                        >
+                          Sett original tekst
+                        </Button>
                         {formData.regelverk !== "BF85" && formData.baereevne && formData.brannklasse && (() => {
                           const toggles = { trappeloep: formData.trappeloepRelevant, kjeller: formData.kjellerRelevant, utvendig: formData.utvendigTrapperRelevant };
                           const auto = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer, toggles);
