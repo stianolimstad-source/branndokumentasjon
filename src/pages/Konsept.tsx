@@ -3243,6 +3243,7 @@ const Konsept = () => {
                       )}
                     </div>
                     )}
+                    {!formData.harFlereRisikoklasser && (
                     <div className="space-y-2 mt-2">
                       <Label className="text-xs font-medium">Universell utforming</Label>
                       <div className="flex items-start gap-2">
@@ -3256,6 +3257,7 @@ const Konsept = () => {
                         </Label>
                       </div>
                     </div>
+                    )}
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">2.2 Grunnlagsdokumenter</Label>
