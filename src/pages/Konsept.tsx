@@ -1830,6 +1830,18 @@ const Konsept = () => {
                 text: formData.avgrensning || "[Avgrensning beskrives]",
                 spacing: { after: 100 },
               }),
+              ...(avgrensningImageData ? [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [new ImageRun({ data: avgrensningImageData.buffer, transformation: { width: avgrensningImageData.width, height: avgrensningImageData.height }, type: "png" })],
+                  spacing: { after: 50 },
+                }),
+                new Paragraph({
+                  children: [new TextRun({ text: "Figur: Tiltaksavgrensning", italics: true, size: 18 })],
+                  alignment: AlignmentType.CENTER,
+                  spacing: { after: 100 },
+                }),
+              ] : []),
               new Paragraph({
                 children: [new TextRun({ text: "1.5 Gjeldende regelverk", bold: true, size: 24 })],
                 spacing: { before: 200, after: 100 },
