@@ -495,6 +495,7 @@ const Konsept = () => {
     harTerrengTilgang: string;
     areal: string;
     etasjer: string;
+    spesifikkBrannenergi: string;
   };
 
   const [allKap3Open, setAllKap3Open] = useState<boolean | undefined>(undefined);
