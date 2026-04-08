@@ -683,6 +683,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     )}
                   </td>
                 </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 font-semibold">Universell utforming</td>
+                  <td className="border border-gray-400 p-2">
+                    {formData.universellUtforming ? "Ja" : "Nei"}
+                  </td>
+                </tr>
               </tbody>
             </table>
           )}
