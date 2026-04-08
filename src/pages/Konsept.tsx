@@ -2944,6 +2944,7 @@ const Konsept = () => {
                             />
                           </div>
                         </div>
+                        {!formData.harFlereRisikoklasser && (
                         <div>
                           <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
                           <Select 
@@ -2960,6 +2961,7 @@ const Konsept = () => {
                             </SelectContent>
                           </Select>
                         </div>
+                        )}
                       </div>
                     </div>
                     <div className="space-y-2">

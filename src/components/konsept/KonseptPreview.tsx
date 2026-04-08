@@ -611,19 +611,25 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <th className="border border-gray-400 p-2 text-left">Etasjer</th>
                     <th className="border border-gray-400 p-2 text-left">Risikoklasse</th>
                     <th className="border border-gray-400 p-2 text-left">Brannklasse</th>
+                    <th className="border border-gray-400 p-2 text-left">Brannenergi</th>
                   </tr>
                 </thead>
                 <tbody>
                   {bygningsdeler.map((del: any, index: number) => {
                     const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+                    const brannenergiLabel = del.spesifikkBrannenergi === "over400" ? "Over 400 MJ/m²" 
+                      : del.spesifikkBrannenergi === "50-400" ? "50-400 MJ/m²" 
+                      : del.spesifikkBrannenergi === "under50" ? "Under 50 MJ/m²" 
+                      : "-";
                     return (
                       <tr key={del.id || index}>
-                        <td className="border border-gray-400 p-2">{del.navn || `Del ${index + 1}`}</td>
+                        <td className="border border-gray-400 p-2">{del.navn || `Bygningsdel ${index + 1}`}</td>
                         <td className="border border-gray-400 p-2">{del.bygningstype || "-"}</td>
                         <td className="border border-gray-400 p-2">{del.areal ? `${del.areal} m²` : "-"}</td>
                         <td className="border border-gray-400 p-2">{del.etasjer || "-"}</td>
                         <td className="border border-gray-400 p-2">{del.risikoklasse || "-"}</td>
                         <td className="border border-gray-400 p-2">{delBrannklasse || "-"}</td>
+                        <td className="border border-gray-400 p-2">{brannenergiLabel}</td>
                       </tr>
                     );
                   })}
