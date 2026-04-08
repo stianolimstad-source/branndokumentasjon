@@ -2987,6 +2987,29 @@ const Konsept = () => {
                             </SelectContent>
                           </Select>
                         </div>
+                        {formData.harFlereRisikoklasser && (() => {
+                          const del1BrannklasseResult = getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal);
+                          return (
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Risikoklasse</Label>
+                                <Select value={formData.risikoklasse} onValueChange={(value) => setFormData({...formData, risikoklasse: value})}>
+                                  <SelectTrigger><SelectValue placeholder="Velg" /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="RK1">RK 1</SelectItem><SelectItem value="RK2">RK 2</SelectItem><SelectItem value="RK3">RK 3</SelectItem><SelectItem value="RK4">RK 4</SelectItem><SelectItem value="RK5">RK 5</SelectItem><SelectItem value="RK6">RK 6</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Brannklasse {del1BrannklasseResult.brannklasse && <span className="text-muted-foreground ml-1 text-xs">(Auto: {del1BrannklasseResult.brannklasse})</span>}</Label>
+                                <Select value={formData.brannklasse || del1BrannklasseResult.brannklasse} onValueChange={(value) => setFormData({...formData, brannklasse: value})}>
+                                  <SelectTrigger><SelectValue placeholder="Velg" /></SelectTrigger>
+                                  <SelectContent><SelectItem value="BKL1">BKL 1</SelectItem><SelectItem value="BKL2">BKL 2</SelectItem><SelectItem value="BKL3">BKL 3</SelectItem></SelectContent>
+                                </Select>
+                              </div>
+                            </div>
+                          );
+                        })()}
                         </div>
                         
                         {/* Bygningsdeler - vises under 2.1 når flere risikoklasser er valgt */}
