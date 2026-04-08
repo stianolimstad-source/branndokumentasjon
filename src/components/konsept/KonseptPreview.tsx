@@ -633,17 +633,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   })}
                    <tr>
                     <td className="border border-gray-400 p-2 font-semibold" colSpan={2}>Tiltaksklasse</td>
-                    <td className="border border-gray-400 p-2" colSpan={5}>
+                    <td className="border border-gray-400 p-2" colSpan={6}>
                       {formData.tiltaksklasse || "[Angis]"}
                       {formData.tiltaksklasseBegrunnelse && (
                         <p className="text-xs italic mt-1">Begrunnelse: {formData.tiltaksklasseBegrunnelse}</p>
                       )}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-400 p-2 font-semibold" colSpan={2}>Universell utforming</td>
-                    <td className="border border-gray-400 p-2" colSpan={5}>
-                      {formData.universellUtforming ? "Ja" : "Nei"}
                     </td>
                   </tr>
                 </tbody>
