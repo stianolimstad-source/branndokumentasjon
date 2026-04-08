@@ -1029,6 +1029,30 @@ const Konsept = () => {
       return;
     }
     // TEK17 and others
+    if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+      const toggles = { trappeloep: formData.trappeloepRelevant, kjeller: formData.kjellerRelevant, utvendig: formData.utvendigTrapperRelevant };
+      const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
+      const del1Result = getBaereevneTekst(del1Bkl, formData.risikoklasse, formData.etasjer, toggles);
+      
+      const sections = [`[Bygningsdel 1 – ${formData.bygningstype || 'Bygningsdel 1'} (${del1Bkl})]\n${del1Result.tekst}`];
+      const alleUnntak = [...del1Result.anvendteUnntak];
+      
+      formData.bygningsdeler.forEach((del: any, i: number) => {
+        const delBkl = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+        const delResult = getBaereevneTekst(delBkl, del.risikoklasse, del.etasjer || formData.etasjer, toggles);
+        sections.push(`[Bygningsdel ${i + 2} – ${del.navn || del.bygningstype || `Bygningsdel ${i + 2}`} (${delBkl})]\n${delResult.tekst}`);
+        alleUnntak.push(...delResult.anvendteUnntak);
+      });
+      
+      const combined = sections.join('\n\n');
+      setFormData(prev => ({
+        ...prev,
+        baereevne: combined,
+        baereevneUnntak: [...new Set(alleUnntak)],
+      }));
+      return;
+    }
+    
     const toggles = { trappeloep: formData.trappeloepRelevant, kjeller: formData.kjellerRelevant, utvendig: formData.utvendigTrapperRelevant };
     const result = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer, toggles);
     if (result.tekst) {
@@ -1038,7 +1062,7 @@ const Konsept = () => {
         baereevneUnntak: result.anvendteUnntak
       }));
     }
-  }, [formData.brannklasse, formData.risikoklasse, formData.etasjer, formData.regelverk, formData.bygningsbrannklasse, formData.trappeloepRelevant, formData.kjellerRelevant, formData.utvendigTrapperRelevant]);
+  }, [formData.brannklasse, formData.risikoklasse, formData.etasjer, formData.regelverk, formData.bygningsbrannklasse, formData.trappeloepRelevant, formData.kjellerRelevant, formData.utvendigTrapperRelevant, formData.harFlereRisikoklasser, formData.bygningsdeler]);
 
   // Automatisk BF85 røykventilasjonskrav basert på etasjer
   useEffect(() => {

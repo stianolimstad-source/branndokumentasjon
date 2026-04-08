@@ -818,22 +818,27 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     ? "Det bærende hovedsystemet i byggverk i brannklasse 3 og 4 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet gjennom et fullstendig brannforløp, slik dette kan modelleres."
                     : "Bæresystemet i byggverk i brannklasse 1 og 2 skal dimensjoneres for å kunne opprettholde tilfredsstillende bæreevne og stabilitet i minimum den tiden som er nødvendig for å rømme og redde personer og husdyr i og på byggverket.";
 
-                  const krav: Record<string, { hovedsystem: string; sekundaer: string; etasjeskiller: string; trappeløp: string; utvendig: string; kjeller: string; tak: string }> = {
-                    "1": { hovedsystem: "R 30", sekundaer: "R 30", etasjeskiller: "R 30", trappeløp: "-", utvendig: "-", kjeller: "R 60 A2-s1,d0", tak: "R 30" },
-                    "2": { hovedsystem: "R 60", sekundaer: "R 60", etasjeskiller: "R 60", trappeløp: "R 30", utvendig: "R 30 / A2-s1,d0", kjeller: "R 90 A2-s1,d0", tak: "R 60" },
-                    "3": { hovedsystem: "R 90 A2-s1,d0", sekundaer: "R 60 A2-s1,d0", etasjeskiller: "R 60 A2-s1,d0", trappeløp: "R 30 A2-s1,d0", utvendig: "A2-s1,d0", kjeller: "R 120 A2-s1,d0", tak: "R 60 A2-s1,d0" },
-                    "4": { hovedsystem: "R 120 A2-s1,d0", sekundaer: "R 90 A2-s1,d0", etasjeskiller: "R 90 A2-s1,d0", trappeløp: "R 60 A2-s1,d0", utvendig: "A2-s1,d0", kjeller: "R 120 A2-s1,d0", tak: "R 90 A2-s1,d0" },
-                  };
+                  // Parse baereevne textarea into sections per bygningsdel
+                  const baereevneTekst = formData.baereevne || "";
+                  const sectionBlocks = baereevneTekst.split(/\[Bygningsdel \d+/).filter((s: string) => s.trim());
+                  
+                  // Parse each section block into label:value pairs
+                  const parsedSections = sectionBlocks.map((block: string) => {
+                    const lines = block.split('\n').filter((l: string) => l.trim());
+                    // First line contains the header like "– Bolig (BKL2)]"
+                    const header = lines[0]?.replace(/^[^–]*–\s*/, '').replace(/\]$/, '').trim() || '';
+                    const kravLines = lines.slice(1).filter((l: string) => l.includes(':'));
+                    return { header, kravLines };
+                  });
 
-                  const rows = [
-                    { label: "Bærende hovedsystem", key: "hovedsystem" },
-                    { label: "Sekundære, bærende bygningsdeler", key: "sekundaer" },
-                    { label: "Etasjeskiller", key: "etasjeskiller" },
-                    { label: "Trappeløp", key: "trappeløp" },
-                    { label: "Utvendig trapp", key: "utvendig" },
-                    { label: "Plan under øverste kjeller", key: "kjeller" },
-                    { label: "Takkonstruksjon", key: "tak" },
-                  ];
+                  // Collect unique krav labels across all sections
+                  const allLabels: string[] = [];
+                  parsedSections.forEach((section: any) => {
+                    section.kravLines.forEach((line: string) => {
+                      const label = line.split(':')[0]?.trim();
+                      if (label && !allLabels.includes(label)) allLabels.push(label);
+                    });
+                  });
 
                   return (
                     <>
@@ -847,18 +852,18 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                         </td>
                         <td className="border border-gray-400 p-2">RIB</td>
                       </tr>
-                      {rows.map((row, idx) => (
+                      {allLabels.map((label, idx) => (
                         <tr key={idx}>
-                          <td className="border border-gray-400 p-2">{row.label}</td>
+                          <td className="border border-gray-400 p-2">{label}</td>
                           <td className="border border-gray-400 p-2">
                             {alleDeler.map((del, delIdx) => {
-                              const bklNum = del.brannklasse?.replace("BKL", "") || "1";
-                              const delKrav = krav[bklNum] || krav["1"];
-                              const verdi = delKrav[row.key as keyof typeof delKrav];
+                              const section = parsedSections[delIdx];
+                              const matchLine = section?.kravLines.find((l: string) => l.startsWith(label + ':'));
+                              const value = matchLine ? matchLine.split(':').slice(1).join(':').trim() : '-';
                               return (
                                 <p key={del.id} className={delIdx > 0 ? "mt-1" : ""}>
                                   <span className="font-medium">Bygningsdel {del.index} ({del.navn}, {del.brannklasse}):</span>{" "}
-                                  <span className="text-red-600 font-medium">{verdi}</span>
+                                  <span className="text-red-600 font-medium">{value}</span>
                                 </p>
                               );
                             })}
