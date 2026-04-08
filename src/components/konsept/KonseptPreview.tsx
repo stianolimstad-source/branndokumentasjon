@@ -438,10 +438,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         )}
 
         <h3 className="font-semibold mb-2">1.5 Gjeldende regelverk</h3>
-        <ul className="ml-4 mb-3 list-disc list-inside">
-          <li>TEK17 - Forskrift om tekniske krav til byggverk</li>
-          <li>VTEK17 - Veiledning til teknisk forskrift</li>
-        </ul>
+        <div className="ml-4 mb-3">
+          {(formData.gjeldendeRegelverk || "• TEK17 - Forskrift om tekniske krav til byggverk\n• VTEK17 - Veiledning til teknisk forskrift").split('\n').filter((l: string) => l.trim()).map((line: string, i: number) => (
+            <p key={i}>{line}</p>
+          ))}
+        </div>
 
         <h3 className="font-semibold mb-2">1.6 Kvalitetssikring (KS)</h3>
         <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
