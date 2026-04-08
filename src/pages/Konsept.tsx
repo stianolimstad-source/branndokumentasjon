@@ -3542,43 +3542,6 @@ const Konsept = () => {
                         )}
                       </div>
                     </div>
-                    {documentType !== "tilstandsvurdering" && (
-                    <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">Tiltaksklasse</Label>
-                      <Select 
-                        value={formData.tiltaksklasse}
-                        onValueChange={(value) => setFormData({...formData, tiltaksklasse: value, tiltaksklasseBegrunnelse: value === autoTiltaksklasse ? "" : formData.tiltaksklasseBegrunnelse})}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Velg tiltaksklasse" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Tiltaksklasse 1">Tiltaksklasse 1</SelectItem>
-                          <SelectItem value="Tiltaksklasse 2">Tiltaksklasse 2</SelectItem>
-                          <SelectItem value="Tiltaksklasse 3">Tiltaksklasse 3</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {autoTiltaksklasse && formData.tiltaksklasse && formData.tiltaksklasse !== autoTiltaksklasse && (
-                        <div className="space-y-1">
-                          <p className="text-xs text-amber-600">
-                            Automatisk beregnet: {autoTiltaksklasse}. Du har valgt en annen tiltaksklasse.
-                          </p>
-                          <Label className="text-xs">Begrunnelse for endring</Label>
-                          <Textarea
-                            className="min-h-[60px]"
-                            placeholder="Beskriv kort hvorfor tiltaksklassen er endret..."
-                            value={formData.tiltaksklasseBegrunnelse || ""}
-                            onChange={(e) => setFormData({...formData, tiltaksklasseBegrunnelse: e.target.value})}
-                          />
-                        </div>
-                      )}
-                      {formData.tiltaksklasse === "Tiltaksklasse 3" && (formData.prosjekteringsmetode === "analyse" || formData.prosjekteringsmetode === "blanding") && formData.tiltaksklasse === autoTiltaksklasse && (
-                        <p className="text-xs text-amber-600 mt-1">
-                          Tiltaksklasse 3 er satt fordi prosjekteringsmetode er {formData.prosjekteringsmetode === "analyse" ? "analyse" : "blandingsløsning"}.
-                        </p>
-                      )}
-                    </div>
-                    )}
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">Universell utforming</Label>
                       <div className="flex items-start gap-2">
