@@ -2968,7 +2968,17 @@ const Konsept = () => {
                             type="checkbox"
                             id="harFlereRisikoklasser"
                             checked={formData.harFlereRisikoklasser}
-                            onChange={(e) => setFormData({...formData, harFlereRisikoklasser: e.target.checked})}
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              if (checked && formData.bygningsdeler.length === 0) {
+                                // Opprett 2 bygningsdeler automatisk
+                                const del1 = { id: crypto.randomUUID(), navn: "Bygningsdel 1", bygningstype: "", risikoklasse: "", brannklasse: "", brannklasseUnntak: "", harTerrengTilgang: "", areal: "", etasjer: formData.etasjer || "", spesifikkBrannenergi: "" };
+                                const del2 = { id: crypto.randomUUID(), navn: "Bygningsdel 2", bygningstype: "", risikoklasse: "", brannklasse: "", brannklasseUnntak: "", harTerrengTilgang: "", areal: "", etasjer: formData.etasjer || "", spesifikkBrannenergi: "" };
+                                setFormData({...formData, harFlereRisikoklasser: true, bygningsdeler: [del1, del2]});
+                              } else {
+                                setFormData({...formData, harFlereRisikoklasser: checked});
+                              }
+                            }}
                             className="h-4 w-4"
                           />
                           <Label htmlFor="harFlereRisikoklasser" className="text-sm cursor-pointer">
