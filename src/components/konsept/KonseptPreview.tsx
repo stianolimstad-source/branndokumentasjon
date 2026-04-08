@@ -619,9 +619,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   {/* Bygningsdel 1 from main formData */}
                   {(() => {
                     const del1Brannklasse = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
-                    const del1BrannenergiLabel = formData.spesifikkBrannenergi === "over400" ? "Over 400 MJ/m²" 
-                      : formData.spesifikkBrannenergi === "50-400" ? "50-400 MJ/m²" 
-                      : formData.spesifikkBrannenergi === "under50" ? "Under 50 MJ/m²" 
+                    const del1BrannenergiLabel = formData.brannseksjonBrannenergi === "over400" ? "Over 400 MJ/m²" 
+                      : formData.brannseksjonBrannenergi === "50-400" ? "50-400 MJ/m²" 
+                      : formData.brannseksjonBrannenergi === "under50" ? "Under 50 MJ/m²" 
                       : "-";
                     return (
                       <tr>
