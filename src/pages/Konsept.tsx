@@ -2890,6 +2890,20 @@ const Konsept = () => {
                       </div>
                     </div>
                     )}
+                    {documentType !== "tilstandsvurdering" && (
+                    <div className="space-y-2">
+                      <Label className="text-xs text-muted-foreground">1.5 Gjeldende regelverk</Label>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Regelverk som gjelder for prosjektet</Label>
+                        <Textarea
+                          value={formData.gjeldendeRegelverk}
+                          onChange={(e) => setFormData({...formData, gjeldendeRegelverk: e.target.value})}
+                          placeholder="• TEK17 - Forskrift om tekniske krav til byggverk&#10;• VTEK17 - Veiledning til teknisk forskrift"
+                          rows={4}
+                        />
+                      </div>
+                    </div>
+                    )}
                     {/* KS-status */}
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">
