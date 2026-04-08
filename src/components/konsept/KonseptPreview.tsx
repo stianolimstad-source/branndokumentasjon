@@ -639,7 +639,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <tbody>
                   <tr>
                     <td className="border border-gray-400 p-2 font-semibold w-1/3">Tiltaksklasse</td>
-                    <td className="border border-gray-400 p-2" colSpan={5}>
+                    <td className="border border-gray-400 p-2" colSpan={6}>
                       {formData.tiltaksklasse || "[Angis]"}
                       {formData.tiltaksklasseBegrunnelse && (
                         <p className="text-xs italic mt-1">Begrunnelse: {formData.tiltaksklasseBegrunnelse}</p>
