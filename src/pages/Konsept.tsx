@@ -1057,8 +1057,25 @@ const Konsept = () => {
     }
   }, [formData.etasjer, formData.regelverk]);
 
-  // Beregn automatisk tiltaksklasse for visning
+  // Beregn automatisk tiltaksklasse for visning – velg høyeste fra alle bygningsdeler
   const autoTiltaksklasse = (() => {
+    const tiltaksklasseNum = (tk: string) => parseInt(tk.replace(/\D/g, ''), 10) || 0;
+    
+    if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+      // Bygningsdel 1
+      const effBkl1 = beregnetBrannklasseResult.brannklasse || formData.brannklasse;
+      const tk1 = getTiltaksklasse(effBkl1, formData.risikoklasse, formData.prosjekteringsmetode);
+      
+      // Alle bygningsdeler 2+
+      const allTk = [tk1, ...formData.bygningsdeler.map((del: any) => {
+        const delBkl = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+        return getTiltaksklasse(delBkl, del.risikoklasse, formData.prosjekteringsmetode);
+      })].filter(Boolean);
+      
+      // Returner høyeste
+      return allTk.reduce((max, tk) => tiltaksklasseNum(tk) > tiltaksklasseNum(max) ? tk : max, allTk[0] || "");
+    }
+    
     const effBkl = beregnetBrannklasseResult.brannklasse || formData.brannklasse;
     return getTiltaksklasse(effBkl, formData.risikoklasse, formData.prosjekteringsmetode);
   })();
@@ -1070,7 +1087,7 @@ const Konsept = () => {
     if (nyTiltaksklasse && !formData.tiltaksklasse) {
       setFormData(prev => ({ ...prev, tiltaksklasse: nyTiltaksklasse }));
     }
-  }, [formData.brannklasse, formData.risikoklasse, formData.prosjekteringsmetode, beregnetBrannklasseResult.brannklasse]);
+  }, [formData.brannklasse, formData.risikoklasse, formData.prosjekteringsmetode, beregnetBrannklasseResult.brannklasse, formData.harFlereRisikoklasser, formData.bygningsdeler]);
 
   // Bygg dynamisk litteraturliste basert på konseptets innstillinger
   const genererLitteraturRefs = () => {
