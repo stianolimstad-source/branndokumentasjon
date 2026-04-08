@@ -2988,27 +2988,7 @@ const Konsept = () => {
                           </Select>
                         </div>
                         </div>
-                        <div className="flex items-center gap-2 p-3 bg-muted/30 border rounded-md">
-                          <input
-                            type="checkbox"
-                            id="harFlereRisikoklasser"
-                            checked={formData.harFlereRisikoklasser}
-                            onChange={(e) => {
-                              const checked = e.target.checked;
-                              if (checked && formData.bygningsdeler.length === 0) {
-                                // Hovedbygget i 2.1 er Bygningsdel 1, opprett kun Bygningsdel 2
-                                const del2 = { id: crypto.randomUUID(), navn: "Bygningsdel 2", bygningstype: "", risikoklasse: "", brannklasse: "", brannklasseUnntak: "", harTerrengTilgang: "", areal: "", etasjer: formData.etasjer || "", spesifikkBrannenergi: "" };
-                                setFormData({...formData, harFlereRisikoklasser: true, bygningsdeler: [del2]});
-                              } else {
-                                setFormData({...formData, harFlereRisikoklasser: checked});
-                              }
-                            }}
-                            className="h-4 w-4"
-                          />
-                          <Label htmlFor="harFlereRisikoklasser" className="text-sm cursor-pointer">
-                            Tiltaket/bygget har flere risikoklasser eller brannklasser
-                          </Label>
-                        </div>
+                        
                         {/* Bygningsdeler - vises under 2.1 når flere risikoklasser er valgt */}
                         {formData.harFlereRisikoklasser && (
                           <div className="space-y-4 mt-3">
