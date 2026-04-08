@@ -526,6 +526,7 @@ const Konsept = () => {
     tiltaksklasse: "",
     tiltaksklasseBegrunnelse: "",
     avgrensning: "",
+    avgrensningBilde: "" as string,
     // KS-status
     ksEgenkontrollUtfortAv: "",
     ksSidemannskontrollUtfortAv: "",
