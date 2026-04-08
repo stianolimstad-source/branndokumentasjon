@@ -3222,19 +3222,7 @@ const Konsept = () => {
                           })()
                         ) : (
                         <>
-                        {/* Toggle for flere risikoklasser */}
-                        <div className="flex items-center gap-2 p-3 bg-muted/30 border rounded-md">
-                          <input
-                            type="checkbox"
-                            id="harFlereRisikoklasser"
-                            checked={formData.harFlereRisikoklasser}
-                            onChange={(e) => setFormData({...formData, harFlereRisikoklasser: e.target.checked})}
-                            className="h-4 w-4"
-                          />
-                          <Label htmlFor="harFlereRisikoklasser" className="text-sm cursor-pointer">
-                            Tiltaket/bygget har flere risikoklasser eller brannklasser
-                          </Label>
-                        </div>
+                        
 
                         {!formData.harFlereRisikoklasser ? (
                           /* Enkel visning - én risikoklasse */
