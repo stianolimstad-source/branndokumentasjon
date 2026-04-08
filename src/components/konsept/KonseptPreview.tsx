@@ -572,36 +572,37 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
           )}
 
           <h3 className="font-semibold mb-2">2.2 Beskrivelse av bygning og branntekniske forutsetninger</h3>
-          <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
-            <tbody>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold w-1/3">Bygningstype</td>
-                <td className="border border-gray-400 p-2">{formData.bygningstype || "[Angis]"}</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold">Bruttoareal</td>
-                <td className="border border-gray-400 p-2">{formData.areal || "[Angis]"} m²</td>
-              </tr>
-              <tr>
-                <td className="border border-gray-400 p-2 font-semibold">Antall etasjer</td>
-                <td className="border border-gray-400 p-2">{formData.etasjer || "[Angis]"}</td>
-              </tr>
-            </tbody>
-          </table>
           {isBF85 ? (
-            <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
-              <tbody>
-                <tr>
-                  <td className="border border-gray-400 p-2 font-semibold w-1/3">Bygningsbrannklasse (BF85)</td>
-                  <td className="border border-gray-400 p-2">
-                    {formData.bygningsbrannklasse ? `Bygningsbrannklasse ${formData.bygningsbrannklasse}` : "[Angis]"}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <>
+              <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+                <tbody>
+                  <tr>
+                    <td className="border border-gray-400 p-2 font-semibold w-1/3">Bygningstype</td>
+                    <td className="border border-gray-400 p-2">{formData.bygningstype || "[Angis]"}</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 font-semibold">Bruttoareal</td>
+                    <td className="border border-gray-400 p-2">{formData.areal || "[Angis]"} m²</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 font-semibold">Antall etasjer</td>
+                    <td className="border border-gray-400 p-2">{formData.etasjer || "[Angis]"}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+                <tbody>
+                  <tr>
+                    <td className="border border-gray-400 p-2 font-semibold w-1/3">Bygningsbrannklasse (BF85)</td>
+                    <td className="border border-gray-400 p-2">
+                      {formData.bygningsbrannklasse ? `Bygningsbrannklasse ${formData.bygningsbrannklasse}` : "[Angis]"}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </>
           ) : formData.harFlereRisikoklasser && bygningsdeler.length > 0 ? (
             <>
-              <p className="ml-4 mb-2 text-xs italic">Bygget inneholder flere bygningsdeler med ulike risikoklasser:</p>
               <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
                 <thead>
                   <tr className="bg-gray-100">
@@ -615,6 +616,26 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   </tr>
                 </thead>
                 <tbody>
+                  {/* Bygningsdel 1 from main formData */}
+                  {(() => {
+                    const del1Brannklasse = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
+                    const del1BrannenergiLabel = formData.spesifikkBrannenergi === "over400" ? "Over 400 MJ/m²" 
+                      : formData.spesifikkBrannenergi === "50-400" ? "50-400 MJ/m²" 
+                      : formData.spesifikkBrannenergi === "under50" ? "Under 50 MJ/m²" 
+                      : "-";
+                    return (
+                      <tr>
+                        <td className="border border-gray-400 p-2">Bygningsdel 1</td>
+                        <td className="border border-gray-400 p-2">{formData.bygningstype || "-"}</td>
+                        <td className="border border-gray-400 p-2">{formData.areal ? `${formData.areal} m²` : "-"}</td>
+                        <td className="border border-gray-400 p-2">{formData.etasjer || "-"}</td>
+                        <td className="border border-gray-400 p-2">{formData.risikoklasse || "-"}</td>
+                        <td className="border border-gray-400 p-2">{del1Brannklasse || "-"}</td>
+                        <td className="border border-gray-400 p-2">{del1BrannenergiLabel}</td>
+                      </tr>
+                    );
+                  })()}
+                  {/* Bygningsdel 2+ */}
                   {bygningsdeler.map((del: any, index: number) => {
                     const delBrannklasse = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
                     const brannenergiLabel = del.spesifikkBrannenergi === "over400" ? "Over 400 MJ/m²" 
@@ -623,7 +644,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       : "-";
                     return (
                       <tr key={del.id || index}>
-                        <td className="border border-gray-400 p-2">{del.navn || `Bygningsdel ${index + 1}`}</td>
+                        <td className="border border-gray-400 p-2">{del.navn || `Bygningsdel ${index + 2}`}</td>
                         <td className="border border-gray-400 p-2">{del.bygningstype || "-"}</td>
                         <td className="border border-gray-400 p-2">{del.areal ? `${del.areal} m²` : "-"}</td>
                         <td className="border border-gray-400 p-2">{del.etasjer || "-"}</td>
@@ -633,13 +654,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       </tr>
                     );
                   })}
-                </tbody>
-              </table>
-              <table className="w-full border-collapse text-xs mb-3 mt-2">
-                <tbody>
                   <tr>
-                    <td className="border border-gray-400 p-2 font-semibold w-1/3">Tiltaksklasse</td>
-                    <td className="border border-gray-400 p-2" colSpan={6}>
+                    <td className="border border-gray-400 p-2 font-semibold" colSpan={2}>Tiltaksklasse</td>
+                    <td className="border border-gray-400 p-2" colSpan={5}>
                       {formData.tiltaksklasse || "[Angis]"}
                       {formData.tiltaksklasseBegrunnelse && (
                         <p className="text-xs italic mt-1">Begrunnelse: {formData.tiltaksklasseBegrunnelse}</p>
@@ -653,7 +670,19 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
               <tbody>
                 <tr>
-                  <td className="border border-gray-400 p-2 font-semibold w-1/3">Risikoklasse</td>
+                  <td className="border border-gray-400 p-2 font-semibold w-1/3">Bygningstype</td>
+                  <td className="border border-gray-400 p-2">{formData.bygningstype || "[Angis]"}</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 font-semibold">Bruttoareal</td>
+                  <td className="border border-gray-400 p-2">{formData.areal || "[Angis]"} m²</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 font-semibold">Antall etasjer</td>
+                  <td className="border border-gray-400 p-2">{formData.etasjer || "[Angis]"}</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 font-semibold">Risikoklasse</td>
                   <td className="border border-gray-400 p-2">{formData.risikoklasse || "[Angis]"}</td>
                 </tr>
                 <tr>
