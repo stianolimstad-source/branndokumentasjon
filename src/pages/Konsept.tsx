@@ -3786,8 +3786,23 @@ const Konsept = () => {
                         </Button>
                         {formData.regelverk !== "BF85" && formData.baereevne && formData.brannklasse && (() => {
                           const toggles = { trappeloep: formData.trappeloepRelevant, kjeller: formData.kjellerRelevant, utvendig: formData.utvendigTrapperRelevant };
-                          const auto = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer, toggles);
-                          return auto.tekst && formData.baereevne !== auto.tekst;
+                          const harFlere = formData.bygningsdeler && formData.bygningsdeler.length > 0;
+                          let autoTekst = "";
+                          if (harFlere) {
+                            const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
+                            const del1Result = getBaereevneTekst(del1Bkl, formData.risikoklasse, formData.etasjer, toggles);
+                            const sections = [`[Bygningsdel 1 – ${formData.bygningstype || 'Bygningsdel 1'} (${del1Bkl})]\n${del1Result.tekst}`];
+                            formData.bygningsdeler.forEach((del: any, i: number) => {
+                              const delBkl = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+                              const delResult = getBaereevneTekst(delBkl, del.risikoklasse, del.etasjer || formData.etasjer, toggles);
+                              sections.push(`[Bygningsdel ${i + 2} – ${del.navn || del.bygningstype || `Bygningsdel ${i + 2}`} (${delBkl})]\n${delResult.tekst}`);
+                            });
+                            autoTekst = sections.join('\n\n');
+                          } else {
+                            const auto = getBaereevneTekst(formData.brannklasse, formData.risikoklasse, formData.etasjer, toggles);
+                            autoTekst = auto.tekst;
+                          }
+                          return autoTekst && formData.baereevne !== autoTekst;
                         })() && (
                           <div className="flex items-start gap-2 mt-2 p-2 border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 rounded-md">
                             <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
