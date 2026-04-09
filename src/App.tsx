@@ -33,6 +33,7 @@ import Sikkerhetsrutiner from "./pages/Sikkerhetsrutiner";
 import Eksempelkatalog from "./pages/Eksempelkatalog";
 import BranntekniskeKonstruksjoner from "./pages/eksempelkatalog/BranntekniskeKonstruksjoner";
 import ResetPassword from "./pages/ResetPassword";
+import Brensellagring from "./pages/Brensellagring";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -71,6 +72,7 @@ const App = () => (
             <Route path="/mine-kontakter/gruppe/:id" element={<GruppeDetalj />} />
             <Route path="/fraviksdokumentasjon/kvalitativ" element={<KvalitativAnalyse />} />
             <Route path="/min-profil" element={<MinProfil />} />
+            <Route path="/brensellagring" element={<Brensellagring />} />
             <Route path="/sikkerhetsrutiner" element={<Sikkerhetsrutiner />} />
             <Route path="/eksempelkatalog" element={<Eksempelkatalog />} />
             <Route path="/eksempelkatalog/branncellevegger" element={<BranntekniskeKonstruksjoner />} />
