@@ -1,52 +1,29 @@
 
 
-# TEK17 AI-assistent
+# Forbedre TEK17-assistentens system-prompt
 
-## Hva vi bygger
-En chatbasert AI-assistent som kan svare på spørsmål om TEK17 (Teknisk forskrift), VTEK17, og brannteknisk prosjektering. Assistenten blir tilgjengelig som en flytende chat-boble på alle sider, samt en dedikert side.
+## Problem
+Assistenten gir for lange og upresise svar. Ved spørsmål om rømningsvindu fra soverom i kjellerleilighet burde svaret vært kort og direkte: **"Nei"** – etterfulgt av en kort forklaring om at kravet gjelder utgang til det fri fra branncellen (leiligheten), ikke fra enkeltrom.
 
-## Arkitektur
+## Endringer
 
-```text
-┌─────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│  Chat UI    │────▶│  Edge Function   │────▶│  Lovable AI     │
-│  (React)    │◀────│  tek17-chat      │◀────│  Gateway        │
-│  Streaming  │     │  System prompt   │     │  gemini-3-flash │
-└─────────────┘     └──────────────────┘     └─────────────────┘
-```
+### 1. Oppdatere system-prompt i `supabase/functions/tek17-chat/index.ts`
 
-## Implementasjon
+**Retningslinjer for svar** – legge til regler om:
+- Start alltid med et kort, direkte svar (ja/nei) før forklaring
+- Hold svar korte og presise – maks 3-5 setninger med mindre brukeren ber om mer
+- Unngå å gjenta spørsmålet tilbake
 
-### 1. Edge Function: `supabase/functions/tek17-chat/index.ts`
-- Streaming SSE-basert chat med Lovable AI Gateway
-- System-prompt som inneholder kjerneinnholdet fra TEK17 kapittel 11 (brannsikkerhet), inkludert:
-  - Risikoklasser og brannklasser
-  - Krav til branncelleinndeling, rømningsveier, brannmotstand
-  - Materialkrav og overflatebehandling
-  - Sprinkler- og slokkekrav
-  - Nøkkelreferanser til VTEK17
-- Modell: `google/gemini-3-flash-preview` (rask og presis)
-- Håndterer 429/402-feil
+**§11-11 Rømning** – presisere:
+- Krav til rømning gjelder fra **branncellen** (f.eks. boenheten), IKKE fra enkeltrom
+- Det er INGEN krav til rømningsvindu fra soverom i TEK17
+- Hovedadkomst (inngangsdør) er normalt tilstrekkelig som utgang til det fri fra en boenhet i BKL1
+- For boliger i BKL1 er det tilstrekkelig med én utgang til det fri dersom branncellen har direkte utgang, eller vindu som brannvesenet kan nå med høydemateriell
 
-### 2. Chat-komponent: `src/components/tek17/TEK17Chat.tsx`
-- Flytende chat-boble (ikon nederst til høyre)
-- Ekspanderbar til chat-panel med meldingshistorikk
-- Streaming token-by-token rendering med markdown-støtte
-- Forhåndsdefinerte hurtigspørsmål (f.eks. "Hva er kravene for RK4?", "Når trengs sprinkler?")
-- Responsivt design
+### 2. Deploy edge function
+Deploye oppdatert `tek17-chat` funksjon.
 
-### 3. Dedikert side: `src/pages/TEK17Assistent.tsx`
-- Fullskjerm chat-grensesnitt
-- Lenke fra hovedmenyen/verktøysiden
-
-### 4. Routing og navigasjon
-- Ny rute `/tek17-assistent`
-- Kort på Index-siden og Verktøy-siden
-- Flytende chat-boble tilgjengelig på alle sider
-
-## Tekniske detaljer
-- Bruker eksisterende `LOVABLE_API_KEY` (allerede konfigurert)
-- Ingen database-tabeller nødvendig (chat-historikk kun i session)
-- System-prompten inneholder komprimert TEK17 kap. 11 referansemateriale for presise svar
-- Markdown-rendering via `react-markdown`
+## Teknisk omfang
+- Én fil endres: `supabase/functions/tek17-chat/index.ts`
+- Kun system-prompt oppdateres, ingen kodelogikk
 
