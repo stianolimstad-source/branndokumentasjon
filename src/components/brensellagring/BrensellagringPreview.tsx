@@ -100,14 +100,31 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const tillatteBrensler = valgtBygg ? valgtBygg.grenser.filter(g => g.maksLiter !== null || g.maksKg) : [];
   const selectedStoffer = STOFF_KATALOG.filter(s => selectedStoffIds.has(s.id));
 
-  // Dynamic section numbering: stoffdata comes first if any stoffer selected
-  const hasStoffdata = selectedStoffer.length > 0;
-  const orderedKeys: BrenselSectionKey[] = ["mengder", "konstruksjon", "avstander", "beliggenhet", "tankkrav", "oppsamling", "kontroll", "dokumentasjon"];
-  const visibleKeys = orderedKeys.filter(k => visibleSections.has(k));
-  const stoffOffset = hasStoffdata ? 1 : 0;
-  const sectionNum = (key: BrenselSectionKey) => visibleKeys.indexOf(key) + 1 + stoffOffset;
+  // Filter krav items by selectedKravIds
+  const selBeliggenhet = BELIGGENHET_KRAV.filter((_, i) => selectedKravIds.has(`beliggenhet_${i}`));
+  const selTank = TANK_KRAV.filter((_, i) => selectedKravIds.has(`tank_${i}`));
+  const selPumpe = PUMPE_KRAV.filter((_, i) => selectedKravIds.has(`pumpe_${i}`));
+  const selOppsamling = OPPSAMLING_KRAV.filter((_, i) => selectedKravIds.has(`oppsamling_${i}`));
+  const selRoer = ROERLEDNING_KRAV.filter((_, i) => selectedKravIds.has(`roer_${i}`));
+  const selVentil = VENTIL_KRAV.filter((_, i) => selectedKravIds.has(`ventil_${i}`));
+  const selKontroll = KONTROLL_KRAV.filter((_, i) => selectedKravIds.has(`kontroll_${i}`));
+  const selDok = DOKUMENTASJON_KRAV.filter((_, i) => selectedKravIds.has(`dok_${i}`));
 
-  const hasAnySections = visibleKeys.length > 0 || hasStoffdata;
+  // Build visible sections dynamically based on selected items
+  const sections: { key: string; label: string }[] = [];
+  if (hasStoffdata) sections.push({ key: "stoffdata", label: "Stoffdata" });
+  if (selBeliggenhet.length > 0) sections.push({ key: "beliggenhet", label: "Beliggenhet og utforming" });
+  if (visibleSections.has("avstander")) sections.push({ key: "avstander", label: "Sikkerhetsavstander" });
+  if (selTank.length > 0 || selPumpe.length > 0) sections.push({ key: "tankkrav", label: "Krav til tanker" });
+  if (selOppsamling.length > 0) sections.push({ key: "oppsamling", label: "Oppsamling og overfyllingsvern" });
+  if (selRoer.length > 0 || selVentil.length > 0) sections.push({ key: "roer", label: "Rørledninger og ventiler" });
+  if (selKontroll.length > 0) sections.push({ key: "kontroll", label: "Kontroll og tilstandskontroll" });
+  if (selDok.length > 0) sections.push({ key: "dokumentasjon", label: "Dokumentasjonskrav" });
+  if (visibleSections.has("mengder") && valgtBygg) sections.push({ key: "mengder", label: "Tillatte mengder" });
+  if (visibleSections.has("konstruksjon") && valgtBygg) sections.push({ key: "konstruksjon", label: "Konstruksjonskrav" });
+
+  const secNum = (key: string) => sections.findIndex(s => s.key === key) + 1;
+  const hasAnySections = sections.length > 0;
 
   return (
     <div>
