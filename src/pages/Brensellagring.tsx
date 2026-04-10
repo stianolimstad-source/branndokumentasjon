@@ -127,6 +127,42 @@ const Brensellagring = () => {
     setIsCreatingProject(false);
   };
 
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSaveDocument = async () => {
+    if (!selectedProjectId || !user) {
+      toast({ title: "Velg prosjekt", description: "Du må velge et prosjekt før du kan lagre", variant: "destructive" });
+      return;
+    }
+    if (!valgtBygningstype) {
+      toast({ title: "Velg bygningstype", description: "Du må velge bygningstype før du kan lagre", variant: "destructive" });
+      return;
+    }
+    setIsSaving(true);
+    const docContent = {
+      type: "brensellagring",
+      documentType: "brensellagring",
+      bygningstype: valgtBygningstype,
+      visibleSections: Array.from(visibleSections),
+    };
+    const docName = `Brensellagring – ${valgtBygg?.navn || valgtBygningstype}`;
+    const { error } = await supabase
+      .from('fire_concepts')
+      .insert({
+        name: docName,
+        project_id: selectedProjectId,
+        user_id: user.id,
+        content: docContent,
+        status: 'draft',
+      });
+    if (error) {
+      toast({ title: "Feil", description: "Kunne ikke lagre dokumentet", variant: "destructive" });
+    } else {
+      toast({ title: "Lagret", description: `"${docName}" er lagret i prosjektet` });
+    }
+    setIsSaving(false);
+  };
+
   const mengdeNum = parseFloat(mengde) || 0;
   const result = brenselType ? getBrensellagringKrav(brenselType as BrenselType, mengdeNum) : null;
 
