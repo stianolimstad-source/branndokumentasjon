@@ -1620,94 +1620,114 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             })()}
             </>
             )}
-            {!isBF85 && formData.heismaskinromRelevant === "ja" && formData.brannklasse && (
-              <tr>
-                <td className="border border-gray-400 p-2 align-top">Heismaskinrom</td>
-                <td className="border border-gray-400 p-2 font-semibold">
-                  {formData.brannklasse === "BKL1" && "EI 60 [B 60]"}
-                  {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
-                  {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                </td>
-                <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
-              </tr>
-            )}
-            {!isBF85 && formData.fyrromRelevant === "ja" && formData.brannklasse && (
-              <>
-                {formData.fyrromKw === "fast" && (
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">Fyrrom for sentralvarmeanlegg eller varmluftsaggregat for fast brensel</td>
-                    <td className="border border-gray-400 p-2 font-semibold">
-                      {formData.brannklasse === "BKL1" && "EI 60 [B 60]"}
-                      {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
-                      {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                    </td>
+            {!isBF85 && formData.heismaskinromRelevant === "ja" && (formData.brannklasse || (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0)) && (() => {
+              const getHeismaskinromKrav = (bkl: string) => {
+                if (bkl === "BKL3") return "EI 60 A2-s1,d0 [A 60]";
+                return "EI 60 [B 60]";
+              };
+              const bklEntries: { label: string; bkl: string }[] = [];
+              if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+                const seen = new Set<string>();
+                formData.bygningsdeler.forEach((del: any) => {
+                  if (del.brannklasse && !seen.has(del.brannklasse)) {
+                    seen.add(del.brannklasse);
+                    bklEntries.push({ label: del.navn || del.bygningstype || del.brannklasse, bkl: del.brannklasse });
+                  }
+                });
+              } else if (formData.brannklasse) {
+                bklEntries.push({ label: "", bkl: formData.brannklasse });
+              }
+              const showLabel = bklEntries.length > 1;
+              return bklEntries.map((entry, idx) => (
+                <tr key={`heismaskinrom-${idx}`}>
+                  <td className="border border-gray-400 p-2 align-top">
+                    Heismaskinrom
+                    {showLabel && <div className="text-xs font-normal text-gray-600 mt-1">[{entry.label} – {entry.bkl}]</div>}
+                  </td>
+                  <td className="border border-gray-400 p-2 font-semibold">{getHeismaskinromKrav(entry.bkl)}</td>
+                  <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                </tr>
+              ));
+            })()}
+            {!isBF85 && formData.fyrromRelevant === "ja" && (formData.brannklasse || (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0)) && (() => {
+              const getBrannmotstand = (bkl: string) => {
+                if (bkl === "BKL1") return "EI 30 [B 30]";
+                if (bkl === "BKL2") return "EI 60 [B 60]";
+                if (bkl === "BKL3") return "EI 60 A2-s1,d0 [A 60]";
+                return "";
+              };
+              const getEI60 = (bkl: string) => bkl === "BKL3" ? "EI 60 A2-s1,d0 [A 60]" : "EI 60 [B 60]";
+              const bklEntries: { label: string; bkl: string }[] = [];
+              if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+                const seen = new Set<string>();
+                formData.bygningsdeler.forEach((del: any) => {
+                  if (del.brannklasse && !seen.has(del.brannklasse)) {
+                    seen.add(del.brannklasse);
+                    bklEntries.push({ label: del.navn || del.bygningstype || del.brannklasse, bkl: del.brannklasse });
+                  }
+                });
+              } else if (formData.brannklasse) {
+                bklEntries.push({ label: "", bkl: formData.brannklasse });
+              }
+              const showLabel = bklEntries.length > 1;
+              const renderFyrrom = (fyrKw: string, entry: { label: string; bkl: string }, idx: number) => {
+                const suffix = showLabel ? <div className="text-xs font-normal text-gray-600 mt-1">[{entry.label} – {entry.bkl}]</div> : null;
+                if (fyrKw === "fast") return (
+                  <tr key={`fyrrom-fast-${idx}`}>
+                    <td className="border border-gray-400 p-2 align-top">Fyrrom for sentralvarmeanlegg eller varmluftsaggregat for fast brensel{suffix}</td>
+                    <td className="border border-gray-400 p-2 font-semibold">{getEI60(entry.bkl)}</td>
                     <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
                   </tr>
-                )}
-                {formData.fyrromKw === "under50" && (
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, P &lt; 50 kW</td>
-                    <td className="border border-gray-400 p-2 font-semibold">
-                      {formData.brannklasse === "BKL1" && "K₂ 10 A2-s1,d0 [K1-A] – kun ytelse for kledning/overflate"}
-                      {formData.brannklasse === "BKL2" && "K₂ 10 A2-s1,d0 [K1-A] – kun ytelse for kledning/overflate"}
-                      {formData.brannklasse === "BKL3" && "K₂ 10 A2-s1,d0 [K1-A] – kun ytelse for kledning/overflate"}
-                    </td>
+                );
+                if (fyrKw === "under50") return (
+                  <tr key={`fyrrom-u50-${idx}`}>
+                    <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, P &lt; 50 kW{suffix}</td>
+                    <td className="border border-gray-400 p-2 font-semibold">K₂ 10 A2-s1,d0 [K1-A] – kun ytelse for kledning/overflate</td>
                     <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
                   </tr>
-                )}
-                {formData.fyrromKw === "50-100" && (
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, 50 kW ≤ P ≤ 100 kW</td>
-                    <td className="border border-gray-400 p-2 font-semibold">
-                      {formData.brannklasse === "BKL1" && "EI 30 [B 30]"}
-                      {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
-                      {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                    </td>
+                );
+                if (fyrKw === "50-100") return (
+                  <tr key={`fyrrom-50100-${idx}`}>
+                    <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, 50 kW ≤ P ≤ 100 kW{suffix}</td>
+                    <td className="border border-gray-400 p-2 font-semibold">{getBrannmotstand(entry.bkl)}</td>
                     <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
                   </tr>
-                )}
-                {formData.fyrromKw === "over100" && (
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, P &gt; 100 kW</td>
-                    <td className="border border-gray-400 p-2 font-semibold">
-                      {formData.brannklasse === "BKL1" && "EI 60 A2-s1,d0 [A 60]"}
-                      {formData.brannklasse === "BKL2" && "EI 60 A2-s1,d0 [A 60]"}
-                      {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                    </td>
+                );
+                if (fyrKw === "over100") return (
+                  <tr key={`fyrrom-o100-${idx}`}>
+                    <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, P &gt; 100 kW{suffix}</td>
+                    <td className="border border-gray-400 p-2 font-semibold">EI 60 A2-s1,d0 [A 60]</td>
                     <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
                   </tr>
-                )}
-                {formData.fyrromKw === "ukjent" && (
-                  <>
+                );
+                if (fyrKw === "ukjent") return (
+                  <React.Fragment key={`fyrrom-ukjent-${idx}`}>
                     <tr>
-                      <td className="border border-gray-400 p-2 align-top">Fyrrom for sentralvarmeanlegg eller varmluftsaggregat for fast brensel</td>
-                      <td className="border border-gray-400 p-2 font-semibold">
-                        {formData.brannklasse === "BKL1" && "EI 60 [B 60]"}
-                        {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
-                        {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                      </td>
+                      <td className="border border-gray-400 p-2 align-top">Fyrrom for sentralvarmeanlegg eller varmluftsaggregat for fast brensel{suffix}</td>
+                      <td className="border border-gray-400 p-2 font-semibold">{getEI60(entry.bkl)}</td>
                       <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, P &lt; 50 kW</td>
-                      <td className="border border-gray-400 p-2 font-semibold">
-                        {formData.brannklasse === "BKL1" && "K₂ 10 A2-s1,d0 [K1-A]"}
-                        {formData.brannklasse === "BKL2" && "K₂ 10 A2-s1,d0 [K1-A]"}
-                        {formData.brannklasse === "BKL3" && "K₂ 10 A2-s1,d0 [K1-A]"}
-                      </td>
+                      <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, P &lt; 50 kW{suffix}</td>
+                      <td className="border border-gray-400 p-2 font-semibold">K₂ 10 A2-s1,d0 [K1-A]</td>
                       <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, 50 kW ≤ P ≤ 100 kW</td>
-                      <td className="border border-gray-400 p-2 font-semibold">
-                        {formData.brannklasse === "BKL1" && "EI 30 [B 30]"}
-                        {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
-                        {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                      </td>
+                      <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, 50 kW ≤ P ≤ 100 kW{suffix}</td>
+                      <td className="border border-gray-400 p-2 font-semibold">{getBrannmotstand(entry.bkl)}</td>
                       <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
                     </tr>
                     <tr>
-                      <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, P &gt; 100 kW</td>
+                      <td className="border border-gray-400 p-2 align-top">Fyrrom – flytende/gassformig brensel, P &gt; 100 kW{suffix}</td>
+                      <td className="border border-gray-400 p-2 font-semibold">EI 60 A2-s1,d0 [A 60]</td>
+                      <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                    </tr>
+                  </React.Fragment>
+                );
+                return null;
+              };
+              return bklEntries.map((entry, idx) => renderFyrrom(formData.fyrromKw, entry, idx));
+            })()}
                       <td className="border border-gray-400 p-2 font-semibold">
                         {formData.brannklasse === "BKL1" && "EI 60 A2-s1,d0 [A 60]"}
                         {formData.brannklasse === "BKL2" && "EI 60 A2-s1,d0 [A 60]"}
