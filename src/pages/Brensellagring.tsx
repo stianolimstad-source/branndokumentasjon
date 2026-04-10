@@ -51,6 +51,7 @@ const Brensellagring = () => {
   // Tankanlegg – innmelding
   const [valgtStoff, setValgtStoff] = useState("");
   const [tankMengde, setTankMengde] = useState("");
+  const [stoffKategoriFilter, setStoffKategoriFilter] = useState<string>("alle");
 
   const mengdeNum = parseFloat(mengde) || 0;
   const result = brenselType ? getBrensellagringKrav(brenselType as BrenselType, mengdeNum) : null;
@@ -125,6 +126,21 @@ const Brensellagring = () => {
                   <p className="text-sm text-muted-foreground">Typiske verdier iht. DSB Temaveiledning tabell 4.1</p>
                 </CardHeader>
                 <CardContent>
+                  <div className="flex items-center gap-3 mb-3">
+                    <Label className="text-sm font-medium whitespace-nowrap">Filtrer på kategori:</Label>
+                    <Select value={stoffKategoriFilter} onValueChange={setStoffKategoriFilter}>
+                      <SelectTrigger className="w-[240px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="alle">Alle kategorier</SelectItem>
+                        <SelectItem value="kat1">Kategori 1</SelectItem>
+                        <SelectItem value="kat2">Kategori 2</SelectItem>
+                        <SelectItem value="kat3">Kategori 3</SelectItem>
+                        <SelectItem value="diesel_fyringsolje">Diesel / fyringsolje</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                   <div className="border rounded-lg overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
@@ -139,7 +155,7 @@ const Brensellagring = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {STOFF_KATALOG.map((stoff) => (
+                        {STOFF_KATALOG.filter((s) => stoffKategoriFilter === "alle" || s.kategori === stoffKategoriFilter).map((stoff) => (
                           <tr key={stoff.id} className="border-t">
                             <td className="py-2 px-3 font-medium">{stoff.navn}</td>
                             <td className="py-2 px-3">
