@@ -791,6 +791,15 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
     beskrivelse: "Lagerbygg og oppbevaringsrom. Lagring av brensel i eget tankrom.",
     grenser: [
       {
+        brenselType: "propan",
+        brenselNavn: "Propan / LPG",
+        maksLiter: null,
+        maksKg: 400,
+        romKrav: [
+          { kategori: "Plassering", tekst: "Godt ventilert rom eller utendørs. Ikke i kjeller eller rom under terreng.", ansvar: "Eier" },
+        ],
+      },
+      {
         brenselType: "fyringsparafin",
         brenselNavn: "Fyringsparafin",
         maksLiter: 10000,
