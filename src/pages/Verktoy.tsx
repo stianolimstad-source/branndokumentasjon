@@ -54,8 +54,8 @@ const tools = [
   },
   {
     icon: Bot,
-    title: "TEK17 AI-assistent",
-    description: "Still spørsmål om branntekniske krav fra TEK17 og få svar umiddelbart",
+    title: "AI Brannkonsulent",
+    description: "Still spørsmål om branntekniske krav fra TEK17, VTEK17 og BF85",
     href: "/tek17-assistent",
   },
 ];

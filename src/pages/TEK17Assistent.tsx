@@ -68,8 +68,8 @@ const TEK17Assistent = () => {
             <Bot className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">TEK17 AI-assistent</h1>
-            <p className="text-sm text-muted-foreground">Spør om branntekniske krav fra TEK17 og VTEK17</p>
+            <h1 className="text-2xl font-bold">AI Brannkonsulent</h1>
+            <p className="text-sm text-muted-foreground">Spør om branntekniske krav fra TEK17, VTEK17 og BF85</p>
           </div>
         </div>
 
@@ -83,7 +83,7 @@ const TEK17Assistent = () => {
                   </div>
                 </div>
                 <p className="text-center text-muted-foreground text-sm max-w-md mx-auto">
-                  Jeg er en AI-assistent som kan hjelpe deg med spørsmål om TEK17 kapittel 11 – sikkerhet ved brann. Still et spørsmål eller velg et forslag under.
+                  Jeg er en AI brannkonsulent som kan hjelpe deg med spørsmål om TEK17, VTEK17 og BF85 – sikkerhet ved brann. Still et spørsmål eller velg et forslag under.
                 </p>
                 <div className="flex flex-wrap justify-center gap-2 mt-4">
                   {quickQuestions.map(q => (
@@ -124,7 +124,7 @@ const TEK17Assistent = () => {
                 ref={inputRef}
                 value={input}
                 onChange={e => setInput(e.target.value)}
-                placeholder="Still et spørsmål om TEK17..."
+                placeholder="Still et spørsmål om TEK17, BF85..."
                 disabled={isLoading}
               />
               <Button type="submit" disabled={isLoading || !input.trim()}>
