@@ -199,6 +199,7 @@ const Brensellagring = () => {
       documentType: "brensellagring",
       bygningstype: valgtBygningstype,
       visibleSections: Array.from(visibleSections),
+      selectedStoffer: Array.from(selectedStoffIds),
     };
     const docName = `Brensellagring – ${valgtBygg?.navn || valgtBygningstype}`;
     const { error } = await supabase
