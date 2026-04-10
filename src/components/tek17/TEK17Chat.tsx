@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { MessageSquare, X, Send, Loader2, Flame } from "lucide-react";
+import { MessageSquare, X, Minus, Send, Loader2, Flame } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { streamTEK17Chat, type ChatMessage } from "@/lib/tek17-stream";
 import { toast } from "sonner";
@@ -88,9 +88,14 @@ export default function TEK17Chat() {
           <Flame className="h-5 w-5" />
           <span className="font-semibold text-sm">AI Brannkonsulent</span>
         </div>
-        <button onClick={() => setOpen(false)} className="hover:opacity-80">
-          <X className="h-4 w-4" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button onClick={() => setOpen(false)} className="hover:opacity-80" aria-label="Minimer">
+            <Minus className="h-4 w-4" />
+          </button>
+          <button onClick={() => { setOpen(false); setMessages([]); setInput(""); }} className="hover:opacity-80" aria-label="Lukk og slett chat">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
       {/* Messages */}
