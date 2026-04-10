@@ -696,7 +696,15 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
     beskrivelse: "Dedikert tankrom med strengere konstruksjonskrav. Tillater de høyeste mengdene innenfor bygning.",
     grenser: [
       {
-        brenselType: "fyringsparafin",
+        brenselType: "propan",
+        brenselNavn: "Propan / LPG",
+        maksLiter: null,
+        maksKg: 200,
+        romKrav: [
+          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Tankrom skal ha ventilasjon ned mot gulv.", ansvar: "RIV" },
+        ],
+      },
+      {
         brenselNavn: "Fyringsparafin",
         maksLiter: 10000,
         romKrav: [
