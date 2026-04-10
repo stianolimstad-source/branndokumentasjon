@@ -317,6 +317,7 @@ const Brensellagring = () => {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="bg-muted/50">
+                          <th className="text-center py-2.5 px-2 font-medium w-10">Dok.</th>
                           <th className="text-left py-2.5 px-3 font-medium">Stoff</th>
                           <th className="text-left py-2.5 px-3 font-medium">Kategori</th>
                           <th className="text-left py-2.5 px-3 font-medium">Flammepunkt</th>
@@ -332,8 +333,21 @@ const Brensellagring = () => {
                           if (stoffKategoriFilter === "alle_vaesker") return s.tilstand === "væske";
                           if (stoffKategoriFilter === "alle_gasser") return s.tilstand === "gass";
                           return s.kategori === stoffKategoriFilter;
-                        }).map((stoff) => (
-                          <tr key={stoff.id} className="border-t">
+                        }).map((stoff) => {
+                          const isSelected = selectedStoffIds.has(stoff.id);
+                          return (
+                          <tr key={stoff.id} className={`border-t ${isSelected ? "bg-primary/5" : ""}`}>
+                            <td className="py-2 px-2 text-center">
+                              <Button
+                                variant={isSelected ? "default" : "ghost"}
+                                size="sm"
+                                className={`h-6 w-6 p-0 ${isSelected ? "" : "text-muted-foreground hover:text-primary"}`}
+                                onClick={() => toggleStoff(stoff.id)}
+                                title={isSelected ? "Fjern fra dokument" : "Legg til i dokument"}
+                              >
+                                {isSelected ? <Check className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+                              </Button>
+                            </td>
                             <td className="py-2 px-3 font-medium">{stoff.navn}</td>
                             <td className="py-2 px-3">
                               <Badge variant="outline" className="text-xs whitespace-nowrap">
@@ -351,7 +365,8 @@ const Brensellagring = () => {
                             <td className="py-2 px-3">{stoff.eksplosjonsgrenser || "–"}</td>
                             <td className="py-2 px-3">{stoff.selvantennelse || "–"}</td>
                           </tr>
-                        ))}
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
