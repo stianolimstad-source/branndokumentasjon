@@ -215,7 +215,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
 
         {visibleSections.has("mengder") && valgtBygg && (
           <>
-            <h2 style={h2}>{sectionNum("mengder")}. Tillatte mengder</h2>
+            <h2 style={h2}>{secNum("mengder")}. Tillatte mengder</h2>
             <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
               Oversikt over maksimalt tillatte mengder brannfarlig stoff for {valgtBygg.navn.toLowerCase()} iht. VTEK § 11-8.
             </p>
@@ -255,7 +255,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         {/* 2. Konstruksjonskrav */}
         {visibleSections.has("konstruksjon") && (
           <>
-            <h2 style={h2}>{sectionNum("konstruksjon")}. Konstruksjonskrav</h2>
+            <h2 style={h2}>{secNum("konstruksjon")}. Konstruksjonskrav</h2>
             {tillatteBrensler.map((g) => (
               <div key={g.brenselType} style={{ marginBottom: 16 }}>
                 <h3 style={h3}>
@@ -293,7 +293,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         {/* 3. Sikkerhetsavstander */}
         {visibleSections.has("avstander") && (
           <>
-            <h2 style={h2}>{sectionNum("avstander")}. Sikkerhetsavstander (§ 15.11)</h2>
+            <h2 style={h2}>{secNum("avstander")}. Sikkerhetsavstander (§ 15.11)</h2>
             <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
               Veiledende minsteavstander mellom tank og nærliggende objekter.
             </p>
@@ -323,7 +323,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         {/* 4. Beliggenhet */}
         {visibleSections.has("beliggenhet") && (
           <>
-            <h2 style={h2}>{sectionNum("beliggenhet")}. Beliggenhet og utforming (§ 15.1)</h2>
+            <h2 style={h2}>{secNum("beliggenhet")}. Beliggenhet og utforming (§ 15.1)</h2>
             {BELIGGENHET_KRAV.map((krav, i) => (
               <div key={i} style={{ marginBottom: 8 }}>
                 <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 2 }}>{krav.tittel}</p>
@@ -336,7 +336,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         {/* 5. Tankkrav */}
         {visibleSections.has("tankkrav") && (
           <>
-            <h2 style={h2}>{sectionNum("tankkrav")}. Krav til tanker (§ 15.2)</h2>
+            <h2 style={h2}>{secNum("tankkrav")}. Krav til tanker (§ 15.2)</h2>
             {TANK_KRAV.map((krav, i) => (
               <div key={i} style={{ marginBottom: 8 }}>
                 <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 2 }}>{krav.tittel}</p>
@@ -349,7 +349,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         {/* 6. Oppsamling */}
         {visibleSections.has("oppsamling") && (
           <>
-            <h2 style={h2}>{sectionNum("oppsamling")}. Oppsamling og overfyllingsvern (§ 15.3)</h2>
+            <h2 style={h2}>{secNum("oppsamling")}. Oppsamling og overfyllingsvern (§ 15.3)</h2>
             {OPPSAMLING_KRAV.map((krav, i) => (
               <div key={i} style={{ marginBottom: 8 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -365,7 +365,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         {/* 7. Kontroll */}
         {visibleSections.has("kontroll") && (
           <>
-            <h2 style={h2}>{sectionNum("kontroll")}. Kontroll og tilstandskontroll (§ 9)</h2>
+            <h2 style={h2}>{secNum("kontroll")}. Kontroll og tilstandskontroll (§ 9)</h2>
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 16 }}>
               <thead>
                 <tr>
@@ -390,7 +390,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         {/* 8. Dokumentasjon */}
         {visibleSections.has("dokumentasjon") && (
           <>
-            <h2 style={h2}>{sectionNum("dokumentasjon")}. Dokumentasjonskrav (§ 13)</h2>
+            <h2 style={h2}>{secNum("dokumentasjon")}. Dokumentasjonskrav (§ 13)</h2>
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 16 }}>
               <thead>
                 <tr>
