@@ -78,6 +78,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   prosjektNavn,
   adresse,
   visibleSections,
+  selectedStoffIds = new Set(),
 }) => {
   if (!valgtBygg) {
     return (
