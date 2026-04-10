@@ -557,6 +557,17 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
     beskrivelse: "Boliger, leiligheter, rekkehus o.l. Begrenset mengde lov i fyrrom/teknisk rom.",
     grenser: [
       {
+        brenselType: "propan",
+        brenselNavn: "Propan / LPG (grillgass m.m.)",
+        maksLiter: null,
+        maksKg: 55,
+        romKrav: [
+          { kategori: "Plassering", tekst: "Propanflasker skal ikke oppbevares i kjeller, på loft eller i rom under terreng. Maks 2 × 11 kg flasker (inkl. reserve) i/ved bolig.", ansvar: "Eier" },
+          { kategori: "Ventilasjon", tekst: "Oppbevaring skal være i godt ventilert rom eller utendørs.", ansvar: "Eier" },
+          { kategori: "Avstand", tekst: "Min. 1 m fra brennbare materialer og tennkilder.", ansvar: "Eier" },
+        ],
+      },
+      {
         brenselType: "fyringsparafin",
         brenselNavn: "Fyringsparafin",
         maksLiter: 1650,
