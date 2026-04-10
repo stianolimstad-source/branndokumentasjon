@@ -33,7 +33,8 @@ import {
   STYKKGODS_GRENSER,
   getStykkgodsGrense,
 } from "@/lib/brensellagring-krav";
-import BrensellagringPreview from "@/components/brensellagring/BrensellagringPreview";
+import BrensellagringPreview, { BRENSEL_SECTIONS, BrenselSectionKey } from "@/components/brensellagring/BrensellagringPreview";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const Brensellagring = () => {
   const navigate = useNavigate();
