@@ -88,6 +88,9 @@ const Brensellagring = () => {
   // Selected substances for document
   const [selectedStoffIds, setSelectedStoffIds] = useState<Set<string>>(new Set());
 
+  // Selected individual krav items per category (index-based keys like "beliggenhet_0")
+  const [selectedKravIds, setSelectedKravIds] = useState<Set<string>>(new Set());
+
   const toggleStoff = (id: string) => {
     setSelectedStoffIds(prev => {
       const next = new Set(prev);
@@ -95,6 +98,32 @@ const Brensellagring = () => {
       else next.add(id);
       return next;
     });
+  };
+
+  const toggleKrav = (id: string) => {
+    setSelectedKravIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const isKravSelected = (id: string) => selectedKravIds.has(id);
+
+  const KravItemButton = ({ id }: { id: string }) => {
+    const selected = isKravSelected(id);
+    return (
+      <Button
+        variant={selected ? "default" : "ghost"}
+        size="sm"
+        className={`h-6 w-6 p-0 shrink-0 ${selected ? "" : "text-muted-foreground hover:text-primary"}`}
+        onClick={() => toggleKrav(id)}
+        title={selected ? "Fjern fra dokument" : "Legg til i dokument"}
+      >
+        {selected ? <Check className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+      </Button>
+    );
   };
 
   const toggleSection = (key: BrenselSectionKey) => {
