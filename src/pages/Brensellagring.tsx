@@ -231,23 +231,27 @@ const Brensellagring = () => {
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Flame className="h-5 w-5 text-orange-500" />
-                    Tekniske data – brannfarlige væsker (§ 4.1)
+                    Tekniske data – brannfarlige stoffer
                   </CardTitle>
-                  <p className="text-sm text-muted-foreground">Typiske verdier iht. DSB Temaveiledning tabell 4.1</p>
+                  <p className="text-sm text-muted-foreground">Typiske verdier iht. DSB Temaveiledning, GHS/CLP og NFPA. Kilder: DSB § 4.1, GESTIS, PubChem.</p>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center gap-3 mb-3">
                     <Label className="text-sm font-medium whitespace-nowrap">Filtrer på kategori:</Label>
                     <Select value={stoffKategoriFilter} onValueChange={setStoffKategoriFilter}>
-                      <SelectTrigger className="w-[240px]">
+                      <SelectTrigger className="w-[280px]">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="alle">Alle kategorier</SelectItem>
-                        <SelectItem value="kat1">Kategori 1</SelectItem>
-                        <SelectItem value="kat2">Kategori 2</SelectItem>
-                        <SelectItem value="kat3">Kategori 3</SelectItem>
+                        <SelectItem value="alle_vaesker">Alle væsker</SelectItem>
+                        <SelectItem value="alle_gasser">Alle gasser</SelectItem>
+                        <SelectItem value="kat1">Væske – Kategori 1</SelectItem>
+                        <SelectItem value="kat2">Væske – Kategori 2</SelectItem>
+                        <SelectItem value="kat3">Væske – Kategori 3</SelectItem>
                         <SelectItem value="diesel_fyringsolje">Diesel / fyringsolje</SelectItem>
+                        <SelectItem value="gass_kat1">Gass – Kategori 1</SelectItem>
+                        <SelectItem value="gass_kat2">Gass – Kategori 2</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -260,24 +264,34 @@ const Brensellagring = () => {
                           <th className="text-left py-2.5 px-3 font-medium">Flammepunkt</th>
                           <th className="text-left py-2.5 px-3 font-medium">Densitet</th>
                           <th className="text-left py-2.5 px-3 font-medium">Brennverdi</th>
-                          <th className="text-left py-2.5 px-3 font-medium">Viskositet</th>
-                          <th className="text-left py-2.5 px-3 font-medium">Dest.intervall</th>
+                          <th className="text-left py-2.5 px-3 font-medium">Eksp.grenser</th>
+                          <th className="text-left py-2.5 px-3 font-medium">Selvant.</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {STOFF_KATALOG.filter((s) => stoffKategoriFilter === "alle" || s.kategori === stoffKategoriFilter).map((stoff) => (
+                        {STOFF_KATALOG.filter((s) => {
+                          if (stoffKategoriFilter === "alle") return true;
+                          if (stoffKategoriFilter === "alle_vaesker") return s.tilstand === "væske";
+                          if (stoffKategoriFilter === "alle_gasser") return s.tilstand === "gass";
+                          return s.kategori === stoffKategoriFilter;
+                        }).map((stoff) => (
                           <tr key={stoff.id} className="border-t">
                             <td className="py-2 px-3 font-medium">{stoff.navn}</td>
                             <td className="py-2 px-3">
                               <Badge variant="outline" className="text-xs whitespace-nowrap">
-                                {stoff.kategori === "kat1" ? "Kat. 1" : stoff.kategori === "kat2" ? "Kat. 2" : stoff.kategori === "kat3" ? "Kat. 3" : "Diesel/fyringsolje"}
+                                {stoff.kategori === "kat1" ? "Væske Kat. 1"
+                                  : stoff.kategori === "kat2" ? "Væske Kat. 2"
+                                  : stoff.kategori === "kat3" ? "Væske Kat. 3"
+                                  : stoff.kategori === "diesel_fyringsolje" ? "Diesel/fyr.olje"
+                                  : stoff.kategori === "gass_kat1" ? "Gass Kat. 1"
+                                  : "Gass Kat. 2"}
                               </Badge>
                             </td>
                             <td className="py-2 px-3">{stoff.flammepunkt}</td>
                             <td className="py-2 px-3">{stoff.densitet}</td>
                             <td className="py-2 px-3">{stoff.nedreBrennverdi}</td>
-                            <td className="py-2 px-3">{stoff.viskositet}</td>
-                            <td className="py-2 px-3">{stoff.destillasjonsintervall}</td>
+                            <td className="py-2 px-3">{stoff.eksplosjonsgrenser || "–"}</td>
+                            <td className="py-2 px-3">{stoff.selvantennelse || "–"}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -286,10 +300,12 @@ const Brensellagring = () => {
 
                   <div className="mt-4 p-3 bg-muted/30 rounded-lg text-sm space-y-1.5">
                     <p className="font-medium">Kategorier iht. GHS/DSB:</p>
-                    <p><strong>Kategori 1:</strong> Flammepunkt &lt; 23 °C og startkokepunkt ≤ 35 °C (f.eks. bensin)</p>
-                    <p><strong>Kategori 2:</strong> Flammepunkt &lt; 23 °C og startkokepunkt &gt; 35 °C (f.eks. aceton)</p>
-                    <p><strong>Kategori 3:</strong> Flammepunkt ≥ 23 °C og ≤ 60 °C (f.eks. parafin, JetA1)</p>
+                    <p><strong>Væske kat. 1:</strong> Flammepunkt &lt; 23 °C og startkokepunkt ≤ 35 °C (f.eks. bensin, pentan)</p>
+                    <p><strong>Væske kat. 2:</strong> Flammepunkt &lt; 23 °C og startkokepunkt &gt; 35 °C (f.eks. aceton, toluen)</p>
+                    <p><strong>Væske kat. 3:</strong> Flammepunkt ≥ 23 °C og ≤ 60 °C (f.eks. parafin, white spirit)</p>
                     <p><strong>Diesel/fyringsoljer:</strong> Flammepunkt &gt; 60 °C</p>
+                    <p><strong>Gass kat. 1:</strong> LEL ≤ 13 % eller eksplosjonsområde ≥ 12 prosentpoeng (f.eks. propan, hydrogen)</p>
+                    <p><strong>Gass kat. 2:</strong> Eksplosjonsområde i luft, men ikke kat. 1 (f.eks. ammoniakk)</p>
                   </div>
                 </CardContent>
               </Card>
