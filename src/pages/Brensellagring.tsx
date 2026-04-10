@@ -82,7 +82,7 @@ const Brensellagring = () => {
 
   // Section visibility for preview
   const [visibleSections, setVisibleSections] = useState<Set<BrenselSectionKey>>(
-    new Set(BRENSEL_SECTIONS.map(s => s.key))
+    new Set()
   );
 
   const toggleSection = (key: BrenselSectionKey) => {
