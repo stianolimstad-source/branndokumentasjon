@@ -247,9 +247,14 @@ const Brensellagring = () => {
           {/* ============================================================== */}
           <Tabs defaultValue="stoffdata" className="space-y-6">
             <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 h-auto gap-1">
-              <TabsTrigger value="stoffdata" className="text-xs py-2">
+              <TabsTrigger value="stoffdata" className="text-xs py-2 relative">
                 <Flame className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
                 Stoffdata
+                {selectedStoffIds.size > 0 && (
+                  <span className="ml-1 bg-primary text-primary-foreground text-[10px] rounded-full h-4 min-w-[16px] inline-flex items-center justify-center px-1">
+                    {selectedStoffIds.size}
+                  </span>
+                )}
               </TabsTrigger>
               <TabsTrigger value="beliggenhet" className="text-xs py-2">
                 <Ruler className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
