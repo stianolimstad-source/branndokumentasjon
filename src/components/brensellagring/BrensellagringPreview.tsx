@@ -37,6 +37,7 @@ interface BrensellagringPreviewProps {
   adresse?: string;
   visibleSections: Set<BrenselSectionKey>;
   selectedStoffIds?: Set<string>;
+  selectedKravIds?: Set<string>;
 }
 
 const pageStyle: React.CSSProperties = {
@@ -79,6 +80,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   adresse,
   visibleSections,
   selectedStoffIds = new Set(),
+  selectedKravIds = new Set(),
 }) => {
   if (!valgtBygg && selectedStoffIds.size === 0) {
     return (
