@@ -85,6 +85,18 @@ const Brensellagring = () => {
     new Set()
   );
 
+  // Selected substances for document
+  const [selectedStoffIds, setSelectedStoffIds] = useState<Set<string>>(new Set());
+
+  const toggleStoff = (id: string) => {
+    setSelectedStoffIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
   const toggleSection = (key: BrenselSectionKey) => {
     setVisibleSections(prev => {
       const next = new Set(prev);
