@@ -99,6 +99,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const today = new Date().toLocaleDateString("nb-NO", { day: "2-digit", month: "long", year: "numeric" });
   const tillatteBrensler = valgtBygg ? valgtBygg.grenser.filter(g => g.maksLiter !== null || g.maksKg) : [];
   const selectedStoffer = STOFF_KATALOG.filter(s => selectedStoffIds.has(s.id));
+  const hasStoffdata = selectedStoffer.length > 0;
 
   // Filter krav items by selectedKravIds
   const selBeliggenhet = BELIGGENHET_KRAV.filter((_, i) => selectedKravIds.has(`beliggenhet_${i}`));
