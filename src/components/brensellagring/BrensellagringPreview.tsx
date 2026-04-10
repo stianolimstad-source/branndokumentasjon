@@ -8,6 +8,9 @@ import {
   KONTROLL_KRAV,
   DOKUMENTASJON_KRAV,
   STOFF_KATALOG,
+  PUMPE_KRAV,
+  ROERLEDNING_KRAV,
+  VENTIL_KRAV,
 } from "@/lib/brensellagring-krav";
 
 export type BrenselSectionKey =
