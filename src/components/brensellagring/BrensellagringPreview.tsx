@@ -80,12 +80,12 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   visibleSections,
   selectedStoffIds = new Set(),
 }) => {
-  if (!valgtBygg) {
+  if (!valgtBygg && selectedStoffIds.size === 0) {
     return (
       <div style={{ ...pageStyle, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 400 }}>
         <div style={{ textAlign: "center", color: "#94a3b8" }}>
-          <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>Ingen bygningstype valgt</p>
-          <p style={{ fontSize: 12 }}>Velg en bygningstype til venstre for å generere kravdokumentet.</p>
+          <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>Ingen data valgt</p>
+          <p style={{ fontSize: 12 }}>Velg stoffer fra Stoffdata-tabellen eller en bygningstype for å generere dokumentet.</p>
         </div>
       </div>
     );
@@ -95,12 +95,14 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const tillatteBrensler = valgtBygg ? valgtBygg.grenser.filter(g => g.maksLiter !== null || g.maksKg) : [];
   const selectedStoffer = STOFF_KATALOG.filter(s => selectedStoffIds.has(s.id));
 
-  // Dynamic section numbering based on visible sections
+  // Dynamic section numbering: stoffdata comes first if any stoffer selected
+  const hasStoffdata = selectedStoffer.length > 0;
   const orderedKeys: BrenselSectionKey[] = ["mengder", "konstruksjon", "avstander", "beliggenhet", "tankkrav", "oppsamling", "kontroll", "dokumentasjon"];
   const visibleKeys = orderedKeys.filter(k => visibleSections.has(k));
-  const sectionNum = (key: BrenselSectionKey) => visibleKeys.indexOf(key) + 1;
+  const stoffOffset = hasStoffdata ? 1 : 0;
+  const sectionNum = (key: BrenselSectionKey) => visibleKeys.indexOf(key) + 1 + stoffOffset;
 
-  const hasAnySections = visibleKeys.length > 0;
+  const hasAnySections = visibleKeys.length > 0 || hasStoffdata;
 
   return (
     <div>
