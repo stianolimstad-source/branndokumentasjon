@@ -476,8 +476,289 @@ export const PUMPE_KRAV: PumpeKrav[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// 13. Eksisterende VTEK § 11-8 – lagring i bygg
+// 13. VTEK § 11-8 – lagring i bygg – bygningstype → tillatte mengder
 // ---------------------------------------------------------------------------
+
+export type BygningsType =
+  | "bolig"
+  | "garasje"
+  | "fyrrom"
+  | "tankrom"
+  | "verksted"
+  | "lager"
+  | "forretning";
+
+export interface ByggBrenselGrense {
+  brenselType: BrenselType;
+  brenselNavn: string;
+  maksLiter: number | null; // null = ikke tillatt
+  romKrav: BrensellagringKravItem[];
+}
+
+export interface BygningsTypeInfo {
+  id: BygningsType;
+  navn: string;
+  beskrivelse: string;
+  grenser: ByggBrenselGrense[];
+}
+
+export const BYGNINGSTYPER: BygningsTypeInfo[] = [
+  {
+    id: "bolig",
+    navn: "Bolig / leilighetsbygg",
+    beskrivelse: "Boliger, leiligheter, rekkehus o.l. Begrenset mengde lov i fyrrom/teknisk rom.",
+    grenser: [
+      {
+        brenselType: "fyringsparafin",
+        brenselNavn: "Fyringsparafin",
+        maksLiter: 1650,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
+          { kategori: "Tank", tekst: "Ståltank.", ansvar: "ARK" },
+        ],
+      },
+      {
+        brenselType: "lett_fyringsolje",
+        brenselNavn: "Lett fyringsolje",
+        maksLiter: 4000,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
+        ],
+      },
+      {
+        brenselType: "begge",
+        brenselNavn: "Kombinasjon (parafin + fyringsolje)",
+        maksLiter: null,
+        romKrav: [],
+      },
+    ],
+  },
+  {
+    id: "garasje",
+    navn: "Garasje",
+    beskrivelse: "Garasjer under eller i tilknytning til bygning. Lagring i egen branncelle.",
+    grenser: [
+      {
+        brenselType: "fyringsparafin",
+        brenselNavn: "Fyringsparafin",
+        maksLiter: 1650,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
+          { kategori: "Tank", tekst: "Ståltank.", ansvar: "ARK" },
+        ],
+      },
+      {
+        brenselType: "lett_fyringsolje",
+        brenselNavn: "Lett fyringsolje",
+        maksLiter: 4000,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
+        ],
+      },
+      {
+        brenselType: "begge",
+        brenselNavn: "Kombinasjon (parafin + fyringsolje)",
+        maksLiter: null,
+        romKrav: [],
+      },
+    ],
+  },
+  {
+    id: "fyrrom",
+    navn: "Fyrrom (egen branncelle)",
+    beskrivelse: "Eget fyrrom med egen branncelle iht. VTEK § 11-8. Tillater noe høyere mengder med strengere konstruksjonskrav.",
+    grenser: [
+      {
+        brenselType: "fyringsparafin",
+        brenselNavn: "Fyringsparafin",
+        maksLiter: 4000,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
+        ],
+      },
+      {
+        brenselType: "lett_fyringsolje",
+        brenselNavn: "Lett fyringsolje",
+        maksLiter: 4000,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
+        ],
+      },
+      {
+        brenselType: "begge",
+        brenselNavn: "Kombinasjon (parafin + fyringsolje)",
+        maksLiter: 6000,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK" },
+          { kategori: "Tank", tekst: "Tank i brennbart materiale (f.eks. GUP/polyetylen-HD). Med dokumentert brannmotstand 30 min kan tankrom være EI 30.", ansvar: "ARK" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "tankrom",
+    navn: "Tankrom (eget rom for tanklagring)",
+    beskrivelse: "Dedikert tankrom med strengere konstruksjonskrav. Tillater de høyeste mengdene innenfor bygning.",
+    grenser: [
+      {
+        brenselType: "fyringsparafin",
+        brenselNavn: "Fyringsparafin",
+        maksLiter: 10000,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK" },
+        ],
+      },
+      {
+        brenselType: "lett_fyringsolje",
+        brenselNavn: "Lett fyringsolje",
+        maksLiter: 10000,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S].", ansvar: "ARK" },
+        ],
+      },
+      {
+        brenselType: "begge",
+        brenselNavn: "Kombinasjon (parafin + fyringsolje)",
+        maksLiter: 6000,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK" },
+          { kategori: "Tank", tekst: "Tank i brennbart materiale (f.eks. GUP/polyetylen-HD). Med dokumentert brannmotstand 30 min kan tankrom være EI 30.", ansvar: "ARK" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "verksted",
+    navn: "Verksted / industri",
+    beskrivelse: "Industribygg, verksteder. Lagring av brannfarlig væske i tilknytning til produksjonsareal.",
+    grenser: [
+      {
+        brenselType: "fyringsparafin",
+        brenselNavn: "Fyringsparafin",
+        maksLiter: 4000,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
+        ],
+      },
+      {
+        brenselType: "lett_fyringsolje",
+        brenselNavn: "Lett fyringsolje",
+        maksLiter: 10000,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S].", ansvar: "ARK" },
+        ],
+      },
+      {
+        brenselType: "begge",
+        brenselNavn: "Kombinasjon (parafin + fyringsolje)",
+        maksLiter: 6000,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK" },
+          { kategori: "Tank", tekst: "Tank i brennbart materiale tillatt med dokumentert brannmotstand.", ansvar: "ARK" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "lager",
+    navn: "Lagerbygg",
+    beskrivelse: "Lagerbygg og oppbevaringsrom. Lagring av brensel i eget tankrom.",
+    grenser: [
+      {
+        brenselType: "fyringsparafin",
+        brenselNavn: "Fyringsparafin",
+        maksLiter: 10000,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK" },
+        ],
+      },
+      {
+        brenselType: "lett_fyringsolje",
+        brenselNavn: "Lett fyringsolje",
+        maksLiter: 10000,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S].", ansvar: "ARK" },
+        ],
+      },
+      {
+        brenselType: "begge",
+        brenselNavn: "Kombinasjon (parafin + fyringsolje)",
+        maksLiter: 6000,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "forretning",
+    navn: "Forretningsbygg / kontor",
+    beskrivelse: "Kontorer, forretningsbygg. Lagring kun i eget fyrrom/tankrom med begrenset mengde.",
+    grenser: [
+      {
+        brenselType: "fyringsparafin",
+        brenselNavn: "Fyringsparafin",
+        maksLiter: 1650,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
+          { kategori: "Tank", tekst: "Ståltank.", ansvar: "ARK" },
+        ],
+      },
+      {
+        brenselType: "lett_fyringsolje",
+        brenselNavn: "Lett fyringsolje",
+        maksLiter: 4000,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
+        ],
+      },
+      {
+        brenselType: "begge",
+        brenselNavn: "Kombinasjon (parafin + fyringsolje)",
+        maksLiter: null,
+        romKrav: [],
+      },
+    ],
+  },
+];
+
+// Legacy function kept for backward compat
 export function getBrensellagringKrav(
   brenselType: BrenselType,
   mengdeLiter: number
