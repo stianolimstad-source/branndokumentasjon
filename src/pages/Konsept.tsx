@@ -7056,38 +7056,107 @@ const Konsept = () => {
                           {!isViewMode && (
                             <Button type="button" variant="outline" size="sm" className="text-xs gap-1" onClick={() => {
                               const lines: string[] = [];
-                              const type = formData.bygningstype || "bygget";
-                              const etasjer = formData.etasjer || "ukjent antall";
                               
-                              lines.push(`${type} har ${etasjer} etasje${parseInt(formData.etasjer) > 1 ? "r" : ""}.`);
-                              
-                              // Trapperom info
-                              const trappeInfo: string[] = [];
-                              if (formData.regelverk === "BF85") {
-                                // BF85 trapperom from trapperomKrav
-                                if (formData.trapperomKrav.includes("bf85_tr_aapent") || formData.trapperomKrav.includes("bf85_bolig_2_aapne") || formData.trapperomKrav.includes("bf85_bolig_aapent_brannvesen")) trappeInfo.push("Tr1 (åpent trapperom)");
-                                if (formData.trapperomKrav.includes("bf85_tr_lukket") || formData.trapperomKrav.includes("bf85_bolig_lukket") || formData.trapperomKrav.includes("bf85_bolig_2_branntrygge")) trappeInfo.push("Tr2 (lukket trapperom)");
-                                if (formData.trapperomKrav.includes("bf85_tr_roykfritt") || formData.trapperomKrav.includes("bf85_bolig_roykfritt")) trappeInfo.push("Tr3 (røykfritt trapperom)");
-                              } else {
-                                // TEK17 - auto-determined trapperom type
-                                const rk = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
-                                const fl = parseInt(formData.etasjer || '0', 10);
-                                const trMap: Record<number, { lav: string; hoy: string }> = {
-                                  1: { lav: "Tr1", hoy: "Tr3" }, 2: { lav: "Tr1", hoy: "Tr3" },
-                                  3: { lav: "Tr2", hoy: "Tr3" }, 4: { lav: "Tr1", hoy: "Tr3" },
-                                  5: { lav: "Tr2", hoy: "Tr3" }, 6: { lav: "Tr2", hoy: "Tr3" },
-                                };
-                                if (rk >= 1 && rk <= 6 && fl > 0) {
-                                  const trT = fl <= 8 ? trMap[rk].lav : trMap[rk].hoy;
-                                  if (trT === "Tr1") trappeInfo.push("Tr1 (åpent trapperom)");
-                                  else if (trT === "Tr2") trappeInfo.push("Tr2 (lukket trapperom)");
-                                  else if (trT === "Tr3") trappeInfo.push("Tr3 (røykfritt trapperom)");
-                                }
+                              // Build list of all building parts
+                              interface PartInfo {
+                                name: string;
+                                label: string;
+                                rk: number;
+                                rkLabel: string;
+                                etasjer: number;
+                                erSykehus: boolean;
                               }
-                              if (formData.trapperomBeskrivelse) {
-                                lines.push(formData.trapperomBeskrivelse);
-                              } else if (trappeInfo.length > 0) {
-                                lines.push(`Trapperom er utført som ${trappeInfo.join(" og ")}.`);
+                              const parts: PartInfo[] = [];
+                              
+                              // Primary part
+                              const primaryRk = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
+                              const primaryEt = parseInt(formData.etasjer || '0', 10);
+                              parts.push({
+                                name: formData.bygningstype || "Bygningsdel 1",
+                                label: "Bygningsdel 1",
+                                rk: primaryRk,
+                                rkLabel: formData.risikoklasse || "",
+                                etasjer: primaryEt,
+                                erSykehus: !!formData.erSykehusPleieinstitusjon,
+                              });
+                              
+                              // Additional parts from bygningsdeler
+                              if (formData.bygningsdeler && formData.bygningsdeler.length > 0) {
+                                formData.bygningsdeler.forEach((del: any, idx: number) => {
+                                  const delRk = parseInt((del.risikoklasse || '').replace(/\D/g, '') || '0', 10);
+                                  const delEt = parseInt(del.etasjer || '0', 10);
+                                  parts.push({
+                                    name: del.bygningstype || del.navn || `Bygningsdel ${idx + 2}`,
+                                    label: `Bygningsdel ${idx + 2}`,
+                                    rk: delRk,
+                                    rkLabel: del.risikoklasse || "",
+                                    etasjer: delEt > 0 ? delEt : primaryEt,
+                                    erSykehus: del.risikoklasse === "RK6" && (del.erSykehusPleieinstitusjon || false),
+                                  });
+                                });
+                              }
+                              
+                              const hasMultipleParts = parts.length > 1;
+                              
+                              // Introduction - describe all parts
+                              if (hasMultipleParts) {
+                                const partDescriptions = parts.map((p, i) => `${p.label} (${p.name}, ${p.rkLabel})`);
+                                lines.push(`Bygget inneholder ${partDescriptions.join(" og ")}.`);
+                                const etasjeDesc = parts.map(p => `${p.name} har ${p.etasjer} etasje${p.etasjer > 1 ? "r" : ""}`).join(". ");
+                                lines.push(etasjeDesc + ".");
+                              } else {
+                                const type = formData.bygningstype || "bygget";
+                                const etasjer = formData.etasjer || "ukjent antall";
+                                lines.push(`${type} har ${etasjer} etasje${parseInt(formData.etasjer) > 1 ? "r" : ""}.`);
+                              }
+                              
+                              // Trapperom per part
+                              const trMap: Record<number, { lav: string; hoy: string }> = {
+                                1: { lav: "Tr1", hoy: "Tr3" }, 2: { lav: "Tr1", hoy: "Tr3" },
+                                3: { lav: "Tr2", hoy: "Tr3" }, 4: { lav: "Tr1", hoy: "Tr3" },
+                                5: { lav: "Tr2", hoy: "Tr3" }, 6: { lav: "Tr2", hoy: "Tr3" },
+                              };
+                              
+                              const allTrappeInfo: string[] = [];
+                              
+                              if (formData.regelverk === "BF85") {
+                                if (formData.trapperomKrav.includes("bf85_tr_aapent") || formData.trapperomKrav.includes("bf85_bolig_2_aapne") || formData.trapperomKrav.includes("bf85_bolig_aapent_brannvesen")) allTrappeInfo.push("Tr1 (åpent trapperom)");
+                                if (formData.trapperomKrav.includes("bf85_tr_lukket") || formData.trapperomKrav.includes("bf85_bolig_lukket") || formData.trapperomKrav.includes("bf85_bolig_2_branntrygge")) allTrappeInfo.push("Tr2 (lukket trapperom)");
+                                if (formData.trapperomKrav.includes("bf85_tr_roykfritt") || formData.trapperomKrav.includes("bf85_bolig_roykfritt")) allTrappeInfo.push("Tr3 (røykfritt trapperom)");
+                                if (formData.trapperomBeskrivelse) {
+                                  lines.push(formData.trapperomBeskrivelse);
+                                } else if (allTrappeInfo.length > 0) {
+                                  lines.push(`Trapperom er utført som ${allTrappeInfo.join(" og ")}.`);
+                                }
+                              } else {
+                                // TEK17 - calculate per part
+                                const partTrappeLines: string[] = [];
+                                let strengesteTr = "Tr1";
+                                
+                                parts.forEach(p => {
+                                  if (p.rk >= 1 && p.rk <= 6 && p.etasjer > 0) {
+                                    const trT = p.etasjer <= 8 ? trMap[p.rk].lav : trMap[p.rk].hoy;
+                                    const trLabel = trT === "Tr1" ? "Tr1 (åpent trapperom)" : trT === "Tr2" ? "Tr2 (lukket trapperom)" : "Tr3 (røykfritt trapperom)";
+                                    
+                                    if (hasMultipleParts) {
+                                      partTrappeLines.push(`${p.label} (${p.name}, ${p.rkLabel}): Trapperom utføres som ${trLabel}.`);
+                                    }
+                                    
+                                    allTrappeInfo.push(trLabel);
+                                    // Track strictest
+                                    if (trT === "Tr3" || (trT === "Tr2" && strengesteTr !== "Tr3")) {
+                                      strengesteTr = trT;
+                                    }
+                                  }
+                                });
+                                
+                                if (formData.trapperomBeskrivelse) {
+                                  lines.push(formData.trapperomBeskrivelse);
+                                } else if (hasMultipleParts && partTrappeLines.length > 0) {
+                                  lines.push(partTrappeLines.join("\n"));
+                                } else if (allTrappeInfo.length > 0) {
+                                  lines.push(`Trapperom er utført som ${allTrappeInfo[0]}.`);
+                                }
                               }
                               
                               // Rømningsvei trappvalg
@@ -7107,12 +7176,31 @@ const Konsept = () => {
                                 (formData.brannseksjonBrannenergi && formData.brannseksjonTiltak && 
                                   (() => { const a = parseFloat(formData.areal) || 0; const g = ({"over400":{normalt:800,brannalarm:1200,sprinkler:5000},"50-400":{normalt:1200,brannalarm:1800,sprinkler:10000},"under50":{normalt:1800,brannalarm:2700,sprinkler:10000}} as any)[formData.brannseksjonBrannenergi]; return g && a > (g[formData.brannseksjonTiltak] ?? g.normalt); })());
                               if (harSeksjonering) {
-                                lines.push("Bygget er oppdelt med seksjoneringsvegg(er). Evakuering kan foregå innenfor hver brannseksjon uavhengig av brann i tilstøtende seksjon.");
+                                if (hasMultipleParts) {
+                                  lines.push("Bygget er oppdelt med seksjoneringsvegg(er). Bygningsdeler med ulik risikoklasse er adskilt med branncelleskillende konstruksjoner. Evakuering kan foregå innenfor hver brannseksjon uavhengig av brann i tilstøtende seksjon.");
+                                } else {
+                                  lines.push("Bygget er oppdelt med seksjoneringsvegg(er). Evakuering kan foregå innenfor hver brannseksjon uavhengig av brann i tilstøtende seksjon.");
+                                }
                               }
                               
-                              // Evakueringsstrategi med trapperomtype
-                              const trappeTypeTekst = trappeInfo.length > 0 ? ` via ${trappeInfo.join(" / ")}` : "";
-                              if (formData.erSykehusPleieinstitusjon || formData.risikoklasse === "RK6") {
+                              // Evakueringsstrategi
+                              const harSykehus = parts.some(p => p.erSykehus || p.rk === 6);
+                              const uniqueTrappeInfo = [...new Set(allTrappeInfo)];
+                              const trappeTypeTekst = uniqueTrappeInfo.length > 0 ? ` via ${uniqueTrappeInfo.join(" / ")}` : "";
+                              
+                              if (hasMultipleParts && harSykehus) {
+                                const sykehusDeler = parts.filter(p => p.erSykehus || p.rk === 6);
+                                const andreDeler = parts.filter(p => !p.erSykehus && p.rk !== 6);
+                                const evakLines: string[] = [];
+                                sykehusDeler.forEach(p => {
+                                  evakLines.push(`${p.label} (${p.name}): Evakueringsstrategi er basert på horisontal forflytning til sikker sone bak seksjoneringsvegg, med mulighet for videre evakuering til det fri ved behov.`);
+                                });
+                                if (andreDeler.length > 0) {
+                                  const andreNavn = andreDeler.map(p => `${p.label} (${p.name})`).join(" og ");
+                                  evakLines.push(`${andreNavn}: Evakuering skjer${trappeTypeTekst} via rømningsveier til det fri.`);
+                                }
+                                lines.push(evakLines.join("\n"));
+                              } else if (formData.erSykehusPleieinstitusjon || formData.risikoklasse === "RK6") {
                                 lines.push(`Evakueringsstrategi er basert på horisontal forflytning til sikker sone bak seksjoneringsvegg, med mulighet for videre evakuering${trappeTypeTekst} til det fri ved behov.`);
                               } else {
                                 lines.push(`Evakuering skjer${trappeTypeTekst} via rømningsveier til det fri.`);
