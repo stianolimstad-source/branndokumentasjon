@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   ArrowLeft, Flame, AlertTriangle, Info, Shield, Ruler, FileText, Save,
-  Droplets, ChevronDown, Cylinder, PipetteIcon, Gauge, ClipboardCheck, FolderOpen, ExternalLink, Eye, Building, Check, Plus, Search,
+  Droplets, ChevronDown, Cylinder, PipetteIcon, Gauge, ClipboardCheck, FolderOpen, ExternalLink, Eye, Building, Check, Plus, Search, FileDown, FilePlus2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -82,7 +82,7 @@ const Brensellagring = () => {
 
   // Section visibility for preview
   const [visibleSections, setVisibleSections] = useState<Set<BrenselSectionKey>>(
-    new Set(BRENSEL_SECTIONS.map(s => s.key))
+    new Set()
   );
 
   const toggleSection = (key: BrenselSectionKey) => {
@@ -92,6 +92,49 @@ const Brensellagring = () => {
       else next.add(key);
       return next;
     });
+  };
+
+  // Map tabs to document sections
+  const TAB_SECTION_MAP: Record<string, { keys: BrenselSectionKey[]; label: string }> = {
+    stoffdata: { keys: ["mengder"], label: "Tillatte mengder" },
+    beliggenhet: { keys: ["avstander", "beliggenhet"], label: "Avstander & beliggenhet" },
+    tanker: { keys: ["tankkrav"], label: "Tankkrav" },
+    oppsamling: { keys: ["oppsamling"], label: "Oppsamling" },
+    kontroll: { keys: ["kontroll"], label: "Kontroll" },
+    dokumentasjon: { keys: ["dokumentasjon"], label: "Dokumentasjonskrav" },
+    roer: { keys: ["konstruksjon"], label: "Konstruksjonskrav" },
+  };
+
+  const isTabInDocument = (tabKey: string) => {
+    const mapping = TAB_SECTION_MAP[tabKey];
+    if (!mapping) return false;
+    return mapping.keys.every(k => visibleSections.has(k));
+  };
+
+  const toggleTabInDocument = (tabKey: string) => {
+    const mapping = TAB_SECTION_MAP[tabKey];
+    if (!mapping) return;
+    setVisibleSections(prev => {
+      const next = new Set(prev);
+      const allIn = mapping.keys.every(k => next.has(k));
+      mapping.keys.forEach(k => allIn ? next.delete(k) : next.add(k));
+      return next;
+    });
+  };
+
+  const DocToggleButton = ({ tabKey }: { tabKey: string }) => {
+    const inDoc = isTabInDocument(tabKey);
+    return (
+      <Button
+        variant={inDoc ? "default" : "outline"}
+        size="sm"
+        className="h-7 text-xs gap-1.5"
+        onClick={() => toggleTabInDocument(tabKey)}
+      >
+        {inDoc ? <Check className="h-3.5 w-3.5" /> : <FilePlus2 className="h-3.5 w-3.5" />}
+        {inDoc ? "I dokumentet" : "Legg til i dokument"}
+      </Button>
+    );
   };
 
   // Fetch projects
@@ -229,10 +272,13 @@ const Brensellagring = () => {
             <TabsContent value="stoffdata" className="space-y-4">
               <Card className="shadow-soft">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Flame className="h-5 w-5 text-orange-500" />
-                    Tekniske data – brannfarlige stoffer
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Flame className="h-5 w-5 text-orange-500" />
+                      Tekniske data – brannfarlige stoffer
+                    </CardTitle>
+                    <DocToggleButton tabKey="stoffdata" />
+                  </div>
                   <p className="text-sm text-muted-foreground">Typiske verdier iht. DSB Temaveiledning, GHS/CLP og NFPA. Kilder: DSB § 4.1, GESTIS, PubChem.</p>
                 </CardHeader>
                 <CardContent>
@@ -315,10 +361,13 @@ const Brensellagring = () => {
             <TabsContent value="beliggenhet" className="space-y-4">
               <Card className="shadow-soft">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Ruler className="h-5 w-5 text-primary" />
-                    Beliggenhet og utforming (§ 15.1)
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Ruler className="h-5 w-5 text-primary" />
+                      Beliggenhet og utforming (§ 15.1)
+                    </CardTitle>
+                    <DocToggleButton tabKey="beliggenhet" />
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     Krav til plassering, branngater, inngjerding og rømningsveier
                   </p>
@@ -413,10 +462,13 @@ const Brensellagring = () => {
             <TabsContent value="tanker" className="space-y-4">
               <Card className="shadow-soft">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Cylinder className="h-5 w-5 text-primary" />
-                    Krav til tanker (§ 15.2)
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Cylinder className="h-5 w-5 text-primary" />
+                      Krav til tanker (§ 15.2)
+                    </CardTitle>
+                    <DocToggleButton tabKey="tanker" />
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     Utførelse, fundament, korrosjonsbeskyttelse og flammesikring
                   </p>
@@ -457,10 +509,13 @@ const Brensellagring = () => {
             <TabsContent value="oppsamling" className="space-y-4">
               <Card className="shadow-soft">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Droplets className="h-5 w-5 text-blue-500" />
-                    Oppsamling og overfyllingsvern (§ 15.3)
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Droplets className="h-5 w-5 text-blue-500" />
+                      Oppsamling og overfyllingsvern (§ 15.3)
+                    </CardTitle>
+                    <DocToggleButton tabKey="oppsamling" />
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     Krav til oppsamlingsbasseng, drenering, overfyllingsvarsel og oljeutskiller
                   </p>
@@ -487,10 +542,13 @@ const Brensellagring = () => {
             <TabsContent value="roer" className="space-y-4">
               <Card className="shadow-soft">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <PipetteIcon className="h-5 w-5 text-primary" />
-                    Rørledninger (§ 15.4)
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <PipetteIcon className="h-5 w-5 text-primary" />
+                      Rørledninger (§ 15.4)
+                    </CardTitle>
+                    <DocToggleButton tabKey="roer" />
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -525,10 +583,13 @@ const Brensellagring = () => {
             <TabsContent value="kontroll" className="space-y-4">
               <Card className="shadow-soft">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Gauge className="h-5 w-5 text-primary" />
-                    Kontroll og tilstandskontroll (§ 9)
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Gauge className="h-5 w-5 text-primary" />
+                      Kontroll og tilstandskontroll (§ 9)
+                    </CardTitle>
+                    <DocToggleButton tabKey="kontroll" />
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     Krav til kontrollintervaller og systematisk tilstandskontroll
                   </p>
@@ -659,10 +720,13 @@ const Brensellagring = () => {
             <TabsContent value="dokumentasjon" className="space-y-4">
               <Card className="shadow-soft">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <FolderOpen className="h-5 w-5 text-primary" />
-                    Dokumentasjonskrav (§ 13)
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <FolderOpen className="h-5 w-5 text-primary" />
+                      Dokumentasjonskrav (§ 13)
+                    </CardTitle>
+                    <DocToggleButton tabKey="dokumentasjon" />
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     Dokumentasjon som skal være tilgjengelig gjennom anleggets levetid
                   </p>
@@ -833,35 +897,7 @@ const Brensellagring = () => {
                 </CardContent>
               </Card>
 
-              {/* Velg seksjoner for dokumentet */}
-              <Card className="shadow-soft">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Eye className="h-4 w-4 text-primary" />
-                    Velg seksjoner i dokumentet
-                  </CardTitle>
-                  <p className="text-xs text-muted-foreground">Huk av de kravene som er relevante for prosjektet</p>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  {BRENSEL_SECTIONS.map((s) => (
-                    <label key={s.key} className="flex items-center gap-2.5 cursor-pointer group">
-                      <Checkbox
-                        checked={visibleSections.has(s.key)}
-                        onCheckedChange={() => toggleSection(s.key)}
-                      />
-                      <span className="text-sm group-hover:text-primary transition-colors">{s.label}</span>
-                    </label>
-                  ))}
-                  <div className="flex gap-2 pt-2">
-                    <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => setVisibleSections(new Set(BRENSEL_SECTIONS.map(s => s.key)))}>
-                      Velg alle
-                    </Button>
-                    <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => setVisibleSections(new Set())}>
-                      Fjern alle
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              {/* Removed: section selector moved inline into tabs */}
 
               {/* Vis tillatte mengder */}
               {valgtBygg && (
