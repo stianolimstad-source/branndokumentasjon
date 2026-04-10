@@ -2115,7 +2115,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               }
 
               // TEK17 logic
-              const rk = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
               const trapperomTypeMap: Record<number, { lav: string; hoy: string }> = {
                 1: { lav: "Tr 1", hoy: "Tr 3" },
                 2: { lav: "Tr 1", hoy: "Tr 3" },
@@ -2124,9 +2123,37 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 5: { lav: "Tr 2", hoy: "Tr 3" },
                 6: { lav: "Tr 2", hoy: "Tr 3" },
               };
-              const trType = rk >= 1 && rk <= 6 && floors > 0
-                ? (floors <= 8 ? trapperomTypeMap[rk].lav : trapperomTypeMap[rk].hoy)
-                : null;
+              const getTrType = (rkNum: number, floorCount: number) => {
+                return rkNum >= 1 && rkNum <= 6 && floorCount > 0
+                  ? (floorCount <= 8 ? trapperomTypeMap[rkNum].lav : trapperomTypeMap[rkNum].hoy)
+                  : null;
+              };
+
+              // Build per-building-part Tr types
+              const trapperomDeler: { index: number; navn: string; trType: string | null }[] = [];
+              if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+                const rk1 = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
+                const fl1 = parseInt(formData.etasjer, 10) || 0;
+                trapperomDeler.push({ index: 1, navn: formData.bygningstype || 'Bygningsdel 1', trType: getTrType(rk1, fl1) });
+                formData.bygningsdeler.forEach((del: any, i: number) => {
+                  const rkDel = parseInt(del.risikoklasse?.replace(/\D/g, '') || '0', 10);
+                  const flDel = parseInt(del.etasjer || formData.etasjer, 10) || 0;
+                  trapperomDeler.push({ index: i + 2, navn: del.navn || del.bygningstype || `Bygningsdel ${i + 2}`, trType: getTrType(rkDel, flDel) });
+                });
+              }
+              if (trapperomDeler.length === 0) {
+                const rk = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
+                trapperomDeler.push({ index: 1, navn: "", trType: getTrType(rk, floors) });
+              }
+
+              const uniqueTrTypes = [...new Set(trapperomDeler.map(d => d.trType).filter(Boolean))];
+              const showMultipleTr = trapperomDeler.length > 1 && uniqueTrTypes.length > 1;
+
+              // Header label
+              const trTypeLabel = showMultipleTr
+                ? uniqueTrTypes.join(" / ")
+                : (uniqueTrTypes[0] || null);
+
               const trapperomKravMap: Record<string, string> = {
                 tr_forbinder_brannceller: "Trapperom som forbinder ulike brannceller, må utføres som egen branncelle selv om trapperommet ikke er en del av en rømningsvei.",
                 tr_romningsvei_videre: "Dersom trapperommet ikke leder direkte til det fri eller sikkert sted, må rømningsveien videre utføres som trapperom med hensyn til omsluttende konstruksjoner, mellomliggende rom, dører mv.",
@@ -2142,7 +2169,16 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               if (activeKrav.length === 0) return null;
               return (
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Krav til trapperom{trType && ` (${trType})`}</td>
+                  <td className="border border-gray-400 p-2 align-top">
+                    Krav til trapperom{trTypeLabel && ` (${trTypeLabel})`}
+                    {showMultipleTr && (
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {trapperomDeler.map(d => (
+                          <div key={d.index}>Bygningsdel {d.index} ({d.navn}): {d.trType}</div>
+                        ))}
+                      </div>
+                    )}
+                  </td>
                   <td className="border border-gray-400 p-2">
                     <div className="space-y-1">
                       {activeKrav.map((k: { id: string; text: string; num: number }) => (
