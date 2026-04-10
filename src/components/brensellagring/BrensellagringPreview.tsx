@@ -154,7 +154,42 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           </p>
         )}
 
-        {/* 1. Tillatte mengder */}
+        {/* Stoffdata section */}
+        {hasStoffdata && (
+          <>
+            <h2 style={h2}>1. Stoffdata – utvalgte stoffer</h2>
+            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
+              Tekniske data for utvalgte brannfarlige stoffer iht. GHS/CLP, DSB Temaveiledning og NFPA.
+            </p>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 16 }}>
+              <thead>
+                <tr>
+                  <th style={thStyle}>Stoff</th>
+                  <th style={thStyle}>Kategori</th>
+                  <th style={thStyle}>Flammepunkt</th>
+                  <th style={thStyle}>Densitet</th>
+                  <th style={thStyle}>Brennverdi</th>
+                  {selectedStoffer.some(s => s.eksplosjonsgrenser) && <th style={thStyle}>Eksp.grenser</th>}
+                  {selectedStoffer.some(s => s.selvantennelse) && <th style={thStyle}>Selvant.</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {selectedStoffer.map((stoff) => (
+                  <tr key={stoff.id}>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>{stoff.navn}</td>
+                    <td style={tdStyle}>{stoff.kategoriNavn}</td>
+                    <td style={tdStyle}>{stoff.flammepunkt}</td>
+                    <td style={tdStyle}>{stoff.densitet}</td>
+                    <td style={tdStyle}>{stoff.nedreBrennverdi}</td>
+                    {selectedStoffer.some(s => s.eksplosjonsgrenser) && <td style={tdStyle}>{stoff.eksplosjonsgrenser || "–"}</td>}
+                    {selectedStoffer.some(s => s.selvantennelse) && <td style={tdStyle}>{stoff.selvantennelse || "–"}</td>}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+
         {visibleSections.has("mengder") && (
           <>
             <h2 style={h2}>{sectionNum("mengder")}. Tillatte mengder</h2>
