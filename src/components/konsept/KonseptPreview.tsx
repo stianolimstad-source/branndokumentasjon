@@ -1830,8 +1830,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 );
               });
             })()}
-              );
-            })()}
             {/* Vinduskrav */}
             {formData.vinduskravRelevant && (
               <tr>
