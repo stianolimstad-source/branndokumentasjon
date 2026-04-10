@@ -5,7 +5,7 @@
 
 export type BrensellagringKravItem = { kategori: string; tekst: string; ansvar: string };
 
-export type BrenselType = "fyringsparafin" | "lett_fyringsolje" | "begge";
+export type BrenselType = "fyringsparafin" | "lett_fyringsolje" | "begge" | "propan" | "brannfarlig_gass";
 
 export interface BrensellagringResult {
   romType: string;
@@ -540,6 +540,7 @@ export interface ByggBrenselGrense {
   brenselType: BrenselType;
   brenselNavn: string;
   maksLiter: number | null; // null = ikke tillatt
+  maksKg?: number | null; // for gass (kg)
   romKrav: BrensellagringKravItem[];
 }
 
@@ -556,6 +557,17 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
     navn: "Bolig / leilighetsbygg",
     beskrivelse: "Boliger, leiligheter, rekkehus o.l. Begrenset mengde lov i fyrrom/teknisk rom.",
     grenser: [
+      {
+        brenselType: "propan",
+        brenselNavn: "Propan / LPG (grillgass m.m.)",
+        maksLiter: null,
+        maksKg: 55,
+        romKrav: [
+          { kategori: "Plassering", tekst: "Propanflasker skal ikke oppbevares i kjeller, på loft eller i rom under terreng. Maks 2 × 11 kg flasker (inkl. reserve) i/ved bolig.", ansvar: "Eier" },
+          { kategori: "Ventilasjon", tekst: "Oppbevaring skal være i godt ventilert rom eller utendørs.", ansvar: "Eier" },
+          { kategori: "Avstand", tekst: "Min. 1 m fra brennbare materialer og tennkilder.", ansvar: "Eier" },
+        ],
+      },
       {
         brenselType: "fyringsparafin",
         brenselNavn: "Fyringsparafin",
@@ -591,6 +603,17 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
     beskrivelse: "Garasjer under eller i tilknytning til bygning. Lagring i egen branncelle.",
     grenser: [
       {
+        brenselType: "propan",
+        brenselNavn: "Propan / LPG (grillgass m.m.)",
+        maksLiter: null,
+        maksKg: 55,
+        romKrav: [
+          { kategori: "Plassering", tekst: "Propanflasker skal ikke oppbevares i kjeller, på loft eller i rom under terreng.", ansvar: "Eier" },
+          { kategori: "Ventilasjon", tekst: "Oppbevaring skal være i godt ventilert rom eller utendørs.", ansvar: "Eier" },
+          { kategori: "Avstand", tekst: "Min. 1 m fra brennbare materialer og tennkilder.", ansvar: "Eier" },
+        ],
+      },
+      {
         brenselType: "fyringsparafin",
         brenselNavn: "Fyringsparafin",
         maksLiter: 1650,
@@ -624,6 +647,16 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
     navn: "Fyrrom (egen branncelle)",
     beskrivelse: "Eget fyrrom med egen branncelle iht. VTEK § 11-8. Tillater noe høyere mengder med strengere konstruksjonskrav.",
     grenser: [
+      {
+        brenselType: "propan",
+        brenselNavn: "Propan / LPG",
+        maksLiter: null,
+        maksKg: 55,
+        romKrav: [
+          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Godt ventilert rom eller utendørs.", ansvar: "Eier" },
+          { kategori: "Ventilasjon", tekst: "Rommet skal ha god naturlig eller mekanisk ventilasjon ned mot gulv.", ansvar: "RIV" },
+        ],
+      },
       {
         brenselType: "fyringsparafin",
         brenselNavn: "Fyringsparafin",
@@ -663,6 +696,15 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
     beskrivelse: "Dedikert tankrom med strengere konstruksjonskrav. Tillater de høyeste mengdene innenfor bygning.",
     grenser: [
       {
+        brenselType: "propan",
+        brenselNavn: "Propan / LPG",
+        maksLiter: null,
+        maksKg: 200,
+        romKrav: [
+          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Tankrom skal ha ventilasjon ned mot gulv.", ansvar: "RIV" },
+        ],
+      },
+      {
         brenselType: "fyringsparafin",
         brenselNavn: "Fyringsparafin",
         maksLiter: 10000,
@@ -700,6 +742,16 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
     navn: "Verksted / industri",
     beskrivelse: "Industribygg, verksteder. Lagring av brannfarlig væske i tilknytning til produksjonsareal.",
     grenser: [
+      {
+        brenselType: "propan",
+        brenselNavn: "Propan / LPG",
+        maksLiter: null,
+        maksKg: 200,
+        romKrav: [
+          { kategori: "Plassering", tekst: "Godt ventilert rom eller utendørs. Ikke i kjeller eller rom under terreng.", ansvar: "Eier" },
+          { kategori: "Ventilasjon", tekst: "Mekanisk eller naturlig ventilasjon ned mot gulv i oppbevaringsrom.", ansvar: "RIV" },
+        ],
+      },
       {
         brenselType: "fyringsparafin",
         brenselNavn: "Fyringsparafin",
@@ -739,6 +791,15 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
     beskrivelse: "Lagerbygg og oppbevaringsrom. Lagring av brensel i eget tankrom.",
     grenser: [
       {
+        brenselType: "propan",
+        brenselNavn: "Propan / LPG",
+        maksLiter: null,
+        maksKg: 400,
+        romKrav: [
+          { kategori: "Plassering", tekst: "Godt ventilert rom eller utendørs. Ikke i kjeller eller rom under terreng.", ansvar: "Eier" },
+        ],
+      },
+      {
         brenselType: "fyringsparafin",
         brenselNavn: "Fyringsparafin",
         maksLiter: 10000,
@@ -775,6 +836,15 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
     navn: "Forretningsbygg / kontor",
     beskrivelse: "Kontorer, forretningsbygg. Lagring kun i eget fyrrom/tankrom med begrenset mengde.",
     grenser: [
+      {
+        brenselType: "propan",
+        brenselNavn: "Propan / LPG",
+        maksLiter: null,
+        maksKg: 55,
+        romKrav: [
+          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Oppbevaring utendørs eller i godt ventilert rom.", ansvar: "Eier" },
+        ],
+      },
       {
         brenselType: "fyringsparafin",
         brenselNavn: "Fyringsparafin",

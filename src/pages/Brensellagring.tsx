@@ -699,16 +699,20 @@ const Brensellagring = () => {
                                 <tr key={g.brenselType} className="border-t">
                                   <td className="py-2.5 px-3 font-medium">{g.brenselNavn}</td>
                                   <td className="py-2.5 px-3">
-                                    {g.maksLiter === null ? (
+                                    {g.maksLiter === null && !g.maksKg ? (
                                       <Badge variant="outline" className="text-destructive border-destructive/30">Ikke tillatt</Badge>
+                                    ) : g.maksKg ? (
+                                      <Badge variant="secondary" className="font-mono">
+                                        {g.maksKg.toLocaleString("nb-NO")} kg
+                                      </Badge>
                                     ) : (
                                       <Badge variant="secondary" className="font-mono">
-                                        {g.maksLiter.toLocaleString("nb-NO")} L
+                                        {g.maksLiter!.toLocaleString("nb-NO")} L
                                       </Badge>
                                     )}
                                   </td>
                                   <td className="py-2.5 px-3">
-                                    {g.maksLiter !== null && g.romKrav.length > 0 && (
+                                    {(g.maksLiter !== null || g.maksKg) && g.romKrav.length > 0 && (
                                       <Button
                                         variant="ghost"
                                         size="sm"
@@ -737,7 +741,7 @@ const Brensellagring = () => {
                               Konstruksjonskrav – {grense.brenselNavn}
                             </CardTitle>
                             <p className="text-sm text-muted-foreground">
-                              Maks {grense.maksLiter?.toLocaleString("nb-NO")} liter i {valgtBygg.navn.toLowerCase()}
+                              Maks {grense.maksKg ? `${grense.maksKg} kg` : `${grense.maksLiter?.toLocaleString("nb-NO")} liter`} i {valgtBygg.navn.toLowerCase()}
                             </p>
                           </CardHeader>
                           <CardContent>
