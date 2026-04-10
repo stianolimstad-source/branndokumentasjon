@@ -7,6 +7,7 @@ import {
   BELIGGENHET_KRAV,
   KONTROLL_KRAV,
   DOKUMENTASJON_KRAV,
+  STOFF_KATALOG,
 } from "@/lib/brensellagring-krav";
 
 export type BrenselSectionKey =
