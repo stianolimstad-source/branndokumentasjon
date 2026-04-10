@@ -2739,7 +2739,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 )}
               </>
             ) : (
-              {(() => {
+              (() => {
                 // Build list of all building parts with their RK and BKL
                 const materialDeler: { index: number; navn: string; rk: string; bkl: string }[] = [];
                 if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
