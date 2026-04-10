@@ -743,6 +743,16 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
     beskrivelse: "Industribygg, verksteder. Lagring av brannfarlig væske i tilknytning til produksjonsareal.",
     grenser: [
       {
+        brenselType: "propan",
+        brenselNavn: "Propan / LPG",
+        maksLiter: null,
+        maksKg: 200,
+        romKrav: [
+          { kategori: "Plassering", tekst: "Godt ventilert rom eller utendørs. Ikke i kjeller eller rom under terreng.", ansvar: "Eier" },
+          { kategori: "Ventilasjon", tekst: "Mekanisk eller naturlig ventilasjon ned mot gulv i oppbevaringsrom.", ansvar: "RIV" },
+        ],
+      },
+      {
         brenselType: "fyringsparafin",
         brenselNavn: "Fyringsparafin",
         maksLiter: 4000,
