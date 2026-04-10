@@ -837,6 +837,15 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
     beskrivelse: "Kontorer, forretningsbygg. Lagring kun i eget fyrrom/tankrom med begrenset mengde.",
     grenser: [
       {
+        brenselType: "propan",
+        brenselNavn: "Propan / LPG",
+        maksLiter: null,
+        maksKg: 55,
+        romKrav: [
+          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Oppbevaring utendørs eller i godt ventilert rom.", ansvar: "Eier" },
+        ],
+      },
+      {
         brenselType: "fyringsparafin",
         brenselNavn: "Fyringsparafin",
         maksLiter: 1650,
