@@ -741,7 +741,7 @@ const Brensellagring = () => {
                               Konstruksjonskrav – {grense.brenselNavn}
                             </CardTitle>
                             <p className="text-sm text-muted-foreground">
-                              Maks {grense.maksLiter?.toLocaleString("nb-NO")} liter i {valgtBygg.navn.toLowerCase()}
+                              Maks {grense.maksKg ? `${grense.maksKg} kg` : `${grense.maksLiter?.toLocaleString("nb-NO")} liter`} i {valgtBygg.navn.toLowerCase()}
                             </p>
                           </CardHeader>
                           <CardContent>
