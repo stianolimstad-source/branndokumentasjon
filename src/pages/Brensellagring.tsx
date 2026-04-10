@@ -57,8 +57,19 @@ const Brensellagring = () => {
   const [tankMengde, setTankMengde] = useState("");
   const [stoffKategoriFilter, setStoffKategoriFilter] = useState<string>("alle");
 
-  // Preview visibility
-  const [showPreview, setShowPreview] = useState(false);
+  // Section visibility for preview
+  const [visibleSections, setVisibleSections] = useState<Set<BrenselSectionKey>>(
+    new Set(BRENSEL_SECTIONS.map(s => s.key))
+  );
+
+  const toggleSection = (key: BrenselSectionKey) => {
+    setVisibleSections(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
   const mengdeNum = parseFloat(mengde) || 0;
   const result = brenselType ? getBrensellagringKrav(brenselType as BrenselType, mengdeNum) : null;
