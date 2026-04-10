@@ -6,7 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Flame, AlertTriangle, Info, Shield, Ruler, FileText, Droplets } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+  ArrowLeft, Flame, AlertTriangle, Info, Shield, Ruler, FileText,
+  Droplets, ChevronDown, Cylinder, PipetteIcon, Gauge, ClipboardCheck, FolderOpen,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   getBrensellagringKrav,
@@ -16,6 +20,13 @@ import {
   SIKKERHETSAVSTANDER,
   INTERNE_AVSTANDER_KAT12,
   OPPSAMLING_KRAV,
+  TANK_KRAV,
+  BELIGGENHET_KRAV,
+  ROERLEDNING_KRAV,
+  VENTIL_KRAV,
+  KONTROLL_KRAV,
+  DOKUMENTASJON_KRAV,
+  PUMPE_KRAV,
   getInnmeldingsStatus,
 } from "@/lib/brensellagring-krav";
 
@@ -49,31 +60,46 @@ const Brensellagring = () => {
           <div className="mb-6">
             <h2 className="text-2xl sm:text-3xl font-bold">Lagring av brannfarlig stoff</h2>
             <p className="text-muted-foreground mt-1">
-              Basert på DSB Temaveiledning om oppbevaring av farlig stoff og VTEK § 11-8
+              Basert på DSB Temaveiledning om oppbevaring av farlig stoff (Kapittel 1 – Atmosfæriske tanker) og VTEK § 11-8
             </p>
           </div>
 
+          {/* ============================================================== */}
+          {/* TABS – DSB Temaveiledning innhold                               */}
+          {/* ============================================================== */}
           <Tabs defaultValue="stoffdata" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 h-auto gap-1">
-              <TabsTrigger value="stoffdata" className="text-xs sm:text-sm py-2">
-                <Flame className="h-3.5 w-3.5 mr-1.5 hidden sm:inline" />
+            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 h-auto gap-1">
+              <TabsTrigger value="stoffdata" className="text-xs py-2">
+                <Flame className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
                 Stoffdata
               </TabsTrigger>
-              <TabsTrigger value="byggkrav" className="text-xs sm:text-sm py-2">
-                <Shield className="h-3.5 w-3.5 mr-1.5 hidden sm:inline" />
-                Byggkrav
+              <TabsTrigger value="beliggenhet" className="text-xs py-2">
+                <Ruler className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
+                Beliggenhet
               </TabsTrigger>
-              <TabsTrigger value="avstander" className="text-xs sm:text-sm py-2">
-                <Ruler className="h-3.5 w-3.5 mr-1.5 hidden sm:inline" />
-                Avstander
+              <TabsTrigger value="tanker" className="text-xs py-2">
+                <Cylinder className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
+                Tanker
               </TabsTrigger>
-              <TabsTrigger value="innmelding" className="text-xs sm:text-sm py-2">
-                <FileText className="h-3.5 w-3.5 mr-1.5 hidden sm:inline" />
+              <TabsTrigger value="oppsamling" className="text-xs py-2">
+                <Droplets className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
+                Oppsamling
+              </TabsTrigger>
+              <TabsTrigger value="roer" className="text-xs py-2">
+                <PipetteIcon className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
+                Rør & ventiler
+              </TabsTrigger>
+              <TabsTrigger value="kontroll" className="text-xs py-2">
+                <Gauge className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
+                Kontroll
+              </TabsTrigger>
+              <TabsTrigger value="innmelding" className="text-xs py-2">
+                <FileText className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
                 Innmelding
               </TabsTrigger>
-              <TabsTrigger value="oppsamling" className="text-xs sm:text-sm py-2">
-                <Droplets className="h-3.5 w-3.5 mr-1.5 hidden sm:inline" />
-                Oppsamling
+              <TabsTrigger value="dokumentasjon" className="text-xs py-2">
+                <FolderOpen className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
+                Dokumentasjon
               </TabsTrigger>
             </TabsList>
 
@@ -83,9 +109,9 @@ const Brensellagring = () => {
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Flame className="h-5 w-5 text-orange-500" />
-                    Tekniske data – brannfarlige væsker
+                    Tekniske data – brannfarlige væsker (§ 4.1)
                   </CardTitle>
-                  <p className="text-sm text-muted-foreground">Typiske verdier iht. DSB Temaveiledning § 4.1</p>
+                  <p className="text-sm text-muted-foreground">Typiske verdier iht. DSB Temaveiledning tabell 4.1</p>
                 </CardHeader>
                 <CardContent>
                   <div className="border rounded-lg overflow-x-auto">
@@ -97,6 +123,8 @@ const Brensellagring = () => {
                           <th className="text-left py-2.5 px-3 font-medium">Flammepunkt</th>
                           <th className="text-left py-2.5 px-3 font-medium">Densitet</th>
                           <th className="text-left py-2.5 px-3 font-medium">Brennverdi</th>
+                          <th className="text-left py-2.5 px-3 font-medium">Viskositet</th>
+                          <th className="text-left py-2.5 px-3 font-medium">Dest.intervall</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -105,18 +133,14 @@ const Brensellagring = () => {
                             <td className="py-2 px-3 font-medium">{stoff.navn}</td>
                             <td className="py-2 px-3">
                               <Badge variant="outline" className="text-xs whitespace-nowrap">
-                                {stoff.kategori === "kat1"
-                                  ? "Kat. 1"
-                                  : stoff.kategori === "kat2"
-                                  ? "Kat. 2"
-                                  : stoff.kategori === "kat3"
-                                  ? "Kat. 3"
-                                  : "Diesel/fyringsolje"}
+                                {stoff.kategori === "kat1" ? "Kat. 1" : stoff.kategori === "kat2" ? "Kat. 2" : stoff.kategori === "kat3" ? "Kat. 3" : "Diesel/fyringsolje"}
                               </Badge>
                             </td>
                             <td className="py-2 px-3">{stoff.flammepunkt}</td>
                             <td className="py-2 px-3">{stoff.densitet}</td>
                             <td className="py-2 px-3">{stoff.nedreBrennverdi}</td>
+                            <td className="py-2 px-3">{stoff.viskositet}</td>
+                            <td className="py-2 px-3">{stoff.destillasjonsintervall}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -134,108 +158,35 @@ const Brensellagring = () => {
               </Card>
             </TabsContent>
 
-            {/* ============ TAB: Byggkrav (VTEK) ============ */}
-            <TabsContent value="byggkrav" className="space-y-4">
-              <Card className="shadow-soft">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Shield className="h-5 w-5 text-primary" />
-                    Lagring i bygning – VTEK § 11-8 Tabell 4
-                  </CardTitle>
-                  <p className="text-sm text-muted-foreground">
-                    Krav til rom for lagring av brennbar væske i bygninger
-                  </p>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Type brensel</Label>
-                      <Select value={brenselType} onValueChange={(v) => setBrenselType(v as BrenselType)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Velg type..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="fyringsparafin">Fyringsparafin</SelectItem>
-                          <SelectItem value="lett_fyringsolje">Lett fyringsolje</SelectItem>
-                          <SelectItem value="begge">Begge (kombinasjon)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Mengde (liter)</Label>
-                      <Input
-                        type="number"
-                        min={0}
-                        placeholder="F.eks. 3000"
-                        value={mengde}
-                        onChange={(e) => setMengde(e.target.value)}
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {result && (
-                <>
-                  {result.feilmelding ? (
-                    <Card className="shadow-soft border-amber-300 dark:border-amber-700">
-                      <CardContent className="py-6">
-                        <div className="flex items-start gap-3">
-                          <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
-                          <p className="text-sm text-amber-800 dark:text-amber-200">{result.feilmelding}</p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ) : result.romType && result.krav.length > 0 ? (
-                    <Card className="shadow-soft">
-                      <CardHeader>
-                        <div className="flex items-center gap-2">
-                          <Info className="h-5 w-5 text-primary" />
-                          <CardTitle className="text-lg">Krav – {result.romType}</CardTitle>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {brenselType === "fyringsparafin" ? "Fyringsparafin" : brenselType === "lett_fyringsolje" ? "Lett fyringsolje" : "Kombinasjon"} – {mengdeNum.toLocaleString("nb-NO")} liter
-                        </p>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="border rounded-lg overflow-hidden">
-                          <table className="w-full text-sm">
-                            <thead>
-                              <tr className="bg-muted/50">
-                                <th className="text-left py-2 px-3 font-medium">Kategori</th>
-                                <th className="text-left py-2 px-3 font-medium">Krav</th>
-                                <th className="text-left py-2 px-3 font-medium w-20">Ansvar</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {result.krav.map((k, i) => (
-                                <tr key={i} className="border-t">
-                                  <td className="py-2 px-3 font-medium">{k.kategori}</td>
-                                  <td className="py-2 px-3">{k.tekst}</td>
-                                  <td className="py-2 px-3 text-muted-foreground">{k.ansvar}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ) : null}
-                </>
-              )}
-            </TabsContent>
-
-            {/* ============ TAB: Sikkerhetsavstander ============ */}
-            <TabsContent value="avstander" className="space-y-4">
+            {/* ============ TAB: Beliggenhet & utforming ============ */}
+            <TabsContent value="beliggenhet" className="space-y-4">
               <Card className="shadow-soft">
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
                     <Ruler className="h-5 w-5 text-primary" />
-                    Sikkerhetsavstander – tankanlegg (§ 15.11)
+                    Beliggenhet og utforming (§ 15.1)
                   </CardTitle>
                   <p className="text-sm text-muted-foreground">
-                    Veiledende minsteavstander mellom tank og nærliggende objekter
+                    Krav til plassering, branngater, inngjerding og rømningsveier
                   </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {BELIGGENHET_KRAV.map((krav, i) => (
+                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
+                        <h4 className="font-medium mb-1">{krav.tittel}</h4>
+                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Sikkerhetsavstander */}
+              <Card className="shadow-soft">
+                <CardHeader>
+                  <CardTitle className="text-lg">Sikkerhetsavstander – tank til objekt (§ 15.11)</CardTitle>
+                  <p className="text-sm text-muted-foreground">Veiledende minsteavstander mellom tank og nærliggende objekter</p>
                 </CardHeader>
                 <CardContent>
                   <div className="border rounded-lg overflow-x-auto">
@@ -263,12 +214,11 @@ const Brensellagring = () => {
                 </CardContent>
               </Card>
 
+              {/* Interne avstander */}
               <Card className="shadow-soft">
                 <CardHeader>
                   <CardTitle className="text-lg">Interne avstander – kat. 1 & 2 (meter)</CardTitle>
-                  <p className="text-sm text-muted-foreground">
-                    Veiledende minsteavstander mellom anleggsdeler (f.eks. bensin)
-                  </p>
+                  <p className="text-sm text-muted-foreground">Veiledende minsteavstander mellom anleggsdeler (f.eks. bensin)</p>
                 </CardHeader>
                 <CardContent>
                   <div className="border rounded-lg overflow-x-auto">
@@ -306,6 +256,170 @@ const Brensellagring = () => {
               </Card>
             </TabsContent>
 
+            {/* ============ TAB: Tanker ============ */}
+            <TabsContent value="tanker" className="space-y-4">
+              <Card className="shadow-soft">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Cylinder className="h-5 w-5 text-primary" />
+                    Krav til tanker (§ 15.2)
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Utførelse, fundament, korrosjonsbeskyttelse og flammesikring
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {TANK_KRAV.map((krav, i) => (
+                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
+                        <h4 className="font-medium mb-1">{krav.tittel}</h4>
+                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Pumper */}
+              <Card className="shadow-soft">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    Pumper og pumperom (§ 15.6)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {PUMPE_KRAV.map((krav, i) => (
+                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
+                        <h4 className="font-medium mb-1">{krav.tittel}</h4>
+                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* ============ TAB: Oppsamling & overfylling ============ */}
+            <TabsContent value="oppsamling" className="space-y-4">
+              <Card className="shadow-soft">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Droplets className="h-5 w-5 text-blue-500" />
+                    Oppsamling og overfyllingsvern (§ 15.3)
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Krav til oppsamlingsbasseng, drenering, overfyllingsvarsel og oljeutskiller
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {OPPSAMLING_KRAV.map((krav, i) => (
+                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-medium">{krav.tittel}</h4>
+                          {krav.paragraf && (
+                            <Badge variant="outline" className="text-xs">{krav.paragraf}</Badge>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* ============ TAB: Rør & ventiler ============ */}
+            <TabsContent value="roer" className="space-y-4">
+              <Card className="shadow-soft">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <PipetteIcon className="h-5 w-5 text-primary" />
+                    Rørledninger (§ 15.4)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {ROERLEDNING_KRAV.map((krav, i) => (
+                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
+                        <h4 className="font-medium mb-1">{krav.tittel}</h4>
+                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-soft">
+                <CardHeader>
+                  <CardTitle className="text-lg">Ventiler (§ 15.5)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {VENTIL_KRAV.map((krav, i) => (
+                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
+                        <h4 className="font-medium mb-1">{krav.tittel}</h4>
+                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* ============ TAB: Kontroll ============ */}
+            <TabsContent value="kontroll" className="space-y-4">
+              <Card className="shadow-soft">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Gauge className="h-5 w-5 text-primary" />
+                    Kontroll og tilstandskontroll (§ 9)
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Krav til kontrollintervaller og systematisk tilstandskontroll
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="border rounded-lg overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="bg-muted/50">
+                          <th className="text-left py-2.5 px-3 font-medium">Kontrolltype</th>
+                          <th className="text-left py-2.5 px-3 font-medium">Beskrivelse</th>
+                          <th className="text-left py-2.5 px-3 font-medium w-36">Intervall</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {KONTROLL_KRAV.map((krav, i) => (
+                          <tr key={i} className="border-t">
+                            <td className="py-2 px-3 font-medium">{krav.tittel}</td>
+                            <td className="py-2 px-3 text-muted-foreground">{krav.beskrivelse}</td>
+                            <td className="py-2 px-3">
+                              {krav.intervall && <Badge variant="secondary" className="text-xs">{krav.intervall}</Badge>}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="mt-4 p-3 bg-muted/30 rounded-lg text-sm space-y-1.5">
+                    <p className="font-medium">Generelt skal systematisk tilstandskontroll omfatte:</p>
+                    <ul className="list-disc list-inside space-y-0.5 text-muted-foreground">
+                      <li>Visuell kontroll av tanker og rørføringer</li>
+                      <li>Korrosjonskontroll</li>
+                      <li>Tetthetsprøving, evt. trykkprøving</li>
+                      <li>Kontroll av viktige komponenter</li>
+                      <li>Testing av sikkerhetsfunksjoner og -kritisk utstyr</li>
+                      <li>Gjennomgang av dokumentasjon om reparasjoner og endringer</li>
+                      <li>Kontrollrapport med avvik, tiltak og tidspunkt for neste kontroll</li>
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
             {/* ============ TAB: Innmelding ============ */}
             <TabsContent value="innmelding" className="space-y-4">
               <Card className="shadow-soft">
@@ -328,22 +442,14 @@ const Brensellagring = () => {
                         </SelectTrigger>
                         <SelectContent>
                           {STOFF_KATALOG.map((s) => (
-                            <SelectItem key={s.id} value={s.id}>
-                              {s.navn}
-                            </SelectItem>
+                            <SelectItem key={s.id} value={s.id}>{s.navn}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="space-y-2">
                       <Label>Mengde (liter)</Label>
-                      <Input
-                        type="number"
-                        min={0}
-                        placeholder="F.eks. 5000"
-                        value={tankMengde}
-                        onChange={(e) => setTankMengde(e.target.value)}
-                      />
+                      <Input type="number" min={0} placeholder="F.eks. 5000" value={tankMengde} onChange={(e) => setTankMengde(e.target.value)} />
                     </div>
                   </div>
 
@@ -358,9 +464,7 @@ const Brensellagring = () => {
                           )}
                           <div className="space-y-1">
                             <p className="font-medium">
-                              {innmeldingsStatus.trengerInnmelding
-                                ? "Innmeldingsplikt til DSB"
-                                : "Ingen innmeldingsplikt"}
+                              {innmeldingsStatus.trengerInnmelding ? "Innmeldingsplikt til DSB" : "Ingen innmeldingsplikt"}
                             </p>
                             <p className="text-sm text-muted-foreground">
                               {valgtStoffInfo.navn} ({valgtStoffInfo.kategoriNavn}) – Innmeldingsgrense: {innmeldingsStatus.grenseTekst}
@@ -398,51 +502,150 @@ const Brensellagring = () => {
               </Card>
             </TabsContent>
 
-            {/* ============ TAB: Oppsamling & overfylling ============ */}
-            <TabsContent value="oppsamling" className="space-y-4">
+            {/* ============ TAB: Dokumentasjon ============ */}
+            <TabsContent value="dokumentasjon" className="space-y-4">
               <Card className="shadow-soft">
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
-                    <Droplets className="h-5 w-5 text-blue-500" />
-                    Oppsamling og overfyllingsvern (§ 15.3)
+                    <FolderOpen className="h-5 w-5 text-primary" />
+                    Dokumentasjonskrav (§ 13)
                   </CardTitle>
                   <p className="text-sm text-muted-foreground">
-                    Krav til oppsamlingsbasseng, drenering og tiltak mot overfylling
+                    Dokumentasjon som skal være tilgjengelig gjennom anleggets levetid
                   </p>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {OPPSAMLING_KRAV.map((krav, i) => (
-                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
-                        <h4 className="font-medium mb-1">{krav.tittel}</h4>
-                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
-                      </div>
-                    ))}
+                  <div className="border rounded-lg overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="bg-muted/50">
+                          <th className="text-left py-2.5 px-3 font-medium">Type dokumentasjon</th>
+                          <th className="text-left py-2.5 px-3 font-medium w-32">Referanse</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {DOKUMENTASJON_KRAV.map((dok, i) => (
+                          <tr key={i} className="border-t">
+                            <td className="py-2 px-3">{dok.type}</td>
+                            <td className="py-2 px-3">
+                              <Badge variant="outline" className="text-xs">{dok.referanse}</Badge>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-
-                  <div className="mt-6 p-4 border rounded-lg bg-primary/5">
-                    <h4 className="font-medium flex items-center gap-2 mb-2">
-                      <Info className="h-4 w-4 text-primary" />
-                      Flammesikring av tanker
-                    </h4>
-                    <div className="text-sm space-y-2 text-muted-foreground">
-                      <p>
-                        <strong>Kat. 1 & 2 (flammepunkt &lt; 10 °C over lagringstemperatur):</strong> Krever
-                        trykk/vakuumventil, flytetak eller annen godkjent flammesikring.
-                      </p>
-                      <p>
-                        <strong>Kat. 3 / diesel / fyringsolje (flammepunkt ≥ 10 °C over lagringstemperatur):</strong> Ingen
-                        særlige krav til flammesikring.
-                      </p>
-                    </div>
-                  </div>
+                  <p className="text-xs text-muted-foreground mt-3">
+                    Omfanget avhenger av anleggets størrelse og kompleksitet. Dokumentasjonen skal inngå som del av internkontroll (IK-forskriften § 5).
+                  </p>
                 </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
 
+          {/* ============================================================== */}
+          {/* BYGGKRAV – VTEK § 11-8 – Separat seksjon under tabs             */}
+          {/* ============================================================== */}
+          <div className="mt-10 pt-8 border-t">
+            <Collapsible defaultOpen>
+              <CollapsibleTrigger asChild>
+                <button className="flex items-center gap-3 w-full text-left group mb-4">
+                  <div className="flex items-center gap-2">
+                    <Shield className="h-6 w-6 text-primary" />
+                    <div>
+                      <h3 className="text-xl font-bold">Lagring i bygning – VTEK § 11-8</h3>
+                      <p className="text-sm text-muted-foreground">Branntekniske krav til rom for lagring av brennbar væske</p>
+                    </div>
+                  </div>
+                  <ChevronDown className="h-5 w-5 text-muted-foreground ml-auto transition-transform group-data-[state=open]:rotate-180" />
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-4">
+                <Card className="shadow-soft">
+                  <CardContent className="pt-6 space-y-4">
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Type brensel</Label>
+                        <Select value={brenselType} onValueChange={(v) => setBrenselType(v as BrenselType)}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Velg type..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="fyringsparafin">Fyringsparafin</SelectItem>
+                            <SelectItem value="lett_fyringsolje">Lett fyringsolje</SelectItem>
+                            <SelectItem value="begge">Begge (kombinasjon)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Mengde (liter)</Label>
+                        <Input type="number" min={0} placeholder="F.eks. 3000" value={mengde} onChange={(e) => setMengde(e.target.value)} />
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-muted/30 rounded-lg text-sm space-y-1">
+                      <p className="font-medium">Mengdegrenser iht. VTEK § 11-8 Tabell 4:</p>
+                      <p><strong>Fyringsparafin:</strong> ≤ 1 650 L (fyrrom) | ≤ 4 000 L (fyrrom, strengere krav) | ≤ 10 000 L (tankrom)</p>
+                      <p><strong>Lett fyringsolje:</strong> ≤ 4 000 L (fyrrom) | ≤ 10 000 L (tankrom)</p>
+                      <p><strong>Kombinasjon:</strong> ≤ 6 000 L (tankrom)</p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {result && (
+                  <>
+                    {result.feilmelding ? (
+                      <Card className="shadow-soft border-amber-300 dark:border-amber-700">
+                        <CardContent className="py-6">
+                          <div className="flex items-start gap-3">
+                            <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                            <p className="text-sm text-amber-800 dark:text-amber-200">{result.feilmelding}</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ) : result.romType && result.krav.length > 0 ? (
+                      <Card className="shadow-soft">
+                        <CardHeader>
+                          <div className="flex items-center gap-2">
+                            <ClipboardCheck className="h-5 w-5 text-primary" />
+                            <CardTitle className="text-lg">Krav – {result.romType}</CardTitle>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {brenselType === "fyringsparafin" ? "Fyringsparafin" : brenselType === "lett_fyringsolje" ? "Lett fyringsolje" : "Kombinasjon"} – {mengdeNum.toLocaleString("nb-NO")} liter
+                          </p>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="border rounded-lg overflow-hidden">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="bg-muted/50">
+                                  <th className="text-left py-2 px-3 font-medium">Kategori</th>
+                                  <th className="text-left py-2 px-3 font-medium">Krav</th>
+                                  <th className="text-left py-2 px-3 font-medium w-20">Ansvar</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {result.krav.map((k, i) => (
+                                  <tr key={i} className="border-t">
+                                    <td className="py-2 px-3 font-medium">{k.kategori}</td>
+                                    <td className="py-2 px-3">{k.tekst}</td>
+                                    <td className="py-2 px-3 text-muted-foreground">{k.ansvar}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ) : null}
+                  </>
+                )}
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
+
           <p className="text-xs text-muted-foreground mt-8 text-center">
-            Kilde: DSB Temaveiledning om oppbevaring av farlig stoff og VTEK § 11-8.
+            Kilde: DSB Temaveiledning om oppbevaring av farlig stoff (Kapittel 1 – Atmosfæriske tanker) og VTEK § 11-8.
             <br />
             <a
               href="https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/"

@@ -14,7 +14,7 @@ export interface BrensellagringResult {
 }
 
 // ---------------------------------------------------------------------------
-// 1. Stoffkategorier iht. DSB / GHS
+// 1. Stoffkategorier iht. DSB / GHS – utvidet med data fra § 4.1
 // ---------------------------------------------------------------------------
 export type VaeskeKategori = "kat1" | "kat2" | "kat3" | "diesel_fyringsolje";
 
@@ -26,6 +26,10 @@ export interface StoffInfo {
   flammepunkt: string;
   densitet: string;
   nedreBrennverdi: string;
+  viskositet: string;
+  destillasjonsintervall: string;
+  karboninnhold: string;
+  hydrogeninnhold: string;
   eksempler: string;
 }
 
@@ -38,6 +42,10 @@ export const STOFF_KATALOG: StoffInfo[] = [
     flammepunkt: "< −40 °C",
     densitet: "735–765 kg/m³",
     nedreBrennverdi: "43,8 MJ/kg",
+    viskositet: "Ikke relevant",
+    destillasjonsintervall: "< 20–210 °C",
+    karboninnhold: "ca. 86 %",
+    hydrogeninnhold: "ca. 14 %",
     eksempler: "Motorbensin, flybensin",
   },
   {
@@ -48,6 +56,10 @@ export const STOFF_KATALOG: StoffInfo[] = [
     flammepunkt: "12 °C",
     densitet: "790 kg/m³",
     nedreBrennverdi: "26,7 MJ/kg",
+    viskositet: "Ikke relevant",
+    destillasjonsintervall: "78 °C",
+    karboninnhold: "52 %",
+    hydrogeninnhold: "13 %",
     eksempler: "Sprit, E85-drivstoff",
   },
   {
@@ -58,6 +70,10 @@ export const STOFF_KATALOG: StoffInfo[] = [
     flammepunkt: "11 °C",
     densitet: "792 kg/m³",
     nedreBrennverdi: "19,9 MJ/kg",
+    viskositet: "Ikke relevant",
+    destillasjonsintervall: "64,7 °C",
+    karboninnhold: "37,5 %",
+    hydrogeninnhold: "12,5 %",
     eksempler: "Industriløsemiddel",
   },
   {
@@ -68,6 +84,10 @@ export const STOFF_KATALOG: StoffInfo[] = [
     flammepunkt: "≥ 35 °C",
     densitet: "780–815 kg/m³",
     nedreBrennverdi: "43,2 MJ/kg",
+    viskositet: "2–4 cSt v/−20 °C",
+    destillasjonsintervall: "150–280 °C",
+    karboninnhold: "86 %",
+    hydrogeninnhold: "14 %",
     eksempler: "Parafin, JetA1",
   },
   {
@@ -78,6 +98,10 @@ export const STOFF_KATALOG: StoffInfo[] = [
     flammepunkt: "≥ 56 °C",
     densitet: "820–845 kg/m³",
     nedreBrennverdi: "42,8 MJ/kg",
+    viskositet: "1,5–4 cSt v/40 °C",
+    destillasjonsintervall: "180–360 °C",
+    karboninnhold: "ca. 86 %",
+    hydrogeninnhold: "ca. 14 %",
     eksempler: "Autodiesel, gassolje",
   },
   {
@@ -88,6 +112,10 @@ export const STOFF_KATALOG: StoffInfo[] = [
     flammepunkt: "≥ 56 °C",
     densitet: "820–870 kg/m³",
     nedreBrennverdi: "42,7 MJ/kg",
+    viskositet: "1,5–4 cSt v/40 °C",
+    destillasjonsintervall: "180–370 °C",
+    karboninnhold: "86 %",
+    hydrogeninnhold: "ca. 14 %",
     eksempler: "Fyringsolje nr. 1",
   },
 ];
@@ -174,41 +202,281 @@ export const INTERNE_AVSTANDER_KAT12: InternAvstandRad[] = [
 export interface OppsamlingKrav {
   tittel: string;
   beskrivelse: string;
+  paragraf?: string;
 }
 
 export const OPPSAMLING_KRAV: OppsamlingKrav[] = [
   {
     tittel: "Oppsamlingsbasseng – enkelt tank",
-    beskrivelse: "Kapasitet lik tankens totale rominnhold + ca. 15 cm overhøyde for skumslokking.",
+    beskrivelse: "Kapasitet lik tankens totale rominnhold + ca. 15 cm overhøyde for skumslokking. I kapasiteten medregnes den delen av tanken som står lavere enn toppen av bassengveggen.",
+    paragraf: "§ 15.3.1",
   },
   {
     tittel: "Felles oppsamlingsbasseng – flere tanker",
     beskrivelse: "Kapasitet ≥ volumet av største tank + 10 % av summen av øvrige tankers volum + ca. 15 cm overhøyde.",
+    paragraf: "§ 15.3.1",
+  },
+  {
+    tittel: "Materialer",
+    beskrivelse: "Oppsamlingsbasseng kan være av stål, betong, betong/murblokker, jord tettet med leire e.l., avhengig av forholdene på stedet. Bassenget skal motstå vanntrykk ved maksimal oppfylling og ha tilstrekkelig brannmotstand.",
+    paragraf: "§ 15.3.1",
   },
   {
     tittel: "Drenering",
-    beskrivelse: "Bunnen i bassenget skal ha minst 1 % fall bort fra tanken. Dreneringsventiler skal normalt være stengt.",
+    beskrivelse: "Bunnen i bassenget skal ha minst 1 % fall bort fra tanken. Dreneringsventiler skal normalt være stengt. Dreneringskapasiteten bør minst tilsvare den vannmengde som kan bli tilført under en brann.",
+    paragraf: "§ 15.3.1",
+  },
+  {
+    tittel: "Ledemurer",
+    beskrivelse: "I skrånende terreng kan ledemurer lede lekkasje mot oppsamlingsbasseng. Krav til tetthet og vegetasjonsfrihet som for bassenger.",
+    paragraf: "§ 15.3.1",
   },
   {
     tittel: "Overfyllingsvarsel",
-    beskrivelse: "Tank med fast tilkobling skal ha overfyllingsvarsel. Alarm ved nivå over høyeste tillatte driftsnivå.",
+    beskrivelse: "Tank med fast tilkobling skal ha overfyllingsvarsel. Alarm ved nivå over høyeste tillatte driftsnivå. Det skal da være tilstrekkelig ledig volum og tid til å stoppe videre oppfylling.",
+    paragraf: "§ 15.3.2",
   },
   {
     tittel: "Overfyllingsvern",
-    beskrivelse: "Krav ved stor fyllehastighet eller store konsekvenser. Automatisk stopp av tilførsel ved definert nivå.",
+    beskrivelse: "Krav ved stor fyllehastighet, store konsekvenser eller problematisk kommunikasjon mellom tank og fyllested. Automatisk stopp av tilførsel ved definert nivå + alarm. Skal være uavhengig av tankens nivåovervåkning.",
+    paragraf: "§ 15.3.2",
   },
   {
     tittel: "Brannfarlig væske kat. 1 og 2",
-    beskrivelse: "Tanker skal ha overfyllingsvern (automatisk stopp).",
+    beskrivelse: "Tanker skal ha overfyllingsvern (automatisk stopp). Nivåfølere monteres lett tilgjengelig for funksjonskontroll.",
+    paragraf: "§ 15.3.2",
   },
   {
     tittel: "Brannfarlig væske kat. 3 / diesel / fyringsolje",
     beskrivelse: "Tanker skal ha overfyllingsvarsel eller overfyllingsvern.",
+    paragraf: "§ 15.3.2",
+  },
+  {
+    tittel: "Oljeutskiller",
+    beskrivelse: "Vann fra tanker, oppsamlingsbasseng, bilfylleplasser og kaianlegg skal ledes til oljeutskiller. Ved brannfarlig væske kat. 1 og 2 kreves tilbakeslagssikring (væskelås). Lufterør fra utskiller minst 3 m over terreng.",
+    paragraf: "§ 15.3.1",
   },
 ];
 
 // ---------------------------------------------------------------------------
-// 6. Eksisterende VTEK § 11-8 – lagring i bygg
+// 6. Tankkrav – § 15.2
+// ---------------------------------------------------------------------------
+export interface TankKrav {
+  tittel: string;
+  beskrivelse: string;
+}
+
+export const TANK_KRAV: TankKrav[] = [
+  {
+    tittel: "Utførelse",
+    beskrivelse: "Tanker skal utføres iht. anerkjent norm, f.eks. NS-EN 14015 (tidl. NS 1544) eller NS-EN 12285-2.",
+  },
+  {
+    tittel: "Korrosjonsbeskyttelse",
+    beskrivelse: "Tanker skal korrosjonsbeskyttelsesiht. anvendt standard. Beskyttelsen må kontrolleres regelmessig.",
+  },
+  {
+    tittel: "Fundament",
+    beskrivelse: "Tanker plasseres på fundament av ubrennbart materiale. Grunnen skal være bæredyktig og telefri.",
+  },
+  {
+    tittel: "Lekkasjedeteksjon",
+    beskrivelse: "Vertikale tanker bør ha væsketett plate/membran under eller i fundamentet, med dreneringsrør (sladrerør) for å påvise lekkasje i bunnseksjonen.",
+  },
+  {
+    tittel: "Lufterør",
+    beskrivelse: "Skal være av stål og hindre skader på tank pga. over-/undertrykk. Plassering skal ta hensyn til vindretninger, lavpunkter, brennbart opplag og bygninger.",
+  },
+  {
+    tittel: "Flammesikring – kat. 1 & 2",
+    beskrivelse: "Tank med flammepunkt < 10 °C over lagringstemperatur krever trykk/vakuumventil, flytetak eller annen godkjent flammesikring.",
+  },
+  {
+    tittel: "Flammesikring – kat. 3 / diesel",
+    beskrivelse: "Ingen særlige krav til flammesikring for væsker med flammepunkt ≥ 10 °C over lagringstemperatur.",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// 7. Beliggenhet & utforming – § 15.1
+// ---------------------------------------------------------------------------
+export interface BeliggenhetKrav {
+  tittel: string;
+  beskrivelse: string;
+}
+
+export const BELIGGENHET_KRAV: BeliggenhetKrav[] = [
+  {
+    tittel: "Terrengforhold",
+    beskrivelse: "Terrengforholdene skal utnyttes slik at eventuell lekkasje og utslipp gir minst mulig påvirkning. Terrenget bør også utnyttes til å begrense brannspredning utenfra og inn mot anlegget.",
+  },
+  {
+    tittel: "Branngater",
+    beskrivelse: "Mellom tankgrupper skal det legges branngater. Tankgrupper med samlet volum over 30 000 m³ bør adskilles med branngate ≥ 30 m. Branngater skal gi rask adkomst og være fri for vegetasjon og brennbart opplag.",
+  },
+  {
+    tittel: "Tankgrupper – kat. 1 & 2",
+    beskrivelse: "Samlet volum i en gruppe bør ikke overstige 8 000 m³. Tanker med kat. 3/diesel plasseres i egne grupper, adskilt fra kat. 1 & 2, med mindre risikoanalyse tillater samlokalisering.",
+  },
+  {
+    tittel: "Inngjerding",
+    beskrivelse: "Anlegg for kat. 1 & 2 skal være inngjerdet. Kat. 3/diesel bør være inngjerdet. Gjerdet skal være ≥ 2 m høyt, avstand til nærmeste anleggsdel ≥ 5 m. Porter skal være låsbare.",
+  },
+  {
+    tittel: "Rømningsveier",
+    beskrivelse: "Alle anleggsdeler skal ha minst to uavhengige rømningsveier, fri for trafikkhindringer.",
+  },
+  {
+    tittel: "Vegetasjon",
+    beskrivelse: "Gress, busker, nåletrær m.v. må begrenses i nærheten av bilfylleplasser, tappesteder, tanker og annet brannfarlig opplag.",
+  },
+  {
+    tittel: "Transportplan",
+    beskrivelse: "Det skal foreligge plan for sikker transport inn til, rundt på og ut av anlegget, inkl. adkomst for brann- og redningsvesenet (normalt fra to sider).",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// 8. Rørledninger – § 15.4
+// ---------------------------------------------------------------------------
+export interface RoerledningKrav {
+  tittel: string;
+  beskrivelse: string;
+}
+
+export const ROERLEDNING_KRAV: RoerledningKrav[] = [
+  {
+    tittel: "Over grunn",
+    beskrivelse: "Rørledninger bør være helsveiset med nok flenseforbindelser til omkobling uten varmt arbeid. Skal ha arrangement for lengdeforandringer og overtrykksavlastning.",
+  },
+  {
+    tittel: "Bærekonstruksjoner",
+    beskrivelse: "Bærekonstruksjoner for rørgater skal være av ubrennbart materiale med tilstrekkelig brannintegritet mot kollaps/brudd. Ingen brannbelastninger under rørgater.",
+  },
+  {
+    tittel: "Nedgravd",
+    beskrivelse: "PEH-plast/GRP rørledninger skal være nedgravd i sin helhet. Overgang plast–stål i tett kum eller min. 25 cm under bakken. Maks 0,7 × nominell trykklasse.",
+  },
+  {
+    tittel: "Nye anlegg",
+    beskrivelse: "Rørledninger bør legges over bakkenivå eller i væsketett kulvert. Eksisterende nedgravde rørledninger kan aksepteres med god lekkasje- og korrosjonskontroll.",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// 9. Ventiler – § 15.5
+// ---------------------------------------------------------------------------
+export interface VentilKrav {
+  tittel: string;
+  beskrivelse: string;
+}
+
+export const VENTIL_KRAV: VentilKrav[] = [
+  {
+    tittel: "Materialkrav",
+    beskrivelse: "Utstyr av sikkerhetsmessig betydning (tankventiler, kaiventiler, tilbakeslagsventiler, rørbruddsventiler, trykk-/vakuumventiler, lastearmer) skal være brannsikker utførelse, gods av støpestål eller tilsvarende.",
+  },
+  {
+    tittel: "Tilbakeslagsventiler",
+    beskrivelse: "Skal hindre tilbakestrømning ved brudd i pumpe/slange/tilkopling, og overstrømming mellom tanker gjennom lekke ventiler. Plasseres vanligvis på innpumpingsstedet.",
+  },
+  {
+    tittel: "Rørbruddsventil",
+    beskrivelse: "Monteres på utløpsledning fra tank, pumpe og der rørbrudd kan gi lekkasje av større mengder. For tanker med oppsamlingsbasseng plasseres ventilen i bassenget.",
+  },
+  {
+    tittel: "Merking & tilgjengelighet",
+    beskrivelse: "Viktige stengeventiler og tappeutstyr skal være tydelig merket, lett tilgjengelig i nødsituasjoner, og kunne låses i stengt posisjon.",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// 10. Kontroll & tilstandskontroll – § 9
+// ---------------------------------------------------------------------------
+export interface KontrollKrav {
+  tittel: string;
+  beskrivelse: string;
+  intervall?: string;
+}
+
+export const KONTROLL_KRAV: KontrollKrav[] = [
+  {
+    tittel: "Ferdigkontroll",
+    beskrivelse: "Før overlevering skal det foretas ferdigkontroll inkl. trykkprøving/tetthetsprøving etter anerkjente metoder og fastsatte akseptkriterier.",
+    intervall: "Ved installasjon",
+  },
+  {
+    tittel: "Utvendig tilstandskontroll",
+    beskrivelse: "Systematisk tilstandskontroll av tankenes ytre, korrosjonsbeskyttelse, viktige komponenter og sikkerhetsfunksjoner.",
+    intervall: "Maks hvert 5. år",
+  },
+  {
+    tittel: "Innvendig tilstandskontroll",
+    beskrivelse: "Innvendig inspeksjon av tanker for korrosjon, bunnsjikt og strukturell integritet.",
+    intervall: "Maks hvert 20. år",
+  },
+  {
+    tittel: "Sikkerhetskritisk utstyr",
+    beskrivelse: "Kontroll- og sikkerhetsfunksjoner (nødstopp, nødavstengning) kontrolleres og prøves etter fastsatte prosedyrer. Kan bruke NS-EN IEC 61508 for intervallbestemmelse.",
+    intervall: "Hvert 2. år (uten 61508)",
+  },
+  {
+    tittel: "Rørsystem og utstyr",
+    beskrivelse: "Systematisk tilstandskontroll av beholdere, rørsystem og øvrig utstyr.",
+    intervall: "Maks hvert 5. år",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// 11. Dokumentasjonskrav – § 13
+// ---------------------------------------------------------------------------
+export interface DokumentasjonKrav {
+  type: string;
+  referanse: string;
+}
+
+export const DOKUMENTASJON_KRAV: DokumentasjonKrav[] = [
+  { type: "Igangsettingstillatelse fra kommunen", referanse: "PBL" },
+  { type: "Ferdigattest / midlertidig brukstillatelse", referanse: "PBL" },
+  { type: "Kompetansedokumentasjon (prosjektering, drift, kontroll)", referanse: "§ 7" },
+  { type: "Prosjektering med risikoanalyse og arealdisponeringsplan", referanse: "§ 8.1.1, 14, 16" },
+  { type: "Kvittering for innmelding av farlig stoff", referanse: "§ 12" },
+  { type: "Monterings-, bruks- og vedlikeholdsveiledninger", referanse: "§ 8.2.2" },
+  { type: "Kontrollrapporter med sjekklister", referanse: "§ 9" },
+  { type: "Systematisk tilstandskontroll", referanse: "§ 9.6–9.7" },
+  { type: "Drifts-, vedlikeholds- og kontrollplaner", referanse: "§ 10" },
+  { type: "Branninstruks, varslings- og beredskapsplan", referanse: "§ 10, 19" },
+  { type: "Områdeklassifisering og eksplosjonsverndokument", referanse: "§ 15.12" },
+  { type: "Elektriske installasjoner", referanse: "§ 15.13" },
+  { type: "Samtykke (storulykkevirksomhet)", referanse: "§ 17" },
+  { type: "Rapportering av uhell og ulykker", referanse: "§ 20" },
+];
+
+// ---------------------------------------------------------------------------
+// 12. Pumper & pumperom – § 15.6
+// ---------------------------------------------------------------------------
+export interface PumpeKrav {
+  tittel: string;
+  beskrivelse: string;
+}
+
+export const PUMPE_KRAV: PumpeKrav[] = [
+  {
+    tittel: "Plassering",
+    beskrivelse: "Pumper bør fortrinnsvis plasseres i friluft. Kan stå i eget rom dersom rommet er av ubrennbare materialer og godt ventilert. Gulv i pumperom skal være væsketett.",
+  },
+  {
+    tittel: "Brannsikring",
+    beskrivelse: "Pumper plasseres slik at brann ikke umiddelbart utsetter omgivelsene for varmepåvirkning. For kat. 1 & 2 skal pumper plasseres adskilt fra tanker med tilstrekkelig avstand eller brannvegg.",
+  },
+  {
+    tittel: "Sikkerhet",
+    beskrivelse: "Pumper skal være sikret mot varmgang ved kjøring mot stengt ventil. Nødstopp i betryggende avstand. Ventiler for avstenging skal være lett tilgjengelige.",
+  },
+];
+
+// ---------------------------------------------------------------------------
+// 13. Eksisterende VTEK § 11-8 – lagring i bygg
 // ---------------------------------------------------------------------------
 export function getBrensellagringKrav(
   brenselType: BrenselType,
@@ -292,7 +560,7 @@ export function getBrensellagringKrav(
 }
 
 // ---------------------------------------------------------------------------
-// 7. Hjelpefunksjon: finn innmeldingsgrense for et stoff
+// 14. Hjelpefunksjon: finn innmeldingsgrense for et stoff
 // ---------------------------------------------------------------------------
 export function getInnmeldingsStatus(stoffId: string, mengdeLiter: number): { trengerInnmelding: boolean; grenseTekst: string } {
   const stoff = STOFF_KATALOG.find((s) => s.id === stoffId);
