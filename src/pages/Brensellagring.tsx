@@ -88,6 +88,9 @@ const Brensellagring = () => {
   // Selected substances for document
   const [selectedStoffIds, setSelectedStoffIds] = useState<Set<string>>(new Set());
 
+  // Selected individual krav items per category (index-based keys like "beliggenhet_0")
+  const [selectedKravIds, setSelectedKravIds] = useState<Set<string>>(new Set());
+
   const toggleStoff = (id: string) => {
     setSelectedStoffIds(prev => {
       const next = new Set(prev);
@@ -95,6 +98,32 @@ const Brensellagring = () => {
       else next.add(id);
       return next;
     });
+  };
+
+  const toggleKrav = (id: string) => {
+    setSelectedKravIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const isKravSelected = (id: string) => selectedKravIds.has(id);
+
+  const KravItemButton = ({ id }: { id: string }) => {
+    const selected = isKravSelected(id);
+    return (
+      <Button
+        variant={selected ? "default" : "ghost"}
+        size="sm"
+        className={`h-6 w-6 p-0 shrink-0 ${selected ? "" : "text-muted-foreground hover:text-primary"}`}
+        onClick={() => toggleKrav(id)}
+        title={selected ? "Fjern fra dokument" : "Legg til i dokument"}
+      >
+        {selected ? <Check className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+      </Button>
+    );
   };
 
   const toggleSection = (key: BrenselSectionKey) => {
@@ -200,6 +229,7 @@ const Brensellagring = () => {
       bygningstype: valgtBygningstype,
       visibleSections: Array.from(visibleSections),
       selectedStoffer: Array.from(selectedStoffIds),
+      selectedKrav: Array.from(selectedKravIds),
     };
     const docName = `Brensellagring – ${valgtBygg?.navn || valgtBygningstype}`;
     const { error } = await supabase
@@ -533,9 +563,12 @@ const Brensellagring = () => {
                 <CardContent>
                   <div className="space-y-3">
                     {BELIGGENHET_KRAV.map((krav, i) => (
-                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
-                        <h4 className="font-medium mb-1">{krav.tittel}</h4>
-                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                      <div key={i} className={`p-4 rounded-lg flex items-start gap-3 ${isKravSelected(`beliggenhet_${i}`) ? "bg-primary/10 ring-1 ring-primary/30" : "bg-muted/30"}`}>
+                        <KravItemButton id={`beliggenhet_${i}`} />
+                        <div>
+                          <h4 className="font-medium mb-1">{krav.tittel}</h4>
+                          <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -634,9 +667,12 @@ const Brensellagring = () => {
                 <CardContent>
                   <div className="space-y-3">
                     {TANK_KRAV.map((krav, i) => (
-                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
-                        <h4 className="font-medium mb-1">{krav.tittel}</h4>
-                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                      <div key={i} className={`p-4 rounded-lg flex items-start gap-3 ${isKravSelected(`tank_${i}`) ? "bg-primary/10 ring-1 ring-primary/30" : "bg-muted/30"}`}>
+                        <KravItemButton id={`tank_${i}`} />
+                        <div>
+                          <h4 className="font-medium mb-1">{krav.tittel}</h4>
+                          <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -653,9 +689,12 @@ const Brensellagring = () => {
                 <CardContent>
                   <div className="space-y-3">
                     {PUMPE_KRAV.map((krav, i) => (
-                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
-                        <h4 className="font-medium mb-1">{krav.tittel}</h4>
-                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                      <div key={i} className={`p-4 rounded-lg flex items-start gap-3 ${isKravSelected(`pumpe_${i}`) ? "bg-primary/10 ring-1 ring-primary/30" : "bg-muted/30"}`}>
+                        <KravItemButton id={`pumpe_${i}`} />
+                        <div>
+                          <h4 className="font-medium mb-1">{krav.tittel}</h4>
+                          <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -681,14 +720,17 @@ const Brensellagring = () => {
                 <CardContent>
                   <div className="space-y-3">
                     {OPPSAMLING_KRAV.map((krav, i) => (
-                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-medium">{krav.tittel}</h4>
-                          {krav.paragraf && (
-                            <Badge variant="outline" className="text-xs">{krav.paragraf}</Badge>
-                          )}
+                      <div key={i} className={`p-4 rounded-lg flex items-start gap-3 ${isKravSelected(`oppsamling_${i}`) ? "bg-primary/10 ring-1 ring-primary/30" : "bg-muted/30"}`}>
+                        <KravItemButton id={`oppsamling_${i}`} />
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-medium">{krav.tittel}</h4>
+                            {krav.paragraf && (
+                              <Badge variant="outline" className="text-xs">{krav.paragraf}</Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
                         </div>
-                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
                       </div>
                     ))}
                   </div>
@@ -711,9 +753,12 @@ const Brensellagring = () => {
                 <CardContent>
                   <div className="space-y-3">
                     {ROERLEDNING_KRAV.map((krav, i) => (
-                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
-                        <h4 className="font-medium mb-1">{krav.tittel}</h4>
-                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                      <div key={i} className={`p-4 rounded-lg flex items-start gap-3 ${isKravSelected(`roer_${i}`) ? "bg-primary/10 ring-1 ring-primary/30" : "bg-muted/30"}`}>
+                        <KravItemButton id={`roer_${i}`} />
+                        <div>
+                          <h4 className="font-medium mb-1">{krav.tittel}</h4>
+                          <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -727,9 +772,12 @@ const Brensellagring = () => {
                 <CardContent>
                   <div className="space-y-3">
                     {VENTIL_KRAV.map((krav, i) => (
-                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
-                        <h4 className="font-medium mb-1">{krav.tittel}</h4>
-                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                      <div key={i} className={`p-4 rounded-lg flex items-start gap-3 ${isKravSelected(`ventil_${i}`) ? "bg-primary/10 ring-1 ring-primary/30" : "bg-muted/30"}`}>
+                        <KravItemButton id={`ventil_${i}`} />
+                        <div>
+                          <h4 className="font-medium mb-1">{krav.tittel}</h4>
+                          <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -757,6 +805,7 @@ const Brensellagring = () => {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="bg-muted/50">
+                          <th className="text-center py-2.5 px-2 font-medium w-10">Dok.</th>
                           <th className="text-left py-2.5 px-3 font-medium">Kontrolltype</th>
                           <th className="text-left py-2.5 px-3 font-medium">Beskrivelse</th>
                           <th className="text-left py-2.5 px-3 font-medium w-36">Intervall</th>
@@ -764,7 +813,8 @@ const Brensellagring = () => {
                       </thead>
                       <tbody>
                         {KONTROLL_KRAV.map((krav, i) => (
-                          <tr key={i} className="border-t">
+                          <tr key={i} className={`border-t ${isKravSelected(`kontroll_${i}`) ? "bg-primary/5" : ""}`}>
+                            <td className="py-2 px-2 text-center"><KravItemButton id={`kontroll_${i}`} /></td>
                             <td className="py-2 px-3 font-medium">{krav.tittel}</td>
                             <td className="py-2 px-3 text-muted-foreground">{krav.beskrivelse}</td>
                             <td className="py-2 px-3">
@@ -894,13 +944,15 @@ const Brensellagring = () => {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="bg-muted/50">
+                          <th className="text-center py-2.5 px-2 font-medium w-10">Dok.</th>
                           <th className="text-left py-2.5 px-3 font-medium">Type dokumentasjon</th>
                           <th className="text-left py-2.5 px-3 font-medium w-32">Referanse</th>
                         </tr>
                       </thead>
                       <tbody>
                         {DOKUMENTASJON_KRAV.map((dok, i) => (
-                          <tr key={i} className="border-t">
+                          <tr key={i} className={`border-t ${isKravSelected(`dok_${i}`) ? "bg-primary/5" : ""}`}>
+                            <td className="py-2 px-2 text-center"><KravItemButton id={`dok_${i}`} /></td>
                             <td className="py-2 px-3">{dok.type}</td>
                             <td className="py-2 px-3">
                               <Badge variant="outline" className="text-xs">{dok.referanse}</Badge>
@@ -1147,7 +1199,7 @@ const Brensellagring = () => {
                   <Button
                     size="sm"
                     onClick={handleSaveDocument}
-                    disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedStoffIds.size === 0)}
+                    disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedStoffIds.size === 0 && selectedKravIds.size === 0)}
                     className="h-8"
                   >
                     <Save className="h-4 w-4 mr-1.5" />
@@ -1161,6 +1213,7 @@ const Brensellagring = () => {
                     adresse={adresse || undefined}
                     visibleSections={visibleSections}
                     selectedStoffIds={selectedStoffIds}
+                    selectedKravIds={selectedKravIds}
                   />
                 </div>
               </div>
