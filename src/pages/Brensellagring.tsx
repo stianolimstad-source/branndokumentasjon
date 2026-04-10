@@ -712,7 +712,7 @@ const Brensellagring = () => {
                                     )}
                                   </td>
                                   <td className="py-2.5 px-3">
-                                    {g.maksLiter !== null && g.romKrav.length > 0 && (
+                                    {(g.maksLiter !== null || g.maksKg) && g.romKrav.length > 0 && (
                                       <Button
                                         variant="ghost"
                                         size="sm"
