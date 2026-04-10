@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useRef, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -9,9 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   ArrowLeft, Flame, AlertTriangle, Info, Shield, Ruler, FileText,
-  Droplets, ChevronDown, Cylinder, PipetteIcon, Gauge, ClipboardCheck, FolderOpen, ExternalLink, Eye,
+  Droplets, ChevronDown, Cylinder, PipetteIcon, Gauge, ClipboardCheck, FolderOpen, ExternalLink, Eye, Building, Check, Plus, Search,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import {
   getBrensellagringKrav,
   BrenselType,
@@ -36,15 +41,33 @@ import {
 import BrensellagringPreview, { BRENSEL_SECTIONS, BrenselSectionKey } from "@/components/brensellagring/BrensellagringPreview";
 import { Checkbox } from "@/components/ui/checkbox";
 
+interface ProjectOption {
+  id: string;
+  name: string;
+  address: string | null;
+}
+
 const Brensellagring = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  // Project selection
+  const [projects, setProjects] = useState<ProjectOption[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [projectSearchQuery, setProjectSearchQuery] = useState("");
+  const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [newProject, setNewProject] = useState({ name: "", description: "", address: "" });
 
   // VTEK byggkrav
   const [valgtBygningstype, setValgtBygningstype] = useState<BygningsType | "">("");
   const [brenselType, setBrenselType] = useState<BrenselType | "">("");
   const [mengde, setMengde] = useState("");
-  const [prosjektNavn, setProsjektNavn] = useState("");
-  const [adresse, setAdresse] = useState("");
+
+  const selectedProject = projects.find(p => p.id === selectedProjectId);
+  const prosjektNavn = selectedProject?.name || "";
+  const adresse = selectedProject?.address || "";
 
   const valgtBygg = BYGNINGSTYPER.find((b) => b.id === valgtBygningstype) || null;
   const [expandedBrensel, setExpandedBrensel] = useState<string | null>(null);
