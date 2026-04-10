@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   ArrowLeft, Flame, AlertTriangle, Info, Shield, Ruler, FileText,
-  Droplets, ChevronDown, Cylinder, PipetteIcon, Gauge, ClipboardCheck, FolderOpen, ExternalLink,
+  Droplets, ChevronDown, Cylinder, PipetteIcon, Gauge, ClipboardCheck, FolderOpen, ExternalLink, Eye,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -33,6 +33,7 @@ import {
   STYKKGODS_GRENSER,
   getStykkgodsGrense,
 } from "@/lib/brensellagring-krav";
+import BrensellagringPreview from "@/components/brensellagring/BrensellagringPreview";
 
 const Brensellagring = () => {
   const navigate = useNavigate();
@@ -41,8 +42,10 @@ const Brensellagring = () => {
   const [valgtBygningstype, setValgtBygningstype] = useState<BygningsType | "">("");
   const [brenselType, setBrenselType] = useState<BrenselType | "">("");
   const [mengde, setMengde] = useState("");
+  const [prosjektNavn, setProsjektNavn] = useState("");
+  const [adresse, setAdresse] = useState("");
 
-  const valgtBygg = BYGNINGSTYPER.find((b) => b.id === valgtBygningstype);
+  const valgtBygg = BYGNINGSTYPER.find((b) => b.id === valgtBygningstype) || null;
   const [expandedBrensel, setExpandedBrensel] = useState<string | null>(null);
 
   // DSB stykkgods – areal
@@ -52,6 +55,9 @@ const Brensellagring = () => {
   const [valgtStoff, setValgtStoff] = useState("");
   const [tankMengde, setTankMengde] = useState("");
   const [stoffKategoriFilter, setStoffKategoriFilter] = useState<string>("alle");
+
+  // Preview visibility
+  const [showPreview, setShowPreview] = useState(false);
 
   const mengdeNum = parseFloat(mengde) || 0;
   const result = brenselType ? getBrensellagringKrav(brenselType as BrenselType, mengdeNum) : null;
@@ -569,255 +575,288 @@ const Brensellagring = () => {
               </Card>
             </TabsContent>
           </Tabs>
+        </div>
 
-          {/* ============================================================== */}
-          {/* LAGRING I BYGNING – DSB Kap. 3 (stykkgods) + VTEK § 11-8       */}
-          {/* ============================================================== */}
-          <div className="mt-10 pt-8 border-t space-y-6">
-            <div className="flex items-center gap-2">
-              <Shield className="h-6 w-6 text-primary" />
-              <div>
-                <h3 className="text-xl font-bold">Lagring i bygning</h3>
-                <p className="text-sm text-muted-foreground">
-                  DSB Temaveiledning Kap. 3 (stykkgods) og VTEK § 11-8 (tanklagring)
-                </p>
-              </div>
+        {/* ============================================================== */}
+        {/* LAGRING I BYGNING – DSB Kap. 3 (stykkgods) + VTEK § 11-8       */}
+        {/* Split-screen med forhåndsvisning                                */}
+        {/* ============================================================== */}
+        <div className="mt-10 pt-8 border-t">
+          <div className="flex items-center gap-2 mb-6 max-w-5xl mx-auto">
+            <Shield className="h-6 w-6 text-primary" />
+            <div>
+              <h3 className="text-xl font-bold">Lagring i bygning</h3>
+              <p className="text-sm text-muted-foreground">
+                DSB Temaveiledning Kap. 3 (stykkgods) og VTEK § 11-8 (tanklagring)
+              </p>
             </div>
+          </div>
 
-            {/* --- DSB Kap. 3: Stykkgods etter areal --- */}
-            <Collapsible defaultOpen>
-              <CollapsibleTrigger asChild>
-                <button className="flex items-center gap-3 w-full text-left group mb-3">
-                  <h4 className="text-lg font-semibold">Stykkgods – mengdegrenser etter areal (DSB Kap. 3)</h4>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground ml-auto transition-transform group-data-[state=open]:rotate-180" />
-                </button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-4">
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* ===== LEFT: Input form ===== */}
+            <div className="w-full lg:w-[440px] lg:flex-shrink-0 space-y-6">
+              {/* Prosjektinfo */}
+              <Card className="shadow-soft">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-primary" />
+                    Prosjektinfo
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-sm">Prosjektnavn</Label>
+                    <Input placeholder="F.eks. Varmeanlegg Fjordheim" value={prosjektNavn} onChange={(e) => setProsjektNavn(e.target.value)} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-sm">Adresse</Label>
+                    <Input placeholder="F.eks. Strandveien 12, 1234 Oslo" value={adresse} onChange={(e) => setAdresse(e.target.value)} />
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Bygningstype velger */}
+              <Card className="shadow-soft">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <ClipboardCheck className="h-4 w-4 text-primary" />
+                    Tanklagring i bygning – VTEK § 11-8
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="space-y-1.5">
+                    <Label className="text-sm">Bygningstype / romtype</Label>
+                    <Select value={valgtBygningstype} onValueChange={(v) => { setValgtBygningstype(v as BygningsType); setExpandedBrensel(null); setShowPreview(true); }}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Velg bygningstype..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BYGNINGSTYPER.map((b) => (
+                          <SelectItem key={b.id} value={b.id}>{b.navn}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Vis tillatte mengder */}
+              {valgtBygg && (
                 <Card className="shadow-soft">
-                  <CardContent className="pt-6 space-y-4">
-                    <div className="space-y-2 max-w-xs">
-                      <Label>Areal på salgs-/lagerlokale (m²)</Label>
-                      <Input
-                        type="number"
-                        min={0}
-                        placeholder="F.eks. 500"
-                        value={arealInput}
-                        onChange={(e) => setArealInput(e.target.value)}
-                      />
-                    </div>
-
-                    {/* Full referansetabell */}
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base">
+                      Tillatte mengder – {valgtBygg.navn}
+                    </CardTitle>
+                    <p className="text-xs text-muted-foreground">{valgtBygg.beskrivelse}</p>
+                  </CardHeader>
+                  <CardContent>
                     <div className="border rounded-lg overflow-hidden">
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="bg-muted/50">
-                            <th className="text-left py-2.5 px-3 font-medium">Areal</th>
-                            <th className="text-left py-2.5 px-3 font-medium">Aerosoler</th>
-                            <th className="text-left py-2.5 px-3 font-medium">Brannfarlig gass</th>
-                            <th className="text-left py-2.5 px-3 font-medium">Brannf. væske kat. 1 og 2</th>
-                            <th className="text-left py-2.5 px-3 font-medium">Brannf. væske kat. 3</th>
+                            <th className="text-left py-2 px-3 font-medium text-xs">Brenseltype</th>
+                            <th className="text-left py-2 px-3 font-medium text-xs">Maks mengde</th>
+                            <th className="text-left py-2 px-3 font-medium text-xs w-20">Detaljer</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {STYKKGODS_GRENSER.map((g, i) => {
-                            const arealNum = parseFloat(arealInput) || 0;
-                            const isActive = arealNum > 0 && getStykkgodsGrense(arealNum) === g;
-                            return (
-                              <tr
-                                key={i}
-                                className={`border-t ${isActive ? "bg-primary/10 font-semibold" : ""}`}
-                              >
-                                <td className="py-2.5 px-3">{g.arealBeskrivelse}</td>
-                                <td className="py-2.5 px-3">{g.aerosoler} liter</td>
-                                <td className="py-2.5 px-3">{g.brannfarligGass}</td>
-                                <td className="py-2.5 px-3">{g.brannfarligVaeskeKat1og2} liter</td>
-                                <td className="py-2.5 px-3">{g.brannfarligVaeskeKat3.toLocaleString("nb-NO")} liter</td>
-                              </tr>
-                            );
-                          })}
+                          {valgtBygg.grenser.map((g) => (
+                            <tr key={g.brenselType} className="border-t">
+                              <td className="py-2 px-3 font-medium text-xs">{g.brenselNavn}</td>
+                              <td className="py-2 px-3">
+                                {g.maksLiter === null && !g.maksKg ? (
+                                  <Badge variant="outline" className="text-destructive border-destructive/30 text-xs">Ikke tillatt</Badge>
+                                ) : g.maksKg ? (
+                                  <Badge variant="secondary" className="font-mono text-xs">
+                                    {g.maksKg.toLocaleString("nb-NO")} kg
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="secondary" className="font-mono text-xs">
+                                    {g.maksLiter!.toLocaleString("nb-NO")} L
+                                  </Badge>
+                                )}
+                              </td>
+                              <td className="py-2 px-3">
+                                {(g.maksLiter !== null || g.maksKg) && g.romKrav.length > 0 && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 text-xs px-2"
+                                    onClick={() => setExpandedBrensel(expandedBrensel === g.brenselType ? null : g.brenselType)}
+                                  >
+                                    {expandedBrensel === g.brenselType ? "Skjul" : "Vis krav"}
+                                  </Button>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
                         </tbody>
                       </table>
                     </div>
-
-                    {parseFloat(arealInput) > 0 && (() => {
-                      const grense = getStykkgodsGrense(parseFloat(arealInput));
-                      return (
-                        <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg text-sm space-y-1">
-                          <p className="font-semibold">For areal {parseFloat(arealInput).toLocaleString("nb-NO")} m² ({grense.arealBeskrivelse}):</p>
-                          <ul className="list-disc list-inside space-y-0.5">
-                            <li>Aerosoler: maks <strong>{grense.aerosoler} liter</strong></li>
-                            <li>Brannfarlig gass: maks <strong>{grense.brannfarligGass}</strong></li>
-                            <li>Brannfarlig væske kat. 1 og 2: maks <strong>{grense.brannfarligVaeskeKat1og2} liter</strong></li>
-                            <li>Brannfarlig væske kat. 3: maks <strong>{grense.brannfarligVaeskeKat3.toLocaleString("nb-NO")} liter</strong></li>
-                          </ul>
-                        </div>
-                      );
-                    })()}
-
-                    <div className="p-3 bg-muted/30 rounded-lg text-xs text-muted-foreground">
-                      <p><strong>Kilde:</strong> DSB Temaveiledning, Kapittel 3 – Oppbevaring av brannfarlig stoff i transport- og brukeremballasje (stykkgods), § 6.</p>
-                      <p className="mt-1">Gjelder for salgs- og lagerlokaler. Mengdene gjelder samlet for hele lokalet, inkl. lager bak butikk.</p>
-                    </div>
                   </CardContent>
                 </Card>
-              </CollapsibleContent>
-            </Collapsible>
+              )}
 
-            {/* --- VTEK § 11-8: Tanklagring i bygning --- */}
-            <Collapsible>
-              <CollapsibleTrigger asChild>
-                <button className="flex items-center gap-3 w-full text-left group mb-3">
-                  <h4 className="text-lg font-semibold">Tanklagring i bygning – VTEK § 11-8</h4>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground ml-auto transition-transform group-data-[state=open]:rotate-180" />
-                </button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-4">
-                <Card className="shadow-soft">
-                  <CardContent className="pt-6 space-y-4">
-                    <div className="space-y-2">
-                      <Label>Bygningstype / romtype</Label>
-                      <Select value={valgtBygningstype} onValueChange={(v) => { setValgtBygningstype(v as BygningsType); setExpandedBrensel(null); }}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Velg bygningstype..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {BYGNINGSTYPER.map((b) => (
-                            <SelectItem key={b.id} value={b.id}>{b.navn}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {valgtBygg && (
-                  <>
-                    <Card className="shadow-soft">
-                      <CardHeader>
-                        <CardTitle className="text-lg flex items-center gap-2">
-                          <ClipboardCheck className="h-5 w-5 text-primary" />
-                          Tillatte mengder – {valgtBygg.navn}
-                        </CardTitle>
-                        <p className="text-sm text-muted-foreground">{valgtBygg.beskrivelse}</p>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="border rounded-lg overflow-hidden">
-                          <table className="w-full text-sm">
-                            <thead>
-                              <tr className="bg-muted/50">
-                                <th className="text-left py-2.5 px-3 font-medium">Brenseltype</th>
-                                <th className="text-left py-2.5 px-3 font-medium">Maks mengde</th>
-                                <th className="text-left py-2.5 px-3 font-medium w-24">Detaljer</th>
+              {/* Utfyllende konstruksjonskrav */}
+              {expandedBrensel && valgtBygg && (() => {
+                const grense = valgtBygg.grenser.find((g) => g.brenselType === expandedBrensel);
+                if (!grense || grense.romKrav.length === 0) return null;
+                return (
+                  <Card className="shadow-soft border-primary/20">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-base">
+                        Konstruksjonskrav – {grense.brenselNavn}
+                      </CardTitle>
+                      <p className="text-xs text-muted-foreground">
+                        Maks {grense.maksKg ? `${grense.maksKg} kg` : `${grense.maksLiter?.toLocaleString("nb-NO")} liter`} i {valgtBygg.navn.toLowerCase()}
+                      </p>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="border rounded-lg overflow-hidden">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="bg-muted/50">
+                              <th className="text-left py-2 px-3 font-medium text-xs">Kategori</th>
+                              <th className="text-left py-2 px-3 font-medium text-xs">Krav</th>
+                              <th className="text-left py-2 px-3 font-medium text-xs w-16">Ansvar</th>
+                              <th className="text-left py-2 px-3 font-medium text-xs">Ref.</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {grense.romKrav.map((k, i) => (
+                              <tr key={i} className="border-t">
+                                <td className="py-2 px-3 font-medium text-xs">{k.kategori}</td>
+                                <td className="py-2 px-3 text-xs">{k.tekst}</td>
+                                <td className="py-2 px-3 text-xs text-muted-foreground">{k.ansvar}</td>
+                                <td className="py-2 px-3 text-xs">
+                                  {k.referanse ? (
+                                    <a
+                                      href={k.referanse.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1 text-primary hover:underline"
+                                    >
+                                      {k.referanse.label}
+                                      <ExternalLink className="h-3 w-3" />
+                                    </a>
+                                  ) : "–"}
+                                </td>
                               </tr>
-                            </thead>
-                            <tbody>
-                              {valgtBygg.grenser.map((g) => (
-                                <tr key={g.brenselType} className="border-t">
-                                  <td className="py-2.5 px-3 font-medium">{g.brenselNavn}</td>
-                                  <td className="py-2.5 px-3">
-                                    {g.maksLiter === null && !g.maksKg ? (
-                                      <Badge variant="outline" className="text-destructive border-destructive/30">Ikke tillatt</Badge>
-                                    ) : g.maksKg ? (
-                                      <Badge variant="secondary" className="font-mono">
-                                        {g.maksKg.toLocaleString("nb-NO")} kg
-                                      </Badge>
-                                    ) : (
-                                      <Badge variant="secondary" className="font-mono">
-                                        {g.maksLiter!.toLocaleString("nb-NO")} L
-                                      </Badge>
-                                    )}
-                                  </td>
-                                  <td className="py-2.5 px-3">
-                                    {(g.maksLiter !== null || g.maksKg) && g.romKrav.length > 0 && (
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="h-7 text-xs"
-                                        onClick={() => setExpandedBrensel(expandedBrensel === g.brenselType ? null : g.brenselType)}
-                                      >
-                                        {expandedBrensel === g.brenselType ? "Skjul" : "Vis krav"}
-                                      </Button>
-                                    )}
-                                  </td>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })()}
+
+              {/* DSB Kap. 3: Stykkgods */}
+              <Collapsible>
+                <CollapsibleTrigger asChild>
+                  <button className="flex items-center gap-3 w-full text-left group mb-2">
+                    <h4 className="text-sm font-semibold">Stykkgods – mengdegrenser etter areal (DSB Kap. 3)</h4>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground ml-auto transition-transform group-data-[state=open]:rotate-180" />
+                  </button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-3">
+                  <Card className="shadow-soft">
+                    <CardContent className="pt-4 space-y-3">
+                      <div className="space-y-1.5">
+                        <Label className="text-sm">Areal på salgs-/lagerlokale (m²)</Label>
+                        <Input
+                          type="number"
+                          min={0}
+                          placeholder="F.eks. 500"
+                          value={arealInput}
+                          onChange={(e) => setArealInput(e.target.value)}
+                        />
+                      </div>
+
+                      <div className="border rounded-lg overflow-hidden">
+                        <table className="w-full text-xs">
+                          <thead>
+                            <tr className="bg-muted/50">
+                              <th className="text-left py-2 px-2 font-medium">Areal</th>
+                              <th className="text-left py-2 px-2 font-medium">Aerosoler</th>
+                              <th className="text-left py-2 px-2 font-medium">Br.f. gass</th>
+                              <th className="text-left py-2 px-2 font-medium">Kat 1&2</th>
+                              <th className="text-left py-2 px-2 font-medium">Kat 3</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {STYKKGODS_GRENSER.map((g, i) => {
+                              const arealNum = parseFloat(arealInput) || 0;
+                              const isActive = arealNum > 0 && getStykkgodsGrense(arealNum) === g;
+                              return (
+                                <tr key={i} className={`border-t ${isActive ? "bg-primary/10 font-semibold" : ""}`}>
+                                  <td className="py-2 px-2">{g.arealBeskrivelse}</td>
+                                  <td className="py-2 px-2">{g.aerosoler} L</td>
+                                  <td className="py-2 px-2">{g.brannfarligGass}</td>
+                                  <td className="py-2 px-2">{g.brannfarligVaeskeKat1og2} L</td>
+                                  <td className="py-2 px-2">{g.brannfarligVaeskeKat3.toLocaleString("nb-NO")} L</td>
                                 </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      </CardContent>
-                    </Card>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
 
-                    {expandedBrensel && (() => {
-                      const grense = valgtBygg.grenser.find((g) => g.brenselType === expandedBrensel);
-                      if (!grense || grense.romKrav.length === 0) return null;
-                      return (
-                        <Card className="shadow-soft border-primary/20">
-                          <CardHeader>
-                            <CardTitle className="text-base">
-                              Konstruksjonskrav – {grense.brenselNavn}
-                            </CardTitle>
-                            <p className="text-sm text-muted-foreground">
-                              Maks {grense.maksKg ? `${grense.maksKg} kg` : `${grense.maksLiter?.toLocaleString("nb-NO")} liter`} i {valgtBygg.navn.toLowerCase()}
-                            </p>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="border rounded-lg overflow-hidden">
-                              <table className="w-full text-sm">
-                                <thead>
-                                  <tr className="bg-muted/50">
-                                    <th className="text-left py-2 px-3 font-medium">Kategori</th>
-                                    <th className="text-left py-2 px-3 font-medium">Krav</th>
-                                    <th className="text-left py-2 px-3 font-medium w-20">Ansvar</th>
-                                    <th className="text-left py-2 px-3 font-medium">Referanse</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {grense.romKrav.map((k, i) => (
-                                    <tr key={i} className="border-t">
-                                      <td className="py-2 px-3 font-medium">{k.kategori}</td>
-                                      <td className="py-2 px-3">{k.tekst}</td>
-                                      <td className="py-2 px-3 text-muted-foreground">{k.ansvar}</td>
-                                      <td className="py-2 px-3 text-xs">
-                                        {k.referanse ? (
-                                          <a
-                                            href={k.referanse.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-1 text-primary hover:underline"
-                                          >
-                                            {k.referanse.label}
-                                            <ExternalLink className="h-3 w-3" />
-                                          </a>
-                                        ) : "–"}
-                                      </td>
-                                    </tr>
-                                  ))}
-                                </tbody>
-                              </table>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    })()}
-                  </>
-                )}
-              </CollapsibleContent>
-            </Collapsible>
+                      {parseFloat(arealInput) > 0 && (() => {
+                        const grense = getStykkgodsGrense(parseFloat(arealInput));
+                        return (
+                          <div className="p-2.5 bg-primary/5 border border-primary/20 rounded-lg text-xs space-y-1">
+                            <p className="font-semibold">For areal {parseFloat(arealInput).toLocaleString("nb-NO")} m² ({grense.arealBeskrivelse}):</p>
+                            <ul className="list-disc list-inside space-y-0.5">
+                              <li>Aerosoler: maks <strong>{grense.aerosoler} liter</strong></li>
+                              <li>Brannfarlig gass: maks <strong>{grense.brannfarligGass}</strong></li>
+                              <li>Brannfarlig væske kat. 1 og 2: maks <strong>{grense.brannfarligVaeskeKat1og2} liter</strong></li>
+                              <li>Brannfarlig væske kat. 3: maks <strong>{grense.brannfarligVaeskeKat3.toLocaleString("nb-NO")} liter</strong></li>
+                            </ul>
+                          </div>
+                        );
+                      })()}
+
+                      <div className="p-2 bg-muted/30 rounded-lg text-xs text-muted-foreground">
+                        <p><strong>Kilde:</strong> DSB Temaveiledning, Kapittel 3 – Oppbevaring av brannfarlig stoff i transport- og brukeremballasje (stykkgods), § 6.</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+
+            {/* ===== RIGHT: Document preview ===== */}
+            <div className="flex-1 min-w-0">
+              <div className="sticky top-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <h4 className="text-sm font-semibold text-muted-foreground">Forhåndsvisning – Kravdokument</h4>
+                </div>
+                <div className="bg-muted/30 rounded-xl p-4 overflow-y-auto max-h-[calc(100vh-120px)]" style={{ transform: "scale(0.65)", transformOrigin: "top left", width: "153.8%" }}>
+                  <BrensellagringPreview
+                    valgtBygg={valgtBygg}
+                    prosjektNavn={prosjektNavn || undefined}
+                    adresse={adresse || undefined}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
-
-          <p className="text-xs text-muted-foreground mt-8 text-center">
-            Kilde: DSB Temaveiledning om oppbevaring av farlig stoff (Kap. 1 & 3) og VTEK § 11-8.
-            <br />
-            <a
-              href="https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-primary"
-            >
-              Les hele veiledningen på dsb.no
-            </a>
-          </p>
         </div>
+
+        <p className="text-xs text-muted-foreground mt-8 text-center max-w-5xl mx-auto">
+          Kilde: DSB Temaveiledning om oppbevaring av farlig stoff (Kap. 1 & 3) og VTEK § 11-8.
+          <br />
+          <a
+            href="https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-primary"
+          >
+            Les hele veiledningen på dsb.no
+          </a>
+        </p>
       </section>
     </div>
   );
