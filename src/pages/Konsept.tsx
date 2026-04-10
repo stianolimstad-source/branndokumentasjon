@@ -4281,6 +4281,11 @@ const Konsept = () => {
                                       <SelectItem value="600-800">600-800 MJ/m² → REI 240-M A2-s1,d0</SelectItem>
                                     </SelectContent>
                                   </Select>
+                                  {formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0 && (
+                                    <p className="text-xs text-orange-700 dark:text-orange-300 mt-2 font-medium">
+                                      ⚠ Ved flere bygningsdeler skal spesifikk brannenergi velges ut ifra bygningsdelen med høyest brannenergi.
+                                    </p>
+                                  )}
                                 </div>
                               )}
 
