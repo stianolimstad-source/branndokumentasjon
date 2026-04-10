@@ -1728,17 +1728,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               };
               return bklEntries.map((entry, idx) => renderFyrrom(formData.fyrromKw, entry, idx));
             })()}
-                      <td className="border border-gray-400 p-2 font-semibold">
-                        {formData.brannklasse === "BKL1" && "EI 60 A2-s1,d0 [A 60]"}
-                        {formData.brannklasse === "BKL2" && "EI 60 A2-s1,d0 [A 60]"}
-                        {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                      </td>
-                      <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
-                    </tr>
-                  </>
-                )}
-              </>
-            )}
             {branncelleTyper.length > 0 && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Følgende rom/lokaler skal være egne brannceller</td>
