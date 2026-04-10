@@ -3040,59 +3040,50 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     </tr>
                     {harFlereDeler ? (
                       <>
-                        {materialDeler.map((del) => {
-                          if (del.rk === "RK6") {
-                            return (
-                              <React.Fragment key={`kled-${del.index}`}>
-                                <tr>
-                                  <td className="border border-gray-400 p-2 align-top">Kledning i brannceller</td>
-                                  <td className="border border-gray-400 p-2">
-                                    <div className="font-medium text-xs mb-1">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</div>
-                                    <span className="text-red-600 font-medium">K<sub>2</sub>10 B-s1,d0 [K1]</span>
-                                  </td>
-                                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                                </tr>
-                                <tr>
-                                  <td className="border border-gray-400 p-2 align-top">Kledninger i branncelle som er rømningsvei</td>
-                                  <td className="border border-gray-400 p-2">
-                                    <div className="font-medium text-xs mb-1">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</div>
+                        <tr>
+                          <td className="border border-gray-400 p-2 align-top">Kledning i branncelle inntil 200 m²</td>
+                          <td className="border border-gray-400 p-2">
+                            <div className="space-y-1">
+                              {materialDeler.map((del) => (
+                                <div key={`kled200-${del.index}`}>
+                                  <span className="font-medium">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</span>{" "}
+                                  <span className="text-red-600 font-medium">{del.rk === "RK6" ? <>K<sub>2</sub>10 B-s1,d0 [K1]</> : <>K<sub>2</sub>10 D-s2,d0 [K2]</>}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="border border-gray-400 p-2 align-top">ARK</td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-400 p-2 align-top">Kledning i branncelle som er rømningsvei</td>
+                          <td className="border border-gray-400 p-2">
+                            <div className="space-y-1">
+                              {materialDeler.map((del) => (
+                                <div key={`kledrom-${del.index}`}>
+                                  <span className="font-medium">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</span>{" "}
+                                  <span className="text-red-600 font-medium">{(del.rk === "RK6" || del.bkl !== "BKL1") ? <>K<sub>2</sub>10 A2-s1,d0 [K1-A]</> : <>K<sub>2</sub>10 B-s1,d0 [K1]</>}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="border border-gray-400 p-2 align-top">ARK</td>
+                        </tr>
+                        {materialDeler.some(d => d.rk === "RK6") && (
+                          <tr>
+                            <td className="border border-gray-400 p-2 align-top">Kledning i sjakter og hulrom</td>
+                            <td className="border border-gray-400 p-2">
+                              <div className="space-y-1">
+                                {materialDeler.filter(d => d.rk === "RK6").map((del) => (
+                                  <div key={`kledsjakt-${del.index}`}>
+                                    <span className="font-medium">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</span>{" "}
                                     <span className="text-red-600 font-medium">K<sub>2</sub>10 A2-s1,d0 [K1-A]</span>
-                                  </td>
-                                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                                </tr>
-                                <tr>
-                                  <td className="border border-gray-400 p-2 align-top">Kledning i sjakter og hulrom</td>
-                                  <td className="border border-gray-400 p-2">
-                                    <div className="font-medium text-xs mb-1">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</div>
-                                    <span className="text-red-600 font-medium">K<sub>2</sub>10 A2-s1,d0 [K1-A]</span>
-                                  </td>
-                                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                                </tr>
-                              </React.Fragment>
-                            );
-                          } else {
-                            return (
-                              <React.Fragment key={`kled-${del.index}`}>
-                                <tr>
-                                  <td className="border border-gray-400 p-2 align-top">Kledning i branncelle inntil 200 m²</td>
-                                  <td className="border border-gray-400 p-2">
-                                    <div className="font-medium text-xs mb-1">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</div>
-                                    <span className="text-red-600 font-medium">K<sub>2</sub>10 D-s2,d0 [K2]</span>
-                                  </td>
-                                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                                </tr>
-                                <tr>
-                                  <td className="border border-gray-400 p-2 align-top">Kledning i branncelle som er rømningsvei</td>
-                                  <td className="border border-gray-400 p-2">
-                                    <div className="font-medium text-xs mb-1">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</div>
-                                    <span className="text-red-600 font-medium">{del.bkl === "BKL1" ? "K₂10 B-s1,d0 [K1]" : "K₂10 A2-s1,d0 [K1-A]"}</span>
-                                  </td>
-                                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                                </tr>
-                              </React.Fragment>
-                            );
-                          }
-                        })}
+                                  </div>
+                                ))}
+                              </div>
+                            </td>
+                            <td className="border border-gray-400 p-2 align-top">ARK</td>
+                          </tr>
+                        )}
                       </>
                     ) : harRK6 ? (
                       <>
