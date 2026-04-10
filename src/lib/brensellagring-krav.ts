@@ -563,9 +563,9 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         maksLiter: null,
         maksKg: 55,
         romKrav: [
-          { kategori: "Plassering", tekst: "Propanflasker skal ikke oppbevares i kjeller, på loft eller i rom under terreng. Maks 2 × 11 kg flasker (inkl. reserve) i/ved bolig.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/kapittel-2/" } },
-          { kategori: "Ventilasjon", tekst: "Oppbevaring skal være i godt ventilert rom eller utendørs.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/kapittel-2/" } },
-          { kategori: "Avstand", tekst: "Min. 1 m fra brennbare materialer og tennkilder.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/kapittel-2/" } },
+          { kategori: "Plassering", tekst: "Propanflasker skal ikke oppbevares i kjeller, på loft eller i rom under terreng. Maks 2 × 11 kg flasker (inkl. reserve) i/ved bolig.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/#kapittel-2-%C2%AD-tankanlegg---lpg-og-lng" } },
+          { kategori: "Ventilasjon", tekst: "Oppbevaring skal være i godt ventilert rom eller utendørs.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/#kapittel-2-%C2%AD-tankanlegg---lpg-og-lng" } },
+          { kategori: "Avstand", tekst: "Min. 1 m fra brennbare materialer og tennkilder.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/#kapittel-2-%C2%AD-tankanlegg---lpg-og-lng" } },
         ],
       },
       {
@@ -608,9 +608,9 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         maksLiter: null,
         maksKg: 55,
         romKrav: [
-          { kategori: "Plassering", tekst: "Propanflasker skal ikke oppbevares i kjeller, på loft eller i rom under terreng.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/kapittel-2/" } },
-          { kategori: "Ventilasjon", tekst: "Oppbevaring skal være i godt ventilert rom eller utendørs.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/kapittel-2/" } },
-          { kategori: "Avstand", tekst: "Min. 1 m fra brennbare materialer og tennkilder.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/kapittel-2/" } },
+          { kategori: "Plassering", tekst: "Propanflasker skal ikke oppbevares i kjeller, på loft eller i rom under terreng.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/#kapittel-2-%C2%AD-tankanlegg---lpg-og-lng" } },
+          { kategori: "Ventilasjon", tekst: "Oppbevaring skal være i godt ventilert rom eller utendørs.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/#kapittel-2-%C2%AD-tankanlegg---lpg-og-lng" } },
+          { kategori: "Avstand", tekst: "Min. 1 m fra brennbare materialer og tennkilder.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/#kapittel-2-%C2%AD-tankanlegg---lpg-og-lng" } },
         ],
       },
       {
@@ -653,8 +653,8 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         maksLiter: null,
         maksKg: 55,
         romKrav: [
-          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Godt ventilert rom eller utendørs.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/kapittel-2/" } },
-          { kategori: "Ventilasjon", tekst: "Rommet skal ha god naturlig eller mekanisk ventilasjon ned mot gulv.", ansvar: "RIV", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/kapittel-2/" } },
+          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Godt ventilert rom eller utendørs.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/#kapittel-2-%C2%AD-tankanlegg---lpg-og-lng" } },
+          { kategori: "Ventilasjon", tekst: "Rommet skal ha god naturlig eller mekanisk ventilasjon ned mot gulv.", ansvar: "RIV", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/#kapittel-2-%C2%AD-tankanlegg---lpg-og-lng" } },
         ],
       },
       {
@@ -701,7 +701,7 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         maksLiter: null,
         maksKg: 200,
         romKrav: [
-          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Tankrom skal ha ventilasjon ned mot gulv.", ansvar: "RIV", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/kapittel-2/" } },
+          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Tankrom skal ha ventilasjon ned mot gulv.", ansvar: "RIV", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/#kapittel-2-%C2%AD-tankanlegg---lpg-og-lng" } },
         ],
       },
       {
@@ -748,8 +748,8 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         maksLiter: null,
         maksKg: 200,
         romKrav: [
-          { kategori: "Plassering", tekst: "Godt ventilert rom eller utendørs. Ikke i kjeller eller rom under terreng.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/kapittel-2/" } },
-          { kategori: "Ventilasjon", tekst: "Mekanisk eller naturlig ventilasjon ned mot gulv i oppbevaringsrom.", ansvar: "RIV", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/kapittel-2/" } },
+          { kategori: "Plassering", tekst: "Godt ventilert rom eller utendørs. Ikke i kjeller eller rom under terreng.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/#kapittel-2-%C2%AD-tankanlegg---lpg-og-lng" } },
+          { kategori: "Ventilasjon", tekst: "Mekanisk eller naturlig ventilasjon ned mot gulv i oppbevaringsrom.", ansvar: "RIV", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/#kapittel-2-%C2%AD-tankanlegg---lpg-og-lng" } },
         ],
       },
       {
@@ -796,7 +796,7 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         maksLiter: null,
         maksKg: 400,
         romKrav: [
-          { kategori: "Plassering", tekst: "Godt ventilert rom eller utendørs. Ikke i kjeller eller rom under terreng.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/kapittel-2/" } },
+          { kategori: "Plassering", tekst: "Godt ventilert rom eller utendørs. Ikke i kjeller eller rom under terreng.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/#kapittel-2-%C2%AD-tankanlegg---lpg-og-lng" } },
         ],
       },
       {
@@ -842,7 +842,7 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         maksLiter: null,
         maksKg: 55,
         romKrav: [
-          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Oppbevaring utendørs eller i godt ventilert rom.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/kapittel-2/" } },
+          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Oppbevaring utendørs eller i godt ventilert rom.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/#kapittel-2-%C2%AD-tankanlegg---lpg-og-lng" } },
         ],
       },
       {
