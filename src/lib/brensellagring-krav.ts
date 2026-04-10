@@ -3,7 +3,7 @@
 // av farlig stoff + VTEK § 11-8
 // =============================================================================
 
-export type BrensellagringKravItem = { kategori: string; tekst: string; ansvar: string };
+export type BrensellagringKravItem = { kategori: string; tekst: string; ansvar: string; referanse?: string };
 
 export type BrenselType = "fyringsparafin" | "lett_fyringsolje" | "begge" | "propan" | "brannfarlig_gass";
 
@@ -563,9 +563,9 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         maksLiter: null,
         maksKg: 55,
         romKrav: [
-          { kategori: "Plassering", tekst: "Propanflasker skal ikke oppbevares i kjeller, på loft eller i rom under terreng. Maks 2 × 11 kg flasker (inkl. reserve) i/ved bolig.", ansvar: "Eier" },
-          { kategori: "Ventilasjon", tekst: "Oppbevaring skal være i godt ventilert rom eller utendørs.", ansvar: "Eier" },
-          { kategori: "Avstand", tekst: "Min. 1 m fra brennbare materialer og tennkilder.", ansvar: "Eier" },
+          { kategori: "Plassering", tekst: "Propanflasker skal ikke oppbevares i kjeller, på loft eller i rom under terreng. Maks 2 × 11 kg flasker (inkl. reserve) i/ved bolig.", ansvar: "Eier", referanse: "DSB Temaveiledning Kap. 2" },
+          { kategori: "Ventilasjon", tekst: "Oppbevaring skal være i godt ventilert rom eller utendørs.", ansvar: "Eier", referanse: "DSB Temaveiledning Kap. 2" },
+          { kategori: "Avstand", tekst: "Min. 1 m fra brennbare materialer og tennkilder.", ansvar: "Eier", referanse: "DSB Temaveiledning Kap. 2" },
         ],
       },
       {
@@ -573,10 +573,10 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Fyringsparafin",
         maksLiter: 1650,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
-          { kategori: "Tank", tekst: "Ståltank.", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Tank", tekst: "Ståltank.", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
       {
@@ -584,9 +584,9 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Lett fyringsolje",
         maksLiter: 4000,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
       {
@@ -608,9 +608,9 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         maksLiter: null,
         maksKg: 55,
         romKrav: [
-          { kategori: "Plassering", tekst: "Propanflasker skal ikke oppbevares i kjeller, på loft eller i rom under terreng.", ansvar: "Eier" },
-          { kategori: "Ventilasjon", tekst: "Oppbevaring skal være i godt ventilert rom eller utendørs.", ansvar: "Eier" },
-          { kategori: "Avstand", tekst: "Min. 1 m fra brennbare materialer og tennkilder.", ansvar: "Eier" },
+          { kategori: "Plassering", tekst: "Propanflasker skal ikke oppbevares i kjeller, på loft eller i rom under terreng.", ansvar: "Eier", referanse: "DSB Temaveiledning Kap. 2" },
+          { kategori: "Ventilasjon", tekst: "Oppbevaring skal være i godt ventilert rom eller utendørs.", ansvar: "Eier", referanse: "DSB Temaveiledning Kap. 2" },
+          { kategori: "Avstand", tekst: "Min. 1 m fra brennbare materialer og tennkilder.", ansvar: "Eier", referanse: "DSB Temaveiledning Kap. 2" },
         ],
       },
       {
@@ -618,10 +618,10 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Fyringsparafin",
         maksLiter: 1650,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
-          { kategori: "Tank", tekst: "Ståltank.", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Tank", tekst: "Ståltank.", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
       {
@@ -629,9 +629,9 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Lett fyringsolje",
         maksLiter: 4000,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
       {
@@ -653,8 +653,8 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         maksLiter: null,
         maksKg: 55,
         romKrav: [
-          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Godt ventilert rom eller utendørs.", ansvar: "Eier" },
-          { kategori: "Ventilasjon", tekst: "Rommet skal ha god naturlig eller mekanisk ventilasjon ned mot gulv.", ansvar: "RIV" },
+          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Godt ventilert rom eller utendørs.", ansvar: "Eier", referanse: "DSB Temaveiledning Kap. 2" },
+          { kategori: "Ventilasjon", tekst: "Rommet skal ha god naturlig eller mekanisk ventilasjon ned mot gulv.", ansvar: "RIV", referanse: "DSB Temaveiledning Kap. 2" },
         ],
       },
       {
@@ -662,9 +662,9 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Fyringsparafin",
         maksLiter: 4000,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
       {
@@ -672,9 +672,9 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Lett fyringsolje",
         maksLiter: 4000,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
       {
@@ -682,10 +682,10 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Kombinasjon (parafin + fyringsolje)",
         maksLiter: 6000,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK" },
-          { kategori: "Tank", tekst: "Tank i brennbart materiale (f.eks. GUP/polyetylen-HD). Med dokumentert brannmotstand 30 min kan tankrom være EI 30.", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Tank", tekst: "Tank i brennbart materiale (f.eks. GUP/polyetylen-HD). Med dokumentert brannmotstand 30 min kan tankrom være EI 30.", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
     ],
@@ -701,7 +701,7 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         maksLiter: null,
         maksKg: 200,
         romKrav: [
-          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Tankrom skal ha ventilasjon ned mot gulv.", ansvar: "RIV" },
+          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Tankrom skal ha ventilasjon ned mot gulv.", ansvar: "RIV", referanse: "DSB Temaveiledning Kap. 2" },
         ],
       },
       {
@@ -709,9 +709,9 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Fyringsparafin",
         maksLiter: 10000,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
       {
@@ -719,9 +719,9 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Lett fyringsolje",
         maksLiter: 10000,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S].", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S].", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
       {
@@ -729,10 +729,10 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Kombinasjon (parafin + fyringsolje)",
         maksLiter: 6000,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK" },
-          { kategori: "Tank", tekst: "Tank i brennbart materiale (f.eks. GUP/polyetylen-HD). Med dokumentert brannmotstand 30 min kan tankrom være EI 30.", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Tank", tekst: "Tank i brennbart materiale (f.eks. GUP/polyetylen-HD). Med dokumentert brannmotstand 30 min kan tankrom være EI 30.", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
     ],
@@ -748,8 +748,8 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         maksLiter: null,
         maksKg: 200,
         romKrav: [
-          { kategori: "Plassering", tekst: "Godt ventilert rom eller utendørs. Ikke i kjeller eller rom under terreng.", ansvar: "Eier" },
-          { kategori: "Ventilasjon", tekst: "Mekanisk eller naturlig ventilasjon ned mot gulv i oppbevaringsrom.", ansvar: "RIV" },
+          { kategori: "Plassering", tekst: "Godt ventilert rom eller utendørs. Ikke i kjeller eller rom under terreng.", ansvar: "Eier", referanse: "DSB Temaveiledning Kap. 2" },
+          { kategori: "Ventilasjon", tekst: "Mekanisk eller naturlig ventilasjon ned mot gulv i oppbevaringsrom.", ansvar: "RIV", referanse: "DSB Temaveiledning Kap. 2" },
         ],
       },
       {
@@ -757,9 +757,9 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Fyringsparafin",
         maksLiter: 4000,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
       {
@@ -767,9 +767,9 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Lett fyringsolje",
         maksLiter: 10000,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S].", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S].", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
       {
@@ -777,10 +777,10 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Kombinasjon (parafin + fyringsolje)",
         maksLiter: 6000,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK" },
-          { kategori: "Tank", tekst: "Tank i brennbart materiale tillatt med dokumentert brannmotstand.", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Tank", tekst: "Tank i brennbart materiale tillatt med dokumentert brannmotstand.", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
     ],
@@ -796,7 +796,7 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         maksLiter: null,
         maksKg: 400,
         romKrav: [
-          { kategori: "Plassering", tekst: "Godt ventilert rom eller utendørs. Ikke i kjeller eller rom under terreng.", ansvar: "Eier" },
+          { kategori: "Plassering", tekst: "Godt ventilert rom eller utendørs. Ikke i kjeller eller rom under terreng.", ansvar: "Eier", referanse: "DSB Temaveiledning Kap. 2" },
         ],
       },
       {
@@ -804,9 +804,9 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Fyringsparafin",
         maksLiter: 10000,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
       {
@@ -814,9 +814,9 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Lett fyringsolje",
         maksLiter: 10000,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S].", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S].", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
       {
@@ -824,9 +824,9 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Kombinasjon (parafin + fyringsolje)",
         maksLiter: 6000,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
     ],
@@ -842,7 +842,7 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         maksLiter: null,
         maksKg: 55,
         romKrav: [
-          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Oppbevaring utendørs eller i godt ventilert rom.", ansvar: "Eier" },
+          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Oppbevaring utendørs eller i godt ventilert rom.", ansvar: "Eier", referanse: "DSB Temaveiledning Kap. 2" },
         ],
       },
       {
@@ -850,10 +850,10 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Fyringsparafin",
         maksLiter: 1650,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
-          { kategori: "Tank", tekst: "Ståltank.", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Tank", tekst: "Ståltank.", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
       {
@@ -861,9 +861,9 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         brenselNavn: "Lett fyringsolje",
         maksLiter: 4000,
         romKrav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       },
       {
@@ -890,28 +890,28 @@ export function getBrensellagringKrav(
       return {
         romType: "Fyrrom / garasje / annet rom",
         krav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
-          { kategori: "Tank", tekst: "Ståltank.", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Tank", tekst: "Ståltank.", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       };
     } else if (mengdeLiter <= 4000) {
       return {
         romType: "Fyrrom / garasje / annet rom",
         krav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       };
     } else if (mengdeLiter <= 10000) {
       return {
         romType: "Tankrom",
         krav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       };
     } else {
@@ -922,18 +922,18 @@ export function getBrensellagringKrav(
       return {
         romType: "Fyrrom / garasje / annet rom",
         krav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S]. Klasse C [S] – selvlukkende.", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       };
     } else if (mengdeLiter <= 10000) {
       return {
         romType: "Tankrom",
         krav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S].", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "Branncellebegrensende bygningsdel.", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 30-CSₐ [B 30 S].", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       };
     } else {
@@ -944,10 +944,10 @@ export function getBrensellagringKrav(
       return {
         romType: "Tankrom",
         krav: [
-          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK" },
-          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK" },
-          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK" },
-          { kategori: "Tank", tekst: "Tank i brennbart materiale (f.eks. GUP/polyetylen-HD). Med dokumentert brannmotstand 30 min kan tankrom være EI 30.", ansvar: "ARK" },
+          { kategori: "Vegger/etasjeskiller", tekst: "EI 60 A2-s1,d0 [A 60].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S].", ansvar: "ARK", referanse: "VTEK § 11-8" },
+          { kategori: "Tank", tekst: "Tank i brennbart materiale (f.eks. GUP/polyetylen-HD). Med dokumentert brannmotstand 30 min kan tankrom være EI 30.", ansvar: "ARK", referanse: "VTEK § 11-8" },
         ],
       };
     } else {

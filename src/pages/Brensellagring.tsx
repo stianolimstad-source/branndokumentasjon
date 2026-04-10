@@ -752,6 +752,7 @@ const Brensellagring = () => {
                                     <th className="text-left py-2 px-3 font-medium">Kategori</th>
                                     <th className="text-left py-2 px-3 font-medium">Krav</th>
                                     <th className="text-left py-2 px-3 font-medium w-20">Ansvar</th>
+                                    <th className="text-left py-2 px-3 font-medium">Referanse</th>
                                   </tr>
                                 </thead>
                                 <tbody>
@@ -760,6 +761,7 @@ const Brensellagring = () => {
                                       <td className="py-2 px-3 font-medium">{k.kategori}</td>
                                       <td className="py-2 px-3">{k.tekst}</td>
                                       <td className="py-2 px-3 text-muted-foreground">{k.ansvar}</td>
+                                      <td className="py-2 px-3 text-xs text-muted-foreground">{k.referanse || "–"}</td>
                                     </tr>
                                   ))}
                                 </tbody>
