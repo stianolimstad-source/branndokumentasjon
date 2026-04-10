@@ -30,6 +30,8 @@ import {
   getInnmeldingsStatus,
   BYGNINGSTYPER,
   BygningsType,
+  STYKKGODS_GRENSER,
+  getStykkgodsGrense,
 } from "@/lib/brensellagring-krav";
 
 const Brensellagring = () => {
@@ -42,6 +44,9 @@ const Brensellagring = () => {
 
   const valgtBygg = BYGNINGSTYPER.find((b) => b.id === valgtBygningstype);
   const [expandedBrensel, setExpandedBrensel] = useState<string | null>(null);
+
+  // DSB stykkgods – areal
+  const [arealInput, setArealInput] = useState("");
 
   // Tankanlegg – innmelding
   const [valgtStoff, setValgtStoff] = useState("");
