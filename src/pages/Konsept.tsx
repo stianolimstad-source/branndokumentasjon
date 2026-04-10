@@ -5752,17 +5752,40 @@ const Konsept = () => {
                             );
                           })() : (() => {
                             const etasjerNum = parseInt(formData.etasjer, 10) || 0;
+                            // Collect all Tr types and max floors across building parts
+                            const roykTrapperomTypeMap: Record<number, { lav: string; hoy: string }> = {
+                              1: { lav: "Tr 1", hoy: "Tr 3" }, 2: { lav: "Tr 1", hoy: "Tr 3" },
+                              3: { lav: "Tr 2", hoy: "Tr 3" }, 4: { lav: "Tr 1", hoy: "Tr 3" },
+                              5: { lav: "Tr 2", hoy: "Tr 3" }, 6: { lav: "Tr 2", hoy: "Tr 3" },
+                            };
+                            const allTrTypesRoyk = new Set<string>();
+                            let maxEtasjer = etasjerNum;
+                            const rkPrimary = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
+                            if (rkPrimary >= 1 && rkPrimary <= 6 && etasjerNum > 0) {
+                              allTrTypesRoyk.add(etasjerNum <= 8 ? roykTrapperomTypeMap[rkPrimary].lav : roykTrapperomTypeMap[rkPrimary].hoy);
+                            }
+                            if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+                              formData.bygningsdeler.forEach((del: any) => {
+                                const rkDel = parseInt(del.risikoklasse?.replace(/\D/g, '') || '0', 10);
+                                const flDel = parseInt(del.etasjer || formData.etasjer, 10) || 0;
+                                if (flDel > maxEtasjer) maxEtasjer = flDel;
+                                if (rkDel >= 1 && rkDel <= 6 && flDel > 0) {
+                                  allTrTypesRoyk.add(flDel <= 8 ? roykTrapperomTypeMap[rkDel].lav : roykTrapperomTypeMap[rkDel].hoy);
+                                }
+                              });
+                            }
+
                             const alleRoykKrav = [
                               { id: "royk_romningsvei", label: "Trapperom som er rømningsvei i byggverk med flere enn to etasjer, må røykventileres." },
-                              { id: "royk_luke_vindu", label: "I byggverk med inntil 8 etasjer med trapperom Tr 1 eller Tr 2, jf. § 11-13 Tabell 2, er det tilstrekkelig med luke eller vindu med fri åpning minimum 1,0 m² øverst i trapperommet." },
-                              { id: "royk_manuell_bryter", label: "Luke eller vindu skal kunne åpnes manuelt med bryter fra inngangsplanet." },
-                              { id: "royk_mekanisk_ventilasjon", label: "Mellomliggende rom knyttet til Tr 2 må ha mekanisk balansert ventilasjon." },
-                              { id: "royk_tr3_trykksetting", label: "I byggverk med mer enn 8 etasjer med trapperom Tr 3, jf. § 11-13 Tabell 2, må det mellomliggende rommet være åpent mot det fri, eller trapperommet må trykksettes og det mellomliggende rommet må ha trykkavlastning (røykventilasjon).", minEtasjer: 9 },
+                              { id: "royk_luke_vindu", label: "I byggverk med inntil 8 etasjer med trapperom Tr 1 eller Tr 2, jf. § 11-13 Tabell 2, er det tilstrekkelig med luke eller vindu med fri åpning minimum 1,0 m² øverst i trapperommet.", condition: () => allTrTypesRoyk.has("Tr 1") || allTrTypesRoyk.has("Tr 2") },
+                              { id: "royk_manuell_bryter", label: "Luke eller vindu skal kunne åpnes manuelt med bryter fra inngangsplanet.", condition: () => allTrTypesRoyk.has("Tr 1") || allTrTypesRoyk.has("Tr 2") },
+                              { id: "royk_mekanisk_ventilasjon", label: "Mellomliggende rom knyttet til Tr 2 må ha mekanisk balansert ventilasjon.", condition: () => allTrTypesRoyk.has("Tr 2") },
+                              { id: "royk_tr3_trykksetting", label: "I byggverk med mer enn 8 etasjer med trapperom Tr 3, jf. § 11-13 Tabell 2, må det mellomliggende rommet være åpent mot det fri, eller trapperommet må trykksettes og det mellomliggende rommet må ha trykkavlastning (røykventilasjon).", condition: () => allTrTypesRoyk.has("Tr 3") && maxEtasjer > 8 },
                               { id: "royk_overbygde_garder", label: "Overbygde gårder og gater må ha røykventilasjon for å hindre røykspredning mellom ulike brannceller som ligger ut mot den overbygde gården.", requiresToggle: true },
                             ];
                             
                             const filtrerteKrav = alleRoykKrav.filter(k => {
-                              if (k.minEtasjer && etasjerNum < k.minEtasjer) return false;
+                              if (k.condition && !k.condition()) return false;
                               if (k.requiresToggle && !formData.harOverbygdeGarder) return false;
                               return true;
                             });
