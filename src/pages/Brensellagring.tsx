@@ -1118,7 +1118,6 @@ const Brensellagring = () => {
               </Collapsible>
             </div>
           </div>
-        </div>
 
         <p className="text-xs text-muted-foreground mt-8 text-center">
           Kilde: DSB Temaveiledning om oppbevaring av farlig stoff (Kap. 1 & 3) og VTEK § 11-8.
