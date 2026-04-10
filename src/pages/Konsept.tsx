@@ -5845,11 +5845,13 @@ const Konsept = () => {
                             <label htmlFor="vertikalBrannspredningRelevant" className="text-xs cursor-pointer font-medium">Vertikal brannspredning er relevant</label>
                           </div>
                           {formData.vertikalBrannspredningRelevant && (() => {
-                            // Sjekk om sprinkler er påkrevd basert på risikoklasse
-                            const rk = formData.risikoklasse;
+                            // Sjekk om sprinkler er påkrevd basert på risikoklasse (alle bygningsdeler)
+                            const alleRKVert = formData.harFlereRisikoklasser && formData.bygningsdeler?.length
+                              ? (formData.bygningsdeler || []).map((d: any) => d.risikoklasse).filter(Boolean)
+                              : formData.risikoklasse ? [formData.risikoklasse] : [];
                             const etasjerNum = parseInt(formData.etasjer, 10) || 0;
-                            const erRK6 = rk === "RK6";
-                            const erRK4MedHeis = rk === "RK4" && etasjerNum > 3;
+                            const erRK6 = alleRKVert.includes("RK6");
+                            const erRK4MedHeis = alleRKVert.includes("RK4") && etasjerNum > 3;
                             const harSprinklerKrav = erRK6 || erRK4MedHeis || formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b;
                             // Auto-add vb_sprinkler when sprinkler is required
                             if (harSprinklerKrav && formData.regelverk !== "BF85" && !formData.vertikalBrannspredningKrav.includes("vb_sprinkler")) {
@@ -5923,12 +5925,12 @@ const Konsept = () => {
                             <label htmlFor="vinduBrannspredningRelevant" className="text-xs cursor-pointer font-medium">Horisontal brannspredning er relevant</label>
                           </div>
                           {formData.vinduBrannspredningRelevant && (() => {
-                            const rk = formData.harFlereRisikoklasser
-                              ? (formData.bygningsdeler || []).map((d: any) => d.risikoklasse).filter(Boolean)[0] || ""
-                              : formData.risikoklasse || "";
+                            const alleRKHoriz = formData.harFlereRisikoklasser && formData.bygningsdeler?.length
+                              ? (formData.bygningsdeler || []).map((d: any) => d.risikoklasse).filter(Boolean)
+                              : formData.risikoklasse ? [formData.risikoklasse] : [];
                             const etasjerNum = parseInt(formData.etasjer, 10) || 0;
-                            const erRK6 = rk === "RK6";
-                            const erRK4MedHeis = rk === "RK4" && etasjerNum > 3;
+                            const erRK6 = alleRKHoriz.includes("RK6");
+                            const erRK4MedHeis = alleRKHoriz.includes("RK4") && etasjerNum > 3;
                             const harSprinklerHorisontal = erRK6 || erRK4MedHeis || formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b;
                             const bklNum = formData.harFlereRisikoklasser
                               ? (() => { const nums = (formData.bygningsdeler || []).map((d: any) => parseInt((d.brannklasse || "").replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n)); return nums.length > 0 ? Math.max(...nums) : 0; })()
