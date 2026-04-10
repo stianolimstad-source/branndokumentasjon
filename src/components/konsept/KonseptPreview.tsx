@@ -2065,20 +2065,39 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
               // If trapperomKravTekst exists, show it directly
               if (formData.trapperomKravTekst) {
-                const trType = (() => {
-                  const rk = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
-                  const trapperomTypeMap: Record<number, { lav: string; hoy: string }> = {
-                    1: { lav: "Tr 1", hoy: "Tr 3" }, 2: { lav: "Tr 1", hoy: "Tr 3" },
-                    3: { lav: "Tr 2", hoy: "Tr 3" }, 4: { lav: "Tr 1", hoy: "Tr 3" },
-                    5: { lav: "Tr 2", hoy: "Tr 3" }, 6: { lav: "Tr 2", hoy: "Tr 3" },
-                  };
-                  return rk >= 1 && rk <= 6 && floors > 0
-                    ? (floors <= 8 ? trapperomTypeMap[rk].lav : trapperomTypeMap[rk].hoy)
+                const trapperomTypeMap: Record<number, { lav: string; hoy: string }> = {
+                  1: { lav: "Tr 1", hoy: "Tr 3" }, 2: { lav: "Tr 1", hoy: "Tr 3" },
+                  3: { lav: "Tr 2", hoy: "Tr 3" }, 4: { lav: "Tr 1", hoy: "Tr 3" },
+                  5: { lav: "Tr 2", hoy: "Tr 3" }, 6: { lav: "Tr 2", hoy: "Tr 3" },
+                };
+                const getTrTypeLocal = (rkNum: number, floorCount: number) => {
+                  return rkNum >= 1 && rkNum <= 6 && floorCount > 0
+                    ? (floorCount <= 8 ? trapperomTypeMap[rkNum].lav : trapperomTypeMap[rkNum].hoy)
                     : null;
-                })();
+                };
+                // Build multi-part label
+                const trLabels: string[] = [];
+                if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+                  const rk1 = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
+                  const tr1 = getTrTypeLocal(rk1, floors);
+                  if (tr1) trLabels.push(`${formData.bygningstype || 'Bygningsdel 1'}: ${tr1}`);
+                  formData.bygningsdeler.forEach((del: any, i: number) => {
+                    const rkD = parseInt(del.risikoklasse?.replace(/\D/g, '') || '0', 10);
+                    const flD = parseInt(del.etasjer || formData.etasjer, 10) || 0;
+                    const trD = getTrTypeLocal(rkD, flD);
+                    if (trD) trLabels.push(`${del.navn || del.bygningstype || `Bygningsdel ${i + 2}`}: ${trD}`);
+                  });
+                } else {
+                  const rk1 = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
+                  const tr1 = getTrTypeLocal(rk1, floors);
+                  if (tr1) trLabels.push(tr1);
+                }
+                const uniqueTr = [...new Set(trLabels)];
+                const trTypeHeader = uniqueTr.length > 1 ? uniqueTr.join(", ") : (uniqueTr[0] || null);
+                
                 return (
                   <tr>
-                    <td className="border border-gray-400 p-2 align-top">Krav til trapperom{trType && ` (${trType})`}</td>
+                    <td className="border border-gray-400 p-2 align-top">Krav til trapperom{trTypeHeader && ` (${trTypeHeader})`}</td>
                     <td className="border border-gray-400 p-2 whitespace-pre-wrap">{formData.trapperomKravTekst}</td>
                     <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
                   </tr>
