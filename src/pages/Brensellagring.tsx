@@ -796,14 +796,12 @@ const Brensellagring = () => {
               </Card>
             </TabsContent>
           </Tabs>
-        </div>
 
         {/* ============================================================== */}
         {/* LAGRING I BYGNING – DSB Kap. 3 (stykkgods) + VTEK § 11-8       */}
-        {/* Split-screen med forhåndsvisning                                */}
         {/* ============================================================== */}
         <div className="mt-10 pt-8 border-t">
-          <div className="flex items-center gap-2 mb-6 max-w-5xl mx-auto">
+          <div className="flex items-center gap-2 mb-6">
             <Shield className="h-6 w-6 text-primary" />
             <div>
               <h3 className="text-xl font-bold">Lagring i bygning</h3>
@@ -813,9 +811,7 @@ const Brensellagring = () => {
             </div>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-6">
-            {/* ===== LEFT: Input form ===== */}
-            <div className="w-full lg:w-[440px] lg:flex-shrink-0 space-y-6">
+          <div className="space-y-6">
               {/* Prosjektvalg */}
               <Card className="shadow-soft">
                 <CardHeader className="pb-3">
