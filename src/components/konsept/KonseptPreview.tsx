@@ -1804,11 +1804,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               const bklEntries: { label: string; bkl: string }[] = [];
               if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
                 const seen = new Set<string>();
+                const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
+                if (del1Bkl) { seen.add(del1Bkl); bklEntries.push({ label: formData.bygningstype || 'Bygningsdel 1', bkl: del1Bkl }); }
                 formData.bygningsdeler.forEach((del: any) => {
-                  if (del.brannklasse && !seen.has(del.brannklasse)) {
-                    seen.add(del.brannklasse);
-                    bklEntries.push({ label: del.navn || del.bygningstype || del.brannklasse, bkl: del.brannklasse });
-                  }
+                  const delBkl = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer || formData.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+                  if (delBkl && !seen.has(delBkl)) { seen.add(delBkl); bklEntries.push({ label: del.navn || del.bygningstype || delBkl, bkl: delBkl }); }
                 });
               }
               if (bklEntries.length === 0 && formData.brannklasse) {
