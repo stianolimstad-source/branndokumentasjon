@@ -188,6 +188,7 @@ const ProsjektDetalj = () => {
   const brannkonsepter = concepts.filter(c => !c.contentType || c.contentType === "brannkonsept");
   const tilstandsvurderinger = concepts.filter(c => c.contentType === "tilstandsvurdering");
   const fraviksdokumenter = concepts.filter(c => c.contentType === "kvalitativ" || c.contentType === "komparativ" || c.contentType === "risikoanalyse");
+  const brensellagringDocs = concepts.filter(c => c.contentType === "brensellagring");
 
   const ConceptRow = ({ concept, icon: Icon, iconColor, linkTo }: { concept: FireConcept; icon: any; iconColor: string; linkTo: string }) => {
     const ks = ksStatus[concept.id];
