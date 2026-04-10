@@ -2957,23 +2957,23 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       <td className="border border-gray-400 p-2 align-top">Overflater på ytterkledning</td>
                       <td className="border border-gray-400 p-2">
                         {harFlereDeler ? (
-                          <div className="space-y-2">
+                          <div className="space-y-1">
                             {materialDeler.map((del) => {
                               const isYtterkledningD = formData.ytterkledningDKrav && (del.bkl === "BKL2" || del.bkl === "BKL3");
                               return (
                                 <div key={`ytterkl-${del.index}`}>
-                                  <div className="font-medium text-xs mb-1">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</div>
+                                  <span className="font-medium">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</span>{" "}
                                   {isYtterkledningD ? (
-                                    <>
-                                      <span className="text-red-600 font-medium">D-s3,d0 [Ut 2]</span>
-                                      <p className="text-sm mt-1">Yttervegg er utformet slik at den hindrer brannspredning i fasaden.</p>
-                                    </>
+                                    <span className="text-red-600 font-medium">D-s3,d0 [Ut 2]</span>
                                   ) : (
                                     <span className="text-red-600 font-medium">{del.bkl === "BKL1" ? "D-s3,d0 [Ut 2]" : "B-s3,d0 [Ut 1]"}</span>
                                   )}
                                 </div>
                               );
                             })}
+                            {formData.ytterkledningDKrav && materialDeler.some(d => d.bkl === "BKL2" || d.bkl === "BKL3") && (
+                              <p className="text-sm mt-1">Yttervegg er utformet slik at den hindrer brannspredning i fasaden.</p>
+                            )}
                           </div>
                         ) : (
                           <>
