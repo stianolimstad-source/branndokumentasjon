@@ -189,8 +189,8 @@ const Brensellagring = () => {
       toast({ title: "Velg prosjekt", description: "Du må velge et prosjekt før du kan lagre", variant: "destructive" });
       return;
     }
-    if (!valgtBygningstype) {
-      toast({ title: "Velg bygningstype", description: "Du må velge bygningstype før du kan lagre", variant: "destructive" });
+    if (!valgtBygningstype && selectedStoffIds.size === 0) {
+      toast({ title: "Ingen data", description: "Velg stoffer eller bygningstype før du kan lagre", variant: "destructive" });
       return;
     }
     setIsSaving(true);
@@ -1124,7 +1124,7 @@ const Brensellagring = () => {
                   <Button
                     size="sm"
                     onClick={handleSaveDocument}
-                    disabled={isSaving || !selectedProjectId || !valgtBygningstype}
+                    disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedStoffIds.size === 0)}
                     className="h-8"
                   >
                     <Save className="h-4 w-4 mr-1.5" />
