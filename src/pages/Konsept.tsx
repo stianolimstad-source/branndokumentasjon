@@ -645,7 +645,7 @@ const Konsept = () => {
     ventKrav6: true, // Kjøkken boenheter EI 15
     ventKrav7: false, // Småhus avtrekk
     ventKrav8: false, // Småhus kanal klasse E
-    ventKrav9: true, // Brannspjeld seksjoneringsvegg
+    ventKrav9: false, // Brannspjeld seksjoneringsvegg
     // Vann- og avløpsrør
     vannAvlopRelevant: true, // Hovedbryter for om vann- og avløpsrør er relevant
     // Rør- og kanalisolasjon
@@ -974,6 +974,17 @@ const Konsept = () => {
       setFormData(prev => ({ ...prev, ...updates }));
     }
   }, [formData.risikoklasse, formData.etasjer, formData.bygningsdeler]);
+
+  // Automatisk aktivering av brannspjeld i seksjoneringsvegg
+  useEffect(() => {
+    if (isViewMode) return;
+    const seksjoneringPaakrevd = formData.erSykehusPleieinstitusjon || isSeksjoneringRequired(formData.areal, formData.brannseksjonBrannenergi, formData.brannseksjonTiltak);
+    if (seksjoneringPaakrevd && !formData.ventKrav9) {
+      setFormData(prev => ({ ...prev, ventKrav9: true }));
+    } else if (!seksjoneringPaakrevd && formData.ventKrav9) {
+      setFormData(prev => ({ ...prev, ventKrav9: false }));
+    }
+  }, [formData.erSykehusPleieinstitusjon, formData.areal, formData.brannseksjonBrannenergi, formData.brannseksjonTiltak]);
 
   // Reset trapperom kravtekst when RK or etasjer changes so it regenerates for the correct type
   useEffect(() => {
