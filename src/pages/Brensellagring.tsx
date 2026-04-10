@@ -272,10 +272,13 @@ const Brensellagring = () => {
             <TabsContent value="stoffdata" className="space-y-4">
               <Card className="shadow-soft">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Flame className="h-5 w-5 text-orange-500" />
-                    Tekniske data – brannfarlige stoffer
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Flame className="h-5 w-5 text-orange-500" />
+                      Tekniske data – brannfarlige stoffer
+                    </CardTitle>
+                    <DocToggleButton tabKey="stoffdata" />
+                  </div>
                   <p className="text-sm text-muted-foreground">Typiske verdier iht. DSB Temaveiledning, GHS/CLP og NFPA. Kilder: DSB § 4.1, GESTIS, PubChem.</p>
                 </CardHeader>
                 <CardContent>
@@ -358,10 +361,13 @@ const Brensellagring = () => {
             <TabsContent value="beliggenhet" className="space-y-4">
               <Card className="shadow-soft">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Ruler className="h-5 w-5 text-primary" />
-                    Beliggenhet og utforming (§ 15.1)
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Ruler className="h-5 w-5 text-primary" />
+                      Beliggenhet og utforming (§ 15.1)
+                    </CardTitle>
+                    <DocToggleButton tabKey="beliggenhet" />
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     Krav til plassering, branngater, inngjerding og rømningsveier
                   </p>
@@ -456,10 +462,13 @@ const Brensellagring = () => {
             <TabsContent value="tanker" className="space-y-4">
               <Card className="shadow-soft">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Cylinder className="h-5 w-5 text-primary" />
-                    Krav til tanker (§ 15.2)
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Cylinder className="h-5 w-5 text-primary" />
+                      Krav til tanker (§ 15.2)
+                    </CardTitle>
+                    <DocToggleButton tabKey="tanker" />
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     Utførelse, fundament, korrosjonsbeskyttelse og flammesikring
                   </p>
@@ -500,10 +509,13 @@ const Brensellagring = () => {
             <TabsContent value="oppsamling" className="space-y-4">
               <Card className="shadow-soft">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Droplets className="h-5 w-5 text-blue-500" />
-                    Oppsamling og overfyllingsvern (§ 15.3)
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Droplets className="h-5 w-5 text-blue-500" />
+                      Oppsamling og overfyllingsvern (§ 15.3)
+                    </CardTitle>
+                    <DocToggleButton tabKey="oppsamling" />
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     Krav til oppsamlingsbasseng, drenering, overfyllingsvarsel og oljeutskiller
                   </p>
@@ -530,10 +542,13 @@ const Brensellagring = () => {
             <TabsContent value="roer" className="space-y-4">
               <Card className="shadow-soft">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <PipetteIcon className="h-5 w-5 text-primary" />
-                    Rørledninger (§ 15.4)
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <PipetteIcon className="h-5 w-5 text-primary" />
+                      Rørledninger (§ 15.4)
+                    </CardTitle>
+                    <DocToggleButton tabKey="roer" />
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
@@ -568,10 +583,13 @@ const Brensellagring = () => {
             <TabsContent value="kontroll" className="space-y-4">
               <Card className="shadow-soft">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <Gauge className="h-5 w-5 text-primary" />
-                    Kontroll og tilstandskontroll (§ 9)
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Gauge className="h-5 w-5 text-primary" />
+                      Kontroll og tilstandskontroll (§ 9)
+                    </CardTitle>
+                    <DocToggleButton tabKey="kontroll" />
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     Krav til kontrollintervaller og systematisk tilstandskontroll
                   </p>
@@ -702,10 +720,13 @@ const Brensellagring = () => {
             <TabsContent value="dokumentasjon" className="space-y-4">
               <Card className="shadow-soft">
                 <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <FolderOpen className="h-5 w-5 text-primary" />
-                    Dokumentasjonskrav (§ 13)
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <FolderOpen className="h-5 w-5 text-primary" />
+                      Dokumentasjonskrav (§ 13)
+                    </CardTitle>
+                    <DocToggleButton tabKey="dokumentasjon" />
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     Dokumentasjon som skal være tilgjengelig gjennom anleggets levetid
                   </p>
