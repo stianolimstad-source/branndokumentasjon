@@ -28,6 +28,8 @@ import {
   DOKUMENTASJON_KRAV,
   PUMPE_KRAV,
   getInnmeldingsStatus,
+  BYGNINGSTYPER,
+  BygningsType,
 } from "@/lib/brensellagring-krav";
 
 const Brensellagring = () => {
