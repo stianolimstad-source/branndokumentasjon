@@ -699,11 +699,15 @@ const Brensellagring = () => {
                                 <tr key={g.brenselType} className="border-t">
                                   <td className="py-2.5 px-3 font-medium">{g.brenselNavn}</td>
                                   <td className="py-2.5 px-3">
-                                    {g.maksLiter === null ? (
+                                    {g.maksLiter === null && !g.maksKg ? (
                                       <Badge variant="outline" className="text-destructive border-destructive/30">Ikke tillatt</Badge>
+                                    ) : g.maksKg ? (
+                                      <Badge variant="secondary" className="font-mono">
+                                        {g.maksKg.toLocaleString("nb-NO")} kg
+                                      </Badge>
                                     ) : (
                                       <Badge variant="secondary" className="font-mono">
-                                        {g.maksLiter.toLocaleString("nb-NO")} L
+                                        {g.maksLiter!.toLocaleString("nb-NO")} L
                                       </Badge>
                                     )}
                                   </td>
