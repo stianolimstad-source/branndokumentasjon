@@ -1568,28 +1568,56 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">RIBr</td>
             </tr>
-            {formData.brannklasse && (
-              <>
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Branncellebegrensende bygningsdel - generelt</td>
-                  <td className="border border-gray-400 p-2 font-semibold">
-                    {formData.brannklasse === "BKL1" && "EI 30 [B 30]"}
-                    {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
-                    {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
-                </tr>
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Bygningsdel som omslutter trapperom, heissjakt og installasjonssjakter over flere plan</td>
-                  <td className="border border-gray-400 p-2 font-semibold">
-                    {formData.brannklasse === "BKL1" && "EI 30 [B 30]"}
-                    {formData.brannklasse === "BKL2" && "EI 60 [B 60]"}
-                    {formData.brannklasse === "BKL3" && "EI 60 A2-s1,d0 [A 60]"}
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
-                </tr>
-              </>
-            )}
+            {(() => {
+              const getBrannmotstand = (bkl: string) => {
+                if (bkl === "BKL1") return "EI 30 [B 30]";
+                if (bkl === "BKL2") return "EI 60 [B 60]";
+                if (bkl === "BKL3") return "EI 60 A2-s1,d0 [A 60]";
+                return "";
+              };
+
+              // Collect unique BKL entries from bygningsdeler or single brannklasse
+              const bklEntries: { label: string; bkl: string }[] = [];
+              if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+                const uniqueBkls = new Set<string>();
+                formData.bygningsdeler.forEach((del: any) => {
+                  if (del.brannklasse && !uniqueBkls.has(del.brannklasse)) {
+                    uniqueBkls.add(del.brannklasse);
+                    bklEntries.push({ label: del.navn || del.bygningstype || del.brannklasse, bkl: del.brannklasse });
+                  }
+                });
+              } else if (formData.brannklasse) {
+                bklEntries.push({ label: "", bkl: formData.brannklasse });
+              }
+
+              if (bklEntries.length === 0) return null;
+              const showLabel = bklEntries.length > 1;
+
+              return bklEntries.map((entry, idx) => (
+                <React.Fragment key={`bkl-branncelle-${idx}`}>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">
+                      Branncellebegrensende bygningsdel - generelt
+                      {showLabel && <div className="text-xs font-normal text-gray-600 mt-1">[{entry.label} – {entry.bkl}]</div>}
+                    </td>
+                    <td className="border border-gray-400 p-2 font-semibold">
+                      {getBrannmotstand(entry.bkl)}
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">
+                      Bygningsdel som omslutter trapperom, heissjakt og installasjonssjakter over flere plan
+                      {showLabel && <div className="text-xs font-normal text-gray-600 mt-1">[{entry.label} – {entry.bkl}]</div>}
+                    </td>
+                    <td className="border border-gray-400 p-2 font-semibold">
+                      {getBrannmotstand(entry.bkl)}
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
+                </React.Fragment>
+              ));
+            })()}
             </>
             )}
             {!isBF85 && formData.heismaskinromRelevant === "ja" && formData.brannklasse && (
