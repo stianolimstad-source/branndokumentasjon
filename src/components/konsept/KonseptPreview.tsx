@@ -1586,7 +1586,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     bklEntries.push({ label: del.navn || del.bygningstype || del.brannklasse, bkl: del.brannklasse });
                   }
                 });
-              } else if (formData.brannklasse) {
+              }
+              // Fallback to single brannklasse if no entries found from bygningsdeler
+              if (bklEntries.length === 0 && formData.brannklasse) {
                 bklEntries.push({ label: "", bkl: formData.brannklasse });
               }
 
