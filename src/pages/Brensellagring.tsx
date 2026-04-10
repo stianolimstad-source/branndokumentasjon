@@ -804,6 +804,7 @@ const Brensellagring = () => {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="bg-muted/50">
+                          <th className="text-center py-2.5 px-2 font-medium w-10">Dok.</th>
                           <th className="text-left py-2.5 px-3 font-medium">Kontrolltype</th>
                           <th className="text-left py-2.5 px-3 font-medium">Beskrivelse</th>
                           <th className="text-left py-2.5 px-3 font-medium w-36">Intervall</th>
@@ -811,7 +812,8 @@ const Brensellagring = () => {
                       </thead>
                       <tbody>
                         {KONTROLL_KRAV.map((krav, i) => (
-                          <tr key={i} className="border-t">
+                          <tr key={i} className={`border-t ${isKravSelected(`kontroll_${i}`) ? "bg-primary/5" : ""}`}>
+                            <td className="py-2 px-2 text-center"><KravItemButton id={`kontroll_${i}`} /></td>
                             <td className="py-2 px-3 font-medium">{krav.tittel}</td>
                             <td className="py-2 px-3 text-muted-foreground">{krav.beskrivelse}</td>
                             <td className="py-2 px-3">
