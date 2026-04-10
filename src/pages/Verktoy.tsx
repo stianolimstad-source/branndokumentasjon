@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, MoveVertical, Box, Users, Zap, Shield, Maximize, Wind } from "lucide-react";
+import { Flame, MoveVertical, Box, Users, Zap, Shield, Maximize, Wind, Bot } from "lucide-react";
 import { Link } from "react-router-dom";
 
 
@@ -51,6 +51,12 @@ const tools = [
     title: "Røykventilasjon",
     description: "Beregn nødvendig åpningsareal for termisk røykventilasjon (HO-3/2000)",
     href: "/verktoy/roykventilasjon",
+  },
+  {
+    icon: Bot,
+    title: "TEK17 AI-assistent",
+    description: "Still spørsmål om branntekniske krav fra TEK17 og få svar umiddelbart",
+    href: "/tek17-assistent",
   },
 ];
 
