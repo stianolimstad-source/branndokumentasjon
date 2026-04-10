@@ -242,6 +242,10 @@ const Brensellagring = () => {
             </p>
           </div>
 
+          <div className="flex flex-col lg:flex-row gap-6">
+            {/* ===== LEFT: All content ===== */}
+            <div className="flex-1 min-w-0 space-y-8">
+
           {/* ============================================================== */}
           {/* TABS – DSB Temaveiledning innhold                               */}
           {/* ============================================================== */}
