@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
-  ArrowLeft, Flame, AlertTriangle, Info, Shield, Ruler, FileText,
+  ArrowLeft, Flame, AlertTriangle, Info, Shield, Ruler, FileText, Save,
   Droplets, ChevronDown, Cylinder, PipetteIcon, Gauge, ClipboardCheck, FolderOpen, ExternalLink, Eye, Building, Check, Plus, Search,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
