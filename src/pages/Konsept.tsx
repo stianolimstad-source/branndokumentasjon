@@ -6496,6 +6496,12 @@ const Konsept = () => {
                           <li>Brannmotstand for branncellebegrensende konstruksjoner</li>
                           <li>Dørkrav i branncellebegrensende vegger</li>
                           <li>Krav til gjennomføringer og branntetting</li>
+                          {formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0 && (() => {
+                            const uniqueBkls = new Set(formData.bygningsdeler.map((d: any) => d.brannklasse).filter(Boolean));
+                            return uniqueBkls.size > 1 ? (
+                              <li className="font-medium text-foreground">Krav vises separat for hver brannklasse ({[...uniqueBkls].join(', ')})</li>
+                            ) : null;
+                          })()}
                         </ul>
                       </div>
                       <div>
