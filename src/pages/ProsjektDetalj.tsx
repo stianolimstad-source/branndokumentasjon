@@ -188,6 +188,7 @@ const ProsjektDetalj = () => {
   const brannkonsepter = concepts.filter(c => !c.contentType || c.contentType === "brannkonsept");
   const tilstandsvurderinger = concepts.filter(c => c.contentType === "tilstandsvurdering");
   const fraviksdokumenter = concepts.filter(c => c.contentType === "kvalitativ" || c.contentType === "komparativ" || c.contentType === "risikoanalyse");
+  const brensellagringDocs = concepts.filter(c => c.contentType === "brensellagring");
 
   const ConceptRow = ({ concept, icon: Icon, iconColor, linkTo }: { concept: FireConcept; icon: any; iconColor: string; linkTo: string }) => {
     const ks = ksStatus[concept.id];
@@ -335,7 +336,28 @@ const ProsjektDetalj = () => {
             )}
           </Card>
 
-          {/* Shares */}
+          {/* Brensellagring */}
+          <Card className="shadow-soft mb-3 sm:mb-4">
+            <CardHeader className="p-3 sm:p-6">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                  <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-red-500 flex-shrink-0" />
+                  <CardTitle className="text-sm sm:text-lg truncate">Brensellagring ({brensellagringDocs.length})</CardTitle>
+                </div>
+                <Link to={`/brensellagring`}>
+                  <Button size="sm" variant="outline" className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 whitespace-nowrap"><Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />Nytt</Button>
+                </Link>
+              </div>
+            </CardHeader>
+            {brensellagringDocs.length > 0 && (
+              <CardContent className="space-y-2 px-3 sm:px-6 pb-3 sm:pb-6 pt-0">
+                {brensellagringDocs.map(c => (
+                  <ConceptRow key={c.id} concept={c} icon={Shield} iconColor="text-red-500" linkTo={`/brensellagring?project=${project.id}&concept=${c.id}`} />
+                ))}
+              </CardContent>
+            )}
+          </Card>
+
           {shares.length > 0 && (
             <Card className="shadow-soft">
               <CardHeader className="p-3 sm:p-6">

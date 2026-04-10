@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
-  ArrowLeft, Flame, AlertTriangle, Info, Shield, Ruler, FileText,
+  ArrowLeft, Flame, AlertTriangle, Info, Shield, Ruler, FileText, Save,
   Droplets, ChevronDown, Cylinder, PipetteIcon, Gauge, ClipboardCheck, FolderOpen, ExternalLink, Eye, Building, Check, Plus, Search,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -125,6 +125,42 @@ const Brensellagring = () => {
       toast({ title: "Prosjekt opprettet", description: `"${data.name}" er nå opprettet` });
     }
     setIsCreatingProject(false);
+  };
+
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSaveDocument = async () => {
+    if (!selectedProjectId || !user) {
+      toast({ title: "Velg prosjekt", description: "Du må velge et prosjekt før du kan lagre", variant: "destructive" });
+      return;
+    }
+    if (!valgtBygningstype) {
+      toast({ title: "Velg bygningstype", description: "Du må velge bygningstype før du kan lagre", variant: "destructive" });
+      return;
+    }
+    setIsSaving(true);
+    const docContent = {
+      type: "brensellagring",
+      documentType: "brensellagring",
+      bygningstype: valgtBygningstype,
+      visibleSections: Array.from(visibleSections),
+    };
+    const docName = `Brensellagring – ${valgtBygg?.navn || valgtBygningstype}`;
+    const { error } = await supabase
+      .from('fire_concepts')
+      .insert({
+        name: docName,
+        project_id: selectedProjectId,
+        user_id: user.id,
+        content: docContent,
+        status: 'draft',
+      });
+    if (error) {
+      toast({ title: "Feil", description: "Kunne ikke lagre dokumentet", variant: "destructive" });
+    } else {
+      toast({ title: "Lagret", description: `"${docName}" er lagret i prosjektet` });
+    }
+    setIsSaving(false);
   };
 
   const mengdeNum = parseFloat(mengde) || 0;
@@ -1000,9 +1036,20 @@ const Brensellagring = () => {
             {/* ===== RIGHT: Document preview ===== */}
             <div className="flex-1 min-w-0">
               <div className="sticky top-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <Eye className="h-4 w-4 text-muted-foreground" />
-                  <h4 className="text-sm font-semibold text-muted-foreground">Forhåndsvisning – Kravdokument</h4>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                    <h4 className="text-sm font-semibold text-muted-foreground">Forhåndsvisning – Kravdokument</h4>
+                  </div>
+                  <Button
+                    size="sm"
+                    onClick={handleSaveDocument}
+                    disabled={isSaving || !selectedProjectId || !valgtBygningstype}
+                    className="h-8"
+                  >
+                    <Save className="h-4 w-4 mr-1.5" />
+                    {isSaving ? "Lagrer..." : "Lagre i prosjekt"}
+                  </Button>
                 </div>
                 <div className="bg-muted/30 rounded-xl p-4 overflow-y-auto max-h-[calc(100vh-120px)]">
                   <BrensellagringPreview
