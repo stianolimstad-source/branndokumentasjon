@@ -1637,30 +1637,33 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 if (bkl === "BKL3") return "EI 60 A2-s1,d0 [A 60]";
                 return "EI 60 [B 60]";
               };
-              const bklEntries: { label: string; bkl: string }[] = [];
+              const alleDeler: { index: number; navn: string; bkl: string }[] = [];
               if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
-                const seen = new Set<string>();
                 const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
-                if (del1Bkl) { seen.add(del1Bkl); bklEntries.push({ label: formData.bygningstype || 'Bygningsdel 1', bkl: del1Bkl }); }
-                formData.bygningsdeler.forEach((del: any) => {
+                if (del1Bkl) alleDeler.push({ index: 1, navn: formData.bygningstype || 'Bygningsdel 1', bkl: del1Bkl });
+                formData.bygningsdeler.forEach((del: any, i: number) => {
                   const delBkl = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer || formData.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
-                  if (delBkl && !seen.has(delBkl)) { seen.add(delBkl); bklEntries.push({ label: del.navn || del.bygningstype || delBkl, bkl: delBkl }); }
+                  if (delBkl) alleDeler.push({ index: i + 2, navn: del.navn || del.bygningstype || `Bygningsdel ${i + 2}`, bkl: delBkl });
                 });
               }
-              if (bklEntries.length === 0 && formData.brannklasse) {
-                bklEntries.push({ label: "", bkl: formData.brannklasse });
-              }
-              const showLabel = bklEntries.length > 1;
-              return bklEntries.map((entry, idx) => (
-                <tr key={`heismaskinrom-${idx}`}>
-                  <td className="border border-gray-400 p-2 align-top">
-                    Heismaskinrom
-                    {showLabel && <div className="text-xs font-normal text-gray-600 mt-1">[{entry.label} – {entry.bkl}]</div>}
+              if (alleDeler.length === 0 && formData.brannklasse) alleDeler.push({ index: 1, navn: "", bkl: formData.brannklasse });
+              const showLabel = alleDeler.length > 1;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Heismaskinrom</td>
+                  <td className="border border-gray-400 p-2">
+                    {showLabel ? alleDeler.map((del) => (
+                      <p key={del.index} className={del.index > 1 ? "mt-1" : ""}>
+                        <span className="font-medium">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</span>{" "}
+                        <span className="text-red-600 font-semibold">{getHeismaskinromKrav(del.bkl)}</span>
+                      </p>
+                    )) : (
+                      <span className="font-semibold">{getHeismaskinromKrav(alleDeler[0].bkl)}</span>
+                    )}
                   </td>
-                  <td className="border border-gray-400 p-2 font-semibold">{getHeismaskinromKrav(entry.bkl)}</td>
                   <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
                 </tr>
-              ));
+              );
             })()}
             {!isBF85 && formData.fyrromRelevant === "ja" && (formData.brannklasse || (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0)) && (() => {
               const getBrannmotstand = (bkl: string) => {
