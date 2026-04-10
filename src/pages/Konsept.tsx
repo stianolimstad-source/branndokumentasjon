@@ -5608,9 +5608,35 @@ const Konsept = () => {
                             setTimeout(() => setFormData({...formData, trapperomKravTekst: trapperomOriginalTekst}), 0);
                           }
 
+                          // Build per-building-part Tr types for display
+                          const trapperomPerDel: { index: number; navn: string; trType: string | null; rk: number; floors: number }[] = [];
+                          if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+                            trapperomPerDel.push({ index: 1, navn: formData.bygningstype || 'Bygningsdel 1', trType: trType, rk, floors });
+                            formData.bygningsdeler.forEach((del: any, i: number) => {
+                              const rkDel = parseInt(del.risikoklasse?.replace(/\D/g, '') || '0', 10);
+                              const flDel = parseInt(del.etasjer || formData.etasjer, 10) || 0;
+                              const trDel = rkDel >= 1 && rkDel <= 6 && flDel > 0
+                                ? (flDel <= 8 ? trapperomTypeMap[rkDel].lav : trapperomTypeMap[rkDel].hoy)
+                                : null;
+                              trapperomPerDel.push({ index: i + 2, navn: del.navn || del.bygningstype || `Bygningsdel ${i + 2}`, trType: trDel, rk: rkDel, floors: flDel });
+                            });
+                          }
+                          const showMultipleTrInput = trapperomPerDel.length > 1;
+
                           return (
                             <>
-                              {trType ? (
+                              {showMultipleTrInput ? (
+                                <div className="mb-2 p-2 bg-accent/50 rounded text-xs space-y-1">
+                                  <span className="font-medium">Automatisk bestemte trapperomtyper:</span>
+                                  {trapperomPerDel.map(d => (
+                                    <div key={d.index}>
+                                      <span className="font-bold">{d.navn}:</span>{" "}
+                                      <span className="font-bold">{d.trType || "Ikke bestemt"}</span>
+                                      <span className="text-muted-foreground ml-1">(RK{d.rk}, {d.floors} etasje{d.floors > 1 ? "r" : ""})</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : trType ? (
                                 <div className="mb-2 p-2 bg-accent/50 rounded text-xs">
                                   <span className="font-medium">Automatisk bestemt trapperomtype:</span>{" "}
                                   <span className="font-bold">{trType}</span>
