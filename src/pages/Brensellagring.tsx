@@ -555,27 +555,111 @@ const Brensellagring = () => {
           </Tabs>
 
           {/* ============================================================== */}
-          {/* BYGGKRAV – VTEK § 11-8 – Velg bygningstype                      */}
+          {/* LAGRING I BYGNING – DSB Kap. 3 (stykkgods) + VTEK § 11-8       */}
           {/* ============================================================== */}
-          <div className="mt-10 pt-8 border-t">
+          <div className="mt-10 pt-8 border-t space-y-6">
+            <div className="flex items-center gap-2">
+              <Shield className="h-6 w-6 text-primary" />
+              <div>
+                <h3 className="text-xl font-bold">Lagring i bygning</h3>
+                <p className="text-sm text-muted-foreground">
+                  DSB Temaveiledning Kap. 3 (stykkgods) og VTEK § 11-8 (tanklagring)
+                </p>
+              </div>
+            </div>
+
+            {/* --- DSB Kap. 3: Stykkgods etter areal --- */}
             <Collapsible defaultOpen>
               <CollapsibleTrigger asChild>
-                <button className="flex items-center gap-3 w-full text-left group mb-4">
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-6 w-6 text-primary" />
-                    <div>
-                      <h3 className="text-xl font-bold">Lagring i bygning – VTEK § 11-8</h3>
-                      <p className="text-sm text-muted-foreground">Velg bygningstype for å se tillatte mengder og krav</p>
+                <button className="flex items-center gap-3 w-full text-left group mb-3">
+                  <h4 className="text-lg font-semibold">Stykkgods – mengdegrenser etter areal (DSB Kap. 3)</h4>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground ml-auto transition-transform group-data-[state=open]:rotate-180" />
+                </button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-4">
+                <Card className="shadow-soft">
+                  <CardContent className="pt-6 space-y-4">
+                    <div className="space-y-2 max-w-xs">
+                      <Label>Areal på salgs-/lagerlokale (m²)</Label>
+                      <Input
+                        type="number"
+                        min={0}
+                        placeholder="F.eks. 500"
+                        value={arealInput}
+                        onChange={(e) => setArealInput(e.target.value)}
+                      />
                     </div>
-                  </div>
-                  <ChevronDown className="h-5 w-5 text-muted-foreground ml-auto transition-transform group-data-[state=open]:rotate-180" />
+
+                    {/* Full referansetabell */}
+                    <div className="border rounded-lg overflow-hidden">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="bg-muted/50">
+                            <th className="text-left py-2.5 px-3 font-medium">Areal</th>
+                            <th className="text-left py-2.5 px-3 font-medium">Aerosoler</th>
+                            <th className="text-left py-2.5 px-3 font-medium">Brannfarlig gass</th>
+                            <th className="text-left py-2.5 px-3 font-medium">Brannf. væske kat. 1 og 2</th>
+                            <th className="text-left py-2.5 px-3 font-medium">Brannf. væske kat. 3</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {STYKKGODS_GRENSER.map((g, i) => {
+                            const arealNum = parseFloat(arealInput) || 0;
+                            const isActive = arealNum > 0 && getStykkgodsGrense(arealNum) === g;
+                            return (
+                              <tr
+                                key={i}
+                                className={`border-t ${isActive ? "bg-primary/10 font-semibold" : ""}`}
+                              >
+                                <td className="py-2.5 px-3">{g.arealBeskrivelse}</td>
+                                <td className="py-2.5 px-3">{g.aerosoler} liter</td>
+                                <td className="py-2.5 px-3">{g.brannfarligGass}</td>
+                                <td className="py-2.5 px-3">{g.brannfarligVaeskeKat1og2} liter</td>
+                                <td className="py-2.5 px-3">{g.brannfarligVaeskeKat3.toLocaleString("nb-NO")} liter</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {parseFloat(arealInput) > 0 && (() => {
+                      const grense = getStykkgodsGrense(parseFloat(arealInput));
+                      return (
+                        <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg text-sm space-y-1">
+                          <p className="font-semibold">For areal {parseFloat(arealInput).toLocaleString("nb-NO")} m² ({grense.arealBeskrivelse}):</p>
+                          <ul className="list-disc list-inside space-y-0.5">
+                            <li>Aerosoler: maks <strong>{grense.aerosoler} liter</strong></li>
+                            <li>Brannfarlig gass: maks <strong>{grense.brannfarligGass}</strong></li>
+                            <li>Brannfarlig væske kat. 1 og 2: maks <strong>{grense.brannfarligVaeskeKat1og2} liter</strong></li>
+                            <li>Brannfarlig væske kat. 3: maks <strong>{grense.brannfarligVaeskeKat3.toLocaleString("nb-NO")} liter</strong></li>
+                          </ul>
+                        </div>
+                      );
+                    })()}
+
+                    <div className="p-3 bg-muted/30 rounded-lg text-xs text-muted-foreground">
+                      <p><strong>Kilde:</strong> DSB Temaveiledning, Kapittel 3 – Oppbevaring av brannfarlig stoff i transport- og brukeremballasje (stykkgods), § 6.</p>
+                      <p className="mt-1">Gjelder for salgs- og lagerlokaler. Mengdene gjelder samlet for hele lokalet, inkl. lager bak butikk.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </CollapsibleContent>
+            </Collapsible>
+
+            {/* --- VTEK § 11-8: Tanklagring i bygning --- */}
+            <Collapsible>
+              <CollapsibleTrigger asChild>
+                <button className="flex items-center gap-3 w-full text-left group mb-3">
+                  <h4 className="text-lg font-semibold">Tanklagring i bygning – VTEK § 11-8</h4>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground ml-auto transition-transform group-data-[state=open]:rotate-180" />
                 </button>
               </CollapsibleTrigger>
               <CollapsibleContent className="space-y-4">
                 <Card className="shadow-soft">
                   <CardContent className="pt-6 space-y-4">
                     <div className="space-y-2">
-                      <Label>Bygningstype</Label>
+                      <Label>Bygningstype / romtype</Label>
                       <Select value={valgtBygningstype} onValueChange={(v) => { setValgtBygningstype(v as BygningsType); setExpandedBrensel(null); }}>
                         <SelectTrigger>
                           <SelectValue placeholder="Velg bygningstype..." />
@@ -688,7 +772,7 @@ const Brensellagring = () => {
           </div>
 
           <p className="text-xs text-muted-foreground mt-8 text-center">
-            Kilde: DSB Temaveiledning om oppbevaring av farlig stoff (Kapittel 1 – Atmosfæriske tanker) og VTEK § 11-8.
+            Kilde: DSB Temaveiledning om oppbevaring av farlig stoff (Kap. 1 & 3) og VTEK § 11-8.
             <br />
             <a
               href="https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/"
