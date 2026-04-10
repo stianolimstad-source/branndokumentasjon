@@ -947,7 +947,7 @@ const Konsept = () => {
       ? [...new Set(formData.bygningsdeler.map((d: any) => d.risikoklasse).filter(Boolean))]
       : formData.risikoklasse ? [formData.risikoklasse] : [];
     const etasjerNum = parseInt(formData.etasjer || '0', 10);
-    const erRK4MedHeis = alleRK.includes("RK4") && etasjerNum > 1;
+    const erRK4MedHeis = alleRK.includes("RK4") && etasjerNum > 3;
     const erRK6 = alleRK.includes("RK6");
     
     const updates: any = {};
@@ -5787,7 +5787,7 @@ const Konsept = () => {
                             const rk = formData.risikoklasse;
                             const etasjerNum = parseInt(formData.etasjer, 10) || 0;
                             const erRK6 = rk === "RK6";
-                            const erRK4MedHeis = rk === "RK4" && etasjerNum > 1;
+                            const erRK4MedHeis = rk === "RK4" && etasjerNum > 3;
                             const harSprinklerKrav = erRK6 || erRK4MedHeis || formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b;
                             // Auto-add vb_sprinkler when sprinkler is required
                             if (harSprinklerKrav && formData.regelverk !== "BF85" && !formData.vertikalBrannspredningKrav.includes("vb_sprinkler")) {
@@ -5866,7 +5866,7 @@ const Konsept = () => {
                               : formData.risikoklasse || "";
                             const etasjerNum = parseInt(formData.etasjer, 10) || 0;
                             const erRK6 = rk === "RK6";
-                            const erRK4MedHeis = rk === "RK4" && etasjerNum > 1;
+                            const erRK4MedHeis = rk === "RK4" && etasjerNum > 3;
                             const harSprinklerHorisontal = erRK6 || erRK4MedHeis || formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b;
                             const bklNum = formData.harFlereRisikoklasser
                               ? (() => { const nums = (formData.bygningsdeler || []).map((d: any) => parseInt((d.brannklasse || "").replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n)); return nums.length > 0 ? Math.max(...nums) : 0; })()

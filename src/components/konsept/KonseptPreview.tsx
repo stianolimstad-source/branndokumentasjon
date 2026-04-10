@@ -2103,7 +2103,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               const rk = formData.risikoklasse;
               const etasjerNum = parseInt(formData.etasjer, 10) || 0;
               const erRK6 = rk === "RK6";
-              const erRK4MedHeis = rk === "RK4" && etasjerNum > 1;
+              const erRK4MedHeis = rk === "RK4" && etasjerNum > 3;
               const harSprinklerKrav = (erRK6 || erRK4MedHeis || formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) && formData.regelverk !== "BF85";
 
               if (harSprinklerKrav) {
@@ -2164,7 +2164,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 : formData.risikoklasse || "";
               const etasjerNum = parseInt(formData.etasjer, 10) || 0;
               const erRK6 = rk === "RK6";
-              const erRK4MedHeis = rk === "RK4" && etasjerNum > 1;
+              const erRK4MedHeis = rk === "RK4" && etasjerNum > 3;
               const harSprinklerKrav = !isBF85 && (erRK6 || erRK4MedHeis || formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b);
 
               if (harSprinklerKrav) {
