@@ -5752,18 +5752,25 @@ const Konsept = () => {
                             );
                           })() : (() => {
                             const etasjerNum = parseInt(formData.etasjer, 10) || 0;
-                            
                             // Collect all Tr types and max floors across building parts
+                            const roykTrapperomTypeMap: Record<number, { lav: string; hoy: string }> = {
+                              1: { lav: "Tr 1", hoy: "Tr 3" }, 2: { lav: "Tr 1", hoy: "Tr 3" },
+                              3: { lav: "Tr 2", hoy: "Tr 3" }, 4: { lav: "Tr 1", hoy: "Tr 3" },
+                              5: { lav: "Tr 2", hoy: "Tr 3" }, 6: { lav: "Tr 2", hoy: "Tr 3" },
+                            };
                             const allTrTypesRoyk = new Set<string>();
                             let maxEtasjer = etasjerNum;
-                            if (trType) allTrTypesRoyk.add(trType);
+                            const rkPrimary = parseInt(formData.risikoklasse?.replace(/\D/g, '') || '0', 10);
+                            if (rkPrimary >= 1 && rkPrimary <= 6 && etasjerNum > 0) {
+                              allTrTypesRoyk.add(etasjerNum <= 8 ? roykTrapperomTypeMap[rkPrimary].lav : roykTrapperomTypeMap[rkPrimary].hoy);
+                            }
                             if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
                               formData.bygningsdeler.forEach((del: any) => {
                                 const rkDel = parseInt(del.risikoklasse?.replace(/\D/g, '') || '0', 10);
                                 const flDel = parseInt(del.etasjer || formData.etasjer, 10) || 0;
                                 if (flDel > maxEtasjer) maxEtasjer = flDel;
                                 if (rkDel >= 1 && rkDel <= 6 && flDel > 0) {
-                                  allTrTypesRoyk.add(flDel <= 8 ? trapperomTypeMap[rkDel].lav : trapperomTypeMap[rkDel].hoy);
+                                  allTrTypesRoyk.add(flDel <= 8 ? roykTrapperomTypeMap[rkDel].lav : roykTrapperomTypeMap[rkDel].hoy);
                                 }
                               });
                             }
