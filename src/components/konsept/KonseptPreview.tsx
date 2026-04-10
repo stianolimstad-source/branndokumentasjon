@@ -1813,47 +1813,62 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 korridor_det_fri_tr3: { label: "Korridor – det fri (i kombinasjon med trapperom Tr 3)", bkl1: "", bkl23: "EI₂ 30-Sₐ [B 30]" },
               };
 
-              const bklEntries: { label: string; bkl: string }[] = [];
+              const alleDeler: { index: number; navn: string; bkl: string }[] = [];
               if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
-                const seen = new Set<string>();
                 const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
-                if (del1Bkl) { seen.add(del1Bkl); bklEntries.push({ label: formData.bygningstype || 'Bygningsdel 1', bkl: del1Bkl }); }
-                formData.bygningsdeler.forEach((del: any) => {
+                if (del1Bkl) alleDeler.push({ index: 1, navn: formData.bygningstype || 'Bygningsdel 1', bkl: del1Bkl });
+                formData.bygningsdeler.forEach((del: any, i: number) => {
                   const delBkl = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer || formData.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
-                  if (delBkl && !seen.has(delBkl)) { seen.add(delBkl); bklEntries.push({ label: del.navn || del.bygningstype || delBkl, bkl: delBkl }); }
+                  if (delBkl) alleDeler.push({ index: i + 2, navn: del.navn || del.bygningstype || `Bygningsdel ${i + 2}`, bkl: delBkl });
                 });
               }
-              if (bklEntries.length === 0 && formData.brannklasse) {
-                bklEntries.push({ label: "", bkl: formData.brannklasse });
-              }
-              const showLabel = bklEntries.length > 1;
+              if (alleDeler.length === 0 && formData.brannklasse) alleDeler.push({ index: 1, navn: "", bkl: formData.brannklasse });
+              const showLabel = alleDeler.length > 1;
 
-              return bklEntries.map((entry, entryIdx) => {
-                const isBKL1 = entry.bkl === "BKL1";
-                const activeDoors = formData.dorPlasseringer
-                  .map((id: string) => dorKravMap[id])
-                  .filter(Boolean)
-                  .filter((d: { bkl1: string; bkl23: string }) => isBKL1 ? d.bkl1 : d.bkl23);
-                if (activeDoors.length === 0) return null;
-                return (
-                  <tr key={`dorkrav-${entryIdx}`}>
-                    <td className="border border-gray-400 p-2 align-top">
-                      Dørkrav
-                      {showLabel && <div className="text-xs font-normal text-gray-600 mt-1">[{entry.label} – {entry.bkl}]</div>}
-                    </td>
-                    <td className="border border-gray-400 p-2">
-                      <div className="space-y-1">
-                        {activeDoors.map((d: { label: string; bkl1: string; bkl23: string }, idx: number) => {
+              // Get all active door types
+              const allActiveDoors = formData.dorPlasseringer
+                .map((id: string) => dorKravMap[id])
+                .filter(Boolean);
+              if (allActiveDoors.length === 0) return null;
+
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Dørkrav</td>
+                  <td className="border border-gray-400 p-2">
+                    <div className="space-y-2">
+                      {allActiveDoors.map((d: { label: string; bkl1: string; bkl23: string }, idx: number) => {
+                        if (showLabel) {
+                          // Show per building part
+                          const lines = alleDeler.map((del) => {
+                            const isBKL1 = del.bkl === "BKL1";
+                            const krav = isBKL1 ? d.bkl1 : d.bkl23;
+                            if (!krav) return null;
+                            return (
+                              <p key={del.index} className={del.index > 1 ? "mt-1" : ""}>
+                                <span className="font-medium">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</span>{" "}
+                                <span className="text-red-600 font-semibold">{krav}</span>
+                              </p>
+                            );
+                          }).filter(Boolean);
+                          if (lines.length === 0) return null;
+                          return (
+                            <div key={idx}>
+                              <p className="font-medium text-sm">{d.label}:</p>
+                              {lines}
+                            </div>
+                          );
+                        } else {
+                          const isBKL1 = alleDeler[0].bkl === "BKL1";
                           const krav = isBKL1 ? d.bkl1 : d.bkl23;
                           if (!krav) return null;
                           return <div key={idx}>{d.label}: <span className="font-semibold">{krav}</span></div>;
-                        })}
-                      </div>
-                    </td>
-                    <td className="border border-gray-400 p-2 align-top">ARK</td>
-                  </tr>
-                );
-              });
+                        }
+                      })}
+                    </div>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              );
             })()}
             {/* Vinduskrav */}
             {formData.vinduskravRelevant && (
