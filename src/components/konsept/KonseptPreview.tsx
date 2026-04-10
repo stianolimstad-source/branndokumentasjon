@@ -2809,53 +2809,100 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <tr className="bg-gray-100">
                       <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Overflater i brannceller som ikke er rømningsvei</td>
                     </tr>
-                    {harFlereDeler ? (
+                    {harFlereDeler && harRK6 && harIkkeRK6 ? (
                       <>
-                        {materialDeler.map((del) => {
-                          if (del.rk === "RK6") {
-                            return (
-                              <React.Fragment key={`ovfl-${del.index}`}>
-                                <tr>
-                                  <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak, og i sjakter og hulrom</td>
-                                  <td className="border border-gray-400 p-2">
-                                    <div className="font-medium text-xs mb-1">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</div>
-                                    <span className="text-red-600 font-medium">B-s1,d0 [In 1]</span>
-                                  </td>
-                                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                                </tr>
-                                <tr>
-                                  <td className="border border-gray-400 p-2 align-top">Overflater på gulv</td>
-                                  <td className="border border-gray-400 p-2">
-                                    <div className="font-medium text-xs mb-1">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</div>
+                        <tr>
+                          <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak i branncelle inntil 200 m²</td>
+                          <td className="border border-gray-400 p-2">
+                            <div className="space-y-1">
+                              {materialDeler.map((del) => (
+                                <div key={`ovfl200-${del.index}`}>
+                                  <span className="font-medium">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</span>{" "}
+                                  <span className="text-red-600 font-medium">{del.rk === "RK6" ? "B-s1,d0 [In 1]" : "D-s2,d0 [In 2]"}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="border border-gray-400 p-2 align-top">ARK</td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak i branncelle over 200 m²</td>
+                          <td className="border border-gray-400 p-2">
+                            <div className="space-y-1">
+                              {materialDeler.map((del) => (
+                                <div key={`ovfl200p-${del.index}`}>
+                                  <span className="font-medium">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</span>{" "}
+                                  <span className="text-red-600 font-medium">{(del.rk === "RK6" || del.bkl !== "BKL1") ? "B-s1,d0 [In 1]" : "D-s2,d0 [In 2]"}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="border border-gray-400 p-2 align-top">ARK</td>
+                        </tr>
+                        {materialDeler.some(d => d.rk === "RK6") && (
+                          <tr>
+                            <td className="border border-gray-400 p-2 align-top">Overflater på gulv</td>
+                            <td className="border border-gray-400 p-2">
+                              <div className="space-y-1">
+                                {materialDeler.filter(d => d.rk === "RK6").map((del) => (
+                                  <div key={`ovflg-${del.index}`}>
+                                    <span className="font-medium">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</span>{" "}
                                     <span className="text-red-600 font-medium">D<sub>fl</sub>-s1 [G]</span>
-                                  </td>
-                                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                                </tr>
-                              </React.Fragment>
-                            );
-                          } else {
-                            return (
-                              <React.Fragment key={`ovfl-${del.index}`}>
-                                <tr>
-                                  <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak i branncelle inntil 200 m²</td>
-                                  <td className="border border-gray-400 p-2">
-                                    <div className="font-medium text-xs mb-1">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</div>
-                                    <span className="text-red-600 font-medium">D-s2,d0 [In 2]</span>
-                                  </td>
-                                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                                </tr>
-                                <tr>
-                                  <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak i branncelle over 200 m²</td>
-                                  <td className="border border-gray-400 p-2">
-                                    <div className="font-medium text-xs mb-1">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</div>
+                                  </div>
+                                ))}
+                              </div>
+                            </td>
+                            <td className="border border-gray-400 p-2 align-top">ARK</td>
+                          </tr>
+                        )}
+                      </>
+                    ) : harFlereDeler ? (
+                      <>
+                        <tr>
+                          <td className="border border-gray-400 p-2 align-top">{harRK6 ? "Overflater på vegger og i himling/tak, og i sjakter og hulrom" : "Overflater på vegger og i himling/tak i branncelle inntil 200 m²"}</td>
+                          <td className="border border-gray-400 p-2">
+                            <div className="space-y-1">
+                              {materialDeler.map((del) => (
+                                <div key={`ovfl200-${del.index}`}>
+                                  <span className="font-medium">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</span>{" "}
+                                  <span className="text-red-600 font-medium">{harRK6 ? "B-s1,d0 [In 1]" : "D-s2,d0 [In 2]"}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="border border-gray-400 p-2 align-top">ARK</td>
+                        </tr>
+                        {harRK6 ? (
+                          <tr>
+                            <td className="border border-gray-400 p-2 align-top">Overflater på gulv</td>
+                            <td className="border border-gray-400 p-2">
+                              <div className="space-y-1">
+                                {materialDeler.map((del) => (
+                                  <div key={`ovflg-${del.index}`}>
+                                    <span className="font-medium">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</span>{" "}
+                                    <span className="text-red-600 font-medium">D<sub>fl</sub>-s1 [G]</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </td>
+                            <td className="border border-gray-400 p-2 align-top">ARK</td>
+                          </tr>
+                        ) : (
+                          <tr>
+                            <td className="border border-gray-400 p-2 align-top">Overflater på vegger og i himling/tak i branncelle over 200 m²</td>
+                            <td className="border border-gray-400 p-2">
+                              <div className="space-y-1">
+                                {materialDeler.map((del) => (
+                                  <div key={`ovfl200p-${del.index}`}>
+                                    <span className="font-medium">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</span>{" "}
                                     <span className="text-red-600 font-medium">{del.bkl === "BKL1" ? "D-s2,d0 [In 2]" : "B-s1,d0 [In 1]"}</span>
-                                  </td>
-                                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                                </tr>
-                              </React.Fragment>
-                            );
-                          }
-                        })}
+                                  </div>
+                                ))}
+                              </div>
+                            </td>
+                            <td className="border border-gray-400 p-2 align-top">ARK</td>
+                          </tr>
+                        )}
                       </>
                     ) : harRK6 ? (
                       <>
