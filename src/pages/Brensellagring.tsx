@@ -1198,7 +1198,7 @@ const Brensellagring = () => {
                   <Button
                     size="sm"
                     onClick={handleSaveDocument}
-                    disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedStoffIds.size === 0)}
+                    disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedStoffIds.size === 0 && selectedKravIds.size === 0)}
                     className="h-8"
                   >
                     <Save className="h-4 w-4 mr-1.5" />
@@ -1212,6 +1212,7 @@ const Brensellagring = () => {
                     adresse={adresse || undefined}
                     visibleSections={visibleSections}
                     selectedStoffIds={selectedStoffIds}
+                    selectedKravIds={selectedKravIds}
                   />
                 </div>
               </div>
