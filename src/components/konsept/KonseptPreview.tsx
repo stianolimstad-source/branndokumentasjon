@@ -1576,57 +1576,59 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 return "";
               };
 
-              // Collect unique BKL entries from all building parts (including first)
-              const bklEntries: { label: string; bkl: string }[] = [];
+              // Build list of all building parts with their BKL
+              const alleDeler: { index: number; navn: string; bkl: string }[] = [];
               if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
-                const uniqueBkls = new Set<string>();
-                // First bygningsdel (stored in formData itself)
                 const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
                 if (del1Bkl) {
-                  uniqueBkls.add(del1Bkl);
-                  bklEntries.push({ label: formData.bygningstype || 'Bygningsdel 1', bkl: del1Bkl });
+                  alleDeler.push({ index: 1, navn: formData.bygningstype || 'Bygningsdel 1', bkl: del1Bkl });
                 }
-                // Additional bygningsdeler
-                formData.bygningsdeler.forEach((del: any) => {
+                formData.bygningsdeler.forEach((del: any, i: number) => {
                   const delBkl = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer || formData.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
-                  if (delBkl && !uniqueBkls.has(delBkl)) {
-                    uniqueBkls.add(delBkl);
-                    bklEntries.push({ label: del.navn || del.bygningstype || delBkl, bkl: delBkl });
+                  if (delBkl) {
+                    alleDeler.push({ index: i + 2, navn: del.navn || del.bygningstype || `Bygningsdel ${i + 2}`, bkl: delBkl });
                   }
                 });
               }
-              // Fallback to single brannklasse if no entries found
-              if (bklEntries.length === 0 && formData.brannklasse) {
-                bklEntries.push({ label: "", bkl: formData.brannklasse });
+              // Fallback single
+              if (alleDeler.length === 0 && formData.brannklasse) {
+                alleDeler.push({ index: 1, navn: "", bkl: formData.brannklasse });
               }
+              if (alleDeler.length === 0) return null;
+              const showLabel = alleDeler.length > 1;
 
-              if (bklEntries.length === 0) return null;
-              const showLabel = bklEntries.length > 1;
-
-              return bklEntries.map((entry, idx) => (
-                <React.Fragment key={`bkl-branncelle-${idx}`}>
+              return (
+                <>
                   <tr>
-                    <td className="border border-gray-400 p-2 align-top">
-                      Branncellebegrensende bygningsdel - generelt
-                      {showLabel && <div className="text-xs font-normal text-gray-600 mt-1">[{entry.label} – {entry.bkl}]</div>}
-                    </td>
-                    <td className="border border-gray-400 p-2 font-semibold">
-                      {getBrannmotstand(entry.bkl)}
+                    <td className="border border-gray-400 p-2 align-top">Branncellebegrensende bygningsdel - generelt</td>
+                    <td className="border border-gray-400 p-2">
+                      {showLabel ? alleDeler.map((del) => (
+                        <p key={del.index} className={del.index > 1 ? "mt-1" : ""}>
+                          <span className="font-medium">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</span>{" "}
+                          <span className="text-red-600 font-semibold">{getBrannmotstand(del.bkl)}</span>
+                        </p>
+                      )) : (
+                        <span className="font-semibold">{getBrannmotstand(alleDeler[0].bkl)}</span>
+                      )}
                     </td>
                     <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-400 p-2 align-top">
-                      Bygningsdel som omslutter trapperom, heissjakt og installasjonssjakter over flere plan
-                      {showLabel && <div className="text-xs font-normal text-gray-600 mt-1">[{entry.label} – {entry.bkl}]</div>}
-                    </td>
-                    <td className="border border-gray-400 p-2 font-semibold">
-                      {getBrannmotstand(entry.bkl)}
+                    <td className="border border-gray-400 p-2 align-top">Bygningsdel som omslutter trapperom, heissjakt og installasjonssjakter over flere plan</td>
+                    <td className="border border-gray-400 p-2">
+                      {showLabel ? alleDeler.map((del) => (
+                        <p key={del.index} className={del.index > 1 ? "mt-1" : ""}>
+                          <span className="font-medium">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</span>{" "}
+                          <span className="text-red-600 font-semibold">{getBrannmotstand(del.bkl)}</span>
+                        </p>
+                      )) : (
+                        <span className="font-semibold">{getBrannmotstand(alleDeler[0].bkl)}</span>
+                      )}
                     </td>
                     <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
                   </tr>
-                </React.Fragment>
-              ));
+                </>
+              );
             })()}
             </>
             )}
