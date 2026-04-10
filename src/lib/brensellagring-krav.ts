@@ -648,6 +648,16 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
     beskrivelse: "Eget fyrrom med egen branncelle iht. VTEK § 11-8. Tillater noe høyere mengder med strengere konstruksjonskrav.",
     grenser: [
       {
+        brenselType: "propan",
+        brenselNavn: "Propan / LPG",
+        maksLiter: null,
+        maksKg: 55,
+        romKrav: [
+          { kategori: "Plassering", tekst: "Ikke i kjeller eller rom under terreng. Godt ventilert rom eller utendørs.", ansvar: "Eier" },
+          { kategori: "Ventilasjon", tekst: "Rommet skal ha god naturlig eller mekanisk ventilasjon ned mot gulv.", ansvar: "RIV" },
+        ],
+      },
+      {
         brenselType: "fyringsparafin",
         brenselNavn: "Fyringsparafin",
         maksLiter: 4000,
