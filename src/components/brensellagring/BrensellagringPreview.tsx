@@ -7,6 +7,7 @@ import {
   BELIGGENHET_KRAV,
   KONTROLL_KRAV,
   DOKUMENTASJON_KRAV,
+  STOFF_KATALOG,
 } from "@/lib/brensellagring-krav";
 
 export type BrenselSectionKey =
@@ -35,6 +36,7 @@ interface BrensellagringPreviewProps {
   prosjektNavn?: string;
   adresse?: string;
   visibleSections: Set<BrenselSectionKey>;
+  selectedStoffIds?: Set<string>;
 }
 
 const pageStyle: React.CSSProperties = {
@@ -76,27 +78,31 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   prosjektNavn,
   adresse,
   visibleSections,
+  selectedStoffIds = new Set(),
 }) => {
-  if (!valgtBygg) {
+  if (!valgtBygg && selectedStoffIds.size === 0) {
     return (
       <div style={{ ...pageStyle, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 400 }}>
         <div style={{ textAlign: "center", color: "#94a3b8" }}>
-          <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>Ingen bygningstype valgt</p>
-          <p style={{ fontSize: 12 }}>Velg en bygningstype til venstre for å generere kravdokumentet.</p>
+          <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>Ingen data valgt</p>
+          <p style={{ fontSize: 12 }}>Velg stoffer fra Stoffdata-tabellen eller en bygningstype for å generere dokumentet.</p>
         </div>
       </div>
     );
   }
 
   const today = new Date().toLocaleDateString("nb-NO", { day: "2-digit", month: "long", year: "numeric" });
-  const tillatteBrensler = valgtBygg.grenser.filter(g => g.maksLiter !== null || g.maksKg);
+  const tillatteBrensler = valgtBygg ? valgtBygg.grenser.filter(g => g.maksLiter !== null || g.maksKg) : [];
+  const selectedStoffer = STOFF_KATALOG.filter(s => selectedStoffIds.has(s.id));
 
-  // Dynamic section numbering based on visible sections
+  // Dynamic section numbering: stoffdata comes first if any stoffer selected
+  const hasStoffdata = selectedStoffer.length > 0;
   const orderedKeys: BrenselSectionKey[] = ["mengder", "konstruksjon", "avstander", "beliggenhet", "tankkrav", "oppsamling", "kontroll", "dokumentasjon"];
   const visibleKeys = orderedKeys.filter(k => visibleSections.has(k));
-  const sectionNum = (key: BrenselSectionKey) => visibleKeys.indexOf(key) + 1;
+  const stoffOffset = hasStoffdata ? 1 : 0;
+  const sectionNum = (key: BrenselSectionKey) => visibleKeys.indexOf(key) + 1 + stoffOffset;
 
-  const hasAnySections = visibleKeys.length > 0;
+  const hasAnySections = visibleKeys.length > 0 || hasStoffdata;
 
   return (
     <div>
@@ -105,7 +111,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         <div style={{ background: "#1e3a5f", color: "#fff", padding: "16px 20px", borderRadius: 6, marginBottom: 20 }}>
           <p style={{ fontSize: 10, opacity: 0.8, marginBottom: 2 }}>KRAVDOKUMENT</p>
           <p style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Lagring av brannfarlig stoff</p>
-          <p style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>{valgtBygg.navn}</p>
+          {valgtBygg && <p style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>{valgtBygg.navn}</p>}
         </div>
 
         {/* Project info */}
@@ -123,10 +129,12 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                 <td style={tdStyle}>{adresse}</td>
               </tr>
             )}
-            <tr>
-              <td style={{ ...tdStyle, fontWeight: 600 }}>Bygningstype</td>
-              <td style={tdStyle}>{valgtBygg.navn}</td>
-            </tr>
+            {valgtBygg && (
+              <tr>
+                <td style={{ ...tdStyle, fontWeight: 600 }}>Bygningstype</td>
+                <td style={tdStyle}>{valgtBygg.navn}</td>
+              </tr>
+            )}
             <tr>
               <td style={{ ...tdStyle, fontWeight: 600 }}>Dato</td>
               <td style={tdStyle}>{today}</td>
@@ -138,7 +146,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           </tbody>
         </table>
 
-        <p style={{ fontSize: 10, color: "#64748b", marginBottom: 24 }}>{valgtBygg.beskrivelse}</p>
+        {valgtBygg && <p style={{ fontSize: 10, color: "#64748b", marginBottom: 24 }}>{valgtBygg.beskrivelse}</p>}
 
         {!hasAnySections && (
           <p style={{ fontSize: 12, color: "#94a3b8", textAlign: "center", marginTop: 40 }}>
@@ -146,8 +154,43 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           </p>
         )}
 
-        {/* 1. Tillatte mengder */}
-        {visibleSections.has("mengder") && (
+        {/* Stoffdata section */}
+        {hasStoffdata && (
+          <>
+            <h2 style={h2}>1. Stoffdata – utvalgte stoffer</h2>
+            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
+              Tekniske data for utvalgte brannfarlige stoffer iht. GHS/CLP, DSB Temaveiledning og NFPA.
+            </p>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 16 }}>
+              <thead>
+                <tr>
+                  <th style={thStyle}>Stoff</th>
+                  <th style={thStyle}>Kategori</th>
+                  <th style={thStyle}>Flammepunkt</th>
+                  <th style={thStyle}>Densitet</th>
+                  <th style={thStyle}>Brennverdi</th>
+                  {selectedStoffer.some(s => s.eksplosjonsgrenser) && <th style={thStyle}>Eksp.grenser</th>}
+                  {selectedStoffer.some(s => s.selvantennelse) && <th style={thStyle}>Selvant.</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {selectedStoffer.map((stoff) => (
+                  <tr key={stoff.id}>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>{stoff.navn}</td>
+                    <td style={tdStyle}>{stoff.kategoriNavn}</td>
+                    <td style={tdStyle}>{stoff.flammepunkt}</td>
+                    <td style={tdStyle}>{stoff.densitet}</td>
+                    <td style={tdStyle}>{stoff.nedreBrennverdi}</td>
+                    {selectedStoffer.some(s => s.eksplosjonsgrenser) && <td style={tdStyle}>{stoff.eksplosjonsgrenser || "–"}</td>}
+                    {selectedStoffer.some(s => s.selvantennelse) && <td style={tdStyle}>{stoff.selvantennelse || "–"}</td>}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
+
+        {visibleSections.has("mengder") && valgtBygg && (
           <>
             <h2 style={h2}>{sectionNum("mengder")}. Tillatte mengder</h2>
             <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
