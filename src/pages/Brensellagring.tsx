@@ -33,7 +33,8 @@ import {
   STYKKGODS_GRENSER,
   getStykkgodsGrense,
 } from "@/lib/brensellagring-krav";
-import BrensellagringPreview from "@/components/brensellagring/BrensellagringPreview";
+import BrensellagringPreview, { BRENSEL_SECTIONS, BrenselSectionKey } from "@/components/brensellagring/BrensellagringPreview";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const Brensellagring = () => {
   const navigate = useNavigate();
@@ -56,8 +57,19 @@ const Brensellagring = () => {
   const [tankMengde, setTankMengde] = useState("");
   const [stoffKategoriFilter, setStoffKategoriFilter] = useState<string>("alle");
 
-  // Preview visibility
-  const [showPreview, setShowPreview] = useState(false);
+  // Section visibility for preview
+  const [visibleSections, setVisibleSections] = useState<Set<BrenselSectionKey>>(
+    new Set(BRENSEL_SECTIONS.map(s => s.key))
+  );
+
+  const toggleSection = (key: BrenselSectionKey) => {
+    setVisibleSections(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
   const mengdeNum = parseFloat(mengde) || 0;
   const result = brenselType ? getBrensellagringKrav(brenselType as BrenselType, mengdeNum) : null;
@@ -626,7 +638,7 @@ const Brensellagring = () => {
                 <CardContent className="space-y-3">
                   <div className="space-y-1.5">
                     <Label className="text-sm">Bygningstype / romtype</Label>
-                    <Select value={valgtBygningstype} onValueChange={(v) => { setValgtBygningstype(v as BygningsType); setExpandedBrensel(null); setShowPreview(true); }}>
+                    <Select value={valgtBygningstype} onValueChange={(v) => { setValgtBygningstype(v as BygningsType); setExpandedBrensel(null); }}>
                       <SelectTrigger>
                         <SelectValue placeholder="Velg bygningstype..." />
                       </SelectTrigger>
@@ -636,6 +648,36 @@ const Brensellagring = () => {
                         ))}
                       </SelectContent>
                     </Select>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Velg seksjoner for dokumentet */}
+              <Card className="shadow-soft">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Eye className="h-4 w-4 text-primary" />
+                    Velg seksjoner i dokumentet
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground">Huk av de kravene som er relevante for prosjektet</p>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {BRENSEL_SECTIONS.map((s) => (
+                    <label key={s.key} className="flex items-center gap-2.5 cursor-pointer group">
+                      <Checkbox
+                        checked={visibleSections.has(s.key)}
+                        onCheckedChange={() => toggleSection(s.key)}
+                      />
+                      <span className="text-sm group-hover:text-primary transition-colors">{s.label}</span>
+                    </label>
+                  ))}
+                  <div className="flex gap-2 pt-2">
+                    <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => setVisibleSections(new Set(BRENSEL_SECTIONS.map(s => s.key)))}>
+                      Velg alle
+                    </Button>
+                    <Button variant="outline" size="sm" className="text-xs h-7" onClick={() => setVisibleSections(new Set())}>
+                      Fjern alle
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -838,6 +880,7 @@ const Brensellagring = () => {
                     valgtBygg={valgtBygg}
                     prosjektNavn={prosjektNavn || undefined}
                     adresse={adresse || undefined}
+                    visibleSections={visibleSections}
                   />
                 </div>
               </div>
