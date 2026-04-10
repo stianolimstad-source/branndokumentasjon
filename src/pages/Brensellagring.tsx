@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useRef, useEffect } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -9,9 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   ArrowLeft, Flame, AlertTriangle, Info, Shield, Ruler, FileText,
-  Droplets, ChevronDown, Cylinder, PipetteIcon, Gauge, ClipboardCheck, FolderOpen, ExternalLink, Eye,
+  Droplets, ChevronDown, Cylinder, PipetteIcon, Gauge, ClipboardCheck, FolderOpen, ExternalLink, Eye, Building, Check, Plus, Search,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import {
   getBrensellagringKrav,
   BrenselType,
@@ -36,15 +41,33 @@ import {
 import BrensellagringPreview, { BRENSEL_SECTIONS, BrenselSectionKey } from "@/components/brensellagring/BrensellagringPreview";
 import { Checkbox } from "@/components/ui/checkbox";
 
+interface ProjectOption {
+  id: string;
+  name: string;
+  address: string | null;
+}
+
 const Brensellagring = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
+
+  // Project selection
+  const [projects, setProjects] = useState<ProjectOption[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [projectSearchQuery, setProjectSearchQuery] = useState("");
+  const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [newProject, setNewProject] = useState({ name: "", description: "", address: "" });
 
   // VTEK byggkrav
   const [valgtBygningstype, setValgtBygningstype] = useState<BygningsType | "">("");
   const [brenselType, setBrenselType] = useState<BrenselType | "">("");
   const [mengde, setMengde] = useState("");
-  const [prosjektNavn, setProsjektNavn] = useState("");
-  const [adresse, setAdresse] = useState("");
+
+  const selectedProject = projects.find(p => p.id === selectedProjectId);
+  const prosjektNavn = selectedProject?.name || "";
+  const adresse = selectedProject?.address || "";
 
   const valgtBygg = BYGNINGSTYPER.find((b) => b.id === valgtBygningstype) || null;
   const [expandedBrensel, setExpandedBrensel] = useState<string | null>(null);
@@ -69,6 +92,39 @@ const Brensellagring = () => {
       else next.add(key);
       return next;
     });
+  };
+
+  // Fetch projects
+  useEffect(() => {
+    if (user) {
+      supabase
+        .from('projects')
+        .select('id, name, address')
+        .order('created_at', { ascending: false })
+        .then(({ data }) => {
+          if (data) setProjects(data as ProjectOption[]);
+        });
+    }
+  }, [user]);
+
+  const handleCreateProject = async () => {
+    if (!newProject.name.trim() || !user) return;
+    setIsCreatingProject(true);
+    const { data, error } = await supabase
+      .from('projects')
+      .insert({ name: newProject.name, description: newProject.description || null, address: newProject.address || null, user_id: user.id })
+      .select('id, name, address')
+      .single();
+    if (error) {
+      toast({ title: "Feil", description: "Kunne ikke opprette prosjekt", variant: "destructive" });
+    } else if (data) {
+      setProjects(prev => [data as ProjectOption, ...prev]);
+      setSelectedProjectId(data.id);
+      setNewProject({ name: "", description: "", address: "" });
+      setIsCreateProjectOpen(false);
+      toast({ title: "Prosjekt opprettet", description: `"${data.name}" er nå opprettet` });
+    }
+    setIsCreatingProject(false);
   };
 
   const mengdeNum = parseFloat(mengde) || 0;
@@ -607,22 +663,95 @@ const Brensellagring = () => {
           <div className="flex flex-col lg:flex-row gap-6">
             {/* ===== LEFT: Input form ===== */}
             <div className="w-full lg:w-[440px] lg:flex-shrink-0 space-y-6">
-              {/* Prosjektinfo */}
+              {/* Prosjektvalg */}
               <Card className="shadow-soft">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-primary" />
-                    Prosjektinfo
+                    <Building className="h-4 w-4 text-primary" />
+                    Velg prosjekt
                   </CardTitle>
+                  <CardDescription className="text-xs">Dokumentet lagres under valgt prosjekt</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="space-y-1.5">
-                    <Label className="text-sm">Prosjektnavn</Label>
-                    <Input placeholder="F.eks. Varmeanlegg Fjordheim" value={prosjektNavn} onChange={(e) => setProsjektNavn(e.target.value)} />
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Søk prosjekt..."
+                        value={projectSearchQuery}
+                        onChange={(e) => setProjectSearchQuery(e.target.value)}
+                        className="pl-9 h-9 text-sm"
+                      />
+                    </div>
+                    <Dialog open={isCreateProjectOpen} onOpenChange={setIsCreateProjectOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="h-9">
+                          <Plus className="h-4 w-4 mr-1" />Nytt
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Opprett nytt prosjekt</DialogTitle>
+                          <DialogDescription>Fyll inn informasjon om prosjektet</DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                          <div className="space-y-2">
+                            <Label>Prosjektnavn *</Label>
+                            <Input placeholder="f.eks. Nybygg Storgata 1" value={newProject.name} onChange={(e) => setNewProject({ ...newProject, name: e.target.value })} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Adresse</Label>
+                            <Input placeholder="f.eks. Storgata 1, 0001 Oslo" value={newProject.address} onChange={(e) => setNewProject({ ...newProject, address: e.target.value })} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Beskrivelse</Label>
+                            <Textarea placeholder="Kort beskrivelse" value={newProject.description} onChange={(e) => setNewProject({ ...newProject, description: e.target.value })} />
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setIsCreateProjectOpen(false)}>Avbryt</Button>
+                          <Button onClick={handleCreateProject} disabled={isCreatingProject}>{isCreatingProject ? "Oppretter..." : "Opprett"}</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   </div>
-                  <div className="space-y-1.5">
-                    <Label className="text-sm">Adresse</Label>
-                    <Input placeholder="F.eks. Strandveien 12, 1234 Oslo" value={adresse} onChange={(e) => setAdresse(e.target.value)} />
+                  <div className="max-h-[200px] overflow-y-auto space-y-1.5 pr-1">
+                    {projects
+                      .filter(p => {
+                        if (!projectSearchQuery.trim()) return true;
+                        const q = projectSearchQuery.toLowerCase();
+                        return p.name.toLowerCase().includes(q) || (p.address?.toLowerCase().includes(q) ?? false);
+                      })
+                      .map((p) => {
+                        const isSelected = selectedProjectId === p.id;
+                        return (
+                          <button
+                            key={p.id}
+                            onClick={() => setSelectedProjectId(p.id)}
+                            className={`flex items-center gap-2.5 w-full text-left rounded-lg border p-3 transition-colors hover:bg-accent/50 ${
+                              isSelected ? "border-primary bg-primary/5 ring-1 ring-primary" : "border-border"
+                            }`}
+                          >
+                            <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-md ${
+                              isSelected ? "bg-primary text-primary-foreground" : "bg-muted"
+                            }`}>
+                              <Building className="h-4 w-4" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className={`text-sm font-medium truncate ${isSelected ? "text-primary" : ""}`}>{p.name}</p>
+                              {p.address && <p className="text-xs text-muted-foreground truncate">{p.address}</p>}
+                            </div>
+                            {isSelected && <Check className="h-4 w-4 text-primary shrink-0" />}
+                          </button>
+                        );
+                      })}
+                    {projects.filter(p => {
+                      if (!projectSearchQuery.trim()) return true;
+                      const q = projectSearchQuery.toLowerCase();
+                      return p.name.toLowerCase().includes(q) || (p.address?.toLowerCase().includes(q) ?? false);
+                    }).length === 0 && (
+                      <p className="text-xs text-muted-foreground text-center py-3">Ingen prosjekter funnet</p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
