@@ -94,6 +94,39 @@ const Brensellagring = () => {
     });
   };
 
+  // Fetch projects
+  useEffect(() => {
+    if (user) {
+      supabase
+        .from('projects')
+        .select('id, name, address')
+        .order('created_at', { ascending: false })
+        .then(({ data }) => {
+          if (data) setProjects(data as ProjectOption[]);
+        });
+    }
+  }, [user]);
+
+  const handleCreateProject = async () => {
+    if (!newProject.name.trim() || !user) return;
+    setIsCreatingProject(true);
+    const { data, error } = await supabase
+      .from('projects')
+      .insert({ name: newProject.name, description: newProject.description || null, address: newProject.address || null, user_id: user.id })
+      .select('id, name, address')
+      .single();
+    if (error) {
+      toast({ title: "Feil", description: "Kunne ikke opprette prosjekt", variant: "destructive" });
+    } else if (data) {
+      setProjects(prev => [data as ProjectOption, ...prev]);
+      setSelectedProjectId(data.id);
+      setNewProject({ name: "", description: "", address: "" });
+      setIsCreateProjectOpen(false);
+      toast({ title: "Prosjekt opprettet", description: `"${data.name}" er nå opprettet` });
+    }
+    setIsCreatingProject(false);
+  };
+
   const mengdeNum = parseFloat(mengde) || 0;
   const result = brenselType ? getBrensellagringKrav(brenselType as BrenselType, mengdeNum) : null;
 
