@@ -2743,10 +2743,15 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 // Build list of all building parts with their RK and BKL
                 const materialDeler: { index: number; navn: string; rk: string; bkl: string }[] = [];
                 if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+                  // Add primary part (del 1)
+                  const del1Rk = formData.risikoklasse || "";
+                  const del1Bkl = formData.brannklasse || getBrannklasse(del1Rk, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
+                  if (del1Rk && del1Bkl) materialDeler.push({ index: 1, navn: formData.bygningstype || "Bygningsdel 1", rk: del1Rk, bkl: del1Bkl });
+                  // Add additional parts
                   formData.bygningsdeler.forEach((del: any, i: number) => {
                     const delRk = del.risikoklasse || "";
                     const delBkl = del.brannklasse || getBrannklasse(delRk, del.etasjer || formData.etasjer, del.harTerrengTilgang || "nei", del.areal || "0").brannklasse;
-                    if (delRk && delBkl) materialDeler.push({ index: i + 1, navn: del.navn || `Bygningsdel ${i + 1}`, rk: delRk, bkl: delBkl });
+                    if (delRk && delBkl) materialDeler.push({ index: i + 2, navn: del.navn || `Bygningsdel ${i + 2}`, rk: delRk, bkl: delBkl });
                   });
                 } else {
                   const rk = formData.risikoklasse || "";
