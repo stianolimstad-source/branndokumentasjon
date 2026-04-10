@@ -833,7 +833,7 @@ const Brensellagring = () => {
                   <Eye className="h-4 w-4 text-muted-foreground" />
                   <h4 className="text-sm font-semibold text-muted-foreground">Forhåndsvisning – Kravdokument</h4>
                 </div>
-                <div className="bg-muted/30 rounded-xl p-4 overflow-y-auto max-h-[calc(100vh-120px)]" style={{ transform: "scale(0.65)", transformOrigin: "top left", width: "153.8%" }}>
+                <div className="bg-muted/30 rounded-xl p-4 overflow-y-auto max-h-[calc(100vh-120px)]" style={{ transform: "scale(0.8)", transformOrigin: "top left", width: "125%" }}>
                   <BrensellagringPreview
                     valgtBygg={valgtBygg}
                     prosjektNavn={prosjektNavn || undefined}
