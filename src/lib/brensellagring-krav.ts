@@ -705,6 +705,7 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
         ],
       },
       {
+        brenselType: "fyringsparafin",
         brenselNavn: "Fyringsparafin",
         maksLiter: 10000,
         romKrav: [
