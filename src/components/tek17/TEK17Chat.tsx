@@ -73,7 +73,7 @@ export default function TEK17Chat() {
       <button
         onClick={() => setOpen(true)}
         className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors"
-        aria-label="Åpne TEK17-assistent"
+        aria-label="Åpne AI Brannkonsulent"
       >
         <MessageSquare className="h-6 w-6" />
       </button>
@@ -86,7 +86,7 @@ export default function TEK17Chat() {
       <div className="flex items-center justify-between px-4 py-3 border-b bg-primary text-primary-foreground">
         <div className="flex items-center gap-2">
           <Flame className="h-5 w-5" />
-          <span className="font-semibold text-sm">TEK17-assistent</span>
+          <span className="font-semibold text-sm">AI Brannkonsulent</span>
         </div>
         <button onClick={() => setOpen(false)} className="hover:opacity-80">
           <X className="h-4 w-4" />
@@ -98,7 +98,7 @@ export default function TEK17Chat() {
         {messages.length === 0 && (
           <div className="space-y-3">
             <p className="text-sm text-muted-foreground">
-              Hei! Jeg kan hjelpe deg med spørsmål om TEK17 og branntekniske krav. Prøv et av spørsmålene under, eller skriv ditt eget.
+              Hei! Jeg er en AI brannkonsulent som kan hjelpe deg med spørsmål om TEK17, VTEK17 og BF85. Prøv et av spørsmålene under, eller skriv ditt eget.
             </p>
             <div className="flex flex-wrap gap-2">
               {quickQuestions.map(q => (
@@ -145,7 +145,7 @@ export default function TEK17Chat() {
             ref={inputRef}
             value={input}
             onChange={e => setInput(e.target.value)}
-            placeholder="Still et spørsmål om TEK17..."
+            placeholder="Still et spørsmål om TEK17, BF85..."
             disabled={isLoading}
             className="text-sm"
           />
