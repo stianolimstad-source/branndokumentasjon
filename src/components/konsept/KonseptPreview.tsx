@@ -1743,7 +1743,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
             )}
             {/* Dørkrav */}
-            {formData.dorPlasseringer && formData.dorPlasseringer.length > 0 && formData.brannklasse && (() => {
+            {formData.dorPlasseringer && formData.dorPlasseringer.length > 0 && (formData.brannklasse || (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0)) && (() => {
               const isBF85 = formData.regelverk === "BF85";
               if (isBF85) {
                 const bbk = parseInt(formData.bygningsbrannklasse || '0', 10);
@@ -1779,8 +1779,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 );
               }
 
-              // TEK17 logic
-              const isBKL1 = formData.brannklasse === "BKL1";
+              // TEK17 logic – handle multiple BKLs
               const dorKravMap: Record<string, { label: string; bkl1: string; bkl23: string }> = {
                 branncelle_trapperom_tr1: { label: "Branncelle – trapperom Tr 1", bkl1: "EI₂ 30-CSₐ [B 30 S]", bkl23: "EI₂ 30-CSₐ [B 30 S]" },
                 korridor_trapperom_tr2: { label: "Korridor – trapperom Tr 2", bkl1: "E 30-CSₐ [F 30 S]", bkl23: "E 30-CSₐ [F 30 S]" },
@@ -1789,25 +1788,48 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 branncelle_korridor: { label: "Branncelle – korridor", bkl1: "EI₂ 30-Sₐ [B 30]", bkl23: "EI₂ 30-Sₐ [B 30]" },
                 korridor_det_fri_tr3: { label: "Korridor – det fri (i kombinasjon med trapperom Tr 3)", bkl1: "", bkl23: "EI₂ 30-Sₐ [B 30]" },
               };
-              const activeDoors = formData.dorPlasseringer
-                .map((id: string) => dorKravMap[id])
-                .filter(Boolean)
-                .filter((d: { bkl1: string; bkl23: string }) => isBKL1 ? d.bkl1 : d.bkl23);
-              if (activeDoors.length === 0) return null;
-              return (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Dørkrav</td>
-                  <td className="border border-gray-400 p-2">
-                    <div className="space-y-1">
-                      {activeDoors.map((d: { label: string; bkl1: string; bkl23: string }, idx: number) => {
-                        const krav = isBKL1 ? d.bkl1 : d.bkl23;
-                        if (!krav) return null;
-                        return <div key={idx}>{d.label}: <span className="font-semibold">{krav}</span></div>;
-                      })}
-                    </div>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                </tr>
+
+              const bklEntries: { label: string; bkl: string }[] = [];
+              if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+                const seen = new Set<string>();
+                formData.bygningsdeler.forEach((del: any) => {
+                  if (del.brannklasse && !seen.has(del.brannklasse)) {
+                    seen.add(del.brannklasse);
+                    bklEntries.push({ label: del.navn || del.bygningstype || del.brannklasse, bkl: del.brannklasse });
+                  }
+                });
+              } else if (formData.brannklasse) {
+                bklEntries.push({ label: "", bkl: formData.brannklasse });
+              }
+              const showLabel = bklEntries.length > 1;
+
+              return bklEntries.map((entry, entryIdx) => {
+                const isBKL1 = entry.bkl === "BKL1";
+                const activeDoors = formData.dorPlasseringer
+                  .map((id: string) => dorKravMap[id])
+                  .filter(Boolean)
+                  .filter((d: { bkl1: string; bkl23: string }) => isBKL1 ? d.bkl1 : d.bkl23);
+                if (activeDoors.length === 0) return null;
+                return (
+                  <tr key={`dorkrav-${entryIdx}`}>
+                    <td className="border border-gray-400 p-2 align-top">
+                      Dørkrav
+                      {showLabel && <div className="text-xs font-normal text-gray-600 mt-1">[{entry.label} – {entry.bkl}]</div>}
+                    </td>
+                    <td className="border border-gray-400 p-2">
+                      <div className="space-y-1">
+                        {activeDoors.map((d: { label: string; bkl1: string; bkl23: string }, idx: number) => {
+                          const krav = isBKL1 ? d.bkl1 : d.bkl23;
+                          if (!krav) return null;
+                          return <div key={idx}>{d.label}: <span className="font-semibold">{krav}</span></div>;
+                        })}
+                      </div>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
+                );
+              });
+            })()}
               );
             })()}
             {/* Vinduskrav */}
