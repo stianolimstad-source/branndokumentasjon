@@ -3,7 +3,7 @@
 // av farlig stoff + VTEK § 11-8
 // =============================================================================
 
-export type BrensellagringKravItem = { kategori: string; tekst: string; ansvar: string };
+export type BrensellagringKravItem = { kategori: string; tekst: string; ansvar: string; referanse?: string };
 
 export type BrenselType = "fyringsparafin" | "lett_fyringsolje" | "begge" | "propan" | "brannfarlig_gass";
 
