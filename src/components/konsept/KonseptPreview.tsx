@@ -1813,16 +1813,16 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 korridor_det_fri_tr3: { label: "Korridor – det fri (i kombinasjon med trapperom Tr 3)", bkl1: "", bkl23: "EI₂ 30-Sₐ [B 30]" },
               };
 
-              const alleDeler: { index: number; navn: string; bkl: string }[] = [];
+              const alleDeler: { index: number; navn: string; bkl: string; rk?: string }[] = [];
               if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
                 const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
-                if (del1Bkl) alleDeler.push({ index: 1, navn: formData.bygningstype || 'Bygningsdel 1', bkl: del1Bkl });
+                if (del1Bkl) alleDeler.push({ index: 1, navn: formData.bygningstype || 'Bygningsdel 1', bkl: del1Bkl, rk: formData.risikoklasse?.replace(/\D/g, '') });
                 formData.bygningsdeler.forEach((del: any, i: number) => {
                   const delBkl = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer || formData.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
-                  if (delBkl) alleDeler.push({ index: i + 2, navn: del.navn || del.bygningstype || `Bygningsdel ${i + 2}`, bkl: delBkl });
+                  if (delBkl) alleDeler.push({ index: i + 2, navn: del.navn || del.bygningstype || `Bygningsdel ${i + 2}`, bkl: delBkl, rk: del.risikoklasse?.replace(/\D/g, '') });
                 });
               }
-              if (alleDeler.length === 0 && formData.brannklasse) alleDeler.push({ index: 1, navn: "", bkl: formData.brannklasse });
+              if (alleDeler.length === 0 && formData.brannklasse) alleDeler.push({ index: 1, navn: "", bkl: formData.brannklasse, rk: formData.risikoklasse?.replace(/\D/g, '') });
               const showLabel = alleDeler.length > 1;
 
               // Get all active door types
