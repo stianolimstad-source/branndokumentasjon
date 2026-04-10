@@ -562,9 +562,12 @@ const Brensellagring = () => {
                 <CardContent>
                   <div className="space-y-3">
                     {BELIGGENHET_KRAV.map((krav, i) => (
-                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
-                        <h4 className="font-medium mb-1">{krav.tittel}</h4>
-                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                      <div key={i} className={`p-4 rounded-lg flex items-start gap-3 ${isKravSelected(`beliggenhet_${i}`) ? "bg-primary/10 ring-1 ring-primary/30" : "bg-muted/30"}`}>
+                        <KravItemButton id={`beliggenhet_${i}`} />
+                        <div>
+                          <h4 className="font-medium mb-1">{krav.tittel}</h4>
+                          <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -663,9 +666,12 @@ const Brensellagring = () => {
                 <CardContent>
                   <div className="space-y-3">
                     {TANK_KRAV.map((krav, i) => (
-                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
-                        <h4 className="font-medium mb-1">{krav.tittel}</h4>
-                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                      <div key={i} className={`p-4 rounded-lg flex items-start gap-3 ${isKravSelected(`tank_${i}`) ? "bg-primary/10 ring-1 ring-primary/30" : "bg-muted/30"}`}>
+                        <KravItemButton id={`tank_${i}`} />
+                        <div>
+                          <h4 className="font-medium mb-1">{krav.tittel}</h4>
+                          <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -682,9 +688,12 @@ const Brensellagring = () => {
                 <CardContent>
                   <div className="space-y-3">
                     {PUMPE_KRAV.map((krav, i) => (
-                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
-                        <h4 className="font-medium mb-1">{krav.tittel}</h4>
-                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                      <div key={i} className={`p-4 rounded-lg flex items-start gap-3 ${isKravSelected(`pumpe_${i}`) ? "bg-primary/10 ring-1 ring-primary/30" : "bg-muted/30"}`}>
+                        <KravItemButton id={`pumpe_${i}`} />
+                        <div>
+                          <h4 className="font-medium mb-1">{krav.tittel}</h4>
+                          <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -710,14 +719,17 @@ const Brensellagring = () => {
                 <CardContent>
                   <div className="space-y-3">
                     {OPPSAMLING_KRAV.map((krav, i) => (
-                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-medium">{krav.tittel}</h4>
-                          {krav.paragraf && (
-                            <Badge variant="outline" className="text-xs">{krav.paragraf}</Badge>
-                          )}
+                      <div key={i} className={`p-4 rounded-lg flex items-start gap-3 ${isKravSelected(`oppsamling_${i}`) ? "bg-primary/10 ring-1 ring-primary/30" : "bg-muted/30"}`}>
+                        <KravItemButton id={`oppsamling_${i}`} />
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-medium">{krav.tittel}</h4>
+                            {krav.paragraf && (
+                              <Badge variant="outline" className="text-xs">{krav.paragraf}</Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
                         </div>
-                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
                       </div>
                     ))}
                   </div>
@@ -740,9 +752,12 @@ const Brensellagring = () => {
                 <CardContent>
                   <div className="space-y-3">
                     {ROERLEDNING_KRAV.map((krav, i) => (
-                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
-                        <h4 className="font-medium mb-1">{krav.tittel}</h4>
-                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                      <div key={i} className={`p-4 rounded-lg flex items-start gap-3 ${isKravSelected(`roer_${i}`) ? "bg-primary/10 ring-1 ring-primary/30" : "bg-muted/30"}`}>
+                        <KravItemButton id={`roer_${i}`} />
+                        <div>
+                          <h4 className="font-medium mb-1">{krav.tittel}</h4>
+                          <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -756,9 +771,12 @@ const Brensellagring = () => {
                 <CardContent>
                   <div className="space-y-3">
                     {VENTIL_KRAV.map((krav, i) => (
-                      <div key={i} className="p-4 bg-muted/30 rounded-lg">
-                        <h4 className="font-medium mb-1">{krav.tittel}</h4>
-                        <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                      <div key={i} className={`p-4 rounded-lg flex items-start gap-3 ${isKravSelected(`ventil_${i}`) ? "bg-primary/10 ring-1 ring-primary/30" : "bg-muted/30"}`}>
+                        <KravItemButton id={`ventil_${i}`} />
+                        <div>
+                          <h4 className="font-medium mb-1">{krav.tittel}</h4>
+                          <p className="text-sm text-muted-foreground">{krav.beskrivelse}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
