@@ -94,6 +94,49 @@ const Brensellagring = () => {
     });
   };
 
+  // Map tabs to document sections
+  const TAB_SECTION_MAP: Record<string, { keys: BrenselSectionKey[]; label: string }> = {
+    stoffdata: { keys: ["mengder"], label: "Tillatte mengder" },
+    beliggenhet: { keys: ["avstander", "beliggenhet"], label: "Avstander & beliggenhet" },
+    tanker: { keys: ["tankkrav"], label: "Tankkrav" },
+    oppsamling: { keys: ["oppsamling"], label: "Oppsamling" },
+    kontroll: { keys: ["kontroll"], label: "Kontroll" },
+    dokumentasjon: { keys: ["dokumentasjon"], label: "Dokumentasjonskrav" },
+    roer: { keys: ["konstruksjon"], label: "Konstruksjonskrav" },
+  };
+
+  const isTabInDocument = (tabKey: string) => {
+    const mapping = TAB_SECTION_MAP[tabKey];
+    if (!mapping) return false;
+    return mapping.keys.every(k => visibleSections.has(k));
+  };
+
+  const toggleTabInDocument = (tabKey: string) => {
+    const mapping = TAB_SECTION_MAP[tabKey];
+    if (!mapping) return;
+    setVisibleSections(prev => {
+      const next = new Set(prev);
+      const allIn = mapping.keys.every(k => next.has(k));
+      mapping.keys.forEach(k => allIn ? next.delete(k) : next.add(k));
+      return next;
+    });
+  };
+
+  const DocToggleButton = ({ tabKey }: { tabKey: string }) => {
+    const inDoc = isTabInDocument(tabKey);
+    return (
+      <Button
+        variant={inDoc ? "default" : "outline"}
+        size="sm"
+        className="h-7 text-xs gap-1.5"
+        onClick={() => toggleTabInDocument(tabKey)}
+      >
+        {inDoc ? <Check className="h-3.5 w-3.5" /> : <FilePlus2 className="h-3.5 w-3.5" />}
+        {inDoc ? "I dokumentet" : "Legg til i dokument"}
+      </Button>
+    );
+  };
+
   // Fetch projects
   useEffect(() => {
     if (user) {
