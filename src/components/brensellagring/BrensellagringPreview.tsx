@@ -91,8 +91,8 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
     );
   }
 
-  const today = new Date().toLocaleDateString("nb-NO", { day: "2-digit", month: "long", year: "numeric" });
-  const tillatteBrensler = valgtBygg.grenser.filter(g => g.maksLiter !== null || g.maksKg);
+  const tillatteBrensler = valgtBygg ? valgtBygg.grenser.filter(g => g.maksLiter !== null || g.maksKg) : [];
+  const selectedStoffer = STOFF_KATALOG.filter(s => selectedStoffIds.has(s.id));
 
   // Dynamic section numbering based on visible sections
   const orderedKeys: BrenselSectionKey[] = ["mengder", "konstruksjon", "avstander", "beliggenhet", "tankkrav", "oppsamling", "kontroll", "dokumentasjon"];
