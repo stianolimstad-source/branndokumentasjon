@@ -943,13 +943,15 @@ const Brensellagring = () => {
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="bg-muted/50">
+                          <th className="text-center py-2.5 px-2 font-medium w-10">Dok.</th>
                           <th className="text-left py-2.5 px-3 font-medium">Type dokumentasjon</th>
                           <th className="text-left py-2.5 px-3 font-medium w-32">Referanse</th>
                         </tr>
                       </thead>
                       <tbody>
                         {DOKUMENTASJON_KRAV.map((dok, i) => (
-                          <tr key={i} className="border-t">
+                          <tr key={i} className={`border-t ${isKravSelected(`dok_${i}`) ? "bg-primary/5" : ""}`}>
+                            <td className="py-2 px-2 text-center"><KravItemButton id={`dok_${i}`} /></td>
                             <td className="py-2 px-3">{dok.type}</td>
                             <td className="py-2 px-3">
                               <Badge variant="outline" className="text-xs">{dok.referanse}</Badge>
