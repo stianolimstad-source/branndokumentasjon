@@ -28,14 +28,20 @@ import {
   DOKUMENTASJON_KRAV,
   PUMPE_KRAV,
   getInnmeldingsStatus,
+  BYGNINGSTYPER,
+  BygningsType,
 } from "@/lib/brensellagring-krav";
 
 const Brensellagring = () => {
   const navigate = useNavigate();
 
   // VTEK byggkrav
+  const [valgtBygningstype, setValgtBygningstype] = useState<BygningsType | "">("");
   const [brenselType, setBrenselType] = useState<BrenselType | "">("");
   const [mengde, setMengde] = useState("");
+
+  const valgtBygg = BYGNINGSTYPER.find((b) => b.id === valgtBygningstype);
+  const [expandedBrensel, setExpandedBrensel] = useState<string | null>(null);
 
   // Tankanlegg – innmelding
   const [valgtStoff, setValgtStoff] = useState("");
@@ -544,7 +550,7 @@ const Brensellagring = () => {
           </Tabs>
 
           {/* ============================================================== */}
-          {/* BYGGKRAV – VTEK § 11-8 – Separat seksjon under tabs             */}
+          {/* BYGGKRAV – VTEK § 11-8 – Velg bygningstype                      */}
           {/* ============================================================== */}
           <div className="mt-10 pt-8 border-t">
             <Collapsible defaultOpen>
@@ -554,7 +560,7 @@ const Brensellagring = () => {
                     <Shield className="h-6 w-6 text-primary" />
                     <div>
                       <h3 className="text-xl font-bold">Lagring i bygning – VTEK § 11-8</h3>
-                      <p className="text-sm text-muted-foreground">Branntekniske krav til rom for lagring av brennbar væske</p>
+                      <p className="text-sm text-muted-foreground">Velg bygningstype for å se tillatte mengder og krav</p>
                     </div>
                   </div>
                   <ChevronDown className="h-5 w-5 text-muted-foreground ml-auto transition-transform group-data-[state=open]:rotate-180" />
@@ -563,81 +569,113 @@ const Brensellagring = () => {
               <CollapsibleContent className="space-y-4">
                 <Card className="shadow-soft">
                   <CardContent className="pt-6 space-y-4">
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label>Type brensel</Label>
-                        <Select value={brenselType} onValueChange={(v) => setBrenselType(v as BrenselType)}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Velg type..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="fyringsparafin">Fyringsparafin</SelectItem>
-                            <SelectItem value="lett_fyringsolje">Lett fyringsolje</SelectItem>
-                            <SelectItem value="begge">Begge (kombinasjon)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Mengde (liter)</Label>
-                        <Input type="number" min={0} placeholder="F.eks. 3000" value={mengde} onChange={(e) => setMengde(e.target.value)} />
-                      </div>
-                    </div>
-
-                    <div className="p-3 bg-muted/30 rounded-lg text-sm space-y-1">
-                      <p className="font-medium">Mengdegrenser iht. VTEK § 11-8 Tabell 4:</p>
-                      <p><strong>Fyringsparafin:</strong> ≤ 1 650 L (fyrrom) | ≤ 4 000 L (fyrrom, strengere krav) | ≤ 10 000 L (tankrom)</p>
-                      <p><strong>Lett fyringsolje:</strong> ≤ 4 000 L (fyrrom) | ≤ 10 000 L (tankrom)</p>
-                      <p><strong>Kombinasjon:</strong> ≤ 6 000 L (tankrom)</p>
+                    <div className="space-y-2">
+                      <Label>Bygningstype</Label>
+                      <Select value={valgtBygningstype} onValueChange={(v) => { setValgtBygningstype(v as BygningsType); setExpandedBrensel(null); }}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Velg bygningstype..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {BYGNINGSTYPER.map((b) => (
+                            <SelectItem key={b.id} value={b.id}>{b.navn}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </CardContent>
                 </Card>
 
-                {result && (
+                {valgtBygg && (
                   <>
-                    {result.feilmelding ? (
-                      <Card className="shadow-soft border-amber-300 dark:border-amber-700">
-                        <CardContent className="py-6">
-                          <div className="flex items-start gap-3">
-                            <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
-                            <p className="text-sm text-amber-800 dark:text-amber-200">{result.feilmelding}</p>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ) : result.romType && result.krav.length > 0 ? (
-                      <Card className="shadow-soft">
-                        <CardHeader>
-                          <div className="flex items-center gap-2">
-                            <ClipboardCheck className="h-5 w-5 text-primary" />
-                            <CardTitle className="text-lg">Krav – {result.romType}</CardTitle>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            {brenselType === "fyringsparafin" ? "Fyringsparafin" : brenselType === "lett_fyringsolje" ? "Lett fyringsolje" : "Kombinasjon"} – {mengdeNum.toLocaleString("nb-NO")} liter
-                          </p>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="border rounded-lg overflow-hidden">
-                            <table className="w-full text-sm">
-                              <thead>
-                                <tr className="bg-muted/50">
-                                  <th className="text-left py-2 px-3 font-medium">Kategori</th>
-                                  <th className="text-left py-2 px-3 font-medium">Krav</th>
-                                  <th className="text-left py-2 px-3 font-medium w-20">Ansvar</th>
+                    <Card className="shadow-soft">
+                      <CardHeader>
+                        <CardTitle className="text-lg flex items-center gap-2">
+                          <ClipboardCheck className="h-5 w-5 text-primary" />
+                          Tillatte mengder – {valgtBygg.navn}
+                        </CardTitle>
+                        <p className="text-sm text-muted-foreground">{valgtBygg.beskrivelse}</p>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="border rounded-lg overflow-hidden">
+                          <table className="w-full text-sm">
+                            <thead>
+                              <tr className="bg-muted/50">
+                                <th className="text-left py-2.5 px-3 font-medium">Brenseltype</th>
+                                <th className="text-left py-2.5 px-3 font-medium">Maks mengde</th>
+                                <th className="text-left py-2.5 px-3 font-medium w-24">Detaljer</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {valgtBygg.grenser.map((g) => (
+                                <tr key={g.brenselType} className="border-t">
+                                  <td className="py-2.5 px-3 font-medium">{g.brenselNavn}</td>
+                                  <td className="py-2.5 px-3">
+                                    {g.maksLiter === null ? (
+                                      <Badge variant="outline" className="text-destructive border-destructive/30">Ikke tillatt</Badge>
+                                    ) : (
+                                      <Badge variant="secondary" className="font-mono">
+                                        {g.maksLiter.toLocaleString("nb-NO")} L
+                                      </Badge>
+                                    )}
+                                  </td>
+                                  <td className="py-2.5 px-3">
+                                    {g.maksLiter !== null && g.romKrav.length > 0 && (
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-7 text-xs"
+                                        onClick={() => setExpandedBrensel(expandedBrensel === g.brenselType ? null : g.brenselType)}
+                                      >
+                                        {expandedBrensel === g.brenselType ? "Skjul" : "Vis krav"}
+                                      </Button>
+                                    )}
+                                  </td>
                                 </tr>
-                              </thead>
-                              <tbody>
-                                {result.krav.map((k, i) => (
-                                  <tr key={i} className="border-t">
-                                    <td className="py-2 px-3 font-medium">{k.kategori}</td>
-                                    <td className="py-2 px-3">{k.tekst}</td>
-                                    <td className="py-2 px-3 text-muted-foreground">{k.ansvar}</td>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {expandedBrensel && (() => {
+                      const grense = valgtBygg.grenser.find((g) => g.brenselType === expandedBrensel);
+                      if (!grense || grense.romKrav.length === 0) return null;
+                      return (
+                        <Card className="shadow-soft border-primary/20">
+                          <CardHeader>
+                            <CardTitle className="text-base">
+                              Konstruksjonskrav – {grense.brenselNavn}
+                            </CardTitle>
+                            <p className="text-sm text-muted-foreground">
+                              Maks {grense.maksLiter?.toLocaleString("nb-NO")} liter i {valgtBygg.navn.toLowerCase()}
+                            </p>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="border rounded-lg overflow-hidden">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="bg-muted/50">
+                                    <th className="text-left py-2 px-3 font-medium">Kategori</th>
+                                    <th className="text-left py-2 px-3 font-medium">Krav</th>
+                                    <th className="text-left py-2 px-3 font-medium w-20">Ansvar</th>
                                   </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ) : null}
+                                </thead>
+                                <tbody>
+                                  {grense.romKrav.map((k, i) => (
+                                    <tr key={i} className="border-t">
+                                      <td className="py-2 px-3 font-medium">{k.kategori}</td>
+                                      <td className="py-2 px-3">{k.tekst}</td>
+                                      <td className="py-2 px-3 text-muted-foreground">{k.ansvar}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })()}
                   </>
                 )}
               </CollapsibleContent>
