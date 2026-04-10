@@ -290,7 +290,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           </>
         )}
 
-        {/* 3. Sikkerhetsavstander */}
+        {/* Sikkerhetsavstander */}
         {visibleSections.has("avstander") && (
           <>
             <h2 style={h2}>{secNum("avstander")}. Sikkerhetsavstander (§ 15.11)</h2>
@@ -320,11 +320,11 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           </>
         )}
 
-        {/* 4. Beliggenhet */}
-        {visibleSections.has("beliggenhet") && (
+        {/* Beliggenhet – filtered */}
+        {selBeliggenhet.length > 0 && (
           <>
             <h2 style={h2}>{secNum("beliggenhet")}. Beliggenhet og utforming (§ 15.1)</h2>
-            {BELIGGENHET_KRAV.map((krav, i) => (
+            {selBeliggenhet.map((krav, i) => (
               <div key={i} style={{ marginBottom: 8 }}>
                 <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 2 }}>{krav.tittel}</p>
                 <p style={{ fontSize: 10, color: "#475569" }}>{krav.beskrivelse}</p>
@@ -333,24 +333,35 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           </>
         )}
 
-        {/* 5. Tankkrav */}
-        {visibleSections.has("tankkrav") && (
+        {/* Tankkrav – filtered */}
+        {(selTank.length > 0 || selPumpe.length > 0) && (
           <>
             <h2 style={h2}>{secNum("tankkrav")}. Krav til tanker (§ 15.2)</h2>
-            {TANK_KRAV.map((krav, i) => (
-              <div key={i} style={{ marginBottom: 8 }}>
+            {selTank.map((krav, i) => (
+              <div key={`t${i}`} style={{ marginBottom: 8 }}>
                 <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 2 }}>{krav.tittel}</p>
                 <p style={{ fontSize: 10, color: "#475569" }}>{krav.beskrivelse}</p>
               </div>
             ))}
+            {selPumpe.length > 0 && (
+              <>
+                <h3 style={h3}>Pumper og pumperom (§ 15.6)</h3>
+                {selPumpe.map((krav, i) => (
+                  <div key={`p${i}`} style={{ marginBottom: 8 }}>
+                    <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 2 }}>{krav.tittel}</p>
+                    <p style={{ fontSize: 10, color: "#475569" }}>{krav.beskrivelse}</p>
+                  </div>
+                ))}
+              </>
+            )}
           </>
         )}
 
-        {/* 6. Oppsamling */}
-        {visibleSections.has("oppsamling") && (
+        {/* Oppsamling – filtered */}
+        {selOppsamling.length > 0 && (
           <>
             <h2 style={h2}>{secNum("oppsamling")}. Oppsamling og overfyllingsvern (§ 15.3)</h2>
-            {OPPSAMLING_KRAV.map((krav, i) => (
+            {selOppsamling.map((krav, i) => (
               <div key={i} style={{ marginBottom: 8 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                   <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 2 }}>{krav.tittel}</p>
@@ -362,8 +373,37 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           </>
         )}
 
-        {/* 7. Kontroll */}
-        {visibleSections.has("kontroll") && (
+        {/* Rørledninger & ventiler – filtered */}
+        {(selRoer.length > 0 || selVentil.length > 0) && (
+          <>
+            <h2 style={h2}>{secNum("roer")}. Rørledninger og ventiler</h2>
+            {selRoer.length > 0 && (
+              <>
+                <h3 style={h3}>Rørledninger (§ 15.4)</h3>
+                {selRoer.map((krav, i) => (
+                  <div key={`r${i}`} style={{ marginBottom: 8 }}>
+                    <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 2 }}>{krav.tittel}</p>
+                    <p style={{ fontSize: 10, color: "#475569" }}>{krav.beskrivelse}</p>
+                  </div>
+                ))}
+              </>
+            )}
+            {selVentil.length > 0 && (
+              <>
+                <h3 style={h3}>Ventiler (§ 15.5)</h3>
+                {selVentil.map((krav, i) => (
+                  <div key={`v${i}`} style={{ marginBottom: 8 }}>
+                    <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 2 }}>{krav.tittel}</p>
+                    <p style={{ fontSize: 10, color: "#475569" }}>{krav.beskrivelse}</p>
+                  </div>
+                ))}
+              </>
+            )}
+          </>
+        )}
+
+        {/* Kontroll – filtered */}
+        {selKontroll.length > 0 && (
           <>
             <h2 style={h2}>{secNum("kontroll")}. Kontroll og tilstandskontroll (§ 9)</h2>
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 16 }}>
@@ -375,7 +415,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {KONTROLL_KRAV.map((krav, i) => (
+                {selKontroll.map((krav, i) => (
                   <tr key={i}>
                     <td style={{ ...tdStyle, fontWeight: 500 }}>{krav.tittel}</td>
                     <td style={tdStyle}>{krav.beskrivelse}</td>
@@ -387,8 +427,8 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           </>
         )}
 
-        {/* 8. Dokumentasjon */}
-        {visibleSections.has("dokumentasjon") && (
+        {/* Dokumentasjon – filtered */}
+        {selDok.length > 0 && (
           <>
             <h2 style={h2}>{secNum("dokumentasjon")}. Dokumentasjonskrav (§ 13)</h2>
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 16 }}>
@@ -399,7 +439,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {DOKUMENTASJON_KRAV.map((dok, i) => (
+                {selDok.map((dok, i) => (
                   <tr key={i}>
                     <td style={tdStyle}>{dok.type}</td>
                     <td style={{ ...tdStyle, fontWeight: 500 }}>{dok.referanse}</td>
