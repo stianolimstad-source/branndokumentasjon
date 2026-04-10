@@ -645,7 +645,7 @@ const Konsept = () => {
     ventKrav6: true, // Kjøkken boenheter EI 15
     ventKrav7: false, // Småhus avtrekk
     ventKrav8: false, // Småhus kanal klasse E
-    ventKrav9: true, // Brannspjeld seksjoneringsvegg
+    ventKrav9: false, // Brannspjeld seksjoneringsvegg
     // Vann- og avløpsrør
     vannAvlopRelevant: true, // Hovedbryter for om vann- og avløpsrør er relevant
     // Rør- og kanalisolasjon
