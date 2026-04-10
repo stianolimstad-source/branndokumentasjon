@@ -975,6 +975,17 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.etasjer, formData.bygningsdeler]);
 
+  // Automatisk aktivering av brannspjeld i seksjoneringsvegg
+  useEffect(() => {
+    if (isViewMode) return;
+    const seksjoneringPaakrevd = formData.erSykehusPleieinstitusjon || isSeksjoneringRequired(formData.areal, formData.brannseksjonBrannenergi, formData.brannseksjonTiltak);
+    if (seksjoneringPaakrevd && !formData.ventKrav9) {
+      setFormData(prev => ({ ...prev, ventKrav9: true }));
+    } else if (!seksjoneringPaakrevd && formData.ventKrav9) {
+      setFormData(prev => ({ ...prev, ventKrav9: false }));
+    }
+  }, [formData.erSykehusPleieinstitusjon, formData.areal, formData.brannseksjonBrannenergi, formData.brannseksjonTiltak]);
+
   // Reset trapperom kravtekst when RK or etasjer changes so it regenerates for the correct type
   useEffect(() => {
     if (isViewMode) return;
