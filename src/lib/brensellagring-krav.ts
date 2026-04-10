@@ -5,7 +5,7 @@
 
 export type BrensellagringKravItem = { kategori: string; tekst: string; ansvar: string };
 
-export type BrenselType = "fyringsparafin" | "lett_fyringsolje" | "begge";
+export type BrenselType = "fyringsparafin" | "lett_fyringsolje" | "begge" | "propan" | "brannfarlig_gass";
 
 export interface BrensellagringResult {
   romType: string;
