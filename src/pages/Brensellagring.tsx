@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   ArrowLeft, Flame, AlertTriangle, Info, Shield, Ruler, FileText,
-  Droplets, ChevronDown, Cylinder, PipetteIcon, Gauge, ClipboardCheck, FolderOpen,
+  Droplets, ChevronDown, Cylinder, PipetteIcon, Gauge, ClipboardCheck, FolderOpen, ExternalLink,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -761,7 +761,19 @@ const Brensellagring = () => {
                                       <td className="py-2 px-3 font-medium">{k.kategori}</td>
                                       <td className="py-2 px-3">{k.tekst}</td>
                                       <td className="py-2 px-3 text-muted-foreground">{k.ansvar}</td>
-                                      <td className="py-2 px-3 text-xs text-muted-foreground">{k.referanse || "–"}</td>
+                                      <td className="py-2 px-3 text-xs">
+                                        {k.referanse ? (
+                                          <a
+                                            href={k.referanse.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1 text-primary hover:underline"
+                                          >
+                                            {k.referanse.label}
+                                            <ExternalLink className="h-3 w-3" />
+                                          </a>
+                                        ) : "–"}
+                                      </td>
                                     </tr>
                                   ))}
                                 </tbody>
