@@ -1117,14 +1117,31 @@ const Brensellagring = () => {
                 </CollapsibleContent>
               </Collapsible>
             </div>
+          </div>
+        </div>
 
-            {/* ===== RIGHT: Document preview ===== */}
-            <div className="flex-1 min-w-0">
+        <p className="text-xs text-muted-foreground mt-8 text-center">
+          Kilde: DSB Temaveiledning om oppbevaring av farlig stoff (Kap. 1 & 3) og VTEK § 11-8.
+          <br />
+          <a
+            href="https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-primary"
+          >
+            Les hele veiledningen på dsb.no
+          </a>
+        </p>
+
+            </div>
+
+            {/* ===== RIGHT: Document preview (always visible) ===== */}
+            <div className="hidden lg:block lg:w-[520px] lg:flex-shrink-0">
               <div className="sticky top-4">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <Eye className="h-4 w-4 text-muted-foreground" />
-                    <h4 className="text-sm font-semibold text-muted-foreground">Forhåndsvisning – Kravdokument</h4>
+                    <h4 className="text-sm font-semibold text-muted-foreground">Forhåndsvisning</h4>
                   </div>
                   <Button
                     size="sm"
@@ -1136,7 +1153,7 @@ const Brensellagring = () => {
                     {isSaving ? "Lagrer..." : "Lagre i prosjekt"}
                   </Button>
                 </div>
-                <div className="bg-muted/30 rounded-xl p-4 overflow-y-auto max-h-[calc(100vh-120px)]">
+                <div className="bg-muted/30 rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-100px)]">
                   <BrensellagringPreview
                     valgtBygg={valgtBygg}
                     prosjektNavn={prosjektNavn || undefined}
@@ -1149,19 +1166,6 @@ const Brensellagring = () => {
             </div>
           </div>
         </div>
-
-        <p className="text-xs text-muted-foreground mt-8 text-center max-w-5xl mx-auto">
-          Kilde: DSB Temaveiledning om oppbevaring av farlig stoff (Kap. 1 & 3) og VTEK § 11-8.
-          <br />
-          <a
-            href="https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-primary"
-          >
-            Les hele veiledningen på dsb.no
-          </a>
-        </p>
       </section>
     </div>
   );
