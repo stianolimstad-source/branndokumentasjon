@@ -190,7 +190,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           </>
         )}
 
-        {visibleSections.has("mengder") && (
+        {visibleSections.has("mengder") && valgtBygg && (
           <>
             <h2 style={h2}>{sectionNum("mengder")}. Tillatte mengder</h2>
             <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
