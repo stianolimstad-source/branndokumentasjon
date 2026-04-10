@@ -111,7 +111,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         <div style={{ background: "#1e3a5f", color: "#fff", padding: "16px 20px", borderRadius: 6, marginBottom: 20 }}>
           <p style={{ fontSize: 10, opacity: 0.8, marginBottom: 2 }}>KRAVDOKUMENT</p>
           <p style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Lagring av brannfarlig stoff</p>
-          <p style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>{valgtBygg.navn}</p>
+          {valgtBygg && <p style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>{valgtBygg.navn}</p>}
         </div>
 
         {/* Project info */}
@@ -129,10 +129,12 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                 <td style={tdStyle}>{adresse}</td>
               </tr>
             )}
-            <tr>
-              <td style={{ ...tdStyle, fontWeight: 600 }}>Bygningstype</td>
-              <td style={tdStyle}>{valgtBygg.navn}</td>
-            </tr>
+            {valgtBygg && (
+              <tr>
+                <td style={{ ...tdStyle, fontWeight: 600 }}>Bygningstype</td>
+                <td style={tdStyle}>{valgtBygg.navn}</td>
+              </tr>
+            )}
             <tr>
               <td style={{ ...tdStyle, fontWeight: 600 }}>Dato</td>
               <td style={tdStyle}>{today}</td>
@@ -144,7 +146,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           </tbody>
         </table>
 
-        <p style={{ fontSize: 10, color: "#64748b", marginBottom: 24 }}>{valgtBygg.beskrivelse}</p>
+        {valgtBygg && <p style={{ fontSize: 10, color: "#64748b", marginBottom: 24 }}>{valgtBygg.beskrivelse}</p>}
 
         {!hasAnySections && (
           <p style={{ fontSize: 12, color: "#94a3b8", textAlign: "center", marginTop: 40 }}>
