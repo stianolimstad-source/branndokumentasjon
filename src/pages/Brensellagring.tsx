@@ -638,7 +638,7 @@ const Brensellagring = () => {
                 <CardContent className="space-y-3">
                   <div className="space-y-1.5">
                     <Label className="text-sm">Bygningstype / romtype</Label>
-                    <Select value={valgtBygningstype} onValueChange={(v) => { setValgtBygningstype(v as BygningsType); setExpandedBrensel(null); setShowPreview(true); }}>
+                    <Select value={valgtBygningstype} onValueChange={(v) => { setValgtBygningstype(v as BygningsType); setExpandedBrensel(null); }}>
                       <SelectTrigger>
                         <SelectValue placeholder="Velg bygningstype..." />
                       </SelectTrigger>
