@@ -1813,16 +1813,16 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 korridor_det_fri_tr3: { label: "Korridor – det fri (i kombinasjon med trapperom Tr 3)", bkl1: "", bkl23: "EI₂ 30-Sₐ [B 30]" },
               };
 
-              const alleDeler: { index: number; navn: string; bkl: string }[] = [];
+              const alleDeler: { index: number; navn: string; bkl: string; rk?: string }[] = [];
               if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
                 const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
-                if (del1Bkl) alleDeler.push({ index: 1, navn: formData.bygningstype || 'Bygningsdel 1', bkl: del1Bkl });
+                if (del1Bkl) alleDeler.push({ index: 1, navn: formData.bygningstype || 'Bygningsdel 1', bkl: del1Bkl, rk: formData.risikoklasse?.replace(/\D/g, '') });
                 formData.bygningsdeler.forEach((del: any, i: number) => {
                   const delBkl = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer || formData.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
-                  if (delBkl) alleDeler.push({ index: i + 2, navn: del.navn || del.bygningstype || `Bygningsdel ${i + 2}`, bkl: delBkl });
+                  if (delBkl) alleDeler.push({ index: i + 2, navn: del.navn || del.bygningstype || `Bygningsdel ${i + 2}`, bkl: delBkl, rk: del.risikoklasse?.replace(/\D/g, '') });
                 });
               }
-              if (alleDeler.length === 0 && formData.brannklasse) alleDeler.push({ index: 1, navn: "", bkl: formData.brannklasse });
+              if (alleDeler.length === 0 && formData.brannklasse) alleDeler.push({ index: 1, navn: "", bkl: formData.brannklasse, rk: formData.risikoklasse?.replace(/\D/g, '') });
               const showLabel = alleDeler.length > 1;
 
               // Get all active door types
@@ -1837,12 +1837,27 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2">
                     <div className="space-y-2">
                       {allActiveDoors.map((d: { label: string; bkl1: string; bkl23: string }, idx: number) => {
+                        // Helper: For bolig (RK4) branncelle to Tr1, remove C (selvlukker) requirement
+                        const getKravForDel = (del: { index: number; navn: string; bkl: string; rk?: string }, doorId: string, kravStr: string) => {
+                          if (doorId === "branncelle_trapperom_tr1") {
+                            const rk = del.rk || "";
+                            if (rk === "4") {
+                              // Remove C from requirement: CSₐ -> Sₐ, CSa -> Sa
+                              return kravStr.replace("CSₐ", "Sₐ").replace("CSa", "Sa").replace("C-S", "S");
+                            }
+                          }
+                          return kravStr;
+                        };
+                        // Find the door ID from the map
+                        const doorId = formData.dorPlasseringer.find((id: string) => dorKravMap[id] === d) || "";
+
                         if (showLabel) {
                           // Show per building part
                           const lines = alleDeler.map((del) => {
                             const isBKL1 = del.bkl === "BKL1";
-                            const krav = isBKL1 ? d.bkl1 : d.bkl23;
+                            let krav = isBKL1 ? d.bkl1 : d.bkl23;
                             if (!krav) return null;
+                            krav = getKravForDel(del, doorId, krav);
                             return (
                               <p key={del.index} className={del.index > 1 ? "mt-1" : ""}>
                                 <span className="font-medium">Bygningsdel {del.index} ({del.navn}, {del.bkl}):</span>{" "}
@@ -1859,8 +1874,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                           );
                         } else {
                           const isBKL1 = alleDeler[0].bkl === "BKL1";
-                          const krav = isBKL1 ? d.bkl1 : d.bkl23;
+                          let krav = isBKL1 ? d.bkl1 : d.bkl23;
                           if (!krav) return null;
+                          krav = getKravForDel(alleDeler[0], doorId, krav);
                           return <div key={idx}>{d.label}: <span className="font-semibold">{krav}</span></div>;
                         }
                       })}
