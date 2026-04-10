@@ -5585,15 +5585,28 @@ const Konsept = () => {
                           ];
 
                           const getTrapperomKravOriginalTekst = () => {
+                            // Collect all Tr types across building parts
+                            const allTrTypes = new Set<string>();
+                            if (trType) allTrTypes.add(trType);
+                            if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+                              formData.bygningsdeler.forEach((del: any) => {
+                                const rkDel = parseInt(del.risikoklasse?.replace(/\D/g, '') || '0', 10);
+                                const flDel = parseInt(del.etasjer || formData.etasjer, 10) || 0;
+                                if (rkDel >= 1 && rkDel <= 6 && flDel > 0) {
+                                  allTrTypes.add(flDel <= 8 ? trapperomTypeMap[rkDel].lav : trapperomTypeMap[rkDel].hoy);
+                                }
+                              });
+                            }
+
                             const filteredKrav = trapperomKravListe.filter((krav) => {
                               if (krav.id === "tr_romningsvei_videre" || krav.id === "tr_mellomliggende_rom") {
                                 return formData.trapperomIkkeDirekteTilFri;
                               }
-                              if (trType) {
-                                if (krav.id === "tr1_dor_bruksenhet") return trType === "Tr 1";
-                                if (krav.id === "tr2_eget_rom") return trType === "Tr 2";
-                                if (krav.id === "tr3_mellomliggende") return trType === "Tr 3";
-                                if (krav.id === "tr_roykspredning") return trType === "Tr 2" || trType === "Tr 3";
+                              if (allTrTypes.size > 0) {
+                                if (krav.id === "tr1_dor_bruksenhet") return allTrTypes.has("Tr 1");
+                                if (krav.id === "tr2_eget_rom") return allTrTypes.has("Tr 2");
+                                if (krav.id === "tr3_mellomliggende") return allTrTypes.has("Tr 3");
+                                if (krav.id === "tr_roykspredning") return allTrTypes.has("Tr 2") || allTrTypes.has("Tr 3");
                               }
                               return true;
                             });
