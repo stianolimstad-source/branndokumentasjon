@@ -34,6 +34,8 @@ import Eksempelkatalog from "./pages/Eksempelkatalog";
 import BranntekniskeKonstruksjoner from "./pages/eksempelkatalog/BranntekniskeKonstruksjoner";
 import ResetPassword from "./pages/ResetPassword";
 import Brensellagring from "./pages/Brensellagring";
+import TEK17Assistent from "./pages/TEK17Assistent";
+import TEK17Chat from "./components/tek17/TEK17Chat";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -76,9 +78,11 @@ const App = () => (
             <Route path="/sikkerhetsrutiner" element={<Sikkerhetsrutiner />} />
             <Route path="/eksempelkatalog" element={<Eksempelkatalog />} />
             <Route path="/eksempelkatalog/branncellevegger" element={<BranntekniskeKonstruksjoner />} />
+            <Route path="/tek17-assistent" element={<TEK17Assistent />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <TEK17Chat />
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>
