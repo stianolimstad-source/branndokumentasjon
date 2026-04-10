@@ -36,8 +36,12 @@ const Brensellagring = () => {
   const navigate = useNavigate();
 
   // VTEK byggkrav
+  const [valgtBygningstype, setValgtBygningstype] = useState<BygningsType | "">("");
   const [brenselType, setBrenselType] = useState<BrenselType | "">("");
   const [mengde, setMengde] = useState("");
+
+  const valgtBygg = BYGNINGSTYPER.find((b) => b.id === valgtBygningstype);
+  const [expandedBrensel, setExpandedBrensel] = useState<string | null>(null);
 
   // Tankanlegg – innmelding
   const [valgtStoff, setValgtStoff] = useState("");
