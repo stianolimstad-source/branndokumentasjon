@@ -36,6 +36,7 @@ interface BrensellagringPreviewProps {
   prosjektNavn?: string;
   adresse?: string;
   visibleSections: Set<BrenselSectionKey>;
+  selectedStoffIds?: Set<string>;
 }
 
 const pageStyle: React.CSSProperties = {
