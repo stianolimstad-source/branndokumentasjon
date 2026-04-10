@@ -540,6 +540,7 @@ export interface ByggBrenselGrense {
   brenselType: BrenselType;
   brenselNavn: string;
   maksLiter: number | null; // null = ikke tillatt
+  maksKg?: number | null; // for gass (kg)
   romKrav: BrensellagringKravItem[];
 }
 
