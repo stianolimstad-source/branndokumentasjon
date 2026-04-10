@@ -1576,18 +1576,26 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 return "";
               };
 
-              // Collect unique BKL entries from bygningsdeler or single brannklasse
+              // Collect unique BKL entries from all building parts (including first)
               const bklEntries: { label: string; bkl: string }[] = [];
               if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
                 const uniqueBkls = new Set<string>();
+                // First bygningsdel (stored in formData itself)
+                const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
+                if (del1Bkl) {
+                  uniqueBkls.add(del1Bkl);
+                  bklEntries.push({ label: formData.bygningstype || 'Bygningsdel 1', bkl: del1Bkl });
+                }
+                // Additional bygningsdeler
                 formData.bygningsdeler.forEach((del: any) => {
-                  if (del.brannklasse && !uniqueBkls.has(del.brannklasse)) {
-                    uniqueBkls.add(del.brannklasse);
-                    bklEntries.push({ label: del.navn || del.bygningstype || del.brannklasse, bkl: del.brannklasse });
+                  const delBkl = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer || formData.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+                  if (delBkl && !uniqueBkls.has(delBkl)) {
+                    uniqueBkls.add(delBkl);
+                    bklEntries.push({ label: del.navn || del.bygningstype || delBkl, bkl: delBkl });
                   }
                 });
               }
-              // Fallback to single brannklasse if no entries found from bygningsdeler
+              // Fallback to single brannklasse if no entries found
               if (bklEntries.length === 0 && formData.brannklasse) {
                 bklEntries.push({ label: "", bkl: formData.brannklasse });
               }
@@ -1630,11 +1638,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               const bklEntries: { label: string; bkl: string }[] = [];
               if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
                 const seen = new Set<string>();
+                const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
+                if (del1Bkl) { seen.add(del1Bkl); bklEntries.push({ label: formData.bygningstype || 'Bygningsdel 1', bkl: del1Bkl }); }
                 formData.bygningsdeler.forEach((del: any) => {
-                  if (del.brannklasse && !seen.has(del.brannklasse)) {
-                    seen.add(del.brannklasse);
-                    bklEntries.push({ label: del.navn || del.bygningstype || del.brannklasse, bkl: del.brannklasse });
-                  }
+                  const delBkl = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer || formData.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+                  if (delBkl && !seen.has(delBkl)) { seen.add(delBkl); bklEntries.push({ label: del.navn || del.bygningstype || delBkl, bkl: delBkl }); }
                 });
               }
               if (bklEntries.length === 0 && formData.brannklasse) {
@@ -1663,11 +1671,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               const bklEntries: { label: string; bkl: string }[] = [];
               if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
                 const seen = new Set<string>();
+                const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
+                if (del1Bkl) { seen.add(del1Bkl); bklEntries.push({ label: formData.bygningstype || 'Bygningsdel 1', bkl: del1Bkl }); }
                 formData.bygningsdeler.forEach((del: any) => {
-                  if (del.brannklasse && !seen.has(del.brannklasse)) {
-                    seen.add(del.brannklasse);
-                    bklEntries.push({ label: del.navn || del.bygningstype || del.brannklasse, bkl: del.brannklasse });
-                  }
+                  const delBkl = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer || formData.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+                  if (delBkl && !seen.has(delBkl)) { seen.add(delBkl); bklEntries.push({ label: del.navn || del.bygningstype || delBkl, bkl: delBkl }); }
                 });
               }
               if (bklEntries.length === 0 && formData.brannklasse) {
@@ -1796,11 +1804,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               const bklEntries: { label: string; bkl: string }[] = [];
               if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
                 const seen = new Set<string>();
+                const del1Bkl = formData.brannklasse || getBrannklasse(formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal).brannklasse;
+                if (del1Bkl) { seen.add(del1Bkl); bklEntries.push({ label: formData.bygningstype || 'Bygningsdel 1', bkl: del1Bkl }); }
                 formData.bygningsdeler.forEach((del: any) => {
-                  if (del.brannklasse && !seen.has(del.brannklasse)) {
-                    seen.add(del.brannklasse);
-                    bklEntries.push({ label: del.navn || del.bygningstype || del.brannklasse, bkl: del.brannklasse });
-                  }
+                  const delBkl = del.brannklasse || getBrannklasse(del.risikoklasse, del.etasjer || formData.etasjer, del.harTerrengTilgang, del.areal).brannklasse;
+                  if (delBkl && !seen.has(delBkl)) { seen.add(delBkl); bklEntries.push({ label: del.navn || del.bygningstype || delBkl, bkl: delBkl }); }
                 });
               }
               if (bklEntries.length === 0 && formData.brannklasse) {
