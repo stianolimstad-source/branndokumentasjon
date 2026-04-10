@@ -476,6 +476,54 @@ export const PUMPE_KRAV: PumpeKrav[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// 13a. DSB Kapittel 3 – Stykkgods i bygning – mengdegrenser etter areal
+// ---------------------------------------------------------------------------
+
+export type ArealKategori = "under200" | "200til1000" | "over1000";
+
+export interface StykkgodsGrense {
+  arealKategori: ArealKategori;
+  arealBeskrivelse: string;
+  aerosoler: number;
+  brannfarligGass: string;
+  brannfarligVaeskeKat1og2: number;
+  brannfarligVaeskeKat3: number;
+}
+
+export const STYKKGODS_GRENSER: StykkgodsGrense[] = [
+  {
+    arealKategori: "under200",
+    arealBeskrivelse: "< 200 m²",
+    aerosoler: 50,
+    brannfarligGass: "60 liter (25,2 kg propan)",
+    brannfarligVaeskeKat1og2: 50,
+    brannfarligVaeskeKat3: 250,
+  },
+  {
+    arealKategori: "200til1000",
+    arealBeskrivelse: "200 – 1 000 m²",
+    aerosoler: 100,
+    brannfarligGass: "60 liter (25,2 kg propan)",
+    brannfarligVaeskeKat1og2: 250,
+    brannfarligVaeskeKat3: 500,
+  },
+  {
+    arealKategori: "over1000",
+    arealBeskrivelse: "> 1 000 m²",
+    aerosoler: 200,
+    brannfarligGass: "60 liter (25,2 kg propan)",
+    brannfarligVaeskeKat1og2: 250,
+    brannfarligVaeskeKat3: 1000,
+  },
+];
+
+export function getStykkgodsGrense(arealM2: number): StykkgodsGrense {
+  if (arealM2 < 200) return STYKKGODS_GRENSER[0];
+  if (arealM2 <= 1000) return STYKKGODS_GRENSER[1];
+  return STYKKGODS_GRENSER[2];
+}
+
+// ---------------------------------------------------------------------------
 // 13. VTEK § 11-8 – lagring i bygg – bygningstype → tillatte mengder
 // ---------------------------------------------------------------------------
 
