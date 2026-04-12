@@ -1076,12 +1076,41 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   // ===== 3.9 Tilrettelegging for rømning og redning =====
   rows.push(sectionHeaderRow("3.9   §11-12 Tilrettelegging for rømning og redning"));
   rows.push(columnHeaderRow());
-  if (formData.tilretteleggingLedd2a) {
-    rows.push(contentRow(
-      "Brannalarmanlegg",
-      "Byggverk beregnet for virksomhet i risikoklasse 2 til 6 skal ha brannalarmanlegg.\n\nBrannalarmanlegg må prosjekteres og utføres i samsvar med NS 3960:2019 og NS-EN 54-serien.",
-      "RIE"
-    ));
+  if (formData.tilretteleggingLedd2a || formData.alarmValg === "brannalarm") {
+    // Beregn kategori per bygningsdel
+    const bygningsdeler39 = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
+    const allParts39: { label: string; rk: string; etasjer: number }[] = [];
+    if (formData.harFlereRisikoklasser && bygningsdeler39.length > 0) {
+      bygningsdeler39.forEach((d: any, i: number) => {
+        if (d.risikoklasse) allParts39.push({
+          label: `Bygningsdel ${i + 1} (${d.navn || d.bygningstype || ''}, ${d.risikoklasse})`,
+          rk: d.risikoklasse,
+          etasjer: parseInt(d.etasjer) || parseInt(formData.etasjer) || 1
+        });
+      });
+    }
+    if (allParts39.length === 0) {
+      allParts39.push({ label: '', rk: formData.risikoklasse, etasjer: parseInt(formData.etasjer) || 1 });
+    }
+    const beregnKat39 = (p: typeof allParts39[0]) => {
+      if (p.rk === "RK5" || p.rk === "RK6") return 2;
+      if ((p.rk === "RK2" || p.rk === "RK3" || p.rk === "RK4") && p.etasjer >= 2) return 2;
+      return 1;
+    };
+    const brannalarmkat = Math.max(...allParts39.map(beregnKat39));
+    const isMulti39 = allParts39.length > 1;
+    const harUlikeKat39 = isMulti39 && new Set(allParts39.map(beregnKat39)).size > 1;
+
+    let alarmText = "Byggverk beregnet for virksomhet i risikoklasse 2 til 6 skal ha brannalarmanlegg.\n\nBrannalarmanlegg må prosjekteres og utføres i samsvar med NS 3960:2019 og NS-EN 54-serien.\n\n";
+    if (isMulti39 && harUlikeKat39) {
+      allParts39.forEach(p => {
+        alarmText += `• ${p.label}: Brannalarmkategori ${beregnKat39(p)} – ${beregnKat39(p) === 1 ? "Optiske røykdetektorer i rømningsveier og fellesarealer." : "Heldekkende brannalarmanlegg med optiske røykdetektorer i alle områder."}\n`;
+      });
+      alarmText += `\nStrengeste krav: Brannalarmkategori ${brannalarmkat}`;
+    } else {
+      alarmText += `Brannalarmkategori: ${brannalarmkat}\n${brannalarmkat === 1 ? "Brannalarmkategori 1: Optiske røykdetektorer i rømningsveier og fellesarealer." : "Brannalarmkategori 2: Heldekkende brannalarmanlegg med optiske røykdetektorer i alle områder."}`;
+    }
+    rows.push(contentRow("Brannalarmanlegg", alarmText, "RIE"));
   }
   if (formData.tilretteleggingLedd3) {
     rows.push(contentRow(

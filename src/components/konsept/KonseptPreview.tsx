@@ -3524,24 +3524,52 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {!isBF85 && (formData.tilretteleggingLedd2a || formData.alarmValg === "brannalarm") && (() => {
               const bt = (formData.bygningstype || "").toLowerCase();
               const erBolig = bt.includes("bolig") || bt.includes("enebolig") || bt.includes("rekkehus") || bt.includes("kjedehus") || bt.includes("leilighet") || formData.risikoklasse === "RK4";
-              const rk = formData.risikoklasse;
-              const etasjer = parseInt(formData.etasjer) || 1;
-              let brannalarmkategori = 1;
-              if (rk === "RK5" || rk === "RK6") {
-                brannalarmkategori = 2;
-              } else if ((rk === "RK2" || rk === "RK3" || rk === "RK4") && etasjer >= 2) {
-                brannalarmkategori = 2;
+              
+              // Bygg opp allParts for å beregne kategori per del
+              const allParts39: { label: string; rk: string; etasjer: number }[] = [];
+              if (formData.harFlereRisikoklasser && bygningsdeler.length > 0) {
+                bygningsdeler.forEach((d: any, i: number) => {
+                  if (d.risikoklasse) allParts39.push({
+                    label: `Bygningsdel ${i + 1} (${d.navn || d.bygningstype || ''}, ${d.risikoklasse})`,
+                    rk: d.risikoklasse,
+                    etasjer: parseInt(d.etasjer) || parseInt(formData.etasjer) || 1
+                  });
+                });
               }
+              if (allParts39.length === 0) {
+                allParts39.push({ label: '', rk: formData.risikoklasse, etasjer: parseInt(formData.etasjer) || 1 });
+              }
+              const isMulti39 = allParts39.length > 1;
+              
+              const beregnKat = (p: typeof allParts39[0]) => {
+                if (p.rk === "RK5" || p.rk === "RK6") return 2;
+                if ((p.rk === "RK2" || p.rk === "RK3" || p.rk === "RK4") && p.etasjer >= 2) return 2;
+                return 1;
+              };
+              const brannalarmkategori = Math.max(...allParts39.map(beregnKat));
+              const harUlikeKat = isMulti39 && new Set(allParts39.map(beregnKat)).size > 1;
+              
               return (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Brannalarmanlegg</td>
                 <td className="border border-gray-400 p-2">
                   <p className="mb-2">Byggverk beregnet for virksomhet i risikoklasse 2 til 6 skal ha brannalarmanlegg.</p>
                   <p className="mb-2">Brannalarmanlegg må prosjekteres og utføres i samsvar med NS 3960:2019 og NS-EN 54-serien.</p>
-                  <p className="mb-2"><strong>Brannalarmkategori: {brannalarmkategori}</strong></p>
-                  <p className="mb-2">{brannalarmkategori === 1
-                    ? "Brannalarmkategori 1: Optiske røykdetektorer i rømningsveier og fellesarealer."
-                    : "Brannalarmkategori 2: Heldekkende brannalarmanlegg med optiske røykdetektorer i alle områder."}</p>
+                  {isMulti39 && harUlikeKat ? (
+                    <>
+                      {allParts39.map((p, idx) => (
+                        <p key={idx} className="mb-1">• {p.label}: Brannalarmkategori {beregnKat(p)} – {beregnKat(p) === 1 ? "Optiske røykdetektorer i rømningsveier og fellesarealer." : "Heldekkende brannalarmanlegg med optiske røykdetektorer i alle områder."}</p>
+                      ))}
+                      <p className="mb-2 mt-1"><strong>Strengeste krav: Brannalarmkategori {brannalarmkategori}</strong></p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="mb-2"><strong>Brannalarmkategori: {brannalarmkategori}</strong></p>
+                      <p className="mb-2">{brannalarmkategori === 1
+                        ? "Brannalarmkategori 1: Optiske røykdetektorer i rømningsveier og fellesarealer."
+                        : "Brannalarmkategori 2: Heldekkende brannalarmanlegg med optiske røykdetektorer i alle områder."}</p>
+                    </>
+                  )}
                   {erBolig && (
                     <>
                       <p className="mb-1">• Detektorer i leiligheter må dekke kjøkken, stue og sone utenfor soverom. Det må være minst én detektor per etasje.</p>

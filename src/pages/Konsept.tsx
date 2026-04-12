@@ -878,15 +878,25 @@ const Konsept = () => {
   ]);
 
   // Automatisk aktivering av ledesystem basert på TEK17 § 11-14
-  // Boligbygg (RK4) med 3+ etasjer, skoler (RK3), RK5, RK6, og store kontorer/offentlige bygg
-  const erBoligMedLedesystemkrav = formData.risikoklasse === "RK4" && (parseInt(formData.etasjer, 10) || 0) >= 3;
-  const erSkoleEllerOffentlig = ["RK3", "RK5", "RK6"].includes(formData.risikoklasse);
+  // Sjekk alle bygningsdeler for RK3/RK5/RK6 og bolig med 3+ etasjer
+  const allPartsLedesystem = (() => {
+    const parts: { rk: string; etasjer: number }[] = [];
+    if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+      formData.bygningsdeler.forEach((d: any) => {
+        if (d.risikoklasse) parts.push({ rk: d.risikoklasse, etasjer: parseInt(d.etasjer) || parseInt(formData.etasjer, 10) || 0 });
+      });
+    }
+    if (parts.length === 0) parts.push({ rk: formData.risikoklasse, etasjer: parseInt(formData.etasjer, 10) || 0 });
+    return parts;
+  })();
+  const erBoligMedLedesystemkrav = allPartsLedesystem.some(p => p.rk === "RK4" && p.etasjer >= 3);
+  const erSkoleEllerOffentlig = allPartsLedesystem.some(p => ["RK3", "RK5", "RK6"].includes(p.rk));
   const erLedesystemPaakrevd = erBoligMedLedesystemkrav || erSkoleEllerOffentlig;
   
   const ledesystemFravikTekst = erBoligMedLedesystemkrav
     ? "⚠️ Fravik: Ledesystem er påkrevd for boligbygning med flere boenheter i mer enn 2 etasjer (jf. VTEK § 11-14). Ved å fjerne ledesystem må dette dokumenteres som et fravik fra preaksepterte ytelser."
     : erSkoleEllerOffentlig
-    ? `⚠️ Fravik: Ledesystem er påkrevd for ${formData.risikoklasse === "RK3" ? "skoler og undervisningsbygg" : formData.risikoklasse === "RK5" ? "overnattingssteder (RK5)" : "pleie- og sykehusbygg (RK6)"} (jf. TEK17 § 11-14). Ved å fjerne ledesystem må dette dokumenteres som et fravik fra preaksepterte ytelser.`
+    ? `⚠️ Fravik: Ledesystem er påkrevd for byggverk i ${allPartsLedesystem.filter(p => ["RK3","RK5","RK6"].includes(p.rk)).map(p => p.rk).join('/')} (jf. TEK17 § 11-14). Ved å fjerne ledesystem må dette dokumenteres som et fravik fra preaksepterte ytelser.`
     : "";
 
   useEffect(() => {
@@ -7390,8 +7400,43 @@ const Konsept = () => {
                       <div className="space-y-3">
                         <Label className="text-xs font-medium">Velg relevante krav:</Label>
                         
-                        {/* Sjekk om bygget kvalifiserer for røykvarslere */}
+                        {/* Sjekk om bygget kvalifiserer for røykvarslere - sjekk alle bygningsdeler */}
                         {(() => {
+                          // Bygg opp allParts for å sjekke alle bygningsdeler
+                          const allParts39: { label: string; rk: string; bkl: string; etasjer: number; areal: number; bygningstype: string }[] = [];
+                          if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+                            formData.bygningsdeler.forEach((d: any, i: number) => {
+                              if (d.risikoklasse) allParts39.push({
+                                label: `Bygningsdel ${i + 1} (${d.navn || d.bygningstype || ''}, ${d.risikoklasse})`,
+                                rk: d.risikoklasse, bkl: d.brannklasse || '',
+                                etasjer: parseInt(d.etasjer) || parseInt(formData.etasjer) || 1,
+                                areal: parseFloat(d.areal) || parseFloat(formData.areal) || 0,
+                                bygningstype: (d.bygningstype || d.navn || '').toLowerCase()
+                              });
+                            });
+                          }
+                          if (allParts39.length === 0) {
+                            allParts39.push({
+                              label: '', rk: formData.risikoklasse, bkl: formData.brannklasse || '',
+                              etasjer: parseInt(formData.etasjer) || 1,
+                              areal: parseFloat(formData.areal) || 0,
+                              bygningstype: (formData.bygningstype || '').toLowerCase()
+                            });
+                          }
+                          const isMulti39 = allParts39.length > 1;
+
+                          // Funksjon for å sjekke om en del kvalifiserer for røykvarslere
+                          const kanDelVelgeRoykvarsler = (p: typeof allParts39[0]) => {
+                            const erRK2IL = p.rk === "RK2" && p.areal <= 1200 && (p.bygningstype.includes("industri") || p.bygningstype.includes("lager"));
+                            const erRK2K = p.rk === "RK2" && p.areal <= 1200 && p.bygningstype.includes("kontor");
+                            const erRK4B = p.rk === "RK4" && (p.bygningstype.includes("bolig") || p.bygningstype.includes("enebolig") || p.bygningstype.includes("rekkehus") || p.bygningstype.includes("kjedehus") || p.bygningstype.includes("fritidsbolig"));
+                            const erRK5L = p.rk === "RK5" && p.areal <= 600;
+                            return erRK2IL || erRK2K || erRK4B || erRK5L;
+                          };
+
+                          // Alle deler må kvalifisere for røykvarslere for at valget skal være tilgjengelig
+                          const kanVelgeRoykvarsler = allParts39.every(p => kanDelVelgeRoykvarsler(p));
+
                           const rk = formData.risikoklasse;
                           const areal = parseFloat(formData.areal) || 0;
                           const bygningstype = formData.bygningstype.toLowerCase();
@@ -7406,18 +7451,20 @@ const Konsept = () => {
                              bygningstype.includes("bolig"));
                           const erRK5Liten = rk === "RK5" && areal <= 600;
                           
-                          const kanVelgeRoykvarsler = erRK2IndustriLager || erRK2Kontor || erRK4Bolig || erRK5Liten;
-                          
                           const bt = formData.bygningstype.toLowerCase();
                           const erBolig = bt.includes("bolig") || bt.includes("enebolig") || bt.includes("rekkehus") || bt.includes("kjedehus") || bt.includes("leilighet") || formData.risikoklasse === "RK4";
                           
-                          // Beregn brannalarmkategori
-                          let brannalarmkategori = 1;
-                          if (rk === "RK5" || rk === "RK6") {
-                            brannalarmkategori = 2;
-                          } else if ((rk === "RK2" || rk === "RK3" || rk === "RK4") && etasjer >= 2) {
-                            brannalarmkategori = 2;
-                          }
+                          // Beregn brannalarmkategori per del og bruk strengeste
+                          const beregnKategori = (p: typeof allParts39[0]) => {
+                            if (p.rk === "RK5" || p.rk === "RK6") return 2;
+                            if ((p.rk === "RK2" || p.rk === "RK3" || p.rk === "RK4") && p.etasjer >= 2) return 2;
+                            return 1;
+                          };
+                          const brannalarmkategori = Math.max(...allParts39.map(beregnKategori));
+                          const harUlikeKategorier = isMulti39 && new Set(allParts39.map(beregnKategori)).size > 1;
+
+                          // Fravikssjekk: sjekk om noen del har RK2-RK6
+                          const noenDelKreverAlarm = allParts39.some(p => ["RK2","RK3","RK4","RK5","RK6"].includes(p.rk));
                           
                           // Alarmvalg: "brannalarm" eller "roykvarsler"
                           const alarmValg = formData.alarmValg || "brannalarm";
@@ -7498,7 +7545,7 @@ const Konsept = () => {
                                   </Label>
                                 </div>
                               )}
-                              {!kanVelgeRoykvarsler && !formData.tilretteleggingLedd2a && ["RK2","RK3","RK4","RK5","RK6"].includes(formData.risikoklasse) && (
+                              {!kanVelgeRoykvarsler && !formData.tilretteleggingLedd2a && noenDelKreverAlarm && (
                                 <div className="ml-6 p-3 border border-destructive/50 rounded-lg bg-destructive/10">
                                   <p className="text-xs font-semibold text-destructive">
                                     ⚠️ Fravik: Brannalarmanlegg er påkrevd for byggverk i risikoklasse 2 til 6 (jf. TEK17 § 11-12, første ledd bokstav c). Ved å fjerne dette kravet må det dokumenteres som et fravik fra preaksepterte ytelser.
@@ -7514,15 +7561,26 @@ const Konsept = () => {
                                     <div className="flex items-center gap-2">
                                       <Label className="text-xs font-medium">Brannalarmkategori:</Label>
                                       <span className="text-xs font-bold text-primary">{brannalarmkategori}</span>
-                                      <span className="text-xs text-muted-foreground ml-1">
-                                        (basert på {rk}, {etasjer} {etasjer === 1 ? "etasje" : "etasjer"})
-                                      </span>
+                                      {!isMulti39 && (
+                                        <span className="text-xs text-muted-foreground ml-1">
+                                          (basert på {rk}, {etasjer} {etasjer === 1 ? "etasje" : "etasjer"})
+                                        </span>
+                                      )}
                                     </div>
-                                    <p className="text-xs text-muted-foreground">
-                                      {brannalarmkategori === 1
-                                        ? "Brannalarmkategori 1: Optiske røykdetektorer i rømningsveier og fellesarealer."
-                                        : "Brannalarmkategori 2: Heldekkende brannalarmanlegg med optiske røykdetektorer i alle områder."}
-                                    </p>
+                                    {isMulti39 && harUlikeKategorier ? (
+                                      <ul className="text-xs text-muted-foreground list-disc list-inside">
+                                        {allParts39.map((p, idx) => (
+                                          <li key={idx}>{p.label}: Kategori {beregnKategori(p)}</li>
+                                        ))}
+                                        <li className="font-medium text-foreground mt-1">Strengeste krav: Kategori {brannalarmkategori}</li>
+                                      </ul>
+                                    ) : (
+                                      <p className="text-xs text-muted-foreground">
+                                        {brannalarmkategori === 1
+                                          ? "Brannalarmkategori 1: Optiske røykdetektorer i rømningsveier og fellesarealer."
+                                          : "Brannalarmkategori 2: Heldekkende brannalarmanlegg med optiske røykdetektorer i alle områder."}
+                                      </p>
+                                    )}
                                   </div>
 
                                   <Label className="text-xs font-medium block mb-2">Krav for brannalarmanlegg:</Label>
@@ -7658,10 +7716,11 @@ const Konsept = () => {
                             {(() => {
                               const rk = formData.risikoklasse;
                               const erBolig = rk === "RK4";
-                              const erRK5 = rk === "RK5";
-                              const erRK6 = rk === "RK6";
+                              const erRK5 = allPartsLedesystem.some(p => p.rk === "RK5") || rk === "RK5";
+                              const erRK6 = allPartsLedesystem.some(p => p.rk === "RK6") || rk === "RK6";
                               const etasjer = parseInt(formData.etasjer) || 0;
                               const brannklasse = formData.brannklasse || "";
+                              const noenRK2RK3RK5 = allPartsLedesystem.some(p => ["RK2","RK3","RK5"].includes(p.rk)) || ["RK2","RK3","RK5"].includes(rk);
 
                               return (
                                 <>
@@ -7676,7 +7735,7 @@ const Konsept = () => {
                                     </div>
                                   )}
 
-                                  {(rk === "RK2" || rk === "RK3" || erRK5) && (
+                                  {noenRK2RK3RK5 && (
                                     <div className="flex items-start space-x-2">
                                       <Checkbox id="ledesystemKontorSkole" checked={formData.ledesystemKontorSkole}
                                         onCheckedChange={(checked) => setFormData({...formData, ledesystemKontorSkole: checked as boolean})} />
