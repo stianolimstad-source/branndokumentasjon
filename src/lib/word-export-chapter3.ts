@@ -1181,7 +1181,62 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
       "For å ivareta generelle krav om tilrettelegging for rask og sikker rømning, jf. § 11-11, må fluktveien være oversiktlig og ha god belysning og merking. Det må heller ikke foregå brannfarlig aktivitet i nabobranncellen det skal rømmes gjennom.",
     ], "ARK"));
   }
-  // Dør-krav til rømningsvei - alltid med
+  // Trapperom - § 11-13 (2) - automatisk basert på RK og etasjer (synkronisert med 3.5)
+  {
+    const trapperomTypeMap310: Record<number, { lav: string; hoy: string }> = {
+      1: { lav: "Tr 1", hoy: "Tr 3" }, 2: { lav: "Tr 1", hoy: "Tr 3" },
+      3: { lav: "Tr 2", hoy: "Tr 3" }, 4: { lav: "Tr 1", hoy: "Tr 3" },
+      5: { lav: "Tr 2", hoy: "Tr 3" }, 6: { lav: "Tr 2", hoy: "Tr 3" },
+    };
+    const getTrType310 = (rk: number, etasjer: number) => {
+      if (!trapperomTypeMap310[rk]) return "Tr 1";
+      return etasjer <= 8 ? trapperomTypeMap310[rk].lav : trapperomTypeMap310[rk].hoy;
+    };
+    const trRank: Record<string, number> = { "Tr 3": 3, "Tr 2": 2, "Tr 1": 1 };
+
+    const trapperomDeler310: { index: number; navn: string; rk: number; etasjer: number; trType: string }[] = [];
+    const rkPri = parseInt((formData.risikoklasse || "").replace(/\D/g, ''), 10);
+    const flPri = parseInt(formData.etasjer || "0", 10);
+    if (rkPri && flPri >= 1) trapperomDeler310.push({ index: 1, navn: formData.bygningstype || 'Bygningsdel 1', rk: rkPri, etasjer: flPri, trType: getTrType310(rkPri, flPri) });
+    if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+      formData.bygningsdeler.forEach((del: any, i: number) => {
+        const rkDel = parseInt((del.risikoklasse || "").replace(/\D/g, ''), 10);
+        const flDel = parseInt(del.etasjer || formData.etasjer || "0", 10);
+        if (rkDel && flDel >= 1) trapperomDeler310.push({ index: i + 2, navn: del.navn || del.bygningstype || `Bygningsdel ${i + 2}`, rk: rkDel, etasjer: flDel, trType: getTrType310(rkDel, flDel) });
+      });
+    }
+
+    if (trapperomDeler310.length > 0) {
+      const showMultiple = trapperomDeler310.length > 1;
+      const uniqueTrTypes = [...new Set(trapperomDeler310.map(d => d.trType))];
+      const harUlikeTrKrav = uniqueTrTypes.length > 1;
+      const strengesteTr = trapperomDeler310.reduce((prev, curr) => (trRank[curr.trType] || 0) > (trRank[prev] || 0) ? curr.trType : prev, "Tr 1");
+      const brukStrengeste = showMultiple && harUlikeTrKrav && formData.trapperomGarGjennomAlleDeler;
+
+      const lines: string[] = [];
+      if (brukStrengeste) {
+        lines.push(`Trapperommene går gjennom flere bygningsdeler med ulike krav. Strengeste krav gjelder: ${strengesteTr}.`);
+      }
+      trapperomDeler310.forEach(del => {
+        const effectiveTr = brukStrengeste ? strengesteTr : del.trType;
+        const prefix = showMultiple ? `Bygningsdel ${del.index} (${del.navn}): ` : "";
+        if (del.rk === 4) {
+          if (formData.rk4TrapperomTekst) {
+            lines.push(formData.rk4TrapperomTekst);
+          } else if (formData.brannvesenTilgangRK4 !== false) {
+            lines.push(`${prefix}For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${effectiveTr}. Det er tilstrekkelig med ett trapperom da brannvesenet har tilkomst til hver boenhet med høydemateriell.`);
+          } else {
+            lines.push(`${prefix}For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${effectiveTr}. Brannvesenet har ikke tilkomst til alle boenheter med høydemateriell. Byggverket må derfor ha minst to trapperom med separat atkomst fra alle tilknyttede brannceller.`);
+          }
+        } else if (formData.tilstrekkeligeUtgangerUtenToTrapperom) {
+          lines.push(`${prefix}For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${effectiveTr}. Det er bekreftet at utgangene er tilstrekkelige uten krav om to trapperom.`);
+        } else {
+          lines.push(`${prefix}Byggverk må ha minst to trapperom. For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${effectiveTr}.`);
+        }
+      });
+      rows.push(contentRowMultiLine("Trapperom – § 11-13 (2)", lines, "ARK"));
+    }
+  }
   {
     const alleRK: string[] = formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0
       ? [...new Set(formData.bygningsdeler.map((d: any) => d.risikoklasse).filter(Boolean))] as string[]
