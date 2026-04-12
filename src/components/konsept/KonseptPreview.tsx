@@ -3695,9 +3695,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     {formData.ledesystemBoligRomningsveier && (
                       <li>Rømningsveier i store boligbygninger med flere boenheter i mer enn 2 etasjer må ha ledesystem.</li>
                     )}
-                    {formData.ledesystemForsamling && (
-                      <li>I byggverk der forskriften stiller krav om ledesystem vil dette gjelde rømningsveiene, samt fluktveier i større, uoversiktlige brannceller.</li>
-                    )}
+                    <li>I byggverk der forskriften stiller krav om ledesystem vil dette gjelde rømningsveiene, samt fluktveier i større, uoversiktlige brannceller.</li>
                     {formData.ledesystemKontorSkole && (
                       <li>Kontorbygninger med store kontorlandskap, skoler med store undervisningsbaser og byggverk eller del av byggverk som er offentlig tilgjengelig og ligger under terreng, må ha ledesystem i fluktveier og rømningsveier.</li>
                     )}

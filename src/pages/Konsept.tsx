@@ -7803,15 +7803,10 @@ const Konsept = () => {
                               return (
                                 <>
 
-                                  {(erRK5 || erRK6) && (
-                                    <div className="flex items-start space-x-2">
-                                      <Checkbox id="ledesystemForsamling" checked={formData.ledesystemForsamling}
-                                        onCheckedChange={(checked) => setFormData({...formData, ledesystemForsamling: checked as boolean})} />
-                                      <Label htmlFor="ledesystemForsamling" className="text-xs cursor-pointer leading-relaxed">
-                                        I byggverk der forskriften stiller krav om ledesystem vil dette gjelde rømningsveiene, samt fluktveier i større, uoversiktlige brannceller.
-                                      </Label>
-                                    </div>
-                                  )}
+                                  <p className="text-xs text-muted-foreground leading-relaxed">
+                                    I byggverk der forskriften stiller krav om ledesystem vil dette gjelde rømningsveiene, samt fluktveier i større, uoversiktlige brannceller.
+                                  </p>
+
 
                                   {noenRK2RK3RK5 && (
                                     <div className="flex items-start space-x-2">
