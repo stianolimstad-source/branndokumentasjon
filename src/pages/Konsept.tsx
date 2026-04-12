@@ -922,9 +922,9 @@ const Konsept = () => {
 
   // Automatisk aktivering av evakueringsplaner for RK2 (kontorer), RK3 (skoler/barnehager), RK5 og RK6
   const erEvakueringsplanPaakrevd = (() => {
-    if (["RK2", "RK3", "RK5", "RK6"].includes(formData.risikoklasse)) return true;
+    if (["RK5", "RK6"].includes(formData.risikoklasse)) return true;
     const bygningsdeler = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
-    return bygningsdeler.some((d: any) => ["RK2", "RK3", "RK5", "RK6"].includes(d.risikoklasse));
+    return bygningsdeler.some((d: any) => ["RK5", "RK6"].includes(d.risikoklasse));
   })();
   
   useEffect(() => {
