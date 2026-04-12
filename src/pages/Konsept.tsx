@@ -878,15 +878,25 @@ const Konsept = () => {
   ]);
 
   // Automatisk aktivering av ledesystem basert på TEK17 § 11-14
-  // Boligbygg (RK4) med 3+ etasjer, skoler (RK3), RK5, RK6, og store kontorer/offentlige bygg
-  const erBoligMedLedesystemkrav = formData.risikoklasse === "RK4" && (parseInt(formData.etasjer, 10) || 0) >= 3;
-  const erSkoleEllerOffentlig = ["RK3", "RK5", "RK6"].includes(formData.risikoklasse);
+  // Sjekk alle bygningsdeler for RK3/RK5/RK6 og bolig med 3+ etasjer
+  const allPartsLedesystem = (() => {
+    const parts: { rk: string; etasjer: number }[] = [];
+    if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+      formData.bygningsdeler.forEach((d: any) => {
+        if (d.risikoklasse) parts.push({ rk: d.risikoklasse, etasjer: parseInt(d.etasjer) || parseInt(formData.etasjer, 10) || 0 });
+      });
+    }
+    if (parts.length === 0) parts.push({ rk: formData.risikoklasse, etasjer: parseInt(formData.etasjer, 10) || 0 });
+    return parts;
+  })();
+  const erBoligMedLedesystemkrav = allPartsLedesystem.some(p => p.rk === "RK4" && p.etasjer >= 3);
+  const erSkoleEllerOffentlig = allPartsLedesystem.some(p => ["RK3", "RK5", "RK6"].includes(p.rk));
   const erLedesystemPaakrevd = erBoligMedLedesystemkrav || erSkoleEllerOffentlig;
   
   const ledesystemFravikTekst = erBoligMedLedesystemkrav
     ? "⚠️ Fravik: Ledesystem er påkrevd for boligbygning med flere boenheter i mer enn 2 etasjer (jf. VTEK § 11-14). Ved å fjerne ledesystem må dette dokumenteres som et fravik fra preaksepterte ytelser."
     : erSkoleEllerOffentlig
-    ? `⚠️ Fravik: Ledesystem er påkrevd for ${formData.risikoklasse === "RK3" ? "skoler og undervisningsbygg" : formData.risikoklasse === "RK5" ? "overnattingssteder (RK5)" : "pleie- og sykehusbygg (RK6)"} (jf. TEK17 § 11-14). Ved å fjerne ledesystem må dette dokumenteres som et fravik fra preaksepterte ytelser.`
+    ? `⚠️ Fravik: Ledesystem er påkrevd for byggverk i ${allPartsLedesystem.filter(p => ["RK3","RK5","RK6"].includes(p.rk)).map(p => p.rk).join('/')} (jf. TEK17 § 11-14). Ved å fjerne ledesystem må dette dokumenteres som et fravik fra preaksepterte ytelser.`
     : "";
 
   useEffect(() => {
