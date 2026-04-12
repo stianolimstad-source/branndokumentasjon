@@ -7716,10 +7716,11 @@ const Konsept = () => {
                             {(() => {
                               const rk = formData.risikoklasse;
                               const erBolig = rk === "RK4";
-                              const erRK5 = rk === "RK5";
-                              const erRK6 = rk === "RK6";
+                              const erRK5 = allPartsLedesystem.some(p => p.rk === "RK5") || rk === "RK5";
+                              const erRK6 = allPartsLedesystem.some(p => p.rk === "RK6") || rk === "RK6";
                               const etasjer = parseInt(formData.etasjer) || 0;
                               const brannklasse = formData.brannklasse || "";
+                              const noenRK2RK3RK5 = allPartsLedesystem.some(p => ["RK2","RK3","RK5"].includes(p.rk)) || ["RK2","RK3","RK5"].includes(rk);
 
                               return (
                                 <>
@@ -7734,7 +7735,7 @@ const Konsept = () => {
                                     </div>
                                   )}
 
-                                  {(rk === "RK2" || rk === "RK3" || erRK5) && (
+                                  {noenRK2RK3RK5 && (
                                     <div className="flex items-start space-x-2">
                                       <Checkbox id="ledesystemKontorSkole" checked={formData.ledesystemKontorSkole}
                                         onCheckedChange={(checked) => setFormData({...formData, ledesystemKontorSkole: checked as boolean})} />
