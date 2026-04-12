@@ -3825,44 +3825,61 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2 align-top font-medium">Trapperom<br/><span className="text-xs text-muted-foreground">§ 11-13 (2)</span></td>
                   <td className="border border-gray-400 p-2">
                     <ul className="list-disc ml-4 space-y-1">
-                      {brukStrengestePgaGjennomgang && (
-                        <li className="font-medium">
-                          Trapperommene går gjennom flere bygningsdeler med ulike krav. Strengeste krav gjelder: {strengesteTr}.
-                        </li>
-                      )}
-                      {trapperomDeler.map((del) => {
-                        const effectiveTr = brukStrengestePgaGjennomgang ? strengesteTr : del.trType;
-                        const isRK4 = del.rk === 4;
-                        if (isRK4) {
-                          return (
-                            <li key={del.index} style={{whiteSpace: 'pre-wrap'}}>
-                              {showMultiple && <span className="font-medium">Bygningsdel {del.index} ({del.navn}): </span>}
-                              {formData.rk4TrapperomTekst || (formData.brannvesenTilgangRK4 !== false 
-                                ? `For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${effectiveTr}. Det er tilstrekkelig med ett trapperom da brannvesenet har tilkomst til hver boenhet med høydemateriell.`
-                                : `For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${effectiveTr}. Brannvesenet har ikke tilkomst til alle boenheter med høydemateriell. Byggverket må derfor ha minst to trapperom med separat atkomst fra alle tilknyttede brannceller.`)}
-                            </li>
-                          );
-                        }
-                        if (formData.tilstrekkeligeUtgangerUtenToTrapperom) {
-                          return (
-                            <li key={del.index}>
-                              {showMultiple && <span className="font-medium">Bygningsdel {del.index} ({del.navn}): </span>}
-                              For risikoklasse {del.rk} med {del.etasjer} etasjer kreves {effectiveTr}. Det er bekreftet at utgangene er tilstrekkelige uten krav om to trapperom, da deler av bygget har direkte tilgang til det fri.
-                            </li>
-                          );
-                        }
-                        return (
-                          <li key={del.index}>
-                            {showMultiple && <span className="font-medium">Bygningsdel {del.index} ({del.navn}): </span>}
-                            Byggverk må ha minst to trapperom. For risikoklasse {del.rk} med {del.etasjer} etasjer kreves {effectiveTr}.
+                      {brukStrengestePgaGjennomgang ? (
+                        <>
+                          <li className="font-medium">
+                            Trapperommene går gjennom flere bygningsdeler med ulike krav. Strengeste krav gjelder: {strengesteTr}.
                           </li>
-                        );
-                      })}
-                      {trapperomDeler.some(d => d.rk === 2) && !formData.tilstrekkeligeUtgangerUtenToTrapperom && (
-                        <li>Unntak gjelder parkeringshus og garasje i risikoklasse 2 med inntil 8 etasjer, som må ha minst to trapperom Tr 2 dersom det ikke er utgang fra hver etasje til sikkert sted.</li>
-                      )}
-                      {trapperomDeler.some(d => (d.rk === 1 || d.rk === 2) && d.etasjer <= 8) && !formData.tilstrekkeligeUtgangerUtenToTrapperom && (
-                        <li>I byggverk med to trapperom Tr 1 må trappene være uavhengige av hverandre. Det må være separat atkomst til hvert av trapperommene fra alle de tilknyttede branncellene.</li>
+                          {trapperomDeler.some(d => d.rk === 4) && (
+                            <li style={{whiteSpace: 'pre-wrap'}}>
+                              {formData.rk4TrapperomTekst || (formData.brannvesenTilgangRK4 !== false 
+                                ? `Det er tilstrekkelig med ett trapperom da brannvesenet har tilkomst til hver boenhet med høydemateriell.`
+                                : `Brannvesenet har ikke tilkomst til alle boenheter med høydemateriell. Byggverket må derfor ha minst to trapperom med separat atkomst fra alle tilknyttede brannceller.`)}
+                            </li>
+                          )}
+                          {formData.tilstrekkeligeUtgangerUtenToTrapperom && !trapperomDeler.every(d => d.rk === 4) && (
+                            <li>Det er bekreftet at utgangene er tilstrekkelige uten krav om to trapperom, da deler av bygget har direkte tilgang til det fri.</li>
+                          )}
+                          {!formData.tilstrekkeligeUtgangerUtenToTrapperom && !trapperomDeler.every(d => d.rk === 4) && (
+                            <li>Byggverk må ha minst to trapperom av type {strengesteTr}.</li>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          {trapperomDeler.map((del) => {
+                            const isRK4 = del.rk === 4;
+                            if (isRK4) {
+                              return (
+                                <li key={del.index} style={{whiteSpace: 'pre-wrap'}}>
+                                  {showMultiple && <span className="font-medium">Bygningsdel {del.index} ({del.navn}): </span>}
+                                  {formData.rk4TrapperomTekst || (formData.brannvesenTilgangRK4 !== false 
+                                    ? `For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${del.trType}. Det er tilstrekkelig med ett trapperom da brannvesenet har tilkomst til hver boenhet med høydemateriell.`
+                                    : `For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${del.trType}. Brannvesenet har ikke tilkomst til alle boenheter med høydemateriell. Byggverket må derfor ha minst to trapperom med separat atkomst fra alle tilknyttede brannceller.`)}
+                                </li>
+                              );
+                            }
+                            if (formData.tilstrekkeligeUtgangerUtenToTrapperom) {
+                              return (
+                                <li key={del.index}>
+                                  {showMultiple && <span className="font-medium">Bygningsdel {del.index} ({del.navn}): </span>}
+                                  For risikoklasse {del.rk} med {del.etasjer} etasjer kreves {del.trType}. Det er bekreftet at utgangene er tilstrekkelige uten krav om to trapperom, da deler av bygget har direkte tilgang til det fri.
+                                </li>
+                              );
+                            }
+                            return (
+                              <li key={del.index}>
+                                {showMultiple && <span className="font-medium">Bygningsdel {del.index} ({del.navn}): </span>}
+                                Byggverk må ha minst to trapperom. For risikoklasse {del.rk} med {del.etasjer} etasjer kreves {del.trType}.
+                              </li>
+                            );
+                          })}
+                          {trapperomDeler.some(d => d.rk === 2) && !formData.tilstrekkeligeUtgangerUtenToTrapperom && (
+                            <li>Unntak gjelder parkeringshus og garasje i risikoklasse 2 med inntil 8 etasjer, som må ha minst to trapperom Tr 2 dersom det ikke er utgang fra hver etasje til sikkert sted.</li>
+                          )}
+                          {trapperomDeler.some(d => (d.rk === 1 || d.rk === 2) && d.etasjer <= 8) && !formData.tilstrekkeligeUtgangerUtenToTrapperom && (
+                            <li>I byggverk med to trapperom Tr 1 må trappene være uavhengige av hverandre. Det må være separat atkomst til hvert av trapperommene fra alle de tilknyttede branncellene.</li>
+                          )}
+                        </>
                       )}
                     </ul>
                   </td>
