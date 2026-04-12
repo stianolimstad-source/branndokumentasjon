@@ -3333,7 +3333,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                               <li>Isolasjon på rør og kanaler i rømningsveier må minst tilfredsstille klasse <span className="text-red-600 font-medium">B<sub>L</sub>-s1,d0 [PI]</span>. Unntak gjelder isolasjon på enkeltstående rør eller kanal med ytre diameter til og med 200 mm som minst må tilfredsstille klasse <span className="text-red-600 font-medium">C<sub>L</sub>-s3,d0 [PII]</span>.</li>
                               <li>Isolasjon på rør og kanaler som er lagt i sjakt, i hulrom og bak nedforet himling med branncellebegrensende funksjon, må minst tilfredsstille klasse <span className="text-red-600 font-medium">C<sub>L</sub>-s3,d0 [PII]</span>.</li>
                               {(() => {
-                                // Collect all parts for øvrig isolasjon check
                                 const allParts: { label: string; rk: string; bkl: string }[] = [];
                                 if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length) {
                                   formData.bygningsdeler.forEach((d: any, i: number) => {
@@ -3342,18 +3341,26 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                                 } else {
                                   allParts.push({ label: '', rk: formData.risikoklasse, bkl: formData.brannklasse });
                                 }
-                                const piiParts = allParts.filter(p => ["RK3","RK5","RK6"].includes(p.rk) || ["BKL2","BKL3"].includes(p.bkl));
-                                const piiiParts = allParts.filter(p => ["RK1","RK2","RK4"].includes(p.rk) && p.bkl === "BKL1");
                                 const isMulti = formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0;
+                                if (!isMulti) {
+                                  // Single part – show one line
+                                  const isPII = ["RK3","RK5","RK6"].includes(allParts[0].rk) || ["BKL2","BKL3"].includes(allParts[0].bkl);
+                                  return (
+                                    <li>Øvrig isolasjon på rør og kanaler må minst tilfredsstille klasse <span className="text-red-600 font-medium">{isPII ? <>C<sub>L</sub>-s3,d0 [PII]</> : <>D<sub>L</sub>-s3,d0 [PIII]</>}</span>.</li>
+                                  );
+                                }
+                                // Multiple parts – show per part
                                 return (
-                                  <>
-                                    {piiParts.length > 0 && (
-                                      <li>Øvrig isolasjon på rør og kanaler må minst tilfredsstille klasse <span className="text-red-600 font-medium">C<sub>L</sub>-s3,d0 [PII]</span>.{isMulti && piiParts.length < allParts.length && <> <em className="text-gray-500">({piiParts.map(p => p.label).join(', ')})</em></>}</li>
-                                    )}
-                                    {piiiParts.length > 0 && (
-                                      <li>Øvrig isolasjon på rør og kanaler må minst tilfredsstille klasse <span className="text-red-600 font-medium">D<sub>L</sub>-s3,d0 [PIII]</span>.{isMulti && piiiParts.length < allParts.length && <> <em className="text-gray-500">({piiiParts.map(p => p.label).join(', ')})</em></>}</li>
-                                    )}
-                                  </>
+                                  <li>Øvrig isolasjon på rør og kanaler:
+                                    <ul className="list-disc ml-6 mt-1 space-y-1">
+                                      {allParts.map((p, idx) => {
+                                        const isPII = ["RK3","RK5","RK6"].includes(p.rk) || ["BKL2","BKL3"].includes(p.bkl);
+                                        return (
+                                          <li key={idx}>{p.label}: klasse <span className="text-red-600 font-medium">{isPII ? <>C<sub>L</sub>-s3,d0 [PII]</> : <>D<sub>L</sub>-s3,d0 [PIII]</>}</span></li>
+                                        );
+                                      })}
+                                    </ul>
+                                  </li>
                                 );
                               })()}
                             </ul>
