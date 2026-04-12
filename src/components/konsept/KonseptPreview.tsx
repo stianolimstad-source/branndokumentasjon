@@ -4008,10 +4008,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       const arealPerPerson: Record<string, number> = {
                         salgslokaler: 2, kontor: 15, skoler: 2, barnehager: 4, forsamlingslokaler: 0.6, spisesaler: 1.4
                       };
+                      const kategoriLabel: Record<string, string> = {
+                        salgslokaler: "Salgslokaler", kontor: "Kontor", skoler: "Skoler", barnehager: "Barnehager/fritidshjem", forsamlingslokaler: "Forsamlingslokaler", spisesaler: "Spisesaler"
+                      };
                       const areal = parseFloat(formData.persontallAreal) || 0;
                       const factor = arealPerPerson[formData.persontallKategori] || 1;
                       const persontall = Math.floor(areal / factor);
-                      return <p><strong>Beregnet persontall:</strong> {persontall} personer ({areal} m² / {factor} m²/pers)</p>;
+                      return <p><strong>Beregnet persontall:</strong> {persontall} personer – kategori: {kategoriLabel[formData.persontallKategori] || formData.persontallKategori} ({areal} m² / {factor} m²/pers)</p>;
                     })()}
                     <ul className="list-disc ml-4 space-y-1 mt-2">
                       <li>Antall personer i en branncelle uten faste sitteplasser bestemmes av tabell 3.{formData.persontallKategori === 'salgslokaler' && <> I salgslokale legges alle de områder som er tilgjengelig for publikum til grunn for dimensjonering av fri bredde. Det gjøres ikke fradrag for inventar.</>}</li>
