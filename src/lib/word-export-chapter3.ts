@@ -1216,24 +1216,38 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
       const lines: string[] = [];
       if (brukStrengeste) {
         lines.push(`Trapperommene går gjennom flere bygningsdeler med ulike krav. Strengeste krav gjelder: ${strengesteTr}.`);
-      }
-      trapperomDeler310.forEach(del => {
-        const effectiveTr = brukStrengeste ? strengesteTr : del.trType;
-        const prefix = showMultiple ? `Bygningsdel ${del.index} (${del.navn}): ` : "";
-        if (del.rk === 4) {
+        if (trapperomDeler310.some(d => d.rk === 4)) {
           if (formData.rk4TrapperomTekst) {
             lines.push(formData.rk4TrapperomTekst);
           } else if (formData.brannvesenTilgangRK4 !== false) {
-            lines.push(`${prefix}For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${effectiveTr}. Det er tilstrekkelig med ett trapperom da brannvesenet har tilkomst til hver boenhet med høydemateriell.`);
+            lines.push(`Det er tilstrekkelig med ett trapperom da brannvesenet har tilkomst til hver boenhet med høydemateriell.`);
           } else {
-            lines.push(`${prefix}For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${effectiveTr}. Brannvesenet har ikke tilkomst til alle boenheter med høydemateriell. Byggverket må derfor ha minst to trapperom med separat atkomst fra alle tilknyttede brannceller.`);
+            lines.push(`Brannvesenet har ikke tilkomst til alle boenheter med høydemateriell. Byggverket må derfor ha minst to trapperom med separat atkomst fra alle tilknyttede brannceller.`);
           }
-        } else if (formData.tilstrekkeligeUtgangerUtenToTrapperom) {
-          lines.push(`${prefix}For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${effectiveTr}. Det er bekreftet at utgangene er tilstrekkelige uten krav om to trapperom.`);
-        } else {
-          lines.push(`${prefix}Byggverk må ha minst to trapperom. For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${effectiveTr}.`);
         }
-      });
+        if (formData.tilstrekkeligeUtgangerUtenToTrapperom && !trapperomDeler310.every(d => d.rk === 4)) {
+          lines.push(`Det er bekreftet at utgangene er tilstrekkelige uten krav om to trapperom.`);
+        } else if (!trapperomDeler310.every(d => d.rk === 4)) {
+          lines.push(`Byggverk må ha minst to trapperom av type ${strengesteTr}.`);
+        }
+      } else {
+        trapperomDeler310.forEach(del => {
+          const prefix = showMultiple ? `Bygningsdel ${del.index} (${del.navn}): ` : "";
+          if (del.rk === 4) {
+            if (formData.rk4TrapperomTekst) {
+              lines.push(formData.rk4TrapperomTekst);
+            } else if (formData.brannvesenTilgangRK4 !== false) {
+              lines.push(`${prefix}For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${del.trType}. Det er tilstrekkelig med ett trapperom da brannvesenet har tilkomst til hver boenhet med høydemateriell.`);
+            } else {
+              lines.push(`${prefix}For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${del.trType}. Brannvesenet har ikke tilkomst til alle boenheter med høydemateriell. Byggverket må derfor ha minst to trapperom med separat atkomst fra alle tilknyttede brannceller.`);
+            }
+          } else if (formData.tilstrekkeligeUtgangerUtenToTrapperom) {
+            lines.push(`${prefix}For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${del.trType}. Det er bekreftet at utgangene er tilstrekkelige uten krav om to trapperom.`);
+          } else {
+            lines.push(`${prefix}Byggverk må ha minst to trapperom. For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${del.trType}.`);
+          }
+        });
+      }
       rows.push(contentRowMultiLine("Trapperom – § 11-13 (2)", lines, "ARK"));
     }
   }
