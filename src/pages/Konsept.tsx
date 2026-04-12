@@ -8117,10 +8117,14 @@ const Konsept = () => {
                                       forsamlingslokaler: 0.6,
                                       spisesaler: 1.4
                                     };
+                                    const kategoriLabel: Record<string, string> = {
+                                      salgslokaler: "Salgslokaler", kontor: "Kontor", skoler: "Skoler", barnehager: "Barnehager/fritidshjem", forsamlingslokaler: "Forsamlingslokaler", spisesaler: "Spisesaler"
+                                    };
                                     const areal = parseFloat(formData.persontallAreal) || 0;
                                     const factor = arealPerPerson[formData.persontallKategori] || 1;
-                                    return Math.floor(areal / factor);
-                                  })()}{" "}personer
+                                    const persontall = Math.floor(areal / factor);
+                                    return `${persontall} personer – kategori: ${kategoriLabel[formData.persontallKategori] || formData.persontallKategori} (${areal} m² / ${factor} m²/pers)`;
+                                  })()}
                                 </div>
                               )}
                             </div>
