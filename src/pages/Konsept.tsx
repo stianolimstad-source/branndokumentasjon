@@ -7400,22 +7400,34 @@ const Konsept = () => {
 
                       {/* Skille mellom sprinklet og usprinklet areal */}
                       {(() => {
-                        console.log("DEBUG sprinklet/usprinklet:", {
-                          harFlere: formData.harFlereRisikoklasser,
-                          bygningsdelerLen: formData.bygningsdeler?.length,
-                          bygningsdeler: formData.bygningsdeler?.map((d: any) => ({ rk: d.risikoklasse, etj: d.etasjer }))
-                        });
-                        if (!formData.harFlereRisikoklasser || !formData.bygningsdeler?.length) return null;
-                        // Finn ut hvilke deler som krever sprinkler
+                        if (!formData.harFlereRisikoklasser) return null;
+                        // Bygg opp alle deler inkludert primær
+                        const alleParts: { label: string; rk: string; etasjer: number }[] = [];
+                        // Primær bygningsdel
+                        if (formData.risikoklasse) {
+                          alleParts.push({
+                            label: `Bygningsdel 1 (${formData.bygningstype || ''}, ${formData.risikoklasse})`,
+                            rk: formData.risikoklasse,
+                            etasjer: parseInt(formData.etasjer) || 1
+                          });
+                        }
+                        // Ekstra bygningsdeler
+                        if (formData.bygningsdeler?.length > 0) {
+                          formData.bygningsdeler.forEach((d: any, i: number) => {
+                            if (d.risikoklasse) alleParts.push({
+                              label: `Bygningsdel ${i + 2} (${d.navn || d.bygningstype || ''}, ${d.risikoklasse})`,
+                              rk: d.risikoklasse,
+                              etasjer: parseInt(d.etasjer) || parseInt(formData.etasjer) || 1
+                            });
+                          });
+                        }
+                        if (alleParts.length < 2) return null;
                         const delerMedSprinklerKrav: string[] = [];
                         const delerUtenSprinklerKrav: string[] = [];
-                        formData.bygningsdeler.forEach((d: any, i: number) => {
-                          const rk = d.risikoklasse;
-                          const etj = parseInt(d.etasjer) || parseInt(formData.etasjer) || 1;
-                          const krevSprinkler = rk === "RK6" || (rk === "RK4" && etj > 3);
-                          const label = `Bygningsdel ${i + 1} (${d.navn || d.bygningstype || ''}, ${rk})`;
-                          if (krevSprinkler) delerMedSprinklerKrav.push(label);
-                          else delerUtenSprinklerKrav.push(label);
+                        alleParts.forEach((p) => {
+                          const krevSprinkler = p.rk === "RK6" || (p.rk === "RK4" && p.etasjer > 3);
+                          if (krevSprinkler) delerMedSprinklerKrav.push(p.label);
+                          else delerUtenSprinklerKrav.push(p.label);
                         });
                         // Vis kun når noen deler krever og noen ikke krever sprinkler
                         if (delerMedSprinklerKrav.length === 0 || delerUtenSprinklerKrav.length === 0) return null;
