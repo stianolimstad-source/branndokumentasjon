@@ -921,14 +921,18 @@ const Konsept = () => {
   }, [formData.risikoklasse, formData.etasjer, formData.brannklasse]);
 
   // Automatisk aktivering av evakueringsplaner for RK2 (kontorer), RK3 (skoler/barnehager), RK5 og RK6
-  const erEvakueringsplanPaakrevd = ["RK2", "RK3", "RK5", "RK6"].includes(formData.risikoklasse);
+  const erEvakueringsplanPaakrevd = (() => {
+    if (["RK2", "RK3", "RK5", "RK6"].includes(formData.risikoklasse)) return true;
+    const bygningsdeler = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
+    return bygningsdeler.some((d: any) => ["RK2", "RK3", "RK5", "RK6"].includes(d.risikoklasse));
+  })();
   
   useEffect(() => {
     if (isViewMode) return;
     if (erEvakueringsplanPaakrevd && !formData.tilretteleggingLedd4) {
       setFormData(prev => ({ ...prev, tilretteleggingLedd4: true }));
     }
-  }, [formData.risikoklasse]);
+  }, [formData.risikoklasse, formData.bygningsdeler]);
 
   // Automatisk sett slokkeutstyr basert på risikoklasse
   useEffect(() => {
