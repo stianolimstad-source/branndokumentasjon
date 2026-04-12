@@ -659,6 +659,7 @@ const Konsept = () => {
     tilretteleggingLedd1b: false, // RK6 - automatisk brannslokkeanlegg
     tilretteleggingLedd1c: false, // Alternativt tiltak istedenfor automatisk slokkeanlegg
     tilretteleggingLedd1cBeskrivelse: "", // Beskrivelse av alternativt tiltak
+    skilleSpinkletUsprinklet: false, // Skille mellom sprinklet og usprinklet areal med brannseksjonering
     rk6Institusjon: true as boolean, // true = institusjon, false = egeneide boenheter
     tilretteleggingLedd2a: false, // RK2-6 brannalarmanlegg
     // Brannalarm sub-checkboxer
