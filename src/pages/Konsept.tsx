@@ -659,6 +659,7 @@ const Konsept = () => {
     tilretteleggingLedd1b: false, // RK6 - automatisk brannslokkeanlegg
     tilretteleggingLedd1c: false, // Alternativt tiltak istedenfor automatisk slokkeanlegg
     tilretteleggingLedd1cBeskrivelse: "", // Beskrivelse av alternativt tiltak
+    skilleSpinkletUsprinklet: false, // Skille mellom sprinklet og usprinklet areal med brannseksjonering
     rk6Institusjon: true as boolean, // true = institusjon, false = egeneide boenheter
     tilretteleggingLedd2a: false, // RK2-6 brannalarmanlegg
     // Brannalarm sub-checkboxer
@@ -7396,6 +7397,55 @@ const Konsept = () => {
                           )}
                         </div>
                       )}
+
+                      {/* Skille mellom sprinklet og usprinklet areal */}
+                      {(() => {
+                        if (!formData.harFlereRisikoklasser || !formData.bygningsdeler?.length) return null;
+                        // Finn ut hvilke deler som krever sprinkler
+                        const delerMedSprinklerKrav: string[] = [];
+                        const delerUtenSprinklerKrav: string[] = [];
+                        formData.bygningsdeler.forEach((d: any, i: number) => {
+                          const rk = d.risikoklasse;
+                          const etj = parseInt(d.etasjer) || parseInt(formData.etasjer) || 1;
+                          const krevSprinkler = rk === "RK6" || (rk === "RK4" && etj > 3);
+                          const label = `Bygningsdel ${i + 1} (${d.navn || d.bygningstype || ''}, ${rk})`;
+                          if (krevSprinkler) delerMedSprinklerKrav.push(label);
+                          else delerUtenSprinklerKrav.push(label);
+                        });
+                        // Vis kun når noen deler krever og noen ikke krever sprinkler
+                        if (delerMedSprinklerKrav.length === 0 || delerUtenSprinklerKrav.length === 0) return null;
+                        return (
+                          <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded space-y-3">
+                            <div className="text-xs space-y-1">
+                              <p className="font-semibold">⚠️ Deler av byggverket har krav om automatisk slokkeanlegg:</p>
+                              <ul className="ml-4 list-disc space-y-0.5">
+                                {delerMedSprinklerKrav.map((d, i) => <li key={i}><span className="font-medium">{d}</span> — krav om sprinkler</li>)}
+                                {delerUtenSprinklerKrav.map((d, i) => <li key={i}><span className="font-medium">{d}</span> — ikke krav om sprinkler</li>)}
+                              </ul>
+                              <p className="mt-2">
+                                Hele byggemassen må sprinkles med mindre det skilles mellom sprinklet og usprinklet areal med brannseksjonering (jf. VTEK § 11-12).
+                              </p>
+                            </div>
+                            <div className="flex items-start space-x-2">
+                              <Checkbox
+                                id="skilleSpinkletUsprinklet"
+                                checked={formData.skilleSpinkletUsprinklet}
+                                onCheckedChange={(checked) => setFormData({...formData, skilleSpinkletUsprinklet: !!checked})}
+                              />
+                              <Label htmlFor="skilleSpinkletUsprinklet" className="text-xs cursor-pointer leading-relaxed">
+                                <strong>Skille mellom sprinklet og usprinklet areal:</strong> Sprinklet og usprinklet areal skilles med brannseksjonering. Kun bygningsdeler med krav om sprinkler sprinkles.
+                              </Label>
+                            </div>
+                            {!formData.skilleSpinkletUsprinklet && (
+                              <div className="ml-6 p-2 bg-accent/30 rounded">
+                                <p className="text-xs text-muted-foreground">
+                                  <span className="font-medium">→</span> Hele byggverket sprinkles da det ikke skilles mellom sprinklet og usprinklet areal med brannseksjonering.
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
 
                       <div className="space-y-3">
                         <Label className="text-xs font-medium">Velg relevante krav:</Label>

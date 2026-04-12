@@ -1076,6 +1076,27 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   // ===== 3.9 Tilrettelegging for rømning og redning =====
   rows.push(sectionHeaderRow("3.9   §11-12 Tilrettelegging for rømning og redning"));
   rows.push(columnHeaderRow());
+
+  // Sprinklet/usprinklet areal ved flere bygningsdeler
+  if ((formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) && formData.harFlereRisikoklasser) {
+    const bygningsdeler39s = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
+    const delerMedKrav: string[] = [];
+    const delerUtenKrav: string[] = [];
+    bygningsdeler39s.forEach((d: any, i: number) => {
+      const rk = d.risikoklasse;
+      const etj = parseInt(d.etasjer) || parseInt(formData.etasjer) || 1;
+      const krev = rk === "RK6" || (rk === "RK4" && etj > 3);
+      const label = `Bygningsdel ${i + 1} (${d.navn || d.bygningstype || ''}, ${rk})`;
+      if (krev) delerMedKrav.push(label); else delerUtenKrav.push(label);
+    });
+    if (delerMedKrav.length > 0 && delerUtenKrav.length > 0) {
+      const tekst = formData.skilleSpinkletUsprinklet
+        ? "Sprinklet og usprinklet areal skilles med brannseksjonering. Kun bygningsdeler med krav om automatisk slokkeanlegg sprinkles."
+        : "Hele byggverket sprinkles da det ikke skilles mellom sprinklet og usprinklet areal med brannseksjonering (jf. VTEK § 11-12).";
+      rows.push(contentRow("Sprinklet/usprinklet areal", tekst, "RIBr"));
+    }
+  }
+
   if (formData.tilretteleggingLedd2a || formData.alarmValg === "brannalarm") {
     // Beregn kategori per bygningsdel
     const bygningsdeler39 = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];

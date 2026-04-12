@@ -3521,6 +3521,32 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">RIBr</td>
               </tr>
             )}
+            {/* Skille mellom sprinklet og usprinklet areal */}
+            {!isBF85 && (formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) && formData.harFlereRisikoklasser && bygningsdeler.length > 0 && (() => {
+              const delerMedKrav: string[] = [];
+              const delerUtenKrav: string[] = [];
+              bygningsdeler.forEach((d: any, i: number) => {
+                const rk = d.risikoklasse;
+                const etj = parseInt(d.etasjer) || parseInt(formData.etasjer) || 1;
+                const krev = rk === "RK6" || (rk === "RK4" && etj > 3);
+                const label = `Bygningsdel ${i + 1} (${d.navn || d.bygningstype || ''}, ${rk})`;
+                if (krev) delerMedKrav.push(label); else delerUtenKrav.push(label);
+              });
+              if (delerMedKrav.length === 0 || delerUtenKrav.length === 0) return null;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Sprinklet/usprinklet areal</td>
+                  <td className="border border-gray-400 p-2">
+                    {formData.skilleSpinkletUsprinklet ? (
+                      <p>Sprinklet og usprinklet areal skilles med brannseksjonering. Kun bygningsdeler med krav om automatisk slokkeanlegg sprinkles.</p>
+                    ) : (
+                      <p>Hele byggverket sprinkles da det ikke skilles mellom sprinklet og usprinklet areal med brannseksjonering (jf. VTEK § 11-12).</p>
+                    )}
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                </tr>
+              );
+            })()}
             {!isBF85 && (formData.tilretteleggingLedd2a || formData.alarmValg === "brannalarm") && (() => {
               const bt = (formData.bygningstype || "").toLowerCase();
               const erBolig = bt.includes("bolig") || bt.includes("enebolig") || bt.includes("rekkehus") || bt.includes("kjedehus") || bt.includes("leilighet") || formData.risikoklasse === "RK4";
