@@ -701,6 +701,7 @@ const Konsept = () => {
     tilstrekkeligeUtgangerUtenToTrapperom: false, // Bekreftelse at utganger er tilstrekkelige uten to trapperom
     brannvesenTilgangRK4: true, // For RK4: brannvesenet har tilgang til alle leiligheter
     rk4TrapperomTekst: "", // Redigerbar tekst for RK4 trapperom-krav
+    trapperomGarGjennomAlleDeler: false, // Om trapperommene fysisk går gjennom flere bygningsdeler
     branncelleStortAntallPersoner: false,
     stortAntallUnder600: false,
     stortAntallOver600: false,
@@ -8198,81 +8199,150 @@ const Konsept = () => {
                         </Label>
                       </div>
                       {(() => {
-                        const rk = formData.risikoklasse || "";
-                        const isRK4 = rk === "RK4";
-                        const etasjerNum = parseInt(formData.etasjer) || 1;
-                        
-                        if (isRK4) {
-                          // For RK4: checkbox for brannvesen-tilgang + redigerbar tekstboks
-                          const getTrapperomType = (e: number) => {
-                            if (e <= 4) return "Tr 1";
-                            if (e <= 8) return "Tr 2";
-                            return "Tr 3";
-                          };
-                          const trType = getTrapperomType(etasjerNum);
-                          
-                          const generateRK4Text = (tilgang: boolean) => {
-                            if (tilgang) {
-                              return `For risikoklasse 4 med ${etasjerNum} etasjer kreves ${trType}. Det er tilstrekkelig med ett trapperom da brannvesenet har tilkomst til hver boenhet med høydemateriell.`;
-                            } else {
-                              return `For risikoklasse 4 med ${etasjerNum} etasjer kreves ${trType}. Brannvesenet har ikke tilkomst til alle boenheter med høydemateriell. Byggverket må derfor ha minst to trapperom med separat atkomst fra alle tilknyttede brannceller.`;
-                            }
-                          };
+                        // Trapperom-logikk synkronisert med 3.5 (bruker samme trapperomTypeMap)
+                        const trapperomTypeMap310: Record<number, { lav: string; hoy: string }> = {
+                          1: { lav: "Tr 1", hoy: "Tr 3" },
+                          2: { lav: "Tr 1", hoy: "Tr 3" },
+                          3: { lav: "Tr 2", hoy: "Tr 3" },
+                          4: { lav: "Tr 1", hoy: "Tr 3" },
+                          5: { lav: "Tr 2", hoy: "Tr 3" },
+                          6: { lav: "Tr 2", hoy: "Tr 3" },
+                        };
+                        const getTrType310 = (rk: number, etasjer: number) => {
+                          if (!trapperomTypeMap310[rk]) return "Tr 1";
+                          return etasjer <= 8 ? trapperomTypeMap310[rk].lav : trapperomTypeMap310[rk].hoy;
+                        };
+                        const trRank: Record<string, number> = { "Tr 3": 3, "Tr 2": 2, "Tr 1": 1 };
 
-                          return (
-                            <>
-                              <div className="flex items-center space-x-2 p-2 bg-muted rounded mt-2">
+                        // Bygg liste over alle deler
+                        type TrDel = { index: number; navn: string; rk: number; etasjer: number; trType: string };
+                        const trapperomDeler310: TrDel[] = [];
+                        const rkPri = parseInt((formData.risikoklasse || "").replace(/\D/g, ''), 10);
+                        const flPri = parseInt(formData.etasjer || "0", 10);
+                        if (rkPri && flPri >= 1) {
+                          trapperomDeler310.push({ index: 1, navn: formData.bygningstype || 'Bygningsdel 1', rk: rkPri, etasjer: flPri, trType: getTrType310(rkPri, flPri) });
+                        }
+                        if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+                          formData.bygningsdeler.forEach((del: any, i: number) => {
+                            const rkDel = parseInt((del.risikoklasse || "").replace(/\D/g, ''), 10);
+                            const flDel = parseInt(del.etasjer || formData.etasjer || "0", 10);
+                            if (rkDel && flDel >= 1) {
+                              trapperomDeler310.push({ index: i + 2, navn: del.navn || del.bygningstype || `Bygningsdel ${i + 2}`, rk: rkDel, etasjer: flDel, trType: getTrType310(rkDel, flDel) });
+                            }
+                          });
+                        }
+
+                        const harFlere = trapperomDeler310.length > 1;
+                        const uniqueTrTypes = [...new Set(trapperomDeler310.map(d => d.trType))];
+                        const harUlikeTrKrav = uniqueTrTypes.length > 1;
+                        const strengesteTr = trapperomDeler310.reduce((prev, curr) => (trRank[curr.trType] || 0) > (trRank[prev] || 0) ? curr.trType : prev, "Tr 1");
+                        const harRK4 = trapperomDeler310.some(d => d.rk === 4);
+                        const alleErRK4 = trapperomDeler310.every(d => d.rk === 4);
+
+                        return (
+                          <>
+                            {/* Vis per-del trapperom-info */}
+                            {trapperomDeler310.length > 0 && (
+                              <div className="p-3 bg-primary/5 border border-primary/20 rounded-md text-xs text-muted-foreground space-y-1 mt-2">
+                                <p className="font-medium text-foreground text-sm">Krav til trapperom (synkronisert med 3.5)</p>
+                                {trapperomDeler310.map(del => (
+                                  <p key={del.index}>
+                                    {harFlere && <span className="font-medium">Bygningsdel {del.index} ({del.navn}, RK{del.rk}): </span>}
+                                    <span className="font-bold text-foreground">{del.trType}</span>
+                                    <span className="ml-1">({del.etasjer} etasjer)</span>
+                                  </p>
+                                ))}
+                                {harFlere && harUlikeTrKrav && (
+                                  <p className="text-amber-600 font-medium pt-1 border-t border-primary/10">
+                                    ⚠ Bygningsdelene har ulike trapperomskrav ({uniqueTrTypes.join(" / ")})
+                                  </p>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Spørsmål om trapperommene går gjennom flere bygningsdeler */}
+                            {harFlere && harUlikeTrKrav && (
+                              <div className="flex items-center space-x-2 p-2 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded mt-2">
                                 <Checkbox 
-                                  id="brannvesenTilgangRK4"
-                                  checked={formData.brannvesenTilgangRK4}
-                                  onCheckedChange={(checked) => {
-                                    const tilgang = checked as boolean;
-                                    setFormData({
-                                      ...formData, 
-                                      brannvesenTilgangRK4: tilgang,
-                                      rk4TrapperomTekst: generateRK4Text(tilgang)
-                                    });
-                                  }}
+                                  id="trapperomGarGjennomAlleDeler"
+                                  checked={formData.trapperomGarGjennomAlleDeler}
+                                  onCheckedChange={(checked) => setFormData({...formData, trapperomGarGjennomAlleDeler: checked as boolean})}
                                 />
-                                <Label htmlFor="brannvesenTilgangRK4" className="text-sm cursor-pointer">
-                                  Brannvesenet har tilkomst til alle boenheter med høydemateriell
+                                <Label htmlFor="trapperomGarGjennomAlleDeler" className="text-sm cursor-pointer">
+                                  Trapperommene går gjennom flere bygningsdeler (strengeste krav gjelder: <span className="font-bold">{strengesteTr}</span>)
                                 </Label>
                               </div>
-                              <div className="mt-2">
-                                <div className="flex items-center justify-between mb-1">
-                                  <Label className="text-xs text-muted-foreground">Trapperom-krav (redigerbar)</Label>
-                                  <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="h-6 text-xs"
-                                    onClick={() => setFormData({...formData, rk4TrapperomTekst: generateRK4Text(formData.brannvesenTilgangRK4)})}
-                                  >
-                                    Sett original tekst
-                                  </Button>
-                                </div>
-                                <Textarea
-                                  value={formData.rk4TrapperomTekst || generateRK4Text(formData.brannvesenTilgangRK4)}
-                                  onChange={(e) => setFormData({...formData, rk4TrapperomTekst: e.target.value})}
-                                  rows={3}
-                                  className="text-sm"
+                            )}
+
+                            {/* RK4: Brannvesen-tilgang */}
+                            {harRK4 && (() => {
+                              const rk4Del = trapperomDeler310.find(d => d.rk === 4)!;
+                              const trType = formData.trapperomGarGjennomAlleDeler && harUlikeTrKrav ? strengesteTr : rk4Del.trType;
+                              const generateRK4Text = (tilgang: boolean) => {
+                                const prefix = harFlere ? `Bygningsdel ${rk4Del.index} (${rk4Del.navn}): ` : "";
+                                if (tilgang) {
+                                  return `${prefix}For risikoklasse 4 med ${rk4Del.etasjer} etasjer kreves ${trType}. Det er tilstrekkelig med ett trapperom da brannvesenet har tilkomst til hver boenhet med høydemateriell.`;
+                                } else {
+                                  return `${prefix}For risikoklasse 4 med ${rk4Del.etasjer} etasjer kreves ${trType}. Brannvesenet har ikke tilkomst til alle boenheter med høydemateriell. Byggverket må derfor ha minst to trapperom med separat atkomst fra alle tilknyttede brannceller.`;
+                                }
+                              };
+                              return (
+                                <>
+                                  <div className="flex items-center space-x-2 p-2 bg-muted rounded mt-2">
+                                    <Checkbox 
+                                      id="brannvesenTilgangRK4"
+                                      checked={formData.brannvesenTilgangRK4}
+                                      onCheckedChange={(checked) => {
+                                        const tilgang = checked as boolean;
+                                        setFormData({
+                                          ...formData, 
+                                          brannvesenTilgangRK4: tilgang,
+                                          rk4TrapperomTekst: generateRK4Text(tilgang)
+                                        });
+                                      }}
+                                    />
+                                    <Label htmlFor="brannvesenTilgangRK4" className="text-sm cursor-pointer">
+                                      Brannvesenet har tilkomst til alle boenheter med høydemateriell
+                                    </Label>
+                                  </div>
+                                  <div className="mt-2">
+                                    <div className="flex items-center justify-between mb-1">
+                                      <Label className="text-xs text-muted-foreground">Trapperom-krav RK4 (redigerbar)</Label>
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-6 text-xs"
+                                        onClick={() => setFormData({...formData, rk4TrapperomTekst: generateRK4Text(formData.brannvesenTilgangRK4)})}
+                                      >
+                                        Sett original tekst
+                                      </Button>
+                                    </div>
+                                    <Textarea
+                                      value={formData.rk4TrapperomTekst || generateRK4Text(formData.brannvesenTilgangRK4)}
+                                      onChange={(e) => setFormData({...formData, rk4TrapperomTekst: e.target.value})}
+                                      rows={3}
+                                      className="text-sm"
+                                    />
+                                  </div>
+                                </>
+                              );
+                            })()}
+
+                            {/* Ikke-RK4: Tilstrekkelige utganger */}
+                            {!alleErRK4 && (
+                              <div className="flex items-center space-x-2 p-2 bg-muted rounded mt-2">
+                                <Checkbox 
+                                  id="tilstrekkeligeUtgangerUtenToTrapperom"
+                                  checked={formData.tilstrekkeligeUtgangerUtenToTrapperom}
+                                  onCheckedChange={(checked) => setFormData({...formData, tilstrekkeligeUtgangerUtenToTrapperom: checked as boolean})}
                                 />
+                                <Label htmlFor="tilstrekkeligeUtgangerUtenToTrapperom" className="text-sm cursor-pointer">
+                                  Utgangene er tilstrekkelige uten krav om to trapperom (f.eks. direkte tilgang til det fri i flere plan)
+                                </Label>
                               </div>
-                            </>
-                          );
-                        }
-                        
-                        return (
-                          <div className="flex items-center space-x-2 p-2 bg-muted rounded mt-2">
-                            <Checkbox 
-                              id="tilstrekkeligeUtgangerUtenToTrapperom"
-                              checked={formData.tilstrekkeligeUtgangerUtenToTrapperom}
-                              onCheckedChange={(checked) => setFormData({...formData, tilstrekkeligeUtgangerUtenToTrapperom: checked as boolean})}
-                            />
-                            <Label htmlFor="tilstrekkeligeUtgangerUtenToTrapperom" className="text-sm cursor-pointer">
-                              Utgangene er tilstrekkelige uten krav om to trapperom (f.eks. direkte tilgang til det fri i flere plan)
-                            </Label>
-                          </div>
+                            )}
+                          </>
                         );
                       })()}
                       </div>
