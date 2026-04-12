@@ -7400,6 +7400,11 @@ const Konsept = () => {
 
                       {/* Skille mellom sprinklet og usprinklet areal */}
                       {(() => {
+                        console.log("DEBUG sprinklet/usprinklet:", {
+                          harFlere: formData.harFlereRisikoklasser,
+                          bygningsdelerLen: formData.bygningsdeler?.length,
+                          bygningsdeler: formData.bygningsdeler?.map((d: any) => ({ rk: d.risikoklasse, etj: d.etasjer }))
+                        });
                         if (!formData.harFlereRisikoklasser || !formData.bygningsdeler?.length) return null;
                         // Finn ut hvilke deler som krever sprinkler
                         const delerMedSprinklerKrav: string[] = [];
