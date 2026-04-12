@@ -3522,16 +3522,14 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
             )}
             {/* Skille mellom sprinklet og usprinklet areal */}
-            {!isBF85 && (formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) && formData.harFlereRisikoklasser && bygningsdeler.length > 0 && (() => {
-              const delerMedKrav: string[] = [];
-              const delerUtenKrav: string[] = [];
+            {!isBF85 && (formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) && formData.harFlereRisikoklasser && (() => {
+              const alleParts: { label: string; rk: string; etasjer: number }[] = [];
+              if (formData.risikoklasse) alleParts.push({ label: `Bygningsdel 1 (${formData.bygningstype || ''}, ${formData.risikoklasse})`, rk: formData.risikoklasse, etasjer: parseInt(formData.etasjer) || 1 });
               bygningsdeler.forEach((d: any, i: number) => {
-                const rk = d.risikoklasse;
-                const etj = parseInt(d.etasjer) || parseInt(formData.etasjer) || 1;
-                const krev = rk === "RK6" || (rk === "RK4" && etj > 3);
-                const label = `Bygningsdel ${i + 1} (${d.navn || d.bygningstype || ''}, ${rk})`;
-                if (krev) delerMedKrav.push(label); else delerUtenKrav.push(label);
+                if (d.risikoklasse) alleParts.push({ label: `Bygningsdel ${i + 2} (${d.navn || d.bygningstype || ''}, ${d.risikoklasse})`, rk: d.risikoklasse, etasjer: parseInt(d.etasjer) || parseInt(formData.etasjer) || 1 });
               });
+              const delerMedKrav = alleParts.filter(p => p.rk === "RK6" || (p.rk === "RK4" && p.etasjer > 3));
+              const delerUtenKrav = alleParts.filter(p => !(p.rk === "RK6" || (p.rk === "RK4" && p.etasjer > 3)));
               if (delerMedKrav.length === 0 || delerUtenKrav.length === 0) return null;
               return (
                 <tr>
