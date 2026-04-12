@@ -7460,6 +7460,13 @@ const Konsept = () => {
                                 </p>
                               </div>
                             )}
+                            {formData.skilleSpinkletUsprinklet && (
+                              <div className="ml-6 p-2 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded">
+                                <p className="text-xs text-blue-700 dark:text-blue-300">
+                                  <span className="font-medium">ℹ️ Kontroller kapittel 3.4 (§ 11-7 Brannseksjonering):</span> Det må etableres brannseksjonering mellom sprinklet og usprinklet areal. Verifiser at brannseksjoneringskrav i kapittel 3.4 er oppdatert i henhold til dette skillet.
+                                </p>
+                              </div>
+                            )}
                           </div>
                         );
                       })()}
