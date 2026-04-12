@@ -1114,6 +1114,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     rows.push(contentRow("Alternativt tiltak for slokkeanlegg", altTekst, "RIBr"));
   }
 
+  if (formData.tilretteleggingLedd2a || formData.alarmValg === "brannalarm") {
     // Beregn kategori per bygningsdel
     const bygningsdeler39 = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
     const allParts39: { label: string; rk: string; etasjer: number }[] = [];
