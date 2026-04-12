@@ -1018,16 +1018,18 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     } else {
       rorParts.push({ label: '', rk: formData.risikoklasse, bkl: formData.brannklasse });
     }
-    const piiRorParts = rorParts.filter(p => ["RK3","RK5","RK6"].includes(p.rk) || ["BKL2","BKL3"].includes(p.bkl));
-    const piiiRorParts = rorParts.filter(p => ["RK1","RK2","RK4"].includes(p.rk) && p.bkl === "BKL1");
     const isMultiRor = rorParts.length > 1;
-    if (piiRorParts.length > 0) {
-      const suffix = isMultiRor && piiiRorParts.length > 0 ? ` (${piiRorParts.map(p => p.label).join(', ')})` : '';
-      rorLines.push(`   Øvrig isolasjon på rør og kanaler må minst tilfredsstille klasse CL-s3,d0 [PII].${suffix}`);
-    }
-    if (piiiRorParts.length > 0) {
-      const suffix = isMultiRor && piiRorParts.length > 0 ? ` (${piiiRorParts.map(p => p.label).join(', ')})` : '';
-      rorLines.push(`   Øvrig isolasjon på rør og kanaler må minst tilfredsstille klasse DL-s3,d0 [PIII].${suffix}`);
+    if (!isMultiRor) {
+      // Single part
+      const isPII = ["RK3","RK5","RK6"].includes(rorParts[0].rk) || ["BKL2","BKL3"].includes(rorParts[0].bkl);
+      rorLines.push(`   Øvrig isolasjon på rør og kanaler må minst tilfredsstille klasse ${isPII ? 'CL-s3,d0 [PII]' : 'DL-s3,d0 [PIII]'}.`);
+    } else {
+      // Multiple parts – list per part
+      rorLines.push("   Øvrig isolasjon på rør og kanaler:");
+      rorParts.forEach(p => {
+        const isPII = ["RK3","RK5","RK6"].includes(p.rk) || ["BKL2","BKL3"].includes(p.bkl);
+        rorLines.push(`      ${p.label}: klasse ${isPII ? 'CL-s3,d0 [PII]' : 'DL-s3,d0 [PIII]'}`);
+      });
     }
     rorLines.push("");
     rorLines.push("Den flaten der rør eller kanal er innfestet, regnes som tilgrensede vegg- eller himlingsflate. For vertikale rør og kanaler er det veggflaten som skal legges til grunn.");
