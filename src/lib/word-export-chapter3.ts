@@ -1095,7 +1095,25 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     }
   }
 
-  if (formData.tilretteleggingLedd2a || formData.alarmValg === "brannalarm") {
+  if (formData.tilretteleggingLedd1a) {
+    const rk4Tekst = formData.harFlereRisikoklasser && !formData.skilleSpinkletUsprinklet
+      ? "Hele byggverket skal ha automatisk brannslokkeanlegg da det ikke skilles mellom sprinklet og usprinklet areal med brannseksjonering.\n\n1. Forskriftens krav til automatisk brannslokkeanlegg i byggverk i risikoklasse 4 anses oppfylt når det installeres automatisk sprinkleranlegg i samsvar med NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019.\n2. Dersom ulike deler av et byggverk ikke kan oppdeles i brannseksjoner, må hele byggverket ha automatisk sprinkleranlegg."
+      : "Byggverk eller del av byggverk i risikoklasse 4 hvor det kreves heis, skal ha automatisk brannslokkeanlegg. Deler av et byggverk med og uten automatisk brannslokkeanlegg skal være ulike brannseksjoner.\n\n1. Forskriftens krav til automatisk brannslokkeanlegg i byggverk i risikoklasse 4 anses oppfylt når det installeres automatisk sprinkleranlegg i samsvar med NS-EN 16925:2018+AC:2020 og NS-EN 16925:2018+NA:2019.\n2. Dersom ulike deler av et byggverk ikke kan oppdeles i brannseksjoner, må hele byggverket ha automatisk sprinkleranlegg.";
+    rows.push(contentRow("Automatisk brannslokkeanlegg (RK4)", rk4Tekst, "RIV"));
+  }
+
+  if (formData.tilretteleggingLedd1b) {
+    rows.push(contentRow("Automatisk brannslokkeanlegg (RK6)", "Byggverk i risikoklasse 6 skal ha automatisk brannslokkeanlegg.\n\n1. Forskriftens krav til automatisk slokkeanlegg i byggverk i risikoklasse 6 anses oppfylt når det installeres automatisk sprinkleranlegg i samsvar med NS-EN 12845:2015+A1:2019.\n2. Dersom byggverket også har virksomhet i andre risikoklasser, må deler av byggverket med og uten automatisk sprinkleranlegg være ulike brannseksjoner.\n3. Dersom virksomhet i ulike risikoklasser ikke kan oppdeles i brannseksjoner, må hele byggverket ha automatisk sprinkleranlegg.", "RIV"));
+  }
+
+  if (formData.tilretteleggingLedd1c && (formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b)) {
+    let altTekst = "Der det er krav om automatisk brannslokkeanlegg, kan det likevel benyttes andre tiltak som gir tilsvarende sikkerhet ved å hindre, begrense eller kontrollere en brann lokalt der den oppstår.";
+    if (formData.tilretteleggingLedd1cBeskrivelse) {
+      altTekst += `\n\nValgt tiltak: ${formData.tilretteleggingLedd1cBeskrivelse}`;
+    }
+    rows.push(contentRow("Alternativt tiltak for slokkeanlegg", altTekst, "RIBr"));
+  }
+
     // Beregn kategori per bygningsdel
     const bygningsdeler39 = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
     const allParts39: { label: string; rk: string; etasjer: number }[] = [];
