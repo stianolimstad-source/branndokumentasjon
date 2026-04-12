@@ -8302,7 +8302,7 @@ const Konsept = () => {
                                       }}
                                     />
                                     <Label htmlFor="brannvesenTilgangRK4" className="text-sm cursor-pointer">
-                                      Brannvesenet har tilkomst til alle boenheter med høydemateriell
+                                      Brannvesenet har tilkomst til alle boenheter med høydemateriell (gjelder risikoklasse 4)
                                     </Label>
                                   </div>
                                   <div className="mt-2">
