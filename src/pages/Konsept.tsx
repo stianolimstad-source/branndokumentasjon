@@ -7020,17 +7020,15 @@ const Konsept = () => {
                                 } else {
                                   allParts.push({ label: '', rk: formData.risikoklasse, bkl: formData.brannklasse });
                                 }
-                                const hasPII = allParts.some(p => ["RK3","RK5","RK6"].includes(p.rk) || ["BKL2","BKL3"].includes(p.bkl));
-                                const hasPIII = allParts.some(p => ["RK1","RK2","RK4"].includes(p.rk) && p.bkl === "BKL1");
                                 const isMulti = allParts.length > 1;
-                                const piiLabels = allParts.filter(p => ["RK3","RK5","RK6"].includes(p.rk) || ["BKL2","BKL3"].includes(p.bkl)).map(p => p.label);
-                                const piiiLabels = allParts.filter(p => ["RK1","RK2","RK4"].includes(p.rk) && p.bkl === "BKL1").map(p => p.label);
-                                return (
-                                  <>
-                                    {hasPII && <li>Øvrig isolasjon: CL-s3,d0 [PII]{isMulti && hasPIII ? ` (${piiLabels.join(', ')})` : ''}</li>}
-                                    {hasPIII && <li>Øvrig isolasjon: DL-s3,d0 [PIII]{isMulti && hasPII ? ` (${piiiLabels.join(', ')})` : ''}</li>}
-                                  </>
-                                );
+                                if (!isMulti) {
+                                  const isPII = ["RK3","RK5","RK6"].includes(allParts[0].rk) || ["BKL2","BKL3"].includes(allParts[0].bkl);
+                                  return <li>Øvrig isolasjon: {isPII ? 'CL-s3,d0 [PII]' : 'DL-s3,d0 [PIII]'}</li>;
+                                }
+                                return allParts.map((p, idx) => {
+                                  const isPII = ["RK3","RK5","RK6"].includes(p.rk) || ["BKL2","BKL3"].includes(p.bkl);
+                                  return <li key={idx}>{p.label}: Øvrig isolasjon {isPII ? 'CL-s3,d0 [PII]' : 'DL-s3,d0 [PIII]'}</li>;
+                                });
                               })()}
                             </>
                           )}
