@@ -7312,7 +7312,11 @@ const Konsept = () => {
                             onCheckedChange={(checked) => setFormData({...formData, tilretteleggingLedd1a: checked as boolean})}
                           />
                           <Label htmlFor="tilretteleggingLedd1a" className="text-xs cursor-pointer leading-relaxed">
-                            <strong>Automatisk brannslokkeanlegg (RK4):</strong> Byggverk eller del av byggverk i risikoklasse 4 hvor det kreves heis, skal ha automatisk brannslokkeanlegg. Deler av et byggverk med og uten automatisk brannslokkeanlegg skal være ulike brannseksjoner.
+                            <strong>Automatisk brannslokkeanlegg (RK4):</strong>{' '}
+                            {formData.harFlereRisikoklasser && !formData.skilleSpinkletUsprinklet
+                              ? "Hele byggverket skal ha automatisk brannslokkeanlegg da det ikke skilles mellom sprinklet og usprinklet areal med brannseksjonering. Deler av et byggverk med og uten automatisk brannslokkeanlegg skal være ulike brannseksjoner."
+                              : "Byggverk eller del av byggverk i risikoklasse 4 hvor det kreves heis, skal ha automatisk brannslokkeanlegg. Deler av et byggverk med og uten automatisk brannslokkeanlegg skal være ulike brannseksjoner."
+                            }
                           </Label>
                         </div>
                         )}
