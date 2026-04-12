@@ -3789,48 +3789,57 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             </tr>
             {/* Krav til trapperom - § 11-13 (2) - automatisk basert på RK og etasjer */}
             {(() => {
-              const getTrapperomType = (rk: number, etasjer: number) => {
-                if (etasjer <= 8) {
-                  if (rk === 1 || rk === 2 || rk === 4) return "Tr 1";
-                  if (rk === 3 || rk === 5 || rk === 6) return "Tr 2";
-                }
-                return "Tr 3";
+              const trapperomTypeMap310: Record<number, { lav: string; hoy: string }> = {
+                1: { lav: "Tr 1", hoy: "Tr 3" }, 2: { lav: "Tr 1", hoy: "Tr 3" },
+                3: { lav: "Tr 2", hoy: "Tr 3" }, 4: { lav: "Tr 1", hoy: "Tr 3" },
+                5: { lav: "Tr 2", hoy: "Tr 3" }, 6: { lav: "Tr 2", hoy: "Tr 3" },
               };
+              const getTrType310 = (rk: number, etasjer: number) => {
+                if (!trapperomTypeMap310[rk]) return "Tr 1";
+                return etasjer <= 8 ? trapperomTypeMap310[rk].lav : trapperomTypeMap310[rk].hoy;
+              };
+              const trRank: Record<string, number> = { "Tr 3": 3, "Tr 2": 2, "Tr 1": 1 };
 
               // Build per-building-part entries
               const trapperomDeler: { index: number; navn: string; rk: number; etasjer: number; trType: string }[] = [];
+              const rk1 = parseInt((formData.risikoklasse || "").replace(/\D/g, ''), 10);
+              const fl1 = parseInt(formData.etasjer || "0", 10);
+              if (rk1 && fl1 >= 1) trapperomDeler.push({ index: 1, navn: formData.bygningstype || 'Bygningsdel 1', rk: rk1, etasjer: fl1, trType: getTrType310(rk1, fl1) });
               if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
-                const rk1 = parseInt((formData.risikoklasse || "").replace(/\D/g, ''), 10);
-                const fl1 = parseInt(formData.etasjer || "0", 10);
-                if (rk1 && fl1 >= 2) trapperomDeler.push({ index: 1, navn: formData.bygningstype || 'Bygningsdel 1', rk: rk1, etasjer: fl1, trType: getTrapperomType(rk1, fl1) });
                 formData.bygningsdeler.forEach((del: any, i: number) => {
                   const rkDel = parseInt((del.risikoklasse || "").replace(/\D/g, ''), 10);
                   const flDel = parseInt(del.etasjer || formData.etasjer || "0", 10);
-                  if (rkDel && flDel >= 2) trapperomDeler.push({ index: i + 2, navn: del.navn || del.bygningstype || `Bygningsdel ${i + 2}`, rk: rkDel, etasjer: flDel, trType: getTrapperomType(rkDel, flDel) });
+                  if (rkDel && flDel >= 1) trapperomDeler.push({ index: i + 2, navn: del.navn || del.bygningstype || `Bygningsdel ${i + 2}`, rk: rkDel, etasjer: flDel, trType: getTrType310(rkDel, flDel) });
                 });
-              } else {
-                const rk = parseInt((formData.risikoklasse || "").replace(/\D/g, ''), 10);
-                const etasjer = parseInt(formData.etasjer || "0", 10);
-                if (rk && etasjer >= 2) trapperomDeler.push({ index: 1, navn: "", rk, etasjer, trType: getTrapperomType(rk, etasjer) });
               }
 
               if (trapperomDeler.length === 0) return null;
               const showMultiple = trapperomDeler.length > 1;
+              const uniqueTrTypes = [...new Set(trapperomDeler.map(d => d.trType))];
+              const harUlikeTrKrav = uniqueTrTypes.length > 1;
+              const strengesteTr = trapperomDeler.reduce((prev, curr) => (trRank[curr.trType] || 0) > (trRank[prev] || 0) ? curr.trType : prev, "Tr 1");
+              const brukStrengestePgaGjennomgang = showMultiple && harUlikeTrKrav && formData.trapperomGarGjennomAlleDeler;
 
               return (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top font-medium">Trapperom<br/><span className="text-xs text-muted-foreground">§ 11-13 (2)</span></td>
                   <td className="border border-gray-400 p-2">
                     <ul className="list-disc ml-4 space-y-1">
+                      {brukStrengestePgaGjennomgang && (
+                        <li className="font-medium">
+                          Trapperommene går gjennom flere bygningsdeler med ulike krav. Strengeste krav gjelder: {strengesteTr}.
+                        </li>
+                      )}
                       {trapperomDeler.map((del) => {
+                        const effectiveTr = brukStrengestePgaGjennomgang ? strengesteTr : del.trType;
                         const isRK4 = del.rk === 4;
                         if (isRK4) {
                           return (
                             <li key={del.index} style={{whiteSpace: 'pre-wrap'}}>
                               {showMultiple && <span className="font-medium">Bygningsdel {del.index} ({del.navn}): </span>}
                               {formData.rk4TrapperomTekst || (formData.brannvesenTilgangRK4 !== false 
-                                ? `For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${del.trType}. Det er tilstrekkelig med ett trapperom da brannvesenet har tilkomst til hver boenhet med høydemateriell.`
-                                : `For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${del.trType}. Brannvesenet har ikke tilkomst til alle boenheter med høydemateriell. Byggverket må derfor ha minst to trapperom med separat atkomst fra alle tilknyttede brannceller.`)}
+                                ? `For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${effectiveTr}. Det er tilstrekkelig med ett trapperom da brannvesenet har tilkomst til hver boenhet med høydemateriell.`
+                                : `For risikoklasse ${del.rk} med ${del.etasjer} etasjer kreves ${effectiveTr}. Brannvesenet har ikke tilkomst til alle boenheter med høydemateriell. Byggverket må derfor ha minst to trapperom med separat atkomst fra alle tilknyttede brannceller.`)}
                             </li>
                           );
                         }
@@ -3838,14 +3847,14 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                           return (
                             <li key={del.index}>
                               {showMultiple && <span className="font-medium">Bygningsdel {del.index} ({del.navn}): </span>}
-                              For risikoklasse {del.rk} med {del.etasjer} etasjer kreves {del.trType}. Det er bekreftet at utgangene er tilstrekkelige uten krav om to trapperom, da deler av bygget har direkte tilgang til det fri.
+                              For risikoklasse {del.rk} med {del.etasjer} etasjer kreves {effectiveTr}. Det er bekreftet at utgangene er tilstrekkelige uten krav om to trapperom, da deler av bygget har direkte tilgang til det fri.
                             </li>
                           );
                         }
                         return (
                           <li key={del.index}>
                             {showMultiple && <span className="font-medium">Bygningsdel {del.index} ({del.navn}): </span>}
-                            Byggverk må ha minst to trapperom. For risikoklasse {del.rk} med {del.etasjer} etasjer kreves {del.trType}.
+                            Byggverk må ha minst to trapperom. For risikoklasse {del.rk} med {del.etasjer} etasjer kreves {effectiveTr}.
                           </li>
                         );
                       })}
