@@ -7390,8 +7390,43 @@ const Konsept = () => {
                       <div className="space-y-3">
                         <Label className="text-xs font-medium">Velg relevante krav:</Label>
                         
-                        {/* Sjekk om bygget kvalifiserer for røykvarslere */}
+                        {/* Sjekk om bygget kvalifiserer for røykvarslere - sjekk alle bygningsdeler */}
                         {(() => {
+                          // Bygg opp allParts for å sjekke alle bygningsdeler
+                          const allParts39: { label: string; rk: string; bkl: string; etasjer: number; areal: number; bygningstype: string }[] = [];
+                          if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0) {
+                            formData.bygningsdeler.forEach((d: any, i: number) => {
+                              if (d.risikoklasse) allParts39.push({
+                                label: `Bygningsdel ${i + 1} (${d.navn || d.bygningstype || ''}, ${d.risikoklasse})`,
+                                rk: d.risikoklasse, bkl: d.brannklasse || '',
+                                etasjer: parseInt(d.etasjer) || parseInt(formData.etasjer) || 1,
+                                areal: parseFloat(d.areal) || parseFloat(formData.areal) || 0,
+                                bygningstype: (d.bygningstype || d.navn || '').toLowerCase()
+                              });
+                            });
+                          }
+                          if (allParts39.length === 0) {
+                            allParts39.push({
+                              label: '', rk: formData.risikoklasse, bkl: formData.brannklasse || '',
+                              etasjer: parseInt(formData.etasjer) || 1,
+                              areal: parseFloat(formData.areal) || 0,
+                              bygningstype: (formData.bygningstype || '').toLowerCase()
+                            });
+                          }
+                          const isMulti39 = allParts39.length > 1;
+
+                          // Funksjon for å sjekke om en del kvalifiserer for røykvarslere
+                          const kanDelVelgeRoykvarsler = (p: typeof allParts39[0]) => {
+                            const erRK2IL = p.rk === "RK2" && p.areal <= 1200 && (p.bygningstype.includes("industri") || p.bygningstype.includes("lager"));
+                            const erRK2K = p.rk === "RK2" && p.areal <= 1200 && p.bygningstype.includes("kontor");
+                            const erRK4B = p.rk === "RK4" && (p.bygningstype.includes("bolig") || p.bygningstype.includes("enebolig") || p.bygningstype.includes("rekkehus") || p.bygningstype.includes("kjedehus") || p.bygningstype.includes("fritidsbolig"));
+                            const erRK5L = p.rk === "RK5" && p.areal <= 600;
+                            return erRK2IL || erRK2K || erRK4B || erRK5L;
+                          };
+
+                          // Alle deler må kvalifisere for røykvarslere for at valget skal være tilgjengelig
+                          const kanVelgeRoykvarsler = allParts39.every(p => kanDelVelgeRoykvarsler(p));
+
                           const rk = formData.risikoklasse;
                           const areal = parseFloat(formData.areal) || 0;
                           const bygningstype = formData.bygningstype.toLowerCase();
@@ -7406,18 +7441,20 @@ const Konsept = () => {
                              bygningstype.includes("bolig"));
                           const erRK5Liten = rk === "RK5" && areal <= 600;
                           
-                          const kanVelgeRoykvarsler = erRK2IndustriLager || erRK2Kontor || erRK4Bolig || erRK5Liten;
-                          
                           const bt = formData.bygningstype.toLowerCase();
                           const erBolig = bt.includes("bolig") || bt.includes("enebolig") || bt.includes("rekkehus") || bt.includes("kjedehus") || bt.includes("leilighet") || formData.risikoklasse === "RK4";
                           
-                          // Beregn brannalarmkategori
-                          let brannalarmkategori = 1;
-                          if (rk === "RK5" || rk === "RK6") {
-                            brannalarmkategori = 2;
-                          } else if ((rk === "RK2" || rk === "RK3" || rk === "RK4") && etasjer >= 2) {
-                            brannalarmkategori = 2;
-                          }
+                          // Beregn brannalarmkategori per del og bruk strengeste
+                          const beregnKategori = (p: typeof allParts39[0]) => {
+                            if (p.rk === "RK5" || p.rk === "RK6") return 2;
+                            if ((p.rk === "RK2" || p.rk === "RK3" || p.rk === "RK4") && p.etasjer >= 2) return 2;
+                            return 1;
+                          };
+                          const brannalarmkategori = Math.max(...allParts39.map(beregnKategori));
+                          const harUlikeKategorier = isMulti39 && new Set(allParts39.map(beregnKategori)).size > 1;
+
+                          // Fravikssjekk: sjekk om noen del har RK2-RK6
+                          const noenDelKreverAlarm = allParts39.some(p => ["RK2","RK3","RK4","RK5","RK6"].includes(p.rk));
                           
                           // Alarmvalg: "brannalarm" eller "roykvarsler"
                           const alarmValg = formData.alarmValg || "brannalarm";
@@ -7498,7 +7535,7 @@ const Konsept = () => {
                                   </Label>
                                 </div>
                               )}
-                              {!kanVelgeRoykvarsler && !formData.tilretteleggingLedd2a && ["RK2","RK3","RK4","RK5","RK6"].includes(formData.risikoklasse) && (
+                              {!kanVelgeRoykvarsler && !formData.tilretteleggingLedd2a && noenDelKreverAlarm && (
                                 <div className="ml-6 p-3 border border-destructive/50 rounded-lg bg-destructive/10">
                                   <p className="text-xs font-semibold text-destructive">
                                     ⚠️ Fravik: Brannalarmanlegg er påkrevd for byggverk i risikoklasse 2 til 6 (jf. TEK17 § 11-12, første ledd bokstav c). Ved å fjerne dette kravet må det dokumenteres som et fravik fra preaksepterte ytelser.
@@ -7514,15 +7551,26 @@ const Konsept = () => {
                                     <div className="flex items-center gap-2">
                                       <Label className="text-xs font-medium">Brannalarmkategori:</Label>
                                       <span className="text-xs font-bold text-primary">{brannalarmkategori}</span>
-                                      <span className="text-xs text-muted-foreground ml-1">
-                                        (basert på {rk}, {etasjer} {etasjer === 1 ? "etasje" : "etasjer"})
-                                      </span>
+                                      {!isMulti39 && (
+                                        <span className="text-xs text-muted-foreground ml-1">
+                                          (basert på {rk}, {etasjer} {etasjer === 1 ? "etasje" : "etasjer"})
+                                        </span>
+                                      )}
                                     </div>
-                                    <p className="text-xs text-muted-foreground">
-                                      {brannalarmkategori === 1
-                                        ? "Brannalarmkategori 1: Optiske røykdetektorer i rømningsveier og fellesarealer."
-                                        : "Brannalarmkategori 2: Heldekkende brannalarmanlegg med optiske røykdetektorer i alle områder."}
-                                    </p>
+                                    {isMulti39 && harUlikeKategorier ? (
+                                      <ul className="text-xs text-muted-foreground list-disc list-inside">
+                                        {allParts39.map((p, idx) => (
+                                          <li key={idx}>{p.label}: Kategori {beregnKategori(p)}</li>
+                                        ))}
+                                        <li className="font-medium text-foreground mt-1">Strengeste krav: Kategori {brannalarmkategori}</li>
+                                      </ul>
+                                    ) : (
+                                      <p className="text-xs text-muted-foreground">
+                                        {brannalarmkategori === 1
+                                          ? "Brannalarmkategori 1: Optiske røykdetektorer i rømningsveier og fellesarealer."
+                                          : "Brannalarmkategori 2: Heldekkende brannalarmanlegg med optiske røykdetektorer i alle områder."}
+                                      </p>
+                                    )}
                                   </div>
 
                                   <Label className="text-xs font-medium block mb-2">Krav for brannalarmanlegg:</Label>
