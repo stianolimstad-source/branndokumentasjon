@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Plus, FolderOpen, ShieldCheck, BarChart3, GitCompare, Shield, LayoutDashboard, Warehouse, Receipt } from "lucide-react";
+import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Plus, FolderOpen, ShieldCheck, BarChart3, GitCompare, Shield, LayoutDashboard, Warehouse, Receipt, Handshake } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -50,6 +50,12 @@ const Index = () => {
       title: "Tilbud",
       description: "Lag og eksporter profesjonelle pristilbud til kunder",
       href: "/tilbud",
+    },
+    {
+      icon: Handshake,
+      title: "Oppdragsbekreftelse",
+      description: "Lag formelle oppdragsbekreftelser med omfang og vilkår",
+      href: "/oppdragsbekreftelse",
     },
     {
       icon: ShieldCheck,

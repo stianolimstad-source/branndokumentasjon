@@ -130,6 +130,77 @@ export type Database = {
           },
         ]
       }
+      engagements: {
+        Row: {
+          assignment_description: string | null
+          client_address: string | null
+          client_company: string | null
+          client_email: string | null
+          client_name: string | null
+          conditions: string | null
+          created_at: string
+          deliverables: string | null
+          engagement_number: string | null
+          fee_amount: number | null
+          fee_description: string | null
+          id: string
+          project_id: string | null
+          scope: string | null
+          status: string
+          timeline: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assignment_description?: string | null
+          client_address?: string | null
+          client_company?: string | null
+          client_email?: string | null
+          client_name?: string | null
+          conditions?: string | null
+          created_at?: string
+          deliverables?: string | null
+          engagement_number?: string | null
+          fee_amount?: number | null
+          fee_description?: string | null
+          id?: string
+          project_id?: string | null
+          scope?: string | null
+          status?: string
+          timeline?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assignment_description?: string | null
+          client_address?: string | null
+          client_company?: string | null
+          client_email?: string | null
+          client_name?: string | null
+          conditions?: string | null
+          created_at?: string
+          deliverables?: string | null
+          engagement_number?: string | null
+          fee_amount?: number | null
+          fee_description?: string | null
+          id?: string
+          project_id?: string | null
+          scope?: string | null
+          status?: string
+          timeline?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "engagements_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fire_concepts: {
         Row: {
           content: Json | null
