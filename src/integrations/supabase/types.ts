@@ -411,6 +411,109 @@ export type Database = {
           },
         ]
       }
+      quote_lines: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          quantity: number
+          quote_id: string
+          sort_order: number
+          unit: string | null
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          id?: string
+          quantity?: number
+          quote_id: string
+          sort_order?: number
+          unit?: string | null
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          quantity?: number
+          quote_id?: string
+          sort_order?: number
+          unit?: string | null
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_lines_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quotes: {
+        Row: {
+          conditions: string | null
+          created_at: string
+          id: string
+          include_mva: boolean
+          payment_terms: string | null
+          project_id: string | null
+          quote_number: string | null
+          recipient_address: string | null
+          recipient_company: string | null
+          recipient_email: string | null
+          recipient_name: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          validity_date: string | null
+        }
+        Insert: {
+          conditions?: string | null
+          created_at?: string
+          id?: string
+          include_mva?: boolean
+          payment_terms?: string | null
+          project_id?: string | null
+          quote_number?: string | null
+          recipient_address?: string | null
+          recipient_company?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          validity_date?: string | null
+        }
+        Update: {
+          conditions?: string | null
+          created_at?: string
+          id?: string
+          include_mva?: boolean
+          payment_terms?: string | null
+          project_id?: string | null
+          quote_number?: string | null
+          recipient_address?: string | null
+          recipient_company?: string | null
+          recipient_email?: string | null
+          recipient_name?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          validity_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotes_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tasks: {
         Row: {
           assigned_by: string
