@@ -46,6 +46,12 @@ const Index = () => {
       href: "/brensellagring",
     },
     {
+      icon: Receipt,
+      title: "Tilbud",
+      description: "Lag og eksporter profesjonelle pristilbud til kunder",
+      href: "/tilbud",
+    },
+    {
       icon: ShieldCheck,
       title: "Sikkerhetsrutiner",
       description: "Rutiner og maler for kvalitetssikring ved prosjektering",
