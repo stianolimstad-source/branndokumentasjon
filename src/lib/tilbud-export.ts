@@ -72,7 +72,7 @@ function dataCell(text: string, width: number, align: typeof AlignmentType[keyof
   });
 }
 
-function totalCell(text: string, width: number, bold = false, align = AlignmentType.LEFT): TableCell {
+function totalCell(text: string, width: number, bold = false, align: typeof AlignmentType[keyof typeof AlignmentType] = AlignmentType.LEFT): TableCell {
   return new TableCell({
     width: { size: width, type: WidthType.DXA },
     borders: { ...borders, top: { style: BorderStyle.SINGLE, size: 2, color: "333333" } },

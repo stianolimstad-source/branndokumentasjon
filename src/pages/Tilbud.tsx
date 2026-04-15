@@ -221,7 +221,7 @@ const Tilbud = () => {
       <div className="container mx-auto px-4 py-8 max-w-5xl space-y-6">
         <PageHeader
           title="Tilbudsgenerator"
-          description="Opprett og eksporter profesjonelle tilbud"
+          subtitle="Opprett og eksporter profesjonelle tilbud"
         />
 
         {/* Project selector */}
