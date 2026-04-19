@@ -415,11 +415,18 @@ const Konsept = () => {
   const [conceptName, setConceptName] = useState("");
 
   // Create project dialog state
-  const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(searchParams.get("new") === "true");
+  const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [newProjectData, setNewProjectData] = useState({ name: "", description: "", address: "" });
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [authorInfo, setAuthorInfo] = useState<{ name: string; company: string } | null>(null);
+
+  // Auto-open create project dialog only for authenticated users when ?new=true
+  useEffect(() => {
+    if (!authLoading && user && searchParams.get("new") === "true") {
+      setIsCreateProjectOpen(true);
+    }
+  }, [authLoading, user, searchParams]);
 
   // Fetch user logo and profile info
   useEffect(() => {
@@ -2351,36 +2358,26 @@ const Konsept = () => {
     );
   }
 
-  // Show login prompt if not authenticated
-  if (!authLoading && !user) {
-    return (
-      <div className="min-h-screen bg-gradient-subtle">
-        <div className="container mx-auto px-4 py-16">
-          <Card className="max-w-md mx-auto shadow-medium">
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <LogIn className="h-12 w-12 text-muted-foreground mb-4" />
-              <CardTitle className="text-xl mb-2">Logg inn for å fortsette</CardTitle>
-              <CardDescription className="text-center mb-6">
-                Du må være innlogget for å opprette og lagre brannkonsepter.
-              </CardDescription>
-              <Link to="/auth">
-                <Button>
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Logg inn
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
+  // Demo-modus: ikke-innloggede brukere kan utforske skjemaet og forhåndsvisning
+  // men kan ikke lagre, dele, sende til KS eller laste ned.
+  const isDemoMode = !authLoading && !user;
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
 
       <div className="w-full px-4 py-6">
         <div className="max-w-[1800px] mx-auto space-y-4">
+          {/* Demo-modus banner */}
+          {isDemoMode && (
+            <Alert className="border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700">
+              <Sparkles className="h-4 w-4 text-amber-700 dark:text-amber-400" />
+              <AlertTitle className="text-amber-900 dark:text-amber-200">Demo-modus</AlertTitle>
+              <AlertDescription className="text-amber-800 dark:text-amber-300">
+                Du er ikke innlogget. Du kan utforske skjemaet og se forhåndsvisning, men kan ikke lagre, dele eller laste ned dokumentet.{" "}
+                <Link to="/auth" className="font-semibold underline hover:no-underline">Logg inn</Link> for full tilgang.
+              </AlertDescription>
+            </Alert>
+          )}
           {/* Back button to project */}
           {selectedProjectId && (
             <Button
@@ -2537,7 +2534,7 @@ const Konsept = () => {
                         </div>
                       )}
 
-                      {!conceptId && (
+                      {!conceptId && !isDemoMode && (
                         <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg border border-dashed">
                           <UploadConceptDialog onDataExtracted={(extracted) => {
                             setFormData(prev => {
@@ -9139,28 +9136,44 @@ const Konsept = () => {
           </ScrollArea>
         </CardContent>
         <div className="flex-shrink-0 border-t bg-background p-4 flex flex-col gap-2">
-          <Button 
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white" 
-            size="lg"
-            onClick={handleSave}
-            disabled={isSaving || !conceptName}
-          >
-            <Save className="h-4 w-4 mr-2" />
-            {isSaving ? "Lagrer..." : "Lagre endringer"}
-          </Button>
-          <SendToKSDialog
-            conceptName={conceptName}
-            projectId={selectedProjectId}
-            conceptId={conceptId}
-            conceptContent={formData}
-            disabled={!conceptName}
-          />
-          <UpdateKSButton
-            conceptId={conceptId}
-            conceptName={conceptName}
-            conceptContent={formData}
-            disabled={!conceptName}
-          />
+          {isDemoMode ? (
+            <div className="rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 p-3 text-center">
+              <p className="text-sm text-amber-900 dark:text-amber-200 mb-2">
+                Lagring, deling og nedlasting krever innlogging.
+              </p>
+              <Link to="/auth">
+                <Button size="sm" variant="outline" className="border-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50">
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Logg inn for full tilgang
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <>
+              <Button
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                size="lg"
+                onClick={handleSave}
+                disabled={isSaving || !conceptName}
+              >
+                <Save className="h-4 w-4 mr-2" />
+                {isSaving ? "Lagrer..." : "Lagre endringer"}
+              </Button>
+              <SendToKSDialog
+                conceptName={conceptName}
+                projectId={selectedProjectId}
+                conceptId={conceptId}
+                conceptContent={formData}
+                disabled={!conceptName}
+              />
+              <UpdateKSButton
+                conceptId={conceptId}
+                conceptName={conceptName}
+                conceptContent={formData}
+                disabled={!conceptName}
+              />
+            </>
+          )}
         </div>
       </Card>
 
