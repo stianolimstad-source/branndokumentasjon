@@ -318,8 +318,8 @@ const Index = () => {
               <p>Utviklet av Stian Olimstad</p>
             </div>
             <div className="flex flex-col items-center md:items-end gap-1">
-              <a href="mailto:stianolimstad@gmail.com" className="hover:text-foreground transition-colors">
-                stianolimstad@gmail.com
+              <a href="mailto:stian.olimstad@olimstadbrannrådgivning.no" className="hover:text-foreground transition-colors">
+                stian.olimstad@olimstadbrannrådgivning.no
               </a>
               <a href="tel:+4790701285" className="hover:text-foreground transition-colors">
                 907 01 285
