@@ -415,7 +415,7 @@ const Konsept = () => {
   const [conceptName, setConceptName] = useState("");
 
   // Create project dialog state
-  const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(searchParams.get("new") === "true");
+  const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [newProjectData, setNewProjectData] = useState({ name: "", description: "", address: "" });
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
