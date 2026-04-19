@@ -421,6 +421,13 @@ const Konsept = () => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [authorInfo, setAuthorInfo] = useState<{ name: string; company: string } | null>(null);
 
+  // Auto-open create project dialog only for authenticated users when ?new=true
+  useEffect(() => {
+    if (!authLoading && user && searchParams.get("new") === "true") {
+      setIsCreateProjectOpen(true);
+    }
+  }, [authLoading, user, searchParams]);
+
   // Fetch user logo and profile info
   useEffect(() => {
     if (user) {
