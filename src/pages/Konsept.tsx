@@ -2534,7 +2534,7 @@ const Konsept = () => {
                         </div>
                       )}
 
-                      {!conceptId && (
+                      {!conceptId && !isDemoMode && (
                         <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg border border-dashed">
                           <UploadConceptDialog onDataExtracted={(extracted) => {
                             setFormData(prev => {
@@ -9136,28 +9136,44 @@ const Konsept = () => {
           </ScrollArea>
         </CardContent>
         <div className="flex-shrink-0 border-t bg-background p-4 flex flex-col gap-2">
-          <Button 
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white" 
-            size="lg"
-            onClick={handleSave}
-            disabled={isSaving || !conceptName}
-          >
-            <Save className="h-4 w-4 mr-2" />
-            {isSaving ? "Lagrer..." : "Lagre endringer"}
-          </Button>
-          <SendToKSDialog
-            conceptName={conceptName}
-            projectId={selectedProjectId}
-            conceptId={conceptId}
-            conceptContent={formData}
-            disabled={!conceptName}
-          />
-          <UpdateKSButton
-            conceptId={conceptId}
-            conceptName={conceptName}
-            conceptContent={formData}
-            disabled={!conceptName}
-          />
+          {isDemoMode ? (
+            <div className="rounded-md border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 p-3 text-center">
+              <p className="text-sm text-amber-900 dark:text-amber-200 mb-2">
+                Lagring, deling og nedlasting krever innlogging.
+              </p>
+              <Link to="/auth">
+                <Button size="sm" variant="outline" className="border-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50">
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Logg inn for full tilgang
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <>
+              <Button
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                size="lg"
+                onClick={handleSave}
+                disabled={isSaving || !conceptName}
+              >
+                <Save className="h-4 w-4 mr-2" />
+                {isSaving ? "Lagrer..." : "Lagre endringer"}
+              </Button>
+              <SendToKSDialog
+                conceptName={conceptName}
+                projectId={selectedProjectId}
+                conceptId={conceptId}
+                conceptContent={formData}
+                disabled={!conceptName}
+              />
+              <UpdateKSButton
+                conceptId={conceptId}
+                conceptName={conceptName}
+                conceptContent={formData}
+                disabled={!conceptName}
+              />
+            </>
+          )}
         </div>
       </Card>
 
