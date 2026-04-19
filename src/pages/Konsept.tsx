@@ -2360,6 +2360,17 @@ const Konsept = () => {
 
       <div className="w-full px-4 py-6">
         <div className="max-w-[1800px] mx-auto space-y-4">
+          {/* Demo-modus banner */}
+          {isDemoMode && (
+            <Alert className="border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700">
+              <Sparkles className="h-4 w-4 text-amber-700 dark:text-amber-400" />
+              <AlertTitle className="text-amber-900 dark:text-amber-200">Demo-modus</AlertTitle>
+              <AlertDescription className="text-amber-800 dark:text-amber-300">
+                Du er ikke innlogget. Du kan utforske skjemaet og se forhåndsvisning, men kan ikke lagre, dele eller laste ned dokumentet.{" "}
+                <Link to="/auth" className="font-semibold underline hover:no-underline">Logg inn</Link> for full tilgang.
+              </AlertDescription>
+            </Alert>
+          )}
           {/* Back button to project */}
           {selectedProjectId && (
             <Button
