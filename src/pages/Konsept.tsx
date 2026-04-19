@@ -2351,30 +2351,9 @@ const Konsept = () => {
     );
   }
 
-  // Show login prompt if not authenticated
-  if (!authLoading && !user) {
-    return (
-      <div className="min-h-screen bg-gradient-subtle">
-        <div className="container mx-auto px-4 py-16">
-          <Card className="max-w-md mx-auto shadow-medium">
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <LogIn className="h-12 w-12 text-muted-foreground mb-4" />
-              <CardTitle className="text-xl mb-2">Logg inn for å fortsette</CardTitle>
-              <CardDescription className="text-center mb-6">
-                Du må være innlogget for å opprette og lagre brannkonsepter.
-              </CardDescription>
-              <Link to="/auth">
-                <Button>
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Logg inn
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
+  // Demo-modus: ikke-innloggede brukere kan utforske skjemaet og forhåndsvisning
+  // men kan ikke lagre, dele, sende til KS eller laste ned.
+  const isDemoMode = !authLoading && !user;
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
