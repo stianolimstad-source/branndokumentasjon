@@ -264,6 +264,86 @@ const Index = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Brensellagring – velg prosjekt først */}
+      <Dialog open={showBrensellagringDialog} onOpenChange={setShowBrensellagringDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Velg prosjekt</DialogTitle>
+            <DialogDescription>Lagring av brannfarlig stoff knyttes til et prosjekt</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Søk prosjekt..."
+                  value={projectSearchQuery}
+                  onChange={(e) => setProjectSearchQuery(e.target.value)}
+                  className="pl-9 h-9 text-sm"
+                />
+              </div>
+              <Dialog open={isCreateProjectOpen} onOpenChange={setIsCreateProjectOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-9">
+                    <Plus className="h-4 w-4 mr-1" />Nytt
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Opprett nytt prosjekt</DialogTitle>
+                    <DialogDescription>Fyll inn informasjon om prosjektet</DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label>Prosjektnavn *</Label>
+                      <Input placeholder="f.eks. Nybygg Storgata 1" value={newProject.name} onChange={(e) => setNewProject({ ...newProject, name: e.target.value })} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Adresse</Label>
+                      <Input placeholder="f.eks. Storgata 1, 0001 Oslo" value={newProject.address} onChange={(e) => setNewProject({ ...newProject, address: e.target.value })} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Beskrivelse</Label>
+                      <Textarea placeholder="Kort beskrivelse" value={newProject.description} onChange={(e) => setNewProject({ ...newProject, description: e.target.value })} />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setIsCreateProjectOpen(false)}>Avbryt</Button>
+                    <Button onClick={handleCreateProjectAndOpen} disabled={isCreatingProject}>{isCreatingProject ? "Oppretter..." : "Opprett og åpne"}</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+            <div className="max-h-[320px] overflow-y-auto space-y-1.5 pr-1">
+              {projects
+                .filter(p => {
+                  if (!projectSearchQuery.trim()) return true;
+                  const q = projectSearchQuery.toLowerCase();
+                  return p.name.toLowerCase().includes(q) || (p.address?.toLowerCase().includes(q) ?? false);
+                })
+                .map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => { setShowBrensellagringDialog(false); navigate(`/brensellagring?project=${p.id}`); }}
+                    className="flex items-center gap-2.5 w-full text-left rounded-lg border p-2.5 transition-colors hover:bg-accent/50 border-border"
+                  >
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted">
+                      <Building className="h-3.5 w-3.5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{p.name}</p>
+                      {p.address && <p className="text-xs text-muted-foreground truncate">{p.address}</p>}
+                    </div>
+                  </button>
+                ))}
+              {projects.length === 0 && (
+                <p className="text-xs text-muted-foreground text-center py-6">Ingen prosjekter ennå. Opprett ett med "Nytt".</p>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={showFravikDialog} onOpenChange={setShowFravikDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
