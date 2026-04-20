@@ -261,47 +261,33 @@ const Brensellagring = () => {
                 Basert på DSB Temaveiledning om oppbevaring av farlig stoff (Kapittel 1 – Atmosfæriske tanker) og VTEK § 11-8
               </p>
             </div>
-            {selectedProject && (
-              <div className="flex items-center gap-2 rounded-lg border bg-card px-3 py-2 shadow-soft">
-                <Building className="h-4 w-4 text-primary shrink-0" />
-                <div className="min-w-0">
-                  <p className="text-sm font-medium truncate">{selectedProject.name}</p>
-                  {selectedProject.address && (
-                    <p className="text-xs text-muted-foreground truncate">{selectedProject.address}</p>
-                  )}
+            <div className="flex items-center gap-2 flex-wrap">
+              {valgtBygg && (
+                <div className="flex items-center gap-2 rounded-lg border bg-card px-3 py-2 shadow-soft">
+                  <Warehouse className="h-4 w-4 text-primary shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-[10px] uppercase tracking-wide text-muted-foreground leading-none">Bygningstype</p>
+                    <p className="text-sm font-medium truncate">{valgtBygg.navn}</p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+              {selectedProject && (
+                <div className="flex items-center gap-2 rounded-lg border bg-card px-3 py-2 shadow-soft">
+                  <Building className="h-4 w-4 text-primary shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{selectedProject.name}</p>
+                    {selectedProject.address && (
+                      <p className="text-xs text-muted-foreground truncate">{selectedProject.address}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-6 lg:h-[calc(100vh-200px)]">
             {/* ===== LEFT: All content ===== */}
             <div className="min-w-0 space-y-10 lg:overflow-y-auto lg:pr-4 lg:text-base">
-
-          {/* Bygningstype velger */}
-          <Card className="shadow-soft mb-6">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <ClipboardCheck className="h-4 w-4 text-primary" />
-                Tanklagring i bygning – VTEK § 11-8
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="space-y-1.5">
-                <Label className="text-sm">Bygningstype / romtype</Label>
-                <Select value={valgtBygningstype} onValueChange={(v) => { setValgtBygningstype(v as BygningsType); setExpandedBrensel(null); }}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Velg bygningstype..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {BYGNINGSTYPER.map((b) => (
-                      <SelectItem key={b.id} value={b.id}>{b.navn}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
 
           {/* ============================================================== */}
           {/* TABS – DSB Temaveiledning innhold                               */}
