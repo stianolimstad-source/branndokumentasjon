@@ -204,7 +204,7 @@ const Brensellagring = () => {
 
   const handleSaveDocument = async () => {
     if (!selectedProjectId || !user) {
-      toast({ title: "Velg prosjekt", description: "Du må velge et prosjekt før du kan lagre", variant: "destructive" });
+      toast({ title: "Feil", description: "Mangler prosjektkobling. Gå tilbake og prøv igjen.", variant: "destructive" });
       return;
     }
     if (!valgtBygningstype && selectedStoffIds.size === 0) {
