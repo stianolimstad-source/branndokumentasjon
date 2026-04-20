@@ -30,10 +30,6 @@ const Index = () => {
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [newProject, setNewProject] = useState({ name: "", description: "", address: "" });
-  // Step in brensellagring dialog: choose project, then building type
-  const [brensellagringStep, setBrensellagringStep] = useState<"project" | "bygningstype">("project");
-  const [pendingProjectId, setPendingProjectId] = useState<string | null>(null);
-
   useEffect(() => {
     if (!user || !showBrensellagringDialog) return;
     supabase
@@ -43,24 +39,13 @@ const Index = () => {
       .then(({ data }) => { if (data) setProjects(data as ProjectOption[]); });
   }, [user, showBrensellagringDialog]);
 
-  // Reset dialog state when closed
   useEffect(() => {
-    if (!showBrensellagringDialog) {
-      setBrensellagringStep("project");
-      setPendingProjectId(null);
-      setProjectSearchQuery("");
-    }
+    if (!showBrensellagringDialog) setProjectSearchQuery("");
   }, [showBrensellagringDialog]);
 
   const handleSelectProjectForBrensel = (projectId: string) => {
-    setPendingProjectId(projectId);
-    setBrensellagringStep("bygningstype");
-  };
-
-  const handleSelectBygningstype = (bygningstypeId: string) => {
-    if (!pendingProjectId) return;
     setShowBrensellagringDialog(false);
-    navigate(`/brensellagring?project=${pendingProjectId}&bygningstype=${bygningstypeId}`);
+    navigate(`/brensellagring?project=${projectId}`);
   };
 
   const handleCreateProjectAndOpen = async () => {
@@ -76,11 +61,8 @@ const Index = () => {
     } else if (data) {
       setNewProject({ name: "", description: "", address: "" });
       setIsCreateProjectOpen(false);
-      // Move to building type selection step instead of navigating directly
-      setPendingProjectId(data.id);
-      setBrensellagringStep("bygningstype");
-      // Refresh projects list so it shows up if user goes back
-      setProjects(prev => [data as ProjectOption, ...prev]);
+      setShowBrensellagringDialog(false);
+      navigate(`/brensellagring?project=${data.id}`);
     }
     setIsCreatingProject(false);
   };
