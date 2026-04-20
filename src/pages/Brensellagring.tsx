@@ -203,8 +203,12 @@ const Brensellagring = () => {
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSaveDocument = async () => {
-    if (!selectedProjectId || !user) {
-      toast({ title: "Feil", description: "Mangler prosjektkobling. Gå tilbake og prøv igjen.", variant: "destructive" });
+    if (!user) {
+      toast({ title: "Ikke innlogget", description: "Du må være innlogget for å lagre.", variant: "destructive" });
+      return;
+    }
+    if (!selectedProjectId) {
+      toast({ title: "Mangler prosjekt", description: "Dokumentet er ikke koblet til et prosjekt. Gå tilbake til forsiden og start på nytt.", variant: "destructive" });
       return;
     }
     if (!valgtBygningstype && selectedStoffIds.size === 0) {
