@@ -44,7 +44,8 @@ interface BrensellagringPreviewProps {
 }
 
 const pageStyle: React.CSSProperties = {
-  width: "210mm",
+  width: "100%",
+  maxWidth: "210mm",
   minHeight: "297mm",
   background: "#fff",
   color: "#1a1a1a",

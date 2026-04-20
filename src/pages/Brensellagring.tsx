@@ -1206,7 +1206,7 @@ const Brensellagring = () => {
                     {isSaving ? "Lagrer..." : "Lagre i prosjekt"}
                   </Button>
                 </div>
-                <div className="bg-muted/30 rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-100px)]">
+                <div className="bg-muted/30 rounded-xl p-3 overflow-auto max-h-[calc(100vh-100px)]">
                   <BrensellagringPreview
                     valgtBygg={valgtBygg}
                     prosjektNavn={prosjektNavn || undefined}
