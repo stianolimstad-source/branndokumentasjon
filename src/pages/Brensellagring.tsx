@@ -60,12 +60,12 @@ const Brensellagring = () => {
   const [projects, setProjects] = useState<ProjectOption[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(projectIdFromUrl);
 
-  // Redirect to home if no project selected
+  // Redirect to home if no project or document is selected
   useEffect(() => {
-    if (!projectIdFromUrl) {
+    if (!projectIdFromUrl && !conceptIdFromUrl) {
       navigate("/", { replace: true });
     }
-  }, [projectIdFromUrl, navigate]);
+  }, [projectIdFromUrl, conceptIdFromUrl, navigate]);
 
 
   // VTEK byggkrav (bygningstype kommer fra URL — valgt på forsiden)
@@ -199,7 +199,40 @@ const Brensellagring = () => {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (!user || !conceptIdFromUrl) return;
 
+    supabase
+      .from('fire_concepts')
+      .select('project_id, content')
+      .eq('id', conceptIdFromUrl)
+      .maybeSingle()
+      .then(({ data, error }) => {
+        if (error || !data) return;
+
+        const content = (data.content as {
+          bygningstype?: BygningsType;
+          visibleSections?: BrenselSectionKey[];
+          selectedStoffer?: string[];
+          selectedKrav?: string[];
+          documentType?: string;
+          type?: string;
+        } | null) ?? null;
+
+        if (data.project_id) {
+          setSelectedProjectId(data.project_id);
+        }
+
+        if (!content || (content.documentType !== "brensellagring" && content.type !== "brensellagring")) {
+          return;
+        }
+
+        setValgtBygningstype(content.bygningstype || bygningstypeFromUrl || "");
+        setVisibleSections(new Set(content.visibleSections || []));
+        setSelectedStoffIds(new Set(content.selectedStoffer || []));
+        setSelectedKravIds(new Set(content.selectedKrav || []));
+      });
+  }, [user, conceptIdFromUrl, bygningstypeFromUrl]);
 
   const [isSaving, setIsSaving] = useState(false);
 
@@ -267,7 +300,12 @@ const Brensellagring = () => {
 <div className="min-h-screen bg-gradient-subtle">
       <div className="w-full px-4 py-6">
         <div className="max-w-[1800px] mx-auto">
-          <Button variant="ghost" size="sm" className="mb-3 sm:mb-4" onClick={() => navigate("/")}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="mb-3 sm:mb-4"
+            onClick={() => selectedProjectId ? navigate(`/prosjekt/${selectedProjectId}`) : navigate("/")}
+          >
             <ArrowLeft className="h-4 w-4 mr-1.5" />
             Tilbake
           </Button>
