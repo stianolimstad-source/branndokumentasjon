@@ -226,15 +226,28 @@ const Brensellagring = () => {
       selectedKrav: Array.from(selectedKravIds),
     };
     const docName = `Brensellagring – ${valgtBygg?.navn || valgtBygningstype}`;
-    const { error } = await supabase
-      .from('fire_concepts')
-      .insert({
-        name: docName,
-        project_id: selectedProjectId,
-        user_id: user.id,
-        content: docContent,
-        status: 'draft',
-      });
+    let error;
+    if (conceptIdFromUrl) {
+      // Update existing document
+      ({ error } = await supabase
+        .from('fire_concepts')
+        .update({
+          name: docName,
+          content: docContent,
+        })
+        .eq('id', conceptIdFromUrl));
+    } else {
+      // Create new document
+      ({ error } = await supabase
+        .from('fire_concepts')
+        .insert({
+          name: docName,
+          project_id: selectedProjectId,
+          user_id: user.id,
+          content: docContent,
+          status: 'draft',
+        }));
+    }
     if (error) {
       toast({ title: "Feil", description: "Kunne ikke lagre dokumentet", variant: "destructive" });
     } else {
