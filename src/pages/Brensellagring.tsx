@@ -283,7 +283,7 @@ const Brensellagring = () => {
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <ClipboardCheck className="h-4 w-4 text-primary" />
-                Tanklagring i bygning – VTEK § 11-8
+                Bygningstype
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
