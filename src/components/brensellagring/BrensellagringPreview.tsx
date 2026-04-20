@@ -45,26 +45,26 @@ interface BrensellagringPreviewProps {
 
 const pageStyle: React.CSSProperties = {
   width: "100%",
-  maxWidth: "250mm",
-  minHeight: "350mm",
+  maxWidth: "210mm",
+  minHeight: "297mm",
   background: "#fff",
   color: "#1a1a1a",
   fontFamily: "'Segoe UI', Arial, sans-serif",
-  fontSize: 13,
+  fontSize: 11,
   lineHeight: 1.6,
-  padding: "24mm 22mm 28mm 22mm",
+  padding: "20mm 18mm 24mm 18mm",
   boxSizing: "border-box",
   boxShadow: "0 2px 16px rgba(0,0,0,0.08)",
   marginBottom: 24,
 };
 
-const h2: React.CSSProperties = { fontSize: 18, fontWeight: 700, marginTop: 32, marginBottom: 12, color: "#1e3a5f", borderBottom: "2px solid #1e3a5f", paddingBottom: 6 };
-const h3: React.CSSProperties = { fontSize: 15, fontWeight: 600, marginTop: 24, marginBottom: 10, color: "#2d4a6f" };
+const h2: React.CSSProperties = { fontSize: 15, fontWeight: 700, marginTop: 28, marginBottom: 10, color: "#1e3a5f", borderBottom: "2px solid #1e3a5f", paddingBottom: 5 };
+const h3: React.CSSProperties = { fontSize: 12, fontWeight: 600, marginTop: 20, marginBottom: 8, color: "#2d4a6f" };
 
 const thStyle: React.CSSProperties = {
   textAlign: "left",
-  padding: "10px 12px",
-  fontSize: 12,
+  padding: "8px 10px",
+  fontSize: 10,
   fontWeight: 600,
   background: "#e8eef5",
   borderBottom: "2px solid #bbc8d9",
@@ -72,8 +72,8 @@ const thStyle: React.CSSProperties = {
 };
 
 const tdStyle: React.CSSProperties = {
-  padding: "9px 12px",
-  fontSize: 12,
+  padding: "7px 10px",
+  fontSize: 10,
   borderBottom: "1px solid #e2e8f0",
   verticalAlign: "top",
 };
