@@ -272,7 +272,7 @@ const Brensellagring = () => {
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-[1fr_1.2fr] gap-8 lg:h-[calc(100vh-180px)]">
+          <div className="grid lg:grid-cols-[1fr_1.4fr] gap-10 lg:h-[calc(100vh-160px)]">
             {/* ===== LEFT: All content ===== */}
             <div className="min-w-0 space-y-10 lg:overflow-y-auto lg:pr-4 lg:text-base">
 
