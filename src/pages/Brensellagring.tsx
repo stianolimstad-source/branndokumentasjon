@@ -51,6 +51,7 @@ const Brensellagring = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const projectIdFromUrl = searchParams.get("project");
+  const conceptIdFromUrl = searchParams.get("concept");
   const bygningstypeFromUrl = searchParams.get("bygningstype") as BygningsType | null;
   const { user } = useAuth();
   const { toast } = useToast();
@@ -203,8 +204,12 @@ const Brensellagring = () => {
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSaveDocument = async () => {
-    if (!selectedProjectId || !user) {
-      toast({ title: "Feil", description: "Mangler prosjektkobling. Gå tilbake og prøv igjen.", variant: "destructive" });
+    if (!user) {
+      toast({ title: "Ikke innlogget", description: "Du må være innlogget for å lagre.", variant: "destructive" });
+      return;
+    }
+    if (!selectedProjectId) {
+      toast({ title: "Mangler prosjekt", description: "Dokumentet er ikke koblet til et prosjekt. Gå tilbake til forsiden og start på nytt.", variant: "destructive" });
       return;
     }
     if (!valgtBygningstype && selectedStoffIds.size === 0) {
@@ -221,15 +226,28 @@ const Brensellagring = () => {
       selectedKrav: Array.from(selectedKravIds),
     };
     const docName = `Brensellagring – ${valgtBygg?.navn || valgtBygningstype}`;
-    const { error } = await supabase
-      .from('fire_concepts')
-      .insert({
-        name: docName,
-        project_id: selectedProjectId,
-        user_id: user.id,
-        content: docContent,
-        status: 'draft',
-      });
+    let error;
+    if (conceptIdFromUrl) {
+      // Update existing document
+      ({ error } = await supabase
+        .from('fire_concepts')
+        .update({
+          name: docName,
+          content: docContent,
+        })
+        .eq('id', conceptIdFromUrl));
+    } else {
+      // Create new document
+      ({ error } = await supabase
+        .from('fire_concepts')
+        .insert({
+          name: docName,
+          project_id: selectedProjectId,
+          user_id: user.id,
+          content: docContent,
+          status: 'draft',
+        }));
+    }
     if (error) {
       toast({ title: "Feil", description: "Kunne ikke lagre dokumentet", variant: "destructive" });
     } else {
