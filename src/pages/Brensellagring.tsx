@@ -258,8 +258,8 @@ const Brensellagring = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <section className="container mx-auto px-3 sm:px-4 py-4 sm:py-12">
-        <div className="max-w-[1600px] mx-auto">
+      <section className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+        <div className="max-w-[1800px] mx-auto">
           <Button variant="ghost" size="sm" className="mb-3 sm:mb-4" onClick={() => navigate("/")}>
             <ArrowLeft className="h-4 w-4 mr-1.5" />
             Tilbake
