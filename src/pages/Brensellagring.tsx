@@ -1108,7 +1108,7 @@ const Brensellagring = () => {
                   className="h-8"
                 >
                   <Save className="h-4 w-4 mr-1.5" />
-                  {isSaving ? "Lagrer..." : "Lagre i prosjekt"}
+                  {isSaving ? "Lagrer..." : "Lagre"}
                 </Button>
               </div>
               <div className="flex-1 min-h-0 bg-muted/30 rounded-xl p-3 overflow-auto">
