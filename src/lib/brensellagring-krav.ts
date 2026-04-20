@@ -984,7 +984,8 @@ export type BygningsType =
   | "tankrom"
   | "verksted"
   | "lager"
-  | "forretning";
+  | "forretning"
+  | "salgslokale";
 
 export interface ByggBrenselGrense {
   brenselType: BrenselType;
