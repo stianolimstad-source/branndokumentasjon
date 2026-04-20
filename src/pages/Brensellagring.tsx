@@ -258,8 +258,8 @@ const Brensellagring = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <section className="container mx-auto px-3 sm:px-4 py-4 sm:py-12">
-        <div className="max-w-[1600px] mx-auto">
+      <section className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
+        <div className="max-w-[1800px] mx-auto">
           <Button variant="ghost" size="sm" className="mb-3 sm:mb-4" onClick={() => navigate("/")}>
             <ArrowLeft className="h-4 w-4 mr-1.5" />
             Tilbake
@@ -272,9 +272,9 @@ const Brensellagring = () => {
             </p>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-6">
+          <div className="grid lg:grid-cols-2 gap-6 lg:h-[calc(100vh-200px)]">
             {/* ===== LEFT: All content ===== */}
-            <div className="flex-1 min-w-0 space-y-8">
+            <div className="min-w-0 space-y-8 lg:overflow-y-auto lg:pr-2">
 
           {/* Prosjekt og bygningstype */}
           <div className="grid sm:grid-cols-2 gap-4 mb-6">
@@ -1189,33 +1189,31 @@ const Brensellagring = () => {
             </div>
 
             {/* ===== RIGHT: Document preview (always visible) ===== */}
-            <div className="hidden lg:block lg:w-[520px] lg:flex-shrink-0">
-              <div className="sticky top-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <Eye className="h-4 w-4 text-muted-foreground" />
-                    <h4 className="text-sm font-semibold text-muted-foreground">Forhåndsvisning</h4>
-                  </div>
-                  <Button
-                    size="sm"
-                    onClick={handleSaveDocument}
-                    disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedStoffIds.size === 0 && selectedKravIds.size === 0)}
-                    className="h-8"
-                  >
-                    <Save className="h-4 w-4 mr-1.5" />
-                    {isSaving ? "Lagrer..." : "Lagre i prosjekt"}
-                  </Button>
+            <div className="hidden lg:flex lg:flex-col lg:min-w-0 lg:h-full">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <h4 className="text-sm font-semibold text-muted-foreground">Forhåndsvisning</h4>
                 </div>
-                <div className="bg-muted/30 rounded-xl p-3 overflow-auto max-h-[calc(100vh-100px)]">
-                  <BrensellagringPreview
-                    valgtBygg={valgtBygg}
-                    prosjektNavn={prosjektNavn || undefined}
-                    adresse={adresse || undefined}
-                    visibleSections={visibleSections}
-                    selectedStoffIds={selectedStoffIds}
-                    selectedKravIds={selectedKravIds}
-                  />
-                </div>
+                <Button
+                  size="sm"
+                  onClick={handleSaveDocument}
+                  disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedStoffIds.size === 0 && selectedKravIds.size === 0)}
+                  className="h-8"
+                >
+                  <Save className="h-4 w-4 mr-1.5" />
+                  {isSaving ? "Lagrer..." : "Lagre i prosjekt"}
+                </Button>
+              </div>
+              <div className="flex-1 min-h-0 bg-muted/30 rounded-xl p-3 overflow-auto">
+                <BrensellagringPreview
+                  valgtBygg={valgtBygg}
+                  prosjektNavn={prosjektNavn || undefined}
+                  adresse={adresse || undefined}
+                  visibleSections={visibleSections}
+                  selectedStoffIds={selectedStoffIds}
+                  selectedKravIds={selectedKravIds}
+                />
               </div>
             </div>
           </div>
