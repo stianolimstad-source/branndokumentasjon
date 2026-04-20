@@ -51,6 +51,7 @@ const Brensellagring = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const projectIdFromUrl = searchParams.get("project");
+  const bygningstypeFromUrl = searchParams.get("bygningstype") as BygningsType | null;
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -66,8 +67,8 @@ const Brensellagring = () => {
   }, [projectIdFromUrl, navigate]);
 
 
-  // VTEK byggkrav
-  const [valgtBygningstype, setValgtBygningstype] = useState<BygningsType | "">("");
+  // VTEK byggkrav (bygningstype kommer fra URL — valgt på forsiden)
+  const [valgtBygningstype, setValgtBygningstype] = useState<BygningsType | "">(bygningstypeFromUrl || "");
   const [brenselType, setBrenselType] = useState<BrenselType | "">("");
   const [mengde, setMengde] = useState("");
 
