@@ -1325,6 +1325,54 @@ export const BYGNINGSTYPER: BygningsTypeInfo[] = [
       },
     ],
   },
+  {
+    id: "salgslokale",
+    navn: "Salgslokale (butikk / publikumsbygg)",
+    beskrivelse: "Forretninger med kundeområder og publikum tilstede. Strenge begrensninger på brannfarlig vare i salgslokalet iht. VTEK § 11-8 og DSB Temaveiledning.",
+    grenser: [
+      {
+        brenselType: "propan",
+        brenselNavn: "Propan / LPG (utstillingsformål, salg)",
+        maksLiter: null,
+        maksKg: 55,
+        romKrav: [
+          { kategori: "Plassering", tekst: "Maks 55 kg LPG i salgslokale. Større mengder i eget lager utenfor publikumsareal. Ikke i kjeller eller rom under terreng.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/#kapittel-2-%C2%AD-tankanlegg---lpg-og-lng" } },
+          { kategori: "Ventilasjon", tekst: "Godt ventilert område, fortrinnsvis utendørs i låsbart skap.", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/#kapittel-2-%C2%AD-tankanlegg---lpg-og-lng" } },
+          { kategori: "Avstand", tekst: "Min. 1 m fra brennbare materialer og tennkilder. Skilting: «Brannfarlig vare – røyking forbudt».", ansvar: "Eier", referanse: { label: "DSB Kap. 2", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/#kapittel-2-%C2%AD-tankanlegg---lpg-og-lng" } },
+        ],
+      },
+      {
+        brenselType: "bensin",
+        brenselNavn: "Bensin / brannfarlig væske kat. 1 og 2 (salg)",
+        maksLiter: 100,
+        romKrav: [
+          { kategori: "Mengde i salgslokale", tekst: "Maks 100 liter brannfarlig væske kategori 1 og 2 i salgsareal, oppbevart i originalemballasje (maks 5 liter pr. enhet).", ansvar: "Eier", referanse: { label: "DSB Kap. 3", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/" } },
+          { kategori: "Plassering", tekst: "Skal stå i ventilert hylle/skap, ikke ved tennkilder eller utganger. Ikke nær elektriske tavler.", ansvar: "Eier", referanse: { label: "DSB Kap. 3", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/" } },
+          { kategori: "Skilting", tekst: "Tydelig merking «Brannfarlig vare» og forbud mot åpen ild og røyking.", ansvar: "Eier", referanse: { label: "DSB Kap. 3", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/" } },
+          { kategori: "Større lager", tekst: "Mengder utover 100 liter skal lagres i eget lagerrom (egen branncelle EI 60) utenfor publikumsareal.", ansvar: "ARK", referanse: { label: "VTEK § 11-8", url: "https://dibk.no/regelverk/byggteknisk-forskrift-tek17/11/11-8" } },
+        ],
+      },
+      {
+        brenselType: "fyringsparafin",
+        brenselNavn: "Fyringsparafin / kat. 3 (salg)",
+        maksLiter: 500,
+        romKrav: [
+          { kategori: "Mengde i salgslokale", tekst: "Maks 500 liter brannfarlig væske kategori 3 i salgsareal, i originalemballasje.", ansvar: "Eier", referanse: { label: "DSB Kap. 3", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/" } },
+          { kategori: "Plassering", tekst: "I ventilert område, ikke ved utganger eller rømningsveier.", ansvar: "Eier", referanse: { label: "DSB Kap. 3", url: "https://www.dsb.no/farlige-stoffer/farlige-stoffer/veiledning/temaveiledning-om-oppbevaring-av-farlig-stoff/" } },
+        ],
+      },
+      {
+        brenselType: "lett_fyringsolje",
+        brenselNavn: "Lett fyringsolje (oppvarming av bygget)",
+        maksLiter: 4000,
+        romKrav: [
+          { kategori: "Vegger/etasjeskiller", tekst: "Eget fyrrom – branncellebegrensende bygningsdel utenfor publikumsareal.", ansvar: "ARK", referanse: { label: "VTEK § 11-8", url: "https://dibk.no/regelverk/byggteknisk-forskrift-tek17/11/11-8" } },
+          { kategori: "Overflate", tekst: "B-s1,d0 [In 1].", ansvar: "ARK", referanse: { label: "VTEK § 11-8", url: "https://dibk.no/regelverk/byggteknisk-forskrift-tek17/11/11-8" } },
+          { kategori: "Dør", tekst: "EI₂ 60-CSₐ [B 60 S] mot publikumsareal. Selvlukkende.", ansvar: "ARK", referanse: { label: "VTEK § 11-8", url: "https://dibk.no/regelverk/byggteknisk-forskrift-tek17/11/11-8" } },
+        ],
+      },
+    ],
+  },
 ];
 
 // Legacy function kept for backward compat
