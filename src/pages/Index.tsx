@@ -1,18 +1,63 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Plus, FolderOpen, ShieldCheck, BarChart3, GitCompare, Shield, LayoutDashboard, Warehouse, Receipt, Handshake } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Plus, FolderOpen, ShieldCheck, BarChart3, GitCompare, Shield, LayoutDashboard, Warehouse, Receipt, Handshake, Building, Search, Check } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import DashboardPanel from "@/components/dashboard/DashboardPanel";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+
+interface ProjectOption { id: string; name: string; address: string | null; }
 
 const Index = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [showConceptDialog, setShowConceptDialog] = useState(false);
   const [showTilstandDialog, setShowTilstandDialog] = useState(false);
   const [showFravikDialog, setShowFravikDialog] = useState(false);
+  const [showBrensellagringDialog, setShowBrensellagringDialog] = useState(false);
+
+  // Project picker state for Brensellagring
+  const [projects, setProjects] = useState<ProjectOption[]>([]);
+  const [projectSearchQuery, setProjectSearchQuery] = useState("");
+  const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [newProject, setNewProject] = useState({ name: "", description: "", address: "" });
+
+  useEffect(() => {
+    if (!user || !showBrensellagringDialog) return;
+    supabase
+      .from("projects")
+      .select("id, name, address")
+      .order("created_at", { ascending: false })
+      .then(({ data }) => { if (data) setProjects(data as ProjectOption[]); });
+  }, [user, showBrensellagringDialog]);
+
+  const handleCreateProjectAndOpen = async () => {
+    if (!newProject.name.trim() || !user) return;
+    setIsCreatingProject(true);
+    const { data, error } = await supabase
+      .from("projects")
+      .insert({ name: newProject.name, description: newProject.description || null, address: newProject.address || null, user_id: user.id })
+      .select("id, name, address")
+      .single();
+    if (error) {
+      toast({ title: "Feil", description: "Kunne ikke opprette prosjekt", variant: "destructive" });
+    } else if (data) {
+      setNewProject({ name: "", description: "", address: "" });
+      setIsCreateProjectOpen(false);
+      setShowBrensellagringDialog(false);
+      navigate(`/brensellagring?project=${data.id}`);
+    }
+    setIsCreatingProject(false);
+  };
+
 
   const features = [
     {
@@ -43,7 +88,7 @@ const Index = () => {
       icon: Warehouse,
       title: "Brannfarlig lagring",
       description: "Krav til lagring av brennbar væske basert på type og mengde",
-      href: "/brensellagring",
+      href: "brensellagring-dialog",
     },
     {
       icon: Receipt,
@@ -106,10 +151,11 @@ const Index = () => {
       <section className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {features.map((feature) => {
-            if (feature.href === "dialog" || feature.href === "fravik-dialog" || feature.href === "tilstand-dialog") {
+            if (feature.href === "dialog" || feature.href === "fravik-dialog" || feature.href === "tilstand-dialog" || feature.href === "brensellagring-dialog") {
               const handleClick = () => {
                 if (feature.href === "dialog") setShowConceptDialog(true);
                 else if (feature.href === "tilstand-dialog") setShowTilstandDialog(true);
+                else if (feature.href === "brensellagring-dialog") setShowBrensellagringDialog(true);
                 else setShowFravikDialog(true);
               };
               return (
@@ -214,6 +260,86 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground font-normal">Se og rediger eksisterende tilstandsvurderinger</p>
               </div>
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Brensellagring – velg prosjekt først */}
+      <Dialog open={showBrensellagringDialog} onOpenChange={setShowBrensellagringDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Velg prosjekt</DialogTitle>
+            <DialogDescription>Lagring av brannfarlig stoff knyttes til et prosjekt</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Søk prosjekt..."
+                  value={projectSearchQuery}
+                  onChange={(e) => setProjectSearchQuery(e.target.value)}
+                  className="pl-9 h-9 text-sm"
+                />
+              </div>
+              <Dialog open={isCreateProjectOpen} onOpenChange={setIsCreateProjectOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-9">
+                    <Plus className="h-4 w-4 mr-1" />Nytt
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Opprett nytt prosjekt</DialogTitle>
+                    <DialogDescription>Fyll inn informasjon om prosjektet</DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label>Prosjektnavn *</Label>
+                      <Input placeholder="f.eks. Nybygg Storgata 1" value={newProject.name} onChange={(e) => setNewProject({ ...newProject, name: e.target.value })} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Adresse</Label>
+                      <Input placeholder="f.eks. Storgata 1, 0001 Oslo" value={newProject.address} onChange={(e) => setNewProject({ ...newProject, address: e.target.value })} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Beskrivelse</Label>
+                      <Textarea placeholder="Kort beskrivelse" value={newProject.description} onChange={(e) => setNewProject({ ...newProject, description: e.target.value })} />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setIsCreateProjectOpen(false)}>Avbryt</Button>
+                    <Button onClick={handleCreateProjectAndOpen} disabled={isCreatingProject}>{isCreatingProject ? "Oppretter..." : "Opprett og åpne"}</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+            <div className="max-h-[320px] overflow-y-auto space-y-1.5 pr-1">
+              {projects
+                .filter(p => {
+                  if (!projectSearchQuery.trim()) return true;
+                  const q = projectSearchQuery.toLowerCase();
+                  return p.name.toLowerCase().includes(q) || (p.address?.toLowerCase().includes(q) ?? false);
+                })
+                .map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => { setShowBrensellagringDialog(false); navigate(`/brensellagring?project=${p.id}`); }}
+                    className="flex items-center gap-2.5 w-full text-left rounded-lg border p-2.5 transition-colors hover:bg-accent/50 border-border"
+                  >
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted">
+                      <Building className="h-3.5 w-3.5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{p.name}</p>
+                      {p.address && <p className="text-xs text-muted-foreground truncate">{p.address}</p>}
+                    </div>
+                  </button>
+                ))}
+              {projects.length === 0 && (
+                <p className="text-xs text-muted-foreground text-center py-6">Ingen prosjekter ennå. Opprett ett med "Nytt".</p>
+              )}
+            </div>
           </div>
         </DialogContent>
       </Dialog>
