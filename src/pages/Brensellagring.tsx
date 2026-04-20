@@ -272,9 +272,9 @@ const Brensellagring = () => {
             </p>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-6">
+          <div className="grid lg:grid-cols-2 gap-6 lg:h-[calc(100vh-200px)]">
             {/* ===== LEFT: All content ===== */}
-            <div className="flex-1 min-w-0 space-y-8">
+            <div className="min-w-0 space-y-8 lg:overflow-y-auto lg:pr-2">
 
           {/* Prosjekt og bygningstype */}
           <div className="grid sm:grid-cols-2 gap-4 mb-6">
