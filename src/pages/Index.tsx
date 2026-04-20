@@ -30,6 +30,9 @@ const Index = () => {
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [newProject, setNewProject] = useState({ name: "", description: "", address: "" });
+  // Step in brensellagring dialog: choose project, then building type
+  const [brensellagringStep, setBrensellagringStep] = useState<"project" | "bygningstype">("project");
+  const [pendingProjectId, setPendingProjectId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user || !showBrensellagringDialog) return;
@@ -39,6 +42,26 @@ const Index = () => {
       .order("created_at", { ascending: false })
       .then(({ data }) => { if (data) setProjects(data as ProjectOption[]); });
   }, [user, showBrensellagringDialog]);
+
+  // Reset dialog state when closed
+  useEffect(() => {
+    if (!showBrensellagringDialog) {
+      setBrensellagringStep("project");
+      setPendingProjectId(null);
+      setProjectSearchQuery("");
+    }
+  }, [showBrensellagringDialog]);
+
+  const handleSelectProjectForBrensel = (projectId: string) => {
+    setPendingProjectId(projectId);
+    setBrensellagringStep("bygningstype");
+  };
+
+  const handleSelectBygningstype = (bygningstypeId: string) => {
+    if (!pendingProjectId) return;
+    setShowBrensellagringDialog(false);
+    navigate(`/brensellagring?project=${pendingProjectId}&bygningstype=${bygningstypeId}`);
+  };
 
   const handleCreateProjectAndOpen = async () => {
     if (!newProject.name.trim() || !user) return;
@@ -53,8 +76,11 @@ const Index = () => {
     } else if (data) {
       setNewProject({ name: "", description: "", address: "" });
       setIsCreateProjectOpen(false);
-      setShowBrensellagringDialog(false);
-      navigate(`/brensellagring?project=${data.id}`);
+      // Move to building type selection step instead of navigating directly
+      setPendingProjectId(data.id);
+      setBrensellagringStep("bygningstype");
+      // Refresh projects list so it shows up if user goes back
+      setProjects(prev => [data as ProjectOption, ...prev]);
     }
     setIsCreatingProject(false);
   };
