@@ -51,6 +51,7 @@ const Brensellagring = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const projectIdFromUrl = searchParams.get("project");
+  const conceptIdFromUrl = searchParams.get("concept");
   const bygningstypeFromUrl = searchParams.get("bygningstype") as BygningsType | null;
   const { user } = useAuth();
   const { toast } = useToast();
