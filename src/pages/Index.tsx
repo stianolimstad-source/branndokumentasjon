@@ -88,7 +88,7 @@ const Index = () => {
       icon: Warehouse,
       title: "Brannfarlig lagring",
       description: "Krav til lagring av brennbar væske basert på type og mengde",
-      href: "/brensellagring",
+      href: "brensellagring-dialog",
     },
     {
       icon: Receipt,
