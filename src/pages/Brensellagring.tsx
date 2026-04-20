@@ -49,16 +49,22 @@ interface ProjectOption {
 
 const Brensellagring = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const projectIdFromUrl = searchParams.get("project");
   const { user } = useAuth();
   const { toast } = useToast();
 
-  // Project selection
+  // Project selection (driven by URL param)
   const [projects, setProjects] = useState<ProjectOption[]>([]);
-  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-  const [projectSearchQuery, setProjectSearchQuery] = useState("");
-  const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
-  const [isCreatingProject, setIsCreatingProject] = useState(false);
-  const [newProject, setNewProject] = useState({ name: "", description: "", address: "" });
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(projectIdFromUrl);
+
+  // Redirect to home if no project selected
+  useEffect(() => {
+    if (!projectIdFromUrl) {
+      navigate("/", { replace: true });
+    }
+  }, [projectIdFromUrl, navigate]);
+
 
   // VTEK byggkrav
   const [valgtBygningstype, setValgtBygningstype] = useState<BygningsType | "">("");
