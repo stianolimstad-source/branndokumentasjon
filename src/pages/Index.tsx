@@ -273,125 +273,83 @@ const Index = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Brensellagring – velg prosjekt og deretter bygningstype */}
+      {/* Brensellagring – velg prosjekt */}
       <Dialog open={showBrensellagringDialog} onOpenChange={setShowBrensellagringDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            {brensellagringStep === "project" ? (
-              <>
-                <DialogTitle>Velg prosjekt</DialogTitle>
-                <DialogDescription>Lagring av brannfarlig stoff knyttes til et prosjekt</DialogDescription>
-              </>
-            ) : (
-              <>
-                <DialogTitle className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setBrensellagringStep("project")}
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                    aria-label="Tilbake"
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                  </button>
-                  Velg bygningstype
-                </DialogTitle>
-                <DialogDescription>Krav fra valgt bygningstype (VTEK § 11-8) blir tilgjengelige i dokumentet</DialogDescription>
-              </>
-            )}
+            <DialogTitle>Velg prosjekt</DialogTitle>
+            <DialogDescription>Lagring av brannfarlig stoff knyttes til et prosjekt</DialogDescription>
           </DialogHeader>
-
-          {brensellagringStep === "project" && (
-            <div className="space-y-3 py-2">
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Søk prosjekt..."
-                    value={projectSearchQuery}
-                    onChange={(e) => setProjectSearchQuery(e.target.value)}
-                    className="pl-9 h-9 text-sm"
-                  />
-                </div>
-                <Dialog open={isCreateProjectOpen} onOpenChange={setIsCreateProjectOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-9">
-                      <Plus className="h-4 w-4 mr-1" />Nytt
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Opprett nytt prosjekt</DialogTitle>
-                      <DialogDescription>Fyll inn informasjon om prosjektet</DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                      <div className="space-y-2">
-                        <Label>Prosjektnavn *</Label>
-                        <Input placeholder="f.eks. Nybygg Storgata 1" value={newProject.name} onChange={(e) => setNewProject({ ...newProject, name: e.target.value })} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Adresse</Label>
-                        <Input placeholder="f.eks. Storgata 1, 0001 Oslo" value={newProject.address} onChange={(e) => setNewProject({ ...newProject, address: e.target.value })} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Beskrivelse</Label>
-                        <Textarea placeholder="Kort beskrivelse" value={newProject.description} onChange={(e) => setNewProject({ ...newProject, description: e.target.value })} />
-                      </div>
+          <div className="space-y-3 py-2">
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Søk prosjekt..."
+                  value={projectSearchQuery}
+                  onChange={(e) => setProjectSearchQuery(e.target.value)}
+                  className="pl-9 h-9 text-sm"
+                />
+              </div>
+              <Dialog open={isCreateProjectOpen} onOpenChange={setIsCreateProjectOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-9">
+                    <Plus className="h-4 w-4 mr-1" />Nytt
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Opprett nytt prosjekt</DialogTitle>
+                    <DialogDescription>Fyll inn informasjon om prosjektet</DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label>Prosjektnavn *</Label>
+                      <Input placeholder="f.eks. Nybygg Storgata 1" value={newProject.name} onChange={(e) => setNewProject({ ...newProject, name: e.target.value })} />
                     </div>
-                    <DialogFooter>
-                      <Button variant="outline" onClick={() => setIsCreateProjectOpen(false)}>Avbryt</Button>
-                      <Button onClick={handleCreateProjectAndOpen} disabled={isCreatingProject}>{isCreatingProject ? "Oppretter..." : "Opprett og fortsett"}</Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
-              <div className="max-h-[320px] overflow-y-auto space-y-1.5 pr-1">
-                {projects
-                  .filter(p => {
-                    if (!projectSearchQuery.trim()) return true;
-                    const q = projectSearchQuery.toLowerCase();
-                    return p.name.toLowerCase().includes(q) || (p.address?.toLowerCase().includes(q) ?? false);
-                  })
-                  .map((p) => (
-                    <button
-                      key={p.id}
-                      onClick={() => handleSelectProjectForBrensel(p.id)}
-                      className="flex items-center gap-2.5 w-full text-left rounded-lg border p-2.5 transition-colors hover:bg-accent/50 border-border"
-                    >
-                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted">
-                        <Building className="h-3.5 w-3.5" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{p.name}</p>
-                        {p.address && <p className="text-xs text-muted-foreground truncate">{p.address}</p>}
-                      </div>
-                    </button>
-                  ))}
-                {projects.length === 0 && (
-                  <p className="text-xs text-muted-foreground text-center py-6">Ingen prosjekter ennå. Opprett ett med "Nytt".</p>
-                )}
-              </div>
-            </div>
-          )}
-
-          {brensellagringStep === "bygningstype" && (
-            <div className="space-y-2 py-2 max-h-[420px] overflow-y-auto pr-1">
-              {BYGNINGSTYPER.map((b) => (
-                <button
-                  key={b.id}
-                  onClick={() => handleSelectBygningstype(b.id)}
-                  className="flex items-start gap-3 w-full text-left rounded-lg border p-3 transition-colors hover:bg-accent/50 hover:border-primary border-border"
-                >
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted">
-                    <Warehouse className="h-4 w-4" />
+                    <div className="space-y-2">
+                      <Label>Adresse</Label>
+                      <Input placeholder="f.eks. Storgata 1, 0001 Oslo" value={newProject.address} onChange={(e) => setNewProject({ ...newProject, address: e.target.value })} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Beskrivelse</Label>
+                      <Textarea placeholder="Kort beskrivelse" value={newProject.description} onChange={(e) => setNewProject({ ...newProject, description: e.target.value })} />
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium">{b.navn}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{b.beskrivelse}</p>
-                  </div>
-                </button>
-              ))}
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setIsCreateProjectOpen(false)}>Avbryt</Button>
+                    <Button onClick={handleCreateProjectAndOpen} disabled={isCreatingProject}>{isCreatingProject ? "Oppretter..." : "Opprett og åpne"}</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
-          )}
+            <div className="max-h-[320px] overflow-y-auto space-y-1.5 pr-1">
+              {projects
+                .filter(p => {
+                  if (!projectSearchQuery.trim()) return true;
+                  const q = projectSearchQuery.toLowerCase();
+                  return p.name.toLowerCase().includes(q) || (p.address?.toLowerCase().includes(q) ?? false);
+                })
+                .map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => handleSelectProjectForBrensel(p.id)}
+                    className="flex items-center gap-2.5 w-full text-left rounded-lg border p-2.5 transition-colors hover:bg-accent/50 border-border"
+                  >
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted">
+                      <Building className="h-3.5 w-3.5" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{p.name}</p>
+                      {p.address && <p className="text-xs text-muted-foreground truncate">{p.address}</p>}
+                    </div>
+                  </button>
+                ))}
+              {projects.length === 0 && (
+                <p className="text-xs text-muted-foreground text-center py-6">Ingen prosjekter ennå. Opprett ett med "Nytt".</p>
+              )}
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
