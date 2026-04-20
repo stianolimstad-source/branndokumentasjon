@@ -1218,7 +1218,7 @@ const Brensellagring = () => {
             </div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };
