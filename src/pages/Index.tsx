@@ -1,18 +1,63 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Plus, FolderOpen, ShieldCheck, BarChart3, GitCompare, Shield, LayoutDashboard, Warehouse, Receipt, Handshake } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Plus, FolderOpen, ShieldCheck, BarChart3, GitCompare, Shield, LayoutDashboard, Warehouse, Receipt, Handshake, Building, Search, Check } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import DashboardPanel from "@/components/dashboard/DashboardPanel";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+
+interface ProjectOption { id: string; name: string; address: string | null; }
 
 const Index = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [showConceptDialog, setShowConceptDialog] = useState(false);
   const [showTilstandDialog, setShowTilstandDialog] = useState(false);
   const [showFravikDialog, setShowFravikDialog] = useState(false);
+  const [showBrensellagringDialog, setShowBrensellagringDialog] = useState(false);
+
+  // Project picker state for Brensellagring
+  const [projects, setProjects] = useState<ProjectOption[]>([]);
+  const [projectSearchQuery, setProjectSearchQuery] = useState("");
+  const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [newProject, setNewProject] = useState({ name: "", description: "", address: "" });
+
+  useEffect(() => {
+    if (!user || !showBrensellagringDialog) return;
+    supabase
+      .from("projects")
+      .select("id, name, address")
+      .order("created_at", { ascending: false })
+      .then(({ data }) => { if (data) setProjects(data as ProjectOption[]); });
+  }, [user, showBrensellagringDialog]);
+
+  const handleCreateProjectAndOpen = async () => {
+    if (!newProject.name.trim() || !user) return;
+    setIsCreatingProject(true);
+    const { data, error } = await supabase
+      .from("projects")
+      .insert({ name: newProject.name, description: newProject.description || null, address: newProject.address || null, user_id: user.id })
+      .select("id, name, address")
+      .single();
+    if (error) {
+      toast({ title: "Feil", description: "Kunne ikke opprette prosjekt", variant: "destructive" });
+    } else if (data) {
+      setNewProject({ name: "", description: "", address: "" });
+      setIsCreateProjectOpen(false);
+      setShowBrensellagringDialog(false);
+      navigate(`/brensellagring?project=${data.id}`);
+    }
+    setIsCreatingProject(false);
+  };
+
 
   const features = [
     {
