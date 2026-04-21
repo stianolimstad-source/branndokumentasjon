@@ -57,7 +57,7 @@ interface BrensellagringPreviewProps {
   plannedKommentar?: string;
   brannenergiInkludert?: boolean;
   brannenergiKommentar?: string;
-  byggDim?: { lengde: string; bredde: string; hoyde: string };
+  etasjer?: { id: string; navn: string; lengde: string; bredde: string; hoyde: string }[];
   energitetthet?: Record<keyof PlannedAmountsData, { verdi: number; enhet: "MJ/kg" | "MJ/L"; kilde: string }>;
 }
 
@@ -109,7 +109,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   plannedKommentar = "",
   brannenergiInkludert = false,
   brannenergiKommentar = "",
-  byggDim,
+  etasjer = [],
   energitetthet,
 }) => {
   if (!valgtBygg) {
@@ -179,11 +179,16 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         .filter((x): x is NonNullable<typeof x> => x !== null)
     : [];
   const totalMJ = energiBidrag.reduce((s, b) => s + b.totalMJ, 0);
-  const dimL = parseFloat(byggDim?.lengde || "");
-  const dimB = parseFloat(byggDim?.bredde || "");
-  const dimH = parseFloat(byggDim?.hoyde || "");
-  const dimGyldig = dimL > 0 && dimB > 0 && dimH > 0;
-  const omhylling = dimGyldig ? 2 * (dimL * dimB) + 2 * (dimL * dimH) + 2 * (dimB * dimH) : 0;
+  const etasjerBeregnet = etasjer.map((et) => {
+    const L = parseFloat(et.lengde || "");
+    const B = parseFloat(et.bredde || "");
+    const H = parseFloat(et.hoyde || "");
+    const gyldig = L > 0 && B > 0 && H > 0;
+    const omh = gyldig ? 2 * (L * B) + 2 * (L * H) + 2 * (B * H) : 0;
+    return { ...et, L, B, H, gyldig, omh };
+  });
+  const omhylling = etasjerBeregnet.reduce((s, e) => s + e.omh, 0);
+  const dimGyldig = etasjerBeregnet.some((e) => e.gyldig);
   const spesifikkMJm2 = dimGyldig && omhylling > 0 ? totalMJ / omhylling : null;
   const visBrannenergi = brannenergiInkludert && energiBidrag.length > 0;
   const formatMJ = (v: number) => {
@@ -303,19 +308,31 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
               <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
                 <thead>
                   <tr>
+                    <th style={thStyle}>Etasje</th>
                     <th style={thStyle}>Lengde</th>
                     <th style={thStyle}>Bredde</th>
                     <th style={thStyle}>Høyde</th>
-                    <th style={thStyle}>Omhyllingsflate A<sub>t</sub></th>
+                    <th style={thStyle}>Omhyllingsflate</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td style={tdStyle}>{dimL.toLocaleString("nb-NO")} m</td>
-                    <td style={tdStyle}>{dimB.toLocaleString("nb-NO")} m</td>
-                    <td style={tdStyle}>{dimH.toLocaleString("nb-NO")} m</td>
-                    <td style={{ ...tdStyle, fontWeight: 600 }}>{omhylling.toFixed(1)} m²</td>
-                  </tr>
+                  {etasjerBeregnet.filter((e) => e.gyldig).map((e) => (
+                    <tr key={e.id}>
+                      <td style={{ ...tdStyle, fontWeight: 500 }}>{e.navn || "Etasje"}</td>
+                      <td style={tdStyle}>{e.L.toLocaleString("nb-NO")} m</td>
+                      <td style={tdStyle}>{e.B.toLocaleString("nb-NO")} m</td>
+                      <td style={tdStyle}>{e.H.toLocaleString("nb-NO")} m</td>
+                      <td style={tdStyle}>{e.omh.toFixed(1)} m²</td>
+                    </tr>
+                  ))}
+                  {etasjerBeregnet.filter((e) => e.gyldig).length > 1 && (
+                    <tr>
+                      <td colSpan={4} style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#f1f5f9" }}>
+                        Total omhyllingsflate A<sub>t</sub>
+                      </td>
+                      <td style={{ ...tdStyle, fontWeight: 700, background: "#f1f5f9" }}>{omhylling.toFixed(1)} m²</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             )}

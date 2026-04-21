@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   ArrowLeft, Flame, AlertTriangle, Info, Shield, Ruler, FileText, Save,
-  Droplets, ChevronDown, Cylinder, PipetteIcon, Gauge, ClipboardCheck, FolderOpen, ExternalLink, Eye, Building, Check, Plus, Search, FileDown, FilePlus2, Warehouse,
+  Droplets, ChevronDown, Cylinder, PipetteIcon, Gauge, ClipboardCheck, FolderOpen, ExternalLink, Eye, Building, Check, Plus, Search, FileDown, FilePlus2, Warehouse, Trash2,
 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -144,10 +144,16 @@ const Brensellagring = () => {
   const [plannedKommentar, setPlannedKommentar] = useState("");
   const [plannedInkludert, setPlannedInkludert] = useState(false);
 
-  // Brannenergi – byggdimensjoner og inkludering
-  type ByggDim = { lengde: string; bredde: string; hoyde: string };
-  const TOMME_DIM: ByggDim = { lengde: "", bredde: "", hoyde: "" };
-  const [byggDim, setByggDim] = useState<ByggDim>(TOMME_DIM);
+  // Brannenergi – etasjer (flere mulig, hver med egne mål) og inkludering
+  type Etasje = { id: string; navn: string; lengde: string; bredde: string; hoyde: string };
+  const lagEtasje = (navn = "Etasje 1"): Etasje => ({
+    id: typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : Math.random().toString(36).slice(2),
+    navn,
+    lengde: "",
+    bredde: "",
+    hoyde: "",
+  });
+  const [etasjer, setEtasjer] = useState<Etasje[]>([lagEtasje("Etasje 1")]);
   const [brannenergiInkludert, setBrannenergiInkludert] = useState(false);
   const [brannenergiKommentar, setBrannenergiKommentar] = useState("");
 
@@ -295,7 +301,8 @@ const Brensellagring = () => {
           plannedAmounts?: Partial<PlannedAmounts>;
           plannedKommentar?: string;
           plannedInkludert?: boolean;
-          byggDim?: Partial<ByggDim>;
+          byggDim?: { lengde?: string; bredde?: string; hoyde?: string };
+          etasjer?: Etasje[];
           brannenergiInkludert?: boolean;
           brannenergiKommentar?: string;
           documentType?: string;
@@ -318,7 +325,26 @@ const Brensellagring = () => {
         setPlannedAmounts({ ...TOMME_MENGDER, ...(content.plannedAmounts || {}) });
         setPlannedKommentar(content.plannedKommentar ?? "");
         setPlannedInkludert(content.plannedInkludert ?? false);
-        setByggDim({ ...TOMME_DIM, ...(content.byggDim || {}) });
+        // Bakoverkompatibilitet: gammelt enkelt-byggDim → konverter til én etasje
+        if (content.etasjer && Array.isArray(content.etasjer) && content.etasjer.length > 0) {
+          setEtasjer(
+            content.etasjer.map((e, i) => ({
+              id: e.id || (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : Math.random().toString(36).slice(2)),
+              navn: e.navn || `Etasje ${i + 1}`,
+              lengde: e.lengde ?? "",
+              bredde: e.bredde ?? "",
+              hoyde: e.hoyde ?? "",
+            }))
+          );
+        } else if (content.byggDim) {
+          setEtasjer([{
+            id: typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : Math.random().toString(36).slice(2),
+            navn: "Etasje 1",
+            lengde: content.byggDim.lengde ?? "",
+            bredde: content.byggDim.bredde ?? "",
+            hoyde: content.byggDim.hoyde ?? "",
+          }]);
+        }
         setBrannenergiInkludert(content.brannenergiInkludert ?? false);
         setBrannenergiKommentar(content.brannenergiKommentar ?? "");
       });
@@ -351,7 +377,7 @@ const Brensellagring = () => {
       plannedAmounts,
       plannedKommentar,
       plannedInkludert,
-      byggDim,
+      etasjer,
       brannenergiInkludert,
       brannenergiKommentar,
     };
@@ -552,11 +578,16 @@ const Brensellagring = () => {
               .filter((x): x is NonNullable<typeof x> => x !== null);
 
             const totalMJ = bidrag.reduce((sum, b) => sum + b.totalMJ, 0);
-            const L = parseFloat(byggDim.lengde);
-            const B = parseFloat(byggDim.bredde);
-            const H = parseFloat(byggDim.hoyde);
-            const dimGyldig = L > 0 && B > 0 && H > 0;
-            const omhylling = dimGyldig ? 2 * (L * B) + 2 * (L * H) + 2 * (B * H) : 0;
+            const etasjerBeregnet = etasjer.map((et) => {
+              const L = parseFloat(et.lengde);
+              const B = parseFloat(et.bredde);
+              const H = parseFloat(et.hoyde);
+              const gyldig = L > 0 && B > 0 && H > 0;
+              const omh = gyldig ? 2 * (L * B) + 2 * (L * H) + 2 * (B * H) : 0;
+              return { ...et, L, B, H, gyldig, omh };
+            });
+            const omhylling = etasjerBeregnet.reduce((s, e) => s + e.omh, 0);
+            const dimGyldig = etasjerBeregnet.some((e) => e.gyldig);
             const spesifikk = dimGyldig && omhylling > 0 ? totalMJ / omhylling : null;
 
             const formatMJ = (v: number) => {
@@ -590,29 +621,84 @@ const Brensellagring = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <Label className="text-xs mb-1.5 block">Innvendige mål (for omhyllingsflate)</Label>
-                    <div className="grid grid-cols-3 gap-3">
-                      {(["lengde", "bredde", "hoyde"] as const).map((d) => (
-                        <div key={d} className="relative">
-                          <Input
-                            type="number"
-                            min="0"
-                            step="any"
-                            inputMode="decimal"
-                            placeholder={d === "lengde" ? "Lengde" : d === "bredde" ? "Bredde" : "Høyde"}
-                            value={byggDim[d]}
-                            onChange={(e) => setByggDim((prev) => ({ ...prev, [d]: e.target.value }))}
-                            className="h-9 pr-8 text-sm"
-                          />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
-                            m
-                          </span>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <Label className="text-xs">Innvendige mål per etasje (for omhyllingsflate)</Label>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs gap-1"
+                        onClick={() =>
+                          setEtasjer((prev) => [...prev, lagEtasje(`Etasje ${prev.length + 1}`)])
+                        }
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                        Legg til etasje
+                      </Button>
+                    </div>
+                    <div className="space-y-2">
+                      {etasjerBeregnet.map((et, idx) => (
+                        <div key={et.id} className="rounded-md border bg-muted/20 p-2.5 space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Input
+                              value={et.navn}
+                              onChange={(e) =>
+                                setEtasjer((prev) =>
+                                  prev.map((p) => (p.id === et.id ? { ...p, navn: e.target.value } : p))
+                                )
+                              }
+                              placeholder={`Etasje ${idx + 1}`}
+                              className="h-8 text-sm flex-1"
+                            />
+                            {etasjer.length > 1 && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                                onClick={() =>
+                                  setEtasjer((prev) => prev.filter((p) => p.id !== et.id))
+                                }
+                                title="Fjern etasje"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            )}
+                          </div>
+                          <div className="grid grid-cols-3 gap-2">
+                            {(["lengde", "bredde", "hoyde"] as const).map((d) => (
+                              <div key={d} className="relative">
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  step="any"
+                                  inputMode="decimal"
+                                  placeholder={d === "lengde" ? "Lengde" : d === "bredde" ? "Bredde" : "Høyde"}
+                                  value={et[d]}
+                                  onChange={(e) =>
+                                    setEtasjer((prev) =>
+                                      prev.map((p) => (p.id === et.id ? { ...p, [d]: e.target.value } : p))
+                                    )
+                                  }
+                                  className="h-8 pr-7 text-sm"
+                                />
+                                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground pointer-events-none">
+                                  m
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                          {et.gyldig && (
+                            <p className="text-[11px] text-muted-foreground">
+                              Omhyllingsflate: <span className="font-medium text-foreground">{et.omh.toFixed(1)} m²</span>
+                            </p>
+                          )}
                         </div>
                       ))}
                     </div>
                     {dimGyldig && (
-                      <p className="text-[11px] text-muted-foreground mt-1.5">
-                        Omhyllingsflate A<sub>t</sub> = 2·(L·B) + 2·(L·H) + 2·(B·H) = <span className="font-medium text-foreground">{omhylling.toFixed(1)} m²</span>
+                      <p className="text-[11px] text-muted-foreground mt-2">
+                        Total omhyllingsflate A<sub>t</sub> (sum av etasjer) = <span className="font-medium text-foreground">{omhylling.toFixed(1)} m²</span>
                       </p>
                     )}
                   </div>
@@ -1437,7 +1523,7 @@ const Brensellagring = () => {
                   plannedKommentar={plannedKommentar}
                   brannenergiInkludert={brannenergiInkludert}
                   brannenergiKommentar={brannenergiKommentar}
-                  byggDim={byggDim}
+                  etasjer={etasjer}
                   energitetthet={ENERGITETTHET}
                 />
               </div>
