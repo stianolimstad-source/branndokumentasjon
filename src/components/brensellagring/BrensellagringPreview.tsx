@@ -7,7 +7,6 @@ import {
   BELIGGENHET_KRAV,
   KONTROLL_KRAV,
   DOKUMENTASJON_KRAV,
-  STOFF_KATALOG,
   PUMPE_KRAV,
   ROERLEDNING_KRAV,
   VENTIL_KRAV,
@@ -39,7 +38,6 @@ interface BrensellagringPreviewProps {
   prosjektNavn?: string;
   adresse?: string;
   visibleSections: Set<BrenselSectionKey>;
-  selectedStoffIds?: Set<string>;
   selectedKravIds?: Set<string>;
 }
 
@@ -83,15 +81,14 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   prosjektNavn,
   adresse,
   visibleSections,
-  selectedStoffIds = new Set(),
   selectedKravIds = new Set(),
 }) => {
-  if (!valgtBygg && selectedStoffIds.size === 0) {
+  if (!valgtBygg) {
     return (
       <div style={{ ...pageStyle, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 400 }}>
         <div style={{ textAlign: "center", color: "#94a3b8" }}>
           <p style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>Ingen data valgt</p>
-          <p style={{ fontSize: 12 }}>Velg stoffer fra Stoffdata-tabellen eller en bygningstype for å generere dokumentet.</p>
+          <p style={{ fontSize: 12 }}>Velg en bygningstype for å generere dokumentet.</p>
         </div>
       </div>
     );
@@ -99,8 +96,6 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
 
   const today = new Date().toLocaleDateString("nb-NO", { day: "2-digit", month: "long", year: "numeric" });
   const tillatteBrensler = valgtBygg ? valgtBygg.grenser.filter(g => g.maksLiter !== null || g.maksKg) : [];
-  const selectedStoffer = STOFF_KATALOG.filter(s => selectedStoffIds.has(s.id));
-  const hasStoffdata = selectedStoffer.length > 0;
 
   // Filter krav items by selectedKravIds
   const selBeliggenhet = BELIGGENHET_KRAV.filter((_, i) => selectedKravIds.has(`beliggenhet_${i}`));
@@ -114,7 +109,6 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
 
   // Build visible sections dynamically based on selected items
   const sections: { key: string; label: string }[] = [];
-  if (hasStoffdata) sections.push({ key: "stoffdata", label: "Stoffdata" });
   if (selBeliggenhet.length > 0) sections.push({ key: "beliggenhet", label: "Beliggenhet og utforming" });
   if (visibleSections.has("avstander")) sections.push({ key: "avstander", label: "Sikkerhetsavstander" });
   if (selTank.length > 0 || selPumpe.length > 0) sections.push({ key: "tankkrav", label: "Krav til tanker" });
@@ -176,42 +170,6 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           <p style={{ fontSize: 12, color: "#94a3b8", textAlign: "center", marginTop: 40 }}>
             Ingen seksjoner valgt. Velg relevante krav i panelet til venstre.
           </p>
-        )}
-
-        {/* Stoffdata section */}
-        {hasStoffdata && (
-          <>
-            <h2 style={h2}>1. Stoffdata – utvalgte stoffer</h2>
-            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
-              Tekniske data for utvalgte brannfarlige stoffer iht. GHS/CLP, DSB Temaveiledning og NFPA.
-            </p>
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 16 }}>
-              <thead>
-                <tr>
-                  <th style={thStyle}>Stoff</th>
-                  <th style={thStyle}>Kategori</th>
-                  <th style={thStyle}>Flammepunkt</th>
-                  <th style={thStyle}>Densitet</th>
-                  <th style={thStyle}>Brennverdi</th>
-                  {selectedStoffer.some(s => s.eksplosjonsgrenser) && <th style={thStyle}>Eksp.grenser</th>}
-                  {selectedStoffer.some(s => s.selvantennelse) && <th style={thStyle}>Selvant.</th>}
-                </tr>
-              </thead>
-              <tbody>
-                {selectedStoffer.map((stoff) => (
-                  <tr key={stoff.id}>
-                    <td style={{ ...tdStyle, fontWeight: 500 }}>{stoff.navn}</td>
-                    <td style={tdStyle}>{stoff.kategoriNavn}</td>
-                    <td style={tdStyle}>{stoff.flammepunkt}</td>
-                    <td style={tdStyle}>{stoff.densitet}</td>
-                    <td style={tdStyle}>{stoff.nedreBrennverdi}</td>
-                    {selectedStoffer.some(s => s.eksplosjonsgrenser) && <td style={tdStyle}>{stoff.eksplosjonsgrenser || "–"}</td>}
-                    {selectedStoffer.some(s => s.selvantennelse) && <td style={tdStyle}>{stoff.selvantennelse || "–"}</td>}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </>
         )}
 
         {visibleSections.has("mengder") && valgtBygg && (

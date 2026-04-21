@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { Layers, FileWarning, Package, Settings } from "lucide-react";
+import { Layers, FileWarning, Package, Settings, FlaskConical } from "lucide-react";
 
 const categories = [
   {
@@ -34,6 +34,14 @@ const categories = [
     href: "/eksempelkatalog/installasjoner",
     color: "text-emerald-500",
     bgColor: "bg-emerald-500/10 group-hover:bg-emerald-500/20",
+  },
+  {
+    icon: FlaskConical,
+    title: "Brannfarlige stoffer",
+    description: "Oppslagsverk over vanlige brannfarlige væsker og gasser med tekniske data (flammepunkt, densitet, brennverdi, eksplosjonsgrenser m.m.) iht. GHS/CLP og DSB.",
+    href: "/eksempelkatalog/brannfarlige-stoffer",
+    color: "text-orange-500",
+    bgColor: "bg-orange-500/10 group-hover:bg-orange-500/20",
   },
 ];
 

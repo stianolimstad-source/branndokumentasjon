@@ -32,6 +32,7 @@ import Dashboard from "./pages/Dashboard";
 import Sikkerhetsrutiner from "./pages/Sikkerhetsrutiner";
 import Eksempelkatalog from "./pages/Eksempelkatalog";
 import BranntekniskeKonstruksjoner from "./pages/eksempelkatalog/BranntekniskeKonstruksjoner";
+import BrannfarligeStoffer from "./pages/eksempelkatalog/BrannfarligeStoffer";
 import ResetPassword from "./pages/ResetPassword";
 import Brensellagring from "./pages/Brensellagring";
 import TEK17Assistent from "./pages/TEK17Assistent";
@@ -80,6 +81,7 @@ const App = () => (
             <Route path="/sikkerhetsrutiner" element={<Sikkerhetsrutiner />} />
             <Route path="/eksempelkatalog" element={<Eksempelkatalog />} />
             <Route path="/eksempelkatalog/branncellevegger" element={<BranntekniskeKonstruksjoner />} />
+            <Route path="/eksempelkatalog/brannfarlige-stoffer" element={<BrannfarligeStoffer />} />
             <Route path="/tek17-assistent" element={<TEK17Assistent />} />
             <Route path="/tilbud" element={<Tilbud />} />
             <Route path="/oppdragsbekreftelse" element={<Oppdragsbekreftelse />} />
