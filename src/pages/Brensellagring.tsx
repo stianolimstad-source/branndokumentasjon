@@ -1161,52 +1161,17 @@ const Brensellagring = () => {
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Velg stoff</Label>
-                      <Select value={valgtStoff} onValueChange={setValgtStoff}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Velg stoff..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {STOFF_KATALOG.map((s) => (
-                            <SelectItem key={s.id} value={s.id}>{s.navn}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Mengde (liter)</Label>
-                      <Input type="number" min={0} placeholder="F.eks. 5000" value={tankMengde} onChange={(e) => setTankMengde(e.target.value)} />
+                  <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
+                    <div className="space-y-1 text-sm">
+                      <p className="font-medium text-foreground">Vurder innmeldingsplikt</p>
+                      <p className="text-muted-foreground">
+                        Dersom de oppgitte lagringsmengdene i prosjektet overgår grensene i tabellen nedenfor, skal anlegget meldes inn til Direktoratet for samfunnssikkerhet og beredskap (DSB) iht. § 12.
+                      </p>
                     </div>
                   </div>
 
-                  {innmeldingsStatus && valgtStoffInfo && (
-                    <Card className={`mt-2 ${innmeldingsStatus.trengerInnmelding ? "border-amber-400 dark:border-amber-600" : "border-green-400 dark:border-green-600"}`}>
-                      <CardContent className="py-4">
-                        <div className="flex items-start gap-3">
-                          {innmeldingsStatus.trengerInnmelding ? (
-                            <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
-                          ) : (
-                            <Info className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
-                          )}
-                          <div className="space-y-1">
-                            <p className="font-medium">
-                              {innmeldingsStatus.trengerInnmelding ? "Innmeldingsplikt til DSB" : "Ingen innmeldingsplikt"}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              {valgtStoffInfo.navn} ({valgtStoffInfo.kategoriNavn}) – Innmeldingsgrense: {innmeldingsStatus.grenseTekst}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              Din mengde: {tankMengdeNum.toLocaleString("nb-NO")} liter
-                            </p>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  <div className="border rounded-lg overflow-hidden mt-4">
+                  <div className="border rounded-lg overflow-hidden mt-2">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="bg-muted/50">
