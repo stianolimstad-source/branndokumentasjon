@@ -1,62 +1,65 @@
 
 
 ## Mål
-Legge til en automatisk beregning av omtrentlig brannenergi i bygget, basert på allerede oppgitte planlagte mengder. Brannenergien angis både totalt (MJ) og per m² omhyllingsflate (MJ/m²) — sistnevnte krever at brukeren oppgir byggets innvendige mål (lengde, bredde, høyde).
+Krav til innmelding til DSB (§ 12) skal beregnes automatisk ut fra de planlagte mengdene som er fylt inn under «Planlagt lagret mengde i bygget», i stedet for å være en ren statisk tabell. Brukeren skal umiddelbart se om planlagt lager utløser innmeldingsplikt — og for hvilken stoffgruppe.
 
-## Plassering
-Et nytt kort **"Brannenergi i bygget"** plasseres i `src/pages/Brensellagring.tsx` **direkte under** kortet *"Planlagt lagret mengde i bygget"*, slik at det er en naturlig forlengelse av samme datagrunnlag. Kortet er kun synlig når minst én planlagt mengde er fylt inn.
+## Logikk — gruppering mot DSB-grenser
+Tre stoffgrupper med hver sin grense (uendret kilde, `INNMELDINGS_GRENSER` i `src/lib/brensellagring-krav.ts`):
 
-## Inndata (nye felter)
-Tre tallfelt for å beregne omhyllingsflate (samme tilnærming som `OmhyllingsflateCalculator.tsx`):
-- **Lengde (m)**
-- **Bredde (m)**
-- **Høyde (m)**
+| Gruppe | Summerer planlagte mengder fra | Grense |
+|---|---|---|
+| Brannfarlig væske kat 1 og 2 | `vaeske_kat1` + `vaeske_kat2` | 6 000 L |
+| Brannfarlig væske kat 3 | `vaeske_kat3` | 12 000 L |
+| Diesel og fyringsoljer | `diesel_fyringsolje` | 100 000 L |
 
-Omhyllingsflate beregnes som `A_t = 2·(L·B) + 2·(L·H) + 2·(B·H)` (gulv + tak + vegger). Hvis ett av feltene mangler vises kun total brannenergi (MJ), ikke spesifikk (MJ/m²).
+Gass (kat 1/2) og aerosoler omfattes ikke av disse tre væske-grensene og rapporteres som «ikke vurdert mot væskegrensene». Hvis gass/aerosoler senere skal vurderes mot egne grenser, beholdes plass i UI for å utvide.
 
-## Beregningsgrunnlag — kalorimetriske verdier
-Standardverdier hentet fra SFPE Handbook og NS-EN 1991-1-2, omregnet til praktiske enheter for hver kategori:
+For hver gruppe regnes:
+- `sum` (L) basert på `plannedAmounts`
+- `status`: `over` (sum ≥ grense) → innmeldingspliktig, `under` (0 < sum < grense) → ikke pliktig, `ingen` (sum = 0) → ikke aktuelt
+- `gjenstaende`: grense − sum (vises kun ved `under`)
 
-| Kategori | Enhet inn | Energi-tetthet | Kommentar |
-|---|---|---|---|
-| Brannfarlig gass kat 1 | kg | **46 MJ/kg** | Propan/butan/hydrogen |
-| Brannfarlig gass kat 2 | kg | **22 MJ/kg** | Ammoniakk (konservativ) |
-| Brannfarlig væske kat 1 | liter | **32 MJ/L** | Bensin (44 MJ/kg × 0,74 kg/L) |
-| Brannfarlig væske kat 2 | liter | **36 MJ/L** | Parafin/jet A-1 |
-| Brannfarlig væske kat 3 | liter | **36 MJ/L** | Smøreolje/terpentin |
-| Diesel / fyringsolje | liter | **36 MJ/L** | 42,5 MJ/kg × 0,84 kg/L |
-| Aerosoler | liter | **20 MJ/L** | Drivgass + innhold (sjablongverdi) |
+Samlet status `trengerInnmelding = true` hvis minst én gruppe er `over`.
 
-Verdiene defineres i en konstant `ENERGITETTHET` øverst i `Brensellagring.tsx`.
+## UI-endringer i «Innmelding»-fanen
+Filen: `src/pages/Brensellagring.tsx`, `TabsContent value="innmelding"` (linje ~1152).
 
-## Resultatvisning i kortet
-- **Total brannenergi**: Σ (mengde × energitetthet) → vises som `X MJ` (avrundet til nærmeste 100 MJ ved >10 000).
-- **Spesifikk brannenergi**: Total / A_t → `Y MJ/m²` (kun når L, B, H er gyldige).
-- En liten oppdelt tabell viser bidraget per kategori (kategori, mengde, MJ/kg eller MJ/L, sum MJ) for transparens.
-- En info-boks med formel og kilde (SFPE / NS-EN 1991-1-2) samt presisering: *"Verdien er en sjablong-beregning og ivaretar ikke fukt, sammensetning eller emballasje. Brukes kun til indikativ vurdering."*
+1. Beholde info-boksen øverst, men oppdatere teksten til å vise **automatisk konklusjon**:
+   - Grønn boks (`bg-emerald-500/10`, `CheckCircle2`): «Ingen innmeldingsplikt utløst basert på planlagte mengder.»
+   - Rød/oransje boks (`bg-destructive/10`, `AlertTriangle`): «Anlegget er innmeldingspliktig til DSB iht. § 12. Følgende stoffgruppe(r) overskrider grensen: …»
+   - Nøytral boks når ingen mengder er fylt inn: «Fyll inn planlagte mengder under «Planlagt lagret mengde i bygget» for å vurdere innmeldingsplikt.» med en knapp/lenke som scroller til kortet.
 
-## Inkludering i dokument
-Samme mønster som planlagte mengder og salgslokale-tabellen:
-- En "Legg til i dokument"-knapp (`brannenergiInkludert`).
-- En `Textarea` for kommentar (`brannenergiKommentar`).
-- Når aktiv, legges en ny seksjon **"Brannenergi i bygget"** inn i forhåndsvisningen (`BrensellagringPreview.tsx`) over de øvrige kravseksjonene, med:
-  - Tabell over byggets dimensjoner og omhyllingsflate.
-  - Tabell over bidrag per kategori.
-  - Total brannenergi og MJ/m².
+2. Erstatte den eksisterende tabellen med en **vurderingstabell** med kolonner:
+   - Stoffgruppe
+   - Planlagt mengde (sum L)
+   - Innmeldingsgrense (L)
+   - Status (badge: «Innmeldingspliktig» rød / «Under grense» grønn / «Ikke aktuelt» grå)
+   - Margin (kun når `under`: «X L til grensen»)
+
+3. Ved overskridelse: kort liste «Hva må gjøres» med standardpunkter (melding sendes inn senest 3 mnd før idriftsettelse, skjema via Altinn, krav til informasjon i søknaden) — vises kun når `trengerInnmelding`.
+
+4. Fjerne det eksisterende `valgtStoff` / `tankMengde`-relaterte oppslaget i denne fanen (input-feltene er allerede fjernet — `getInnmeldingsStatus`/`innmeldingsStatus`-bruken renses opp i samme slengen).
+
+## Inkludering i dokumentet
+Beholde samme mønster som andre seksjoner:
+- Ny «Legg til i dokument»-knapp (`innmeldingInkludert`) i kortet.
+- Tekstboks for kommentar (`innmeldingKommentar`).
+- Når aktiv legges seksjonen «Innmeldingsplikt til DSB» inn i `BrensellagringPreview.tsx` med:
+  - Kort konklusjon (innmeldingspliktig ja/nei + hvilke stoffgrupper).
+  - Vurderingstabell (samme kolonner som i UI).
   - Eventuell kommentar.
-  - Fotnote med kildereferanser.
+  - Fotnote: «Forskrift om håndtering av brannfarlig, reaksjonsfarlig og trykksatt stoff (FBRT) § 12».
 
 ## State og persistens
-Nye state-variabler i `Brensellagring.tsx`:
-- `byggDim: { lengde: string; bredde: string; hoyde: string }`
-- `brannenergiInkludert: boolean`
-- `brannenergiKommentar: string`
+Nye felter i `Brensellagring.tsx`:
+- `innmeldingInkludert: boolean`
+- `innmeldingKommentar: string`
 
-Disse legges til i `docContent` ved lagring og leses tilbake i `useEffect`-en som henter eksisterende dokument (samme mønster som `plannedAmounts`).
+Lagres i `docContent` og leses tilbake i `useEffect`-en som henter eksisterende dokument (samme mønster som `plannedAmounts` / `brannenergiInkludert`).
 
 ## Filer som endres
-1. **`src/pages/Brensellagring.tsx`** — nytt kort, ny state, persistens, propagering til preview.
-2. **`src/components/brensellagring/BrensellagringPreview.tsx`** — ny prop-blokk og rendering av brannenergi-seksjonen, ny entry i `sections`-listen rett etter `planlagt`.
+1. **`src/pages/Brensellagring.tsx`** — ny beregningsfunksjon `evaluerInnmelding(plannedAmounts)`, oppdatert UI i Innmelding-tab, ny state og persistens, propagering til preview. Fjerner ubrukte `valgtStoff`/`tankMengde`/`innmeldingsStatus`-rester.
+2. **`src/components/brensellagring/BrensellagringPreview.tsx`** — ny prop-blokk og rendering av innmelding-seksjonen, ny entry i `BRENSEL_SECTIONS`/`sections`-listen.
 
-Ingen endringer i datafiler, ruter eller andre komponenter.
+Ingen endringer i `src/lib/brensellagring-krav.ts` (grensene gjenbrukes som de er).
 
