@@ -91,10 +91,10 @@ const Brensellagring = () => {
     // Ingen bygg valgt → vis alt (uendret oppførsel)
     if (!valgtBygningstype) return true;
     switch (tab) {
-      case "beliggenhet":
       case "kontroll":
-      case "dokumentasjon":
         return true;
+      case "beliggenhet":
+      case "dokumentasjon":
       case "tanker":
       case "oppsamling":
       case "roer":
@@ -108,11 +108,11 @@ const Brensellagring = () => {
 
   const visTankBeliggenhet = !valgtBygningstype || TANK_BYGG.includes(valgtBygningstype as BygningsType);
 
-  const [activeTab, setActiveTab] = useState<TabKey>("beliggenhet");
-  // Hvis valgt fane blir irrelevant ved bytte av bygningstype → fall tilbake til beliggenhet
+  const [activeTab, setActiveTab] = useState<TabKey>("kontroll");
+  // Hvis valgt fane blir irrelevant ved bytte av bygningstype → fall tilbake til kontroll
   useEffect(() => {
     if (!isTabRelevant(activeTab)) {
-      setActiveTab("beliggenhet");
+      setActiveTab("kontroll");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valgtBygningstype]);
@@ -397,7 +397,7 @@ const Brensellagring = () => {
                   <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                   <p className="text-muted-foreground">
                     Viser kun krav som er relevante for <span className="font-medium text-foreground">{valgtBygg?.navn}</span>.
-                    Generelle krav (beliggenhet, kontroll, dokumentasjon) vises alltid.
+                    Generelle krav (Kontroll) vises alltid. Krav som gjelder tankanlegg vises kun for verksted, fyrrom, tankrom og lager.
                   </p>
                 </div>
                 <Button variant="outline" size="sm" asChild className="shrink-0 h-8 text-xs">
