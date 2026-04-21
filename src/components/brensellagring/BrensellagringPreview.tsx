@@ -34,6 +34,16 @@ export const BRENSEL_SECTIONS: { key: BrenselSectionKey; label: string }[] = [
   { key: "dokumentasjon", label: "Dokumentasjonskrav" },
 ];
 
+export interface PlannedAmountsData {
+  gass_kat1: string;
+  gass_kat2: string;
+  vaeske_kat1: string;
+  vaeske_kat2: string;
+  vaeske_kat3: string;
+  diesel_fyringsolje: string;
+  aerosoler: string;
+}
+
 interface BrensellagringPreviewProps {
   valgtBygg: BygningsTypeInfo | null;
   prosjektNavn?: string;
@@ -42,6 +52,9 @@ interface BrensellagringPreviewProps {
   selectedKravIds?: Set<string>;
   salgslokaleInkludert?: boolean;
   salgslokaleKommentar?: string;
+  plannedInkludert?: boolean;
+  plannedAmounts?: PlannedAmountsData;
+  plannedKommentar?: string;
 }
 
 const pageStyle: React.CSSProperties = {
@@ -87,6 +100,9 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   selectedKravIds = new Set(),
   salgslokaleInkludert = false,
   salgslokaleKommentar = "",
+  plannedInkludert = false,
+  plannedAmounts,
+  plannedKommentar = "",
 }) => {
   if (!valgtBygg) {
     return (
@@ -112,8 +128,31 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const selKontroll = KONTROLL_KRAV.filter((_, i) => selectedKravIds.has(`kontroll_${i}`));
   const selDok = DOKUMENTASJON_KRAV.filter((_, i) => selectedKravIds.has(`dok_${i}`));
 
+  // Planlagte mengder – bygg liste over felt med faktisk innfylte verdier
+  const PLANNED_LABELS: Record<keyof PlannedAmountsData, { label: string; enhet: string }> = {
+    gass_kat1: { label: "Brannfarlig gass, kategori 1", enhet: "kg" },
+    gass_kat2: { label: "Brannfarlig gass, kategori 2", enhet: "kg" },
+    vaeske_kat1: { label: "Brannfarlig væske, kategori 1", enhet: "liter" },
+    vaeske_kat2: { label: "Brannfarlig væske, kategori 2", enhet: "liter" },
+    vaeske_kat3: { label: "Brannfarlig væske, kategori 3", enhet: "liter" },
+    diesel_fyringsolje: { label: "Diesel / fyringsolje", enhet: "liter" },
+    aerosoler: { label: "Aerosoler", enhet: "liter" },
+  };
+  const plannedRows = plannedAmounts
+    ? (Object.keys(PLANNED_LABELS) as (keyof PlannedAmountsData)[])
+        .map((k) => ({
+          key: k,
+          label: PLANNED_LABELS[k].label,
+          enhet: PLANNED_LABELS[k].enhet,
+          verdi: (plannedAmounts[k] || "").trim(),
+        }))
+        .filter((r) => r.verdi !== "" && parseFloat(r.verdi) > 0)
+    : [];
+  const visPlanlagt = plannedInkludert && plannedRows.length > 0;
+
   // Build visible sections dynamically based on selected items
   const sections: { key: string; label: string }[] = [];
+  if (visPlanlagt) sections.push({ key: "planlagt", label: "Planlagt lagret mengde i bygget" });
   if (salgslokaleInkludert) sections.push({ key: "salgslokale", label: "Største tillatte mengder i salgslokaler" });
   if (selBeliggenhet.length > 0) sections.push({ key: "beliggenhet", label: "Beliggenhet og utforming" });
   if (visibleSections.has("avstander")) sections.push({ key: "avstander", label: "Sikkerhetsavstander" });
@@ -176,6 +215,39 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           <p style={{ fontSize: 12, color: "#94a3b8", textAlign: "center", marginTop: 40 }}>
             Ingen seksjoner valgt. Velg relevante krav i panelet til venstre.
           </p>
+        )}
+
+        {visPlanlagt && (
+          <>
+            <h2 style={h2}>{secNum("planlagt")}. Planlagt lagret mengde i bygget</h2>
+            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
+              Oversikt over planlagt lagrede mengder brannfarlig stoff i bygget, fordelt på kategori.
+            </p>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+              <thead>
+                <tr>
+                  <th style={thStyle}>Kategori</th>
+                  <th style={{ ...thStyle, width: "30%" }}>Planlagt mengde</th>
+                </tr>
+              </thead>
+              <tbody>
+                {plannedRows.map((r) => (
+                  <tr key={r.key}>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>{r.label}</td>
+                    <td style={tdStyle}>
+                      {Number(r.verdi).toLocaleString("nb-NO")} {r.enhet}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {plannedKommentar.trim() && (
+              <div style={{ marginBottom: 16, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Kommentar</p>
+                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{plannedKommentar}</p>
+              </div>
+            )}
+          </>
         )}
 
         {salgslokaleInkludert && (

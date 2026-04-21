@@ -121,6 +121,39 @@ const Brensellagring = () => {
   const [salgslokaleInkludert, setSalgslokaleInkludert] = useState(false);
   const [salgslokaleKommentar, setSalgslokaleKommentar] = useState("");
 
+  // Planlagt lagret mengde i bygget – per kategori
+  type PlannedAmounts = {
+    gass_kat1: string;
+    gass_kat2: string;
+    vaeske_kat1: string;
+    vaeske_kat2: string;
+    vaeske_kat3: string;
+    diesel_fyringsolje: string;
+    aerosoler: string;
+  };
+  const TOMME_MENGDER: PlannedAmounts = {
+    gass_kat1: "",
+    gass_kat2: "",
+    vaeske_kat1: "",
+    vaeske_kat2: "",
+    vaeske_kat3: "",
+    diesel_fyringsolje: "",
+    aerosoler: "",
+  };
+  const [plannedAmounts, setPlannedAmounts] = useState<PlannedAmounts>(TOMME_MENGDER);
+  const [plannedKommentar, setPlannedKommentar] = useState("");
+  const [plannedInkludert, setPlannedInkludert] = useState(false);
+
+  const PLANNED_FELT: { key: keyof PlannedAmounts; label: string; enhet: string }[] = [
+    { key: "gass_kat1", label: "Brannfarlig gass, kategori 1", enhet: "kg" },
+    { key: "gass_kat2", label: "Brannfarlig gass, kategori 2", enhet: "kg" },
+    { key: "vaeske_kat1", label: "Brannfarlig væske, kategori 1", enhet: "liter" },
+    { key: "vaeske_kat2", label: "Brannfarlig væske, kategori 2", enhet: "liter" },
+    { key: "vaeske_kat3", label: "Brannfarlig væske, kategori 3", enhet: "liter" },
+    { key: "diesel_fyringsolje", label: "Diesel / fyringsolje", enhet: "liter" },
+    { key: "aerosoler", label: "Aerosoler", enhet: "liter" },
+  ];
+
   // Tankanlegg – innmelding
   const [valgtStoff, setValgtStoff] = useState("");
   const [tankMengde, setTankMengde] = useState("");
@@ -241,6 +274,9 @@ const Brensellagring = () => {
           selectedKrav?: string[];
           salgslokaleInkludert?: boolean;
           salgslokaleKommentar?: string;
+          plannedAmounts?: Partial<PlannedAmounts>;
+          plannedKommentar?: string;
+          plannedInkludert?: boolean;
           documentType?: string;
           type?: string;
         } | null) ?? null;
@@ -258,6 +294,9 @@ const Brensellagring = () => {
         setSelectedKravIds(new Set(content.selectedKrav || []));
         setSalgslokaleInkludert(content.salgslokaleInkludert ?? false);
         setSalgslokaleKommentar(content.salgslokaleKommentar ?? "");
+        setPlannedAmounts({ ...TOMME_MENGDER, ...(content.plannedAmounts || {}) });
+        setPlannedKommentar(content.plannedKommentar ?? "");
+        setPlannedInkludert(content.plannedInkludert ?? false);
       });
   }, [user, conceptIdFromUrl, bygningstypeFromUrl]);
 
@@ -285,6 +324,9 @@ const Brensellagring = () => {
       selectedKrav: Array.from(selectedKravIds),
       salgslokaleInkludert,
       salgslokaleKommentar,
+      plannedAmounts,
+      plannedKommentar,
+      plannedInkludert,
     };
     const docName = `Brensellagring – ${valgtBygg?.navn || valgtBygningstype}`;
     let error;
@@ -383,6 +425,73 @@ const Brensellagring = () => {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Planlagt lagret mengde i bygget */}
+          <Card className="shadow-soft mb-6">
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Warehouse className="h-4 w-4 text-primary" />
+                    Planlagt lagret mengde i bygget
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Fyll inn hvor mye som planlegges lagret per kategori. Tomme felt vises ikke i dokumentet.
+                  </p>
+                </div>
+                <Button
+                  variant={plannedInkludert ? "default" : "outline"}
+                  size="sm"
+                  className="h-7 text-xs gap-1.5 shrink-0"
+                  onClick={() => setPlannedInkludert((v) => !v)}
+                >
+                  {plannedInkludert ? <Check className="h-3.5 w-3.5" /> : <FilePlus2 className="h-3.5 w-3.5" />}
+                  {plannedInkludert ? "I dokumentet" : "Legg til i dokument"}
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {PLANNED_FELT.map((felt) => (
+                  <div key={felt.key} className="space-y-1">
+                    <Label htmlFor={`planlagt-${felt.key}`} className="text-xs">
+                      {felt.label}
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id={`planlagt-${felt.key}`}
+                        type="number"
+                        min="0"
+                        step="any"
+                        inputMode="decimal"
+                        placeholder="0"
+                        value={plannedAmounts[felt.key]}
+                        onChange={(e) =>
+                          setPlannedAmounts((prev) => ({ ...prev, [felt.key]: e.target.value }))
+                        }
+                        className="h-9 pr-12 text-sm"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
+                        {felt.enhet}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="planlagt-kommentar" className="text-xs">
+                  Kommentar (valgfritt)
+                </Label>
+                <Textarea
+                  id="planlagt-kommentar"
+                  placeholder="F.eks. plassering, emballasjetype, lagring i original beholder, m.m."
+                  value={plannedKommentar}
+                  onChange={(e) => setPlannedKommentar(e.target.value)}
+                  className="min-h-[70px] text-sm"
+                />
               </div>
             </CardContent>
           </Card>
@@ -1131,7 +1240,7 @@ const Brensellagring = () => {
                 <Button
                   size="sm"
                   onClick={handleSaveDocument}
-                  disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert)}
+                  disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !plannedInkludert)}
                   className="h-8"
                 >
                   <Save className="h-4 w-4 mr-1.5" />
@@ -1147,6 +1256,9 @@ const Brensellagring = () => {
                   selectedKravIds={selectedKravIds}
                   salgslokaleInkludert={salgslokaleInkludert && valgtBygningstype === "salgslokale"}
                   salgslokaleKommentar={salgslokaleKommentar}
+                  plannedInkludert={plannedInkludert}
+                  plannedAmounts={plannedAmounts}
+                  plannedKommentar={plannedKommentar}
                 />
               </div>
             </div>
