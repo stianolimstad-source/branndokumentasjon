@@ -1435,6 +1435,10 @@ const Brensellagring = () => {
                   plannedInkludert={plannedInkludert}
                   plannedAmounts={plannedAmounts}
                   plannedKommentar={plannedKommentar}
+                  brannenergiInkludert={brannenergiInkludert}
+                  brannenergiKommentar={brannenergiKommentar}
+                  byggDim={byggDim}
+                  energitetthet={ENERGITETTHET}
                 />
               </div>
             </div>
