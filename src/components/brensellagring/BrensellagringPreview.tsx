@@ -58,6 +58,7 @@ interface BrensellagringPreviewProps {
   brannenergiInkludert?: boolean;
   brannenergiKommentar?: string;
   etasjer?: { id: string; navn: string; lengde: string; bredde: string; hoyde: string }[];
+  innledning?: string;
   energitetthet?: Record<keyof PlannedAmountsData, { verdi: number; enhet: "MJ/kg" | "MJ/L"; kilde: string }>;
 }
 
@@ -110,6 +111,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   brannenergiInkludert = false,
   brannenergiKommentar = "",
   etasjer = [],
+  innledning = "",
   energitetthet,
 }) => {
   if (!valgtBygg) {
@@ -257,6 +259,15 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         </table>
 
         {valgtBygg && <p style={{ fontSize: 10, color: "#64748b", marginBottom: 24 }}>{valgtBygg.beskrivelse}</p>}
+
+        {innledning.trim() && (
+          <>
+            <h2 style={h2}>Innledning</h2>
+            <p style={{ fontSize: 11, color: "#1a1a1a", whiteSpace: "pre-wrap", marginBottom: 16 }}>
+              {innledning}
+            </p>
+          </>
+        )}
 
         {!hasAnySections && (
           <p style={{ fontSize: 12, color: "#94a3b8", textAlign: "center", marginTop: 40 }}>
