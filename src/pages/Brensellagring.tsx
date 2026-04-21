@@ -1523,7 +1523,7 @@ const Brensellagring = () => {
                   plannedKommentar={plannedKommentar}
                   brannenergiInkludert={brannenergiInkludert}
                   brannenergiKommentar={brannenergiKommentar}
-                  byggDim={byggDim}
+                  etasjer={etasjer}
                   energitetthet={ENERGITETTHET}
                 />
               </div>
