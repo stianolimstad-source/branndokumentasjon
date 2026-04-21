@@ -132,6 +132,9 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   etasjer = [],
   innledning = "",
   energitetthet,
+  innmeldingInkludert = false,
+  innmeldingKommentar = "",
+  innmeldingVurdering,
 }) => {
   if (!valgtBygg) {
     return (
@@ -212,6 +215,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const dimGyldig = etasjerBeregnet.some((e) => e.gyldig);
   const spesifikkMJm2 = dimGyldig && omhylling > 0 ? totalMJ / omhylling : null;
   const visBrannenergi = brannenergiInkludert && energiBidrag.length > 0;
+  const visInnmelding = innmeldingInkludert && !!innmeldingVurdering && innmeldingVurdering.harMengder;
   const formatMJ = (v: number) => {
     const r = v >= 10000 ? Math.round(v / 100) * 100 : Math.round(v);
     return r.toLocaleString("nb-NO");
@@ -221,6 +225,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const sections: { key: string; label: string }[] = [];
   if (visPlanlagt) sections.push({ key: "planlagt", label: "Planlagt lagret mengde i bygget" });
   if (visBrannenergi) sections.push({ key: "brannenergi", label: "Brannenergi i bygget" });
+  if (visInnmelding) sections.push({ key: "innmelding", label: "Innmeldingsplikt til DSB" });
   if (salgslokaleInkludert) sections.push({ key: "salgslokale", label: "Største tillatte mengder i salgslokaler" });
   if (selBeliggenhet.length > 0) sections.push({ key: "beliggenhet", label: "Beliggenhet og utforming" });
   if (visibleSections.has("avstander")) sections.push({ key: "avstander", label: "Sikkerhetsavstander" });
