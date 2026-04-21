@@ -40,6 +40,8 @@ interface BrensellagringPreviewProps {
   adresse?: string;
   visibleSections: Set<BrenselSectionKey>;
   selectedKravIds?: Set<string>;
+  salgslokaleInkludert?: boolean;
+  salgslokaleKommentar?: string;
 }
 
 const pageStyle: React.CSSProperties = {
