@@ -144,10 +144,16 @@ const Brensellagring = () => {
   const [plannedKommentar, setPlannedKommentar] = useState("");
   const [plannedInkludert, setPlannedInkludert] = useState(false);
 
-  // Brannenergi – byggdimensjoner og inkludering
-  type ByggDim = { lengde: string; bredde: string; hoyde: string };
-  const TOMME_DIM: ByggDim = { lengde: "", bredde: "", hoyde: "" };
-  const [byggDim, setByggDim] = useState<ByggDim>(TOMME_DIM);
+  // Brannenergi – etasjer (flere mulig, hver med egne mål) og inkludering
+  type Etasje = { id: string; navn: string; lengde: string; bredde: string; hoyde: string };
+  const lagEtasje = (navn = "Etasje 1"): Etasje => ({
+    id: typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : Math.random().toString(36).slice(2),
+    navn,
+    lengde: "",
+    bredde: "",
+    hoyde: "",
+  });
+  const [etasjer, setEtasjer] = useState<Etasje[]>([lagEtasje("Etasje 1")]);
   const [brannenergiInkludert, setBrannenergiInkludert] = useState(false);
   const [brannenergiKommentar, setBrannenergiKommentar] = useState("");
 
