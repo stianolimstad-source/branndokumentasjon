@@ -107,6 +107,10 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   plannedInkludert = false,
   plannedAmounts,
   plannedKommentar = "",
+  brannenergiInkludert = false,
+  brannenergiKommentar = "",
+  byggDim,
+  energitetthet,
 }) => {
   if (!valgtBygg) {
     return (
