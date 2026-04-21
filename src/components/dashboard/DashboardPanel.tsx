@@ -123,7 +123,7 @@ const DashboardPanel = () => {
                 {stats.recentConcepts.slice(0, 3).map((c) => {
                   const isBrensel = c.name?.startsWith("Brensellagring");
                   const href = isBrensel
-                    ? `/brensellagring?project=${c.project_id}&doc=${c.id}`
+                    ? `/brensellagring?project=${c.project_id}&concept=${c.id}`
                     : `/konsept?project=${c.project_id}&concept=${c.id}`;
                   return (
                   <li key={c.id} className="flex items-center justify-between gap-2">
