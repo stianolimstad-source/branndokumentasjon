@@ -100,6 +100,9 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   selectedKravIds = new Set(),
   salgslokaleInkludert = false,
   salgslokaleKommentar = "",
+  plannedInkludert = false,
+  plannedAmounts,
+  plannedKommentar = "",
 }) => {
   if (!valgtBygg) {
     return (
