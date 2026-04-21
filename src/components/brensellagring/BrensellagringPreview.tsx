@@ -55,6 +55,10 @@ interface BrensellagringPreviewProps {
   plannedInkludert?: boolean;
   plannedAmounts?: PlannedAmountsData;
   plannedKommentar?: string;
+  brannenergiInkludert?: boolean;
+  brannenergiKommentar?: string;
+  byggDim?: { lengde: string; bredde: string; hoyde: string };
+  energitetthet?: Record<keyof PlannedAmountsData, { verdi: number; enhet: "MJ/kg" | "MJ/L"; kilde: string }>;
 }
 
 const pageStyle: React.CSSProperties = {
