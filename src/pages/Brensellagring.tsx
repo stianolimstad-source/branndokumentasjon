@@ -274,6 +274,9 @@ const Brensellagring = () => {
           selectedKrav?: string[];
           salgslokaleInkludert?: boolean;
           salgslokaleKommentar?: string;
+          plannedAmounts?: Partial<PlannedAmounts>;
+          plannedKommentar?: string;
+          plannedInkludert?: boolean;
           documentType?: string;
           type?: string;
         } | null) ?? null;
@@ -291,6 +294,9 @@ const Brensellagring = () => {
         setSelectedKravIds(new Set(content.selectedKrav || []));
         setSalgslokaleInkludert(content.salgslokaleInkludert ?? false);
         setSalgslokaleKommentar(content.salgslokaleKommentar ?? "");
+        setPlannedAmounts({ ...TOMME_MENGDER, ...(content.plannedAmounts || {}) });
+        setPlannedKommentar(content.plannedKommentar ?? "");
+        setPlannedInkludert(content.plannedInkludert ?? false);
       });
   }, [user, conceptIdFromUrl, bygningstypeFromUrl]);
 
