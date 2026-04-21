@@ -1161,8 +1161,8 @@ const Brensellagring = () => {
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 flex items-start gap-3">
-                    <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
+                  <div className="p-4 rounded-lg bg-accent/30 border border-border flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                     <div className="space-y-1 text-sm">
                       <p className="font-medium text-foreground">Vurder innmeldingsplikt</p>
                       <p className="text-muted-foreground">
