@@ -217,6 +217,39 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           </p>
         )}
 
+        {visPlanlagt && (
+          <>
+            <h2 style={h2}>{secNum("planlagt")}. Planlagt lagret mengde i bygget</h2>
+            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
+              Oversikt over planlagt lagrede mengder brannfarlig stoff i bygget, fordelt på kategori.
+            </p>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+              <thead>
+                <tr>
+                  <th style={thStyle}>Kategori</th>
+                  <th style={{ ...thStyle, width: "30%" }}>Planlagt mengde</th>
+                </tr>
+              </thead>
+              <tbody>
+                {plannedRows.map((r) => (
+                  <tr key={r.key}>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>{r.label}</td>
+                    <td style={tdStyle}>
+                      {Number(r.verdi).toLocaleString("nb-NO")} {r.enhet}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {plannedKommentar.trim() && (
+              <div style={{ marginBottom: 16, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Kommentar</p>
+                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{plannedKommentar}</p>
+              </div>
+            )}
+          </>
+        )}
+
         {salgslokaleInkludert && (
           <>
             <h2 style={h2}>{secNum("salgslokale")}. Største tillatte mengder i salgslokaler</h2>
