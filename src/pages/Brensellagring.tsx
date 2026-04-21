@@ -91,10 +91,10 @@ const Brensellagring = () => {
     // Ingen bygg valgt → vis alt (uendret oppførsel)
     if (!valgtBygningstype) return true;
     switch (tab) {
-      case "beliggenhet":
       case "kontroll":
-      case "dokumentasjon":
         return true;
+      case "beliggenhet":
+      case "dokumentasjon":
       case "tanker":
       case "oppsamling":
       case "roer":
