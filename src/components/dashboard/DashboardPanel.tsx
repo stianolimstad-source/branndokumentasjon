@@ -120,16 +120,22 @@ const DashboardPanel = () => {
               <p className="text-sm text-muted-foreground">Ingen konsepter ennå</p>
             ) : (
               <ul className="space-y-2">
-                {stats.recentConcepts.slice(0, 3).map((c) => (
+                {stats.recentConcepts.slice(0, 3).map((c) => {
+                  const isBrensel = c.name?.startsWith("Brensellagring");
+                  const href = isBrensel
+                    ? `/brensellagring?project=${c.project_id}&concept=${c.id}`
+                    : `/konsept?project=${c.project_id}&concept=${c.id}`;
+                  return (
                   <li key={c.id} className="flex items-center justify-between gap-2">
-                    <Link to={`/konsept?project=${c.project_id}&concept=${c.id}`} className="text-sm hover:text-primary transition-colors line-clamp-1">
+                    <Link to={href} className="text-sm hover:text-primary transition-colors line-clamp-1">
                       {c.name}
                     </Link>
                     <Badge variant={c.status === "draft" ? "secondary" : "default"} className="text-[10px] shrink-0">
                       {c.status === "draft" ? "Utkast" : c.status}
                     </Badge>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             )}
           </CardContent>
