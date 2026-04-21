@@ -679,6 +679,8 @@ const Brensellagring = () => {
                   </p>
                 </CardContent>
               </Card>
+              </>
+              )}
             </TabsContent>
 
             {/* ============ TAB: Tanker ============ */}
