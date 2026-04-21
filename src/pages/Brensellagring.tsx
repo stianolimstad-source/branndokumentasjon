@@ -948,8 +948,103 @@ const Brensellagring = () => {
 
           <div className="space-y-6">
 
-              {/* Vis tillatte mengder */}
-              {valgtBygg && (
+              {/* SALGSLOKALE: DSB-tabell med arealavhengige mengder */}
+              {valgtBygningstype === "salgslokale" && (
+                <Card className="shadow-soft">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base">
+                      Største tillatte mengder i salgslokaler – DSB Temaveiledning Kap. 3
+                    </CardTitle>
+                    <p className="text-xs text-muted-foreground">
+                      Mengdegrensene avhenger av salgslokalets areal. Skriv inn arealet for å markere gjeldende rad.
+                    </p>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-sm">Salgslokalets areal (m²)</Label>
+                      <Input
+                        type="number"
+                        min={0}
+                        placeholder="F.eks. 500"
+                        value={arealInput}
+                        onChange={(e) => setArealInput(e.target.value)}
+                        className="max-w-xs"
+                      />
+                    </div>
+
+                    <div className="border rounded-lg overflow-hidden">
+                      <table className="w-full text-xs">
+                        <thead>
+                          <tr className="bg-muted/50">
+                            <th className="text-left py-2.5 px-3 font-medium">Salgslokalets areal</th>
+                            <th className="text-left py-2.5 px-3 font-medium">Aerosoler</th>
+                            <th className="text-left py-2.5 px-3 font-medium">Brannfarlig gass</th>
+                            <th className="text-left py-2.5 px-3 font-medium">Br.f. væske kat. 1 og 2</th>
+                            <th className="text-left py-2.5 px-3 font-medium">Br.f. væske kat. 3</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {STYKKGODS_GRENSER.map((g, i) => {
+                            const arealNum = parseFloat(arealInput) || 0;
+                            const isActive = arealNum > 0 && getStykkgodsGrense(arealNum) === g;
+                            return (
+                              <tr key={i} className={`border-t ${isActive ? "bg-primary/10 font-semibold" : ""}`}>
+                                <td className="py-2 px-3">{g.arealBeskrivelse}</td>
+                                <td className="py-2 px-3">{g.aerosoler} L</td>
+                                <td className="py-2 px-3">{g.brannfarligGass}</td>
+                                <td className="py-2 px-3">{g.brannfarligVaeskeKat1og2} L</td>
+                                <td className="py-2 px-3">{g.brannfarligVaeskeKat3.toLocaleString("nb-NO")} L</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {parseFloat(arealInput) > 0 && (() => {
+                      const grense = getStykkgodsGrense(parseFloat(arealInput));
+                      return (
+                        <div className="p-2.5 bg-primary/5 border border-primary/20 rounded-lg text-xs space-y-1">
+                          <p className="font-semibold">For areal {parseFloat(arealInput).toLocaleString("nb-NO")} m² ({grense.arealBeskrivelse}):</p>
+                          <ul className="list-disc list-inside space-y-0.5">
+                            <li>Aerosoler: maks <strong>{grense.aerosoler} liter</strong></li>
+                            <li>Brannfarlig gass: maks <strong>{grense.brannfarligGass}</strong></li>
+                            <li>Brannfarlig væske kat. 1 og 2: maks <strong>{grense.brannfarligVaeskeKat1og2} liter</strong></li>
+                            <li>Brannfarlig væske kat. 3: maks <strong>{grense.brannfarligVaeskeKat3.toLocaleString("nb-NO")} liter</strong></li>
+                          </ul>
+                        </div>
+                      );
+                    })()}
+
+                    {/* Vis krav-knapper per kategori */}
+                    {valgtBygg && (
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        <span className="text-xs text-muted-foreground self-center mr-1">Konstruksjonskrav:</span>
+                        {valgtBygg.grenser
+                          .filter((g) => g.romKrav.length > 0 && (g.maksLiter !== null || g.maksKg))
+                          .map((g) => (
+                            <Button
+                              key={g.brenselType}
+                              variant={expandedBrensel === g.brenselType ? "default" : "outline"}
+                              size="sm"
+                              className="h-7 text-xs"
+                              onClick={() => setExpandedBrensel(expandedBrensel === g.brenselType ? null : g.brenselType)}
+                            >
+                              {g.brenselNavn}
+                            </Button>
+                          ))}
+                      </div>
+                    )}
+
+                    <div className="p-2 bg-muted/30 rounded-lg text-xs text-muted-foreground">
+                      <p><strong>Kilde:</strong> DSB Temaveiledning, Kapittel 3 – Oppbevaring av brannfarlig stoff i transport- og brukeremballasje (stykkgods), § 6.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* ANDRE BYGNINGSTYPER: Standard tabell over tillatte mengder */}
+              {valgtBygg && valgtBygningstype !== "salgslokale" && (
                 <Card className="shadow-soft">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base">
@@ -1005,7 +1100,7 @@ const Brensellagring = () => {
                 </Card>
               )}
 
-              {/* Utfyllende konstruksjonskrav */}
+              {/* Utfyllende konstruksjonskrav (felles for begge tilfeller) */}
               {expandedBrensel && valgtBygg && (() => {
                 const grense = valgtBygg.grenser.find((g) => g.brenselType === expandedBrensel);
                 if (!grense || grense.romKrav.length === 0) return null;
@@ -1058,80 +1153,6 @@ const Brensellagring = () => {
                   </Card>
                 );
               })()}
-
-              {/* DSB Kap. 3: Stykkgods */}
-              <Collapsible>
-                <CollapsibleTrigger asChild>
-                  <button className="flex items-center gap-3 w-full text-left group mb-2">
-                    <h4 className="text-sm font-semibold">Stykkgods – mengdegrenser etter areal (DSB Kap. 3)</h4>
-                    <ChevronDown className="h-4 w-4 text-muted-foreground ml-auto transition-transform group-data-[state=open]:rotate-180" />
-                  </button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="space-y-3">
-                  <Card className="shadow-soft">
-                    <CardContent className="pt-4 space-y-3">
-                      <div className="space-y-1.5">
-                        <Label className="text-sm">Areal på salgs-/lagerlokale (m²)</Label>
-                        <Input
-                          type="number"
-                          min={0}
-                          placeholder="F.eks. 500"
-                          value={arealInput}
-                          onChange={(e) => setArealInput(e.target.value)}
-                        />
-                      </div>
-
-                      <div className="border rounded-lg overflow-hidden">
-                        <table className="w-full text-xs">
-                          <thead>
-                            <tr className="bg-muted/50">
-                              <th className="text-left py-2 px-2 font-medium">Areal</th>
-                              <th className="text-left py-2 px-2 font-medium">Aerosoler</th>
-                              <th className="text-left py-2 px-2 font-medium">Br.f. gass</th>
-                              <th className="text-left py-2 px-2 font-medium">Kat 1&2</th>
-                              <th className="text-left py-2 px-2 font-medium">Kat 3</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {STYKKGODS_GRENSER.map((g, i) => {
-                              const arealNum = parseFloat(arealInput) || 0;
-                              const isActive = arealNum > 0 && getStykkgodsGrense(arealNum) === g;
-                              return (
-                                <tr key={i} className={`border-t ${isActive ? "bg-primary/10 font-semibold" : ""}`}>
-                                  <td className="py-2 px-2">{g.arealBeskrivelse}</td>
-                                  <td className="py-2 px-2">{g.aerosoler} L</td>
-                                  <td className="py-2 px-2">{g.brannfarligGass}</td>
-                                  <td className="py-2 px-2">{g.brannfarligVaeskeKat1og2} L</td>
-                                  <td className="py-2 px-2">{g.brannfarligVaeskeKat3.toLocaleString("nb-NO")} L</td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
-                      </div>
-
-                      {parseFloat(arealInput) > 0 && (() => {
-                        const grense = getStykkgodsGrense(parseFloat(arealInput));
-                        return (
-                          <div className="p-2.5 bg-primary/5 border border-primary/20 rounded-lg text-xs space-y-1">
-                            <p className="font-semibold">For areal {parseFloat(arealInput).toLocaleString("nb-NO")} m² ({grense.arealBeskrivelse}):</p>
-                            <ul className="list-disc list-inside space-y-0.5">
-                              <li>Aerosoler: maks <strong>{grense.aerosoler} liter</strong></li>
-                              <li>Brannfarlig gass: maks <strong>{grense.brannfarligGass}</strong></li>
-                              <li>Brannfarlig væske kat. 1 og 2: maks <strong>{grense.brannfarligVaeskeKat1og2} liter</strong></li>
-                              <li>Brannfarlig væske kat. 3: maks <strong>{grense.brannfarligVaeskeKat3.toLocaleString("nb-NO")} liter</strong></li>
-                            </ul>
-                          </div>
-                        );
-                      })()}
-
-                      <div className="p-2 bg-muted/30 rounded-lg text-xs text-muted-foreground">
-                        <p><strong>Kilde:</strong> DSB Temaveiledning, Kapittel 3 – Oppbevaring av brannfarlig stoff i transport- og brukeremballasje (stykkgods), § 6.</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </CollapsibleContent>
-              </Collapsible>
             </div>
           </div>
 
