@@ -80,6 +80,45 @@ const Brensellagring = () => {
   const valgtBygg = BYGNINGSTYPER.find((b) => b.id === valgtBygningstype) || null;
   const [expandedBrensel, setExpandedBrensel] = useState<string | null>(null);
 
+  // ===== Tab-relevans per bygningstype =====
+  // Bygg som typisk har tankanlegg (innendørs eller utendørs)
+  const TANK_BYGG: BygningsType[] = ["verksted", "fyrrom", "tankrom", "lager"];
+  // Bygg som kan utløse innmeldingsplikt til DSB
+  const INNMELDING_BYGG: BygningsType[] = ["verksted", "fyrrom", "tankrom", "lager", "salgslokale", "forretning"];
+
+  type TabKey = "stoffdata" | "beliggenhet" | "tanker" | "oppsamling" | "roer" | "kontroll" | "innmelding" | "dokumentasjon";
+
+  const isTabRelevant = (tab: TabKey): boolean => {
+    // Ingen bygg valgt → vis alt (uendret oppførsel)
+    if (!valgtBygningstype) return true;
+    switch (tab) {
+      case "stoffdata":
+      case "beliggenhet":
+      case "kontroll":
+      case "dokumentasjon":
+        return true;
+      case "tanker":
+      case "oppsamling":
+      case "roer":
+        return TANK_BYGG.includes(valgtBygningstype as BygningsType);
+      case "innmelding":
+        return INNMELDING_BYGG.includes(valgtBygningstype as BygningsType);
+      default:
+        return true;
+    }
+  };
+
+  const visTankBeliggenhet = !valgtBygningstype || TANK_BYGG.includes(valgtBygningstype as BygningsType);
+
+  const [activeTab, setActiveTab] = useState<TabKey>("stoffdata");
+  // Hvis valgt fane blir irrelevant ved bytte av bygningstype → fall tilbake til stoffdata
+  useEffect(() => {
+    if (!isTabRelevant(activeTab)) {
+      setActiveTab("stoffdata");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [valgtBygningstype]);
+
   // DSB stykkgods – areal
   const [arealInput, setArealInput] = useState("");
 
