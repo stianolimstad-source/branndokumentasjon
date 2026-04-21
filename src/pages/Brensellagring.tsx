@@ -239,6 +239,8 @@ const Brensellagring = () => {
           bygningstype?: BygningsType;
           visibleSections?: BrenselSectionKey[];
           selectedKrav?: string[];
+          salgslokaleInkludert?: boolean;
+          salgslokaleKommentar?: string;
           documentType?: string;
           type?: string;
         } | null) ?? null;
@@ -254,6 +256,8 @@ const Brensellagring = () => {
         setValgtBygningstype(content.bygningstype || bygningstypeFromUrl || "");
         setVisibleSections(new Set(content.visibleSections || []));
         setSelectedKravIds(new Set(content.selectedKrav || []));
+        setSalgslokaleInkludert(content.salgslokaleInkludert ?? false);
+        setSalgslokaleKommentar(content.salgslokaleKommentar ?? "");
       });
   }, [user, conceptIdFromUrl, bygningstypeFromUrl]);
 
