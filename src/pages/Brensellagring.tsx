@@ -144,6 +144,24 @@ const Brensellagring = () => {
   const [plannedKommentar, setPlannedKommentar] = useState("");
   const [plannedInkludert, setPlannedInkludert] = useState(false);
 
+  // Brannenergi – byggdimensjoner og inkludering
+  type ByggDim = { lengde: string; bredde: string; hoyde: string };
+  const TOMME_DIM: ByggDim = { lengde: "", bredde: "", hoyde: "" };
+  const [byggDim, setByggDim] = useState<ByggDim>(TOMME_DIM);
+  const [brannenergiInkludert, setBrannenergiInkludert] = useState(false);
+  const [brannenergiKommentar, setBrannenergiKommentar] = useState("");
+
+  // Energitetthet (MJ per kg/L) – kilder: SFPE Handbook og NS-EN 1991-1-2
+  const ENERGITETTHET: Record<keyof PlannedAmounts, { verdi: number; enhet: "MJ/kg" | "MJ/L"; kilde: string }> = {
+    gass_kat1: { verdi: 46, enhet: "MJ/kg", kilde: "Propan/butan/hydrogen" },
+    gass_kat2: { verdi: 22, enhet: "MJ/kg", kilde: "Ammoniakk (konservativ)" },
+    vaeske_kat1: { verdi: 32, enhet: "MJ/L", kilde: "Bensin (44 MJ/kg × 0,74 kg/L)" },
+    vaeske_kat2: { verdi: 36, enhet: "MJ/L", kilde: "Parafin / Jet A-1" },
+    vaeske_kat3: { verdi: 36, enhet: "MJ/L", kilde: "Smøreolje / terpentin" },
+    diesel_fyringsolje: { verdi: 36, enhet: "MJ/L", kilde: "Diesel (42,5 MJ/kg × 0,84 kg/L)" },
+    aerosoler: { verdi: 20, enhet: "MJ/L", kilde: "Drivgass + innhold (sjablong)" },
+  };
+
   const PLANNED_FELT: { key: keyof PlannedAmounts; label: string; enhet: string; eksempler: string }[] = [
     { key: "gass_kat1", label: "Brannfarlig gass, kategori 1", enhet: "kg", eksempler: "Propan, butan, hydrogen, acetylen" },
     { key: "gass_kat2", label: "Brannfarlig gass, kategori 2", enhet: "kg", eksempler: "Ammoniakk" },
