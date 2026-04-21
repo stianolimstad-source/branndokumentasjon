@@ -121,6 +121,39 @@ const Brensellagring = () => {
   const [salgslokaleInkludert, setSalgslokaleInkludert] = useState(false);
   const [salgslokaleKommentar, setSalgslokaleKommentar] = useState("");
 
+  // Planlagt lagret mengde i bygget – per kategori
+  type PlannedAmounts = {
+    gass_kat1: string;
+    gass_kat2: string;
+    vaeske_kat1: string;
+    vaeske_kat2: string;
+    vaeske_kat3: string;
+    diesel_fyringsolje: string;
+    aerosoler: string;
+  };
+  const TOMME_MENGDER: PlannedAmounts = {
+    gass_kat1: "",
+    gass_kat2: "",
+    vaeske_kat1: "",
+    vaeske_kat2: "",
+    vaeske_kat3: "",
+    diesel_fyringsolje: "",
+    aerosoler: "",
+  };
+  const [plannedAmounts, setPlannedAmounts] = useState<PlannedAmounts>(TOMME_MENGDER);
+  const [plannedKommentar, setPlannedKommentar] = useState("");
+  const [plannedInkludert, setPlannedInkludert] = useState(false);
+
+  const PLANNED_FELT: { key: keyof PlannedAmounts; label: string; enhet: string }[] = [
+    { key: "gass_kat1", label: "Brannfarlig gass, kategori 1", enhet: "kg" },
+    { key: "gass_kat2", label: "Brannfarlig gass, kategori 2", enhet: "kg" },
+    { key: "vaeske_kat1", label: "Brannfarlig væske, kategori 1", enhet: "liter" },
+    { key: "vaeske_kat2", label: "Brannfarlig væske, kategori 2", enhet: "liter" },
+    { key: "vaeske_kat3", label: "Brannfarlig væske, kategori 3", enhet: "liter" },
+    { key: "diesel_fyringsolje", label: "Diesel / fyringsolje", enhet: "liter" },
+    { key: "aerosoler", label: "Aerosoler", enhet: "liter" },
+  ];
+
   // Tankanlegg – innmelding
   const [valgtStoff, setValgtStoff] = useState("");
   const [tankMengde, setTankMengde] = useState("");
