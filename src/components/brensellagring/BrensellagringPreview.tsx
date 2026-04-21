@@ -114,6 +114,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
 
   // Build visible sections dynamically based on selected items
   const sections: { key: string; label: string }[] = [];
+  if (salgslokaleInkludert) sections.push({ key: "salgslokale", label: "Største tillatte mengder i salgslokaler" });
   if (selBeliggenhet.length > 0) sections.push({ key: "beliggenhet", label: "Beliggenhet og utforming" });
   if (visibleSections.has("avstander")) sections.push({ key: "avstander", label: "Sikkerhetsavstander" });
   if (selTank.length > 0 || selPumpe.length > 0) sections.push({ key: "tankkrav", label: "Krav til tanker" });
