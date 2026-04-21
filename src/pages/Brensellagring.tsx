@@ -301,7 +301,8 @@ const Brensellagring = () => {
           plannedAmounts?: Partial<PlannedAmounts>;
           plannedKommentar?: string;
           plannedInkludert?: boolean;
-          byggDim?: Partial<ByggDim>;
+          byggDim?: { lengde?: string; bredde?: string; hoyde?: string };
+          etasjer?: Etasje[];
           brannenergiInkludert?: boolean;
           brannenergiKommentar?: string;
           documentType?: string;
@@ -324,7 +325,26 @@ const Brensellagring = () => {
         setPlannedAmounts({ ...TOMME_MENGDER, ...(content.plannedAmounts || {}) });
         setPlannedKommentar(content.plannedKommentar ?? "");
         setPlannedInkludert(content.plannedInkludert ?? false);
-        setByggDim({ ...TOMME_DIM, ...(content.byggDim || {}) });
+        // Bakoverkompatibilitet: gammelt enkelt-byggDim → konverter til én etasje
+        if (content.etasjer && Array.isArray(content.etasjer) && content.etasjer.length > 0) {
+          setEtasjer(
+            content.etasjer.map((e, i) => ({
+              id: e.id || (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : Math.random().toString(36).slice(2)),
+              navn: e.navn || `Etasje ${i + 1}`,
+              lengde: e.lengde ?? "",
+              bredde: e.bredde ?? "",
+              hoyde: e.hoyde ?? "",
+            }))
+          );
+        } else if (content.byggDim) {
+          setEtasjer([{
+            id: typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : Math.random().toString(36).slice(2),
+            navn: "Etasje 1",
+            lengde: content.byggDim.lengde ?? "",
+            bredde: content.byggDim.bredde ?? "",
+            hoyde: content.byggDim.hoyde ?? "",
+          }]);
+        }
         setBrannenergiInkludert(content.brannenergiInkludert ?? false);
         setBrannenergiKommentar(content.brannenergiKommentar ?? "");
       });
@@ -357,7 +377,7 @@ const Brensellagring = () => {
       plannedAmounts,
       plannedKommentar,
       plannedInkludert,
-      byggDim,
+      etasjer,
       brannenergiInkludert,
       brannenergiKommentar,
     };
