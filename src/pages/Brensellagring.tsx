@@ -36,7 +36,6 @@ import {
   BYGNINGSTYPER,
   BygningsType,
   STYKKGODS_GRENSER,
-  getStykkgodsGrense,
 } from "@/lib/brensellagring-krav";
 import BrensellagringPreview, { BRENSEL_SECTIONS, BrenselSectionKey } from "@/components/brensellagring/BrensellagringPreview";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -118,8 +117,9 @@ const Brensellagring = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valgtBygningstype]);
 
-  // DSB stykkgods – areal
-  const [arealInput, setArealInput] = useState("");
+  // DSB stykkgods – salgslokale
+  const [salgslokaleInkludert, setSalgslokaleInkludert] = useState(false);
+  const [salgslokaleKommentar, setSalgslokaleKommentar] = useState("");
 
   // Tankanlegg – innmelding
   const [valgtStoff, setValgtStoff] = useState("");
@@ -239,6 +239,8 @@ const Brensellagring = () => {
           bygningstype?: BygningsType;
           visibleSections?: BrenselSectionKey[];
           selectedKrav?: string[];
+          salgslokaleInkludert?: boolean;
+          salgslokaleKommentar?: string;
           documentType?: string;
           type?: string;
         } | null) ?? null;
@@ -254,6 +256,8 @@ const Brensellagring = () => {
         setValgtBygningstype(content.bygningstype || bygningstypeFromUrl || "");
         setVisibleSections(new Set(content.visibleSections || []));
         setSelectedKravIds(new Set(content.selectedKrav || []));
+        setSalgslokaleInkludert(content.salgslokaleInkludert ?? false);
+        setSalgslokaleKommentar(content.salgslokaleKommentar ?? "");
       });
   }, [user, conceptIdFromUrl, bygningstypeFromUrl]);
 
@@ -279,6 +283,8 @@ const Brensellagring = () => {
       bygningstype: valgtBygningstype,
       visibleSections: Array.from(visibleSections),
       selectedKrav: Array.from(selectedKravIds),
+      salgslokaleInkludert,
+      salgslokaleKommentar,
     };
     const docName = `Brensellagring – ${valgtBygg?.navn || valgtBygningstype}`;
     let error;
@@ -897,30 +903,31 @@ const Brensellagring = () => {
 
           <div className="space-y-6">
 
-              {/* SALGSLOKALE: DSB-tabell med arealavhengige mengder */}
+              {/* SALGSLOKALE: DSB-tabell – fast tabell, kan legges til i dokumentet */}
               {valgtBygningstype === "salgslokale" && (
                 <Card className="shadow-soft">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-base">
-                      Største tillatte mengder i salgslokaler – DSB Temaveiledning Kap. 3
-                    </CardTitle>
-                    <p className="text-xs text-muted-foreground">
-                      Mengdegrensene avhenger av salgslokalets areal. Skriv inn arealet for å markere gjeldende rad.
-                    </p>
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <CardTitle className="text-base">
+                          Største tillatte mengder i salgslokaler – DSB Temaveiledning Kap. 3
+                        </CardTitle>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Mengdegrensene avhenger av salgslokalets areal.
+                        </p>
+                      </div>
+                      <Button
+                        variant={salgslokaleInkludert ? "default" : "outline"}
+                        size="sm"
+                        className="h-7 text-xs gap-1.5 shrink-0"
+                        onClick={() => setSalgslokaleInkludert((v) => !v)}
+                      >
+                        {salgslokaleInkludert ? <Check className="h-3.5 w-3.5" /> : <FilePlus2 className="h-3.5 w-3.5" />}
+                        {salgslokaleInkludert ? "I dokumentet" : "Legg til i dokument"}
+                      </Button>
+                    </div>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <div className="space-y-1.5">
-                      <Label className="text-sm">Salgslokalets areal (m²)</Label>
-                      <Input
-                        type="number"
-                        min={0}
-                        placeholder="F.eks. 500"
-                        value={arealInput}
-                        onChange={(e) => setArealInput(e.target.value)}
-                        className="max-w-xs"
-                      />
-                    </div>
-
                     <div className="border rounded-lg overflow-hidden">
                       <table className="w-full text-xs">
                         <thead>
@@ -933,37 +940,31 @@ const Brensellagring = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {STYKKGODS_GRENSER.map((g, i) => {
-                            const arealNum = parseFloat(arealInput) || 0;
-                            const isActive = arealNum > 0 && getStykkgodsGrense(arealNum) === g;
-                            return (
-                              <tr key={i} className={`border-t ${isActive ? "bg-primary/10 font-semibold" : ""}`}>
-                                <td className="py-2 px-3">{g.arealBeskrivelse}</td>
-                                <td className="py-2 px-3">{g.aerosoler} L</td>
-                                <td className="py-2 px-3">{g.brannfarligGass}</td>
-                                <td className="py-2 px-3">{g.brannfarligVaeskeKat1og2} L</td>
-                                <td className="py-2 px-3">{g.brannfarligVaeskeKat3.toLocaleString("nb-NO")} L</td>
-                              </tr>
-                            );
-                          })}
+                          {STYKKGODS_GRENSER.map((g, i) => (
+                            <tr key={i} className="border-t">
+                              <td className="py-2 px-3">{g.arealBeskrivelse}</td>
+                              <td className="py-2 px-3">{g.aerosoler} L</td>
+                              <td className="py-2 px-3">{g.brannfarligGass}</td>
+                              <td className="py-2 px-3">{g.brannfarligVaeskeKat1og2} L</td>
+                              <td className="py-2 px-3">{g.brannfarligVaeskeKat3.toLocaleString("nb-NO")} L</td>
+                            </tr>
+                          ))}
                         </tbody>
                       </table>
                     </div>
 
-                    {parseFloat(arealInput) > 0 && (() => {
-                      const grense = getStykkgodsGrense(parseFloat(arealInput));
-                      return (
-                        <div className="p-2.5 bg-primary/5 border border-primary/20 rounded-lg text-xs space-y-1">
-                          <p className="font-semibold">For areal {parseFloat(arealInput).toLocaleString("nb-NO")} m² ({grense.arealBeskrivelse}):</p>
-                          <ul className="list-disc list-inside space-y-0.5">
-                            <li>Aerosoler: maks <strong>{grense.aerosoler} liter</strong></li>
-                            <li>Brannfarlig gass: maks <strong>{grense.brannfarligGass}</strong></li>
-                            <li>Brannfarlig væske kat. 1 og 2: maks <strong>{grense.brannfarligVaeskeKat1og2} liter</strong></li>
-                            <li>Brannfarlig væske kat. 3: maks <strong>{grense.brannfarligVaeskeKat3.toLocaleString("nb-NO")} liter</strong></li>
-                          </ul>
-                        </div>
-                      );
-                    })()}
+                    <div className="space-y-1.5">
+                      <Label htmlFor="salgslokale-kommentar" className="text-sm">
+                        Kommentar (valgfritt)
+                      </Label>
+                      <Textarea
+                        id="salgslokale-kommentar"
+                        placeholder="Legg til en prosjektspesifikk kommentar som vises under tabellen i dokumentet (f.eks. faktisk areal, tiltak, avvik …)."
+                        value={salgslokaleKommentar}
+                        onChange={(e) => setSalgslokaleKommentar(e.target.value)}
+                        className="min-h-[80px] text-sm"
+                      />
+                    </div>
 
                     {/* Vis krav-knapper per kategori */}
                     {valgtBygg && (
@@ -1130,7 +1131,7 @@ const Brensellagring = () => {
                 <Button
                   size="sm"
                   onClick={handleSaveDocument}
-                  disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0)}
+                  disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert)}
                   className="h-8"
                 >
                   <Save className="h-4 w-4 mr-1.5" />
@@ -1143,8 +1144,9 @@ const Brensellagring = () => {
                   prosjektNavn={prosjektNavn || undefined}
                   adresse={adresse || undefined}
                   visibleSections={visibleSections}
-                  
                   selectedKravIds={selectedKravIds}
+                  salgslokaleInkludert={salgslokaleInkludert && valgtBygningstype === "salgslokale"}
+                  salgslokaleKommentar={salgslokaleKommentar}
                 />
               </div>
             </div>

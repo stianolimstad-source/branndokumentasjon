@@ -10,6 +10,7 @@ import {
   PUMPE_KRAV,
   ROERLEDNING_KRAV,
   VENTIL_KRAV,
+  STYKKGODS_GRENSER,
 } from "@/lib/brensellagring-krav";
 
 export type BrenselSectionKey =
@@ -39,6 +40,8 @@ interface BrensellagringPreviewProps {
   adresse?: string;
   visibleSections: Set<BrenselSectionKey>;
   selectedKravIds?: Set<string>;
+  salgslokaleInkludert?: boolean;
+  salgslokaleKommentar?: string;
 }
 
 const pageStyle: React.CSSProperties = {
@@ -82,6 +85,8 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   adresse,
   visibleSections,
   selectedKravIds = new Set(),
+  salgslokaleInkludert = false,
+  salgslokaleKommentar = "",
 }) => {
   if (!valgtBygg) {
     return (
@@ -109,6 +114,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
 
   // Build visible sections dynamically based on selected items
   const sections: { key: string; label: string }[] = [];
+  if (salgslokaleInkludert) sections.push({ key: "salgslokale", label: "Største tillatte mengder i salgslokaler" });
   if (selBeliggenhet.length > 0) sections.push({ key: "beliggenhet", label: "Beliggenhet og utforming" });
   if (visibleSections.has("avstander")) sections.push({ key: "avstander", label: "Sikkerhetsavstander" });
   if (selTank.length > 0 || selPumpe.length > 0) sections.push({ key: "tankkrav", label: "Krav til tanker" });
@@ -170,6 +176,43 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           <p style={{ fontSize: 12, color: "#94a3b8", textAlign: "center", marginTop: 40 }}>
             Ingen seksjoner valgt. Velg relevante krav i panelet til venstre.
           </p>
+        )}
+
+        {salgslokaleInkludert && (
+          <>
+            <h2 style={h2}>{secNum("salgslokale")}. Største tillatte mengder i salgslokaler</h2>
+            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
+              Mengdegrensene avhenger av salgslokalets areal iht. DSB Temaveiledning Kap. 3 – Oppbevaring av brannfarlig stoff i transport- og brukeremballasje (stykkgods), § 6.
+            </p>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+              <thead>
+                <tr>
+                  <th style={thStyle}>Salgslokalets areal</th>
+                  <th style={thStyle}>Aerosoler</th>
+                  <th style={thStyle}>Brannfarlig gass</th>
+                  <th style={thStyle}>Br.f. væske kat. 1 og 2</th>
+                  <th style={thStyle}>Br.f. væske kat. 3</th>
+                </tr>
+              </thead>
+              <tbody>
+                {STYKKGODS_GRENSER.map((g, i) => (
+                  <tr key={i}>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>{g.arealBeskrivelse}</td>
+                    <td style={tdStyle}>{g.aerosoler} L</td>
+                    <td style={tdStyle}>{g.brannfarligGass}</td>
+                    <td style={tdStyle}>{g.brannfarligVaeskeKat1og2} L</td>
+                    <td style={tdStyle}>{g.brannfarligVaeskeKat3.toLocaleString("nb-NO")} L</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {salgslokaleKommentar.trim() && (
+              <div style={{ marginBottom: 16, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Kommentar</p>
+                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{salgslokaleKommentar}</p>
+              </div>
+            )}
+          </>
         )}
 
         {visibleSections.has("mengder") && valgtBygg && (
