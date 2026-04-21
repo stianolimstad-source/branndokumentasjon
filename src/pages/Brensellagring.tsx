@@ -1144,8 +1144,9 @@ const Brensellagring = () => {
                   prosjektNavn={prosjektNavn || undefined}
                   adresse={adresse || undefined}
                   visibleSections={visibleSections}
-                  
                   selectedKravIds={selectedKravIds}
+                  salgslokaleInkludert={salgslokaleInkludert && valgtBygningstype === "salgslokale"}
+                  salgslokaleKommentar={salgslokaleKommentar}
                 />
               </div>
             </div>
