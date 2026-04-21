@@ -10,6 +10,7 @@ import {
   PUMPE_KRAV,
   ROERLEDNING_KRAV,
   VENTIL_KRAV,
+  STYKKGODS_GRENSER,
 } from "@/lib/brensellagring-krav";
 
 export type BrenselSectionKey =
