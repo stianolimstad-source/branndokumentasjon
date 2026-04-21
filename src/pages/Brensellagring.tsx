@@ -605,6 +605,8 @@ const Brensellagring = () => {
                 </CardContent>
               </Card>
 
+              {visTankBeliggenhet && (
+              <>
               {/* Sikkerhetsavstander */}
               <Card className="shadow-soft">
                 <CardHeader>
