@@ -34,6 +34,16 @@ export const BRENSEL_SECTIONS: { key: BrenselSectionKey; label: string }[] = [
   { key: "dokumentasjon", label: "Dokumentasjonskrav" },
 ];
 
+export interface PlannedAmountsData {
+  gass_kat1: string;
+  gass_kat2: string;
+  vaeske_kat1: string;
+  vaeske_kat2: string;
+  vaeske_kat3: string;
+  diesel_fyringsolje: string;
+  aerosoler: string;
+}
+
 interface BrensellagringPreviewProps {
   valgtBygg: BygningsTypeInfo | null;
   prosjektNavn?: string;
@@ -42,6 +52,9 @@ interface BrensellagringPreviewProps {
   selectedKravIds?: Set<string>;
   salgslokaleInkludert?: boolean;
   salgslokaleKommentar?: string;
+  plannedInkludert?: boolean;
+  plannedAmounts?: PlannedAmountsData;
+  plannedKommentar?: string;
 }
 
 const pageStyle: React.CSSProperties = {
