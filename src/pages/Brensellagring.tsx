@@ -306,6 +306,7 @@ const Brensellagring = () => {
           etasjer?: Etasje[];
           brannenergiInkludert?: boolean;
           brannenergiKommentar?: string;
+          innledning?: string;
           documentType?: string;
           type?: string;
         } | null) ?? null;
@@ -348,6 +349,7 @@ const Brensellagring = () => {
         }
         setBrannenergiInkludert(content.brannenergiInkludert ?? false);
         setBrannenergiKommentar(content.brannenergiKommentar ?? "");
+        setInnledning(content.innledning ?? "");
       });
   }, [user, conceptIdFromUrl, bygningstypeFromUrl]);
 
@@ -381,6 +383,7 @@ const Brensellagring = () => {
       etasjer,
       brannenergiInkludert,
       brannenergiKommentar,
+      innledning,
     };
     const docName = `Brensellagring – ${valgtBygg?.navn || valgtBygningstype}`;
     let error;
@@ -466,7 +469,7 @@ const Brensellagring = () => {
                 Bygningstype
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-4">
               <div className="space-y-1.5">
                 <Label className="text-sm">Bygningstype / romtype</Label>
                 <Select value={valgtBygningstype} onValueChange={(v) => { setValgtBygningstype(v as BygningsType); setExpandedBrensel(null); }}>
@@ -479,6 +482,20 @@ const Brensellagring = () => {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="innledning" className="text-sm">Innledning</Label>
+                <p className="text-xs text-muted-foreground">
+                  Beskriv tiltaket, hva som inngår og hva som er oppdraget.
+                </p>
+                <Textarea
+                  id="innledning"
+                  value={innledning}
+                  onChange={(e) => setInnledning(e.target.value)}
+                  placeholder="Kort beskrivelse av tiltaket og oppdragets omfang..."
+                  className="min-h-[120px] resize-y"
+                />
               </div>
             </CardContent>
           </Card>
@@ -1540,6 +1557,7 @@ const Brensellagring = () => {
                   brannenergiInkludert={brannenergiInkludert}
                   brannenergiKommentar={brannenergiKommentar}
                   etasjer={etasjer}
+                  innledning={innledning}
                   energitetthet={ENERGITETTHET}
                 />
               </div>
