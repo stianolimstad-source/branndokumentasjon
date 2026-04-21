@@ -71,6 +71,7 @@ const Brensellagring = () => {
   const [valgtBygningstype, setValgtBygningstype] = useState<BygningsType | "">(bygningstypeFromUrl || "");
   const [brenselType, setBrenselType] = useState<BrenselType | "">("");
   const [mengde, setMengde] = useState("");
+  const [innledning, setInnledning] = useState("");
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
   const prosjektNavn = selectedProject?.name || "";
