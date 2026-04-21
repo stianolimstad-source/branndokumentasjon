@@ -55,6 +55,10 @@ interface BrensellagringPreviewProps {
   plannedInkludert?: boolean;
   plannedAmounts?: PlannedAmountsData;
   plannedKommentar?: string;
+  brannenergiInkludert?: boolean;
+  brannenergiKommentar?: string;
+  byggDim?: { lengde: string; bredde: string; hoyde: string };
+  energitetthet?: Record<keyof PlannedAmountsData, { verdi: number; enhet: "MJ/kg" | "MJ/L"; kilde: string }>;
 }
 
 const pageStyle: React.CSSProperties = {
@@ -103,6 +107,10 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   plannedInkludert = false,
   plannedAmounts,
   plannedKommentar = "",
+  brannenergiInkludert = false,
+  brannenergiKommentar = "",
+  byggDim,
+  energitetthet,
 }) => {
   if (!valgtBygg) {
     return (
@@ -150,9 +158,43 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
     : [];
   const visPlanlagt = plannedInkludert && plannedRows.length > 0;
 
+  // Brannenergi – beregning
+  const energiBidrag = (plannedAmounts && energitetthet)
+    ? (Object.keys(PLANNED_LABELS) as (keyof PlannedAmountsData)[])
+        .map((k) => {
+          const m = parseFloat((plannedAmounts[k] || "").trim());
+          if (!(m > 0)) return null;
+          const e = energitetthet[k];
+          if (!e) return null;
+          return {
+            key: k,
+            label: PLANNED_LABELS[k].label,
+            enhetInn: PLANNED_LABELS[k].enhet,
+            mengde: m,
+            energi: e.verdi,
+            enhetEnergi: e.enhet,
+            totalMJ: m * e.verdi,
+          };
+        })
+        .filter((x): x is NonNullable<typeof x> => x !== null)
+    : [];
+  const totalMJ = energiBidrag.reduce((s, b) => s + b.totalMJ, 0);
+  const dimL = parseFloat(byggDim?.lengde || "");
+  const dimB = parseFloat(byggDim?.bredde || "");
+  const dimH = parseFloat(byggDim?.hoyde || "");
+  const dimGyldig = dimL > 0 && dimB > 0 && dimH > 0;
+  const omhylling = dimGyldig ? 2 * (dimL * dimB) + 2 * (dimL * dimH) + 2 * (dimB * dimH) : 0;
+  const spesifikkMJm2 = dimGyldig && omhylling > 0 ? totalMJ / omhylling : null;
+  const visBrannenergi = brannenergiInkludert && energiBidrag.length > 0;
+  const formatMJ = (v: number) => {
+    const r = v >= 10000 ? Math.round(v / 100) * 100 : Math.round(v);
+    return r.toLocaleString("nb-NO");
+  };
+
   // Build visible sections dynamically based on selected items
   const sections: { key: string; label: string }[] = [];
   if (visPlanlagt) sections.push({ key: "planlagt", label: "Planlagt lagret mengde i bygget" });
+  if (visBrannenergi) sections.push({ key: "brannenergi", label: "Brannenergi i bygget" });
   if (salgslokaleInkludert) sections.push({ key: "salgslokale", label: "Største tillatte mengder i salgslokaler" });
   if (selBeliggenhet.length > 0) sections.push({ key: "beliggenhet", label: "Beliggenhet og utforming" });
   if (visibleSections.has("avstander")) sections.push({ key: "avstander", label: "Sikkerhetsavstander" });
@@ -247,6 +289,92 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                 <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{plannedKommentar}</p>
               </div>
             )}
+          </>
+        )}
+
+        {visBrannenergi && (
+          <>
+            <h2 style={h2}>{secNum("brannenergi")}. Brannenergi i bygget</h2>
+            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
+              Sjablong-beregning av total og spesifikk brannenergi basert på planlagte mengder. Energitettheter er hentet fra SFPE Handbook of Fire Protection Engineering og NS-EN 1991-1-2.
+            </p>
+
+            {dimGyldig && (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+                <thead>
+                  <tr>
+                    <th style={thStyle}>Lengde</th>
+                    <th style={thStyle}>Bredde</th>
+                    <th style={thStyle}>Høyde</th>
+                    <th style={thStyle}>Omhyllingsflate A<sub>t</sub></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={tdStyle}>{dimL.toLocaleString("nb-NO")} m</td>
+                    <td style={tdStyle}>{dimB.toLocaleString("nb-NO")} m</td>
+                    <td style={tdStyle}>{dimH.toLocaleString("nb-NO")} m</td>
+                    <td style={{ ...tdStyle, fontWeight: 600 }}>{omhylling.toFixed(1)} m²</td>
+                  </tr>
+                </tbody>
+              </table>
+            )}
+
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+              <thead>
+                <tr>
+                  <th style={thStyle}>Kategori</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Mengde</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Energi</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Bidrag</th>
+                </tr>
+              </thead>
+              <tbody>
+                {energiBidrag.map((b) => (
+                  <tr key={b.key}>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>{b.label}</td>
+                    <td style={{ ...tdStyle, textAlign: "right" }}>
+                      {b.mengde.toLocaleString("nb-NO")} {b.enhetInn}
+                    </td>
+                    <td style={{ ...tdStyle, textAlign: "right", color: "#64748b" }}>
+                      {b.energi} {b.enhetEnergi}
+                    </td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontWeight: 600 }}>
+                      {formatMJ(b.totalMJ)} MJ
+                    </td>
+                  </tr>
+                ))}
+                <tr>
+                  <td colSpan={3} style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#f1f5f9" }}>
+                    Total brannenergi
+                  </td>
+                  <td style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#f1f5f9" }}>
+                    {formatMJ(totalMJ)} MJ
+                  </td>
+                </tr>
+                {spesifikkMJm2 !== null && (
+                  <tr>
+                    <td colSpan={3} style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#e8eef5", color: "#1e3a5f" }}>
+                      Spesifikk brannenergi (per m² omhyllingsflate)
+                    </td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#e8eef5", color: "#1e3a5f" }}>
+                      {spesifikkMJm2.toFixed(1)} MJ/m²
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+            {brannenergiKommentar.trim() && (
+              <div style={{ marginBottom: 12, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Kommentar</p>
+                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{brannenergiKommentar}</p>
+              </div>
+            )}
+
+            <p style={{ fontSize: 9, color: "#94a3b8", fontStyle: "italic", marginBottom: 16 }}>
+              Sjablongverdier ivaretar ikke fuktinnhold, sammensetning eller emballasje. Beregningen brukes kun til indikativ vurdering av brannenergi i bygget.
+            </p>
           </>
         )}
 
