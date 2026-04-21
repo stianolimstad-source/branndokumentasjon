@@ -283,6 +283,8 @@ const Brensellagring = () => {
       bygningstype: valgtBygningstype,
       visibleSections: Array.from(visibleSections),
       selectedKrav: Array.from(selectedKravIds),
+      salgslokaleInkludert,
+      salgslokaleKommentar,
     };
     const docName = `Brensellagring – ${valgtBygg?.navn || valgtBygningstype}`;
     let error;
