@@ -144,14 +144,14 @@ const Brensellagring = () => {
   const [plannedKommentar, setPlannedKommentar] = useState("");
   const [plannedInkludert, setPlannedInkludert] = useState(false);
 
-  const PLANNED_FELT: { key: keyof PlannedAmounts; label: string; enhet: string }[] = [
-    { key: "gass_kat1", label: "Brannfarlig gass, kategori 1", enhet: "kg" },
-    { key: "gass_kat2", label: "Brannfarlig gass, kategori 2", enhet: "kg" },
-    { key: "vaeske_kat1", label: "Brannfarlig væske, kategori 1", enhet: "liter" },
-    { key: "vaeske_kat2", label: "Brannfarlig væske, kategori 2", enhet: "liter" },
-    { key: "vaeske_kat3", label: "Brannfarlig væske, kategori 3", enhet: "liter" },
-    { key: "diesel_fyringsolje", label: "Diesel / fyringsolje", enhet: "liter" },
-    { key: "aerosoler", label: "Aerosoler", enhet: "liter" },
+  const PLANNED_FELT: { key: keyof PlannedAmounts; label: string; enhet: string; eksempler: string }[] = [
+    { key: "gass_kat1", label: "Brannfarlig gass, kategori 1", enhet: "kg", eksempler: "Propan, butan, hydrogen, acetylen" },
+    { key: "gass_kat2", label: "Brannfarlig gass, kategori 2", enhet: "kg", eksempler: "Ammoniakk" },
+    { key: "vaeske_kat1", label: "Brannfarlig væske, kategori 1", enhet: "liter", eksempler: "Bensin, bioetanol, aceton, white spirit" },
+    { key: "vaeske_kat2", label: "Brannfarlig væske, kategori 2", enhet: "liter", eksempler: "Jet A-1, parafin, lampeolje" },
+    { key: "vaeske_kat3", label: "Brannfarlig væske, kategori 3", enhet: "liter", eksempler: "Terpentin, dieselolje > 60 °C, smøreolje" },
+    { key: "diesel_fyringsolje", label: "Diesel / fyringsolje", enhet: "liter", eksempler: "Anleggsdiesel, autodiesel, lett fyringsolje" },
+    { key: "aerosoler", label: "Aerosoler", enhet: "liter", eksempler: "Spraybokser: maling, smøremiddel, hårspray" },
   ];
 
   // Tankanlegg – innmelding
