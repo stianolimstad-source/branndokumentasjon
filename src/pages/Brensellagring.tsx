@@ -1678,6 +1678,9 @@ const Brensellagring = () => {
                   etasjer={etasjer}
                   innledning={innledning}
                   energitetthet={ENERGITETTHET}
+                  innmeldingInkludert={innmeldingInkludert}
+                  innmeldingKommentar={innmeldingKommentar}
+                  innmeldingVurdering={innmeldingVurdering}
                 />
               </div>
             </div>
