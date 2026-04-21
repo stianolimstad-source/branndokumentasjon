@@ -178,9 +178,9 @@ const Brensellagring = () => {
     { key: "aerosoler", label: "Aerosoler", enhet: "liter", eksempler: "Spraybokser: maling, smøremiddel, hårspray" },
   ];
 
-  // Tankanlegg – innmelding
-  const [valgtStoff, setValgtStoff] = useState("");
-  const [tankMengde, setTankMengde] = useState("");
+  // Innmelding til DSB – inkludering i dokument
+  const [innmeldingInkludert, setInnmeldingInkludert] = useState(false);
+  const [innmeldingKommentar, setInnmeldingKommentar] = useState("");
 
   // Section visibility for preview
   const [visibleSections, setVisibleSections] = useState<Set<BrenselSectionKey>>(
@@ -418,9 +418,62 @@ const Brensellagring = () => {
   const mengdeNum = parseFloat(mengde) || 0;
   const result = brenselType ? getBrensellagringKrav(brenselType as BrenselType, mengdeNum) : null;
 
-  const tankMengdeNum = parseFloat(tankMengde) || 0;
-  const innmeldingsStatus = valgtStoff && tankMengdeNum > 0 ? getInnmeldingsStatus(valgtStoff, tankMengdeNum) : null;
-  const valgtStoffInfo = STOFF_KATALOG.find((s) => s.id === valgtStoff);
+  // ===== Innmeldingsvurdering basert på planlagte mengder =====
+  type InnmeldingGruppeStatus = "over" | "under" | "ingen";
+  type InnmeldingGruppe = {
+    id: "vaeske_kat12" | "vaeske_kat3" | "diesel";
+    kategori: string;
+    sum: number;
+    grenseLiter: number;
+    grenseTekst: string;
+    status: InnmeldingGruppeStatus;
+    gjenstaende: number;
+  };
+  const evaluerInnmelding = (): { grupper: InnmeldingGruppe[]; trengerInnmelding: boolean; harMengder: boolean } => {
+    const sumKat12 = (parseFloat(plannedAmounts.vaeske_kat1) || 0) + (parseFloat(plannedAmounts.vaeske_kat2) || 0);
+    const sumKat3 = parseFloat(plannedAmounts.vaeske_kat3) || 0;
+    const sumDiesel = parseFloat(plannedAmounts.diesel_fyringsolje) || 0;
+
+    const lagStatus = (sum: number, grense: number): InnmeldingGruppeStatus => {
+      if (sum <= 0) return "ingen";
+      if (sum >= grense) return "over";
+      return "under";
+    };
+
+    const grupper: InnmeldingGruppe[] = [
+      {
+        id: "vaeske_kat12",
+        kategori: INNMELDINGS_GRENSER[0].kategori,
+        sum: sumKat12,
+        grenseLiter: INNMELDINGS_GRENSER[0].grenseLiter,
+        grenseTekst: INNMELDINGS_GRENSER[0].grenseTekst,
+        status: lagStatus(sumKat12, INNMELDINGS_GRENSER[0].grenseLiter),
+        gjenstaende: INNMELDINGS_GRENSER[0].grenseLiter - sumKat12,
+      },
+      {
+        id: "vaeske_kat3",
+        kategori: INNMELDINGS_GRENSER[1].kategori,
+        sum: sumKat3,
+        grenseLiter: INNMELDINGS_GRENSER[1].grenseLiter,
+        grenseTekst: INNMELDINGS_GRENSER[1].grenseTekst,
+        status: lagStatus(sumKat3, INNMELDINGS_GRENSER[1].grenseLiter),
+        gjenstaende: INNMELDINGS_GRENSER[1].grenseLiter - sumKat3,
+      },
+      {
+        id: "diesel",
+        kategori: INNMELDINGS_GRENSER[2].kategori,
+        sum: sumDiesel,
+        grenseLiter: INNMELDINGS_GRENSER[2].grenseLiter,
+        grenseTekst: INNMELDINGS_GRENSER[2].grenseTekst,
+        status: lagStatus(sumDiesel, INNMELDINGS_GRENSER[2].grenseLiter),
+        gjenstaende: INNMELDINGS_GRENSER[2].grenseLiter - sumDiesel,
+      },
+    ];
+    const trengerInnmelding = grupper.some((g) => g.status === "over");
+    const harMengder = grupper.some((g) => g.sum > 0);
+    return { grupper, trengerInnmelding, harMengder };
+  };
+  const innmeldingVurdering = evaluerInnmelding();
 
   return (
 <div className="min-h-screen bg-gradient-subtle">
