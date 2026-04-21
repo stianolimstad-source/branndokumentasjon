@@ -118,8 +118,9 @@ const Brensellagring = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valgtBygningstype]);
 
-  // DSB stykkgods – areal
-  const [arealInput, setArealInput] = useState("");
+  // DSB stykkgods – salgslokale
+  const [salgslokaleInkludert, setSalgslokaleInkludert] = useState(false);
+  const [salgslokaleKommentar, setSalgslokaleKommentar] = useState("");
 
   // Tankanlegg – innmelding
   const [valgtStoff, setValgtStoff] = useState("");
