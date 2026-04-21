@@ -1474,6 +1474,19 @@ const Brensellagring = () => {
                   </Card>
                 );
               })()}
+
+              {/* Lagre-knapp fast nede til høyre */}
+              <div className="sticky bottom-4 flex justify-end pt-6 pb-2">
+                <Button
+                  size="default"
+                  onClick={handleSaveDocument}
+                  disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !plannedInkludert)}
+                  className="h-10 px-6 shadow-lg"
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {isSaving ? "Lagrer..." : "Lagre dokument"}
+                </Button>
+              </div>
             </div>
           </div>
 
