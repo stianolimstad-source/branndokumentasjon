@@ -295,6 +295,9 @@ const Brensellagring = () => {
           plannedAmounts?: Partial<PlannedAmounts>;
           plannedKommentar?: string;
           plannedInkludert?: boolean;
+          byggDim?: Partial<ByggDim>;
+          brannenergiInkludert?: boolean;
+          brannenergiKommentar?: string;
           documentType?: string;
           type?: string;
         } | null) ?? null;
@@ -315,6 +318,9 @@ const Brensellagring = () => {
         setPlannedAmounts({ ...TOMME_MENGDER, ...(content.plannedAmounts || {}) });
         setPlannedKommentar(content.plannedKommentar ?? "");
         setPlannedInkludert(content.plannedInkludert ?? false);
+        setByggDim({ ...TOMME_DIM, ...(content.byggDim || {}) });
+        setBrannenergiInkludert(content.brannenergiInkludert ?? false);
+        setBrannenergiKommentar(content.brannenergiKommentar ?? "");
       });
   }, [user, conceptIdFromUrl, bygningstypeFromUrl]);
 
