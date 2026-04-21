@@ -128,8 +128,31 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const selKontroll = KONTROLL_KRAV.filter((_, i) => selectedKravIds.has(`kontroll_${i}`));
   const selDok = DOKUMENTASJON_KRAV.filter((_, i) => selectedKravIds.has(`dok_${i}`));
 
+  // Planlagte mengder – bygg liste over felt med faktisk innfylte verdier
+  const PLANNED_LABELS: Record<keyof PlannedAmountsData, { label: string; enhet: string }> = {
+    gass_kat1: { label: "Brannfarlig gass, kategori 1", enhet: "kg" },
+    gass_kat2: { label: "Brannfarlig gass, kategori 2", enhet: "kg" },
+    vaeske_kat1: { label: "Brannfarlig væske, kategori 1", enhet: "liter" },
+    vaeske_kat2: { label: "Brannfarlig væske, kategori 2", enhet: "liter" },
+    vaeske_kat3: { label: "Brannfarlig væske, kategori 3", enhet: "liter" },
+    diesel_fyringsolje: { label: "Diesel / fyringsolje", enhet: "liter" },
+    aerosoler: { label: "Aerosoler", enhet: "liter" },
+  };
+  const plannedRows = plannedAmounts
+    ? (Object.keys(PLANNED_LABELS) as (keyof PlannedAmountsData)[])
+        .map((k) => ({
+          key: k,
+          label: PLANNED_LABELS[k].label,
+          enhet: PLANNED_LABELS[k].enhet,
+          verdi: (plannedAmounts[k] || "").trim(),
+        }))
+        .filter((r) => r.verdi !== "" && parseFloat(r.verdi) > 0)
+    : [];
+  const visPlanlagt = plannedInkludert && plannedRows.length > 0;
+
   // Build visible sections dynamically based on selected items
   const sections: { key: string; label: string }[] = [];
+  if (visPlanlagt) sections.push({ key: "planlagt", label: "Planlagt lagret mengde i bygget" });
   if (salgslokaleInkludert) sections.push({ key: "salgslokale", label: "Største tillatte mengder i salgslokaler" });
   if (selBeliggenhet.length > 0) sections.push({ key: "beliggenhet", label: "Beliggenhet og utforming" });
   if (visibleSections.has("avstander")) sections.push({ key: "avstander", label: "Sikkerhetsavstander" });
