@@ -158,8 +158,6 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
     : [];
   const visPlanlagt = plannedInkludert && plannedRows.length > 0;
 
-  const visPlanlagt = plannedInkludert && plannedRows.length > 0;
-
   // Brannenergi – beregning
   const energiBidrag = (plannedAmounts && energitetthet)
     ? (Object.keys(PLANNED_LABELS) as (keyof PlannedAmountsData)[])
