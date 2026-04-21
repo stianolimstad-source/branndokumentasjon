@@ -351,6 +351,9 @@ const Brensellagring = () => {
       plannedAmounts,
       plannedKommentar,
       plannedInkludert,
+      byggDim,
+      brannenergiInkludert,
+      brannenergiKommentar,
     };
     const docName = `Brensellagring – ${valgtBygg?.navn || valgtBygningstype}`;
     let error;
