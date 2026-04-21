@@ -324,6 +324,9 @@ const Brensellagring = () => {
       selectedKrav: Array.from(selectedKravIds),
       salgslokaleInkludert,
       salgslokaleKommentar,
+      plannedAmounts,
+      plannedKommentar,
+      plannedInkludert,
     };
     const docName = `Brensellagring – ${valgtBygg?.navn || valgtBygningstype}`;
     let error;
