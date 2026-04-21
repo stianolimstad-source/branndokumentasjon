@@ -401,45 +401,74 @@ const Brensellagring = () => {
           {/* ============================================================== */}
           {/* TABS – DSB Temaveiledning innhold                               */}
           {/* ============================================================== */}
-          <Tabs defaultValue="stoffdata" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 h-auto gap-1">
-              <TabsTrigger value="stoffdata" className="text-xs py-2 relative">
-                <Flame className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
-                Stoffdata
-                {selectedStoffIds.size > 0 && (
-                  <span className="ml-1 bg-primary text-primary-foreground text-[10px] rounded-full h-4 min-w-[16px] inline-flex items-center justify-center px-1">
-                    {selectedStoffIds.size}
-                  </span>
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="beliggenhet" className="text-xs py-2">
-                <Ruler className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
-                Beliggenhet
-              </TabsTrigger>
-              <TabsTrigger value="tanker" className="text-xs py-2">
-                <Cylinder className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
-                Tanker
-              </TabsTrigger>
-              <TabsTrigger value="oppsamling" className="text-xs py-2">
-                <Droplets className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
-                Oppsamling
-              </TabsTrigger>
-              <TabsTrigger value="roer" className="text-xs py-2">
-                <PipetteIcon className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
-                Rør & ventiler
-              </TabsTrigger>
-              <TabsTrigger value="kontroll" className="text-xs py-2">
-                <Gauge className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
-                Kontroll
-              </TabsTrigger>
-              <TabsTrigger value="innmelding" className="text-xs py-2">
-                <FileText className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
-                Innmelding
-              </TabsTrigger>
-              <TabsTrigger value="dokumentasjon" className="text-xs py-2">
-                <FolderOpen className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
-                Dokumentasjon
-              </TabsTrigger>
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabKey)} className="space-y-6">
+            {valgtBygningstype && (
+              <div className="flex items-start gap-2 p-3 rounded-lg bg-accent/30 border border-accent text-sm">
+                <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                <p className="text-muted-foreground">
+                  Viser kun krav som er relevante for <span className="font-medium text-foreground">{valgtBygg?.navn}</span>.
+                  Generelle krav (stoffdata, beliggenhet, kontroll, dokumentasjon) vises alltid.
+                </p>
+              </div>
+            )}
+            <TabsList className={`grid w-full h-auto gap-1 ${
+              [isTabRelevant("stoffdata"), isTabRelevant("beliggenhet"), isTabRelevant("tanker"), isTabRelevant("oppsamling"), isTabRelevant("roer"), isTabRelevant("kontroll"), isTabRelevant("innmelding"), isTabRelevant("dokumentasjon")].filter(Boolean).length >= 7
+                ? "grid-cols-2 sm:grid-cols-4 lg:grid-cols-8"
+                : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5"
+            }`}>
+              {isTabRelevant("stoffdata") && (
+                <TabsTrigger value="stoffdata" className="text-xs py-2 relative">
+                  <Flame className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
+                  Stoffdata
+                  {selectedStoffIds.size > 0 && (
+                    <span className="ml-1 bg-primary text-primary-foreground text-[10px] rounded-full h-4 min-w-[16px] inline-flex items-center justify-center px-1">
+                      {selectedStoffIds.size}
+                    </span>
+                  )}
+                </TabsTrigger>
+              )}
+              {isTabRelevant("beliggenhet") && (
+                <TabsTrigger value="beliggenhet" className="text-xs py-2">
+                  <Ruler className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
+                  Beliggenhet
+                </TabsTrigger>
+              )}
+              {isTabRelevant("tanker") && (
+                <TabsTrigger value="tanker" className="text-xs py-2">
+                  <Cylinder className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
+                  Tanker
+                </TabsTrigger>
+              )}
+              {isTabRelevant("oppsamling") && (
+                <TabsTrigger value="oppsamling" className="text-xs py-2">
+                  <Droplets className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
+                  Oppsamling
+                </TabsTrigger>
+              )}
+              {isTabRelevant("roer") && (
+                <TabsTrigger value="roer" className="text-xs py-2">
+                  <PipetteIcon className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
+                  Rør & ventiler
+                </TabsTrigger>
+              )}
+              {isTabRelevant("kontroll") && (
+                <TabsTrigger value="kontroll" className="text-xs py-2">
+                  <Gauge className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
+                  Kontroll
+                </TabsTrigger>
+              )}
+              {isTabRelevant("innmelding") && (
+                <TabsTrigger value="innmelding" className="text-xs py-2">
+                  <FileText className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
+                  Innmelding
+                </TabsTrigger>
+              )}
+              {isTabRelevant("dokumentasjon") && (
+                <TabsTrigger value="dokumentasjon" className="text-xs py-2">
+                  <FolderOpen className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
+                  Dokumentasjon
+                </TabsTrigger>
+              )}
             </TabsList>
 
             {/* ============ TAB: Stoffdata ============ */}
