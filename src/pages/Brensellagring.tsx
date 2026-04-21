@@ -478,6 +478,9 @@ const Brensellagring = () => {
                         {felt.enhet}
                       </span>
                     </div>
+                    <p className="text-[11px] text-muted-foreground leading-snug">
+                      F.eks. {felt.eksempler}
+                    </p>
                   </div>
                 ))}
               </div>
