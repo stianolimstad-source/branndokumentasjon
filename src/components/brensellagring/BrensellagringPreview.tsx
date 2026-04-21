@@ -430,6 +430,118 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           </>
         )}
 
+        {visInnmelding && innmeldingVurdering && (
+          <>
+            <h2 style={h2}>{secNum("innmelding")}. Innmeldingsplikt til DSB</h2>
+            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
+              Vurdering av innmeldingsplikt etter Forskrift om håndtering av brannfarlig, reaksjonsfarlig og trykksatt stoff (FBRT) § 12, basert på planlagte mengder i bygget.
+            </p>
+
+            {/* Konklusjon */}
+            <div
+              style={{
+                marginBottom: 12,
+                padding: "10px 12px",
+                background: innmeldingVurdering.trengerInnmelding ? "#fef2f2" : "#f0fdf4",
+                borderLeft: `3px solid ${innmeldingVurdering.trengerInnmelding ? "#b91c1c" : "#15803d"}`,
+                borderRadius: 4,
+              }}
+            >
+              <p
+                style={{
+                  fontSize: 10.5,
+                  fontWeight: 700,
+                  marginBottom: 4,
+                  color: innmeldingVurdering.trengerInnmelding ? "#b91c1c" : "#15803d",
+                }}
+              >
+                {innmeldingVurdering.trengerInnmelding
+                  ? "Anlegget er innmeldingspliktig til DSB"
+                  : "Anlegget er ikke innmeldingspliktig"}
+              </p>
+              {innmeldingVurdering.trengerInnmelding ? (
+                <>
+                  <p style={{ fontSize: 10, color: "#334155", marginBottom: 4 }}>
+                    Følgende stoffgruppe(r) overskrider innmeldingsgrensen iht. § 12:
+                  </p>
+                  <ul style={{ fontSize: 10, color: "#334155", margin: 0, paddingLeft: 18 }}>
+                    {innmeldingVurdering.grupper
+                      .filter((g) => g.status === "over")
+                      .map((g) => (
+                        <li key={g.id}>
+                          {g.kategori} – planlagt {g.sum.toLocaleString("nb-NO")} L (grense{" "}
+                          {g.grenseLiter.toLocaleString("nb-NO")} L)
+                        </li>
+                      ))}
+                  </ul>
+                </>
+              ) : (
+                <p style={{ fontSize: 10, color: "#334155" }}>
+                  Planlagte mengder ligger under grensene i § 12.
+                </p>
+              )}
+            </div>
+
+            {/* Vurderingstabell */}
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+              <thead>
+                <tr>
+                  <th style={thStyle}>Stoffgruppe</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Planlagt mengde</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Innmeldingsgrense</th>
+                  <th style={thStyle}>Status</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Margin</th>
+                </tr>
+              </thead>
+              <tbody>
+                {innmeldingVurdering.grupper.map((g) => (
+                  <tr key={g.id}>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>{g.kategori}</td>
+                    <td style={{ ...tdStyle, textAlign: "right" }}>
+                      {g.sum > 0 ? `${g.sum.toLocaleString("nb-NO")} L` : "—"}
+                    </td>
+                    <td style={{ ...tdStyle, textAlign: "right", color: "#64748b" }}>
+                      {g.grenseLiter.toLocaleString("nb-NO")} L
+                    </td>
+                    <td style={tdStyle}>
+                      {g.status === "over" && (
+                        <span style={{ color: "#b91c1c", fontWeight: 600 }}>Innmeldingspliktig</span>
+                      )}
+                      {g.status === "under" && (
+                        <span style={{ color: "#15803d", fontWeight: 600 }}>Under grense</span>
+                      )}
+                      {g.status === "ingen" && <span style={{ color: "#94a3b8" }}>Ikke aktuelt</span>}
+                    </td>
+                    <td style={{ ...tdStyle, textAlign: "right", color: "#64748b" }}>
+                      {g.status === "under" ? `${g.gjenstaende.toLocaleString("nb-NO")} L til grensen` : ""}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {innmeldingKommentar.trim() && (
+              <div
+                style={{
+                  marginBottom: 12,
+                  padding: "10px 12px",
+                  background: "#f8fafc",
+                  borderLeft: "3px solid #1e3a5f",
+                  borderRadius: 4,
+                }}
+              >
+                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Kommentar</p>
+                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{innmeldingKommentar}</p>
+              </div>
+            )}
+
+            <p style={{ fontSize: 9, color: "#94a3b8", fontStyle: "italic", marginBottom: 16 }}>
+              Kilde: Forskrift om håndtering av brannfarlig, reaksjonsfarlig og trykksatt stoff (FBRT) § 12. Gass og
+              aerosoler vurderes ikke mot væskegrensene i denne tabellen.
+            </p>
+          </>
+        )}
+
         {salgslokaleInkludert && (
           <>
             <h2 style={h2}>{secNum("salgslokale")}. Største tillatte mengder i salgslokaler</h2>
