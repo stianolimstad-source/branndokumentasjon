@@ -526,6 +526,152 @@ const Brensellagring = () => {
             </CardContent>
           </Card>
 
+          {/* Brannenergi i bygget – beregning */}
+          {(() => {
+            const harMengder = (Object.keys(plannedAmounts) as (keyof PlannedAmounts)[]).some(
+              (k) => parseFloat(plannedAmounts[k]) > 0
+            );
+            if (!harMengder) return null;
+
+            const bidrag = (Object.keys(plannedAmounts) as (keyof PlannedAmounts)[])
+              .map((k) => {
+                const mengde = parseFloat(plannedAmounts[k]) || 0;
+                if (mengde <= 0) return null;
+                const e = ENERGITETTHET[k];
+                const felt = PLANNED_FELT.find((f) => f.key === k);
+                return {
+                  key: k,
+                  label: felt?.label || k,
+                  enhetInn: felt?.enhet || "",
+                  mengde,
+                  energi: e.verdi,
+                  enhetEnergi: e.enhet,
+                  totalMJ: mengde * e.verdi,
+                };
+              })
+              .filter((x): x is NonNullable<typeof x> => x !== null);
+
+            const totalMJ = bidrag.reduce((sum, b) => sum + b.totalMJ, 0);
+            const L = parseFloat(byggDim.lengde);
+            const B = parseFloat(byggDim.bredde);
+            const H = parseFloat(byggDim.hoyde);
+            const dimGyldig = L > 0 && B > 0 && H > 0;
+            const omhylling = dimGyldig ? 2 * (L * B) + 2 * (L * H) + 2 * (B * H) : 0;
+            const spesifikk = dimGyldig && omhylling > 0 ? totalMJ / omhylling : null;
+
+            const formatMJ = (v: number) => {
+              const rounded = v >= 10000 ? Math.round(v / 100) * 100 : Math.round(v);
+              return rounded.toLocaleString("nb-NO");
+            };
+
+            return (
+              <Card className="shadow-soft mb-6">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <Flame className="h-4 w-4 text-primary" />
+                        Brannenergi i bygget
+                      </CardTitle>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Sjablong-beregning basert på planlagte mengder. Oppgi byggets innvendige mål for å få spesifikk brannenergi (MJ/m²).
+                      </p>
+                    </div>
+                    <Button
+                      variant={brannenergiInkludert ? "default" : "outline"}
+                      size="sm"
+                      className="h-7 text-xs gap-1.5 shrink-0"
+                      onClick={() => setBrannenergiInkludert((v) => !v)}
+                    >
+                      {brannenergiInkludert ? <Check className="h-3.5 w-3.5" /> : <FilePlus2 className="h-3.5 w-3.5" />}
+                      {brannenergiInkludert ? "I dokumentet" : "Legg til i dokument"}
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label className="text-xs mb-1.5 block">Innvendige mål (for omhyllingsflate)</Label>
+                    <div className="grid grid-cols-3 gap-3">
+                      {(["lengde", "bredde", "hoyde"] as const).map((d) => (
+                        <div key={d} className="relative">
+                          <Input
+                            type="number"
+                            min="0"
+                            step="any"
+                            inputMode="decimal"
+                            placeholder={d === "lengde" ? "Lengde" : d === "bredde" ? "Bredde" : "Høyde"}
+                            value={byggDim[d]}
+                            onChange={(e) => setByggDim((prev) => ({ ...prev, [d]: e.target.value }))}
+                            className="h-9 pr-8 text-sm"
+                          />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
+                            m
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    {dimGyldig && (
+                      <p className="text-[11px] text-muted-foreground mt-1.5">
+                        Omhyllingsflate A<sub>t</sub> = 2·(L·B) + 2·(L·H) + 2·(B·H) = <span className="font-medium text-foreground">{omhylling.toFixed(1)} m²</span>
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="rounded-md border overflow-hidden">
+                    <table className="w-full text-xs">
+                      <thead className="bg-muted/50">
+                        <tr>
+                          <th className="text-left px-3 py-2 font-medium">Kategori</th>
+                          <th className="text-right px-3 py-2 font-medium">Mengde</th>
+                          <th className="text-right px-3 py-2 font-medium">Energi</th>
+                          <th className="text-right px-3 py-2 font-medium">Sum</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {bidrag.map((b) => (
+                          <tr key={b.key} className="border-t">
+                            <td className="px-3 py-2">{b.label}</td>
+                            <td className="px-3 py-2 text-right tabular-nums">{b.mengde.toLocaleString("nb-NO")} {b.enhetInn}</td>
+                            <td className="px-3 py-2 text-right tabular-nums text-muted-foreground">{b.energi} {b.enhetEnergi}</td>
+                            <td className="px-3 py-2 text-right tabular-nums font-medium">{formatMJ(b.totalMJ)} MJ</td>
+                          </tr>
+                        ))}
+                        <tr className="border-t bg-muted/30">
+                          <td colSpan={3} className="px-3 py-2 font-semibold text-right">Total brannenergi</td>
+                          <td className="px-3 py-2 text-right tabular-nums font-semibold">{formatMJ(totalMJ)} MJ</td>
+                        </tr>
+                        {spesifikk !== null && (
+                          <tr className="border-t bg-primary/5">
+                            <td colSpan={3} className="px-3 py-2 font-semibold text-right">Spesifikk brannenergi (MJ/m² omhyllingsflate)</td>
+                            <td className="px-3 py-2 text-right tabular-nums font-semibold text-primary">{spesifikk.toFixed(1)} MJ/m²</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="flex items-start gap-2 p-3 rounded-md bg-accent/30 border border-accent text-xs">
+                    <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                    <p className="text-muted-foreground leading-relaxed">
+                      Energitettheter er sjablongverdier hentet fra <span className="font-medium text-foreground">SFPE Handbook of Fire Protection Engineering</span> og <span className="font-medium text-foreground">NS-EN 1991-1-2</span>. Beregningen ivaretar ikke fuktinnhold, sammensetning eller emballasje, og brukes kun til indikativ vurdering.
+                    </p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="brannenergi-kommentar" className="text-xs">Kommentar (valgfritt)</Label>
+                    <Textarea
+                      id="brannenergi-kommentar"
+                      placeholder="F.eks. forutsetninger for romstørrelse, andel av total bygningsmasse, m.m."
+                      value={brannenergiKommentar}
+                      onChange={(e) => setBrannenergiKommentar(e.target.value)}
+                      className="min-h-[60px] text-sm"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })()}
+
           {/* ============================================================== */}
           {/* TABS – DSB Temaveiledning innhold                               */}
           {/* ============================================================== */}
