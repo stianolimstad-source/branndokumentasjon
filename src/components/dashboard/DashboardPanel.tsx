@@ -134,7 +134,8 @@ const DashboardPanel = () => {
                       {c.status === "draft" ? "Utkast" : c.status}
                     </Badge>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             )}
           </CardContent>
