@@ -20,7 +20,6 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   getBrensellagringKrav,
   BrenselType,
-  STOFF_KATALOG,
   INNMELDINGS_GRENSER,
   SIKKERHETSAVSTANDER,
   INTERNE_AVSTANDER_KAT12,
@@ -306,6 +305,8 @@ const Brensellagring = () => {
           brannenergiInkludert?: boolean;
           brannenergiKommentar?: string;
           innledning?: string;
+          innmeldingInkludert?: boolean;
+          innmeldingKommentar?: string;
           documentType?: string;
           type?: string;
         } | null) ?? null;
@@ -349,6 +350,8 @@ const Brensellagring = () => {
         setBrannenergiInkludert(content.brannenergiInkludert ?? false);
         setBrannenergiKommentar(content.brannenergiKommentar ?? "");
         setInnledning(content.innledning ?? "");
+        setInnmeldingInkludert(content.innmeldingInkludert ?? false);
+        setInnmeldingKommentar(content.innmeldingKommentar ?? "");
       });
   }, [user, conceptIdFromUrl, bygningstypeFromUrl]);
 
@@ -383,6 +386,8 @@ const Brensellagring = () => {
       brannenergiInkludert,
       brannenergiKommentar,
       innledning,
+      innmeldingInkludert,
+      innmeldingKommentar,
     };
     const docName = `Brensellagring – ${valgtBygg?.navn || valgtBygningstype}`;
     let error;
