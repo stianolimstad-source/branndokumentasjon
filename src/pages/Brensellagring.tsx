@@ -397,7 +397,7 @@ const Brensellagring = () => {
                   <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                   <p className="text-muted-foreground">
                     Viser kun krav som er relevante for <span className="font-medium text-foreground">{valgtBygg?.navn}</span>.
-                    Generelle krav (beliggenhet, kontroll, dokumentasjon) vises alltid.
+                    Generelle krav (Kontroll) vises alltid. Krav som gjelder tankanlegg vises kun for verksted, fyrrom, tankrom og lager.
                   </p>
                 </div>
                 <Button variant="outline" size="sm" asChild className="shrink-0 h-8 text-xs">
