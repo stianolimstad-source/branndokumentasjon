@@ -86,13 +86,12 @@ const Brensellagring = () => {
   // Bygg som kan utløse innmeldingsplikt til DSB
   const INNMELDING_BYGG: BygningsType[] = ["verksted", "fyrrom", "tankrom", "lager", "salgslokale", "forretning"];
 
-  type TabKey = "stoffdata" | "beliggenhet" | "tanker" | "oppsamling" | "roer" | "kontroll" | "innmelding" | "dokumentasjon";
+  type TabKey = "beliggenhet" | "tanker" | "oppsamling" | "roer" | "kontroll" | "innmelding" | "dokumentasjon";
 
   const isTabRelevant = (tab: TabKey): boolean => {
     // Ingen bygg valgt → vis alt (uendret oppførsel)
     if (!valgtBygningstype) return true;
     switch (tab) {
-      case "stoffdata":
       case "beliggenhet":
       case "kontroll":
       case "dokumentasjon":
@@ -110,11 +109,11 @@ const Brensellagring = () => {
 
   const visTankBeliggenhet = !valgtBygningstype || TANK_BYGG.includes(valgtBygningstype as BygningsType);
 
-  const [activeTab, setActiveTab] = useState<TabKey>("stoffdata");
-  // Hvis valgt fane blir irrelevant ved bytte av bygningstype → fall tilbake til stoffdata
+  const [activeTab, setActiveTab] = useState<TabKey>("beliggenhet");
+  // Hvis valgt fane blir irrelevant ved bytte av bygningstype → fall tilbake til beliggenhet
   useEffect(() => {
     if (!isTabRelevant(activeTab)) {
-      setActiveTab("stoffdata");
+      setActiveTab("beliggenhet");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valgtBygningstype]);
@@ -125,27 +124,14 @@ const Brensellagring = () => {
   // Tankanlegg – innmelding
   const [valgtStoff, setValgtStoff] = useState("");
   const [tankMengde, setTankMengde] = useState("");
-  const [stoffKategoriFilter, setStoffKategoriFilter] = useState<string>("alle");
 
   // Section visibility for preview
   const [visibleSections, setVisibleSections] = useState<Set<BrenselSectionKey>>(
     new Set()
   );
 
-  // Selected substances for document
-  const [selectedStoffIds, setSelectedStoffIds] = useState<Set<string>>(new Set());
-
   // Selected individual krav items per category (index-based keys like "beliggenhet_0")
   const [selectedKravIds, setSelectedKravIds] = useState<Set<string>>(new Set());
-
-  const toggleStoff = (id: string) => {
-    setSelectedStoffIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
 
   const toggleKrav = (id: string) => {
     setSelectedKravIds(prev => {
@@ -184,7 +170,7 @@ const Brensellagring = () => {
 
   // Map tabs to document sections
   const TAB_SECTION_MAP: Record<string, { keys: BrenselSectionKey[]; label: string }> = {
-    stoffdata: { keys: ["mengder"], label: "Tillatte mengder" },
+    
     beliggenhet: { keys: ["avstander", "beliggenhet"], label: "Avstander & beliggenhet" },
     tanker: { keys: ["tankkrav"], label: "Tankkrav" },
     oppsamling: { keys: ["oppsamling"], label: "Oppsamling" },
@@ -252,7 +238,6 @@ const Brensellagring = () => {
         const content = (data.content as {
           bygningstype?: BygningsType;
           visibleSections?: BrenselSectionKey[];
-          selectedStoffer?: string[];
           selectedKrav?: string[];
           documentType?: string;
           type?: string;
@@ -268,7 +253,6 @@ const Brensellagring = () => {
 
         setValgtBygningstype(content.bygningstype || bygningstypeFromUrl || "");
         setVisibleSections(new Set(content.visibleSections || []));
-        setSelectedStoffIds(new Set(content.selectedStoffer || []));
         setSelectedKravIds(new Set(content.selectedKrav || []));
       });
   }, [user, conceptIdFromUrl, bygningstypeFromUrl]);
@@ -284,8 +268,8 @@ const Brensellagring = () => {
       toast({ title: "Mangler prosjekt", description: "Dokumentet er ikke koblet til et prosjekt. Gå tilbake til forsiden og start på nytt.", variant: "destructive" });
       return;
     }
-    if (!valgtBygningstype && selectedStoffIds.size === 0) {
-      toast({ title: "Ingen data", description: "Velg stoffer eller bygningstype før du kan lagre", variant: "destructive" });
+    if (!valgtBygningstype && selectedKravIds.size === 0) {
+      toast({ title: "Ingen data", description: "Velg bygningstype eller krav før du kan lagre", variant: "destructive" });
       return;
     }
     setIsSaving(true);
@@ -294,7 +278,6 @@ const Brensellagring = () => {
       documentType: "brensellagring",
       bygningstype: valgtBygningstype,
       visibleSections: Array.from(visibleSections),
-      selectedStoffer: Array.from(selectedStoffIds),
       selectedKrav: Array.from(selectedKravIds),
     };
     const docName = `Brensellagring – ${valgtBygg?.navn || valgtBygningstype}`;
@@ -403,30 +386,28 @@ const Brensellagring = () => {
           {/* ============================================================== */}
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabKey)} className="space-y-6">
             {valgtBygningstype && (
-              <div className="flex items-start gap-2 p-3 rounded-lg bg-accent/30 border border-accent text-sm">
-                <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                <p className="text-muted-foreground">
-                  Viser kun krav som er relevante for <span className="font-medium text-foreground">{valgtBygg?.navn}</span>.
-                  Generelle krav (stoffdata, beliggenhet, kontroll, dokumentasjon) vises alltid.
-                </p>
+              <div className="flex items-start justify-between gap-3 p-3 rounded-lg bg-accent/30 border border-accent text-sm">
+                <div className="flex items-start gap-2">
+                  <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                  <p className="text-muted-foreground">
+                    Viser kun krav som er relevante for <span className="font-medium text-foreground">{valgtBygg?.navn}</span>.
+                    Generelle krav (beliggenhet, kontroll, dokumentasjon) vises alltid.
+                  </p>
+                </div>
+                <Button variant="outline" size="sm" asChild className="shrink-0 h-8 text-xs">
+                  <a href="/eksempelkatalog/brannfarlige-stoffer" target="_blank" rel="noopener noreferrer">
+                    <Flame className="h-3.5 w-3.5 mr-1" />
+                    Slå opp stoffdata
+                    <ExternalLink className="h-3 w-3 ml-1" />
+                  </a>
+                </Button>
               </div>
             )}
             <TabsList className={`grid w-full h-auto gap-1 ${
-              [isTabRelevant("stoffdata"), isTabRelevant("beliggenhet"), isTabRelevant("tanker"), isTabRelevant("oppsamling"), isTabRelevant("roer"), isTabRelevant("kontroll"), isTabRelevant("innmelding"), isTabRelevant("dokumentasjon")].filter(Boolean).length >= 7
-                ? "grid-cols-2 sm:grid-cols-4 lg:grid-cols-8"
-                : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5"
+              [isTabRelevant("beliggenhet"), isTabRelevant("tanker"), isTabRelevant("oppsamling"), isTabRelevant("roer"), isTabRelevant("kontroll"), isTabRelevant("innmelding"), isTabRelevant("dokumentasjon")].filter(Boolean).length >= 6
+                ? "grid-cols-2 sm:grid-cols-4 lg:grid-cols-7"
+                : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
             }`}>
-              {isTabRelevant("stoffdata") && (
-                <TabsTrigger value="stoffdata" className="text-xs py-2 relative">
-                  <Flame className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
-                  Stoffdata
-                  {selectedStoffIds.size > 0 && (
-                    <span className="ml-1 bg-primary text-primary-foreground text-[10px] rounded-full h-4 min-w-[16px] inline-flex items-center justify-center px-1">
-                      {selectedStoffIds.size}
-                    </span>
-                  )}
-                </TabsTrigger>
-              )}
               {isTabRelevant("beliggenhet") && (
                 <TabsTrigger value="beliggenhet" className="text-xs py-2">
                   <Ruler className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
@@ -470,110 +451,6 @@ const Brensellagring = () => {
                 </TabsTrigger>
               )}
             </TabsList>
-
-            {/* ============ TAB: Stoffdata ============ */}
-            <TabsContent value="stoffdata" className="space-y-4">
-              <Card className="shadow-soft">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <Flame className="h-5 w-5 text-orange-500" />
-                      Tekniske data – brannfarlige stoffer
-                    </CardTitle>
-                    <DocToggleButton tabKey="stoffdata" />
-                  </div>
-                  <p className="text-sm text-muted-foreground">Typiske verdier iht. DSB Temaveiledning, GHS/CLP og NFPA. Kilder: DSB § 4.1, GESTIS, PubChem.</p>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center gap-3 mb-3">
-                    <Label className="text-sm font-medium whitespace-nowrap">Filtrer på kategori:</Label>
-                    <Select value={stoffKategoriFilter} onValueChange={setStoffKategoriFilter}>
-                      <SelectTrigger className="w-[280px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="alle">Alle kategorier</SelectItem>
-                        <SelectItem value="alle_vaesker">Alle væsker</SelectItem>
-                        <SelectItem value="alle_gasser">Alle gasser</SelectItem>
-                        <SelectItem value="kat1">Væske – Kategori 1</SelectItem>
-                        <SelectItem value="kat2">Væske – Kategori 2</SelectItem>
-                        <SelectItem value="kat3">Væske – Kategori 3</SelectItem>
-                        <SelectItem value="diesel_fyringsolje">Diesel / fyringsolje</SelectItem>
-                        <SelectItem value="gass_kat1">Gass – Kategori 1</SelectItem>
-                        <SelectItem value="gass_kat2">Gass – Kategori 2</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="border rounded-lg overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="bg-muted/50">
-                          <th className="text-center py-2.5 px-2 font-medium w-10">Dok.</th>
-                          <th className="text-left py-2.5 px-3 font-medium">Stoff</th>
-                          <th className="text-left py-2.5 px-3 font-medium">Kategori</th>
-                          <th className="text-left py-2.5 px-3 font-medium">Flammepunkt</th>
-                          <th className="text-left py-2.5 px-3 font-medium">Densitet</th>
-                          <th className="text-left py-2.5 px-3 font-medium">Brennverdi</th>
-                          <th className="text-left py-2.5 px-3 font-medium">Eksp.grenser</th>
-                          <th className="text-left py-2.5 px-3 font-medium">Selvant.</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {STOFF_KATALOG.filter((s) => {
-                          if (stoffKategoriFilter === "alle") return true;
-                          if (stoffKategoriFilter === "alle_vaesker") return s.tilstand === "væske";
-                          if (stoffKategoriFilter === "alle_gasser") return s.tilstand === "gass";
-                          return s.kategori === stoffKategoriFilter;
-                        }).map((stoff) => {
-                          const isSelected = selectedStoffIds.has(stoff.id);
-                          return (
-                          <tr key={stoff.id} className={`border-t ${isSelected ? "bg-primary/5" : ""}`}>
-                            <td className="py-2 px-2 text-center">
-                              <Button
-                                variant={isSelected ? "default" : "ghost"}
-                                size="sm"
-                                className={`h-6 w-6 p-0 ${isSelected ? "" : "text-muted-foreground hover:text-primary"}`}
-                                onClick={() => toggleStoff(stoff.id)}
-                                title={isSelected ? "Fjern fra dokument" : "Legg til i dokument"}
-                              >
-                                {isSelected ? <Check className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
-                              </Button>
-                            </td>
-                            <td className="py-2 px-3 font-medium">{stoff.navn}</td>
-                            <td className="py-2 px-3">
-                              <Badge variant="outline" className="text-xs whitespace-nowrap">
-                                {stoff.kategori === "kat1" ? "Væske Kat. 1"
-                                  : stoff.kategori === "kat2" ? "Væske Kat. 2"
-                                  : stoff.kategori === "kat3" ? "Væske Kat. 3"
-                                  : stoff.kategori === "diesel_fyringsolje" ? "Diesel/fyr.olje"
-                                  : stoff.kategori === "gass_kat1" ? "Gass Kat. 1"
-                                  : "Gass Kat. 2"}
-                              </Badge>
-                            </td>
-                            <td className="py-2 px-3">{stoff.flammepunkt}</td>
-                            <td className="py-2 px-3">{stoff.densitet}</td>
-                            <td className="py-2 px-3">{stoff.nedreBrennverdi}</td>
-                            <td className="py-2 px-3">{stoff.eksplosjonsgrenser || "–"}</td>
-                            <td className="py-2 px-3">{stoff.selvantennelse || "–"}</td>
-                          </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div className="mt-4 p-3 bg-muted/30 rounded-lg text-sm space-y-1.5">
-                    <p className="font-medium">Kategorier iht. GHS/DSB:</p>
-                    <p><strong>Væske kat. 1:</strong> Flammepunkt &lt; 23 °C og startkokepunkt ≤ 35 °C (f.eks. bensin, pentan)</p>
-                    <p><strong>Væske kat. 2:</strong> Flammepunkt &lt; 23 °C og startkokepunkt &gt; 35 °C (f.eks. aceton, toluen)</p>
-                    <p><strong>Væske kat. 3:</strong> Flammepunkt ≥ 23 °C og ≤ 60 °C (f.eks. parafin, white spirit)</p>
-                    <p><strong>Diesel/fyringsoljer:</strong> Flammepunkt &gt; 60 °C</p>
-                    <p><strong>Gass kat. 1:</strong> LEL ≤ 13 % eller eksplosjonsområde ≥ 12 prosentpoeng (f.eks. propan, hydrogen)</p>
-                    <p><strong>Gass kat. 2:</strong> Eksplosjonsområde i luft, men ikke kat. 1 (f.eks. ammoniakk)</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
 
             {/* ============ TAB: Beliggenhet & utforming ============ */}
             <TabsContent value="beliggenhet" className="space-y-4">
@@ -1253,7 +1130,7 @@ const Brensellagring = () => {
                 <Button
                   size="sm"
                   onClick={handleSaveDocument}
-                  disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedStoffIds.size === 0 && selectedKravIds.size === 0)}
+                  disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0)}
                   className="h-8"
                 >
                   <Save className="h-4 w-4 mr-1.5" />
@@ -1266,7 +1143,7 @@ const Brensellagring = () => {
                   prosjektNavn={prosjektNavn || undefined}
                   adresse={adresse || undefined}
                   visibleSections={visibleSections}
-                  selectedStoffIds={selectedStoffIds}
+                  
                   selectedKravIds={selectedKravIds}
                 />
               </div>
