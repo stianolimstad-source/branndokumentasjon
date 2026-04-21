@@ -1478,8 +1478,8 @@ const Brensellagring = () => {
             </div>
           </div>
 
-          {/* Lagre-knapp – alltid synlig nede til høyre */}
-          <div className="fixed bottom-6 right-6 z-50">
+          {/* Lagre-knapp – alltid synlig, plassert over inntastingskolonnen (venstre halvdel) */}
+          <div className="fixed bottom-6 left-1/2 -translate-x-[calc(50%+1rem)] z-50 hidden lg:block">
             <Button
               size="default"
               onClick={handleSaveDocument}
@@ -1488,6 +1488,18 @@ const Brensellagring = () => {
             >
               <Save className="h-4 w-4 mr-2" />
               {isSaving ? "Lagrer..." : "Lagre dokument"}
+            </Button>
+          </div>
+          {/* Mobil: fast nede til høyre */}
+          <div className="fixed bottom-6 right-6 z-50 lg:hidden">
+            <Button
+              size="default"
+              onClick={handleSaveDocument}
+              disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !plannedInkludert)}
+              className="h-11 px-6 shadow-xl"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              {isSaving ? "Lagrer..." : "Lagre"}
             </Button>
           </div>
 
