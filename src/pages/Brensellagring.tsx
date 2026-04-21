@@ -32,7 +32,6 @@ import {
   KONTROLL_KRAV,
   DOKUMENTASJON_KRAV,
   PUMPE_KRAV,
-  getInnmeldingsStatus,
   BYGNINGSTYPER,
   BygningsType,
   STYKKGODS_GRENSER,
