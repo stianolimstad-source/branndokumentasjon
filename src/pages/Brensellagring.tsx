@@ -108,11 +108,11 @@ const Brensellagring = () => {
 
   const visTankBeliggenhet = !valgtBygningstype || TANK_BYGG.includes(valgtBygningstype as BygningsType);
 
-  const [activeTab, setActiveTab] = useState<TabKey>("beliggenhet");
-  // Hvis valgt fane blir irrelevant ved bytte av bygningstype → fall tilbake til beliggenhet
+  const [activeTab, setActiveTab] = useState<TabKey>("kontroll");
+  // Hvis valgt fane blir irrelevant ved bytte av bygningstype → fall tilbake til kontroll
   useEffect(() => {
     if (!isTabRelevant(activeTab)) {
-      setActiveTab("beliggenhet");
+      setActiveTab("kontroll");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [valgtBygningstype]);
