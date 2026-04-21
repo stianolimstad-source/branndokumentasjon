@@ -292,6 +292,92 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           </>
         )}
 
+        {visBrannenergi && (
+          <>
+            <h2 style={h2}>{secNum("brannenergi")}. Brannenergi i bygget</h2>
+            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
+              Sjablong-beregning av total og spesifikk brannenergi basert på planlagte mengder. Energitettheter er hentet fra SFPE Handbook of Fire Protection Engineering og NS-EN 1991-1-2.
+            </p>
+
+            {dimGyldig && (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+                <thead>
+                  <tr>
+                    <th style={thStyle}>Lengde</th>
+                    <th style={thStyle}>Bredde</th>
+                    <th style={thStyle}>Høyde</th>
+                    <th style={thStyle}>Omhyllingsflate A<sub>t</sub></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={tdStyle}>{dimL.toLocaleString("nb-NO")} m</td>
+                    <td style={tdStyle}>{dimB.toLocaleString("nb-NO")} m</td>
+                    <td style={tdStyle}>{dimH.toLocaleString("nb-NO")} m</td>
+                    <td style={{ ...tdStyle, fontWeight: 600 }}>{omhylling.toFixed(1)} m²</td>
+                  </tr>
+                </tbody>
+              </table>
+            )}
+
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+              <thead>
+                <tr>
+                  <th style={thStyle}>Kategori</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Mengde</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Energi</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Bidrag</th>
+                </tr>
+              </thead>
+              <tbody>
+                {energiBidrag.map((b) => (
+                  <tr key={b.key}>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>{b.label}</td>
+                    <td style={{ ...tdStyle, textAlign: "right" }}>
+                      {b.mengde.toLocaleString("nb-NO")} {b.enhetInn}
+                    </td>
+                    <td style={{ ...tdStyle, textAlign: "right", color: "#64748b" }}>
+                      {b.energi} {b.enhetEnergi}
+                    </td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontWeight: 600 }}>
+                      {formatMJ(b.totalMJ)} MJ
+                    </td>
+                  </tr>
+                ))}
+                <tr>
+                  <td colSpan={3} style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#f1f5f9" }}>
+                    Total brannenergi
+                  </td>
+                  <td style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#f1f5f9" }}>
+                    {formatMJ(totalMJ)} MJ
+                  </td>
+                </tr>
+                {spesifikkMJm2 !== null && (
+                  <tr>
+                    <td colSpan={3} style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#e8eef5", color: "#1e3a5f" }}>
+                      Spesifikk brannenergi (per m² omhyllingsflate)
+                    </td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#e8eef5", color: "#1e3a5f" }}>
+                      {spesifikkMJm2.toFixed(1)} MJ/m²
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+            {brannenergiKommentar.trim() && (
+              <div style={{ marginBottom: 12, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Kommentar</p>
+                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{brannenergiKommentar}</p>
+              </div>
+            )}
+
+            <p style={{ fontSize: 9, color: "#94a3b8", fontStyle: "italic", marginBottom: 16 }}>
+              Sjablongverdier ivaretar ikke fuktinnhold, sammensetning eller emballasje. Beregningen brukes kun til indikativ vurdering av brannenergi i bygget.
+            </p>
+          </>
+        )}
+
         {salgslokaleInkludert && (
           <>
             <h2 style={h2}>{secNum("salgslokale")}. Største tillatte mengder i salgslokaler</h2>
