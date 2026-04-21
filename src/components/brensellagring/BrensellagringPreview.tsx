@@ -44,6 +44,22 @@ export interface PlannedAmountsData {
   aerosoler: string;
 }
 
+export type InnmeldingGruppeData = {
+  id: string;
+  kategori: string;
+  sum: number;
+  grenseLiter: number;
+  grenseTekst: string;
+  status: "over" | "under" | "ingen";
+  gjenstaende: number;
+};
+
+export interface InnmeldingVurderingData {
+  grupper: InnmeldingGruppeData[];
+  trengerInnmelding: boolean;
+  harMengder: boolean;
+}
+
 interface BrensellagringPreviewProps {
   valgtBygg: BygningsTypeInfo | null;
   prosjektNavn?: string;
@@ -60,6 +76,9 @@ interface BrensellagringPreviewProps {
   etasjer?: { id: string; navn: string; lengde: string; bredde: string; hoyde: string }[];
   innledning?: string;
   energitetthet?: Record<keyof PlannedAmountsData, { verdi: number; enhet: "MJ/kg" | "MJ/L"; kilde: string }>;
+  innmeldingInkludert?: boolean;
+  innmeldingKommentar?: string;
+  innmeldingVurdering?: InnmeldingVurderingData;
 }
 
 const pageStyle: React.CSSProperties = {
