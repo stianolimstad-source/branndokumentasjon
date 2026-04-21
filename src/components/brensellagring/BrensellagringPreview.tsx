@@ -85,6 +85,8 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   adresse,
   visibleSections,
   selectedKravIds = new Set(),
+  salgslokaleInkludert = false,
+  salgslokaleKommentar = "",
 }) => {
   if (!valgtBygg) {
     return (
