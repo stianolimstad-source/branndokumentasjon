@@ -44,6 +44,22 @@ export interface PlannedAmountsData {
   aerosoler: string;
 }
 
+export type InnmeldingGruppeData = {
+  id: string;
+  kategori: string;
+  sum: number;
+  grenseLiter: number;
+  grenseTekst: string;
+  status: "over" | "under" | "ingen";
+  gjenstaende: number;
+};
+
+export interface InnmeldingVurderingData {
+  grupper: InnmeldingGruppeData[];
+  trengerInnmelding: boolean;
+  harMengder: boolean;
+}
+
 interface BrensellagringPreviewProps {
   valgtBygg: BygningsTypeInfo | null;
   prosjektNavn?: string;
@@ -60,6 +76,9 @@ interface BrensellagringPreviewProps {
   etasjer?: { id: string; navn: string; lengde: string; bredde: string; hoyde: string }[];
   innledning?: string;
   energitetthet?: Record<keyof PlannedAmountsData, { verdi: number; enhet: "MJ/kg" | "MJ/L"; kilde: string }>;
+  innmeldingInkludert?: boolean;
+  innmeldingKommentar?: string;
+  innmeldingVurdering?: InnmeldingVurderingData;
 }
 
 const pageStyle: React.CSSProperties = {
@@ -113,6 +132,9 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   etasjer = [],
   innledning = "",
   energitetthet,
+  innmeldingInkludert = false,
+  innmeldingKommentar = "",
+  innmeldingVurdering,
 }) => {
   if (!valgtBygg) {
     return (
@@ -193,6 +215,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const dimGyldig = etasjerBeregnet.some((e) => e.gyldig);
   const spesifikkMJm2 = dimGyldig && omhylling > 0 ? totalMJ / omhylling : null;
   const visBrannenergi = brannenergiInkludert && energiBidrag.length > 0;
+  const visInnmelding = innmeldingInkludert && !!innmeldingVurdering && innmeldingVurdering.harMengder;
   const formatMJ = (v: number) => {
     const r = v >= 10000 ? Math.round(v / 100) * 100 : Math.round(v);
     return r.toLocaleString("nb-NO");
@@ -202,6 +225,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const sections: { key: string; label: string }[] = [];
   if (visPlanlagt) sections.push({ key: "planlagt", label: "Planlagt lagret mengde i bygget" });
   if (visBrannenergi) sections.push({ key: "brannenergi", label: "Brannenergi i bygget" });
+  if (visInnmelding) sections.push({ key: "innmelding", label: "Innmeldingsplikt til DSB" });
   if (salgslokaleInkludert) sections.push({ key: "salgslokale", label: "Største tillatte mengder i salgslokaler" });
   if (selBeliggenhet.length > 0) sections.push({ key: "beliggenhet", label: "Beliggenhet og utforming" });
   if (visibleSections.has("avstander")) sections.push({ key: "avstander", label: "Sikkerhetsavstander" });
@@ -402,6 +426,118 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
 
             <p style={{ fontSize: 9, color: "#94a3b8", fontStyle: "italic", marginBottom: 16 }}>
               Sjablongverdier ivaretar ikke fuktinnhold, sammensetning eller emballasje. Beregningen brukes kun til indikativ vurdering av brannenergi i bygget.
+            </p>
+          </>
+        )}
+
+        {visInnmelding && innmeldingVurdering && (
+          <>
+            <h2 style={h2}>{secNum("innmelding")}. Innmeldingsplikt til DSB</h2>
+            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
+              Vurdering av innmeldingsplikt etter Forskrift om håndtering av brannfarlig, reaksjonsfarlig og trykksatt stoff (FBRT) § 12, basert på planlagte mengder i bygget.
+            </p>
+
+            {/* Konklusjon */}
+            <div
+              style={{
+                marginBottom: 12,
+                padding: "10px 12px",
+                background: innmeldingVurdering.trengerInnmelding ? "#fef2f2" : "#f0fdf4",
+                borderLeft: `3px solid ${innmeldingVurdering.trengerInnmelding ? "#b91c1c" : "#15803d"}`,
+                borderRadius: 4,
+              }}
+            >
+              <p
+                style={{
+                  fontSize: 10.5,
+                  fontWeight: 700,
+                  marginBottom: 4,
+                  color: innmeldingVurdering.trengerInnmelding ? "#b91c1c" : "#15803d",
+                }}
+              >
+                {innmeldingVurdering.trengerInnmelding
+                  ? "Anlegget er innmeldingspliktig til DSB"
+                  : "Anlegget er ikke innmeldingspliktig"}
+              </p>
+              {innmeldingVurdering.trengerInnmelding ? (
+                <>
+                  <p style={{ fontSize: 10, color: "#334155", marginBottom: 4 }}>
+                    Følgende stoffgruppe(r) overskrider innmeldingsgrensen iht. § 12:
+                  </p>
+                  <ul style={{ fontSize: 10, color: "#334155", margin: 0, paddingLeft: 18 }}>
+                    {innmeldingVurdering.grupper
+                      .filter((g) => g.status === "over")
+                      .map((g) => (
+                        <li key={g.id}>
+                          {g.kategori} – planlagt {g.sum.toLocaleString("nb-NO")} L (grense{" "}
+                          {g.grenseLiter.toLocaleString("nb-NO")} L)
+                        </li>
+                      ))}
+                  </ul>
+                </>
+              ) : (
+                <p style={{ fontSize: 10, color: "#334155" }}>
+                  Planlagte mengder ligger under grensene i § 12.
+                </p>
+              )}
+            </div>
+
+            {/* Vurderingstabell */}
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+              <thead>
+                <tr>
+                  <th style={thStyle}>Stoffgruppe</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Planlagt mengde</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Innmeldingsgrense</th>
+                  <th style={thStyle}>Status</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Margin</th>
+                </tr>
+              </thead>
+              <tbody>
+                {innmeldingVurdering.grupper.map((g) => (
+                  <tr key={g.id}>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>{g.kategori}</td>
+                    <td style={{ ...tdStyle, textAlign: "right" }}>
+                      {g.sum > 0 ? `${g.sum.toLocaleString("nb-NO")} L` : "—"}
+                    </td>
+                    <td style={{ ...tdStyle, textAlign: "right", color: "#64748b" }}>
+                      {g.grenseLiter.toLocaleString("nb-NO")} L
+                    </td>
+                    <td style={tdStyle}>
+                      {g.status === "over" && (
+                        <span style={{ color: "#b91c1c", fontWeight: 600 }}>Innmeldingspliktig</span>
+                      )}
+                      {g.status === "under" && (
+                        <span style={{ color: "#15803d", fontWeight: 600 }}>Under grense</span>
+                      )}
+                      {g.status === "ingen" && <span style={{ color: "#94a3b8" }}>Ikke aktuelt</span>}
+                    </td>
+                    <td style={{ ...tdStyle, textAlign: "right", color: "#64748b" }}>
+                      {g.status === "under" ? `${g.gjenstaende.toLocaleString("nb-NO")} L til grensen` : ""}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {innmeldingKommentar.trim() && (
+              <div
+                style={{
+                  marginBottom: 12,
+                  padding: "10px 12px",
+                  background: "#f8fafc",
+                  borderLeft: "3px solid #1e3a5f",
+                  borderRadius: 4,
+                }}
+              >
+                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Kommentar</p>
+                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{innmeldingKommentar}</p>
+              </div>
+            )}
+
+            <p style={{ fontSize: 9, color: "#94a3b8", fontStyle: "italic", marginBottom: 16 }}>
+              Kilde: Forskrift om håndtering av brannfarlig, reaksjonsfarlig og trykksatt stoff (FBRT) § 12. Gass og
+              aerosoler vurderes ikke mot væskegrensene i denne tabellen.
             </p>
           </>
         )}
