@@ -130,20 +130,8 @@ const Brensellagring = () => {
     new Set()
   );
 
-  // Selected substances for document
-  const [selectedStoffIds, setSelectedStoffIds] = useState<Set<string>>(new Set());
-
   // Selected individual krav items per category (index-based keys like "beliggenhet_0")
   const [selectedKravIds, setSelectedKravIds] = useState<Set<string>>(new Set());
-
-  const toggleStoff = (id: string) => {
-    setSelectedStoffIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
 
   const toggleKrav = (id: string) => {
     setSelectedKravIds(prev => {
@@ -182,7 +170,7 @@ const Brensellagring = () => {
 
   // Map tabs to document sections
   const TAB_SECTION_MAP: Record<string, { keys: BrenselSectionKey[]; label: string }> = {
-    stoffdata: { keys: ["mengder"], label: "Tillatte mengder" },
+    
     beliggenhet: { keys: ["avstander", "beliggenhet"], label: "Avstander & beliggenhet" },
     tanker: { keys: ["tankkrav"], label: "Tankkrav" },
     oppsamling: { keys: ["oppsamling"], label: "Oppsamling" },
