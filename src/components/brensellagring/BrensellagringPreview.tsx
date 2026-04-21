@@ -158,9 +158,45 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
     : [];
   const visPlanlagt = plannedInkludert && plannedRows.length > 0;
 
+  const visPlanlagt = plannedInkludert && plannedRows.length > 0;
+
+  // Brannenergi – beregning
+  const energiBidrag = (plannedAmounts && energitetthet)
+    ? (Object.keys(PLANNED_LABELS) as (keyof PlannedAmountsData)[])
+        .map((k) => {
+          const m = parseFloat((plannedAmounts[k] || "").trim());
+          if (!(m > 0)) return null;
+          const e = energitetthet[k];
+          if (!e) return null;
+          return {
+            key: k,
+            label: PLANNED_LABELS[k].label,
+            enhetInn: PLANNED_LABELS[k].enhet,
+            mengde: m,
+            energi: e.verdi,
+            enhetEnergi: e.enhet,
+            totalMJ: m * e.verdi,
+          };
+        })
+        .filter((x): x is NonNullable<typeof x> => x !== null)
+    : [];
+  const totalMJ = energiBidrag.reduce((s, b) => s + b.totalMJ, 0);
+  const dimL = parseFloat(byggDim?.lengde || "");
+  const dimB = parseFloat(byggDim?.bredde || "");
+  const dimH = parseFloat(byggDim?.hoyde || "");
+  const dimGyldig = dimL > 0 && dimB > 0 && dimH > 0;
+  const omhylling = dimGyldig ? 2 * (dimL * dimB) + 2 * (dimL * dimH) + 2 * (dimB * dimH) : 0;
+  const spesifikkMJm2 = dimGyldig && omhylling > 0 ? totalMJ / omhylling : null;
+  const visBrannenergi = brannenergiInkludert && energiBidrag.length > 0;
+  const formatMJ = (v: number) => {
+    const r = v >= 10000 ? Math.round(v / 100) * 100 : Math.round(v);
+    return r.toLocaleString("nb-NO");
+  };
+
   // Build visible sections dynamically based on selected items
   const sections: { key: string; label: string }[] = [];
   if (visPlanlagt) sections.push({ key: "planlagt", label: "Planlagt lagret mengde i bygget" });
+  if (visBrannenergi) sections.push({ key: "brannenergi", label: "Brannenergi i bygget" });
   if (salgslokaleInkludert) sections.push({ key: "salgslokale", label: "Største tillatte mengder i salgslokaler" });
   if (selBeliggenhet.length > 0) sections.push({ key: "beliggenhet", label: "Beliggenhet og utforming" });
   if (visibleSections.has("avstander")) sections.push({ key: "avstander", label: "Sikkerhetsavstander" });
