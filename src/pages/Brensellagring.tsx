@@ -1494,20 +1494,9 @@ const Brensellagring = () => {
 
             {/* ===== RIGHT: Document preview (always visible) ===== */}
             <div className="hidden lg:flex lg:flex-col lg:min-w-0 lg:h-full">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-muted-foreground" />
-                  <h4 className="text-sm font-semibold text-muted-foreground">Forhåndsvisning</h4>
-                </div>
-                <Button
-                  size="sm"
-                  onClick={handleSaveDocument}
-                  disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !plannedInkludert)}
-                  className="h-8"
-                >
-                  <Save className="h-4 w-4 mr-1.5" />
-                  {isSaving ? "Lagrer..." : "Lagre"}
-                </Button>
+              <div className="flex items-center gap-2 mb-3">
+                <Eye className="h-4 w-4 text-muted-foreground" />
+                <h4 className="text-sm font-semibold text-muted-foreground">Forhåndsvisning</h4>
               </div>
               <div className="flex-1 min-h-0 bg-muted/30 rounded-xl p-3 overflow-auto">
                 <BrensellagringPreview
