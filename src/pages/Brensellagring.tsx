@@ -147,6 +147,9 @@ const Brensellagring = () => {
   // DSB stykkgods – salgslokale
   const [salgslokaleInkludert, setSalgslokaleInkludert] = useState(false);
   const [salgslokaleKommentar, setSalgslokaleKommentar] = useState("");
+  const getOriginalSalgslokaleTiltakTekst = () =>
+    "Ovennevnte krav til avstander og mengder bør kunne økes noe, under forutsetning av at salgslokalet er sprinklet og at det fremgår av risikovurderingen at en slik begrenset økning er akseptabel.\n\nDet anbefales imidlertid at de brannfarlige stoffene oppbevares i eget brannskap eller avlukke i salgslokalet. Dette bør også kunne medføre aksept for større lagringsmengder enn angitt i tabellen over. Det forutsettes da at alt brannfarlig stoff i salgslokalet oppbevares i skapet/avlukket. Brannskapet/avlukket bør ha dør eller sjalusidør, samt røykdetektor utenfor og eventuelt inne i skapet/avlukket, med automatisk stenging av dører ved detektering. Brannskapet/avlukket vil da kunne beskytte både dersom brannen starter i det brannfarlige stoffet i skapet/avlukket, og dersom brannen starter utenfor. Alternativt kan det benyttes skap/avlukke hvor dørene er selvlukkende, dvs. lukker automatisk for hver gang de har vært åpnet.";
+  const [salgslokaleTiltakTekst, setSalgslokaleTiltakTekst] = useState(getOriginalSalgslokaleTiltakTekst);
 
   // Planlagt lagret mengde i bygget – per kategori
   type PlannedAmounts = {
@@ -367,6 +370,7 @@ const Brensellagring = () => {
           selectedKrav?: string[];
           salgslokaleInkludert?: boolean;
           salgslokaleKommentar?: string;
+          salgslokaleTiltakTekst?: string;
           plannedAmounts?: Partial<PlannedAmounts>;
           plannedKommentar?: string;
           plannedInkludert?: boolean;
@@ -397,6 +401,7 @@ const Brensellagring = () => {
         setSelectedKravIds(new Set(content.selectedKrav || []));
         setSalgslokaleInkludert(content.salgslokaleInkludert ?? false);
         setSalgslokaleKommentar(content.salgslokaleKommentar ?? "");
+        setSalgslokaleTiltakTekst(content.salgslokaleTiltakTekst ?? getOriginalSalgslokaleTiltakTekst());
         setPlannedAmounts({ ...TOMME_MENGDER, ...(content.plannedAmounts || {}) });
         setPlannedKommentar(content.plannedKommentar ?? "");
         setPlannedInkludert(content.plannedInkludert ?? false);
@@ -461,6 +466,7 @@ const Brensellagring = () => {
       selectedKrav: Array.from(selectedKravIds),
       salgslokaleInkludert,
       salgslokaleKommentar,
+      salgslokaleTiltakTekst,
       plannedAmounts,
       plannedKommentar,
       plannedInkludert,
