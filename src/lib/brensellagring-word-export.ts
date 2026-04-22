@@ -138,6 +138,7 @@ const table = (headers: string[], rows: string[][], widths: number[]) =>
   new Table({
     width: { size: TABLE_WIDTH, type: WidthType.DXA },
     columnWidths: widths,
+    margins: { top: 70, bottom: 160 },
     rows: [
       new TableRow({ children: headers.map((header, index) => cell(header, widths[index], { header: true })) }),
       ...rows.map((row) => new TableRow({ children: row.map((value, index) => cell(value || "—", widths[index])) })),
@@ -153,14 +154,17 @@ async function logoParagraph(logoUrl?: string): Promise<Paragraph | null> {
     const contentType = response.headers.get("content-type") || "";
     const type = contentType.includes("png") ? "png" : contentType.includes("jpeg") || contentType.includes("jpg") ? "jpg" : null;
     if (!type) return null;
+    const imageSize = getImageSize(buffer, type);
+    const logoWidth = 220;
+    const logoHeight = Math.round((imageSize.height / imageSize.width) * logoWidth);
     return new Paragraph({
       alignment: AlignmentType.RIGHT,
-      spacing: { after: 180 },
+      spacing: { after: 120 },
       children: [
         new ImageRun({
           type,
           data: buffer,
-          transformation: { width: 170, height: 74 },
+          transformation: { width: logoWidth, height: logoHeight },
           altText: { title: "Firmalogo", description: "Firmalogo", name: "Firmalogo" },
         }),
       ],
