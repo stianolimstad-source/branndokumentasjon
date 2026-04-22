@@ -1920,7 +1920,7 @@ const Brensellagring = () => {
                     </div>
 
                     <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm text-muted-foreground">
-                      DSB sin temaveiledning angir anbefalte mengder for salgslokaler, men legger opp til at mengdene kan økes noe dersom det er gjort særskilte tiltak og det fremgår av risikovurderingen at en begrenset økning er akseptabel. Eksempler på tiltak kan være sprinkleranlegg, oppbevaring i brannskap eller egen avlukke, røykdeteksjon og automatisk stenging/lukking av skap eller dører.
+                      DSB sin temaveiledning angir anbefalte mengder for salgslokaler, men legger opp til at mengdene kan økes noe dersom det fremgår av risikovurderingen at en begrenset økning er akseptabel. En slik økning bør knyttes til konkrete forutsetninger som sprinkleranlegg, oversiktlig lagring, kontrollrutiner og begrenset økning. Gassmengder vurderes strengere og bør ikke økes uten særskilt vurdering.
                     </div>
 
                     <div className="space-y-1.5">
@@ -2244,7 +2244,7 @@ const Brensellagring = () => {
                   id="overskridelse-tiltak"
                   value={overskridelseTiltak}
                   onChange={(e) => setOverskridelseTiltak(e.target.value)}
-                  placeholder="F.eks. oppsamlingskar, låst brannskap, begrenset publikumsadgang, rutiner for kontroll og opplæring..."
+                  placeholder="F.eks. sprinkleranlegg, oversiktlig plassering, oppsamlingskar, begrenset publikumsadgang, rutiner for kontroll og opplæring..."
                   className="min-h-[70px] text-sm"
                 />
               </div>
