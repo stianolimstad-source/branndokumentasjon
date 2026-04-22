@@ -323,7 +323,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
     <div>
       <div style={pageStyle}>
         {logoUrl && (
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: 10 }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
             <div style={{ width: logoWidth, height: logoHeight, background: "#fff", borderRadius: 4, padding: 6, display: "flex", alignItems: "center", justifyContent: "center" }}>
               <img src={logoUrl} alt="Firmalogo" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
             </div>
