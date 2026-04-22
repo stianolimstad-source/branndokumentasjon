@@ -497,6 +497,7 @@ const Brensellagring = () => {
       branntekniskeTiltakInkludert,
       branntekniskeTiltak,
       innledning,
+      kunde,
       innmeldingInkludert,
       innmeldingKommentar,
     };
