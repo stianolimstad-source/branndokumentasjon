@@ -1,172 +1,102 @@
 
 ## Mål
 
-Justere «Brannenergi i bygget» for salgslokaler slik at lagring av brannfarlig vare behandles som et tillegg til normal brannenergi i bygget, ikke som hele brannenergien alene.
+Utvide delen «Lagring i bygning» for salgslokaler slik at rapporten tydelig får med at DSB sin veiledning åpner for høyere mengder enn tabellverdiene, dersom dette er risikovurdert og det etableres egnede kompenserende tiltak.
 
-Resultatet skal vise:
-- generell/statistisk brannenergi for bygget uten brannfarlig lagring
-- brannenergi fra planlagte brannfarlige varer som tillegg
-- spesifikk brannenergi per m² omhyllingsflate for begge tilfeller
-- sammenligning med og uten brannfarlige materialer, slik at man kan vurdere om økningen er vesentlig
+Dette skal ikke endre selve DSB-tabellen eller mengdegrensene, men legge til en faglig presisering og en redigerbar vurderingstekst.
 
-## Faglig grunnlag
+## Endring i input-siden
 
-For salgslokale/kjøpesenter legges det inn en standardverdi:
+I `src/pages/Brensellagring.tsx` utvides kortet:
 
 ```text
-730 MJ/m² gulvareal
+Største tillatte mengder i salgslokaler – DSB Temaveiledning Kap. 3
 ```
 
-Kilde vises som:
+Under tabellen legges det inn en tydelig infoboks, for eksempel:
 
 ```text
-Byggforsk 321.051 Brannenergi i bygninger. Beregninger og statistiske verdier
+DSB sin temaveiledning angir anbefalte mengder for salgslokaler, men legger opp til at mengdene kan økes noe dersom det er gjort særskilte tiltak og det fremgår av risikovurderingen at en begrenset økning er akseptabel. Eksempler på tiltak kan være sprinkleranlegg, oppbevaring i brannskap eller egen avlukke, røykdeteksjon og automatisk stenging/lukking av skap eller dører.
 ```
 
-Denne verdien brukes som normal brannenergi for bygget før planlagt lagring av brannfarlig vare legges til.
+## Redigerbar rapporttekst
 
-## Endring i beregningslogikk
-
-Eksisterende mål per etasje brukes videre, men beregningen utvides:
-
-For hver etasje beregnes:
-- gulvareal: `lengde × bredde`
-- omhyllingsflate: `gulv + tak + vegger = 2LB + 2LH + 2BH`
-
-For hele vurdert areal beregnes:
-- samlet gulvareal
-- samlet omhyllingsflate
-- generell brannenergi uten brannfarlig vare:
-  - `730 MJ/m² × samlet gulvareal`
-- tilleggsbrannenergi fra planlagte brannfarlige varer:
-  - dagens beregning fra mengde og energitetthet
-- total brannenergi med brannfarlig vare:
-  - generell brannenergi + tilleggsbrannenergi
-
-Deretter vises:
-- generell brannenergi per m² omhyllingsflate
-- tilleggsbrannenergi per m² omhyllingsflate
-- total brannenergi per m² omhyllingsflate
-- prosentvis økning fra generell situasjon til situasjon med brannfarlig vare
-
-## Input-side
-
-I `src/pages/Brensellagring.tsx` endres kortet «Brannenergi i bygget».
-
-### Ny tekst og struktur
-
-Kortet får tydeligere forklaring om at beregningen består av to deler:
+Det legges til et eget tekstfelt under DSB-tabellen:
 
 ```text
-1. Generell brannenergi i bygget uten brannfarlig lagring
-2. Tillegg fra planlagt lagring av brannfarlige varer
+Vurdering av høyere mengder / kompenserende tiltak
 ```
 
-For salgslokaler vises en infoboks:
+Feltet får en automatisk standardtekst basert på innholdet i bildet/eksempelet brukeren la ved:
 
 ```text
-For salgslokale/kjøpesenter benyttes 730 MJ/m² gulvareal som statistisk brannenergi iht. Byggforsk 321.051. Planlagt lagring av brannfarlig vare beregnes som et tillegg til denne brannenergien.
+Ovennevnte krav til avstander og mengder bør kunne økes noe, under forutsetning av at salgslokalet er sprinklet og at det fremgår av risikovurderingen at en slik begrenset økning er akseptabel.
+
+Det anbefales imidlertid at de brannfarlige stoffene oppbevares i eget brannskap eller avlukke i salgslokalet. Dette bør også kunne medføre aksept for større lagringsmengder enn angitt i tabellen over. Det forutsettes da at alt brannfarlig stoff i salgslokalet oppbevares i skapet/avlukket. Brannskapet/avlukket bør ha dør eller sjalusidør, samt røykdetektor utenfor og eventuelt inne i skapet/avlukket, med automatisk stenging av dører ved detektering. Brannskapet/avlukket vil da kunne beskytte både dersom brannen starter i det brannfarlige stoffet i skapet/avlukket, og dersom brannen starter utenfor. Alternativt kan det benyttes skap/avlukke hvor dørene er selvlukkende, dvs. lukker automatisk for hver gang de har vært åpnet.
 ```
 
-### Standardverdi
+Teksten skal kunne redigeres fritt.
 
-Det legges inn en state for generell brannenergi per gulvareal, med standard:
+## Original tekst-knapp
+
+Ved tekstfeltet legges det inn en knapp:
+
+```text
+Original tekst
+```
+
+Knappen tilbakestiller tekstfeltet til standardteksten over.
+
+Dette følger samme mønster som nylig ble lagt inn for branntekniske tiltak.
+
+## State og lagring
+
+I `Brensellagring.tsx` legges det til et nytt felt i dokumentinnholdet, for eksempel:
 
 ```ts
-generellBrannenergiMJm2 = "730"
+salgslokaleTiltakTekst: string
 ```
 
-Feltet kan vises som redigerbart, slik at brukeren kan justere dersom prosjektet har et annet dokumentert grunnlag.
+Eksisterende dokumenter uten dette feltet åpnes bakoverkompatibelt med tom streng eller standardtekst.
 
-Label:
-
-```text
-Generell brannenergi uten brannfarlig lagring (MJ/m² gulvareal)
-```
-
-Hjelpetekst:
-
-```text
-Standardverdi for salgslokale/kjøpesenter: 730 MJ/m², Byggforsk 321.051.
-```
-
-## Resultatvisning på input-siden
-
-Dagens tabell for brannfarlige materialer beholdes, men får ny overskrift:
-
-```text
-Tillegg fra brannfarlige varer
-```
-
-Under/over denne legges det inn en sammenligningstabell:
-
-| Beregningsdel | Total brannenergi | Spesifikk brannenergi per m² omhyllingsflate |
-|---|---:|---:|
-| Generell brannenergi uten brannfarlig lagring | ... MJ | ... MJ/m² |
-| Tillegg fra brannfarlige varer | ... MJ | ... MJ/m² |
-| Sum med brannfarlige varer | ... MJ | ... MJ/m² |
-
-I tillegg vises:
-
-```text
-Økning som følge av brannfarlige varer: X %
-```
-
-Dersom omhyllingsflate mangler, vises en tydelig beskjed om at lengde, bredde og høyde må fylles inn for å kunne vurdere brannenergi per omhyllingsflate.
+Ved lagring inkluderes feltet i eksisterende `content`-objekt. Ingen databaseendring er nødvendig.
 
 ## Rapport / forhåndsvisning
 
-I `src/components/brensellagring/BrensellagringPreview.tsx` oppdateres seksjonen «Brannenergi i bygget» tilsvarende.
-
-Rapporten skal vise:
-1. kilde og forutsetning for generell brannenergi
-2. tabell med etasjemål, gulvareal og omhyllingsflate
-3. tabell med tillegg fra brannfarlige varer
-4. oppsummeringstabell med:
-   - uten brannfarlige varer
-   - tillegg fra brannfarlige varer
-   - med brannfarlige varer
-5. prosentvis økning
-
-Eksempeltekst i rapporten:
+I `src/components/brensellagring/BrensellagringPreview.tsx` oppdateres seksjonen:
 
 ```text
-For salgslokale/kjøpesenter er generell brannenergi satt til 730 MJ/m² gulvareal iht. Byggforsk 321.051. Planlagt lagring av brannfarlig vare er vurdert som et tillegg til den statistiske brannenergien i bygget. Begge verdier er omregnet til spesifikk brannenergi per m² omhyllingsflate.
+Største tillatte mengder i salgslokaler
 ```
 
-## Lagring og bakoverkompatibilitet
+Etter DSB-tabellen vises:
+1. kort presisering om at tabellen er veiledende/anbefalt nivå
+2. redigerbar vurderingstekst om høyere mengder ved tiltak
+3. eventuell eksisterende kommentar fra brukeren
 
-I dokumentinnholdet lagres nytt felt:
-
-```ts
-generellBrannenergiMJm2: string
-```
-
-Eksisterende dokumenter uten feltet åpnes med standardverdi `730`.
-
-Ingen databasemigrasjon er nødvendig, fordi dette lagres i eksisterende dokumentinnhold.
+Dette gjør at rapporten tydelig dokumenterer:
+- at tabellverdiene er utgangspunktet
+- at økte mengder kan vurderes dersom tiltak er etablert
+- hvilke tiltak som legges til grunn
+- at vurderingen må forankres i risikovurderingen
 
 ## Filer som endres
 
 ### `src/pages/Brensellagring.tsx`
-- Legge til state for generell brannenergi per gulvareal
+- Legge til state for `salgslokaleTiltakTekst`
 - Lese og lagre feltet i dokumentinnhold
-- Beregne samlet gulvareal og omhyllingsflate
-- Beregne generell brannenergi uten brannfarlig lagring
-- Beregne tillegg fra brannfarlige varer
-- Beregne total med brannfarlige varer
-- Vise sammenligningstabell og prosentvis økning
-- Oppdatere hjelpetekster og kildehenvisning til Byggforsk 321.051
+- Legge inn standardtekst-funksjon
+- Legge inn infoboks under DSB-tabellen
+- Legge inn redigerbart tekstfelt for vurdering av høyere mengder
+- Legge inn «Original tekst»-knapp
 
 ### `src/components/brensellagring/BrensellagringPreview.tsx`
-- Utvide props med `generellBrannenergiMJm2`
-- Beregne samme verdier som input-siden
-- Vise gulvareal, omhyllingsflate og sammenligning i rapporten
-- Oppdatere tekst og kildehenvisninger
-- Beholde eksisterende seksjonsrekkefølge
+- Utvide props med `salgslokaleTiltakTekst`
+- Vise presisering og redigerbar vurderingstekst i rapportseksjonen for salgslokale
+- Beholde eksisterende DSB-tabell og kommentar
 
 ## Ikke inkludert
 
+- Ingen endring av DSB-tabellens mengdeverdier
+- Ingen automatisk aksept/konklusjon om at høyere mengder er tillatt
 - Ingen databaseendringer
-- Ingen endring av DSB-mengdegrenser
-- Ingen automatisk konklusjon om «vesentlig høyere» utover beregnet økning; vurderingen overlates til brukerens faglige kommentar
