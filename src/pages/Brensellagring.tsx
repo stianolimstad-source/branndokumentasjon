@@ -34,6 +34,7 @@ import {
   BYGNINGSTYPER,
   BygningsType,
   STYKKGODS_GRENSER,
+  getStykkgodsGrense,
 } from "@/lib/brensellagring-krav";
 import BrensellagringPreview, { BRENSEL_SECTIONS, BrenselSectionKey } from "@/components/brensellagring/BrensellagringPreview";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -182,6 +183,14 @@ const Brensellagring = () => {
   const [plannedAmounts, setPlannedAmounts] = useState<PlannedAmounts>(TOMME_MENGDER);
   const [plannedKommentar, setPlannedKommentar] = useState("");
   const [plannedInkludert, setPlannedInkludert] = useState(false);
+
+  type OverskridelseTillattMengde = Record<string, string>;
+  const [overskridelseInkludert, setOverskridelseInkludert] = useState(false);
+  const [overskridelseArealgrunnlag, setOverskridelseArealgrunnlag] = useState("");
+  const [overskridelseVurdertTillattMengde, setOverskridelseVurdertTillattMengde] = useState<OverskridelseTillattMengde>({});
+  const [overskridelseTiltak, setOverskridelseTiltak] = useState("");
+  const [overskridelseVurderingstekst, setOverskridelseVurderingstekst] = useState("");
+  const [overskridelseKonklusjon, setOverskridelseKonklusjon] = useState("");
 
   // Brannenergi – etasjer (flere mulig, hver med egne mål) og inkludering
   type Etasje = { id: string; navn: string; lengde: string; bredde: string; hoyde: string };
@@ -392,6 +401,12 @@ const Brensellagring = () => {
           plannedAmounts?: Partial<PlannedAmounts>;
           plannedKommentar?: string;
           plannedInkludert?: boolean;
+          overskridelseInkludert?: boolean;
+          overskridelseArealgrunnlag?: string;
+          overskridelseVurdertTillattMengde?: OverskridelseTillattMengde;
+          overskridelseTiltak?: string;
+          overskridelseVurderingstekst?: string;
+          overskridelseKonklusjon?: string;
           byggDim?: { lengde?: string; bredde?: string; hoyde?: string };
           etasjer?: Etasje[];
           brannenergiInkludert?: boolean;
@@ -424,6 +439,12 @@ const Brensellagring = () => {
         setPlannedAmounts({ ...TOMME_MENGDER, ...(content.plannedAmounts || {}) });
         setPlannedKommentar(content.plannedKommentar ?? "");
         setPlannedInkludert(content.plannedInkludert ?? false);
+        setOverskridelseInkludert(content.overskridelseInkludert ?? false);
+        setOverskridelseArealgrunnlag(content.overskridelseArealgrunnlag ?? "");
+        setOverskridelseVurdertTillattMengde(content.overskridelseVurdertTillattMengde ?? {});
+        setOverskridelseTiltak(content.overskridelseTiltak ?? "");
+        setOverskridelseVurderingstekst(content.overskridelseVurderingstekst ?? "");
+        setOverskridelseKonklusjon(content.overskridelseKonklusjon ?? "");
         // Bakoverkompatibilitet: gammelt enkelt-byggDim → konverter til én etasje
         if (content.etasjer && Array.isArray(content.etasjer) && content.etasjer.length > 0) {
           setEtasjer(
@@ -490,6 +511,12 @@ const Brensellagring = () => {
       plannedAmounts,
       plannedKommentar,
       plannedInkludert,
+      overskridelseInkludert,
+      overskridelseArealgrunnlag,
+      overskridelseVurdertTillattMengde,
+      overskridelseTiltak,
+      overskridelseVurderingstekst,
+      overskridelseKonklusjon,
       etasjer,
       brannenergiInkludert,
       brannenergiKommentar,
@@ -591,6 +618,84 @@ const Brensellagring = () => {
     return { grupper, trengerInnmelding, harMengder };
   };
   const innmeldingVurdering = evaluerInnmelding();
+
+  type OverskridelseRow = {
+    id: string;
+    stoffgruppe: string;
+    anbefaltMengde: number;
+    planlagtMengde: number;
+    enhet: string;
+    overskridelse: number;
+    overskridelseProsent: number;
+    vurdertTillattMengde: string;
+  };
+  const samletGulvareal = etasjer.reduce((sum, et) => {
+    const lengde = parseFloat(et.lengde) || 0;
+    const bredde = parseFloat(et.bredde) || 0;
+    return sum + (lengde > 0 && bredde > 0 ? lengde * bredde : 0);
+  }, 0);
+  const overskridelseAreal = parseFloat(overskridelseArealgrunnlag) || samletGulvareal;
+  const stykkgodsGrense = getStykkgodsGrense(overskridelseAreal > 0 ? overskridelseAreal : 0);
+  const grenseFor = (type: BrenselType) => valgtBygg?.grenser.find((g) => g.brenselType === type);
+  const overskridelseRows: OverskridelseRow[] = [
+    {
+      id: "gass",
+      stoffgruppe: "Brannfarlig gass",
+      anbefaltMengde: valgtBygningstype === "salgslokale" ? 25.2 : (grenseFor("propan")?.maksKg || 0),
+      planlagtMengde: (parseFloat(plannedAmounts.gass_kat1) || 0) + (parseFloat(plannedAmounts.gass_kat2) || 0),
+      enhet: "kg",
+      vurdertTillattMengde: overskridelseVurdertTillattMengde.gass || "",
+    },
+    {
+      id: "vaeske_kat12",
+      stoffgruppe: "Brannfarlig væske kategori 1 og 2",
+      anbefaltMengde: valgtBygningstype === "salgslokale" ? stykkgodsGrense.brannfarligVaeskeKat1og2 : (grenseFor("bensin")?.maksLiter || 0),
+      planlagtMengde: (parseFloat(plannedAmounts.vaeske_kat1) || 0) + (parseFloat(plannedAmounts.vaeske_kat2) || 0),
+      enhet: "liter",
+      vurdertTillattMengde: overskridelseVurdertTillattMengde.vaeske_kat12 || "",
+    },
+    {
+      id: "vaeske_kat3",
+      stoffgruppe: "Brannfarlig væske kategori 3",
+      anbefaltMengde: valgtBygningstype === "salgslokale" ? stykkgodsGrense.brannfarligVaeskeKat3 : (grenseFor("fyringsparafin")?.maksLiter || 0),
+      planlagtMengde: parseFloat(plannedAmounts.vaeske_kat3) || 0,
+      enhet: "liter",
+      vurdertTillattMengde: overskridelseVurdertTillattMengde.vaeske_kat3 || "",
+    },
+    {
+      id: "diesel_fyringsolje",
+      stoffgruppe: "Diesel / fyringsolje",
+      anbefaltMengde: grenseFor("lett_fyringsolje")?.maksLiter || 0,
+      planlagtMengde: parseFloat(plannedAmounts.diesel_fyringsolje) || 0,
+      enhet: "liter",
+      vurdertTillattMengde: overskridelseVurdertTillattMengde.diesel_fyringsolje || "",
+    },
+    {
+      id: "aerosoler",
+      stoffgruppe: "Aerosoler",
+      anbefaltMengde: valgtBygningstype === "salgslokale" ? stykkgodsGrense.aerosoler : 0,
+      planlagtMengde: parseFloat(plannedAmounts.aerosoler) || 0,
+      enhet: "liter",
+      vurdertTillattMengde: overskridelseVurdertTillattMengde.aerosoler || "",
+    },
+  ].map((row) => ({
+    ...row,
+    overskridelse: Math.max(0, row.planlagtMengde - row.anbefaltMengde),
+    overskridelseProsent: row.anbefaltMengde > 0 ? (Math.max(0, row.planlagtMengde - row.anbefaltMengde) / row.anbefaltMengde) * 100 : 0,
+  })).filter((row) => row.planlagtMengde > 0 && row.anbefaltMengde > 0 && row.overskridelse > 0);
+  const aktiveTiltak = [
+    branntekniskeTiltak.brannalarm.status && branntekniskeTiltak.brannalarm.status !== "Ikke installert" && branntekniskeTiltak.brannalarm.status !== "Ikke aktuelt" ? "brannalarmanlegg/tidlig deteksjon" : "",
+    branntekniskeTiltak.roykventilasjon.status && branntekniskeTiltak.roykventilasjon.status !== "Ikke installert" && branntekniskeTiltak.roykventilasjon.status !== "Ikke aktuelt" ? "røykventilasjon" : "",
+    branntekniskeTiltak.slokkeanlegg.status && branntekniskeTiltak.slokkeanlegg.status !== "Ikke installert" && branntekniskeTiltak.slokkeanlegg.status !== "Ikke aktuelt" ? "automatisk slokkeanlegg" : "",
+    salgslokaleTiltakTekst.toLowerCase().includes("brannskap") ? "oppbevaring i brannskap/avlukke" : "",
+    overskridelseTiltak.trim(),
+  ].filter(Boolean);
+  const foreslattOverskridelseTekst = overskridelseRows.length > 0
+    ? `Planlagt lagring overstiger anbefalt mengde i DSB sin temaveiledning for ${overskridelseRows.map((r) => `${r.stoffgruppe.toLowerCase()} med ${r.overskridelse.toLocaleString("nb-NO")} ${r.enhet} (${r.overskridelseProsent.toFixed(0)} %)`).join(", ")}. Det er lagt til grunn ${aktiveTiltak.length > 0 ? `kompenserende tiltak som ${aktiveTiltak.join(", ")}` : "at lagringen skjer kontrollert, oversiktlig og i samsvar med beskrevne organisatoriske og branntekniske forutsetninger"}. På bakgrunn av tiltakene vurderes den angitte økte mengden som akseptabel for dette bygget, forutsatt at lagringen skjer som beskrevet og at tiltakene etableres og opprettholdes i driftsfasen.`
+    : "";
+  const foreslattOverskridelseKonklusjon = overskridelseRows.length > 0
+    ? "Vurderingen gjelder kun for dette bygget, de beskrevne mengdene og de angitte kompenserende tiltakene. Den innebærer ikke en generell heving av anbefalte DSB-mengder."
+    : "";
 
   return (
 <div className="min-h-screen bg-gradient-subtle">
@@ -744,6 +849,136 @@ const Brensellagring = () => {
                   value={plannedKommentar}
                   onChange={(e) => setPlannedKommentar(e.target.value)}
                   className="min-h-[70px] text-sm"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-soft mb-6">
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-primary" />
+                    Vurdering av mengde over anbefalt DSB-mengde
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Sammenligner planlagt mengde med anbefalt mengde og dokumenterer kompenserende tiltak.
+                  </p>
+                </div>
+                <Button
+                  variant={overskridelseInkludert ? "default" : "outline"}
+                  size="sm"
+                  className="h-7 text-xs gap-1.5 shrink-0"
+                  onClick={() => setOverskridelseInkludert((v) => !v)}
+                >
+                  {overskridelseInkludert ? <Check className="h-3.5 w-3.5" /> : <FilePlus2 className="h-3.5 w-3.5" />}
+                  {overskridelseInkludert ? "I dokumentet" : "Legg til i dokument"}
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {valgtBygningstype === "salgslokale" && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="overskridelse-areal" className="text-xs">Arealgrunnlag for DSB-tabell</Label>
+                  <Input
+                    id="overskridelse-areal"
+                    type="number"
+                    min="0"
+                    step="any"
+                    inputMode="decimal"
+                    value={overskridelseArealgrunnlag}
+                    onChange={(e) => setOverskridelseArealgrunnlag(e.target.value)}
+                    placeholder={samletGulvareal > 0 ? samletGulvareal.toFixed(1) : "m²"}
+                    className="h-9 text-sm max-w-xs"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Bruker samlet gulvareal fra brannenergidelen hvis feltet står tomt. Aktiv DSB-rad: {stykkgodsGrense.arealBeskrivelse}.
+                  </p>
+                </div>
+              )}
+
+              {overskridelseRows.length > 0 ? (
+                <div className="rounded-md border overflow-hidden">
+                  <table className="w-full text-xs">
+                    <thead className="bg-muted/50">
+                      <tr>
+                        <th className="text-left px-3 py-2 font-medium">Stoffgruppe</th>
+                        <th className="text-right px-3 py-2 font-medium">Anbefalt</th>
+                        <th className="text-right px-3 py-2 font-medium">Planlagt</th>
+                        <th className="text-right px-3 py-2 font-medium">Overskridelse</th>
+                        <th className="text-left px-3 py-2 font-medium">Vurdert tillatt</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {overskridelseRows.map((row) => (
+                        <tr key={row.id} className="border-t">
+                          <td className="px-3 py-2 font-medium">{row.stoffgruppe}</td>
+                          <td className="px-3 py-2 text-right tabular-nums">{row.anbefaltMengde.toLocaleString("nb-NO")} {row.enhet}</td>
+                          <td className="px-3 py-2 text-right tabular-nums">{row.planlagtMengde.toLocaleString("nb-NO")} {row.enhet}</td>
+                          <td className="px-3 py-2 text-right tabular-nums text-destructive">{row.overskridelse.toLocaleString("nb-NO")} {row.enhet} ({row.overskridelseProsent.toFixed(0)} %)</td>
+                          <td className="px-3 py-2">
+                            <Input
+                              value={overskridelseVurdertTillattMengde[row.id] || ""}
+                              onChange={(e) => setOverskridelseVurdertTillattMengde((prev) => ({ ...prev, [row.id]: e.target.value }))}
+                              placeholder={`${row.planlagtMengde.toLocaleString("nb-NO")} ${row.enhet}`}
+                              className="h-8 text-xs"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="flex items-start gap-2 p-3 rounded-md bg-accent/30 border border-accent text-xs">
+                  <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                  <p className="text-muted-foreground leading-relaxed">
+                    Ingen registrerte planlagte mengder overstiger anbefalt mengde for valgt bygningstype/arealgrunnlag.
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <Label htmlFor="overskridelse-tiltak" className="text-xs">Andre prosjektspesifikke tiltak</Label>
+                <Textarea
+                  id="overskridelse-tiltak"
+                  value={overskridelseTiltak}
+                  onChange={(e) => setOverskridelseTiltak(e.target.value)}
+                  placeholder="F.eks. oppsamlingskar, låst brannskap, begrenset publikumsadgang, rutiner for kontroll og opplæring..."
+                  className="min-h-[70px] text-sm"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <Label htmlFor="overskridelse-vurdering" className="text-xs">Vurderingstekst</Label>
+                  <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={() => setOverskridelseVurderingstekst(foreslattOverskridelseTekst)}>
+                    Generer tekst
+                  </Button>
+                </div>
+                <Textarea
+                  id="overskridelse-vurdering"
+                  value={overskridelseVurderingstekst}
+                  onChange={(e) => setOverskridelseVurderingstekst(e.target.value)}
+                  placeholder="Beskriv hvorfor høyere mengde vurderes akseptabel basert på tiltakene..."
+                  className="min-h-[130px] text-sm"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <Label htmlFor="overskridelse-konklusjon" className="text-xs">Konklusjon / avgrensning</Label>
+                  <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={() => setOverskridelseKonklusjon(foreslattOverskridelseKonklusjon)}>
+                    Standardtekst
+                  </Button>
+                </div>
+                <Textarea
+                  id="overskridelse-konklusjon"
+                  value={overskridelseKonklusjon}
+                  onChange={(e) => setOverskridelseKonklusjon(e.target.value)}
+                  placeholder="Konklusjon og presisering av at vurderingen kun gjelder dette bygget..."
+                  className="min-h-[80px] text-sm"
                 />
               </div>
             </CardContent>
@@ -2065,6 +2300,12 @@ const Brensellagring = () => {
                   plannedInkludert={plannedInkludert}
                   plannedAmounts={plannedAmounts}
                   plannedKommentar={plannedKommentar}
+                  overskridelseInkludert={overskridelseInkludert}
+                  overskridelseRows={overskridelseRows}
+                  overskridelseArealgrunnlag={overskridelseArealgrunnlag || (samletGulvareal > 0 ? samletGulvareal.toFixed(1) : "")}
+                  overskridelseTiltak={overskridelseTiltak}
+                  overskridelseVurderingstekst={overskridelseVurderingstekst}
+                  overskridelseKonklusjon={overskridelseKonklusjon}
                   brannenergiInkludert={brannenergiInkludert}
                   brannenergiKommentar={brannenergiKommentar}
                   generellBrannenergiMJm2={generellBrannenergiMJm2}
