@@ -183,6 +183,7 @@ const Brensellagring = () => {
   const [etasjer, setEtasjer] = useState<Etasje[]>([lagEtasje("Etasje 1")]);
   const [brannenergiInkludert, setBrannenergiInkludert] = useState(false);
   const [brannenergiKommentar, setBrannenergiKommentar] = useState("");
+  const [generellBrannenergiMJm2, setGenerellBrannenergiMJm2] = useState("730");
 
   type BranntekniskeTiltakData = {
     brannalarm: { status: string; beskrivelse: string; kommentar: string; rapporttekst: string };
@@ -373,6 +374,7 @@ const Brensellagring = () => {
           etasjer?: Etasje[];
           brannenergiInkludert?: boolean;
           brannenergiKommentar?: string;
+          generellBrannenergiMJm2?: string;
           branntekniskeTiltakInkludert?: boolean;
           branntekniskeTiltak?: Partial<BranntekniskeTiltakData>;
           innledning?: string;
@@ -420,6 +422,7 @@ const Brensellagring = () => {
         }
         setBrannenergiInkludert(content.brannenergiInkludert ?? false);
         setBrannenergiKommentar(content.brannenergiKommentar ?? "");
+        setGenerellBrannenergiMJm2(content.generellBrannenergiMJm2 ?? "730");
         setBranntekniskeTiltakInkludert(content.branntekniskeTiltakInkludert ?? false);
         setBranntekniskeTiltak({
           ...TOMME_BRANNTEKNISKE_TILTAK,
@@ -464,6 +467,7 @@ const Brensellagring = () => {
       etasjer,
       brannenergiInkludert,
       brannenergiKommentar,
+      generellBrannenergiMJm2,
       branntekniskeTiltakInkludert,
       branntekniskeTiltak,
       innledning,
@@ -733,18 +737,26 @@ const Brensellagring = () => {
               })
               .filter((x): x is NonNullable<typeof x> => x !== null);
 
-            const totalMJ = bidrag.reduce((sum, b) => sum + b.totalMJ, 0);
+            const tilleggsMJ = bidrag.reduce((sum, b) => sum + b.totalMJ, 0);
+            const generellMJm2 = parseFloat(generellBrannenergiMJm2) || 0;
             const etasjerBeregnet = etasjer.map((et) => {
               const L = parseFloat(et.lengde);
               const B = parseFloat(et.bredde);
               const H = parseFloat(et.hoyde);
               const gyldig = L > 0 && B > 0 && H > 0;
+              const gulvareal = gyldig ? L * B : 0;
               const omh = gyldig ? 2 * (L * B) + 2 * (L * H) + 2 * (B * H) : 0;
-              return { ...et, L, B, H, gyldig, omh };
+              return { ...et, L, B, H, gyldig, gulvareal, omh };
             });
+            const gulvareal = etasjerBeregnet.reduce((s, e) => s + e.gulvareal, 0);
             const omhylling = etasjerBeregnet.reduce((s, e) => s + e.omh, 0);
             const dimGyldig = etasjerBeregnet.some((e) => e.gyldig);
-            const spesifikk = dimGyldig && omhylling > 0 ? totalMJ / omhylling : null;
+            const generellMJ = generellMJm2 * gulvareal;
+            const totalMedTilleggMJ = generellMJ + tilleggsMJ;
+            const spesifikkGenerell = dimGyldig && omhylling > 0 ? generellMJ / omhylling : null;
+            const spesifikkTillegg = dimGyldig && omhylling > 0 ? tilleggsMJ / omhylling : null;
+            const spesifikkTotal = dimGyldig && omhylling > 0 ? totalMedTilleggMJ / omhylling : null;
+            const okningProsent = generellMJ > 0 ? (tilleggsMJ / generellMJ) * 100 : null;
 
             const formatMJ = (v: number) => {
               const rounded = v >= 10000 ? Math.round(v / 100) * 100 : Math.round(v);
@@ -761,7 +773,7 @@ const Brensellagring = () => {
                         Brannenergi i bygget
                       </CardTitle>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Sjablong-beregning basert på planlagte mengder. Oppgi byggets innvendige mål for å få spesifikk brannenergi (MJ/m²).
+                        Viser generell brannenergi i salgslokalet og tillegg fra planlagt lagring av brannfarlige varer, omregnet til MJ/m² omhyllingsflate.
                       </p>
                     </div>
                     <Button
@@ -776,9 +788,31 @@ const Brensellagring = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  <div className="flex items-start gap-2 p-3 rounded-md bg-accent/30 border border-accent text-xs">
+                    <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                    <p className="text-muted-foreground leading-relaxed">
+                      For salgslokale/kjøpesenter benyttes <span className="font-medium text-foreground">730 MJ/m² gulvareal</span> som statistisk brannenergi iht. <span className="font-medium text-foreground">Byggforsk 321.051 Brannenergi i bygninger. Beregninger og statistiske verdier</span>. Planlagt lagring av brannfarlig vare beregnes som et tillegg til denne brannenergien.
+                    </p>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <Label htmlFor="generell-brannenergi" className="text-xs">Generell brannenergi uten brannfarlig lagring (MJ/m² gulvareal)</Label>
+                    <Input
+                      id="generell-brannenergi"
+                      type="number"
+                      min="0"
+                      step="any"
+                      inputMode="decimal"
+                      value={generellBrannenergiMJm2}
+                      onChange={(e) => setGenerellBrannenergiMJm2(e.target.value)}
+                      className="h-9 text-sm max-w-xs"
+                    />
+                    <p className="text-[11px] text-muted-foreground">Standardverdi for salgslokale/kjøpesenter: 730 MJ/m², Byggforsk 321.051.</p>
+                  </div>
+
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
-                      <Label className="text-xs">Innvendige mål per etasje (for omhyllingsflate)</Label>
+                      <Label className="text-xs">Innvendige mål per etasje (for gulvareal og omhyllingsflate)</Label>
                       <Button
                         type="button"
                         variant="outline"
@@ -846,22 +880,64 @@ const Brensellagring = () => {
                           </div>
                           {et.gyldig && (
                             <p className="text-[11px] text-muted-foreground">
-                              Omhyllingsflate: <span className="font-medium text-foreground">{et.omh.toFixed(1)} m²</span>
+                              Gulvareal: <span className="font-medium text-foreground">{et.gulvareal.toFixed(1)} m²</span> · Omhyllingsflate: <span className="font-medium text-foreground">{et.omh.toFixed(1)} m²</span>
                             </p>
                           )}
                         </div>
                       ))}
                     </div>
-                    {dimGyldig && (
+                    {dimGyldig ? (
                       <p className="text-[11px] text-muted-foreground mt-2">
-                        Total omhyllingsflate A<sub>t</sub> (sum av etasjer) = <span className="font-medium text-foreground">{omhylling.toFixed(1)} m²</span>
+                        Samlet gulvareal = <span className="font-medium text-foreground">{gulvareal.toFixed(1)} m²</span>. Total omhyllingsflate A<sub>t</sub> = <span className="font-medium text-foreground">{omhylling.toFixed(1)} m²</span>.
+                      </p>
+                    ) : (
+                      <p className="text-[11px] text-destructive mt-2">
+                        Lengde, bredde og høyde må fylles inn for å kunne vurdere brannenergi per m² omhyllingsflate.
                       </p>
                     )}
                   </div>
 
+                  {dimGyldig && (
+                    <div className="rounded-md border overflow-hidden">
+                      <table className="w-full text-xs">
+                        <thead className="bg-muted/50">
+                          <tr>
+                            <th className="text-left px-3 py-2 font-medium">Beregningsdel</th>
+                            <th className="text-right px-3 py-2 font-medium">Total brannenergi</th>
+                            <th className="text-right px-3 py-2 font-medium">Spesifikk brannenergi per m² omhyllingsflate</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="border-t">
+                            <td className="px-3 py-2">Generell brannenergi uten brannfarlig lagring</td>
+                            <td className="px-3 py-2 text-right tabular-nums font-medium">{formatMJ(generellMJ)} MJ</td>
+                            <td className="px-3 py-2 text-right tabular-nums">{spesifikkGenerell?.toFixed(1)} MJ/m²</td>
+                          </tr>
+                          <tr className="border-t">
+                            <td className="px-3 py-2">Tillegg fra brannfarlige varer</td>
+                            <td className="px-3 py-2 text-right tabular-nums font-medium">{formatMJ(tilleggsMJ)} MJ</td>
+                            <td className="px-3 py-2 text-right tabular-nums">{spesifikkTillegg?.toFixed(1)} MJ/m²</td>
+                          </tr>
+                          <tr className="border-t bg-primary/5">
+                            <td className="px-3 py-2 font-semibold">Sum med brannfarlige varer</td>
+                            <td className="px-3 py-2 text-right tabular-nums font-semibold">{formatMJ(totalMedTilleggMJ)} MJ</td>
+                            <td className="px-3 py-2 text-right tabular-nums font-semibold text-primary">{spesifikkTotal?.toFixed(1)} MJ/m²</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+
+                  {okningProsent !== null && (
+                    <div className="rounded-md border bg-muted/30 p-3 text-sm">
+                      Økning som følge av brannfarlige varer: <span className="font-semibold text-primary">{okningProsent.toFixed(1)} %</span>
+                    </div>
+                  )}
+
                   <div className="rounded-md border overflow-hidden">
+                    <div className="bg-muted/50 px-3 py-2 text-xs font-semibold">Tillegg fra brannfarlige varer</div>
                     <table className="w-full text-xs">
-                      <thead className="bg-muted/50">
+                      <thead className="bg-muted/30">
                         <tr>
                           <th className="text-left px-3 py-2 font-medium">Kategori</th>
                           <th className="text-right px-3 py-2 font-medium">Mengde</th>
@@ -878,16 +954,6 @@ const Brensellagring = () => {
                             <td className="px-3 py-2 text-right tabular-nums font-medium">{formatMJ(b.totalMJ)} MJ</td>
                           </tr>
                         ))}
-                        <tr className="border-t bg-muted/30">
-                          <td colSpan={3} className="px-3 py-2 font-semibold text-right">Total brannenergi</td>
-                          <td className="px-3 py-2 text-right tabular-nums font-semibold">{formatMJ(totalMJ)} MJ</td>
-                        </tr>
-                        {spesifikk !== null && (
-                          <tr className="border-t bg-primary/5">
-                            <td colSpan={3} className="px-3 py-2 font-semibold text-right">Spesifikk brannenergi (MJ/m² omhyllingsflate)</td>
-                            <td className="px-3 py-2 text-right tabular-nums font-semibold text-primary">{spesifikk.toFixed(1)} MJ/m²</td>
-                          </tr>
-                        )}
                       </tbody>
                     </table>
                   </div>
@@ -895,7 +961,7 @@ const Brensellagring = () => {
                   <div className="flex items-start gap-2 p-3 rounded-md bg-accent/30 border border-accent text-xs">
                     <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                     <p className="text-muted-foreground leading-relaxed">
-                      Energitettheter er sjablongverdier hentet fra <span className="font-medium text-foreground">SFPE Handbook of Fire Protection Engineering</span> og <span className="font-medium text-foreground">NS-EN 1991-1-2</span>. Beregningen ivaretar ikke fuktinnhold, sammensetning eller emballasje, og brukes kun til indikativ vurdering.
+                      Energitettheter for brannfarlige varer er sjablongverdier hentet fra <span className="font-medium text-foreground">SFPE Handbook of Fire Protection Engineering</span> og <span className="font-medium text-foreground">NS-EN 1991-1-2</span>. Beregningen ivaretar ikke fuktinnhold, sammensetning eller emballasje, og brukes kun til indikativ vurdering.
                     </p>
                   </div>
 
@@ -903,7 +969,7 @@ const Brensellagring = () => {
                     <Label htmlFor="brannenergi-kommentar" className="text-xs">Kommentar (valgfritt)</Label>
                     <Textarea
                       id="brannenergi-kommentar"
-                      placeholder="F.eks. forutsetninger for romstørrelse, andel av total bygningsmasse, m.m."
+                      placeholder="F.eks. vurdering av om økningen er vesentlig, forutsetninger for areal/romstørrelse, m.m."
                       value={brannenergiKommentar}
                       onChange={(e) => setBrannenergiKommentar(e.target.value)}
                       className="min-h-[60px] text-sm"
@@ -1933,6 +1999,7 @@ const Brensellagring = () => {
                   plannedKommentar={plannedKommentar}
                   brannenergiInkludert={brannenergiInkludert}
                   brannenergiKommentar={brannenergiKommentar}
+                  generellBrannenergiMJm2={generellBrannenergiMJm2}
                   branntekniskeTiltakInkludert={branntekniskeTiltakInkludert}
                   branntekniskeTiltak={branntekniskeTiltak}
                   etasjer={etasjer}

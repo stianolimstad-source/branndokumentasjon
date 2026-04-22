@@ -80,6 +80,7 @@ interface BrensellagringPreviewProps {
   plannedKommentar?: string;
   brannenergiInkludert?: boolean;
   brannenergiKommentar?: string;
+  generellBrannenergiMJm2?: string;
   etasjer?: { id: string; navn: string; lengde: string; bredde: string; hoyde: string }[];
   innledning?: string;
   energitetthet?: Record<keyof PlannedAmountsData, { verdi: number; enhet: "MJ/kg" | "MJ/L"; kilde: string }>;
@@ -139,6 +140,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   plannedKommentar = "",
   brannenergiInkludert = false,
   brannenergiKommentar = "",
+  generellBrannenergiMJm2 = "730",
   etasjer = [],
   innledning = "",
   energitetthet,
@@ -234,18 +236,26 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         })
         .filter((x): x is NonNullable<typeof x> => x !== null)
     : [];
-  const totalMJ = energiBidrag.reduce((s, b) => s + b.totalMJ, 0);
+  const tilleggsMJ = energiBidrag.reduce((s, b) => s + b.totalMJ, 0);
+  const generellMJm2 = parseFloat(generellBrannenergiMJm2) || 0;
   const etasjerBeregnet = etasjer.map((et) => {
     const L = parseFloat(et.lengde || "");
     const B = parseFloat(et.bredde || "");
     const H = parseFloat(et.hoyde || "");
     const gyldig = L > 0 && B > 0 && H > 0;
+    const gulvareal = gyldig ? L * B : 0;
     const omh = gyldig ? 2 * (L * B) + 2 * (L * H) + 2 * (B * H) : 0;
-    return { ...et, L, B, H, gyldig, omh };
+    return { ...et, L, B, H, gyldig, gulvareal, omh };
   });
+  const gulvareal = etasjerBeregnet.reduce((s, e) => s + e.gulvareal, 0);
   const omhylling = etasjerBeregnet.reduce((s, e) => s + e.omh, 0);
   const dimGyldig = etasjerBeregnet.some((e) => e.gyldig);
-  const spesifikkMJm2 = dimGyldig && omhylling > 0 ? totalMJ / omhylling : null;
+  const generellMJ = generellMJm2 * gulvareal;
+  const totalMedTilleggMJ = generellMJ + tilleggsMJ;
+  const spesifikkGenerell = dimGyldig && omhylling > 0 ? generellMJ / omhylling : null;
+  const spesifikkTillegg = dimGyldig && omhylling > 0 ? tilleggsMJ / omhylling : null;
+  const spesifikkTotal = dimGyldig && omhylling > 0 ? totalMedTilleggMJ / omhylling : null;
+  const okningProsent = generellMJ > 0 ? (tilleggsMJ / generellMJ) * 100 : null;
   const visBrannenergi = brannenergiInkludert && energiBidrag.length > 0;
   const visInnmelding = innmeldingInkludert && !!innmeldingVurdering && innmeldingVurdering.harMengder;
   const branntekniskeTiltakRows = branntekniskeTiltak
@@ -392,7 +402,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           <>
             <h2 style={h2}>{secNum("brannenergi")}. Brannenergi i bygget</h2>
             <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
-              Sjablong-beregning av total og spesifikk brannenergi basert på planlagte mengder. Energitettheter er hentet fra SFPE Handbook of Fire Protection Engineering og NS-EN 1991-1-2.
+              For salgslokale/kjøpesenter er generell brannenergi satt til {generellMJm2.toLocaleString("nb-NO")} MJ/m² gulvareal iht. Byggforsk 321.051 Brannenergi i bygninger. Beregninger og statistiske verdier. Planlagt lagring av brannfarlig vare er vurdert som et tillegg til den statistiske brannenergien i bygget. Begge verdier er omregnet til spesifikk brannenergi per m² omhyllingsflate.
             </p>
 
             {dimGyldig && (
@@ -403,6 +413,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                     <th style={thStyle}>Lengde</th>
                     <th style={thStyle}>Bredde</th>
                     <th style={thStyle}>Høyde</th>
+                    <th style={thStyle}>Gulvareal</th>
                     <th style={thStyle}>Omhyllingsflate</th>
                   </tr>
                 </thead>
@@ -413,17 +424,17 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                       <td style={tdStyle}>{e.L.toLocaleString("nb-NO")} m</td>
                       <td style={tdStyle}>{e.B.toLocaleString("nb-NO")} m</td>
                       <td style={tdStyle}>{e.H.toLocaleString("nb-NO")} m</td>
+                      <td style={tdStyle}>{e.gulvareal.toFixed(1)} m²</td>
                       <td style={tdStyle}>{e.omh.toFixed(1)} m²</td>
                     </tr>
                   ))}
-                  {etasjerBeregnet.filter((e) => e.gyldig).length > 1 && (
-                    <tr>
-                      <td colSpan={4} style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#f1f5f9" }}>
-                        Total omhyllingsflate A<sub>t</sub>
-                      </td>
-                      <td style={{ ...tdStyle, fontWeight: 700, background: "#f1f5f9" }}>{omhylling.toFixed(1)} m²</td>
-                    </tr>
-                  )}
+                  <tr>
+                    <td colSpan={4} style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#f1f5f9" }}>
+                      Sum
+                    </td>
+                    <td style={{ ...tdStyle, fontWeight: 700, background: "#f1f5f9" }}>{gulvareal.toFixed(1)} m²</td>
+                    <td style={{ ...tdStyle, fontWeight: 700, background: "#f1f5f9" }}>{omhylling.toFixed(1)} m²</td>
+                  </tr>
                 </tbody>
               </table>
             )}
@@ -431,7 +442,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
               <thead>
                 <tr>
-                  <th style={thStyle}>Kategori</th>
+                  <th style={thStyle}>Tillegg fra brannfarlige varer</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Mengde</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Energi</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Bidrag</th>
@@ -452,26 +463,49 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                     </td>
                   </tr>
                 ))}
-                <tr>
-                  <td colSpan={3} style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#f1f5f9" }}>
-                    Total brannenergi
-                  </td>
-                  <td style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#f1f5f9" }}>
-                    {formatMJ(totalMJ)} MJ
-                  </td>
-                </tr>
-                {spesifikkMJm2 !== null && (
-                  <tr>
-                    <td colSpan={3} style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#e8eef5", color: "#1e3a5f" }}>
-                      Spesifikk brannenergi (per m² omhyllingsflate)
-                    </td>
-                    <td style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#e8eef5", color: "#1e3a5f" }}>
-                      {spesifikkMJm2.toFixed(1)} MJ/m²
-                    </td>
-                  </tr>
-                )}
               </tbody>
             </table>
+
+            {dimGyldig ? (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+                <thead>
+                  <tr>
+                    <th style={thStyle}>Beregningsdel</th>
+                    <th style={{ ...thStyle, textAlign: "right" }}>Total brannenergi</th>
+                    <th style={{ ...thStyle, textAlign: "right" }}>Spesifikk brannenergi per m² omhyllingsflate</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>Generell brannenergi uten brannfarlig lagring</td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontWeight: 600 }}>{formatMJ(generellMJ)} MJ</td>
+                    <td style={{ ...tdStyle, textAlign: "right" }}>{spesifikkGenerell?.toFixed(1)} MJ/m²</td>
+                  </tr>
+                  <tr>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>Tillegg fra brannfarlige varer</td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontWeight: 600 }}>{formatMJ(tilleggsMJ)} MJ</td>
+                    <td style={{ ...tdStyle, textAlign: "right" }}>{spesifikkTillegg?.toFixed(1)} MJ/m²</td>
+                  </tr>
+                  <tr>
+                    <td style={{ ...tdStyle, fontWeight: 700, background: "#e8eef5", color: "#1e3a5f" }}>Sum med brannfarlige varer</td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#e8eef5", color: "#1e3a5f" }}>{formatMJ(totalMedTilleggMJ)} MJ</td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#e8eef5", color: "#1e3a5f" }}>{spesifikkTotal?.toFixed(1)} MJ/m²</td>
+                  </tr>
+                </tbody>
+              </table>
+            ) : (
+              <p style={{ fontSize: 10, color: "#b91c1c", marginBottom: 12 }}>
+                Lengde, bredde og høyde må fylles inn for å kunne vurdere brannenergi per m² omhyllingsflate.
+              </p>
+            )}
+
+            {okningProsent !== null && (
+              <div style={{ marginBottom: 12, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+                <p style={{ fontSize: 10, color: "#334155" }}>
+                  Økning som følge av brannfarlige varer: <strong>{okningProsent.toFixed(1)} %</strong>
+                </p>
+              </div>
+            )}
 
             {brannenergiKommentar.trim() && (
               <div style={{ marginBottom: 12, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
@@ -481,7 +515,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
             )}
 
             <p style={{ fontSize: 9, color: "#94a3b8", fontStyle: "italic", marginBottom: 16 }}>
-              Sjablongverdier ivaretar ikke fuktinnhold, sammensetning eller emballasje. Beregningen brukes kun til indikativ vurdering av brannenergi i bygget.
+              Energitettheter for brannfarlige varer er sjablongverdier hentet fra SFPE Handbook of Fire Protection Engineering og NS-EN 1991-1-2. Beregningen brukes kun til indikativ vurdering av brannenergi i bygget.
             </p>
           </>
         )}
