@@ -229,7 +229,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const PLANNED_LABELS: Record<keyof PlannedAmountsData, { label: string; enhet: string }> = {
     gass_kat1: { label: "Brannfarlig gass, kategori 1", enhet: "kg" },
     gass_kat2: { label: "Brannfarlig gass, kategori 2", enhet: "kg" },
-    vaeske_kat1: { label: "Brannfarlig væske, kategori 1", enhet: "liter" },
+    vaeske_kat1: { label: "Brannfarlig væske, kategori 1 og 2", enhet: "liter" },
     vaeske_kat2: { label: "Brannfarlig væske, kategori 2", enhet: "liter" },
     vaeske_kat3: { label: "Brannfarlig væske, kategori 3", enhet: "liter" },
     diesel_fyringsolje: { label: "Diesel / fyringsolje", enhet: "liter" },
@@ -241,7 +241,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           key: k,
           label: PLANNED_LABELS[k].label,
           enhet: PLANNED_LABELS[k].enhet,
-          verdi: (plannedAmounts[k] || "").trim(),
+          verdi: k === "vaeske_kat2" ? "" : (plannedAmounts[k] || "").trim(),
         }))
         .filter((r) => r.verdi !== "" && parseFloat(r.verdi) > 0)
     : [];
