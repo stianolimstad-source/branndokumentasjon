@@ -2331,9 +2331,17 @@ const Brensellagring = () => {
 
             {/* ===== RIGHT: Document preview (always visible) ===== */}
             <div className="hidden lg:flex lg:flex-col lg:min-w-0 lg:h-full">
-              <div className="flex items-center gap-2 mb-3">
-                <Eye className="h-4 w-4 text-muted-foreground" />
-                <h4 className="text-sm font-semibold text-muted-foreground">Forhåndsvisning</h4>
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <h4 className="text-sm font-semibold text-muted-foreground">Forhåndsvisning</h4>
+                </div>
+                {canDownload && (
+                  <Button size="sm" variant="outline" className="h-8 text-xs" onClick={handleDownloadWord} disabled={!valgtBygg}>
+                    <FileDown className="h-3.5 w-3.5" />
+                    Last ned Word
+                  </Button>
+                )}
               </div>
               <div className="flex-1 min-h-0 bg-muted/30 rounded-xl p-3 overflow-auto">
                 <BrensellagringPreview
