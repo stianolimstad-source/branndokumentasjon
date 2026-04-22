@@ -1693,7 +1693,7 @@ const Brensellagring = () => {
                         Innmeldingsplikt til DSB (§ 12)
                       </CardTitle>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Vurderingen er beregnet automatisk fra «Planlagt lagret mengde i bygget».
+                        Vurderingen er beregnet automatisk fra «Planlagt mengde utover DSB sin veiledning».
                       </p>
                     </div>
                     <Button
@@ -1715,7 +1715,7 @@ const Brensellagring = () => {
                       <div className="space-y-1 text-sm">
                         <p className="font-medium text-foreground">Ingen planlagte mengder registrert</p>
                         <p className="text-muted-foreground">
-                          Fyll inn planlagte mengder under «Planlagt lagret mengde i bygget» for å vurdere innmeldingsplikt til DSB.
+                          Fyll inn planlagte mengder under «Planlagt mengde utover DSB sin veiledning» for å vurdere innmeldingsplikt til DSB.
                         </p>
                       </div>
                     </div>
@@ -2181,7 +2181,7 @@ const Brensellagring = () => {
                     Vurdering av mengde over anbefalt DSB-mengde
                   </CardTitle>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Sammenligner planlagt mengde med anbefalt mengde og dokumenterer kompenserende tiltak.
+                    Sammenligner mengde utover DSB sin veiledning med anbefalt mengde og dokumenterer kompenserende tiltak.
                   </p>
                 </div>
                 <Button
