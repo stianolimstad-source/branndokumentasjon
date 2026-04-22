@@ -1818,7 +1818,7 @@ const Brensellagring = () => {
             <Button
               size="default"
               onClick={handleSaveDocument}
-              disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !plannedInkludert)}
+              disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !plannedInkludert && !branntekniskeTiltakInkludert)}
               className="h-11 px-6 shadow-xl"
             >
               <Save className="h-4 w-4 mr-2" />
@@ -1830,7 +1830,7 @@ const Brensellagring = () => {
             <Button
               size="default"
               onClick={handleSaveDocument}
-              disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !plannedInkludert)}
+              disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !plannedInkludert && !branntekniskeTiltakInkludert)}
               className="h-11 px-6 shadow-xl"
             >
               <Save className="h-4 w-4 mr-2" />
@@ -1873,6 +1873,8 @@ const Brensellagring = () => {
                   plannedKommentar={plannedKommentar}
                   brannenergiInkludert={brannenergiInkludert}
                   brannenergiKommentar={brannenergiKommentar}
+                  branntekniskeTiltakInkludert={branntekniskeTiltakInkludert}
+                  branntekniskeTiltak={branntekniskeTiltak}
                   etasjer={etasjer}
                   innledning={innledning}
                   energitetthet={ENERGITETTHET}
