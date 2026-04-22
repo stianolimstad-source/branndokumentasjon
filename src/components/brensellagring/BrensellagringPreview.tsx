@@ -75,6 +75,7 @@ interface BrensellagringPreviewProps {
   selectedKravIds?: Set<string>;
   salgslokaleInkludert?: boolean;
   salgslokaleKommentar?: string;
+  salgslokaleTiltakTekst?: string;
   plannedInkludert?: boolean;
   plannedAmounts?: PlannedAmountsData;
   plannedKommentar?: string;
@@ -135,6 +136,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   selectedKravIds = new Set(),
   salgslokaleInkludert = false,
   salgslokaleKommentar = "",
+  salgslokaleTiltakTekst = "",
   plannedInkludert = false,
   plannedAmounts,
   plannedKommentar = "",
