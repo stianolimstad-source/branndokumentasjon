@@ -579,7 +579,7 @@ const Brensellagring = () => {
     gjenstaende: number;
   };
   const evaluerInnmelding = (): { grupper: InnmeldingGruppe[]; trengerInnmelding: boolean; harMengder: boolean } => {
-    const sumKat12 = (parseFloat(plannedAmounts.vaeske_kat1) || 0) + (parseFloat(plannedAmounts.vaeske_kat2) || 0);
+    const sumKat12 = parseFloat(plannedAmounts.vaeske_kat1) || 0;
     const sumKat3 = parseFloat(plannedAmounts.vaeske_kat3) || 0;
     const sumDiesel = parseFloat(plannedAmounts.diesel_fyringsolje) || 0;
 
@@ -655,7 +655,7 @@ const Brensellagring = () => {
       id: "vaeske_kat12",
       stoffgruppe: "Brannfarlig væske kategori 1 og 2",
       anbefaltMengde: valgtBygningstype === "salgslokale" ? stykkgodsGrense.brannfarligVaeskeKat1og2 : (grenseFor("bensin")?.maksLiter || 0),
-      planlagtMengde: (parseFloat(plannedAmounts.vaeske_kat1) || 0) + (parseFloat(plannedAmounts.vaeske_kat2) || 0),
+      planlagtMengde: parseFloat(plannedAmounts.vaeske_kat1) || 0,
       enhet: "liter",
       vurdertTillattMengde: overskridelseVurdertTillattMengde.vaeske_kat12 || "",
     },
