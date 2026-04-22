@@ -435,7 +435,13 @@ const Brensellagring = () => {
         setSalgslokaleInkludert(content.salgslokaleInkludert ?? false);
         setSalgslokaleKommentar(content.salgslokaleKommentar ?? "");
         setSalgslokaleTiltakTekst(content.salgslokaleTiltakTekst ?? getOriginalSalgslokaleTiltakTekst());
-        setPlannedAmounts({ ...TOMME_MENGDER, ...(content.plannedAmounts || {}) });
+        const lagredeMengder = { ...TOMME_MENGDER, ...(content.plannedAmounts || {}) };
+        const samletKat12 = (parseFloat(lagredeMengder.vaeske_kat1) || 0) + (parseFloat(lagredeMengder.vaeske_kat2) || 0);
+        setPlannedAmounts({
+          ...lagredeMengder,
+          vaeske_kat1: samletKat12 > 0 ? String(samletKat12) : "",
+          vaeske_kat2: "",
+        });
         setPlannedKommentar(content.plannedKommentar ?? "");
         setPlannedInkludert(content.plannedInkludert ?? false);
         setOverskridelseInkludert(content.overskridelseInkludert ?? false);
@@ -507,7 +513,7 @@ const Brensellagring = () => {
       salgslokaleInkludert,
       salgslokaleKommentar,
       salgslokaleTiltakTekst,
-      plannedAmounts,
+      plannedAmounts: { ...plannedAmounts, vaeske_kat2: "" },
       plannedKommentar,
       plannedInkludert,
       overskridelseInkludert,
