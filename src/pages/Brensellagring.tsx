@@ -38,6 +38,8 @@ import {
 } from "@/lib/brensellagring-krav";
 import BrensellagringPreview, { BRENSEL_SECTIONS, BrenselSectionKey } from "@/components/brensellagring/BrensellagringPreview";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useCanDownload } from "@/hooks/useCanDownload";
+import { exportBrensellagringToWord } from "@/lib/brensellagring-word-export";
 
 interface ProjectOption {
   id: string;
@@ -58,6 +60,7 @@ const Brensellagring = () => {
   const bygningstypeFromUrl = searchParams.get("bygningstype") as BygningsType | null;
   const { user } = useAuth();
   const { toast } = useToast();
+  const canDownload = useCanDownload();
 
   // Project selection (driven by URL param)
   const [projects, setProjects] = useState<ProjectOption[]>([]);
@@ -562,6 +565,48 @@ const Brensellagring = () => {
       toast({ title: "Lagret", description: `"${docName}" er lagret i prosjektet` });
     }
     setIsSaving(false);
+  };
+
+  const handleDownloadWord = async () => {
+    if (!valgtBygg) {
+      toast({ title: "Mangler data", description: "Velg bygningstype før dokumentet lastes ned.", variant: "destructive" });
+      return;
+    }
+
+    await exportBrensellagringToWord({
+      valgtBygg,
+      firmaNavn: firmaNavn || undefined,
+      kunde: kunde || undefined,
+      logoUrl: logoUrl || undefined,
+      prosjektNavn: prosjektNavn || undefined,
+      adresse: adresse || undefined,
+      visibleSections,
+      selectedKravIds,
+      salgslokaleInkludert: salgslokaleInkludert && valgtBygningstype === "salgslokale",
+      salgslokaleKommentar,
+      salgslokaleTiltakTekst,
+      plannedInkludert,
+      plannedAmounts,
+      plannedKommentar,
+      overskridelseInkludert,
+      overskridelseRows,
+      overskridelseArealgrunnlag: overskridelseArealgrunnlag || (samletGulvareal > 0 ? samletGulvareal.toFixed(1) : ""),
+      overskridelseTiltak,
+      overskridelseVurderingstekst,
+      overskridelseKonklusjon,
+      brannenergiInkludert,
+      brannenergiKommentar,
+      generellBrannenergiMJm2,
+      branntekniskeTiltakInkludert,
+      branntekniskeTiltak,
+      etasjer,
+      innledning,
+      energitetthet: ENERGITETTHET,
+      innmeldingInkludert,
+      innmeldingKommentar,
+      innmeldingVurdering,
+      harTankanlegg,
+    });
   };
 
   const mengdeNum = parseFloat(mengde) || 0;
@@ -2286,9 +2331,17 @@ const Brensellagring = () => {
 
             {/* ===== RIGHT: Document preview (always visible) ===== */}
             <div className="hidden lg:flex lg:flex-col lg:min-w-0 lg:h-full">
-              <div className="flex items-center gap-2 mb-3">
-                <Eye className="h-4 w-4 text-muted-foreground" />
-                <h4 className="text-sm font-semibold text-muted-foreground">Forhåndsvisning</h4>
+              <div className="flex items-center justify-between gap-3 mb-3">
+                <div className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <h4 className="text-sm font-semibold text-muted-foreground">Forhåndsvisning</h4>
+                </div>
+                {canDownload && (
+                  <Button size="sm" variant="outline" className="h-8 text-xs" onClick={handleDownloadWord} disabled={!valgtBygg}>
+                    <FileDown className="h-3.5 w-3.5" />
+                    Last ned Word
+                  </Button>
+                )}
               </div>
               <div className="flex-1 min-h-0 bg-muted/30 rounded-xl p-3 overflow-auto">
                 <BrensellagringPreview
