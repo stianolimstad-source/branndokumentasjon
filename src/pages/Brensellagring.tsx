@@ -2300,6 +2300,12 @@ const Brensellagring = () => {
                   plannedInkludert={plannedInkludert}
                   plannedAmounts={plannedAmounts}
                   plannedKommentar={plannedKommentar}
+                  overskridelseInkludert={overskridelseInkludert}
+                  overskridelseRows={overskridelseRows}
+                  overskridelseArealgrunnlag={overskridelseArealgrunnlag || (samletGulvareal > 0 ? samletGulvareal.toFixed(1) : "")}
+                  overskridelseTiltak={overskridelseTiltak}
+                  overskridelseVurderingstekst={overskridelseVurderingstekst}
+                  overskridelseKonklusjon={overskridelseKonklusjon}
                   brannenergiInkludert={brannenergiInkludert}
                   brannenergiKommentar={brannenergiKommentar}
                   generellBrannenergiMJm2={generellBrannenergiMJm2}
