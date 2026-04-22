@@ -344,7 +344,7 @@ const ProsjektDetalj = () => {
                   <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-red-500 flex-shrink-0" />
                   <CardTitle className="text-sm sm:text-lg truncate">Brensellagring ({brensellagringDocs.length})</CardTitle>
                 </div>
-                <Link to={`/brensellagring`}>
+                <Link to={`/brensellagring?project=${project.id}`}>
                   <Button size="sm" variant="outline" className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 whitespace-nowrap"><Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />Nytt</Button>
                 </Link>
               </div>
