@@ -667,6 +667,22 @@ const Brensellagring = () => {
                 />
               </div>
 
+              {logoUrl && (
+                <div className="space-y-1.5">
+                  <Label className="text-sm">Logostørrelse i dokument</Label>
+                  <Select value={logoScale} onValueChange={(value) => setLogoScale(value as "50" | "100" | "150")}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Velg logostørrelse" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="50">50 %</SelectItem>
+                      <SelectItem value="100">100 %</SelectItem>
+                      <SelectItem value="150">150 %</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
               <div className="space-y-1.5">
                 <Label htmlFor="innledning" className="text-sm">Innledning</Label>
                 <p className="text-xs text-muted-foreground">
@@ -2059,6 +2075,7 @@ const Brensellagring = () => {
                   firmaNavn={firmaNavn || undefined}
                   kunde={kunde || undefined}
                   logoUrl={logoUrl || undefined}
+                  logoScale={logoScale}
                   prosjektNavn={prosjektNavn || undefined}
                   adresse={adresse || undefined}
                   visibleSections={visibleSections}
