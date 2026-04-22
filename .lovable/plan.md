@@ -1,48 +1,107 @@
 
-## Plan: Fjerne dobbel omtale av automatisk slokkeanlegg i vurderingsteksten
+## Plan: Legge til «Utarbeidet av» og «KS» i brensellagring-rapporten
 
-Jeg retter tekstgeneratoren for «Vurdering av mengde over anbefalt DSB-mengde» slik at automatisk slokkeanlegg ikke nevnes to ganger i samme avsnitt.
+Jeg legger inn dokumentkontroll i rapporten for «Lagring av brannfarlig stoff», slik at rapporten viser hvem som har utarbeidet dokumentet og hvem som har kvalitetssikret det.
 
-## Hva som endres
+## Hva som bygges
 
-### 1. Skille hovedbegrunnelse fra tilleggstiltak
+### 1. Automatisk «Utarbeidet av»
 
-I dag skjer dette:
+Rapporten skal vise brukeren som lager rapporten.
 
-```text
-Bygget er sprinklet/har automatisk slokkeanlegg ...
-Det er også lagt til grunn brannalarmanlegg/tidlig deteksjon, automatisk slokkeanlegg.
-```
+Jeg henter dette fra innlogget bruker/profil:
 
-Jeg endrer logikken slik at når automatisk slokkeanlegg allerede brukes som hovedbegrunnelse, tas det ikke med på nytt i listen over «også lagt til grunn».
+- navn fra brukerprofil hvis tilgjengelig
+- e-post som fallback dersom navn mangler
+- eventuelt firma/tittel dersom det allerede finnes i profilen
 
-### 2. Ny formulering
-
-Teksten blir i stedet omtrent slik:
+Dette vises i rapportens informasjonstabell, for eksempel:
 
 ```text
-Overskridelsen vurderes som begrenset. Bygget er sprinklet/har automatisk slokkeanlegg, noe som reduserer sannsynligheten for videre brannutvikling og begrenser konsekvensene av et branntilløp. Det er i tillegg lagt til grunn brannalarmanlegg/tidlig deteksjon.
+Utarbeidet av: Ola Nordmann
 ```
 
-Hvis det også er valgt røykventilasjon eller skrevet inn prosjektspesifikke tiltak, tas disse med i samme tilleggsliste.
+Hvis profilnavn mangler, brukes e-post:
 
-### 3. Oppdatere genereringslogikken
+```text
+Utarbeidet av: ola@example.no
+```
 
-Jeg oppdaterer `src/pages/Brensellagring.tsx`:
+### 2. Manuelt KS-felt
 
-- beholder `harAutomatiskSlokkeanlegg` som hovedbegrunnelse
-- lager en egen liste for tilleggstiltak som ikke inkluderer automatisk slokkeanlegg når det allerede er nevnt
-- justerer setningen fra «Det er også lagt til grunn ...» til en mer presis formulering, for eksempel «Det er i tillegg lagt til grunn ...»
+I skjemaet legger jeg til et nytt felt for kvalitetssikring:
 
-### 4. Forhåndsvisning og Word
+```text
+KS / Kontrollert av
+```
 
-Forhåndsvisning og Word-eksport bruker den lagrede vurderingsteksten. Når ny tekst genereres etter endringen, vil begge steder få den korrigerte teksten.
+Brukeren kan fylle inn navn selv, for eksempel:
 
-## Viktig om eksisterende tekst
+```text
+Kari Kontrollør
+```
 
-Tekst som allerede ligger i feltet blir ikke automatisk overskrevet. Brukeren må enten:
+Dette feltet lagres sammen med brensellagring-dokumentet og vises i rapporten.
 
-- trykke «Generer tekst» på nytt, eller
-- redigere teksten manuelt
+### 3. Rapportvisning
 
-for å få den nye formuleringen.
+I forhåndsvisningen legger jeg inn dokumentkontrollen i toppinformasjonen sammen med firma, kunde, prosjekt, adresse, dato og regelverk.
+
+Eksempel:
+
+```text
+Firma:          ...
+Kunde:          ...
+Prosjekt:       ...
+Adresse:        ...
+Bygningstype:   ...
+Utarbeidet av:  ...
+KS:             ...
+Dato:           ...
+Regelverk:      ...
+```
+
+Hvis KS-feltet er tomt, skjules raden eller vises som tom etter samme mønster som resten av tabellen.
+
+### 4. Word-eksport
+
+Word-dokumentet oppdateres tilsvarende, slik at «Utarbeidet av» og «KS» blir med i den samme informasjonstabellen øverst i dokumentet.
+
+Dette gir samme innhold i:
+
+- forhåndsvisning
+- nedlastet Word-dokument
+- lagret dokument
+
+### 5. Lagring og eksisterende dokumenter
+
+Dette krever ingen databaseendring. Feltene lagres i eksisterende `content`-JSON for brensellagring-dokumentet.
+
+Eksisterende dokumenter vil fortsatt åpne som før. For gamle dokumenter:
+
+- «Utarbeidet av» fylles automatisk fra innlogget bruker/profil
+- «KS» er tomt frem til brukeren fyller det inn og lagrer dokumentet
+
+## Teknisk gjennomføring
+
+Jeg oppdaterer hovedsakelig:
+
+- `src/pages/Brensellagring.tsx`
+  - henter flere profilfelt for innlogget bruker
+  - lager automatisk visningsnavn for «Utarbeidet av»
+  - legger til state for `ksAnsvarlig`
+  - legger inn inputfelt for KS i toppdelen av skjemaet
+  - lagrer/leser KS-feltet i dokumentets `content`
+  - sender `utarbeidetAv` og `ksAnsvarlig` videre til forhåndsvisning og Word-eksport
+
+- `src/components/brensellagring/BrensellagringPreview.tsx`
+  - utvider props med `utarbeidetAv` og `ksAnsvarlig`
+  - viser feltene i toppinformasjonstabellen
+
+- `src/lib/brensellagring-word-export.ts`
+  - utvider Word-data med `utarbeidetAv` og `ksAnsvarlig`
+  - legger feltene inn i dokumentets informasjonstabell
+
+## Ingen databaseendring
+
+Endringen bruker eksisterende lagringsstruktur og krever ingen migrasjoner.
