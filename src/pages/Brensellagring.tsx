@@ -44,6 +44,10 @@ interface ProjectOption {
   address: string | null;
 }
 
+interface ProfileInfo {
+  company: string | null;
+}
+
 const Brensellagring = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -55,6 +59,7 @@ const Brensellagring = () => {
 
   // Project selection (driven by URL param)
   const [projects, setProjects] = useState<ProjectOption[]>([]);
+  const [profile, setProfile] = useState<ProfileInfo | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(projectIdFromUrl);
 
   // Redirect to home if no project or document is selected
@@ -72,6 +77,7 @@ const Brensellagring = () => {
   const [innledning, setInnledning] = useState("");
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
+  const firmaNavn = profile?.company?.trim() || "";
   const prosjektNavn = selectedProject?.name || "";
   const adresse = selectedProject?.address || "";
 
