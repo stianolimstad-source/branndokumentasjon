@@ -49,6 +49,9 @@ interface ProjectOption {
 
 interface ProfileInfo {
   company: string | null;
+  full_name: string | null;
+  email: string | null;
+  title: string | null;
   logo_url: string | null;
 }
 
@@ -81,12 +84,14 @@ const Brensellagring = () => {
   const [mengde, setMengde] = useState("");
   const [innledning, setInnledning] = useState("");
   const [kunde, setKunde] = useState("");
+  const [ksAnsvarlig, setKsAnsvarlig] = useState("");
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
   const firmaNavn = profile?.company?.trim() || "";
   const logoUrl = profile?.logo_url || "";
   const prosjektNavn = selectedProject?.name || "";
   const adresse = selectedProject?.address || "";
+  const utarbeidetAv = profile?.full_name?.trim() || user?.email || "";
 
   const valgtBygg = BYGNINGSTYPER.find((b) => b.id === valgtBygningstype) || null;
   const [expandedBrensel, setExpandedBrensel] = useState<string | null>(null);
