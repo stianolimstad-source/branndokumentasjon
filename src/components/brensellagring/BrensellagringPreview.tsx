@@ -248,6 +248,26 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const spesifikkMJm2 = dimGyldig && omhylling > 0 ? totalMJ / omhylling : null;
   const visBrannenergi = brannenergiInkludert && energiBidrag.length > 0;
   const visInnmelding = innmeldingInkludert && !!innmeldingVurdering && innmeldingVurdering.harMengder;
+  const branntekniskeTiltakRows = branntekniskeTiltak
+    ? [
+        {
+          tiltak: "Brannalarmanlegg",
+          status: branntekniskeTiltak.brannalarm.status,
+          beskrivelse: [branntekniskeTiltak.brannalarm.beskrivelse, branntekniskeTiltak.brannalarm.kommentar].filter(Boolean).join("\n"),
+        },
+        {
+          tiltak: "Røykventilasjon",
+          status: branntekniskeTiltak.roykventilasjon.status,
+          beskrivelse: [branntekniskeTiltak.roykventilasjon.type, branntekniskeTiltak.roykventilasjon.beskrivelse].filter(Boolean).join("\n"),
+        },
+        {
+          tiltak: "Automatisk slokkeanlegg",
+          status: branntekniskeTiltak.slokkeanlegg.status,
+          beskrivelse: [branntekniskeTiltak.slokkeanlegg.type, branntekniskeTiltak.slokkeanlegg.beskrivelse].filter(Boolean).join("\n"),
+        },
+      ].filter((row) => row.status.trim() || row.beskrivelse.trim())
+    : [];
+  const visBranntekniskeTiltak = branntekniskeTiltakInkludert && branntekniskeTiltakRows.length > 0;
   const formatMJ = (v: number) => {
     const r = v >= 10000 ? Math.round(v / 100) * 100 : Math.round(v);
     return r.toLocaleString("nb-NO");
@@ -257,6 +277,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const sections: { key: string; label: string }[] = [];
   if (visPlanlagt) sections.push({ key: "planlagt", label: "Planlagt lagret mengde i bygget" });
   if (visBrannenergi) sections.push({ key: "brannenergi", label: "Brannenergi i bygget" });
+  if (visBranntekniskeTiltak) sections.push({ key: "branntekniskeTiltak", label: "Branntekniske tiltak i bygget" });
   if (visInnmelding) sections.push({ key: "innmelding", label: "Innmeldingsplikt til DSB" });
   if (salgslokaleInkludert) sections.push({ key: "salgslokale", label: "Største tillatte mengder i salgslokaler" });
   if (selBeliggenhet.length > 0) sections.push({ key: "beliggenhet", label: "Beliggenhet og utforming" });
