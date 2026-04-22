@@ -654,6 +654,16 @@ const Brensellagring = () => {
               </div>
 
               <div className="space-y-1.5">
+                <Label htmlFor="kunde" className="text-sm">Kunde</Label>
+                <Input
+                  id="kunde"
+                  value={kunde}
+                  onChange={(e) => setKunde(e.target.value)}
+                  placeholder="Navn på kunde / oppdragsgiver"
+                />
+              </div>
+
+              <div className="space-y-1.5">
                 <Label htmlFor="innledning" className="text-sm">Innledning</Label>
                 <p className="text-xs text-muted-foreground">
                   Beskriv tiltaket, hva som inngår og hva som er oppdraget.
