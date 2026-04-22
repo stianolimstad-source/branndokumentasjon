@@ -540,6 +540,7 @@ const Brensellagring = () => {
       branntekniskeTiltak,
       innledning,
       kunde,
+      ksAnsvarlig,
       innmeldingInkludert,
       innmeldingKommentar,
     };
@@ -584,6 +585,8 @@ const Brensellagring = () => {
       valgtBygg,
       firmaNavn: firmaNavn || undefined,
       kunde: kunde || undefined,
+      utarbeidetAv: utarbeidetAv || undefined,
+      ksAnsvarlig: ksAnsvarlig || undefined,
       logoUrl: logoUrl || undefined,
       prosjektNavn: prosjektNavn || undefined,
       adresse: adresse || undefined,
