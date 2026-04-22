@@ -82,6 +82,8 @@ interface BrensellagringPreviewProps {
   valgtBygg: BygningsTypeInfo | null;
   firmaNavn?: string;
   kunde?: string;
+  utarbeidetAv?: string;
+  ksAnsvarlig?: string;
   logoUrl?: string;
   prosjektNavn?: string;
   adresse?: string;
@@ -152,6 +154,8 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   valgtBygg,
   firmaNavn,
   kunde,
+  utarbeidetAv,
+  ksAnsvarlig,
   logoUrl,
   prosjektNavn,
   adresse,
@@ -391,6 +395,18 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
               <tr>
                 <td style={{ ...tdStyle, fontWeight: 600 }}>Bygningstype</td>
                 <td style={tdStyle}>{valgtBygg.navn}</td>
+              </tr>
+            )}
+            {utarbeidetAv && (
+              <tr>
+                <td style={{ ...tdStyle, fontWeight: 600 }}>Utarbeidet av</td>
+                <td style={tdStyle}>{utarbeidetAv}</td>
+              </tr>
+            )}
+            {ksAnsvarlig && (
+              <tr>
+                <td style={{ ...tdStyle, fontWeight: 600 }}>KS</td>
+                <td style={tdStyle}>{ksAnsvarlig}</td>
               </tr>
             )}
             <tr>

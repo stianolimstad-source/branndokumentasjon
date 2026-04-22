@@ -42,6 +42,8 @@ export interface BrensellagringWordData {
   valgtBygg: BygningsTypeInfo | null;
   firmaNavn?: string;
   kunde?: string;
+  utarbeidetAv?: string;
+  ksAnsvarlig?: string;
   logoUrl?: string;
   prosjektNavn?: string;
   adresse?: string;
@@ -228,6 +230,8 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
         ["Prosjekt", data.prosjektNavn || ""],
         ["Adresse", data.adresse || ""],
         ["Bygningstype", data.valgtBygg?.navn || ""],
+        ["Utarbeidet av", data.utarbeidetAv || ""],
+        ["KS", data.ksAnsvarlig || ""],
         ["Dato", new Date().toLocaleDateString("nb-NO")],
         ["Regelverk", "VTEK § 11-8, DSB Temaveiledning om oppbevaring av farlig stoff"],
       ].filter((row) => row[1]),

@@ -49,6 +49,9 @@ interface ProjectOption {
 
 interface ProfileInfo {
   company: string | null;
+  full_name: string | null;
+  email: string | null;
+  title: string | null;
   logo_url: string | null;
 }
 
@@ -81,12 +84,14 @@ const Brensellagring = () => {
   const [mengde, setMengde] = useState("");
   const [innledning, setInnledning] = useState("");
   const [kunde, setKunde] = useState("");
+  const [ksAnsvarlig, setKsAnsvarlig] = useState("");
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
   const firmaNavn = profile?.company?.trim() || "";
   const logoUrl = profile?.logo_url || "";
   const prosjektNavn = selectedProject?.name || "";
   const adresse = selectedProject?.address || "";
+  const utarbeidetAv = profile?.full_name?.trim() || user?.email || "";
 
   const valgtBygg = BYGNINGSTYPER.find((b) => b.id === valgtBygningstype) || null;
   const [expandedBrensel, setExpandedBrensel] = useState<string | null>(null);
@@ -373,7 +378,7 @@ const Brensellagring = () => {
 
       supabase
         .from('profiles')
-        .select('company, logo_url')
+        .select('company, full_name, email, title, logo_url')
         .eq('id', user.id)
         .maybeSingle()
         .then(({ data }) => {
@@ -418,6 +423,7 @@ const Brensellagring = () => {
           branntekniskeTiltak?: Partial<BranntekniskeTiltakData>;
           innledning?: string;
           kunde?: string;
+          ksAnsvarlig?: string;
           innmeldingInkludert?: boolean;
           innmeldingKommentar?: string;
           documentType?: string;
@@ -486,6 +492,7 @@ const Brensellagring = () => {
         });
         setInnledning(content.innledning ?? "");
         setKunde(content.kunde ?? "");
+        setKsAnsvarlig(content.ksAnsvarlig ?? "");
         setInnmeldingInkludert(content.innmeldingInkludert ?? false);
         setInnmeldingKommentar(content.innmeldingKommentar ?? "");
       });
@@ -533,6 +540,7 @@ const Brensellagring = () => {
       branntekniskeTiltak,
       innledning,
       kunde,
+      ksAnsvarlig,
       innmeldingInkludert,
       innmeldingKommentar,
     };
@@ -577,6 +585,8 @@ const Brensellagring = () => {
       valgtBygg,
       firmaNavn: firmaNavn || undefined,
       kunde: kunde || undefined,
+      utarbeidetAv: utarbeidetAv || undefined,
+      ksAnsvarlig: ksAnsvarlig || undefined,
       logoUrl: logoUrl || undefined,
       prosjektNavn: prosjektNavn || undefined,
       adresse: adresse || undefined,
@@ -816,6 +826,16 @@ const Brensellagring = () => {
                   value={kunde}
                   onChange={(e) => setKunde(e.target.value)}
                   placeholder="Navn på kunde / oppdragsgiver"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="ksAnsvarlig" className="text-sm">KS / Kontrollert av</Label>
+                <Input
+                  id="ksAnsvarlig"
+                  value={ksAnsvarlig}
+                  onChange={(e) => setKsAnsvarlig(e.target.value)}
+                  placeholder="Navn på kvalitetssikrer"
                 />
               </div>
 
@@ -2349,6 +2369,8 @@ const Brensellagring = () => {
                   valgtBygg={valgtBygg}
                   firmaNavn={firmaNavn || undefined}
                   kunde={kunde || undefined}
+                  utarbeidetAv={utarbeidetAv || undefined}
+                  ksAnsvarlig={ksAnsvarlig || undefined}
                   logoUrl={logoUrl || undefined}
                   prosjektNavn={prosjektNavn || undefined}
                   adresse={adresse || undefined}
