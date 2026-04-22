@@ -77,6 +77,7 @@ const Brensellagring = () => {
   const [mengde, setMengde] = useState("");
   const [innledning, setInnledning] = useState("");
   const [kunde, setKunde] = useState("");
+  const [logoScale, setLogoScale] = useState<"50" | "100" | "150">("100");
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
   const firmaNavn = profile?.company?.trim() || "";
@@ -401,6 +402,7 @@ const Brensellagring = () => {
           branntekniskeTiltak?: Partial<BranntekniskeTiltakData>;
           innledning?: string;
           kunde?: string;
+          logoScale?: "50" | "100" | "150";
           innmeldingInkludert?: boolean;
           innmeldingKommentar?: string;
           documentType?: string;
@@ -457,6 +459,7 @@ const Brensellagring = () => {
         });
         setInnledning(content.innledning ?? "");
         setKunde(content.kunde ?? "");
+        setLogoScale(content.logoScale ?? "100");
         setInnmeldingInkludert(content.innmeldingInkludert ?? false);
         setInnmeldingKommentar(content.innmeldingKommentar ?? "");
       });
@@ -498,6 +501,7 @@ const Brensellagring = () => {
       branntekniskeTiltak,
       innledning,
       kunde,
+      logoScale,
       innmeldingInkludert,
       innmeldingKommentar,
     };
@@ -662,6 +666,22 @@ const Brensellagring = () => {
                   placeholder="Navn på kunde / oppdragsgiver"
                 />
               </div>
+
+              {logoUrl && (
+                <div className="space-y-1.5">
+                  <Label className="text-sm">Logostørrelse i dokument</Label>
+                  <Select value={logoScale} onValueChange={(value) => setLogoScale(value as "50" | "100" | "150")}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Velg logostørrelse" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="50">50 %</SelectItem>
+                      <SelectItem value="100">100 %</SelectItem>
+                      <SelectItem value="150">150 %</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               <div className="space-y-1.5">
                 <Label htmlFor="innledning" className="text-sm">Innledning</Label>
@@ -2055,6 +2075,7 @@ const Brensellagring = () => {
                   firmaNavn={firmaNavn || undefined}
                   kunde={kunde || undefined}
                   logoUrl={logoUrl || undefined}
+                  logoScale={logoScale}
                   prosjektNavn={prosjektNavn || undefined}
                   adresse={adresse || undefined}
                   visibleSections={visibleSections}
