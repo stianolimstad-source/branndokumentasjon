@@ -619,6 +619,84 @@ const Brensellagring = () => {
   };
   const innmeldingVurdering = evaluerInnmelding();
 
+  type OverskridelseRow = {
+    id: string;
+    stoffgruppe: string;
+    anbefaltMengde: number;
+    planlagtMengde: number;
+    enhet: string;
+    overskridelse: number;
+    overskridelseProsent: number;
+    vurdertTillattMengde: string;
+  };
+  const samletGulvareal = etasjer.reduce((sum, et) => {
+    const lengde = parseFloat(et.lengde) || 0;
+    const bredde = parseFloat(et.bredde) || 0;
+    return sum + (lengde > 0 && bredde > 0 ? lengde * bredde : 0);
+  }, 0);
+  const overskridelseAreal = parseFloat(overskridelseArealgrunnlag) || samletGulvareal;
+  const stykkgodsGrense = getStykkgodsGrense(overskridelseAreal > 0 ? overskridelseAreal : 0);
+  const grenseFor = (type: BrenselType) => valgtBygg?.grenser.find((g) => g.brenselType === type);
+  const overskridelseRows: OverskridelseRow[] = [
+    {
+      id: "gass",
+      stoffgruppe: "Brannfarlig gass",
+      anbefaltMengde: valgtBygningstype === "salgslokale" ? 25.2 : (grenseFor("propan")?.maksKg || 0),
+      planlagtMengde: (parseFloat(plannedAmounts.gass_kat1) || 0) + (parseFloat(plannedAmounts.gass_kat2) || 0),
+      enhet: "kg",
+      vurdertTillattMengde: overskridelseVurdertTillattMengde.gass || "",
+    },
+    {
+      id: "vaeske_kat12",
+      stoffgruppe: "Brannfarlig væske kategori 1 og 2",
+      anbefaltMengde: valgtBygningstype === "salgslokale" ? stykkgodsGrense.brannfarligVaeskeKat1og2 : (grenseFor("bensin")?.maksLiter || 0),
+      planlagtMengde: (parseFloat(plannedAmounts.vaeske_kat1) || 0) + (parseFloat(plannedAmounts.vaeske_kat2) || 0),
+      enhet: "liter",
+      vurdertTillattMengde: overskridelseVurdertTillattMengde.vaeske_kat12 || "",
+    },
+    {
+      id: "vaeske_kat3",
+      stoffgruppe: "Brannfarlig væske kategori 3",
+      anbefaltMengde: valgtBygningstype === "salgslokale" ? stykkgodsGrense.brannfarligVaeskeKat3 : (grenseFor("fyringsparafin")?.maksLiter || 0),
+      planlagtMengde: parseFloat(plannedAmounts.vaeske_kat3) || 0,
+      enhet: "liter",
+      vurdertTillattMengde: overskridelseVurdertTillattMengde.vaeske_kat3 || "",
+    },
+    {
+      id: "diesel_fyringsolje",
+      stoffgruppe: "Diesel / fyringsolje",
+      anbefaltMengde: grenseFor("lett_fyringsolje")?.maksLiter || 0,
+      planlagtMengde: parseFloat(plannedAmounts.diesel_fyringsolje) || 0,
+      enhet: "liter",
+      vurdertTillattMengde: overskridelseVurdertTillattMengde.diesel_fyringsolje || "",
+    },
+    {
+      id: "aerosoler",
+      stoffgruppe: "Aerosoler",
+      anbefaltMengde: valgtBygningstype === "salgslokale" ? stykkgodsGrense.aerosoler : 0,
+      planlagtMengde: parseFloat(plannedAmounts.aerosoler) || 0,
+      enhet: "liter",
+      vurdertTillattMengde: overskridelseVurdertTillattMengde.aerosoler || "",
+    },
+  ].map((row) => ({
+    ...row,
+    overskridelse: Math.max(0, row.planlagtMengde - row.anbefaltMengde),
+    overskridelseProsent: row.anbefaltMengde > 0 ? (Math.max(0, row.planlagtMengde - row.anbefaltMengde) / row.anbefaltMengde) * 100 : 0,
+  })).filter((row) => row.planlagtMengde > 0 && row.anbefaltMengde > 0 && row.overskridelse > 0);
+  const aktiveTiltak = [
+    branntekniskeTiltak.brannalarm.status && branntekniskeTiltak.brannalarm.status !== "Ikke installert" && branntekniskeTiltak.brannalarm.status !== "Ikke aktuelt" ? "brannalarmanlegg/tidlig deteksjon" : "",
+    branntekniskeTiltak.roykventilasjon.status && branntekniskeTiltak.roykventilasjon.status !== "Ikke installert" && branntekniskeTiltak.roykventilasjon.status !== "Ikke aktuelt" ? "røykventilasjon" : "",
+    branntekniskeTiltak.slokkeanlegg.status && branntekniskeTiltak.slokkeanlegg.status !== "Ikke installert" && branntekniskeTiltak.slokkeanlegg.status !== "Ikke aktuelt" ? "automatisk slokkeanlegg" : "",
+    salgslokaleTiltakTekst.toLowerCase().includes("brannskap") ? "oppbevaring i brannskap/avlukke" : "",
+    overskridelseTiltak.trim(),
+  ].filter(Boolean);
+  const foreslattOverskridelseTekst = overskridelseRows.length > 0
+    ? `Planlagt lagring overstiger anbefalt mengde i DSB sin temaveiledning for ${overskridelseRows.map((r) => `${r.stoffgruppe.toLowerCase()} med ${r.overskridelse.toLocaleString("nb-NO")} ${r.enhet} (${r.overskridelseProsent.toFixed(0)} %)`).join(", ")}. Det er lagt til grunn ${aktiveTiltak.length > 0 ? `kompenserende tiltak som ${aktiveTiltak.join(", ")}` : "at lagringen skjer kontrollert, oversiktlig og i samsvar med beskrevne organisatoriske og branntekniske forutsetninger"}. På bakgrunn av tiltakene vurderes den angitte økte mengden som akseptabel for dette bygget, forutsatt at lagringen skjer som beskrevet og at tiltakene etableres og opprettholdes i driftsfasen.`
+    : "";
+  const foreslattOverskridelseKonklusjon = overskridelseRows.length > 0
+    ? "Vurderingen gjelder kun for dette bygget, de beskrevne mengdene og de angitte kompenserende tiltakene. Den innebærer ikke en generell heving av anbefalte DSB-mengder."
+    : "";
+
   return (
 <div className="min-h-screen bg-gradient-subtle">
       <div className="w-full px-4 py-6">
