@@ -184,6 +184,29 @@ const Brensellagring = () => {
   const [brannenergiInkludert, setBrannenergiInkludert] = useState(false);
   const [brannenergiKommentar, setBrannenergiKommentar] = useState("");
 
+  type BranntekniskeTiltakData = {
+    brannalarm: { status: string; beskrivelse: string; kommentar: string };
+    roykventilasjon: { status: string; type: string; beskrivelse: string };
+    slokkeanlegg: { status: string; type: string; beskrivelse: string };
+    generellKommentar: string;
+  };
+  const TOMME_BRANNTEKNISKE_TILTAK: BranntekniskeTiltakData = {
+    brannalarm: { status: "", beskrivelse: "", kommentar: "" },
+    roykventilasjon: { status: "", type: "", beskrivelse: "" },
+    slokkeanlegg: { status: "", type: "", beskrivelse: "" },
+    generellKommentar: "",
+  };
+  const TILTAK_STATUS = ["Ikke aktuelt", "Ikke installert", "Installert / forutsatt", "Eksisterende anlegg beholdes"];
+  const ROYKVENTILASJON_TYPER = ["Naturlig røykventilasjon", "Mekanisk røykventilasjon", "Luker/vinduer/åpninger", "Annet"];
+  const SLOKKEANLEGG_TYPER = ["Sprinkleranlegg", "Vanntåkeanlegg", "Skum-/gassanlegg", "Annet"];
+  const [branntekniskeTiltakInkludert, setBranntekniskeTiltakInkludert] = useState(false);
+  const [branntekniskeTiltak, setBranntekniskeTiltak] = useState<BranntekniskeTiltakData>(TOMME_BRANNTEKNISKE_TILTAK);
+
+  const updateBranntekniskTiltak = <T extends keyof BranntekniskeTiltakData>(
+    tiltak: T,
+    value: BranntekniskeTiltakData[T]
+  ) => setBranntekniskeTiltak((prev) => ({ ...prev, [tiltak]: value }));
+
   // Energitetthet (MJ per kg/L) – kilder: SFPE Handbook og NS-EN 1991-1-2
   const ENERGITETTHET: Record<keyof PlannedAmounts, { verdi: number; enhet: "MJ/kg" | "MJ/L"; kilde: string }> = {
     gass_kat1: { verdi: 46, enhet: "MJ/kg", kilde: "Propan/butan/hydrogen" },
