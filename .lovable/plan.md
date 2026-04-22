@@ -1,63 +1,85 @@
 
-## Plan: Gi alle innloggede brukere tilgang til nedlasting
+## Plan: Korrigere vurderingstekst for mengder over DSB-anbefaling
 
-Jeg endrer nedlastingstilgangen slik at «Last ned»-knapper vises for alle brukere som er logget inn, ikke bare for testbrukeren `stianolimstad@gmail.com`.
+Jeg oppdaterer vurderingen i «Lagring av brannfarlig stoff» slik at brannskap ikke automatisk fremstår som et tiltak når dette ikke er lagt til grunn. Teksten skal i stedet beskrive at en begrenset økning kan aksepteres fordi bygget er sprinklet og økningen er liten, mens ytterligere økning må håndteres med brannsikker oppbevaring.
 
 ## Hva som endres
 
-### 1. Oppdatere felles tilgangslogikk
+### 1. Fjerne automatisk «brannskap» som tiltak
 
-I dag styres nedlasting av denne hooken:
+I dag legges «oppbevaring i brannskap/avlukke» inn i den genererte vurderingsteksten dersom standardteksten for salgslokale inneholder ordet «brannskap». Det gir feil resultat, fordi brannskap da blir omtalt som et faktisk tiltak selv om det bare er nevnt som en mulig løsning.
 
-```ts
-useCanDownload()
-```
+Jeg endrer dette slik at:
 
-Den sjekker nå mot én spesifikk e-postadresse. Jeg endrer den til å returnere `true` når brukeren er innlogget:
+- brannskap ikke hentes automatisk fra standardteksten
+- brannskap kun omtales som tiltak dersom brukeren selv skriver det inn som prosjektspesifikt tiltak
+- vurderingen ikke feilaktig sier at dagens mengder forutsetter oppbevaring i brannskap
 
-```ts
-return !!user;
-```
+### 2. Ny fagtekst for begrenset økning
 
-Da vil alle innloggede brukere få nedlastingsknappen.
+«Generer tekst»-knappen i vurderingsdelen oppdateres til en mer presis standardtekst:
 
-### 2. Gjelder flere dokumenttyper
+- mengdene overstiger DSB sin anbefalte tabellverdi
+- overskridelsen vurderes som begrenset
+- aksepten begrunnes med sprinkleranlegg i bygget dersom automatisk slokkeanlegg er valgt/forutsatt
+- økningen gjelder bare de angitte mengdene og forutsetningene
+- ytterligere økning utover vurdert mengde må plasseres i brannsikre skap/avlukke eller vurderes særskilt
 
-Siden `useCanDownload` brukes flere steder, vil endringen gjelde konsekvent for dokumentnedlasting i appen, blant annet:
-
-- Brannkonsept
-- KS-gjennomgang
-- Kvalitativ analyse / fraviksdokumentasjon
-- Lagring av brannfarlig stoff
-
-Dette samsvarer med ønsket regel:
+Eksempel på ønsket retning:
 
 ```text
-Er brukeren logget inn, skal brukeren kunne laste ned.
+Planlagt lagring overstiger anbefalt mengde i DSB sin temaveiledning. Overskridelsen vurderes som begrenset, og bygget er sprinklet. På denne bakgrunn vurderes den angitte økte mengden som akseptabel for dette bygget, forutsatt at lagringen skjer oversiktlig og i samsvar med beskrevne forutsetninger.
+
+Dersom det ønskes lagret mengder utover det som er vurdert her, må dette enten plasseres i brannsikre skap/avlukke eller underlegges en ny særskilt risikovurdering.
 ```
 
-### 3. Beholde skjuling for ikke-innloggede brukere
+### 3. Presisering om væsker vs. gass
 
-Brukere som ikke er logget inn skal fortsatt ikke se nedlastingsknappen på steder der appen krever innlogging.
+Jeg legger inn en tydelig presisering i vurderingsteksten om at økt mengde bare kan aksepteres for brannfarlige væsker, ikke for gass.
 
-### 4. Oppdatere prosjektminne
+Teksten skal forklare faglig hvorfor:
 
-Jeg oppdaterer prosjektregelen som i dag sier at Word/PDF-nedlasting er låst til én testbruker, slik at den nye regelen blir:
+- DSB-tabellen åpner for at tillatt væskemengde øker med areal
+- tillatt gassmengde øker ikke tilsvarende med bygningsstørrelse
+- dette tilsier at DSB legger en strengere vurdering til grunn for gass
+- gassmengder skal derfor ikke økes utover anbefalt mengde uten særskilt vurdering
 
-```text
-Alle innloggede brukere kan laste ned Word/PDF-dokumenter.
-```
+### 4. Oppdatere hjelpetekster i skjemaet
+
+Jeg justerer teksten i skjemaet slik at den ikke lenger fremhever brannskap som et generelt eksempel på tiltak for den aktuelle vurderingen.
+
+Jeg endrer blant annet:
+
+- infoteksten under DSB-tabellen for salgslokaler
+- placeholder for «Andre prosjektspesifikke tiltak»
+- eventuell standardtekst som kan gi inntrykk av at brannskap allerede er lagt til grunn
+
+### 5. Forhåndsvisning og Word-eksport
+
+Forhåndsvisningen og Word-dokumentet bruker allerede vurderingsteksten som brukeren har i feltet. Når generatoren og standardtekstene oppdateres, vil både forhåndsvisning og Word-eksport få korrekt tekst.
+
+Jeg kontrollerer også at:
+
+- vurderingsdelen fortsatt ligger nederst i dokumentet
+- tabellen for overskridelse fortsatt viser anbefalt, planlagt, overskridelse og vurdert tillatt mengde
+- Word-eksporten ikke introduserer egen brannskapstekst uten at brukeren har skrevet det inn
 
 ## Teknisk gjennomføring
 
 Jeg oppdaterer hovedsakelig:
 
-- `src/hooks/useCanDownload.ts`
-  - fjerner hardkodet e-postbegrensning
-  - returnerer `true` for alle innloggede brukere
+- `src/pages/Brensellagring.tsx`
+  - fjerner automatisk deteksjon av «brannskap» fra salgslokaleteksten
+  - oppdaterer `foreslattOverskridelseTekst`
+  - legger inn presisering om at økning kun gjelder væsker
+  - justerer hjelpetekster/placeholdere i vurderingskortet
 
-Eventuelt kontrollerer jeg at nedlastingsknappen for brensellagring fortsatt ligger bak `canDownload`, slik at den automatisk følger den nye regelen.
+- `src/components/brensellagring/BrensellagringPreview.tsx`
+  - kontrollerer at vurderingsteksten vises uendret og uten ekstra brannskapstekst
 
-## Ingen databaseendring
+- `src/lib/brensellagring-word-export.ts`
+  - kontrollerer at Word-eksporten bruker samme vurderingstekst uten ekstra automatisk tiltakstekst
 
-Dette krever ingen endringer i databasen eller autentiseringsoppsettet.
+## Viktig om eksisterende dokumenter
+
+Eksisterende dokumenter som allerede har lagret gammel vurderingstekst vil beholde teksten til brukeren trykker «Generer tekst» på nytt eller redigerer feltet manuelt. Nye genererte tekster vil bruke den korrigerte formuleringen.
