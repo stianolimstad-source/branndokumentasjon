@@ -1731,6 +1731,33 @@ const Brensellagring = () => {
                       </table>
                     </div>
 
+                    <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 text-sm text-muted-foreground">
+                      DSB sin temaveiledning angir anbefalte mengder for salgslokaler, men legger opp til at mengdene kan økes noe dersom det er gjort særskilte tiltak og det fremgår av risikovurderingen at en begrenset økning er akseptabel. Eksempler på tiltak kan være sprinkleranlegg, oppbevaring i brannskap eller egen avlukke, røykdeteksjon og automatisk stenging/lukking av skap eller dører.
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between gap-3">
+                        <Label htmlFor="salgslokale-tiltak" className="text-sm">
+                          Vurdering av høyere mengder / kompenserende tiltak
+                        </Label>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs shrink-0"
+                          onClick={() => setSalgslokaleTiltakTekst(getOriginalSalgslokaleTiltakTekst())}
+                        >
+                          Original tekst
+                        </Button>
+                      </div>
+                      <Textarea
+                        id="salgslokale-tiltak"
+                        value={salgslokaleTiltakTekst}
+                        onChange={(e) => setSalgslokaleTiltakTekst(e.target.value)}
+                        className="min-h-[190px] text-sm"
+                      />
+                    </div>
+
                     <div className="space-y-1.5">
                       <Label htmlFor="salgslokale-kommentar" className="text-sm">
                         Kommentar (valgfritt)
@@ -2000,6 +2027,7 @@ const Brensellagring = () => {
                   selectedKravIds={selectedKravIds}
                   salgslokaleInkludert={salgslokaleInkludert && valgtBygningstype === "salgslokale"}
                   salgslokaleKommentar={salgslokaleKommentar}
+                  salgslokaleTiltakTekst={salgslokaleTiltakTekst}
                   plannedInkludert={plannedInkludert}
                   plannedAmounts={plannedAmounts}
                   plannedKommentar={plannedKommentar}
