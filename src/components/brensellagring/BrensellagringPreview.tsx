@@ -44,6 +44,17 @@ export interface PlannedAmountsData {
   aerosoler: string;
 }
 
+export interface OverskridelseRowData {
+  id: string;
+  stoffgruppe: string;
+  anbefaltMengde: number;
+  planlagtMengde: number;
+  enhet: string;
+  overskridelse: number;
+  overskridelseProsent: number;
+  vurdertTillattMengde: string;
+}
+
 export type InnmeldingGruppeData = {
   id: string;
   kategori: string;
@@ -82,6 +93,12 @@ interface BrensellagringPreviewProps {
   plannedInkludert?: boolean;
   plannedAmounts?: PlannedAmountsData;
   plannedKommentar?: string;
+  overskridelseInkludert?: boolean;
+  overskridelseRows?: OverskridelseRowData[];
+  overskridelseArealgrunnlag?: string;
+  overskridelseVurderingstekst?: string;
+  overskridelseKonklusjon?: string;
+  overskridelseTiltak?: string;
   brannenergiInkludert?: boolean;
   brannenergiKommentar?: string;
   generellBrannenergiMJm2?: string;
@@ -146,6 +163,12 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   plannedInkludert = false,
   plannedAmounts,
   plannedKommentar = "",
+  overskridelseInkludert = false,
+  overskridelseRows = [],
+  overskridelseArealgrunnlag = "",
+  overskridelseVurderingstekst = "",
+  overskridelseKonklusjon = "",
+  overskridelseTiltak = "",
   brannenergiInkludert = false,
   brannenergiKommentar = "",
   generellBrannenergiMJm2 = "730",
