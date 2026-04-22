@@ -18,6 +18,7 @@ import Brannenergi from "./pages/verktoy/Brannenergi";
 import Brannmotstand from "./pages/verktoy/Brannmotstand";
 import Brannareal from "./pages/verktoy/Brannareal";
 import RoykventilasjonPage from "./pages/verktoy/Roykventilasjon";
+import Brannsimulering from "./pages/verktoy/Brannsimulering";
 
 import Auth from "./pages/Auth";
 import MineProsjekter from "./pages/MineProsjekter";
@@ -65,6 +66,7 @@ const App = () => (
             <Route path="/verktoy/brannmotstand" element={<Brannmotstand />} />
             <Route path="/verktoy/brannareal" element={<Brannareal />} />
             <Route path="/verktoy/roykventilasjon" element={<RoykventilasjonPage />} />
+            <Route path="/verktoy/brannsimulering" element={<Brannsimulering />} />
             
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/auth" element={<Auth />} />
