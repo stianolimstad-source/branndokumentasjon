@@ -699,6 +699,17 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                 ))}
               </tbody>
             </table>
+            <div style={{ marginBottom: 12, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+              <p style={{ fontSize: 10, color: "#334155", margin: 0 }}>
+                DSB sin temaveiledning angir anbefalte mengder for salgslokaler, men legger opp til at mengdene kan økes noe dersom det er gjort særskilte tiltak og det fremgår av risikovurderingen at en begrenset økning er akseptabel. Tabellverdiene benyttes derfor som utgangspunkt for vurderingen.
+              </p>
+            </div>
+            {salgslokaleTiltakTekst.trim() && (
+              <div style={{ marginBottom: 16, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Vurdering av høyere mengder / kompenserende tiltak</p>
+                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{salgslokaleTiltakTekst}</p>
+              </div>
+            )}
             {salgslokaleKommentar.trim() && (
               <div style={{ marginBottom: 16, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
                 <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Kommentar</p>
