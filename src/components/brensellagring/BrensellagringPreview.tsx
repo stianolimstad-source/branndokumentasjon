@@ -69,6 +69,7 @@ export interface BranntekniskeTiltakData {
 
 interface BrensellagringPreviewProps {
   valgtBygg: BygningsTypeInfo | null;
+  firmaNavn?: string;
   prosjektNavn?: string;
   adresse?: string;
   visibleSections: Set<BrenselSectionKey>;
@@ -130,6 +131,7 @@ const tdStyle: React.CSSProperties = {
 
 const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   valgtBygg,
+  firmaNavn,
   prosjektNavn,
   adresse,
   visibleSections,
@@ -321,6 +323,12 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         {/* Project info */}
         <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 20 }}>
           <tbody>
+            {firmaNavn && (
+              <tr>
+                <td style={{ ...tdStyle, fontWeight: 600, width: 140 }}>Firma</td>
+                <td style={tdStyle}>{firmaNavn}</td>
+              </tr>
+            )}
             {prosjektNavn && (
               <tr>
                 <td style={{ ...tdStyle, fontWeight: 600, width: 140 }}>Prosjekt</td>

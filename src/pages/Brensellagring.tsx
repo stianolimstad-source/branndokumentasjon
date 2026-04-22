@@ -44,6 +44,10 @@ interface ProjectOption {
   address: string | null;
 }
 
+interface ProfileInfo {
+  company: string | null;
+}
+
 const Brensellagring = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -55,6 +59,7 @@ const Brensellagring = () => {
 
   // Project selection (driven by URL param)
   const [projects, setProjects] = useState<ProjectOption[]>([]);
+  const [profile, setProfile] = useState<ProfileInfo | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(projectIdFromUrl);
 
   // Redirect to home if no project or document is selected
@@ -72,6 +77,7 @@ const Brensellagring = () => {
   const [innledning, setInnledning] = useState("");
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
+  const firmaNavn = profile?.company?.trim() || "";
   const prosjektNavn = selectedProject?.name || "";
   const adresse = selectedProject?.address || "";
 
@@ -349,6 +355,15 @@ const Brensellagring = () => {
         .order('created_at', { ascending: false })
         .then(({ data }) => {
           if (data) setProjects(data as ProjectOption[]);
+        });
+
+      supabase
+        .from('profiles')
+        .select('company')
+        .eq('id', user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          setProfile((data as ProfileInfo | null) ?? null);
         });
     }
   }, [user]);
@@ -2021,6 +2036,7 @@ const Brensellagring = () => {
               <div className="flex-1 min-h-0 bg-muted/30 rounded-xl p-3 overflow-auto">
                 <BrensellagringPreview
                   valgtBygg={valgtBygg}
+                  firmaNavn={firmaNavn || undefined}
                   prosjektNavn={prosjektNavn || undefined}
                   adresse={adresse || undefined}
                   visibleSections={visibleSections}
