@@ -324,7 +324,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
 
   // Build visible sections dynamically based on selected items
   const sections: { key: string; label: string }[] = [];
-  if (visPlanlagt) sections.push({ key: "planlagt", label: "Planlagt lagret mengde i bygget" });
+  if (visPlanlagt) sections.push({ key: "planlagt", label: "Planlagt mengde utover DSB sin veiledning" });
   if (visBrannenergi) sections.push({ key: "brannenergi", label: "Brannenergi i bygget" });
   if (visBranntekniskeTiltak) sections.push({ key: "branntekniskeTiltak", label: "Branntekniske tiltak i bygget" });
   if (visInnmelding) sections.push({ key: "innmelding", label: "Innmeldingsplikt til DSB" });
@@ -439,9 +439,9 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
 
         {visPlanlagt && (
           <>
-            <h2 style={h2}>{secNum("planlagt")}. Planlagt lagret mengde i bygget</h2>
+            <h2 style={h2}>{secNum("planlagt")}. Planlagt mengde utover DSB sin veiledning</h2>
             <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
-              Oversikt over planlagt lagrede mengder brannfarlig stoff i bygget, fordelt på kategori.
+              Oversikt over mengder brannfarlig stoff som vurderes utover DSB sin anbefalte mengde. Mengder i brannsikre skap eller egne brannceller beregnet for brannfarlig vare inngår ikke her.
             </p>
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
               <thead>
