@@ -1,85 +1,48 @@
 
-## Plan: Korrigere vurderingstekst for mengder over DSB-anbefaling
+## Plan: Fjerne dobbel omtale av automatisk slokkeanlegg i vurderingsteksten
 
-Jeg oppdaterer vurderingen i «Lagring av brannfarlig stoff» slik at brannskap ikke automatisk fremstår som et tiltak når dette ikke er lagt til grunn. Teksten skal i stedet beskrive at en begrenset økning kan aksepteres fordi bygget er sprinklet og økningen er liten, mens ytterligere økning må håndteres med brannsikker oppbevaring.
+Jeg retter tekstgeneratoren for «Vurdering av mengde over anbefalt DSB-mengde» slik at automatisk slokkeanlegg ikke nevnes to ganger i samme avsnitt.
 
 ## Hva som endres
 
-### 1. Fjerne automatisk «brannskap» som tiltak
+### 1. Skille hovedbegrunnelse fra tilleggstiltak
 
-I dag legges «oppbevaring i brannskap/avlukke» inn i den genererte vurderingsteksten dersom standardteksten for salgslokale inneholder ordet «brannskap». Det gir feil resultat, fordi brannskap da blir omtalt som et faktisk tiltak selv om det bare er nevnt som en mulig løsning.
-
-Jeg endrer dette slik at:
-
-- brannskap ikke hentes automatisk fra standardteksten
-- brannskap kun omtales som tiltak dersom brukeren selv skriver det inn som prosjektspesifikt tiltak
-- vurderingen ikke feilaktig sier at dagens mengder forutsetter oppbevaring i brannskap
-
-### 2. Ny fagtekst for begrenset økning
-
-«Generer tekst»-knappen i vurderingsdelen oppdateres til en mer presis standardtekst:
-
-- mengdene overstiger DSB sin anbefalte tabellverdi
-- overskridelsen vurderes som begrenset
-- aksepten begrunnes med sprinkleranlegg i bygget dersom automatisk slokkeanlegg er valgt/forutsatt
-- økningen gjelder bare de angitte mengdene og forutsetningene
-- ytterligere økning utover vurdert mengde må plasseres i brannsikre skap/avlukke eller vurderes særskilt
-
-Eksempel på ønsket retning:
+I dag skjer dette:
 
 ```text
-Planlagt lagring overstiger anbefalt mengde i DSB sin temaveiledning. Overskridelsen vurderes som begrenset, og bygget er sprinklet. På denne bakgrunn vurderes den angitte økte mengden som akseptabel for dette bygget, forutsatt at lagringen skjer oversiktlig og i samsvar med beskrevne forutsetninger.
-
-Dersom det ønskes lagret mengder utover det som er vurdert her, må dette enten plasseres i brannsikre skap/avlukke eller underlegges en ny særskilt risikovurdering.
+Bygget er sprinklet/har automatisk slokkeanlegg ...
+Det er også lagt til grunn brannalarmanlegg/tidlig deteksjon, automatisk slokkeanlegg.
 ```
 
-### 3. Presisering om væsker vs. gass
+Jeg endrer logikken slik at når automatisk slokkeanlegg allerede brukes som hovedbegrunnelse, tas det ikke med på nytt i listen over «også lagt til grunn».
 
-Jeg legger inn en tydelig presisering i vurderingsteksten om at økt mengde bare kan aksepteres for brannfarlige væsker, ikke for gass.
+### 2. Ny formulering
 
-Teksten skal forklare faglig hvorfor:
+Teksten blir i stedet omtrent slik:
 
-- DSB-tabellen åpner for at tillatt væskemengde øker med areal
-- tillatt gassmengde øker ikke tilsvarende med bygningsstørrelse
-- dette tilsier at DSB legger en strengere vurdering til grunn for gass
-- gassmengder skal derfor ikke økes utover anbefalt mengde uten særskilt vurdering
+```text
+Overskridelsen vurderes som begrenset. Bygget er sprinklet/har automatisk slokkeanlegg, noe som reduserer sannsynligheten for videre brannutvikling og begrenser konsekvensene av et branntilløp. Det er i tillegg lagt til grunn brannalarmanlegg/tidlig deteksjon.
+```
 
-### 4. Oppdatere hjelpetekster i skjemaet
+Hvis det også er valgt røykventilasjon eller skrevet inn prosjektspesifikke tiltak, tas disse med i samme tilleggsliste.
 
-Jeg justerer teksten i skjemaet slik at den ikke lenger fremhever brannskap som et generelt eksempel på tiltak for den aktuelle vurderingen.
+### 3. Oppdatere genereringslogikken
 
-Jeg endrer blant annet:
+Jeg oppdaterer `src/pages/Brensellagring.tsx`:
 
-- infoteksten under DSB-tabellen for salgslokaler
-- placeholder for «Andre prosjektspesifikke tiltak»
-- eventuell standardtekst som kan gi inntrykk av at brannskap allerede er lagt til grunn
+- beholder `harAutomatiskSlokkeanlegg` som hovedbegrunnelse
+- lager en egen liste for tilleggstiltak som ikke inkluderer automatisk slokkeanlegg når det allerede er nevnt
+- justerer setningen fra «Det er også lagt til grunn ...» til en mer presis formulering, for eksempel «Det er i tillegg lagt til grunn ...»
 
-### 5. Forhåndsvisning og Word-eksport
+### 4. Forhåndsvisning og Word
 
-Forhåndsvisningen og Word-dokumentet bruker allerede vurderingsteksten som brukeren har i feltet. Når generatoren og standardtekstene oppdateres, vil både forhåndsvisning og Word-eksport få korrekt tekst.
+Forhåndsvisning og Word-eksport bruker den lagrede vurderingsteksten. Når ny tekst genereres etter endringen, vil begge steder få den korrigerte teksten.
 
-Jeg kontrollerer også at:
+## Viktig om eksisterende tekst
 
-- vurderingsdelen fortsatt ligger nederst i dokumentet
-- tabellen for overskridelse fortsatt viser anbefalt, planlagt, overskridelse og vurdert tillatt mengde
-- Word-eksporten ikke introduserer egen brannskapstekst uten at brukeren har skrevet det inn
+Tekst som allerede ligger i feltet blir ikke automatisk overskrevet. Brukeren må enten:
 
-## Teknisk gjennomføring
+- trykke «Generer tekst» på nytt, eller
+- redigere teksten manuelt
 
-Jeg oppdaterer hovedsakelig:
-
-- `src/pages/Brensellagring.tsx`
-  - fjerner automatisk deteksjon av «brannskap» fra salgslokaleteksten
-  - oppdaterer `foreslattOverskridelseTekst`
-  - legger inn presisering om at økning kun gjelder væsker
-  - justerer hjelpetekster/placeholdere i vurderingskortet
-
-- `src/components/brensellagring/BrensellagringPreview.tsx`
-  - kontrollerer at vurderingsteksten vises uendret og uten ekstra brannskapstekst
-
-- `src/lib/brensellagring-word-export.ts`
-  - kontrollerer at Word-eksporten bruker samme vurderingstekst uten ekstra automatisk tiltakstekst
-
-## Viktig om eksisterende dokumenter
-
-Eksisterende dokumenter som allerede har lagret gammel vurderingstekst vil beholde teksten til brukeren trykker «Generer tekst» på nytt eller redigerer feltet manuelt. Nye genererte tekster vil bruke den korrigerte formuleringen.
+for å få den nye formuleringen.
