@@ -316,8 +316,8 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const secNum = (key: string) => sections.findIndex(s => s.key === key) + 1;
   const hasAnySections = sections.length > 0;
   const logoScaleFactor = Number(logoScale) / 100;
-  const logoWidth = 110 * logoScaleFactor;
-  const logoHeight = 48 * logoScaleFactor;
+  const logoWidth = 220 * logoScaleFactor;
+  const logoHeight = 96 * logoScaleFactor;
 
   return (
     <div>
