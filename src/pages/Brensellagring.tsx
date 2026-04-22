@@ -854,136 +854,6 @@ const Brensellagring = () => {
             </CardContent>
           </Card>
 
-          <Card className="shadow-soft mb-6">
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <AlertTriangle className="h-4 w-4 text-primary" />
-                    Vurdering av mengde over anbefalt DSB-mengde
-                  </CardTitle>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Sammenligner planlagt mengde med anbefalt mengde og dokumenterer kompenserende tiltak.
-                  </p>
-                </div>
-                <Button
-                  variant={overskridelseInkludert ? "default" : "outline"}
-                  size="sm"
-                  className="h-7 text-xs gap-1.5 shrink-0"
-                  onClick={() => setOverskridelseInkludert((v) => !v)}
-                >
-                  {overskridelseInkludert ? <Check className="h-3.5 w-3.5" /> : <FilePlus2 className="h-3.5 w-3.5" />}
-                  {overskridelseInkludert ? "I dokumentet" : "Legg til i dokument"}
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {valgtBygningstype === "salgslokale" && (
-                <div className="space-y-1.5">
-                  <Label htmlFor="overskridelse-areal" className="text-xs">Arealgrunnlag for DSB-tabell</Label>
-                  <Input
-                    id="overskridelse-areal"
-                    type="number"
-                    min="0"
-                    step="any"
-                    inputMode="decimal"
-                    value={overskridelseArealgrunnlag}
-                    onChange={(e) => setOverskridelseArealgrunnlag(e.target.value)}
-                    placeholder={samletGulvareal > 0 ? samletGulvareal.toFixed(1) : "m²"}
-                    className="h-9 text-sm max-w-xs"
-                  />
-                  <p className="text-[11px] text-muted-foreground">
-                    Bruker samlet gulvareal fra brannenergidelen hvis feltet står tomt. Aktiv DSB-rad: {stykkgodsGrense.arealBeskrivelse}.
-                  </p>
-                </div>
-              )}
-
-              {overskridelseRows.length > 0 ? (
-                <div className="rounded-md border overflow-hidden">
-                  <table className="w-full text-xs">
-                    <thead className="bg-muted/50">
-                      <tr>
-                        <th className="text-left px-3 py-2 font-medium">Stoffgruppe</th>
-                        <th className="text-right px-3 py-2 font-medium">Anbefalt</th>
-                        <th className="text-right px-3 py-2 font-medium">Planlagt</th>
-                        <th className="text-right px-3 py-2 font-medium">Overskridelse</th>
-                        <th className="text-left px-3 py-2 font-medium">Vurdert tillatt</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {overskridelseRows.map((row) => (
-                        <tr key={row.id} className="border-t">
-                          <td className="px-3 py-2 font-medium">{row.stoffgruppe}</td>
-                          <td className="px-3 py-2 text-right tabular-nums">{row.anbefaltMengde.toLocaleString("nb-NO")} {row.enhet}</td>
-                          <td className="px-3 py-2 text-right tabular-nums">{row.planlagtMengde.toLocaleString("nb-NO")} {row.enhet}</td>
-                          <td className="px-3 py-2 text-right tabular-nums text-destructive">{row.overskridelse.toLocaleString("nb-NO")} {row.enhet} ({row.overskridelseProsent.toFixed(0)} %)</td>
-                          <td className="px-3 py-2">
-                            <Input
-                              value={overskridelseVurdertTillattMengde[row.id] || ""}
-                              onChange={(e) => setOverskridelseVurdertTillattMengde((prev) => ({ ...prev, [row.id]: e.target.value }))}
-                              placeholder={`${row.planlagtMengde.toLocaleString("nb-NO")} ${row.enhet}`}
-                              className="h-8 text-xs"
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="flex items-start gap-2 p-3 rounded-md bg-accent/30 border border-accent text-xs">
-                  <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                  <p className="text-muted-foreground leading-relaxed">
-                    Ingen registrerte planlagte mengder overstiger anbefalt mengde for valgt bygningstype/arealgrunnlag.
-                  </p>
-                </div>
-              )}
-
-              <div className="space-y-1.5">
-                <Label htmlFor="overskridelse-tiltak" className="text-xs">Andre prosjektspesifikke tiltak</Label>
-                <Textarea
-                  id="overskridelse-tiltak"
-                  value={overskridelseTiltak}
-                  onChange={(e) => setOverskridelseTiltak(e.target.value)}
-                  placeholder="F.eks. oppsamlingskar, låst brannskap, begrenset publikumsadgang, rutiner for kontroll og opplæring..."
-                  className="min-h-[70px] text-sm"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between gap-2">
-                  <Label htmlFor="overskridelse-vurdering" className="text-xs">Vurderingstekst</Label>
-                  <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={() => setOverskridelseVurderingstekst(foreslattOverskridelseTekst)}>
-                    Generer tekst
-                  </Button>
-                </div>
-                <Textarea
-                  id="overskridelse-vurdering"
-                  value={overskridelseVurderingstekst}
-                  onChange={(e) => setOverskridelseVurderingstekst(e.target.value)}
-                  placeholder="Beskriv hvorfor høyere mengde vurderes akseptabel basert på tiltakene..."
-                  className="min-h-[130px] text-sm"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between gap-2">
-                  <Label htmlFor="overskridelse-konklusjon" className="text-xs">Konklusjon / avgrensning</Label>
-                  <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={() => setOverskridelseKonklusjon(foreslattOverskridelseKonklusjon)}>
-                    Standardtekst
-                  </Button>
-                </div>
-                <Textarea
-                  id="overskridelse-konklusjon"
-                  value={overskridelseKonklusjon}
-                  onChange={(e) => setOverskridelseKonklusjon(e.target.value)}
-                  placeholder="Konklusjon og presisering av at vurderingen kun gjelder dette bygget..."
-                  className="min-h-[80px] text-sm"
-                />
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Brannenergi i bygget – beregning */}
           {(() => {
             const harMengder = (Object.keys(plannedAmounts) as (keyof PlannedAmounts)[]).some(
@@ -2231,6 +2101,137 @@ const Brensellagring = () => {
                     </ul>
                   </div>
                 </CardContent>
+          <Card className="shadow-soft mb-6">
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4 text-primary" />
+                    Vurdering av mengde over anbefalt DSB-mengde
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Sammenligner planlagt mengde med anbefalt mengde og dokumenterer kompenserende tiltak.
+                  </p>
+                </div>
+                <Button
+                  variant={overskridelseInkludert ? "default" : "outline"}
+                  size="sm"
+                  className="h-7 text-xs gap-1.5 shrink-0"
+                  onClick={() => setOverskridelseInkludert((v) => !v)}
+                >
+                  {overskridelseInkludert ? <Check className="h-3.5 w-3.5" /> : <FilePlus2 className="h-3.5 w-3.5" />}
+                  {overskridelseInkludert ? "I dokumentet" : "Legg til i dokument"}
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {valgtBygningstype === "salgslokale" && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="overskridelse-areal" className="text-xs">Arealgrunnlag for DSB-tabell</Label>
+                  <Input
+                    id="overskridelse-areal"
+                    type="number"
+                    min="0"
+                    step="any"
+                    inputMode="decimal"
+                    value={overskridelseArealgrunnlag}
+                    onChange={(e) => setOverskridelseArealgrunnlag(e.target.value)}
+                    placeholder={samletGulvareal > 0 ? samletGulvareal.toFixed(1) : "m²"}
+                    className="h-9 text-sm max-w-xs"
+                  />
+                  <p className="text-[11px] text-muted-foreground">
+                    Bruker samlet gulvareal fra brannenergidelen hvis feltet står tomt. Aktiv DSB-rad: {stykkgodsGrense.arealBeskrivelse}.
+                  </p>
+                </div>
+              )}
+
+              {overskridelseRows.length > 0 ? (
+                <div className="rounded-md border overflow-hidden">
+                  <table className="w-full text-xs">
+                    <thead className="bg-muted/50">
+                      <tr>
+                        <th className="text-left px-3 py-2 font-medium">Stoffgruppe</th>
+                        <th className="text-right px-3 py-2 font-medium">Anbefalt</th>
+                        <th className="text-right px-3 py-2 font-medium">Planlagt</th>
+                        <th className="text-right px-3 py-2 font-medium">Overskridelse</th>
+                        <th className="text-left px-3 py-2 font-medium">Vurdert tillatt</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {overskridelseRows.map((row) => (
+                        <tr key={row.id} className="border-t">
+                          <td className="px-3 py-2 font-medium">{row.stoffgruppe}</td>
+                          <td className="px-3 py-2 text-right tabular-nums">{row.anbefaltMengde.toLocaleString("nb-NO")} {row.enhet}</td>
+                          <td className="px-3 py-2 text-right tabular-nums">{row.planlagtMengde.toLocaleString("nb-NO")} {row.enhet}</td>
+                          <td className="px-3 py-2 text-right tabular-nums text-destructive">{row.overskridelse.toLocaleString("nb-NO")} {row.enhet} ({row.overskridelseProsent.toFixed(0)} %)</td>
+                          <td className="px-3 py-2">
+                            <Input
+                              value={overskridelseVurdertTillattMengde[row.id] || ""}
+                              onChange={(e) => setOverskridelseVurdertTillattMengde((prev) => ({ ...prev, [row.id]: e.target.value }))}
+                              placeholder={`${row.planlagtMengde.toLocaleString("nb-NO")} ${row.enhet}`}
+                              className="h-8 text-xs"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="flex items-start gap-2 p-3 rounded-md bg-accent/30 border border-accent text-xs">
+                  <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                  <p className="text-muted-foreground leading-relaxed">
+                    Ingen registrerte planlagte mengder overstiger anbefalt mengde for valgt bygningstype/arealgrunnlag.
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <Label htmlFor="overskridelse-tiltak" className="text-xs">Andre prosjektspesifikke tiltak</Label>
+                <Textarea
+                  id="overskridelse-tiltak"
+                  value={overskridelseTiltak}
+                  onChange={(e) => setOverskridelseTiltak(e.target.value)}
+                  placeholder="F.eks. oppsamlingskar, låst brannskap, begrenset publikumsadgang, rutiner for kontroll og opplæring..."
+                  className="min-h-[70px] text-sm"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <Label htmlFor="overskridelse-vurdering" className="text-xs">Vurderingstekst</Label>
+                  <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={() => setOverskridelseVurderingstekst(foreslattOverskridelseTekst)}>
+                    Generer tekst
+                  </Button>
+                </div>
+                <Textarea
+                  id="overskridelse-vurdering"
+                  value={overskridelseVurderingstekst}
+                  onChange={(e) => setOverskridelseVurderingstekst(e.target.value)}
+                  placeholder="Beskriv hvorfor høyere mengde vurderes akseptabel basert på tiltakene..."
+                  className="min-h-[130px] text-sm"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <Label htmlFor="overskridelse-konklusjon" className="text-xs">Konklusjon / avgrensning</Label>
+                  <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={() => setOverskridelseKonklusjon(foreslattOverskridelseKonklusjon)}>
+                    Standardtekst
+                  </Button>
+                </div>
+                <Textarea
+                  id="overskridelse-konklusjon"
+                  value={overskridelseKonklusjon}
+                  onChange={(e) => setOverskridelseKonklusjon(e.target.value)}
+                  placeholder="Konklusjon og presisering av at vurderingen kun gjelder dette bygget..."
+                  className="min-h-[80px] text-sm"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+
               </Card>
               </div>
 
