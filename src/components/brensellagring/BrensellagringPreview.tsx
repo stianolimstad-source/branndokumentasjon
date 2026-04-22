@@ -454,6 +454,56 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           </>
         )}
 
+        {visOverskridelse && (
+          <>
+            <h2 style={h2}>{secNum("overskridelse")}. Vurdering av mengde over anbefalt DSB-mengde</h2>
+            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
+              Vurderingen sammenligner planlagte mengder med anbefalte mengder i DSB sin temaveiledning. Høyere mengder må begrunnes konkret for bygget, tiltakene og driftsforutsetningene.
+              {overskridelseArealgrunnlag && ` Arealgrunnlag for salgslokale: ${overskridelseArealgrunnlag} m².`}
+            </p>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+              <thead>
+                <tr>
+                  <th style={thStyle}>Stoffgruppe</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Anbefalt mengde</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Planlagt mengde</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Overskridelse</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Vurdert tillatt mengde</th>
+                </tr>
+              </thead>
+              <tbody>
+                {overskridelseRows.map((row) => (
+                  <tr key={row.id}>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>{row.stoffgruppe}</td>
+                    <td style={{ ...tdStyle, textAlign: "right" }}>{row.anbefaltMengde.toLocaleString("nb-NO")} {row.enhet}</td>
+                    <td style={{ ...tdStyle, textAlign: "right" }}>{row.planlagtMengde.toLocaleString("nb-NO")} {row.enhet}</td>
+                    <td style={{ ...tdStyle, textAlign: "right", color: "#b91c1c", fontWeight: 600 }}>{row.overskridelse.toLocaleString("nb-NO")} {row.enhet} ({row.overskridelseProsent.toFixed(0)} %)</td>
+                    <td style={{ ...tdStyle, textAlign: "right" }}>{row.vurdertTillattMengde || `${row.planlagtMengde.toLocaleString("nb-NO")} ${row.enhet}`}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {overskridelseTiltak.trim() && (
+              <div style={{ marginBottom: 12, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Prosjektspesifikke tiltak</p>
+                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{overskridelseTiltak}</p>
+              </div>
+            )}
+            {overskridelseVurderingstekst.trim() && (
+              <div style={{ marginBottom: 12, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Vurdering</p>
+                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{overskridelseVurderingstekst}</p>
+              </div>
+            )}
+            {overskridelseKonklusjon.trim() && (
+              <div style={{ marginBottom: 16, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Konklusjon og avgrensning</p>
+                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{overskridelseKonklusjon}</p>
+              </div>
+            )}
+          </>
+        )}
+
         {visBrannenergi && (
           <>
             <h2 style={h2}>{secNum("brannenergi")}. Brannenergi i bygget</h2>
