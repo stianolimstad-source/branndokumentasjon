@@ -1,107 +1,96 @@
 
-## Plan: Legge til «Utarbeidet av» og «KS» i brensellagring-rapporten
+## Plan: Endre begrepet «Planlagt lagret mengde i bygget» til mengde utover DSB-veiledningen
 
-Jeg legger inn dokumentkontroll i rapporten for «Lagring av brannfarlig stoff», slik at rapporten viser hvem som har utarbeidet dokumentet og hvem som har kvalitetssikret det.
+Jeg oppdaterer brensellagring-modulen slik at denne delen ikke lenger fremstår som en generell oversikt over all brannfarlig lagring i bygget. Den skal tydelig beskrive at feltet gjelder mengder som ønskes lagret utover DSB sin veiledning, og som ikke allerede håndteres med brannsikre skap eller egne brannceller for brannfarlig vare.
 
-## Hva som bygges
+## Hva som endres
 
-### 1. Automatisk «Utarbeidet av»
+### 1. Ny tittel i skjemaet
 
-Rapporten skal vise brukeren som lager rapporten.
-
-Jeg henter dette fra innlogget bruker/profil:
-
-- navn fra brukerprofil hvis tilgjengelig
-- e-post som fallback dersom navn mangler
-- eventuelt firma/tittel dersom det allerede finnes i profilen
-
-Dette vises i rapportens informasjonstabell, for eksempel:
+Dagens tittel:
 
 ```text
-Utarbeidet av: Ola Nordmann
+Planlagt lagret mengde i bygget
 ```
 
-Hvis profilnavn mangler, brukes e-post:
+endres til for eksempel:
 
 ```text
-Utarbeidet av: ola@example.no
+Planlagt mengde utover DSB sin veiledning
 ```
 
-### 2. Manuelt KS-felt
+Dette gjør det tydelig at brukeren bare skal registrere mengdene som inngår i avviksvurderingen mot DSB-tabellen.
 
-I skjemaet legger jeg til et nytt felt for kvalitetssikring:
+### 2. Presisering i hjelpetekst
+
+Hjelpeteksten under tittelen endres fra generell lagring til en faglig presisering:
 
 ```text
-KS / Kontrollert av
+Fyll inn mengder brannfarlig stoff som ønskes lagret utover DSB sin anbefalte mengde. Mengder som oppbevares i brannsikre skap eller i egne brannceller beregnet for brannfarlig vare skal ikke tas med her.
 ```
 
-Brukeren kan fylle inn navn selv, for eksempel:
+### 3. Kommentar-placeholder oppdateres
+
+Kommentar-feltet justeres slik at det peker på relevant vurderingsgrunnlag:
 
 ```text
-Kari Kontrollør
+F.eks. hvor mengdene plasseres, hvorfor de ikke står i brannskap/egen branncelle, og hvilke forutsetninger som gjelder for lagringen.
 ```
 
-Dette feltet lagres sammen med brensellagring-dokumentet og vises i rapporten.
+### 4. Forhåndsvisning oppdateres
 
-### 3. Rapportvisning
-
-I forhåndsvisningen legger jeg inn dokumentkontrollen i toppinformasjonen sammen med firma, kunde, prosjekt, adresse, dato og regelverk.
-
-Eksempel:
+I rapportforhåndsvisningen endres seksjonsnavnet tilsvarende:
 
 ```text
-Firma:          ...
-Kunde:          ...
-Prosjekt:       ...
-Adresse:        ...
-Bygningstype:   ...
-Utarbeidet av:  ...
-KS:             ...
-Dato:           ...
-Regelverk:      ...
+Planlagt mengde utover DSB sin veiledning
 ```
 
-Hvis KS-feltet er tomt, skjules raden eller vises som tom etter samme mønster som resten av tabellen.
+Beskrivelsen under overskriften endres til å forklare at tabellen viser mengder som vurderes utover anbefalt DSB-nivå, ikke byggets totale mengde brannfarlig stoff.
 
-### 4. Word-eksport
+Tabellkolonnen «Planlagt mengde» kan beholdes, siden den beskriver mengden innenfor denne vurderingsdelen.
 
-Word-dokumentet oppdateres tilsvarende, slik at «Utarbeidet av» og «KS» blir med i den samme informasjonstabellen øverst i dokumentet.
+### 5. Word-eksport oppdateres
 
-Dette gir samme innhold i:
+Word-dokumentet får samme endring som forhåndsvisningen:
 
-- forhåndsvisning
-- nedlastet Word-dokument
-- lagret dokument
+- ny seksjonstittel
+- ny forklarende tekst under tittelen
+- samme tabellinnhold som før
 
-### 5. Lagring og eksisterende dokumenter
+Dette sikrer at skjema, forhåndsvisning og nedlastet Word-dokument bruker samme begrepsbruk.
 
-Dette krever ingen databaseendring. Feltene lagres i eksisterende `content`-JSON for brensellagring-dokumentet.
+### 6. Relaterte hjelpetekster justeres
 
-Eksisterende dokumenter vil fortsatt åpne som før. For gamle dokumenter:
+Tekster som peker tilbake på den gamle seksjonen oppdateres, blant annet:
 
-- «Utarbeidet av» fylles automatisk fra innlogget bruker/profil
-- «KS» er tomt frem til brukeren fyller det inn og lagrer dokumentet
+```text
+Vurderingen er beregnet automatisk fra «Planlagt lagret mengde i bygget».
+```
+
+endres til:
+
+```text
+Vurderingen er beregnet automatisk fra «Planlagt mengde utover DSB sin veiledning».
+```
+
+Det samme gjelder meldingen som vises dersom ingen mengder er registrert.
 
 ## Teknisk gjennomføring
 
 Jeg oppdaterer hovedsakelig:
 
 - `src/pages/Brensellagring.tsx`
-  - henter flere profilfelt for innlogget bruker
-  - lager automatisk visningsnavn for «Utarbeidet av»
-  - legger til state for `ksAnsvarlig`
-  - legger inn inputfelt for KS i toppdelen av skjemaet
-  - lagrer/leser KS-feltet i dokumentets `content`
-  - sender `utarbeidetAv` og `ksAnsvarlig` videre til forhåndsvisning og Word-eksport
+  - tittel, hjelpetekst og kommentar-placeholder i inndatafeltet
+  - interne hjelpetekster for innmeldingsplikt og overskridelsesvurdering
+  - kommentarer i koden der de bruker gammel formulering
 
 - `src/components/brensellagring/BrensellagringPreview.tsx`
-  - utvider props med `utarbeidetAv` og `ksAnsvarlig`
-  - viser feltene i toppinformasjonstabellen
+  - seksjonsnavn i dynamisk kapitteloversikt
+  - overskrift og ingress i rapportforhåndsvisningen
 
 - `src/lib/brensellagring-word-export.ts`
-  - utvider Word-data med `utarbeidetAv` og `ksAnsvarlig`
-  - legger feltene inn i dokumentets informasjonstabell
+  - seksjonsoverskrift og ingress i Word-eksporten
 
 ## Ingen databaseendring
 
-Endringen bruker eksisterende lagringsstruktur og krever ingen migrasjoner.
+Dette er en tekst- og begrepsendring. Eksisterende lagrede mengder og dokumenter berøres ikke strukturelt.
