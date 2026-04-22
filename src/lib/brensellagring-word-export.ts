@@ -145,6 +145,31 @@ const table = (headers: string[], rows: string[][], widths: number[]) =>
     ],
   });
 
+const headerBar = (title: string, subtitle?: string) =>
+  new Table({
+    width: { size: TABLE_WIDTH, type: WidthType.DXA },
+    columnWidths: [TABLE_WIDTH],
+    margins: { top: 180, bottom: 180 },
+    borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE }, insideHorizontal: { style: BorderStyle.NONE }, insideVertical: { style: BorderStyle.NONE } },
+    rows: [
+      new TableRow({
+        children: [
+          new TableCell({
+            width: { size: TABLE_WIDTH, type: WidthType.DXA },
+            borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } },
+            shading: { fill: "1E3A5F", type: ShadingType.CLEAR },
+            margins: { top: 220, bottom: 220, left: 300, right: 300 },
+            children: [
+              new Paragraph({ spacing: { after: 30 }, children: [text("KRAVDOKUMENT", { size: 16, color: "FFFFFF", bold: true })] }),
+              new Paragraph({ spacing: { after: subtitle ? 60 : 0 }, children: [text(title, { size: 32, color: "FFFFFF", bold: true })] }),
+              ...(subtitle ? [new Paragraph({ children: [text(subtitle, { size: 20, color: "D7E3F0" })] })] : []),
+            ],
+          }),
+        ],
+      }),
+    ],
+  });
+
 async function logoParagraph(logoUrl?: string): Promise<Paragraph | null> {
   if (!logoUrl) return null;
   try {
