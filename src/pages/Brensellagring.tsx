@@ -185,15 +185,15 @@ const Brensellagring = () => {
   const [brannenergiKommentar, setBrannenergiKommentar] = useState("");
 
   type BranntekniskeTiltakData = {
-    brannalarm: { status: string; beskrivelse: string; kommentar: string };
-    roykventilasjon: { status: string; type: string; beskrivelse: string };
-    slokkeanlegg: { status: string; type: string; beskrivelse: string };
+    brannalarm: { status: string; beskrivelse: string; kommentar: string; rapporttekst: string };
+    roykventilasjon: { status: string; type: string; beskrivelse: string; rapporttekst: string };
+    slokkeanlegg: { status: string; type: string; beskrivelse: string; rapporttekst: string };
     generellKommentar: string;
   };
   const TOMME_BRANNTEKNISKE_TILTAK: BranntekniskeTiltakData = {
-    brannalarm: { status: "", beskrivelse: "", kommentar: "" },
-    roykventilasjon: { status: "", type: "", beskrivelse: "" },
-    slokkeanlegg: { status: "", type: "", beskrivelse: "" },
+    brannalarm: { status: "", beskrivelse: "", kommentar: "", rapporttekst: "" },
+    roykventilasjon: { status: "", type: "", beskrivelse: "", rapporttekst: "" },
+    slokkeanlegg: { status: "", type: "", beskrivelse: "", rapporttekst: "" },
     generellKommentar: "",
   };
   const TILTAK_STATUS = ["Ikke aktuelt", "Ikke installert", "Installert / forutsatt", "Eksisterende anlegg beholdes"];
@@ -201,6 +201,24 @@ const Brensellagring = () => {
   const SLOKKEANLEGG_TYPER = ["Sprinkleranlegg", "Vanntåkeanlegg", "Skum-/gassanlegg", "Annet"];
   const [branntekniskeTiltakInkludert, setBranntekniskeTiltakInkludert] = useState(false);
   const [branntekniskeTiltak, setBranntekniskeTiltak] = useState<BranntekniskeTiltakData>(TOMME_BRANNTEKNISKE_TILTAK);
+
+  const getOriginalTiltakTekst = (tiltak: "brannalarm" | "roykventilasjon" | "slokkeanlegg") => {
+    if (tiltak === "brannalarm") {
+      return "Brannalarmanlegg bidrar til tidlig deteksjon og varsling ved branntilløp. Tidlig varsling reduserer normalt nødvendig rømningstid, fordi personer i bygget kan starte evakuering tidligere. Tiltaket øker dermed sikkerhetsmarginen mellom tilgjengelig rømningstid og nødvendig rømningstid.";
+    }
+    if (tiltak === "roykventilasjon") {
+      return "Røykventilasjon har som formål å begrense røykoppbygging og bidra til bedre sikt- og temperaturforhold i bygget ved brann. Tiltaket kan bidra til å opprettholde tilgjengelig rømningstid ved at røyk- og varmebelastningen i rømningsfasen reduseres.";
+    }
+    return "Automatisk slokkeanlegg kan bidra til å kontrollere eller slokke brannen i en tidlig fase. Dette reduserer brannutvikling, røykproduksjon og temperaturpåvirkning, og kan dermed øke tilgjengelig rømningstid sammenlignet med et bygg uten automatisk slokkeanlegg.";
+  };
+
+  const withRapporttekst = <T extends "brannalarm" | "roykventilasjon" | "slokkeanlegg">(
+    tiltak: T,
+    value: BranntekniskeTiltakData[T]
+  ): BranntekniskeTiltakData[T] => ({
+    ...value,
+    rapporttekst: value.rapporttekst.trim() ? value.rapporttekst : getOriginalTiltakTekst(tiltak),
+  });
 
   const updateBranntekniskTiltak = <T extends keyof BranntekniskeTiltakData>(
     tiltak: T,
@@ -928,7 +946,7 @@ const Brensellagring = () => {
                       <Label className="text-xs">Status</Label>
                       <Select
                         value={branntekniskeTiltak.brannalarm.status}
-                        onValueChange={(status) => updateBranntekniskTiltak("brannalarm", { ...branntekniskeTiltak.brannalarm, status })}
+                        onValueChange={(status) => updateBranntekniskTiltak("brannalarm", withRapporttekst("brannalarm", { ...branntekniskeTiltak.brannalarm, status }))}
                       >
                         <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Velg status" /></SelectTrigger>
                         <SelectContent>{TILTAK_STATUS.map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}</SelectContent>
@@ -950,6 +968,20 @@ const Brensellagring = () => {
                     placeholder="Kommentar til deteksjon, manuelle meldere eller dekning i lagerrom..."
                     className="min-h-[60px] text-sm"
                   />
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <Label className="text-xs">Rapporttekst / virkning på rømningstid</Label>
+                      <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={() => updateBranntekniskTiltak("brannalarm", { ...branntekniskeTiltak.brannalarm, rapporttekst: getOriginalTiltakTekst("brannalarm") })}>
+                        Original tekst
+                      </Button>
+                    </div>
+                    <Textarea
+                      value={branntekniskeTiltak.brannalarm.rapporttekst}
+                      onChange={(e) => updateBranntekniskTiltak("brannalarm", { ...branntekniskeTiltak.brannalarm, rapporttekst: e.target.value })}
+                      placeholder="Fagtekst om tiltakets funksjon og påvirkning på rømningstid..."
+                      className="min-h-[120px] text-sm"
+                    />
+                  </div>
                 </div>
 
                 <div className="rounded-lg border bg-muted/20 p-3 space-y-3">
@@ -964,7 +996,7 @@ const Brensellagring = () => {
                       <Label className="text-xs">Status</Label>
                       <Select
                         value={branntekniskeTiltak.roykventilasjon.status}
-                        onValueChange={(status) => updateBranntekniskTiltak("roykventilasjon", { ...branntekniskeTiltak.roykventilasjon, status })}
+                        onValueChange={(status) => updateBranntekniskTiltak("roykventilasjon", withRapporttekst("roykventilasjon", { ...branntekniskeTiltak.roykventilasjon, status }))}
                       >
                         <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Velg status" /></SelectTrigger>
                         <SelectContent>{TILTAK_STATUS.map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}</SelectContent>
@@ -974,7 +1006,7 @@ const Brensellagring = () => {
                       <Label className="text-xs">Type</Label>
                       <Select
                         value={branntekniskeTiltak.roykventilasjon.type}
-                        onValueChange={(type) => updateBranntekniskTiltak("roykventilasjon", { ...branntekniskeTiltak.roykventilasjon, type })}
+                        onValueChange={(type) => updateBranntekniskTiltak("roykventilasjon", withRapporttekst("roykventilasjon", { ...branntekniskeTiltak.roykventilasjon, type }))}
                       >
                         <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Velg type" /></SelectTrigger>
                         <SelectContent>{ROYKVENTILASJON_TYPER.map((type) => <SelectItem key={type} value={type}>{type}</SelectItem>)}</SelectContent>
@@ -987,6 +1019,20 @@ const Brensellagring = () => {
                     placeholder="F.eks. røykventilasjon vurderes ikke nødvendig, eller dimensjoneres iht. HO-3/2000..."
                     className="min-h-[60px] text-sm"
                   />
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <Label className="text-xs">Rapporttekst / virkning på rømningstid</Label>
+                      <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={() => updateBranntekniskTiltak("roykventilasjon", { ...branntekniskeTiltak.roykventilasjon, rapporttekst: getOriginalTiltakTekst("roykventilasjon") })}>
+                        Original tekst
+                      </Button>
+                    </div>
+                    <Textarea
+                      value={branntekniskeTiltak.roykventilasjon.rapporttekst}
+                      onChange={(e) => updateBranntekniskTiltak("roykventilasjon", { ...branntekniskeTiltak.roykventilasjon, rapporttekst: e.target.value })}
+                      placeholder="Fagtekst om tiltakets funksjon og påvirkning på rømningstid..."
+                      className="min-h-[120px] text-sm"
+                    />
+                  </div>
                 </div>
 
                 <div className="rounded-lg border bg-muted/20 p-3 space-y-3">
@@ -996,7 +1042,7 @@ const Brensellagring = () => {
                       <Label className="text-xs">Status</Label>
                       <Select
                         value={branntekniskeTiltak.slokkeanlegg.status}
-                        onValueChange={(status) => updateBranntekniskTiltak("slokkeanlegg", { ...branntekniskeTiltak.slokkeanlegg, status })}
+                        onValueChange={(status) => updateBranntekniskTiltak("slokkeanlegg", withRapporttekst("slokkeanlegg", { ...branntekniskeTiltak.slokkeanlegg, status }))}
                       >
                         <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Velg status" /></SelectTrigger>
                         <SelectContent>{TILTAK_STATUS.map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}</SelectContent>
@@ -1006,7 +1052,7 @@ const Brensellagring = () => {
                       <Label className="text-xs">Type</Label>
                       <Select
                         value={branntekniskeTiltak.slokkeanlegg.type}
-                        onValueChange={(type) => updateBranntekniskTiltak("slokkeanlegg", { ...branntekniskeTiltak.slokkeanlegg, type })}
+                        onValueChange={(type) => updateBranntekniskTiltak("slokkeanlegg", withRapporttekst("slokkeanlegg", { ...branntekniskeTiltak.slokkeanlegg, type }))}
                       >
                         <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Velg type" /></SelectTrigger>
                         <SelectContent>{SLOKKEANLEGG_TYPER.map((type) => <SelectItem key={type} value={type}>{type}</SelectItem>)}</SelectContent>
@@ -1019,6 +1065,20 @@ const Brensellagring = () => {
                     placeholder="F.eks. bygget er sprinklet, lagerrom omfattes av eksisterende sprinkleranlegg..."
                     className="min-h-[60px] text-sm"
                   />
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <Label className="text-xs">Rapporttekst / virkning på rømningstid</Label>
+                      <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={() => updateBranntekniskTiltak("slokkeanlegg", { ...branntekniskeTiltak.slokkeanlegg, rapporttekst: getOriginalTiltakTekst("slokkeanlegg") })}>
+                        Original tekst
+                      </Button>
+                    </div>
+                    <Textarea
+                      value={branntekniskeTiltak.slokkeanlegg.rapporttekst}
+                      onChange={(e) => updateBranntekniskTiltak("slokkeanlegg", { ...branntekniskeTiltak.slokkeanlegg, rapporttekst: e.target.value })}
+                      placeholder="Fagtekst om tiltakets funksjon og påvirkning på rømningstid..."
+                      className="min-h-[120px] text-sm"
+                    />
+                  </div>
                 </div>
               </div>
 

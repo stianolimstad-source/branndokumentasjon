@@ -61,9 +61,9 @@ export interface InnmeldingVurderingData {
 }
 
 export interface BranntekniskeTiltakData {
-  brannalarm: { status: string; beskrivelse: string; kommentar: string };
-  roykventilasjon: { status: string; type: string; beskrivelse: string };
-  slokkeanlegg: { status: string; type: string; beskrivelse: string };
+  brannalarm: { status: string; beskrivelse: string; kommentar: string; rapporttekst?: string };
+  roykventilasjon: { status: string; type: string; beskrivelse: string; rapporttekst?: string };
+  slokkeanlegg: { status: string; type: string; beskrivelse: string; rapporttekst?: string };
   generellKommentar: string;
 }
 
@@ -254,18 +254,21 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           tiltak: "Brannalarmanlegg",
           status: branntekniskeTiltak.brannalarm.status,
           beskrivelse: [branntekniskeTiltak.brannalarm.beskrivelse, branntekniskeTiltak.brannalarm.kommentar].filter(Boolean).join("\n"),
+          rapporttekst: branntekniskeTiltak.brannalarm.rapporttekst || "",
         },
         {
           tiltak: "Røykventilasjon",
           status: branntekniskeTiltak.roykventilasjon.status,
           beskrivelse: [branntekniskeTiltak.roykventilasjon.type, branntekniskeTiltak.roykventilasjon.beskrivelse].filter(Boolean).join("\n"),
+          rapporttekst: branntekniskeTiltak.roykventilasjon.rapporttekst || "",
         },
         {
           tiltak: "Automatisk slokkeanlegg",
           status: branntekniskeTiltak.slokkeanlegg.status,
           beskrivelse: [branntekniskeTiltak.slokkeanlegg.type, branntekniskeTiltak.slokkeanlegg.beskrivelse].filter(Boolean).join("\n"),
+          rapporttekst: branntekniskeTiltak.slokkeanlegg.rapporttekst || "",
         },
-      ].filter((row) => row.status.trim() || row.beskrivelse.trim())
+      ].filter((row) => row.status.trim() || row.beskrivelse.trim() || row.rapporttekst.trim())
     : [];
   const visBranntekniskeTiltak = branntekniskeTiltakInkludert && branntekniskeTiltakRows.length > 0;
   const formatMJ = (v: number) => {
@@ -492,9 +495,9 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
               <thead>
                 <tr>
-                  <th style={{ ...thStyle, width: "26%" }}>Tiltak</th>
-                  <th style={{ ...thStyle, width: "24%" }}>Status</th>
-                  <th style={thStyle}>Beskrivelse</th>
+                  <th style={{ ...thStyle, width: "24%" }}>Tiltak</th>
+                  <th style={{ ...thStyle, width: "20%" }}>Status</th>
+                  <th style={thStyle}>Beskrivelse og virkning på rømningstid</th>
                 </tr>
               </thead>
               <tbody>
@@ -502,7 +505,11 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                   <tr key={row.tiltak}>
                     <td style={{ ...tdStyle, fontWeight: 500 }}>{row.tiltak}</td>
                     <td style={tdStyle}>{row.status || "—"}</td>
-                    <td style={{ ...tdStyle, whiteSpace: "pre-wrap" }}>{row.beskrivelse || "—"}</td>
+                    <td style={{ ...tdStyle, whiteSpace: "pre-wrap" }}>
+                      {row.beskrivelse && <p style={{ margin: 0, marginBottom: row.rapporttekst ? 6 : 0 }}>{row.beskrivelse}</p>}
+                      {row.rapporttekst && <p style={{ margin: 0 }}>{row.rapporttekst}</p>}
+                      {!row.beskrivelse && !row.rapporttekst && "—"}
+                    </td>
                   </tr>
                 ))}
               </tbody>
