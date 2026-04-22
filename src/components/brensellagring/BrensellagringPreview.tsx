@@ -246,6 +246,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         .filter((r) => r.verdi !== "" && parseFloat(r.verdi) > 0)
     : [];
   const visPlanlagt = plannedInkludert && plannedRows.length > 0;
+  const visOverskridelse = overskridelseInkludert && overskridelseRows.length > 0;
 
   // Brannenergi – beregning
   const energiBidrag = (plannedAmounts && energitetthet)
@@ -320,6 +321,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   // Build visible sections dynamically based on selected items
   const sections: { key: string; label: string }[] = [];
   if (visPlanlagt) sections.push({ key: "planlagt", label: "Planlagt lagret mengde i bygget" });
+  if (visOverskridelse) sections.push({ key: "overskridelse", label: "Vurdering av mengde over anbefalt DSB-mengde" });
   if (visBrannenergi) sections.push({ key: "brannenergi", label: "Brannenergi i bygget" });
   if (visBranntekniskeTiltak) sections.push({ key: "branntekniskeTiltak", label: "Branntekniske tiltak i bygget" });
   if (visInnmelding) sections.push({ key: "innmelding", label: "Innmeldingsplikt til DSB" });
