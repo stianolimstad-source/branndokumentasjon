@@ -1,168 +1,172 @@
 
 ## Mål
-Utvide seksjonen «Branntekniske tiltak i bygget» slik at hvert tiltak får en automatisk fagtekst om funksjon og betydning for tilgjengelig/nødvendig rømningstid. Teksten skal kunne redigeres fritt, og brukeren skal kunne trykke «Original tekst» for å tilbakestille til den automatisk genererte standardteksten.
 
-Tiltakene gjelder:
-- Brannalarmanlegg
-- Røykventilasjon
-- Automatisk slokkeanlegg
+Justere «Brannenergi i bygget» for salgslokaler slik at lagring av brannfarlig vare behandles som et tillegg til normal brannenergi i bygget, ikke som hele brannenergien alene.
 
-## Endring på input-siden
+Resultatet skal vise:
+- generell/statistisk brannenergi for bygget uten brannfarlig lagring
+- brannenergi fra planlagte brannfarlige varer som tillegg
+- spesifikk brannenergi per m² omhyllingsflate for begge tilfeller
+- sammenligning med og uten brannfarlige materialer, slik at man kan vurdere om økningen er vesentlig
 
-I `src/pages/Brensellagring.tsx` utvides kortet «Branntekniske tiltak i bygget».
+## Faglig grunnlag
 
-For hvert tiltak legges det til et nytt tekstfelt:
-
-```text
-Rapporttekst / virkning på rømningstid
-```
-
-Feltet fylles automatisk med standardtekst når brukeren velger status/type, men kan redigeres manuelt.
-
-Ved siden av feltet legges en knapp:
+For salgslokale/kjøpesenter legges det inn en standardverdi:
 
 ```text
-Original tekst
+730 MJ/m² gulvareal
 ```
 
-Knappen erstatter feltets innhold med standardteksten for valgt tiltak/status/type.
-
-## Foreslåtte standardtekster
-
-### Brannalarmanlegg
-Teksten beskriver at brannalarmanlegg gir tidlig deteksjon og varsling, og dermed bidrar til å redusere nødvendig rømningstid ved at personer i bygget varsles tidligere. Tidlig varsling gir økt sikkerhetsmargin mellom tilgjengelig rømningstid og nødvendig rømningstid.
-
-Eksempel:
+Kilde vises som:
 
 ```text
-Brannalarmanlegg bidrar til tidlig deteksjon og varsling ved branntilløp. Tidlig varsling reduserer normalt nødvendig rømningstid, fordi personer i bygget kan starte evakuering tidligere. Tiltaket øker dermed sikkerhetsmarginen mellom tilgjengelig rømningstid og nødvendig rømningstid.
+Byggforsk 321.051 Brannenergi i bygninger. Beregninger og statistiske verdier
 ```
 
-### Røykventilasjon
-Teksten beskriver at røykventilasjon kan begrense røykoppbygging, bedre siktforhold og redusere temperatur-/røykpåvirkning i rømningsfasen. Dette kan bidra til å opprettholde tilgjengelig rømningstid.
+Denne verdien brukes som normal brannenergi for bygget før planlagt lagring av brannfarlig vare legges til.
 
-Eksempel:
+## Endring i beregningslogikk
+
+Eksisterende mål per etasje brukes videre, men beregningen utvides:
+
+For hver etasje beregnes:
+- gulvareal: `lengde × bredde`
+- omhyllingsflate: `gulv + tak + vegger = 2LB + 2LH + 2BH`
+
+For hele vurdert areal beregnes:
+- samlet gulvareal
+- samlet omhyllingsflate
+- generell brannenergi uten brannfarlig vare:
+  - `730 MJ/m² × samlet gulvareal`
+- tilleggsbrannenergi fra planlagte brannfarlige varer:
+  - dagens beregning fra mengde og energitetthet
+- total brannenergi med brannfarlig vare:
+  - generell brannenergi + tilleggsbrannenergi
+
+Deretter vises:
+- generell brannenergi per m² omhyllingsflate
+- tilleggsbrannenergi per m² omhyllingsflate
+- total brannenergi per m² omhyllingsflate
+- prosentvis økning fra generell situasjon til situasjon med brannfarlig vare
+
+## Input-side
+
+I `src/pages/Brensellagring.tsx` endres kortet «Brannenergi i bygget».
+
+### Ny tekst og struktur
+
+Kortet får tydeligere forklaring om at beregningen består av to deler:
 
 ```text
-Røykventilasjon har som formål å begrense røykoppbygging og bidra til bedre sikt- og temperaturforhold i bygget ved brann. Tiltaket kan bidra til å opprettholde tilgjengelig rømningstid ved at røyk- og varmebelastningen i rømningsfasen reduseres.
+1. Generell brannenergi i bygget uten brannfarlig lagring
+2. Tillegg fra planlagt lagring av brannfarlige varer
 ```
 
-### Automatisk slokkeanlegg
-Teksten beskriver at automatisk slokkeanlegg kan kontrollere eller slokke brannen tidlig, redusere brannutvikling, røykproduksjon og temperatur, og dermed øke tilgjengelig rømningstid.
-
-Eksempel:
+For salgslokaler vises en infoboks:
 
 ```text
-Automatisk slokkeanlegg kan bidra til å kontrollere eller slokke brannen i en tidlig fase. Dette reduserer brannutvikling, røykproduksjon og temperaturpåvirkning, og kan dermed øke tilgjengelig rømningstid sammenlignet med et bygg uten automatisk slokkeanlegg.
+For salgslokale/kjøpesenter benyttes 730 MJ/m² gulvareal som statistisk brannenergi iht. Byggforsk 321.051. Planlagt lagring av brannfarlig vare beregnes som et tillegg til denne brannenergien.
 ```
 
-## State og lagring
+### Standardverdi
 
-Eksisterende state for `branntekniskeTiltak` utvides bakoverkompatibelt:
+Det legges inn en state for generell brannenergi per gulvareal, med standard:
 
 ```ts
-branntekniskeTiltak: {
-  brannalarm: {
-    status: string;
-    beskrivelse: string;
-    kommentar: string;
-    rapporttekst: string;
-  };
-  roykventilasjon: {
-    status: string;
-    type: string;
-    beskrivelse: string;
-    rapporttekst: string;
-  };
-  slokkeanlegg: {
-    status: string;
-    type: string;
-    beskrivelse: string;
-    rapporttekst: string;
-  };
-  generellKommentar: string;
-}
+generellBrannenergiMJm2 = "730"
 ```
 
-Eksisterende dokumenter som mangler `rapporttekst` skal fortsatt åpnes uten feil. Tomme felt initialiseres med tom streng.
+Feltet kan vises som redigerbart, slik at brukeren kan justere dersom prosjektet har et annet dokumentert grunnlag.
 
-## Automatisk generering uten å overskrive brukerens tekst
-
-Det legges inn hjelpefunksjoner i `Brensellagring.tsx`:
-
-- `getOriginalTiltakTekst("brannalarm", status)`
-- `getOriginalTiltakTekst("roykventilasjon", status, type)`
-- `getOriginalTiltakTekst("slokkeanlegg", status, type)`
-
-Når brukeren endrer status/type:
-- Hvis rapporttekstfeltet er tomt, fylles det automatisk med originaltekst.
-- Hvis rapporttekstfeltet allerede er redigert manuelt, overskrives det ikke.
-- Knappen «Original tekst» kan brukes for å manuelt tilbakestille teksten.
-
-## UI-oppsett
-
-Hver tiltak-boks får denne strukturen:
+Label:
 
 ```text
-Brannalarmanlegg
-[Status] [Type/beskrivelse]
-[Kommentar]
-Rapporttekst / virkning på rømningstid        [Original tekst]
-[Redigerbart tekstfelt]
+Generell brannenergi uten brannfarlig lagring (MJ/m² gulvareal)
 ```
 
-For røykventilasjon beholdes knappen til beregningsverktøyet.
+Hjelpetekst:
 
-Tekstfeltene får større høyde enn kommentarene, f.eks. `min-h-[120px]`, siden dette er rapporttekst.
+```text
+Standardverdi for salgslokale/kjøpesenter: 730 MJ/m², Byggforsk 321.051.
+```
+
+## Resultatvisning på input-siden
+
+Dagens tabell for brannfarlige materialer beholdes, men får ny overskrift:
+
+```text
+Tillegg fra brannfarlige varer
+```
+
+Under/over denne legges det inn en sammenligningstabell:
+
+| Beregningsdel | Total brannenergi | Spesifikk brannenergi per m² omhyllingsflate |
+|---|---:|---:|
+| Generell brannenergi uten brannfarlig lagring | ... MJ | ... MJ/m² |
+| Tillegg fra brannfarlige varer | ... MJ | ... MJ/m² |
+| Sum med brannfarlige varer | ... MJ | ... MJ/m² |
+
+I tillegg vises:
+
+```text
+Økning som følge av brannfarlige varer: X %
+```
+
+Dersom omhyllingsflate mangler, vises en tydelig beskjed om at lengde, bredde og høyde må fylles inn for å kunne vurdere brannenergi per omhyllingsflate.
 
 ## Rapport / forhåndsvisning
 
-I `src/components/brensellagring/BrensellagringPreview.tsx` utvides rapportseksjonen «Branntekniske tiltak i bygget».
+I `src/components/brensellagring/BrensellagringPreview.tsx` oppdateres seksjonen «Brannenergi i bygget» tilsvarende.
 
-Dagens tabell beholdes, men beskrivelseskolonnen utvides slik at den viser:
-1. Type/beskrivelse/status
-2. Eventuell kommentar
-3. Redigerbar rapporttekst om funksjon og rømningstid
+Rapporten skal vise:
+1. kilde og forutsetning for generell brannenergi
+2. tabell med etasjemål, gulvareal og omhyllingsflate
+3. tabell med tillegg fra brannfarlige varer
+4. oppsummeringstabell med:
+   - uten brannfarlige varer
+   - tillegg fra brannfarlige varer
+   - med brannfarlige varer
+5. prosentvis økning
 
-Alternativt struktureres innholdet i rapporten slik:
+Eksempeltekst i rapporten:
 
 ```text
-Brannalarmanlegg
-Status: Installert / forutsatt
-Beskrivelse: Heldekkende brannalarmanlegg kategori 2
-
-Brannalarmanlegg bidrar til tidlig deteksjon ...
+For salgslokale/kjøpesenter er generell brannenergi satt til 730 MJ/m² gulvareal iht. Byggforsk 321.051. Planlagt lagring av brannfarlig vare er vurdert som et tillegg til den statistiske brannenergien i bygget. Begge verdier er omregnet til spesifikk brannenergi per m² omhyllingsflate.
 ```
 
-Dette gir mer lesbar rapporttekst enn en veldig tett tabell.
+## Lagring og bakoverkompatibilitet
 
-## Rapportlogikk
+I dokumentinnholdet lagres nytt felt:
 
-Seksjonen vises når:
-- `branntekniskeTiltakInkludert === true`
-- minst ett tiltak har status, beskrivelse, kommentar eller rapporttekst
+```ts
+generellBrannenergiMJm2: string
+```
 
-Et tiltak tas med dersom minst ett av disse feltene er utfylt:
-- status
-- type/beskrivelse
-- kommentar
-- rapporttekst
+Eksisterende dokumenter uten feltet åpnes med standardverdi `730`.
+
+Ingen databasemigrasjon er nødvendig, fordi dette lagres i eksisterende dokumentinnhold.
 
 ## Filer som endres
 
 ### `src/pages/Brensellagring.tsx`
-- Utvide `BranntekniskeTiltakData`
-- Utvide tom initialstate
-- Lese gamle og nye dokumentdata bakoverkompatibelt
-- Legge inn standardtekst-funksjoner
-- Legge inn rapporttekstfelt for hvert tiltak
-- Legge inn «Original tekst»-knapp for hvert tiltak
-- Sikre at automatisk tekst ikke overskriver brukerredigert tekst
+- Legge til state for generell brannenergi per gulvareal
+- Lese og lagre feltet i dokumentinnhold
+- Beregne samlet gulvareal og omhyllingsflate
+- Beregne generell brannenergi uten brannfarlig lagring
+- Beregne tillegg fra brannfarlige varer
+- Beregne total med brannfarlige varer
+- Vise sammenligningstabell og prosentvis økning
+- Oppdatere hjelpetekster og kildehenvisning til Byggforsk 321.051
 
 ### `src/components/brensellagring/BrensellagringPreview.tsx`
-- Utvide `BranntekniskeTiltakData`
-- Ta med `rapporttekst` i rapportseksjonen
-- Justere rendering slik at tiltakstekstene blir lesbare i rapporten
+- Utvide props med `generellBrannenergiMJm2`
+- Beregne samme verdier som input-siden
+- Vise gulvareal, omhyllingsflate og sammenligning i rapporten
+- Oppdatere tekst og kildehenvisninger
+- Beholde eksisterende seksjonsrekkefølge
 
-## Ingen databaseendringer
-Dette lagres videre i eksisterende dokumentinnhold (`content`) sammen med resten av brensellagringsrapporten. Det krever derfor ingen migrasjon.
+## Ikke inkludert
+
+- Ingen databaseendringer
+- Ingen endring av DSB-mengdegrenser
+- Ingen automatisk konklusjon om «vesentlig høyere» utover beregnet økning; vurderingen overlates til brukerens faglige kommentar
