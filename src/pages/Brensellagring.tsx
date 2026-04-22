@@ -356,6 +356,15 @@ const Brensellagring = () => {
         .then(({ data }) => {
           if (data) setProjects(data as ProjectOption[]);
         });
+
+      supabase
+        .from('profiles')
+        .select('company')
+        .eq('id', user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          setProfile((data as ProfileInfo | null) ?? null);
+        });
     }
   }, [user]);
 
