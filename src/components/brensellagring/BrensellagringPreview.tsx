@@ -72,6 +72,7 @@ interface BrensellagringPreviewProps {
   firmaNavn?: string;
   kunde?: string;
   logoUrl?: string;
+  logoScale?: "50" | "100" | "150";
   prosjektNavn?: string;
   adresse?: string;
   visibleSections: Set<BrenselSectionKey>;
@@ -136,6 +137,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   firmaNavn,
   kunde,
   logoUrl,
+  logoScale = "100",
   prosjektNavn,
   adresse,
   visibleSections,
@@ -313,22 +315,27 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
 
   const secNum = (key: string) => sections.findIndex(s => s.key === key) + 1;
   const hasAnySections = sections.length > 0;
+  const logoScaleFactor = Number(logoScale) / 100;
+  const logoWidth = 110 * logoScaleFactor;
+  const logoHeight = 48 * logoScaleFactor;
 
   return (
     <div>
       <div style={pageStyle}>
+        {logoUrl && (
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
+            <div style={{ width: logoWidth, height: logoHeight, background: "#fff", borderRadius: 4, padding: 6, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <img src={logoUrl} alt="Firmalogo" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
+            </div>
+          </div>
+        )}
         {/* Header bar */}
-        <div style={{ background: "#1e3a5f", color: "#fff", padding: "16px 20px", borderRadius: 6, marginBottom: 20, display: "flex", justifyContent: "space-between", gap: 16, alignItems: "flex-start" }}>
+        <div style={{ background: "#1e3a5f", color: "#fff", padding: "16px 20px", borderRadius: 6, marginBottom: 20 }}>
           <div>
             <p style={{ fontSize: 10, opacity: 0.8, marginBottom: 2 }}>KRAVDOKUMENT</p>
             <p style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Lagring av brannfarlig stoff</p>
             {valgtBygg && <p style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>{valgtBygg.navn}</p>}
           </div>
-          {logoUrl && (
-            <div style={{ width: 110, height: 48, background: "#fff", borderRadius: 4, padding: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-              <img src={logoUrl} alt="Firmalogo" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
-            </div>
-          )}
         </div>
 
         {/* Project info */}
