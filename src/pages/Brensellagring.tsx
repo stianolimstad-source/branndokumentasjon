@@ -251,7 +251,7 @@ const Brensellagring = () => {
   const ENERGITETTHET: Record<keyof PlannedAmounts, { verdi: number; enhet: "MJ/kg" | "MJ/L"; kilde: string }> = {
     gass_kat1: { verdi: 46, enhet: "MJ/kg", kilde: "Propan/butan/hydrogen" },
     gass_kat2: { verdi: 22, enhet: "MJ/kg", kilde: "Ammoniakk (konservativ)" },
-    vaeske_kat1: { verdi: 32, enhet: "MJ/L", kilde: "Bensin (44 MJ/kg × 0,74 kg/L)" },
+    vaeske_kat1: { verdi: 32, enhet: "MJ/L", kilde: "Brannfarlig væske kategori 1 og 2 (konservativ sjablong)" },
     vaeske_kat2: { verdi: 36, enhet: "MJ/L", kilde: "Parafin / Jet A-1" },
     vaeske_kat3: { verdi: 36, enhet: "MJ/L", kilde: "Smøreolje / terpentin" },
     diesel_fyringsolje: { verdi: 36, enhet: "MJ/L", kilde: "Diesel (42,5 MJ/kg × 0,84 kg/L)" },
@@ -261,8 +261,7 @@ const Brensellagring = () => {
   const PLANNED_FELT: { key: keyof PlannedAmounts; label: string; enhet: string; eksempler: string }[] = [
     { key: "gass_kat1", label: "Brannfarlig gass, kategori 1", enhet: "kg", eksempler: "Propan, butan, hydrogen, acetylen" },
     { key: "gass_kat2", label: "Brannfarlig gass, kategori 2", enhet: "kg", eksempler: "Ammoniakk" },
-    { key: "vaeske_kat1", label: "Brannfarlig væske, kategori 1", enhet: "liter", eksempler: "Bensin, bioetanol, aceton, white spirit" },
-    { key: "vaeske_kat2", label: "Brannfarlig væske, kategori 2", enhet: "liter", eksempler: "Jet A-1, parafin, lampeolje" },
+    { key: "vaeske_kat1", label: "Brannfarlig væske, kategori 1 og 2", enhet: "liter", eksempler: "Bensin, bioetanol, aceton, Jet A-1, parafin" },
     { key: "vaeske_kat3", label: "Brannfarlig væske, kategori 3", enhet: "liter", eksempler: "Terpentin, dieselolje > 60 °C, smøreolje" },
     { key: "diesel_fyringsolje", label: "Diesel / fyringsolje", enhet: "liter", eksempler: "Anleggsdiesel, autodiesel, lett fyringsolje" },
     { key: "aerosoler", label: "Aerosoler", enhet: "liter", eksempler: "Spraybokser: maling, smøremiddel, hårspray" },
@@ -436,7 +435,13 @@ const Brensellagring = () => {
         setSalgslokaleInkludert(content.salgslokaleInkludert ?? false);
         setSalgslokaleKommentar(content.salgslokaleKommentar ?? "");
         setSalgslokaleTiltakTekst(content.salgslokaleTiltakTekst ?? getOriginalSalgslokaleTiltakTekst());
-        setPlannedAmounts({ ...TOMME_MENGDER, ...(content.plannedAmounts || {}) });
+        const lagredeMengder = { ...TOMME_MENGDER, ...(content.plannedAmounts || {}) };
+        const samletKat12 = (parseFloat(lagredeMengder.vaeske_kat1) || 0) + (parseFloat(lagredeMengder.vaeske_kat2) || 0);
+        setPlannedAmounts({
+          ...lagredeMengder,
+          vaeske_kat1: samletKat12 > 0 ? String(samletKat12) : "",
+          vaeske_kat2: "",
+        });
         setPlannedKommentar(content.plannedKommentar ?? "");
         setPlannedInkludert(content.plannedInkludert ?? false);
         setOverskridelseInkludert(content.overskridelseInkludert ?? false);
@@ -508,7 +513,7 @@ const Brensellagring = () => {
       salgslokaleInkludert,
       salgslokaleKommentar,
       salgslokaleTiltakTekst,
-      plannedAmounts,
+      plannedAmounts: { ...plannedAmounts, vaeske_kat2: "" },
       plannedKommentar,
       plannedInkludert,
       overskridelseInkludert,
@@ -574,7 +579,7 @@ const Brensellagring = () => {
     gjenstaende: number;
   };
   const evaluerInnmelding = (): { grupper: InnmeldingGruppe[]; trengerInnmelding: boolean; harMengder: boolean } => {
-    const sumKat12 = (parseFloat(plannedAmounts.vaeske_kat1) || 0) + (parseFloat(plannedAmounts.vaeske_kat2) || 0);
+    const sumKat12 = parseFloat(plannedAmounts.vaeske_kat1) || 0;
     const sumKat3 = parseFloat(plannedAmounts.vaeske_kat3) || 0;
     const sumDiesel = parseFloat(plannedAmounts.diesel_fyringsolje) || 0;
 
@@ -650,7 +655,7 @@ const Brensellagring = () => {
       id: "vaeske_kat12",
       stoffgruppe: "Brannfarlig væske kategori 1 og 2",
       anbefaltMengde: valgtBygningstype === "salgslokale" ? stykkgodsGrense.brannfarligVaeskeKat1og2 : (grenseFor("bensin")?.maksLiter || 0),
-      planlagtMengde: (parseFloat(plannedAmounts.vaeske_kat1) || 0) + (parseFloat(plannedAmounts.vaeske_kat2) || 0),
+      planlagtMengde: parseFloat(plannedAmounts.vaeske_kat1) || 0,
       enhet: "liter",
       vurdertTillattMengde: overskridelseVurdertTillattMengde.vaeske_kat12 || "",
     },
