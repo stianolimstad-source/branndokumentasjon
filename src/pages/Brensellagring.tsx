@@ -46,6 +46,7 @@ interface ProjectOption {
 
 interface ProfileInfo {
   company: string | null;
+  logo_url: string | null;
 }
 
 const Brensellagring = () => {
@@ -75,9 +76,11 @@ const Brensellagring = () => {
   const [brenselType, setBrenselType] = useState<BrenselType | "">("");
   const [mengde, setMengde] = useState("");
   const [innledning, setInnledning] = useState("");
+  const [kunde, setKunde] = useState("");
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
   const firmaNavn = profile?.company?.trim() || "";
+  const logoUrl = profile?.logo_url || "";
   const prosjektNavn = selectedProject?.name || "";
   const adresse = selectedProject?.address || "";
 
