@@ -183,6 +183,14 @@ const Brensellagring = () => {
   const [plannedKommentar, setPlannedKommentar] = useState("");
   const [plannedInkludert, setPlannedInkludert] = useState(false);
 
+  type OverskridelseTillattMengde = Record<string, string>;
+  const [overskridelseInkludert, setOverskridelseInkludert] = useState(false);
+  const [overskridelseArealgrunnlag, setOverskridelseArealgrunnlag] = useState("");
+  const [overskridelseVurdertTillattMengde, setOverskridelseVurdertTillattMengde] = useState<OverskridelseTillattMengde>({});
+  const [overskridelseTiltak, setOverskridelseTiltak] = useState("");
+  const [overskridelseVurderingstekst, setOverskridelseVurderingstekst] = useState("");
+  const [overskridelseKonklusjon, setOverskridelseKonklusjon] = useState("");
+
   // Brannenergi – etasjer (flere mulig, hver med egne mål) og inkludering
   type Etasje = { id: string; navn: string; lengde: string; bredde: string; hoyde: string };
   const lagEtasje = (navn = "Etasje 1"): Etasje => ({
