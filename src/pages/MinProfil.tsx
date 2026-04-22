@@ -69,11 +69,13 @@ const MinProfil = () => {
     }
 
     setUploading(true);
-    const ext = file.name.split(".").pop();
-    const filePath = `${user.id}/logo.${ext}`;
+    const ext = file.name.split(".").pop() || "png";
+    const filePath = `${user.id}/logo-${Date.now()}.${ext}`;
 
-    // Remove old logo if exists
-    await supabase.storage.from("company-logos").remove([filePath]);
+    const { data: existingFiles } = await supabase.storage.from("company-logos").list(user.id);
+    if (existingFiles?.length) {
+      await supabase.storage.from("company-logos").remove(existingFiles.map((f) => `${user.id}/${f.name}`));
+    }
 
     const { error: uploadError } = await supabase.storage
       .from("company-logos")
@@ -86,10 +88,11 @@ const MinProfil = () => {
     }
 
     const { data: urlData } = supabase.storage.from("company-logos").getPublicUrl(filePath);
-    const newUrl = urlData.publicUrl;
+    const newUrl = `${urlData.publicUrl}?v=${Date.now()}`;
 
     await supabase.from("profiles").update({ logo_url: newUrl } as any).eq("id", user.id);
     setLogoUrl(newUrl);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     setUploading(false);
     toast({ title: "Logo lastet opp", description: "Logoen vil vises i rapporter og dokumenter" });
   };
@@ -106,6 +109,7 @@ const MinProfil = () => {
 
     await supabase.from("profiles").update({ logo_url: null } as any).eq("id", user.id);
     setLogoUrl(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     setUploading(false);
     toast({ title: "Logo fjernet" });
   };
