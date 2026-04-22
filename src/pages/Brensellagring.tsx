@@ -1712,6 +1712,7 @@ const Brensellagring = () => {
                   innmeldingInkludert={innmeldingInkludert}
                   innmeldingKommentar={innmeldingKommentar}
                   innmeldingVurdering={innmeldingVurdering}
+                  harTankanlegg={harTankanlegg}
                 />
               </div>
             </div>
