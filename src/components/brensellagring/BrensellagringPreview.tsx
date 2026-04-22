@@ -79,6 +79,7 @@ interface BrensellagringPreviewProps {
   innmeldingInkludert?: boolean;
   innmeldingKommentar?: string;
   innmeldingVurdering?: InnmeldingVurderingData;
+  harTankanlegg?: boolean | null;
 }
 
 const pageStyle: React.CSSProperties = {
@@ -135,6 +136,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   innmeldingInkludert = false,
   innmeldingKommentar = "",
   innmeldingVurdering,
+  harTankanlegg = null,
 }) => {
   if (!valgtBygg) {
     return (
@@ -157,8 +159,27 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const selOppsamling = OPPSAMLING_KRAV.filter((_, i) => selectedKravIds.has(`oppsamling_${i}`));
   const selRoer = ROERLEDNING_KRAV.filter((_, i) => selectedKravIds.has(`roer_${i}`));
   const selVentil = VENTIL_KRAV.filter((_, i) => selectedKravIds.has(`ventil_${i}`));
-  const selKontroll = KONTROLL_KRAV.filter((_, i) => selectedKravIds.has(`kontroll_${i}`));
+  const selKontroll = KONTROLL_KRAV
+    .map((krav, index) => ({ krav, index }))
+    .filter(({ krav, index }) => selectedKravIds.has(`kontroll_${index}`) && (harTankanlegg !== false || krav.gjelder === "alle"));
   const selDok = DOKUMENTASJON_KRAV.filter((_, i) => selectedKravIds.has(`dok_${i}`));
+  const kontrollGenerelt = harTankanlegg === false
+    ? [
+        "Visuell kontroll av emballasje, merking og hylleinnredning",
+        "Kontroll av brannskap, oppsamlingskar og håndtering av lekkasjer",
+        "Kontroll av ventilasjon i lagerrom",
+        "Tilgjengelighet til slokkeutstyr og rømningsveier",
+        "Kontrollrapport med avvik og nødvendige tiltak",
+      ]
+    : [
+        "Visuell kontroll av tanker og rørføringer",
+        "Korrosjonskontroll",
+        "Tetthetsprøving, evt. trykkprøving",
+        "Kontroll av viktige komponenter",
+        "Testing av sikkerhetsfunksjoner og -kritisk utstyr",
+        "Gjennomgang av dokumentasjon om reparasjoner og endringer",
+        "Kontrollrapport med avvik, tiltak og tidspunkt for neste kontroll",
+      ];
 
   // Planlagte mengder – bygg liste over felt med faktisk innfylte verdier
   const PLANNED_LABELS: Record<keyof PlannedAmountsData, { label: string; enhet: string }> = {
@@ -781,8 +802,8 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {selKontroll.map((krav, i) => (
-                  <tr key={i}>
+                {selKontroll.map(({ krav, index }) => (
+                  <tr key={index}>
                     <td style={{ ...tdStyle, fontWeight: 500 }}>{krav.tittel}</td>
                     <td style={tdStyle}>{krav.beskrivelse}</td>
                     <td style={{ ...tdStyle, fontWeight: 500 }}>{krav.intervall || "–"}</td>
@@ -790,6 +811,12 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                 ))}
               </tbody>
             </table>
+            <div style={{ marginBottom: 16, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+              <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Generelt skal systematisk tilstandskontroll omfatte:</p>
+              <ul style={{ margin: 0, paddingLeft: 18, color: "#475569", fontSize: 10 }}>
+                {kontrollGenerelt.map((punkt) => <li key={punkt}>{punkt}</li>)}
+              </ul>
+            </div>
           </>
         )}
 

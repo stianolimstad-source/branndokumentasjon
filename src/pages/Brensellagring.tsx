@@ -106,6 +106,34 @@ const Brensellagring = () => {
   };
 
   const visTankBeliggenhet = !valgtBygningstype || TANK_BYGG.includes(valgtBygningstype as BygningsType);
+  const IKKE_TANK_BYGG: BygningsType[] = ["forretning", "salgslokale"];
+  const harTankanlegg = !valgtBygningstype
+    ? null
+    : TANK_BYGG.includes(valgtBygningstype as BygningsType)
+      ? true
+      : IKKE_TANK_BYGG.includes(valgtBygningstype as BygningsType)
+        ? false
+        : null;
+  const kontrollKravVisning = KONTROLL_KRAV
+    .map((krav, index) => ({ krav, index }))
+    .filter(({ krav }) => harTankanlegg !== false || krav.gjelder === "alle");
+  const kontrollGenerelt = harTankanlegg === false
+    ? [
+        "Visuell kontroll av emballasje, merking og hylleinnredning",
+        "Kontroll av brannskap, oppsamlingskar og håndtering av lekkasjer",
+        "Kontroll av ventilasjon i lagerrom",
+        "Tilgjengelighet til slokkeutstyr og rømningsveier",
+        "Kontrollrapport med avvik og nødvendige tiltak",
+      ]
+    : [
+        "Visuell kontroll av tanker og rørføringer",
+        "Korrosjonskontroll",
+        "Tetthetsprøving, evt. trykkprøving",
+        "Kontroll av viktige komponenter",
+        "Testing av sikkerhetsfunksjoner og -kritisk utstyr",
+        "Gjennomgang av dokumentasjon om reparasjoner og endringer",
+        "Kontrollrapport med avvik, tiltak og tidspunkt for neste kontroll",
+      ];
 
   const [activeTab, setActiveTab] = useState<TabKey>("kontroll");
   // Hvis valgt fane blir irrelevant ved bytte av bygningstype → fall tilbake til kontroll
@@ -841,9 +869,9 @@ const Brensellagring = () => {
               <div className="flex items-start justify-between gap-3 p-3 rounded-lg bg-accent/30 border border-accent text-sm">
                 <div className="flex items-start gap-2">
                   <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                  <p className="text-muted-foreground">
+                    <p className="text-muted-foreground">
                     Viser kun krav som er relevante for <span className="font-medium text-foreground">{valgtBygg?.navn}</span>.
-                    Generelle krav (Kontroll) vises alltid. Krav som gjelder tankanlegg vises kun for verksted, fyrrom, tankrom og lager.
+                    Kontrollfanen tilpasses automatisk etter om anlegget har tanker eller gjelder butikk/småemballasje.
                   </p>
                 </div>
                 <Button variant="outline" size="sm" asChild className="shrink-0 h-8 text-xs">
@@ -1164,6 +1192,15 @@ const Brensellagring = () => {
                   </p>
                 </CardHeader>
                 <CardContent>
+                  <div className="mb-4 flex items-start gap-2 rounded-lg border border-accent bg-accent/30 p-3 text-sm">
+                    <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                    <p className="text-muted-foreground">
+                      {harTankanlegg === false
+                        ? "Anlegget har ikke tanker. Kontrollkrav for tankanlegg (utvendig/innvendig tilstandskontroll, rørsystem og sikkerhetskritisk tankutstyr) er ikke aktuelle og er skjult. Endre bygningstype for å vise alle krav."
+                        : "Vist kontrollomfang er tilpasset anlegg med tanker. Tankspesifikke krav vises sammen med generelle kontrollkrav."}
+                    </p>
+                  </div>
+
                   <div className="border rounded-lg overflow-hidden">
                     <table className="w-full text-sm">
                       <thead>
@@ -1175,9 +1212,9 @@ const Brensellagring = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {KONTROLL_KRAV.map((krav, i) => (
-                          <tr key={i} className={`border-t ${isKravSelected(`kontroll_${i}`) ? "bg-primary/5" : ""}`}>
-                            <td className="py-2 px-2 text-center"><KravItemButton id={`kontroll_${i}`} /></td>
+                        {kontrollKravVisning.map(({ krav, index }) => (
+                          <tr key={index} className={`border-t ${isKravSelected(`kontroll_${index}`) ? "bg-primary/5" : ""}`}>
+                            <td className="py-2 px-2 text-center"><KravItemButton id={`kontroll_${index}`} /></td>
                             <td className="py-2 px-3 font-medium">{krav.tittel}</td>
                             <td className="py-2 px-3 text-muted-foreground">{krav.beskrivelse}</td>
                             <td className="py-2 px-3">
@@ -1192,13 +1229,7 @@ const Brensellagring = () => {
                   <div className="mt-4 p-3 bg-muted/30 rounded-lg text-sm space-y-1.5">
                     <p className="font-medium">Generelt skal systematisk tilstandskontroll omfatte:</p>
                     <ul className="list-disc list-inside space-y-0.5 text-muted-foreground">
-                      <li>Visuell kontroll av tanker og rørføringer</li>
-                      <li>Korrosjonskontroll</li>
-                      <li>Tetthetsprøving, evt. trykkprøving</li>
-                      <li>Kontroll av viktige komponenter</li>
-                      <li>Testing av sikkerhetsfunksjoner og -kritisk utstyr</li>
-                      <li>Gjennomgang av dokumentasjon om reparasjoner og endringer</li>
-                      <li>Kontrollrapport med avvik, tiltak og tidspunkt for neste kontroll</li>
+                      {kontrollGenerelt.map((punkt) => <li key={punkt}>{punkt}</li>)}
                     </ul>
                   </div>
                 </CardContent>
@@ -1681,6 +1712,7 @@ const Brensellagring = () => {
                   innmeldingInkludert={innmeldingInkludert}
                   innmeldingKommentar={innmeldingKommentar}
                   innmeldingVurdering={innmeldingVurdering}
+                  harTankanlegg={harTankanlegg}
                 />
               </div>
             </div>
