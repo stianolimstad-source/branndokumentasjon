@@ -106,7 +106,7 @@ const note = (title: string, value: string) => [
   ...multiline(value),
 ];
 
-const cell = (value: string, width: number, options: { header?: boolean; align?: AlignmentType; bold?: boolean; color?: string } = {}) =>
+const cell = (value: string, width: number, options: { header?: boolean; align?: (typeof AlignmentType)[keyof typeof AlignmentType]; bold?: boolean; color?: string } = {}) =>
   new TableCell({
     width: { size: width, type: WidthType.DXA },
     borders: BORDERS,
