@@ -70,6 +70,8 @@ export interface BranntekniskeTiltakData {
 interface BrensellagringPreviewProps {
   valgtBygg: BygningsTypeInfo | null;
   firmaNavn?: string;
+  kunde?: string;
+  logoUrl?: string;
   prosjektNavn?: string;
   adresse?: string;
   visibleSections: Set<BrenselSectionKey>;
@@ -132,6 +134,8 @@ const tdStyle: React.CSSProperties = {
 const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   valgtBygg,
   firmaNavn,
+  kunde,
+  logoUrl,
   prosjektNavn,
   adresse,
   visibleSections,
@@ -314,10 +318,17 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
     <div>
       <div style={pageStyle}>
         {/* Header bar */}
-        <div style={{ background: "#1e3a5f", color: "#fff", padding: "16px 20px", borderRadius: 6, marginBottom: 20 }}>
-          <p style={{ fontSize: 10, opacity: 0.8, marginBottom: 2 }}>KRAVDOKUMENT</p>
-          <p style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Lagring av brannfarlig stoff</p>
-          {valgtBygg && <p style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>{valgtBygg.navn}</p>}
+        <div style={{ background: "#1e3a5f", color: "#fff", padding: "16px 20px", borderRadius: 6, marginBottom: 20, display: "flex", justifyContent: "space-between", gap: 16, alignItems: "flex-start" }}>
+          <div>
+            <p style={{ fontSize: 10, opacity: 0.8, marginBottom: 2 }}>KRAVDOKUMENT</p>
+            <p style={{ fontSize: 20, fontWeight: 700, margin: 0 }}>Lagring av brannfarlig stoff</p>
+            {valgtBygg && <p style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>{valgtBygg.navn}</p>}
+          </div>
+          {logoUrl && (
+            <div style={{ width: 110, height: 48, background: "#fff", borderRadius: 4, padding: 6, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <img src={logoUrl} alt="Firmalogo" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
+            </div>
+          )}
         </div>
 
         {/* Project info */}
@@ -327,6 +338,12 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
               <tr>
                 <td style={{ ...tdStyle, fontWeight: 600, width: 140 }}>Firma</td>
                 <td style={tdStyle}>{firmaNavn}</td>
+              </tr>
+            )}
+            {kunde && (
+              <tr>
+                <td style={{ ...tdStyle, fontWeight: 600, width: 140 }}>Kunde</td>
+                <td style={tdStyle}>{kunde}</td>
               </tr>
             )}
             {prosjektNavn && (
