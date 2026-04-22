@@ -1,138 +1,116 @@
 
-## Plan: Ny vurderingsdel for mengder over DSB-anbefaling
+## Plan: Nedlasting av dokument for «Lagring av brannfarlig stoff»
 
-Jeg legger til en egen del i «Lagring av brannfarlig stoff» som vurderer planlagt mengde opp mot anbefalte mengder i DSB sin veiledning, og som kan beskrive hvorfor en høyere mengde kan aksepteres basert på kompenserende tiltak.
+Jeg legger til nedlasting av brensellagring-dokumentet som Word-fil, basert på samme innhold og struktur som forhåndsvisningen.
 
 ## Hva som bygges
 
-### 1. Ny seksjon i skjemaet
+### 1. Ny «Last ned Word»-knapp
 
-Jeg legger inn et nytt kort i venstre panel, etter «Planlagt lagret mengde i bygget» og før/ved siden av brannenergi/tiltak:
-
-```text
-Vurdering av mengde over anbefalt DSB-mengde
-```
-
-Seksjonen får:
-
-- knapp for «Legg til i dokument»
-- automatisk sammenligning mellom:
-  - planlagt lagret mengde
-  - anbefalt mengde fra DSB-tabellen/valgt bygningstype
-  - overskridelse i liter/kg
-  - overskridelse i prosent
-- tekstfelt for prosjektspesifikk vurdering
-- tekstfelt for konklusjon / anbefalt maksimal mengde etter tiltak
-
-### 2. Automatisk beregning av overskridelse
-
-Systemet beregner hvilke stoffgrupper som overstiger anbefalt mengde.
-
-For vanlige bygningstyper brukes eksisterende grensedata i `brensellagring-krav.ts`.
-
-For salgslokaler brukes DSB-tabellen for stykkgods/salgslokale. Siden DSB-tabellen avhenger av areal, legger jeg inn en enkel arealvurdering:
-
-- hvis etasje-/arealdata allerede er fylt ut i brannenergidelen, kan systemet bruke samlet gulvareal
-- hvis ikke, kan brukeren fylle inn/velge arealgrunnlag manuelt
-- riktig DSB-rad brukes deretter som anbefalt mengde
-
-### 3. Tiltaksbasert vurderingstekst
-
-Jeg lager en automatisk rapporttekst som bygger på tiltakene som allerede finnes i verktøyet:
-
-- brannalarmanlegg
-- røykventilasjon
-- automatisk slokkeanlegg/sprinkler
-- brannskap/avlukke
-- oppsamlingskar
-- kontroll og dokumentasjon
-- andre prosjektspesifikke tiltak skrevet av brukeren
-
-Teksten skal forklare at mengdene overstiger anbefalte mengder, men at høyere mengde kan vurderes akseptabel dersom tiltakene samlet gir tilstrekkelig sikkerhetsnivå.
-
-Eksempel på rapportlogikk:
+I høyre forhåndsvisningspanel legger jeg til en nedlastingsknapp ved siden av tittelen «Forhåndsvisning»:
 
 ```text
-Planlagt mengde brannfarlig væske kategori 1 og 2 overstiger anbefalt mengde i DSB sin temaveiledning med X liter, tilsvarende Y %. Det er lagt til grunn at stoffene oppbevares i brannskap/avlukke, at området er dekket av brannalarmanlegg og at bygget er sprinklet. På bakgrunn av disse tiltakene vurderes en økning til Z liter som akseptabel for dette bygget, forutsatt at lagringen skjer som beskrevet og at tiltakene opprettholdes i driftsfasen.
+Last ned Word
 ```
 
-Brukeren skal kunne redigere teksten manuelt.
+Knappen skal:
 
-### 4. Ny tabell i forhåndsvisningen
+- eksportere gjeldende dokumentinnhold
+- bruke prosjekt-, kunde-, firma- og logoopplysninger
+- følge samme tilgangsbegrensning som andre dokumentnedlastinger i appen
+- være deaktivert eller skjult hvis det ikke finnes nok innhold å eksportere
 
-I dokumentforhåndsvisningen legger jeg inn en ny seksjon, for eksempel:
+### 2. Egen Word-eksport for brensellagring
+
+Jeg lager en ny eksportfunksjon, for eksempel:
 
 ```text
-Vurdering av mengde over anbefalt DSB-mengde
+src/lib/brensellagring-word-export.ts
 ```
 
-Den får en tabell med:
+Denne bygger et `.docx`-dokument med:
 
-| Stoffgruppe | Anbefalt mengde | Planlagt mengde | Overskridelse | Vurdert tillatt mengde |
-|---|---:|---:|---:|---:|
+- firmalogo øverst til høyre
+- tittel: «Lagring av brannfarlig stoff»
+- firma, kunde, prosjekt, adresse, bygningstype, dato og regelverk
+- innledning
+- valgte dokumentseksjoner
+- tabeller og vurderingstekster tilsvarende forhåndsvisningen
+- kilde-/kvalitetssikringstekst nederst
 
-Under tabellen vises:
+### 3. Samme innhold som forhåndsvisningen
 
-- vurderingsteksten
-- forutsetninger/tiltak
-- konklusjon
-- en tydelig presisering om at dette er en risikovurdering, ikke en generell heving av DSB-grensen
+Eksporten skal ta med de seksjonene som faktisk er valgt/inkludert:
 
-### 5. Lagring
+- Planlagt lagret mengde i bygget
+- Brannenergi i bygget
+- Branntekniske tiltak i bygget
+- Innmeldingsplikt til DSB
+- Største tillatte mengder i salgslokaler
+- Beliggenhet og utforming
+- Sikkerhetsavstander
+- Krav til tanker
+- Oppsamling og overfyllingsvern
+- Rørledninger og ventiler
+- Kontroll og tilstandskontroll
+- Dokumentasjonskrav
+- Tillatte mengder
+- Konstruksjonskrav
+- Vurdering av mengde over anbefalt DSB-mengde nederst
 
-Jeg utvider eksisterende lagring i `fire_concepts.content` med nye felter, uten å lage nye databasetabeller.
+### 4. Gjenbruk av eksisterende beregninger
 
-Nye data kan lagres omtrent slik:
+Jeg gjenbruker beregningene som allerede finnes i `Brensellagring.tsx`, blant annet:
 
-```ts
-overskridelseInkludert
-overskridelseArealgrunnlag
-overskridelseVurdertTillattMengde
-overskridelseTiltak
-overskridelseVurderingstekst
-overskridelseKonklusjon
+- planlagte mengder
+- samlet gulvareal og omhyllingsflate
+- brannenergi
+- innmeldingsvurdering
+- overskridelse mot DSB-anbefalt mengde
+- vurdert tillatt mengde etter tiltak
+- valgte krav og dokumentseksjoner
+
+Dette gjør at Word-filen samsvarer med det brukeren ser i forhåndsvisningen.
+
+### 5. Tilgangsstyring for nedlasting
+
+Jeg bruker eksisterende `useCanDownload`-logikk, slik at nedlasting følger samme begrensning som resten av appen.
+
+Hvis brukeren ikke har nedlastingstilgang, vises ikke nedlastingsknappen.
+
+### 6. Filnavn
+
+Word-filen får et ryddig norsk filnavn, for eksempel:
+
+```text
+Brensellagring_Prosjektnavn.docx
 ```
 
-Dette bevarer eksisterende dokumenter og krever ingen databaseendring.
+Hvis prosjektnavn mangler, brukes:
 
-### 6. Integrasjon med eksisterende dokumentflyt
-
-Jeg kobler den nye delen inn i:
-
-- lasting av eksisterende dokument
-- lagring av dokument
-- forhåndsvisning
-- dynamisk kapittelnummerering
-- eksisterende «Planlagt lagret mengde»
-- eksisterende «Branntekniske tiltak»
+```text
+Brensellagring.docx
+```
 
 ## Teknisk gjennomføring
 
-Jeg oppdaterer hovedsakelig disse filene:
+Jeg oppdaterer hovedsakelig:
 
 - `src/pages/Brensellagring.tsx`
-  - nye state-felter
-  - beregning av anbefalt mengde og overskridelse
-  - nytt skjema-/kort for vurderingen
-  - lagring/lasting i `fire_concepts.content`
-  - props videre til forhåndsvisningen
+  - importerer eksportfunksjon og `useCanDownload`
+  - legger til `handleDownloadWord`
+  - legger inn «Last ned Word»-knapp i forhåndsvisningspanelet
+  - sender alle nødvendige data til eksportfunksjonen
 
-- `src/components/brensellagring/BrensellagringPreview.tsx`
-  - nye props/types
-  - ny rapportseksjon
-  - tabell for overskridelse
-  - vurderingstekst og konklusjon
-  - dynamisk nummerering
+- `src/lib/brensellagring-word-export.ts`
+  - bygger Word-dokumentet med `docx`
+  - lager tabeller, overskrifter, tekstblokker og logo
+  - formaterer tall, enheter og datoer
+  - lagrer dokumentet via `file-saver`
 
 Eventuelt:
-- `src/lib/brensellagring-krav.ts`
-  - bare hvis det trengs en liten hjelpefunksjon for å slå opp anbefalte mengder mer ryddig
+- eksportere eller speile små hjelpefunksjoner fra forhåndsvisningen dersom det gjør eksporten mer konsistent og ryddig
 
-## Faglig avgrensning
+## Ingen databaseendring
 
-Jeg legger inn en tydelig tekst i dokumentet om at:
-
-- DSB-verdiene er anbefalte mengder fra veiledningen
-- høyere mengder må begrunnes med en konkret risikovurdering
-- vurderingen gjelder bare for bygget, tiltakene og forutsetningene som er beskrevet
-- økt mengde forutsetter at tiltakene etableres og opprettholdes
+Dette krever ingen endringer i databasen. Eksporten bruker data som allerede ligger i skjemaet og lagres i eksisterende dokumentinnhold.
