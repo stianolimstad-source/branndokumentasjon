@@ -401,6 +401,12 @@ const Brensellagring = () => {
           plannedAmounts?: Partial<PlannedAmounts>;
           plannedKommentar?: string;
           plannedInkludert?: boolean;
+          overskridelseInkludert?: boolean;
+          overskridelseArealgrunnlag?: string;
+          overskridelseVurdertTillattMengde?: OverskridelseTillattMengde;
+          overskridelseTiltak?: string;
+          overskridelseVurderingstekst?: string;
+          overskridelseKonklusjon?: string;
           byggDim?: { lengde?: string; bredde?: string; hoyde?: string };
           etasjer?: Etasje[];
           brannenergiInkludert?: boolean;
@@ -433,6 +439,12 @@ const Brensellagring = () => {
         setPlannedAmounts({ ...TOMME_MENGDER, ...(content.plannedAmounts || {}) });
         setPlannedKommentar(content.plannedKommentar ?? "");
         setPlannedInkludert(content.plannedInkludert ?? false);
+        setOverskridelseInkludert(content.overskridelseInkludert ?? false);
+        setOverskridelseArealgrunnlag(content.overskridelseArealgrunnlag ?? "");
+        setOverskridelseVurdertTillattMengde(content.overskridelseVurdertTillattMengde ?? {});
+        setOverskridelseTiltak(content.overskridelseTiltak ?? "");
+        setOverskridelseVurderingstekst(content.overskridelseVurderingstekst ?? "");
+        setOverskridelseKonklusjon(content.overskridelseKonklusjon ?? "");
         // Bakoverkompatibilitet: gammelt enkelt-byggDim → konverter til én etasje
         if (content.etasjer && Array.isArray(content.etasjer) && content.etasjer.length > 0) {
           setEtasjer(
@@ -499,6 +511,12 @@ const Brensellagring = () => {
       plannedAmounts,
       plannedKommentar,
       plannedInkludert,
+      overskridelseInkludert,
+      overskridelseArealgrunnlag,
+      overskridelseVurdertTillattMengde,
+      overskridelseTiltak,
+      overskridelseVurderingstekst,
+      overskridelseKonklusjon,
       etasjer,
       brannenergiInkludert,
       brannenergiKommentar,
