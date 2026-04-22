@@ -349,7 +349,7 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
           row.stoffgruppe,
           `${formatNumber(row.anbefaltMengde)} ${row.enhet}`,
           `${formatNumber(row.planlagtMengde)} ${row.enhet}`,
-          `${formatNumber(row.overskridelse)} ${row.enhet} (${row.overskridelseProsent.toFixed(0)} %)",
+          `${formatNumber(row.overskridelse)} ${row.enhet} (${row.overskridelseProsent.toFixed(0)} %)`,
           row.vurdertTillattMengde || `${formatNumber(row.planlagtMengde)} ${row.enhet}`,
         ]),
         [2400, 1550, 1550, 1900, 1626],
