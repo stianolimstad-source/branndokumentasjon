@@ -1,116 +1,63 @@
 
-## Plan: Nedlasting av dokument for «Lagring av brannfarlig stoff»
+## Plan: Gi alle innloggede brukere tilgang til nedlasting
 
-Jeg legger til nedlasting av brensellagring-dokumentet som Word-fil, basert på samme innhold og struktur som forhåndsvisningen.
+Jeg endrer nedlastingstilgangen slik at «Last ned»-knapper vises for alle brukere som er logget inn, ikke bare for testbrukeren `stianolimstad@gmail.com`.
 
-## Hva som bygges
+## Hva som endres
 
-### 1. Ny «Last ned Word»-knapp
+### 1. Oppdatere felles tilgangslogikk
 
-I høyre forhåndsvisningspanel legger jeg til en nedlastingsknapp ved siden av tittelen «Forhåndsvisning»:
+I dag styres nedlasting av denne hooken:
 
-```text
-Last ned Word
+```ts
+useCanDownload()
 ```
 
-Knappen skal:
+Den sjekker nå mot én spesifikk e-postadresse. Jeg endrer den til å returnere `true` når brukeren er innlogget:
 
-- eksportere gjeldende dokumentinnhold
-- bruke prosjekt-, kunde-, firma- og logoopplysninger
-- følge samme tilgangsbegrensning som andre dokumentnedlastinger i appen
-- være deaktivert eller skjult hvis det ikke finnes nok innhold å eksportere
-
-### 2. Egen Word-eksport for brensellagring
-
-Jeg lager en ny eksportfunksjon, for eksempel:
-
-```text
-src/lib/brensellagring-word-export.ts
+```ts
+return !!user;
 ```
 
-Denne bygger et `.docx`-dokument med:
+Da vil alle innloggede brukere få nedlastingsknappen.
 
-- firmalogo øverst til høyre
-- tittel: «Lagring av brannfarlig stoff»
-- firma, kunde, prosjekt, adresse, bygningstype, dato og regelverk
-- innledning
-- valgte dokumentseksjoner
-- tabeller og vurderingstekster tilsvarende forhåndsvisningen
-- kilde-/kvalitetssikringstekst nederst
+### 2. Gjelder flere dokumenttyper
 
-### 3. Samme innhold som forhåndsvisningen
+Siden `useCanDownload` brukes flere steder, vil endringen gjelde konsekvent for dokumentnedlasting i appen, blant annet:
 
-Eksporten skal ta med de seksjonene som faktisk er valgt/inkludert:
+- Brannkonsept
+- KS-gjennomgang
+- Kvalitativ analyse / fraviksdokumentasjon
+- Lagring av brannfarlig stoff
 
-- Planlagt lagret mengde i bygget
-- Brannenergi i bygget
-- Branntekniske tiltak i bygget
-- Innmeldingsplikt til DSB
-- Største tillatte mengder i salgslokaler
-- Beliggenhet og utforming
-- Sikkerhetsavstander
-- Krav til tanker
-- Oppsamling og overfyllingsvern
-- Rørledninger og ventiler
-- Kontroll og tilstandskontroll
-- Dokumentasjonskrav
-- Tillatte mengder
-- Konstruksjonskrav
-- Vurdering av mengde over anbefalt DSB-mengde nederst
-
-### 4. Gjenbruk av eksisterende beregninger
-
-Jeg gjenbruker beregningene som allerede finnes i `Brensellagring.tsx`, blant annet:
-
-- planlagte mengder
-- samlet gulvareal og omhyllingsflate
-- brannenergi
-- innmeldingsvurdering
-- overskridelse mot DSB-anbefalt mengde
-- vurdert tillatt mengde etter tiltak
-- valgte krav og dokumentseksjoner
-
-Dette gjør at Word-filen samsvarer med det brukeren ser i forhåndsvisningen.
-
-### 5. Tilgangsstyring for nedlasting
-
-Jeg bruker eksisterende `useCanDownload`-logikk, slik at nedlasting følger samme begrensning som resten av appen.
-
-Hvis brukeren ikke har nedlastingstilgang, vises ikke nedlastingsknappen.
-
-### 6. Filnavn
-
-Word-filen får et ryddig norsk filnavn, for eksempel:
+Dette samsvarer med ønsket regel:
 
 ```text
-Brensellagring_Prosjektnavn.docx
+Er brukeren logget inn, skal brukeren kunne laste ned.
 ```
 
-Hvis prosjektnavn mangler, brukes:
+### 3. Beholde skjuling for ikke-innloggede brukere
+
+Brukere som ikke er logget inn skal fortsatt ikke se nedlastingsknappen på steder der appen krever innlogging.
+
+### 4. Oppdatere prosjektminne
+
+Jeg oppdaterer prosjektregelen som i dag sier at Word/PDF-nedlasting er låst til én testbruker, slik at den nye regelen blir:
 
 ```text
-Brensellagring.docx
+Alle innloggede brukere kan laste ned Word/PDF-dokumenter.
 ```
 
 ## Teknisk gjennomføring
 
 Jeg oppdaterer hovedsakelig:
 
-- `src/pages/Brensellagring.tsx`
-  - importerer eksportfunksjon og `useCanDownload`
-  - legger til `handleDownloadWord`
-  - legger inn «Last ned Word»-knapp i forhåndsvisningspanelet
-  - sender alle nødvendige data til eksportfunksjonen
+- `src/hooks/useCanDownload.ts`
+  - fjerner hardkodet e-postbegrensning
+  - returnerer `true` for alle innloggede brukere
 
-- `src/lib/brensellagring-word-export.ts`
-  - bygger Word-dokumentet med `docx`
-  - lager tabeller, overskrifter, tekstblokker og logo
-  - formaterer tall, enheter og datoer
-  - lagrer dokumentet via `file-saver`
-
-Eventuelt:
-- eksportere eller speile små hjelpefunksjoner fra forhåndsvisningen dersom det gjør eksporten mer konsistent og ryddig
+Eventuelt kontrollerer jeg at nedlastingsknappen for brensellagring fortsatt ligger bak `canDownload`, slik at den automatisk følger den nye regelen.
 
 ## Ingen databaseendring
 
-Dette krever ingen endringer i databasen. Eksporten bruker data som allerede ligger i skjemaet og lagres i eksisterende dokumentinnhold.
+Dette krever ingen endringer i databasen eller autentiseringsoppsettet.
