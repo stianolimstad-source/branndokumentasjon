@@ -355,6 +355,8 @@ const Brensellagring = () => {
           etasjer?: Etasje[];
           brannenergiInkludert?: boolean;
           brannenergiKommentar?: string;
+          branntekniskeTiltakInkludert?: boolean;
+          branntekniskeTiltak?: Partial<BranntekniskeTiltakData>;
           innledning?: string;
           innmeldingInkludert?: boolean;
           innmeldingKommentar?: string;
@@ -400,6 +402,14 @@ const Brensellagring = () => {
         }
         setBrannenergiInkludert(content.brannenergiInkludert ?? false);
         setBrannenergiKommentar(content.brannenergiKommentar ?? "");
+        setBranntekniskeTiltakInkludert(content.branntekniskeTiltakInkludert ?? false);
+        setBranntekniskeTiltak({
+          ...TOMME_BRANNTEKNISKE_TILTAK,
+          ...(content.branntekniskeTiltak || {}),
+          brannalarm: { ...TOMME_BRANNTEKNISKE_TILTAK.brannalarm, ...(content.branntekniskeTiltak?.brannalarm || {}) },
+          roykventilasjon: { ...TOMME_BRANNTEKNISKE_TILTAK.roykventilasjon, ...(content.branntekniskeTiltak?.roykventilasjon || {}) },
+          slokkeanlegg: { ...TOMME_BRANNTEKNISKE_TILTAK.slokkeanlegg, ...(content.branntekniskeTiltak?.slokkeanlegg || {}) },
+        });
         setInnledning(content.innledning ?? "");
         setInnmeldingInkludert(content.innmeldingInkludert ?? false);
         setInnmeldingKommentar(content.innmeldingKommentar ?? "");
@@ -436,6 +446,8 @@ const Brensellagring = () => {
       etasjer,
       brannenergiInkludert,
       brannenergiKommentar,
+      branntekniskeTiltakInkludert,
+      branntekniskeTiltak,
       innledning,
       innmeldingInkludert,
       innmeldingKommentar,
