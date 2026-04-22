@@ -321,7 +321,6 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   // Build visible sections dynamically based on selected items
   const sections: { key: string; label: string }[] = [];
   if (visPlanlagt) sections.push({ key: "planlagt", label: "Planlagt lagret mengde i bygget" });
-  if (visOverskridelse) sections.push({ key: "overskridelse", label: "Vurdering av mengde over anbefalt DSB-mengde" });
   if (visBrannenergi) sections.push({ key: "brannenergi", label: "Brannenergi i bygget" });
   if (visBranntekniskeTiltak) sections.push({ key: "branntekniskeTiltak", label: "Branntekniske tiltak i bygget" });
   if (visInnmelding) sections.push({ key: "innmelding", label: "Innmeldingsplikt til DSB" });
@@ -335,6 +334,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   if (selDok.length > 0) sections.push({ key: "dokumentasjon", label: "Dokumentasjonskrav" });
   if (visibleSections.has("mengder") && valgtBygg) sections.push({ key: "mengder", label: "Tillatte mengder" });
   if (visibleSections.has("konstruksjon") && valgtBygg) sections.push({ key: "konstruksjon", label: "Konstruksjonskrav" });
+  if (visOverskridelse) sections.push({ key: "overskridelse", label: "Vurdering av mengde over anbefalt DSB-mengde" });
 
   const secNum = (key: string) => sections.findIndex(s => s.key === key) + 1;
   const hasAnySections = sections.length > 0;
@@ -449,56 +449,6 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
               <div style={{ marginBottom: 16, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
                 <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Kommentar</p>
                 <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{plannedKommentar}</p>
-              </div>
-            )}
-          </>
-        )}
-
-        {visOverskridelse && (
-          <>
-            <h2 style={h2}>{secNum("overskridelse")}. Vurdering av mengde over anbefalt DSB-mengde</h2>
-            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
-              Vurderingen sammenligner planlagte mengder med anbefalte mengder i DSB sin temaveiledning. Høyere mengder må begrunnes konkret for bygget, tiltakene og driftsforutsetningene.
-              {overskridelseArealgrunnlag && ` Arealgrunnlag for salgslokale: ${overskridelseArealgrunnlag} m².`}
-            </p>
-            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
-              <thead>
-                <tr>
-                  <th style={thStyle}>Stoffgruppe</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Anbefalt mengde</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Planlagt mengde</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Overskridelse</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Vurdert tillatt mengde</th>
-                </tr>
-              </thead>
-              <tbody>
-                {overskridelseRows.map((row) => (
-                  <tr key={row.id}>
-                    <td style={{ ...tdStyle, fontWeight: 500 }}>{row.stoffgruppe}</td>
-                    <td style={{ ...tdStyle, textAlign: "right" }}>{row.anbefaltMengde.toLocaleString("nb-NO")} {row.enhet}</td>
-                    <td style={{ ...tdStyle, textAlign: "right" }}>{row.planlagtMengde.toLocaleString("nb-NO")} {row.enhet}</td>
-                    <td style={{ ...tdStyle, textAlign: "right", color: "#b91c1c", fontWeight: 600 }}>{row.overskridelse.toLocaleString("nb-NO")} {row.enhet} ({row.overskridelseProsent.toFixed(0)} %)</td>
-                    <td style={{ ...tdStyle, textAlign: "right" }}>{row.vurdertTillattMengde || `${row.planlagtMengde.toLocaleString("nb-NO")} ${row.enhet}`}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {overskridelseTiltak.trim() && (
-              <div style={{ marginBottom: 12, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
-                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Prosjektspesifikke tiltak</p>
-                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{overskridelseTiltak}</p>
-              </div>
-            )}
-            {overskridelseVurderingstekst.trim() && (
-              <div style={{ marginBottom: 12, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
-                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Vurdering</p>
-                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{overskridelseVurderingstekst}</p>
-              </div>
-            )}
-            {overskridelseKonklusjon.trim() && (
-              <div style={{ marginBottom: 16, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
-                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Konklusjon og avgrensning</p>
-                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{overskridelseKonklusjon}</p>
               </div>
             )}
           </>
@@ -1063,6 +1013,56 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                 ))}
               </tbody>
             </table>
+          </>
+        )}
+
+        {visOverskridelse && (
+          <>
+            <h2 style={h2}>{secNum("overskridelse")}. Vurdering av mengde over anbefalt DSB-mengde</h2>
+            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
+              Vurderingen sammenligner planlagte mengder med anbefalte mengder i DSB sin temaveiledning. Høyere mengder må begrunnes konkret for bygget, tiltakene og driftsforutsetningene.
+              {overskridelseArealgrunnlag && ` Arealgrunnlag for salgslokale: ${overskridelseArealgrunnlag} m².`}
+            </p>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+              <thead>
+                <tr>
+                  <th style={thStyle}>Stoffgruppe</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Anbefalt mengde</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Planlagt mengde</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Overskridelse</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Vurdert tillatt mengde</th>
+                </tr>
+              </thead>
+              <tbody>
+                {overskridelseRows.map((row) => (
+                  <tr key={row.id}>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>{row.stoffgruppe}</td>
+                    <td style={{ ...tdStyle, textAlign: "right" }}>{row.anbefaltMengde.toLocaleString("nb-NO")} {row.enhet}</td>
+                    <td style={{ ...tdStyle, textAlign: "right" }}>{row.planlagtMengde.toLocaleString("nb-NO")} {row.enhet}</td>
+                    <td style={{ ...tdStyle, textAlign: "right", color: "#b91c1c", fontWeight: 600 }}>{row.overskridelse.toLocaleString("nb-NO")} {row.enhet} ({row.overskridelseProsent.toFixed(0)} %)</td>
+                    <td style={{ ...tdStyle, textAlign: "right" }}>{row.vurdertTillattMengde || `${row.planlagtMengde.toLocaleString("nb-NO")} ${row.enhet}`}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {overskridelseTiltak.trim() && (
+              <div style={{ marginBottom: 12, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Prosjektspesifikke tiltak</p>
+                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{overskridelseTiltak}</p>
+              </div>
+            )}
+            {overskridelseVurderingstekst.trim() && (
+              <div style={{ marginBottom: 12, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Vurdering</p>
+                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{overskridelseVurderingstekst}</p>
+              </div>
+            )}
+            {overskridelseKonklusjon.trim() && (
+              <div style={{ marginBottom: 16, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Konklusjon og avgrensning</p>
+                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{overskridelseKonklusjon}</p>
+              </div>
+            )}
           </>
         )}
 
