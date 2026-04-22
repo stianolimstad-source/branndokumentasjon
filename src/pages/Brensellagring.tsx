@@ -34,6 +34,7 @@ import {
   BYGNINGSTYPER,
   BygningsType,
   STYKKGODS_GRENSER,
+  getStykkgodsGrense,
 } from "@/lib/brensellagring-krav";
 import BrensellagringPreview, { BRENSEL_SECTIONS, BrenselSectionKey } from "@/components/brensellagring/BrensellagringPreview";
 import { Checkbox } from "@/components/ui/checkbox";
