@@ -483,6 +483,39 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           </>
         )}
 
+        {visBranntekniskeTiltak && branntekniskeTiltak && (
+          <>
+            <h2 style={h2}>{secNum("branntekniskeTiltak")}. Branntekniske tiltak i bygget</h2>
+            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
+              Oversikt over branntekniske tiltak som er lagt til grunn for vurderingen av lagring av brannfarlig stoff.
+            </p>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+              <thead>
+                <tr>
+                  <th style={{ ...thStyle, width: "26%" }}>Tiltak</th>
+                  <th style={{ ...thStyle, width: "24%" }}>Status</th>
+                  <th style={thStyle}>Beskrivelse</th>
+                </tr>
+              </thead>
+              <tbody>
+                {branntekniskeTiltakRows.map((row) => (
+                  <tr key={row.tiltak}>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>{row.tiltak}</td>
+                    <td style={tdStyle}>{row.status || "—"}</td>
+                    <td style={{ ...tdStyle, whiteSpace: "pre-wrap" }}>{row.beskrivelse || "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {branntekniskeTiltak.generellKommentar.trim() && (
+              <div style={{ marginBottom: 12, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Felles kommentar</p>
+                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{branntekniskeTiltak.generellKommentar}</p>
+              </div>
+            )}
+          </>
+        )}
+
         {visInnmelding && innmeldingVurdering && (
           <>
             <h2 style={h2}>{secNum("innmelding")}. Innmeldingsplikt til DSB</h2>
