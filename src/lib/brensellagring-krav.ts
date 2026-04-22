@@ -864,33 +864,51 @@ export interface KontrollKrav {
   tittel: string;
   beskrivelse: string;
   intervall?: string;
+  gjelder: "tank" | "alle";
 }
 
 export const KONTROLL_KRAV: KontrollKrav[] = [
   {
     tittel: "Ferdigkontroll",
-    beskrivelse: "Før overlevering skal det foretas ferdigkontroll inkl. trykkprøving/tetthetsprøving etter anerkjente metoder og fastsatte akseptkriterier.",
+    beskrivelse: "Før overlevering skal det foretas ferdigkontroll av lager, merking, ventilasjon, branntekniske tiltak og relevante sikkerhetsfunksjoner. Tetthets-/trykkprøving inngår der anlegget har tanker eller rørsystem.",
     intervall: "Ved installasjon",
+    gjelder: "alle",
   },
   {
     tittel: "Utvendig tilstandskontroll",
     beskrivelse: "Systematisk tilstandskontroll av tankenes ytre, korrosjonsbeskyttelse, viktige komponenter og sikkerhetsfunksjoner.",
     intervall: "Maks hvert 5. år",
+    gjelder: "tank",
   },
   {
     tittel: "Innvendig tilstandskontroll",
     beskrivelse: "Innvendig inspeksjon av tanker for korrosjon, bunnsjikt og strukturell integritet.",
     intervall: "Maks hvert 20. år",
+    gjelder: "tank",
   },
   {
     tittel: "Sikkerhetskritisk utstyr",
     beskrivelse: "Kontroll- og sikkerhetsfunksjoner (nødstopp, nødavstengning) kontrolleres og prøves etter fastsatte prosedyrer. Kan bruke NS-EN IEC 61508 for intervallbestemmelse.",
     intervall: "Hvert 2. år (uten 61508)",
+    gjelder: "tank",
   },
   {
     tittel: "Rørsystem og utstyr",
     beskrivelse: "Systematisk tilstandskontroll av beholdere, rørsystem og øvrig utstyr.",
     intervall: "Maks hvert 5. år",
+    gjelder: "tank",
+  },
+  {
+    tittel: "Visuell kontroll av lager og emballasje",
+    beskrivelse: "Periodisk visuell kontroll av emballasje, merking, hylleinnredning og brannskap. Lekkasjer, skadet emballasje og utløpte produkter fjernes.",
+    intervall: "Årlig",
+    gjelder: "alle",
+  },
+  {
+    tittel: "Kontroll av branntekniske tiltak",
+    beskrivelse: "Kontroll av ventilasjon i lagerrom, tetthet på brannskap/oppsamlingskar, tilgjengelighet til slokkeutstyr og rømningsveier.",
+    intervall: "Årlig",
+    gjelder: "alle",
   },
 ];
 
