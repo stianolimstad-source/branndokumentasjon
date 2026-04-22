@@ -77,6 +77,20 @@ const TABLE_WIDTH = 9026;
 const BORDER = { style: BorderStyle.SINGLE, size: 1, color: "D9E2EC" };
 const BORDERS = { top: BORDER, bottom: BORDER, left: BORDER, right: BORDER };
 
+const getImageSize = (buffer: ArrayBuffer, type: "png" | "jpg") => {
+  const view = new DataView(buffer);
+  if (type === "png") return { width: view.getUint32(16), height: view.getUint32(20) };
+  let offset = 2;
+  while (offset < view.byteLength) {
+    if (view.getUint8(offset) !== 0xff) break;
+    const marker = view.getUint8(offset + 1);
+    const length = view.getUint16(offset + 2);
+    if (marker >= 0xc0 && marker <= 0xc3) return { width: view.getUint16(offset + 7), height: view.getUint16(offset + 5) };
+    offset += 2 + length;
+  }
+  return { width: 170, height: 74 };
+};
+
 const formatNumber = (value: number, decimals = 0) =>
   value.toLocaleString("nb-NO", { maximumFractionDigits: decimals, minimumFractionDigits: decimals });
 
@@ -84,7 +98,7 @@ const text = (value: string, options: { bold?: boolean; size?: number; color?: s
   new TextRun({ text: value, font: "Arial", size: options.size ?? 20, bold: options.bold, color: options.color });
 
 const paragraph = (value: string, options: { bold?: boolean; size?: number; color?: string; after?: number } = {}) =>
-  new Paragraph({ spacing: { after: options.after ?? 120 }, children: [text(value, options)] });
+  new Paragraph({ spacing: { after: options.after ?? 160 }, children: [text(value, options)] });
 
 const multiline = (value?: string) =>
   (value || "")
@@ -102,7 +116,7 @@ const heading = (title: string) =>
   });
 
 const note = (title: string, value: string) => [
-  new Paragraph({ spacing: { before: 80, after: 60 }, children: [text(title, { bold: true, color: "1E3A5F" })] }),
+  new Paragraph({ spacing: { before: 180, after: 80 }, children: [text(title, { bold: true, color: "1E3A5F" })] }),
   ...multiline(value),
 ];
 
