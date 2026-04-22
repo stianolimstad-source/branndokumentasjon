@@ -61,9 +61,9 @@ export interface InnmeldingVurderingData {
 }
 
 export interface BranntekniskeTiltakData {
-  brannalarm: { status: string; beskrivelse: string; kommentar: string };
-  roykventilasjon: { status: string; type: string; beskrivelse: string };
-  slokkeanlegg: { status: string; type: string; beskrivelse: string };
+  brannalarm: { status: string; beskrivelse: string; kommentar: string; rapporttekst?: string };
+  roykventilasjon: { status: string; type: string; beskrivelse: string; rapporttekst?: string };
+  slokkeanlegg: { status: string; type: string; beskrivelse: string; rapporttekst?: string };
   generellKommentar: string;
 }
 
@@ -254,18 +254,21 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           tiltak: "Brannalarmanlegg",
           status: branntekniskeTiltak.brannalarm.status,
           beskrivelse: [branntekniskeTiltak.brannalarm.beskrivelse, branntekniskeTiltak.brannalarm.kommentar].filter(Boolean).join("\n"),
+          rapporttekst: branntekniskeTiltak.brannalarm.rapporttekst || "",
         },
         {
           tiltak: "Røykventilasjon",
           status: branntekniskeTiltak.roykventilasjon.status,
           beskrivelse: [branntekniskeTiltak.roykventilasjon.type, branntekniskeTiltak.roykventilasjon.beskrivelse].filter(Boolean).join("\n"),
+          rapporttekst: branntekniskeTiltak.roykventilasjon.rapporttekst || "",
         },
         {
           tiltak: "Automatisk slokkeanlegg",
           status: branntekniskeTiltak.slokkeanlegg.status,
           beskrivelse: [branntekniskeTiltak.slokkeanlegg.type, branntekniskeTiltak.slokkeanlegg.beskrivelse].filter(Boolean).join("\n"),
+          rapporttekst: branntekniskeTiltak.slokkeanlegg.rapporttekst || "",
         },
-      ].filter((row) => row.status.trim() || row.beskrivelse.trim())
+      ].filter((row) => row.status.trim() || row.beskrivelse.trim() || row.rapporttekst.trim())
     : [];
   const visBranntekniskeTiltak = branntekniskeTiltakInkludert && branntekniskeTiltakRows.length > 0;
   const formatMJ = (v: number) => {
