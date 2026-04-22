@@ -185,15 +185,15 @@ const Brensellagring = () => {
   const [brannenergiKommentar, setBrannenergiKommentar] = useState("");
 
   type BranntekniskeTiltakData = {
-    brannalarm: { status: string; beskrivelse: string; kommentar: string };
-    roykventilasjon: { status: string; type: string; beskrivelse: string };
-    slokkeanlegg: { status: string; type: string; beskrivelse: string };
+    brannalarm: { status: string; beskrivelse: string; kommentar: string; rapporttekst: string };
+    roykventilasjon: { status: string; type: string; beskrivelse: string; rapporttekst: string };
+    slokkeanlegg: { status: string; type: string; beskrivelse: string; rapporttekst: string };
     generellKommentar: string;
   };
   const TOMME_BRANNTEKNISKE_TILTAK: BranntekniskeTiltakData = {
-    brannalarm: { status: "", beskrivelse: "", kommentar: "" },
-    roykventilasjon: { status: "", type: "", beskrivelse: "" },
-    slokkeanlegg: { status: "", type: "", beskrivelse: "" },
+    brannalarm: { status: "", beskrivelse: "", kommentar: "", rapporttekst: "" },
+    roykventilasjon: { status: "", type: "", beskrivelse: "", rapporttekst: "" },
+    slokkeanlegg: { status: "", type: "", beskrivelse: "", rapporttekst: "" },
     generellKommentar: "",
   };
   const TILTAK_STATUS = ["Ikke aktuelt", "Ikke installert", "Installert / forutsatt", "Eksisterende anlegg beholdes"];
@@ -201,6 +201,24 @@ const Brensellagring = () => {
   const SLOKKEANLEGG_TYPER = ["Sprinkleranlegg", "Vanntåkeanlegg", "Skum-/gassanlegg", "Annet"];
   const [branntekniskeTiltakInkludert, setBranntekniskeTiltakInkludert] = useState(false);
   const [branntekniskeTiltak, setBranntekniskeTiltak] = useState<BranntekniskeTiltakData>(TOMME_BRANNTEKNISKE_TILTAK);
+
+  const getOriginalTiltakTekst = (tiltak: "brannalarm" | "roykventilasjon" | "slokkeanlegg") => {
+    if (tiltak === "brannalarm") {
+      return "Brannalarmanlegg bidrar til tidlig deteksjon og varsling ved branntilløp. Tidlig varsling reduserer normalt nødvendig rømningstid, fordi personer i bygget kan starte evakuering tidligere. Tiltaket øker dermed sikkerhetsmarginen mellom tilgjengelig rømningstid og nødvendig rømningstid.";
+    }
+    if (tiltak === "roykventilasjon") {
+      return "Røykventilasjon har som formål å begrense røykoppbygging og bidra til bedre sikt- og temperaturforhold i bygget ved brann. Tiltaket kan bidra til å opprettholde tilgjengelig rømningstid ved at røyk- og varmebelastningen i rømningsfasen reduseres.";
+    }
+    return "Automatisk slokkeanlegg kan bidra til å kontrollere eller slokke brannen i en tidlig fase. Dette reduserer brannutvikling, røykproduksjon og temperaturpåvirkning, og kan dermed øke tilgjengelig rømningstid sammenlignet med et bygg uten automatisk slokkeanlegg.";
+  };
+
+  const withRapporttekst = <T extends "brannalarm" | "roykventilasjon" | "slokkeanlegg">(
+    tiltak: T,
+    value: BranntekniskeTiltakData[T]
+  ): BranntekniskeTiltakData[T] => ({
+    ...value,
+    rapporttekst: value.rapporttekst.trim() ? value.rapporttekst : getOriginalTiltakTekst(tiltak),
+  });
 
   const updateBranntekniskTiltak = <T extends keyof BranntekniskeTiltakData>(
     tiltak: T,
