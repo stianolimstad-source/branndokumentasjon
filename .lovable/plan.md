@@ -1,65 +1,53 @@
 
 
 ## Mål
-Krav til innmelding til DSB (§ 12) skal beregnes automatisk ut fra de planlagte mengdene som er fylt inn under «Planlagt lagret mengde i bygget», i stedet for å være en ren statisk tabell. Brukeren skal umiddelbart se om planlagt lager utløser innmeldingsplikt — og for hvilken stoffgruppe.
+«Kontroll og tilstandskontroll (§ 9)»-fanen skal tilpasses anleggstypen, slik at tank-spesifikke krav ikke vises for anlegg som ikke har tanker (typisk butikk/utsalg med småemballasje).
 
-## Logikk — gruppering mot DSB-grenser
-Tre stoffgrupper med hver sin grense (uendret kilde, `INNMELDINGS_GRENSER` i `src/lib/brensellagring-krav.ts`):
+## Logikk — anleggstype styrer kontrollkrav
+Bygger videre på det eksisterende valget av `bygningstype` / lagringsform. Vi innfører en avledet flagg `harTankanlegg` basert på:
 
-| Gruppe | Summerer planlagte mengder fra | Grense |
-|---|---|---|
-| Brannfarlig væske kat 1 og 2 | `vaeske_kat1` + `vaeske_kat2` | 6 000 L |
-| Brannfarlig væske kat 3 | `vaeske_kat3` | 12 000 L |
-| Diesel og fyringsoljer | `diesel_fyringsolje` | 100 000 L |
+- **Har tank**: Bygningstype = `tankanlegg`, `industri_tank`, `bensinstasjon`, `fyringsanlegg`, eller når brukeren har fylt inn mengder under «Tanker» (f.eks. `diesel_fyringsolje` over 0 L i en stasjonær tank-kategori).
+- **Uten tank** (typisk butikk, lager med småemballasje): Bygningstype = `butikk`, `utsalg`, `lager_smaaemballasje`, eller når kun «småemballerte beholdere» / aerosoler er fylt inn.
 
-Gass (kat 1/2) og aerosoler omfattes ikke av disse tre væske-grensene og rapporteres som «ikke vurdert mot væskegrensene». Hvis gass/aerosoler senere skal vurderes mot egne grenser, beholdes plass i UI for å utvide.
+Hvis det er usikkert (blandet eller manglende valg), defaulter vi til **å vise alle krav** og lar brukeren velge bort manuelt — i tråd med dagens oppførsel.
 
-For hver gruppe regnes:
-- `sum` (L) basert på `plannedAmounts`
-- `status`: `over` (sum ≥ grense) → innmeldingspliktig, `under` (0 < sum < grense) → ikke pliktig, `ingen` (sum = 0) → ikke aktuelt
-- `gjenstaende`: grense − sum (vises kun ved `under`)
+## Datastruktur — utvide `KontrollKrav`
+I `src/lib/brensellagring-krav.ts`:
+- Legge til felt `gjelder: "tank" | "alle"` på hver post i `KONTROLL_KRAV`.
+- Klassifisering:
+  - `Ferdigkontroll` → `alle` (gjelder alle anlegg, men teksten justeres for ikke-tank — se under)
+  - `Utvendig tilstandskontroll` → `tank`
+  - `Innvendig tilstandskontroll` → `tank`
+  - `Sikkerhetskritisk utstyr` → `tank` (nødstopp/nødavstengning er tank-/prosessrelevant)
+  - `Rørsystem og utstyr` → `tank`
+- Legge til **to nye, generelle krav** som vises for ikke-tank-anlegg (butikk/lager med småemballasje):
+  - `Visuell kontroll av lager og emballasje` → `alle` — «Periodisk visuell kontroll av emballasje, merking, hylleinnredning og brannskap. Lekkasjer, skadet emballasje og utløpte produkter fjernes.» Intervall: «Årlig».
+  - `Kontroll av branntekniske tiltak` → `alle` — «Kontroll av ventilasjon i lagerrom, tetthet på brannskap/oppsamlingskar, tilgjengelighet til slokkeutstyr og rømningsveier.» Intervall: «Årlig».
 
-Samlet status `trengerInnmelding = true` hvis minst én gruppe er `over`.
+Tekstene tilpasses slik at «Ferdigkontroll» nevner trykkprøving/tetthetsprøving **kun** der det er relevant — vi splitter den i to varianter via `gjelder` og bruker korrekt variant.
 
-## UI-endringer i «Innmelding»-fanen
-Filen: `src/pages/Brensellagring.tsx`, `TabsContent value="innmelding"` (linje ~1152).
+## UI-endringer i «Kontroll»-fanen
+Filen: `src/pages/Brensellagring.tsx` (linje ~1151–1206).
 
-1. Beholde info-boksen øverst, men oppdatere teksten til å vise **automatisk konklusjon**:
-   - Grønn boks (`bg-emerald-500/10`, `CheckCircle2`): «Ingen innmeldingsplikt utløst basert på planlagte mengder.»
-   - Rød/oransje boks (`bg-destructive/10`, `AlertTriangle`): «Anlegget er innmeldingspliktig til DSB iht. § 12. Følgende stoffgruppe(r) overskrider grensen: …»
-   - Nøytral boks når ingen mengder er fylt inn: «Fyll inn planlagte mengder under «Planlagt lagret mengde i bygget» for å vurdere innmeldingsplikt.» med en knapp/lenke som scroller til kortet.
+1. Beregne `harTankanlegg` (memo) ut fra `bygningstype` og `plannedAmounts`.
+2. Filtrere `KONTROLL_KRAV` før rendering:
+   - `harTankanlegg === true` → vis poster med `gjelder` i `["tank", "alle"]` (alle).
+   - `harTankanlegg === false` → vis kun `gjelder === "alle"`.
+3. Liste «Generelt skal systematisk tilstandskontroll omfatte:» tilpasses likt:
+   - **Tank**: dagens liste (visuell, korrosjon, tetthetsprøving, komponenter, sikkerhetsfunksjoner, dokumentasjon, kontrollrapport).
+   - **Ikke-tank**: kortere liste (visuell kontroll av emballasje/merking/hyller, kontroll av brannskap og oppsamling, ventilasjon, slokkeutstyr og rømningsveier, kontrollrapport med avvik).
+4. Liten info-banner øverst i fanen som forklarer hvorfor visningen ser slik ut:
+   - Tank-modus: «Vist kontrollomfang er tilpasset anlegg med tanker.»
+   - Ikke-tank-modus: «Anlegget har ikke tanker. Kontrollkrav for tankanlegg (utvendig/innvendig tilstandskontroll, rørsystem) er ikke aktuelle og er skjult. Du kan endre bygningstype for å vise alle krav.»
 
-2. Erstatte den eksisterende tabellen med en **vurderingstabell** med kolonner:
-   - Stoffgruppe
-   - Planlagt mengde (sum L)
-   - Innmeldingsgrense (L)
-   - Status (badge: «Innmeldingspliktig» rød / «Under grense» grønn / «Ikke aktuelt» grå)
-   - Margin (kun når `under`: «X L til grensen»)
-
-3. Ved overskridelse: kort liste «Hva må gjøres» med standardpunkter (melding sendes inn senest 3 mnd før idriftsettelse, skjema via Altinn, krav til informasjon i søknaden) — vises kun når `trengerInnmelding`.
-
-4. Fjerne det eksisterende `valgtStoff` / `tankMengde`-relaterte oppslaget i denne fanen (input-feltene er allerede fjernet — `getInnmeldingsStatus`/`innmeldingsStatus`-bruken renses opp i samme slengen).
-
-## Inkludering i dokumentet
-Beholde samme mønster som andre seksjoner:
-- Ny «Legg til i dokument»-knapp (`innmeldingInkludert`) i kortet.
-- Tekstboks for kommentar (`innmeldingKommentar`).
-- Når aktiv legges seksjonen «Innmeldingsplikt til DSB» inn i `BrensellagringPreview.tsx` med:
-  - Kort konklusjon (innmeldingspliktig ja/nei + hvilke stoffgrupper).
-  - Vurderingstabell (samme kolonner som i UI).
-  - Eventuell kommentar.
-  - Fotnote: «Forskrift om håndtering av brannfarlig, reaksjonsfarlig og trykksatt stoff (FBRT) § 12».
-
-## State og persistens
-Nye felter i `Brensellagring.tsx`:
-- `innmeldingInkludert: boolean`
-- `innmeldingKommentar: string`
-
-Lagres i `docContent` og leses tilbake i `useEffect`-en som henter eksisterende dokument (samme mønster som `plannedAmounts` / `brannenergiInkludert`).
+## Rapportgenerering
+Filen: `src/components/brensellagring/BrensellagringPreview.tsx` (linje ~774).
+- Bruke samme filtrering når kontroll-seksjonen rendres til rapporten — kun valgte (`isKravSelected`) kontrollkrav inkluderes uansett, men listen over generelle punkter byttes til ikke-tank-variant når `harTankanlegg === false`.
+- Propagere `harTankanlegg` (eller direkte `bygningstype` + `plannedAmounts`) som prop fra `Brensellagring.tsx`.
 
 ## Filer som endres
-1. **`src/pages/Brensellagring.tsx`** — ny beregningsfunksjon `evaluerInnmelding(plannedAmounts)`, oppdatert UI i Innmelding-tab, ny state og persistens, propagering til preview. Fjerner ubrukte `valgtStoff`/`tankMengde`/`innmeldingsStatus`-rester.
-2. **`src/components/brensellagring/BrensellagringPreview.tsx`** — ny prop-blokk og rendering av innmelding-seksjonen, ny entry i `BRENSEL_SECTIONS`/`sections`-listen.
+1. **`src/lib/brensellagring-krav.ts`** — legge til `gjelder`-felt på `KONTROLL_KRAV`, legge til to nye generelle poster, splitte `Ferdigkontroll` om nødvendig.
+2. **`src/pages/Brensellagring.tsx`** — beregne `harTankanlegg`, filtrere kontrollkrav, vise tilpasset info-banner og generell liste.
+3. **`src/components/brensellagring/BrensellagringpPreview.tsx`** — motta `harTankanlegg` prop og bruke samme filtrering / generelle liste i rapporten.
 
-Ingen endringer i `src/lib/brensellagring-krav.ts` (grensene gjenbrukes som de er).
-
+Ingen databasemigrasjoner. Eksisterende dokumenter som har huket av tank-spesifikke kontrollkrav beholder valget i lagret state — de filtreres bare bort fra UI når anleggstypen ikke er tank, slik at brukeren får en ren visning.
