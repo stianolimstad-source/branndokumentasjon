@@ -77,6 +77,20 @@ const TABLE_WIDTH = 9026;
 const BORDER = { style: BorderStyle.SINGLE, size: 1, color: "D9E2EC" };
 const BORDERS = { top: BORDER, bottom: BORDER, left: BORDER, right: BORDER };
 
+const getImageSize = (buffer: ArrayBuffer, type: "png" | "jpg") => {
+  const view = new DataView(buffer);
+  if (type === "png") return { width: view.getUint32(16), height: view.getUint32(20) };
+  let offset = 2;
+  while (offset < view.byteLength) {
+    if (view.getUint8(offset) !== 0xff) break;
+    const marker = view.getUint8(offset + 1);
+    const length = view.getUint16(offset + 2);
+    if (marker >= 0xc0 && marker <= 0xc3) return { width: view.getUint16(offset + 7), height: view.getUint16(offset + 5) };
+    offset += 2 + length;
+  }
+  return { width: 170, height: 74 };
+};
+
 const formatNumber = (value: number, decimals = 0) =>
   value.toLocaleString("nb-NO", { maximumFractionDigits: decimals, minimumFractionDigits: decimals });
 
@@ -84,7 +98,7 @@ const text = (value: string, options: { bold?: boolean; size?: number; color?: s
   new TextRun({ text: value, font: "Arial", size: options.size ?? 20, bold: options.bold, color: options.color });
 
 const paragraph = (value: string, options: { bold?: boolean; size?: number; color?: string; after?: number } = {}) =>
-  new Paragraph({ spacing: { after: options.after ?? 120 }, children: [text(value, options)] });
+  new Paragraph({ spacing: { after: options.after ?? 160 }, children: [text(value, options)] });
 
 const multiline = (value?: string) =>
   (value || "")
@@ -102,7 +116,7 @@ const heading = (title: string) =>
   });
 
 const note = (title: string, value: string) => [
-  new Paragraph({ spacing: { before: 80, after: 60 }, children: [text(title, { bold: true, color: "1E3A5F" })] }),
+  new Paragraph({ spacing: { before: 180, after: 80 }, children: [text(title, { bold: true, color: "1E3A5F" })] }),
   ...multiline(value),
 ];
 
@@ -124,9 +138,35 @@ const table = (headers: string[], rows: string[][], widths: number[]) =>
   new Table({
     width: { size: TABLE_WIDTH, type: WidthType.DXA },
     columnWidths: widths,
+    margins: { top: 70, bottom: 160 },
     rows: [
       new TableRow({ children: headers.map((header, index) => cell(header, widths[index], { header: true })) }),
       ...rows.map((row) => new TableRow({ children: row.map((value, index) => cell(value || "—", widths[index])) })),
+    ],
+  });
+
+const headerBar = (title: string, subtitle?: string) =>
+  new Table({
+    width: { size: TABLE_WIDTH, type: WidthType.DXA },
+    columnWidths: [TABLE_WIDTH],
+    margins: { top: 180, bottom: 180 },
+    borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE }, insideHorizontal: { style: BorderStyle.NONE }, insideVertical: { style: BorderStyle.NONE } },
+    rows: [
+      new TableRow({
+        children: [
+          new TableCell({
+            width: { size: TABLE_WIDTH, type: WidthType.DXA },
+            borders: { top: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } },
+            shading: { fill: "1E3A5F", type: ShadingType.CLEAR },
+            margins: { top: 220, bottom: 220, left: 300, right: 300 },
+            children: [
+              new Paragraph({ spacing: { after: 30 }, children: [text("KRAVDOKUMENT", { size: 16, color: "FFFFFF", bold: true })] }),
+              new Paragraph({ spacing: { after: subtitle ? 60 : 0 }, children: [text(title, { size: 32, color: "FFFFFF", bold: true })] }),
+              ...(subtitle ? [new Paragraph({ children: [text(subtitle, { size: 20, color: "D7E3F0" })] })] : []),
+            ],
+          }),
+        ],
+      }),
     ],
   });
 
@@ -139,14 +179,17 @@ async function logoParagraph(logoUrl?: string): Promise<Paragraph | null> {
     const contentType = response.headers.get("content-type") || "";
     const type = contentType.includes("png") ? "png" : contentType.includes("jpeg") || contentType.includes("jpg") ? "jpg" : null;
     if (!type) return null;
+    const imageSize = getImageSize(buffer, type);
+    const logoWidth = 220;
+    const logoHeight = Math.round((imageSize.height / imageSize.width) * logoWidth);
     return new Paragraph({
       alignment: AlignmentType.RIGHT,
-      spacing: { after: 180 },
+      spacing: { after: 120 },
       children: [
         new ImageRun({
           type,
           data: buffer,
-          transformation: { width: 170, height: 74 },
+          transformation: { width: logoWidth, height: logoHeight },
           altText: { title: "Firmalogo", description: "Firmalogo", name: "Firmalogo" },
         }),
       ],
@@ -173,13 +216,10 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
   const logo = await logoParagraph(data.logoUrl);
   if (logo) children.push(logo);
 
-  children.push(
-    new Paragraph({ spacing: { after: 100 }, children: [text("KRAVDOKUMENT", { size: 18, color: "64748B", bold: true })] }),
-    new Paragraph({ spacing: { after: 120 }, children: [text("Lagring av brannfarlig stoff", { size: 36, bold: true, color: "1E3A5F" })] }),
-  );
-  if (data.valgtBygg?.navn) children.push(paragraph(data.valgtBygg.navn, { color: "64748B", after: 240 }));
+  children.push(headerBar("Lagring av brannfarlig stoff", data.valgtBygg?.navn));
 
   children.push(
+    new Paragraph({ spacing: { after: 180 }, children: [] }),
     table(
       ["Forhold", "Opplysning"],
       [
