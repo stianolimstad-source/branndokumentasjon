@@ -216,13 +216,10 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
   const logo = await logoParagraph(data.logoUrl);
   if (logo) children.push(logo);
 
-  children.push(
-    new Paragraph({ spacing: { after: 100 }, children: [text("KRAVDOKUMENT", { size: 18, color: "64748B", bold: true })] }),
-    new Paragraph({ spacing: { after: 120 }, children: [text("Lagring av brannfarlig stoff", { size: 36, bold: true, color: "1E3A5F" })] }),
-  );
-  if (data.valgtBygg?.navn) children.push(paragraph(data.valgtBygg.navn, { color: "64748B", after: 240 }));
+  children.push(headerBar("Lagring av brannfarlig stoff", data.valgtBygg?.navn));
 
   children.push(
+    new Paragraph({ spacing: { after: 180 }, children: [] }),
     table(
       ["Forhold", "Opplysning"],
       [
