@@ -2053,6 +2053,8 @@ const Brensellagring = () => {
                 <BrensellagringPreview
                   valgtBygg={valgtBygg}
                   firmaNavn={firmaNavn || undefined}
+                  kunde={kunde || undefined}
+                  logoUrl={logoUrl || undefined}
                   prosjektNavn={prosjektNavn || undefined}
                   adresse={adresse || undefined}
                   visibleSections={visibleSections}
