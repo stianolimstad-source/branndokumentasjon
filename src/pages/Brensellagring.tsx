@@ -1042,7 +1042,7 @@ const Brensellagring = () => {
                       <Label className="text-xs">Status</Label>
                       <Select
                         value={branntekniskeTiltak.slokkeanlegg.status}
-                        onValueChange={(status) => updateBranntekniskTiltak("slokkeanlegg", { ...branntekniskeTiltak.slokkeanlegg, status })}
+                        onValueChange={(status) => updateBranntekniskTiltak("slokkeanlegg", withRapporttekst("slokkeanlegg", { ...branntekniskeTiltak.slokkeanlegg, status }))}
                       >
                         <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Velg status" /></SelectTrigger>
                         <SelectContent>{TILTAK_STATUS.map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}</SelectContent>
@@ -1052,7 +1052,7 @@ const Brensellagring = () => {
                       <Label className="text-xs">Type</Label>
                       <Select
                         value={branntekniskeTiltak.slokkeanlegg.type}
-                        onValueChange={(type) => updateBranntekniskTiltak("slokkeanlegg", { ...branntekniskeTiltak.slokkeanlegg, type })}
+                        onValueChange={(type) => updateBranntekniskTiltak("slokkeanlegg", withRapporttekst("slokkeanlegg", { ...branntekniskeTiltak.slokkeanlegg, type }))}
                       >
                         <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Velg type" /></SelectTrigger>
                         <SelectContent>{SLOKKEANLEGG_TYPER.map((type) => <SelectItem key={type} value={type}>{type}</SelectItem>)}</SelectContent>
@@ -1065,6 +1065,20 @@ const Brensellagring = () => {
                     placeholder="F.eks. bygget er sprinklet, lagerrom omfattes av eksisterende sprinkleranlegg..."
                     className="min-h-[60px] text-sm"
                   />
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <Label className="text-xs">Rapporttekst / virkning på rømningstid</Label>
+                      <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={() => updateBranntekniskTiltak("slokkeanlegg", { ...branntekniskeTiltak.slokkeanlegg, rapporttekst: getOriginalTiltakTekst("slokkeanlegg") })}>
+                        Original tekst
+                      </Button>
+                    </div>
+                    <Textarea
+                      value={branntekniskeTiltak.slokkeanlegg.rapporttekst}
+                      onChange={(e) => updateBranntekniskTiltak("slokkeanlegg", { ...branntekniskeTiltak.slokkeanlegg, rapporttekst: e.target.value })}
+                      placeholder="Fagtekst om tiltakets funksjon og påvirkning på rømningstid..."
+                      className="min-h-[120px] text-sm"
+                    />
+                  </div>
                 </div>
               </div>
 
