@@ -46,6 +46,7 @@ interface ProjectOption {
 
 interface ProfileInfo {
   company: string | null;
+  logo_url: string | null;
 }
 
 const Brensellagring = () => {
@@ -75,9 +76,11 @@ const Brensellagring = () => {
   const [brenselType, setBrenselType] = useState<BrenselType | "">("");
   const [mengde, setMengde] = useState("");
   const [innledning, setInnledning] = useState("");
+  const [kunde, setKunde] = useState("");
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
   const firmaNavn = profile?.company?.trim() || "";
+  const logoUrl = profile?.logo_url || "";
   const prosjektNavn = selectedProject?.name || "";
   const adresse = selectedProject?.address || "";
 
@@ -359,7 +362,7 @@ const Brensellagring = () => {
 
       supabase
         .from('profiles')
-        .select('company')
+        .select('company, logo_url')
         .eq('id', user.id)
         .maybeSingle()
         .then(({ data }) => {
@@ -397,6 +400,7 @@ const Brensellagring = () => {
           branntekniskeTiltakInkludert?: boolean;
           branntekniskeTiltak?: Partial<BranntekniskeTiltakData>;
           innledning?: string;
+          kunde?: string;
           innmeldingInkludert?: boolean;
           innmeldingKommentar?: string;
           documentType?: string;
@@ -452,6 +456,7 @@ const Brensellagring = () => {
           slokkeanlegg: { ...TOMME_BRANNTEKNISKE_TILTAK.slokkeanlegg, ...(content.branntekniskeTiltak?.slokkeanlegg || {}) },
         });
         setInnledning(content.innledning ?? "");
+        setKunde(content.kunde ?? "");
         setInnmeldingInkludert(content.innmeldingInkludert ?? false);
         setInnmeldingKommentar(content.innmeldingKommentar ?? "");
       });
@@ -492,6 +497,7 @@ const Brensellagring = () => {
       branntekniskeTiltakInkludert,
       branntekniskeTiltak,
       innledning,
+      kunde,
       innmeldingInkludert,
       innmeldingKommentar,
     };
@@ -645,6 +651,16 @@ const Brensellagring = () => {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="kunde" className="text-sm">Kunde</Label>
+                <Input
+                  id="kunde"
+                  value={kunde}
+                  onChange={(e) => setKunde(e.target.value)}
+                  placeholder="Navn på kunde / oppdragsgiver"
+                />
               </div>
 
               <div className="space-y-1.5">
@@ -2037,6 +2053,8 @@ const Brensellagring = () => {
                 <BrensellagringPreview
                   valgtBygg={valgtBygg}
                   firmaNavn={firmaNavn || undefined}
+                  kunde={kunde || undefined}
+                  logoUrl={logoUrl || undefined}
                   prosjektNavn={prosjektNavn || undefined}
                   adresse={adresse || undefined}
                   visibleSections={visibleSections}
