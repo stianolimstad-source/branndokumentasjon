@@ -830,6 +830,16 @@ const Brensellagring = () => {
               </div>
 
               <div className="space-y-1.5">
+                <Label htmlFor="ksAnsvarlig" className="text-sm">KS / Kontrollert av</Label>
+                <Input
+                  id="ksAnsvarlig"
+                  value={ksAnsvarlig}
+                  onChange={(e) => setKsAnsvarlig(e.target.value)}
+                  placeholder="Navn på kvalitetssikrer"
+                />
+              </div>
+
+              <div className="space-y-1.5">
                 <Label htmlFor="innledning" className="text-sm">Innledning</Label>
                 <p className="text-xs text-muted-foreground">
                   Beskriv tiltaket, hva som inngår og hva som er oppdraget.
@@ -2359,6 +2369,8 @@ const Brensellagring = () => {
                   valgtBygg={valgtBygg}
                   firmaNavn={firmaNavn || undefined}
                   kunde={kunde || undefined}
+                  utarbeidetAv={utarbeidetAv || undefined}
+                  ksAnsvarlig={ksAnsvarlig || undefined}
                   logoUrl={logoUrl || undefined}
                   prosjektNavn={prosjektNavn || undefined}
                   adresse={adresse || undefined}
