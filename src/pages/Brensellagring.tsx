@@ -38,6 +38,8 @@ import {
 } from "@/lib/brensellagring-krav";
 import BrensellagringPreview, { BRENSEL_SECTIONS, BrenselSectionKey } from "@/components/brensellagring/BrensellagringPreview";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useCanDownload } from "@/hooks/useCanDownload";
+import { exportBrensellagringToWord } from "@/lib/brensellagring-word-export";
 
 interface ProjectOption {
   id: string;
@@ -58,6 +60,7 @@ const Brensellagring = () => {
   const bygningstypeFromUrl = searchParams.get("bygningstype") as BygningsType | null;
   const { user } = useAuth();
   const { toast } = useToast();
+  const canDownload = useCanDownload();
 
   // Project selection (driven by URL param)
   const [projects, setProjects] = useState<ProjectOption[]>([]);
@@ -562,6 +565,48 @@ const Brensellagring = () => {
       toast({ title: "Lagret", description: `"${docName}" er lagret i prosjektet` });
     }
     setIsSaving(false);
+  };
+
+  const handleDownloadWord = async () => {
+    if (!valgtBygg) {
+      toast({ title: "Mangler data", description: "Velg bygningstype før dokumentet lastes ned.", variant: "destructive" });
+      return;
+    }
+
+    await exportBrensellagringToWord({
+      valgtBygg,
+      firmaNavn: firmaNavn || undefined,
+      kunde: kunde || undefined,
+      logoUrl: logoUrl || undefined,
+      prosjektNavn: prosjektNavn || undefined,
+      adresse: adresse || undefined,
+      visibleSections,
+      selectedKravIds,
+      salgslokaleInkludert: salgslokaleInkludert && valgtBygningstype === "salgslokale",
+      salgslokaleKommentar,
+      salgslokaleTiltakTekst,
+      plannedInkludert,
+      plannedAmounts,
+      plannedKommentar,
+      overskridelseInkludert,
+      overskridelseRows,
+      overskridelseArealgrunnlag: overskridelseArealgrunnlag || (samletGulvareal > 0 ? samletGulvareal.toFixed(1) : ""),
+      overskridelseTiltak,
+      overskridelseVurderingstekst,
+      overskridelseKonklusjon,
+      brannenergiInkludert,
+      brannenergiKommentar,
+      generellBrannenergiMJm2,
+      branntekniskeTiltakInkludert,
+      branntekniskeTiltak,
+      etasjer,
+      innledning,
+      energitetthet: ENERGITETTHET,
+      innmeldingInkludert,
+      innmeldingKommentar,
+      innmeldingVurdering,
+      harTankanlegg,
+    });
   };
 
   const mengdeNum = parseFloat(mengde) || 0;
