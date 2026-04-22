@@ -871,7 +871,7 @@ const Brensellagring = () => {
                   <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                     <p className="text-muted-foreground">
                     Viser kun krav som er relevante for <span className="font-medium text-foreground">{valgtBygg?.navn}</span>.
-                    Kontrollfanen tilpasses automatisk etter om anlegget har tanker eller gjelder butikk/småemballasje.
+                    Kontrollseksjonen tilpasses automatisk etter om anlegget har tanker eller gjelder butikk/småemballasje.
                   </p>
                 </div>
                 <Button variant="outline" size="sm" asChild className="shrink-0 h-8 text-xs">
@@ -884,8 +884,8 @@ const Brensellagring = () => {
               </div>
             )}
             <TabsList className={`grid w-full h-auto gap-1 ${
-              [isTabRelevant("beliggenhet"), isTabRelevant("tanker"), isTabRelevant("oppsamling"), isTabRelevant("roer"), isTabRelevant("kontroll"), isTabRelevant("innmelding"), isTabRelevant("dokumentasjon")].filter(Boolean).length >= 6
-                ? "grid-cols-2 sm:grid-cols-4 lg:grid-cols-7"
+              [isTabRelevant("beliggenhet"), isTabRelevant("tanker"), isTabRelevant("oppsamling"), isTabRelevant("roer"), isTabRelevant("innmelding"), isTabRelevant("dokumentasjon")].filter(Boolean).length >= 6
+                ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6"
                 : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
             }`}>
               {isTabRelevant("beliggenhet") && (
@@ -910,12 +910,6 @@ const Brensellagring = () => {
                 <TabsTrigger value="roer" className="text-xs py-2">
                   <PipetteIcon className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
                   Rør & ventiler
-                </TabsTrigger>
-              )}
-              {isTabRelevant("kontroll") && (
-                <TabsTrigger value="kontroll" className="text-xs py-2">
-                  <Gauge className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
-                  Kontroll
                 </TabsTrigger>
               )}
               {isTabRelevant("innmelding") && (
