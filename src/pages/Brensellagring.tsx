@@ -169,7 +169,7 @@ const Brensellagring = () => {
     "Ovennevnte krav til avstander og mengder bør kunne økes noe for brannfarlige væsker, under forutsetning av at salgslokalet er sprinklet og at det fremgår av risikovurderingen at en slik begrenset økning er akseptabel.\n\nVurderingen gjelder kun de angitte mengdene og forutsetningene. Dersom det ønskes lagret mengder utover dette, må mengdene enten plasseres i brannsikre skap/avlukke eller underlegges en ny særskilt risikovurdering. Økning gjelder ikke brannfarlig gass uten særskilt vurdering, da DSB sin anbefalte gassmengde ikke øker tilsvarende med salgslokalets areal.";
   const [salgslokaleTiltakTekst, setSalgslokaleTiltakTekst] = useState(getOriginalSalgslokaleTiltakTekst);
 
-  // Planlagt lagret mengde i bygget – per kategori
+  // Planlagt mengde utover DSB sin veiledning – per kategori
   type PlannedAmounts = {
     gass_kat1: string;
     gass_kat2: string;
@@ -855,17 +855,17 @@ const Brensellagring = () => {
             </CardContent>
           </Card>
 
-          {/* Planlagt lagret mengde i bygget */}
+          {/* Planlagt mengde utover DSB sin veiledning */}
           <Card className="shadow-soft mb-6">
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <CardTitle className="text-base flex items-center gap-2">
                     <Warehouse className="h-4 w-4 text-primary" />
-                    Planlagt lagret mengde i bygget
+                    Planlagt mengde utover DSB sin veiledning
                   </CardTitle>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Fyll inn hvor mye som planlegges lagret per kategori. Tomme felt vises ikke i dokumentet.
+                    Fyll inn mengder brannfarlig stoff som ønskes lagret utover DSB sin anbefalte mengde. Mengder som oppbevares i brannsikre skap eller i egne brannceller beregnet for brannfarlig vare skal ikke tas med her.
                   </p>
                 </div>
                 <Button
@@ -916,7 +916,7 @@ const Brensellagring = () => {
                 </Label>
                 <Textarea
                   id="planlagt-kommentar"
-                  placeholder="F.eks. plassering, emballasjetype, lagring i original beholder, m.m."
+                  placeholder="F.eks. hvor mengdene plasseres, hvorfor de ikke står i brannskap/egen branncelle, og hvilke forutsetninger som gjelder for lagringen."
                   value={plannedKommentar}
                   onChange={(e) => setPlannedKommentar(e.target.value)}
                   className="min-h-[70px] text-sm"
@@ -1693,7 +1693,7 @@ const Brensellagring = () => {
                         Innmeldingsplikt til DSB (§ 12)
                       </CardTitle>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Vurderingen er beregnet automatisk fra «Planlagt lagret mengde i bygget».
+                        Vurderingen er beregnet automatisk fra «Planlagt mengde utover DSB sin veiledning».
                       </p>
                     </div>
                     <Button
@@ -1715,7 +1715,7 @@ const Brensellagring = () => {
                       <div className="space-y-1 text-sm">
                         <p className="font-medium text-foreground">Ingen planlagte mengder registrert</p>
                         <p className="text-muted-foreground">
-                          Fyll inn planlagte mengder under «Planlagt lagret mengde i bygget» for å vurdere innmeldingsplikt til DSB.
+                          Fyll inn planlagte mengder under «Planlagt mengde utover DSB sin veiledning» for å vurdere innmeldingsplikt til DSB.
                         </p>
                       </div>
                     </div>
@@ -2181,7 +2181,7 @@ const Brensellagring = () => {
                     Vurdering av mengde over anbefalt DSB-mengde
                   </CardTitle>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Sammenligner planlagt mengde med anbefalt mengde og dokumenterer kompenserende tiltak.
+                    Sammenligner mengde utover DSB sin veiledning med anbefalt mengde og dokumenterer kompenserende tiltak.
                   </p>
                 </div>
                 <Button

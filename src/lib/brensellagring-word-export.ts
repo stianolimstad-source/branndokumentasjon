@@ -253,8 +253,8 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
 
   if (data.plannedInkludert && plannedRows.length > 0) {
     children.push(
-      section("Planlagt lagret mengde i bygget"),
-      paragraph("Oversikt over planlagt lagrede mengder brannfarlig stoff i bygget, fordelt på kategori.", { color: "64748B" }),
+      section("Planlagt mengde utover DSB sin veiledning"),
+      paragraph("Oversikt over mengder brannfarlig stoff som vurderes utover DSB sin anbefalte mengde. Mengder i brannsikre skap eller egne brannceller beregnet for brannfarlig vare inngår ikke her.", { color: "64748B" }),
       table(["Kategori", "Planlagt mengde"], plannedRows.map((row) => [row.label, `${formatNumber(Number(row.value))} ${row.enhet}`]), [6100, 2926]),
     );
     if (data.plannedKommentar?.trim()) children.push(...note("Kommentar", data.plannedKommentar));
