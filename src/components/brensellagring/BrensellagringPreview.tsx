@@ -60,6 +60,13 @@ export interface InnmeldingVurderingData {
   harMengder: boolean;
 }
 
+export interface BranntekniskeTiltakData {
+  brannalarm: { status: string; beskrivelse: string; kommentar: string };
+  roykventilasjon: { status: string; type: string; beskrivelse: string };
+  slokkeanlegg: { status: string; type: string; beskrivelse: string };
+  generellKommentar: string;
+}
+
 interface BrensellagringPreviewProps {
   valgtBygg: BygningsTypeInfo | null;
   prosjektNavn?: string;
@@ -79,6 +86,8 @@ interface BrensellagringPreviewProps {
   innmeldingInkludert?: boolean;
   innmeldingKommentar?: string;
   innmeldingVurdering?: InnmeldingVurderingData;
+  branntekniskeTiltakInkludert?: boolean;
+  branntekniskeTiltak?: BranntekniskeTiltakData;
   harTankanlegg?: boolean | null;
 }
 
@@ -136,6 +145,8 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   innmeldingInkludert = false,
   innmeldingKommentar = "",
   innmeldingVurdering,
+  branntekniskeTiltakInkludert = false,
+  branntekniskeTiltak,
   harTankanlegg = null,
 }) => {
   if (!valgtBygg) {
