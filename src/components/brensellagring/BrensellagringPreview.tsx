@@ -495,9 +495,9 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
               <thead>
                 <tr>
-                  <th style={{ ...thStyle, width: "26%" }}>Tiltak</th>
-                  <th style={{ ...thStyle, width: "24%" }}>Status</th>
-                  <th style={thStyle}>Beskrivelse</th>
+                  <th style={{ ...thStyle, width: "24%" }}>Tiltak</th>
+                  <th style={{ ...thStyle, width: "20%" }}>Status</th>
+                  <th style={thStyle}>Beskrivelse og virkning på rømningstid</th>
                 </tr>
               </thead>
               <tbody>
@@ -505,7 +505,11 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                   <tr key={row.tiltak}>
                     <td style={{ ...tdStyle, fontWeight: 500 }}>{row.tiltak}</td>
                     <td style={tdStyle}>{row.status || "—"}</td>
-                    <td style={{ ...tdStyle, whiteSpace: "pre-wrap" }}>{row.beskrivelse || "—"}</td>
+                    <td style={{ ...tdStyle, whiteSpace: "pre-wrap" }}>
+                      {row.beskrivelse && <p style={{ margin: 0, marginBottom: row.rapporttekst ? 6 : 0 }}>{row.beskrivelse}</p>}
+                      {row.rapporttekst && <p style={{ margin: 0 }}>{row.rapporttekst}</p>}
+                      {!row.beskrivelse && !row.rapporttekst && "—"}
+                    </td>
                   </tr>
                 ))}
               </tbody>
