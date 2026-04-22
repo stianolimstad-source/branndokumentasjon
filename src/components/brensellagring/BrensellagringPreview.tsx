@@ -79,6 +79,7 @@ interface BrensellagringPreviewProps {
   innmeldingInkludert?: boolean;
   innmeldingKommentar?: string;
   innmeldingVurdering?: InnmeldingVurderingData;
+  harTankanlegg?: boolean | null;
 }
 
 const pageStyle: React.CSSProperties = {
@@ -135,6 +136,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   innmeldingInkludert = false,
   innmeldingKommentar = "",
   innmeldingVurdering,
+  harTankanlegg = null,
 }) => {
   if (!valgtBygg) {
     return (
@@ -157,7 +159,9 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const selOppsamling = OPPSAMLING_KRAV.filter((_, i) => selectedKravIds.has(`oppsamling_${i}`));
   const selRoer = ROERLEDNING_KRAV.filter((_, i) => selectedKravIds.has(`roer_${i}`));
   const selVentil = VENTIL_KRAV.filter((_, i) => selectedKravIds.has(`ventil_${i}`));
-  const selKontroll = KONTROLL_KRAV.filter((_, i) => selectedKravIds.has(`kontroll_${i}`));
+  const selKontroll = KONTROLL_KRAV
+    .map((krav, index) => ({ krav, index }))
+    .filter(({ krav, index }) => selectedKravIds.has(`kontroll_${index}`) && (harTankanlegg !== false || krav.gjelder === "alle"));
   const selDok = DOKUMENTASJON_KRAV.filter((_, i) => selectedKravIds.has(`dok_${i}`));
 
   // Planlagte mengder – bygg liste over felt med faktisk innfylte verdier
