@@ -871,7 +871,7 @@ const Brensellagring = () => {
                   <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                     <p className="text-muted-foreground">
                     Viser kun krav som er relevante for <span className="font-medium text-foreground">{valgtBygg?.navn}</span>.
-                    Kontrollfanen tilpasses automatisk etter om anlegget har tanker eller gjelder butikk/småemballasje.
+                    Kontrollseksjonen tilpasses automatisk etter om anlegget har tanker eller gjelder butikk/småemballasje.
                   </p>
                 </div>
                 <Button variant="outline" size="sm" asChild className="shrink-0 h-8 text-xs">
@@ -884,8 +884,8 @@ const Brensellagring = () => {
               </div>
             )}
             <TabsList className={`grid w-full h-auto gap-1 ${
-              [isTabRelevant("beliggenhet"), isTabRelevant("tanker"), isTabRelevant("oppsamling"), isTabRelevant("roer"), isTabRelevant("kontroll"), isTabRelevant("innmelding"), isTabRelevant("dokumentasjon")].filter(Boolean).length >= 6
-                ? "grid-cols-2 sm:grid-cols-4 lg:grid-cols-7"
+              [isTabRelevant("beliggenhet"), isTabRelevant("tanker"), isTabRelevant("oppsamling"), isTabRelevant("roer"), isTabRelevant("innmelding"), isTabRelevant("dokumentasjon")].filter(Boolean).length >= 6
+                ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6"
                 : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
             }`}>
               {isTabRelevant("beliggenhet") && (
@@ -910,12 +910,6 @@ const Brensellagring = () => {
                 <TabsTrigger value="roer" className="text-xs py-2">
                   <PipetteIcon className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
                   Rør & ventiler
-                </TabsTrigger>
-              )}
-              {isTabRelevant("kontroll") && (
-                <TabsTrigger value="kontroll" className="text-xs py-2">
-                  <Gauge className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
-                  Kontroll
                 </TabsTrigger>
               )}
               {isTabRelevant("innmelding") && (
@@ -1171,66 +1165,6 @@ const Brensellagring = () => {
                         </div>
                       </div>
                     ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* ============ TAB: Kontroll ============ */}
-            <TabsContent value="kontroll" className="space-y-4">
-              <Card className="shadow-soft">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg flex items-center gap-2">
-                      <Gauge className="h-5 w-5 text-primary" />
-                      Kontroll og tilstandskontroll (§ 9)
-                    </CardTitle>
-                    <DocToggleButton tabKey="kontroll" />
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Krav til kontrollintervaller og systematisk tilstandskontroll
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  <div className="mb-4 flex items-start gap-2 rounded-lg border border-accent bg-accent/30 p-3 text-sm">
-                    <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
-                    <p className="text-muted-foreground">
-                      {harTankanlegg === false
-                        ? "Anlegget har ikke tanker. Kontrollkrav for tankanlegg (utvendig/innvendig tilstandskontroll, rørsystem og sikkerhetskritisk tankutstyr) er ikke aktuelle og er skjult. Endre bygningstype for å vise alle krav."
-                        : "Vist kontrollomfang er tilpasset anlegg med tanker. Tankspesifikke krav vises sammen med generelle kontrollkrav."}
-                    </p>
-                  </div>
-
-                  <div className="border rounded-lg overflow-hidden">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="bg-muted/50">
-                          <th className="text-center py-2.5 px-2 font-medium w-10">Dok.</th>
-                          <th className="text-left py-2.5 px-3 font-medium">Kontrolltype</th>
-                          <th className="text-left py-2.5 px-3 font-medium">Beskrivelse</th>
-                          <th className="text-left py-2.5 px-3 font-medium w-36">Intervall</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {kontrollKravVisning.map(({ krav, index }) => (
-                          <tr key={index} className={`border-t ${isKravSelected(`kontroll_${index}`) ? "bg-primary/5" : ""}`}>
-                            <td className="py-2 px-2 text-center"><KravItemButton id={`kontroll_${index}`} /></td>
-                            <td className="py-2 px-3 font-medium">{krav.tittel}</td>
-                            <td className="py-2 px-3 text-muted-foreground">{krav.beskrivelse}</td>
-                            <td className="py-2 px-3">
-                              {krav.intervall && <Badge variant="secondary" className="text-xs">{krav.intervall}</Badge>}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div className="mt-4 p-3 bg-muted/30 rounded-lg text-sm space-y-1.5">
-                    <p className="font-medium">Generelt skal systematisk tilstandskontroll omfatte:</p>
-                    <ul className="list-disc list-inside space-y-0.5 text-muted-foreground">
-                      {kontrollGenerelt.map((punkt) => <li key={punkt}>{punkt}</li>)}
-                    </ul>
                   </div>
                 </CardContent>
               </Card>
@@ -1642,6 +1576,66 @@ const Brensellagring = () => {
                   </Card>
                 );
               })()}
+              {/* ============ Kontroll og tilstandskontroll ============ */}
+              <div className="space-y-4">
+              <Card className="shadow-soft">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Gauge className="h-5 w-5 text-primary" />
+                      Kontroll og tilstandskontroll (§ 9)
+                    </CardTitle>
+                    <DocToggleButton tabKey="kontroll" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Krav til kontrollintervaller og systematisk tilstandskontroll
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="mb-4 flex items-start gap-2 rounded-lg border border-accent bg-accent/30 p-3 text-sm">
+                    <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                    <p className="text-muted-foreground">
+                      {harTankanlegg === false
+                        ? "Anlegget har ikke tanker. Kontrollkrav for tankanlegg (utvendig/innvendig tilstandskontroll, rørsystem og sikkerhetskritisk tankutstyr) er ikke aktuelle og er skjult. Endre bygningstype for å vise alle krav."
+                        : "Vist kontrollomfang er tilpasset anlegg med tanker. Tankspesifikke krav vises sammen med generelle kontrollkrav."}
+                    </p>
+                  </div>
+
+                  <div className="border rounded-lg overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="bg-muted/50">
+                          <th className="text-center py-2.5 px-2 font-medium w-10">Dok.</th>
+                          <th className="text-left py-2.5 px-3 font-medium">Kontrolltype</th>
+                          <th className="text-left py-2.5 px-3 font-medium">Beskrivelse</th>
+                          <th className="text-left py-2.5 px-3 font-medium w-36">Intervall</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {kontrollKravVisning.map(({ krav, index }) => (
+                          <tr key={index} className={`border-t ${isKravSelected(`kontroll_${index}`) ? "bg-primary/5" : ""}`}>
+                            <td className="py-2 px-2 text-center"><KravItemButton id={`kontroll_${index}`} /></td>
+                            <td className="py-2 px-3 font-medium">{krav.tittel}</td>
+                            <td className="py-2 px-3 text-muted-foreground">{krav.beskrivelse}</td>
+                            <td className="py-2 px-3">
+                              {krav.intervall && <Badge variant="secondary" className="text-xs">{krav.intervall}</Badge>}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className="mt-4 p-3 bg-muted/30 rounded-lg text-sm space-y-1.5">
+                    <p className="font-medium">Generelt skal systematisk tilstandskontroll omfatte:</p>
+                    <ul className="list-disc list-inside space-y-0.5 text-muted-foreground">
+                      {kontrollGenerelt.map((punkt) => <li key={punkt}>{punkt}</li>)}
+                    </ul>
+                  </div>
+                </CardContent>
+              </Card>
+              </div>
+
 
             </div>
           </div>
