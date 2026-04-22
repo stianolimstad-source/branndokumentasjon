@@ -316,14 +316,14 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const secNum = (key: string) => sections.findIndex(s => s.key === key) + 1;
   const hasAnySections = sections.length > 0;
   const logoScaleFactor = Number(logoScale) / 100;
-  const logoWidth = 220 * logoScaleFactor;
-  const logoHeight = 96 * logoScaleFactor;
+  const logoWidth = 440 * logoScaleFactor;
+  const logoHeight = 192 * logoScaleFactor;
 
   return (
     <div>
       <div style={pageStyle}>
         {logoUrl && (
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 10 }}>
             <div style={{ width: logoWidth, height: logoHeight, background: "#fff", borderRadius: 4, padding: 6, display: "flex", alignItems: "center", justifyContent: "center" }}>
               <img src={logoUrl} alt="Firmalogo" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
             </div>
