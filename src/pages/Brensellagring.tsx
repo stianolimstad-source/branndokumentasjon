@@ -2036,6 +2036,7 @@ const Brensellagring = () => {
               <div className="flex-1 min-h-0 bg-muted/30 rounded-xl p-3 overflow-auto">
                 <BrensellagringPreview
                   valgtBygg={valgtBygg}
+                  firmaNavn={firmaNavn || undefined}
                   prosjektNavn={prosjektNavn || undefined}
                   adresse={adresse || undefined}
                   visibleSections={visibleSections}
