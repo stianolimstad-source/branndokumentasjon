@@ -106,6 +106,34 @@ const Brensellagring = () => {
   };
 
   const visTankBeliggenhet = !valgtBygningstype || TANK_BYGG.includes(valgtBygningstype as BygningsType);
+  const IKKE_TANK_BYGG: BygningsType[] = ["forretning", "salgslokale"];
+  const harTankanlegg = !valgtBygningstype
+    ? null
+    : TANK_BYGG.includes(valgtBygningstype as BygningsType)
+      ? true
+      : IKKE_TANK_BYGG.includes(valgtBygningstype as BygningsType)
+        ? false
+        : null;
+  const kontrollKravVisning = KONTROLL_KRAV
+    .map((krav, index) => ({ krav, index }))
+    .filter(({ krav }) => harTankanlegg !== false || krav.gjelder === "alle");
+  const kontrollGenerelt = harTankanlegg === false
+    ? [
+        "Visuell kontroll av emballasje, merking og hylleinnredning",
+        "Kontroll av brannskap, oppsamlingskar og håndtering av lekkasjer",
+        "Kontroll av ventilasjon i lagerrom",
+        "Tilgjengelighet til slokkeutstyr og rømningsveier",
+        "Kontrollrapport med avvik og nødvendige tiltak",
+      ]
+    : [
+        "Visuell kontroll av tanker og rørføringer",
+        "Korrosjonskontroll",
+        "Tetthetsprøving, evt. trykkprøving",
+        "Kontroll av viktige komponenter",
+        "Testing av sikkerhetsfunksjoner og -kritisk utstyr",
+        "Gjennomgang av dokumentasjon om reparasjoner og endringer",
+        "Kontrollrapport med avvik, tiltak og tidspunkt for neste kontroll",
+      ];
 
   const [activeTab, setActiveTab] = useState<TabKey>("kontroll");
   // Hvis valgt fane blir irrelevant ved bytte av bygningstype → fall tilbake til kontroll
