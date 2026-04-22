@@ -72,7 +72,6 @@ interface BrensellagringPreviewProps {
   firmaNavn?: string;
   kunde?: string;
   logoUrl?: string;
-  logoScale?: "50" | "100" | "150";
   prosjektNavn?: string;
   adresse?: string;
   visibleSections: Set<BrenselSectionKey>;
@@ -137,7 +136,6 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   firmaNavn,
   kunde,
   logoUrl,
-  logoScale = "100",
   prosjektNavn,
   adresse,
   visibleSections,
@@ -315,15 +313,14 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
 
   const secNum = (key: string) => sections.findIndex(s => s.key === key) + 1;
   const hasAnySections = sections.length > 0;
-  const logoScaleFactor = Number(logoScale) / 100;
-  const logoWidth = 440 * logoScaleFactor;
-  const logoHeight = 192 * logoScaleFactor;
+  const logoWidth = 220;
+  const logoHeight = 96;
 
   return (
     <div>
       <div style={pageStyle}>
         {logoUrl && (
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "-10mm", marginBottom: 8 }}>
             <div style={{ width: logoWidth, height: logoHeight, background: "#fff", borderRadius: 4, padding: 6, display: "flex", alignItems: "center", justifyContent: "center" }}>
               <img src={logoUrl} alt="Firmalogo" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
             </div>
