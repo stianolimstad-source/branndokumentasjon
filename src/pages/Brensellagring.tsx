@@ -362,7 +362,7 @@ const Brensellagring = () => {
 
       supabase
         .from('profiles')
-        .select('company')
+        .select('company, logo_url')
         .eq('id', user.id)
         .maybeSingle()
         .then(({ data }) => {
@@ -400,6 +400,7 @@ const Brensellagring = () => {
           branntekniskeTiltakInkludert?: boolean;
           branntekniskeTiltak?: Partial<BranntekniskeTiltakData>;
           innledning?: string;
+          kunde?: string;
           innmeldingInkludert?: boolean;
           innmeldingKommentar?: string;
           documentType?: string;
@@ -455,6 +456,7 @@ const Brensellagring = () => {
           slokkeanlegg: { ...TOMME_BRANNTEKNISKE_TILTAK.slokkeanlegg, ...(content.branntekniskeTiltak?.slokkeanlegg || {}) },
         });
         setInnledning(content.innledning ?? "");
+        setKunde(content.kunde ?? "");
         setInnmeldingInkludert(content.innmeldingInkludert ?? false);
         setInnmeldingKommentar(content.innmeldingKommentar ?? "");
       });
