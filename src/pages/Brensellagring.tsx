@@ -77,7 +77,6 @@ const Brensellagring = () => {
   const [mengde, setMengde] = useState("");
   const [innledning, setInnledning] = useState("");
   const [kunde, setKunde] = useState("");
-  const [logoScale, setLogoScale] = useState<"50" | "100" | "150">("100");
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
   const firmaNavn = profile?.company?.trim() || "";
@@ -402,7 +401,6 @@ const Brensellagring = () => {
           branntekniskeTiltak?: Partial<BranntekniskeTiltakData>;
           innledning?: string;
           kunde?: string;
-          logoScale?: "50" | "100" | "150";
           innmeldingInkludert?: boolean;
           innmeldingKommentar?: string;
           documentType?: string;
@@ -459,7 +457,6 @@ const Brensellagring = () => {
         });
         setInnledning(content.innledning ?? "");
         setKunde(content.kunde ?? "");
-        setLogoScale(content.logoScale ?? "100");
         setInnmeldingInkludert(content.innmeldingInkludert ?? false);
         setInnmeldingKommentar(content.innmeldingKommentar ?? "");
       });
@@ -501,7 +498,6 @@ const Brensellagring = () => {
       branntekniskeTiltak,
       innledning,
       kunde,
-      logoScale,
       innmeldingInkludert,
       innmeldingKommentar,
     };
