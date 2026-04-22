@@ -184,6 +184,29 @@ const Brensellagring = () => {
   const [brannenergiInkludert, setBrannenergiInkludert] = useState(false);
   const [brannenergiKommentar, setBrannenergiKommentar] = useState("");
 
+  type BranntekniskeTiltakData = {
+    brannalarm: { status: string; beskrivelse: string; kommentar: string };
+    roykventilasjon: { status: string; type: string; beskrivelse: string };
+    slokkeanlegg: { status: string; type: string; beskrivelse: string };
+    generellKommentar: string;
+  };
+  const TOMME_BRANNTEKNISKE_TILTAK: BranntekniskeTiltakData = {
+    brannalarm: { status: "", beskrivelse: "", kommentar: "" },
+    roykventilasjon: { status: "", type: "", beskrivelse: "" },
+    slokkeanlegg: { status: "", type: "", beskrivelse: "" },
+    generellKommentar: "",
+  };
+  const TILTAK_STATUS = ["Ikke aktuelt", "Ikke installert", "Installert / forutsatt", "Eksisterende anlegg beholdes"];
+  const ROYKVENTILASJON_TYPER = ["Naturlig røykventilasjon", "Mekanisk røykventilasjon", "Luker/vinduer/åpninger", "Annet"];
+  const SLOKKEANLEGG_TYPER = ["Sprinkleranlegg", "Vanntåkeanlegg", "Skum-/gassanlegg", "Annet"];
+  const [branntekniskeTiltakInkludert, setBranntekniskeTiltakInkludert] = useState(false);
+  const [branntekniskeTiltak, setBranntekniskeTiltak] = useState<BranntekniskeTiltakData>(TOMME_BRANNTEKNISKE_TILTAK);
+
+  const updateBranntekniskTiltak = <T extends keyof BranntekniskeTiltakData>(
+    tiltak: T,
+    value: BranntekniskeTiltakData[T]
+  ) => setBranntekniskeTiltak((prev) => ({ ...prev, [tiltak]: value }));
+
   // Energitetthet (MJ per kg/L) – kilder: SFPE Handbook og NS-EN 1991-1-2
   const ENERGITETTHET: Record<keyof PlannedAmounts, { verdi: number; enhet: "MJ/kg" | "MJ/L"; kilde: string }> = {
     gass_kat1: { verdi: 46, enhet: "MJ/kg", kilde: "Propan/butan/hydrogen" },
@@ -332,6 +355,8 @@ const Brensellagring = () => {
           etasjer?: Etasje[];
           brannenergiInkludert?: boolean;
           brannenergiKommentar?: string;
+          branntekniskeTiltakInkludert?: boolean;
+          branntekniskeTiltak?: Partial<BranntekniskeTiltakData>;
           innledning?: string;
           innmeldingInkludert?: boolean;
           innmeldingKommentar?: string;
@@ -377,6 +402,14 @@ const Brensellagring = () => {
         }
         setBrannenergiInkludert(content.brannenergiInkludert ?? false);
         setBrannenergiKommentar(content.brannenergiKommentar ?? "");
+        setBranntekniskeTiltakInkludert(content.branntekniskeTiltakInkludert ?? false);
+        setBranntekniskeTiltak({
+          ...TOMME_BRANNTEKNISKE_TILTAK,
+          ...(content.branntekniskeTiltak || {}),
+          brannalarm: { ...TOMME_BRANNTEKNISKE_TILTAK.brannalarm, ...(content.branntekniskeTiltak?.brannalarm || {}) },
+          roykventilasjon: { ...TOMME_BRANNTEKNISKE_TILTAK.roykventilasjon, ...(content.branntekniskeTiltak?.roykventilasjon || {}) },
+          slokkeanlegg: { ...TOMME_BRANNTEKNISKE_TILTAK.slokkeanlegg, ...(content.branntekniskeTiltak?.slokkeanlegg || {}) },
+        });
         setInnledning(content.innledning ?? "");
         setInnmeldingInkludert(content.innmeldingInkludert ?? false);
         setInnmeldingKommentar(content.innmeldingKommentar ?? "");
@@ -413,6 +446,8 @@ const Brensellagring = () => {
       etasjer,
       brannenergiInkludert,
       brannenergiKommentar,
+      branntekniskeTiltakInkludert,
+      branntekniskeTiltak,
       innledning,
       innmeldingInkludert,
       innmeldingKommentar,
@@ -860,6 +895,144 @@ const Brensellagring = () => {
               </Card>
             );
           })()}
+
+          <Card className="shadow-soft mb-6">
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Shield className="h-4 w-4 text-primary" />
+                    Branntekniske tiltak i bygget
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Dokumenter brannalarm, røykventilasjon og automatiske slokkeanlegg som forutsetninger i rapporten.
+                  </p>
+                </div>
+                <Button
+                  variant={branntekniskeTiltakInkludert ? "default" : "outline"}
+                  size="sm"
+                  className="h-7 text-xs gap-1.5 shrink-0"
+                  onClick={() => setBranntekniskeTiltakInkludert((v) => !v)}
+                >
+                  {branntekniskeTiltakInkludert ? <Check className="h-3.5 w-3.5" /> : <FilePlus2 className="h-3.5 w-3.5" />}
+                  {branntekniskeTiltakInkludert ? "I dokumentet" : "Legg til i dokument"}
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4">
+                <div className="rounded-lg border bg-muted/20 p-3 space-y-3">
+                  <h4 className="text-sm font-semibold">Brannalarmanlegg</h4>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">Status</Label>
+                      <Select
+                        value={branntekniskeTiltak.brannalarm.status}
+                        onValueChange={(status) => updateBranntekniskTiltak("brannalarm", { ...branntekniskeTiltak.brannalarm, status })}
+                      >
+                        <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Velg status" /></SelectTrigger>
+                        <SelectContent>{TILTAK_STATUS.map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}</SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">Type/beskrivelse</Label>
+                      <Input
+                        value={branntekniskeTiltak.brannalarm.beskrivelse}
+                        onChange={(e) => updateBranntekniskTiltak("brannalarm", { ...branntekniskeTiltak.brannalarm, beskrivelse: e.target.value })}
+                        placeholder="F.eks. heldekkende kategori 2"
+                        className="h-9 text-sm"
+                      />
+                    </div>
+                  </div>
+                  <Textarea
+                    value={branntekniskeTiltak.brannalarm.kommentar}
+                    onChange={(e) => updateBranntekniskTiltak("brannalarm", { ...branntekniskeTiltak.brannalarm, kommentar: e.target.value })}
+                    placeholder="Kommentar til deteksjon, manuelle meldere eller dekning i lagerrom..."
+                    className="min-h-[60px] text-sm"
+                  />
+                </div>
+
+                <div className="rounded-lg border bg-muted/20 p-3 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <h4 className="text-sm font-semibold">Røykventilasjon</h4>
+                    <Button type="button" variant="outline" size="sm" className="h-7 text-xs" onClick={() => navigate("/verktoy/roykventilasjon")}>
+                      Åpne beregningsverktøy
+                    </Button>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">Status</Label>
+                      <Select
+                        value={branntekniskeTiltak.roykventilasjon.status}
+                        onValueChange={(status) => updateBranntekniskTiltak("roykventilasjon", { ...branntekniskeTiltak.roykventilasjon, status })}
+                      >
+                        <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Velg status" /></SelectTrigger>
+                        <SelectContent>{TILTAK_STATUS.map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}</SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">Type</Label>
+                      <Select
+                        value={branntekniskeTiltak.roykventilasjon.type}
+                        onValueChange={(type) => updateBranntekniskTiltak("roykventilasjon", { ...branntekniskeTiltak.roykventilasjon, type })}
+                      >
+                        <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Velg type" /></SelectTrigger>
+                        <SelectContent>{ROYKVENTILASJON_TYPER.map((type) => <SelectItem key={type} value={type}>{type}</SelectItem>)}</SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <Textarea
+                    value={branntekniskeTiltak.roykventilasjon.beskrivelse}
+                    onChange={(e) => updateBranntekniskTiltak("roykventilasjon", { ...branntekniskeTiltak.roykventilasjon, beskrivelse: e.target.value })}
+                    placeholder="F.eks. røykventilasjon vurderes ikke nødvendig, eller dimensjoneres iht. HO-3/2000..."
+                    className="min-h-[60px] text-sm"
+                  />
+                </div>
+
+                <div className="rounded-lg border bg-muted/20 p-3 space-y-3">
+                  <h4 className="text-sm font-semibold">Automatisk slokkeanlegg</h4>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">Status</Label>
+                      <Select
+                        value={branntekniskeTiltak.slokkeanlegg.status}
+                        onValueChange={(status) => updateBranntekniskTiltak("slokkeanlegg", { ...branntekniskeTiltak.slokkeanlegg, status })}
+                      >
+                        <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Velg status" /></SelectTrigger>
+                        <SelectContent>{TILTAK_STATUS.map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}</SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-xs">Type</Label>
+                      <Select
+                        value={branntekniskeTiltak.slokkeanlegg.type}
+                        onValueChange={(type) => updateBranntekniskTiltak("slokkeanlegg", { ...branntekniskeTiltak.slokkeanlegg, type })}
+                      >
+                        <SelectTrigger className="h-9 text-sm"><SelectValue placeholder="Velg type" /></SelectTrigger>
+                        <SelectContent>{SLOKKEANLEGG_TYPER.map((type) => <SelectItem key={type} value={type}>{type}</SelectItem>)}</SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <Textarea
+                    value={branntekniskeTiltak.slokkeanlegg.beskrivelse}
+                    onChange={(e) => updateBranntekniskTiltak("slokkeanlegg", { ...branntekniskeTiltak.slokkeanlegg, beskrivelse: e.target.value })}
+                    placeholder="F.eks. bygget er sprinklet, lagerrom omfattes av eksisterende sprinkleranlegg..."
+                    className="min-h-[60px] text-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs">Felles kommentar / forutsetninger</Label>
+                <Textarea
+                  value={branntekniskeTiltak.generellKommentar}
+                  onChange={(e) => updateBranntekniskTiltak("generellKommentar", e.target.value)}
+                  placeholder="Prosjektspesifikke forutsetninger for branntekniske tiltak..."
+                  className="min-h-[70px] text-sm"
+                />
+              </div>
+            </CardContent>
+          </Card>
 
           {/* ============================================================== */}
           {/* TABS – DSB Temaveiledning innhold                               */}
@@ -1645,7 +1818,7 @@ const Brensellagring = () => {
             <Button
               size="default"
               onClick={handleSaveDocument}
-              disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !plannedInkludert)}
+              disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !plannedInkludert && !branntekniskeTiltakInkludert)}
               className="h-11 px-6 shadow-xl"
             >
               <Save className="h-4 w-4 mr-2" />
@@ -1657,7 +1830,7 @@ const Brensellagring = () => {
             <Button
               size="default"
               onClick={handleSaveDocument}
-              disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !plannedInkludert)}
+              disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !plannedInkludert && !branntekniskeTiltakInkludert)}
               className="h-11 px-6 shadow-xl"
             >
               <Save className="h-4 w-4 mr-2" />
@@ -1700,6 +1873,8 @@ const Brensellagring = () => {
                   plannedKommentar={plannedKommentar}
                   brannenergiInkludert={brannenergiInkludert}
                   brannenergiKommentar={brannenergiKommentar}
+                  branntekniskeTiltakInkludert={branntekniskeTiltakInkludert}
+                  branntekniskeTiltak={branntekniskeTiltak}
                   etasjer={etasjer}
                   innledning={innledning}
                   energitetthet={ENERGITETTHET}

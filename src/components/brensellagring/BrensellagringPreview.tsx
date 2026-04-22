@@ -60,6 +60,13 @@ export interface InnmeldingVurderingData {
   harMengder: boolean;
 }
 
+export interface BranntekniskeTiltakData {
+  brannalarm: { status: string; beskrivelse: string; kommentar: string };
+  roykventilasjon: { status: string; type: string; beskrivelse: string };
+  slokkeanlegg: { status: string; type: string; beskrivelse: string };
+  generellKommentar: string;
+}
+
 interface BrensellagringPreviewProps {
   valgtBygg: BygningsTypeInfo | null;
   prosjektNavn?: string;
@@ -79,6 +86,8 @@ interface BrensellagringPreviewProps {
   innmeldingInkludert?: boolean;
   innmeldingKommentar?: string;
   innmeldingVurdering?: InnmeldingVurderingData;
+  branntekniskeTiltakInkludert?: boolean;
+  branntekniskeTiltak?: BranntekniskeTiltakData;
   harTankanlegg?: boolean | null;
 }
 
@@ -136,6 +145,8 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   innmeldingInkludert = false,
   innmeldingKommentar = "",
   innmeldingVurdering,
+  branntekniskeTiltakInkludert = false,
+  branntekniskeTiltak,
   harTankanlegg = null,
 }) => {
   if (!valgtBygg) {
@@ -237,6 +248,26 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const spesifikkMJm2 = dimGyldig && omhylling > 0 ? totalMJ / omhylling : null;
   const visBrannenergi = brannenergiInkludert && energiBidrag.length > 0;
   const visInnmelding = innmeldingInkludert && !!innmeldingVurdering && innmeldingVurdering.harMengder;
+  const branntekniskeTiltakRows = branntekniskeTiltak
+    ? [
+        {
+          tiltak: "Brannalarmanlegg",
+          status: branntekniskeTiltak.brannalarm.status,
+          beskrivelse: [branntekniskeTiltak.brannalarm.beskrivelse, branntekniskeTiltak.brannalarm.kommentar].filter(Boolean).join("\n"),
+        },
+        {
+          tiltak: "Røykventilasjon",
+          status: branntekniskeTiltak.roykventilasjon.status,
+          beskrivelse: [branntekniskeTiltak.roykventilasjon.type, branntekniskeTiltak.roykventilasjon.beskrivelse].filter(Boolean).join("\n"),
+        },
+        {
+          tiltak: "Automatisk slokkeanlegg",
+          status: branntekniskeTiltak.slokkeanlegg.status,
+          beskrivelse: [branntekniskeTiltak.slokkeanlegg.type, branntekniskeTiltak.slokkeanlegg.beskrivelse].filter(Boolean).join("\n"),
+        },
+      ].filter((row) => row.status.trim() || row.beskrivelse.trim())
+    : [];
+  const visBranntekniskeTiltak = branntekniskeTiltakInkludert && branntekniskeTiltakRows.length > 0;
   const formatMJ = (v: number) => {
     const r = v >= 10000 ? Math.round(v / 100) * 100 : Math.round(v);
     return r.toLocaleString("nb-NO");
@@ -246,6 +277,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const sections: { key: string; label: string }[] = [];
   if (visPlanlagt) sections.push({ key: "planlagt", label: "Planlagt lagret mengde i bygget" });
   if (visBrannenergi) sections.push({ key: "brannenergi", label: "Brannenergi i bygget" });
+  if (visBranntekniskeTiltak) sections.push({ key: "branntekniskeTiltak", label: "Branntekniske tiltak i bygget" });
   if (visInnmelding) sections.push({ key: "innmelding", label: "Innmeldingsplikt til DSB" });
   if (salgslokaleInkludert) sections.push({ key: "salgslokale", label: "Største tillatte mengder i salgslokaler" });
   if (selBeliggenhet.length > 0) sections.push({ key: "beliggenhet", label: "Beliggenhet og utforming" });
@@ -448,6 +480,39 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
             <p style={{ fontSize: 9, color: "#94a3b8", fontStyle: "italic", marginBottom: 16 }}>
               Sjablongverdier ivaretar ikke fuktinnhold, sammensetning eller emballasje. Beregningen brukes kun til indikativ vurdering av brannenergi i bygget.
             </p>
+          </>
+        )}
+
+        {visBranntekniskeTiltak && branntekniskeTiltak && (
+          <>
+            <h2 style={h2}>{secNum("branntekniskeTiltak")}. Branntekniske tiltak i bygget</h2>
+            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
+              Oversikt over branntekniske tiltak som er lagt til grunn for vurderingen av lagring av brannfarlig stoff.
+            </p>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+              <thead>
+                <tr>
+                  <th style={{ ...thStyle, width: "26%" }}>Tiltak</th>
+                  <th style={{ ...thStyle, width: "24%" }}>Status</th>
+                  <th style={thStyle}>Beskrivelse</th>
+                </tr>
+              </thead>
+              <tbody>
+                {branntekniskeTiltakRows.map((row) => (
+                  <tr key={row.tiltak}>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>{row.tiltak}</td>
+                    <td style={tdStyle}>{row.status || "—"}</td>
+                    <td style={{ ...tdStyle, whiteSpace: "pre-wrap" }}>{row.beskrivelse || "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {branntekniskeTiltak.generellKommentar.trim() && (
+              <div style={{ marginBottom: 12, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Felles kommentar</p>
+                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{branntekniskeTiltak.generellKommentar}</p>
+              </div>
+            )}
           </>
         )}
 
