@@ -1228,7 +1228,6 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         {hasAnySections && (
           <div style={{ marginTop: 32, paddingTop: 12, borderTop: "1px solid #e2e8f0", fontSize: 9, color: "#94a3b8" }}>
             <p>Kilde: DSB Temaveiledning om oppbevaring av farlig stoff og VTEK § 11-8 (TEK17).</p>
-            <p>Dokumentet er generert automatisk og skal kvalitetssikres av ansvarlig brannrådgiver.</p>
           </div>
         )}
       </div>
