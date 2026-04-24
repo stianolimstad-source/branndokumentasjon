@@ -1,61 +1,73 @@
-## Plan: Ta med alle registrerte stoffgrupper i innmeldingsvurderingen
+## Plan: Vis alle oppgitte mengder i vurdering av anbefalt DSB-mengde
 
-Jeg oppdaterer innmeldingsvurderingen slik at alle stoffgrupper som har fått registrert en mengde vises i vurderingen, også når mengden ligger under innmeldingsgrensen. Dette gir en mer komplett og ryddig oversikt i både input-siden, forhåndsvisningen og Word-rapporten.
+Jeg oppdaterer seksjonen «Vurdering av mengde over anbefalt DSB-mengde» slik at tabellen viser alle stoffgrupper der brukeren har oppgitt en planlagt mengde, også når mengden ikke overstiger anbefalt DSB-mengde.
 
 ## Hva som endres
 
-### 1. Filtrere innmeldingstabellen på registrerte mengder
+### 1. Endre beregningsgrunnlaget
 
-Dagens vurdering bygger status for alle innmeldingsgrupper, og viser også grupper uten mengde som «Ikke aktuelt». Jeg endrer visningen slik at tabellen bare viser grupper der brukeren faktisk har oppgitt mengde:
-
-```text
-Vises:
-- Brannfarlig gass, kategori 1 og 2, hvis gassmengde > 0
-- Brannfarlig væske, kategori 1 og 2, hvis mengde > 0
-- Brannfarlig væske, kategori 3, hvis mengde > 0
-- Diesel og fyringsoljer, hvis mengde > 0
-
-Skjules:
-- Stoffgrupper uten registrert mengde
-```
-
-### 2. Beholde status for under/over grense
-
-For stoffgrupper med registrert mengde vises status uansett om grensen er overskredet:
+Dagens logikk filtrerer bort rader som ikke har overskridelse. Jeg endrer dette slik at tabellen inkluderer alle rader der:
 
 ```text
-Over grense  -> Innmeldingspliktig
-Under grense -> Under grense
+Planlagt mengde > 0
+og
+Anbefalt DSB-mengde finnes (> 0)
 ```
 
-Dermed kan rapporten vise f.eks. at det er registrert 50 kg gass selv om dette ikke alene utløser innmelding.
+Dermed vises både:
 
-### 3. Oppdatere input-siden
+```text
+Over anbefalt mengde  -> Overskridelse vises
+Under/lik anbefalt    -> Vises som ikke overskredet
+```
 
-I fanen «Innmelding» endres tabellen slik at den ikke lenger fylles med irrelevante rader uten mengde. Alle registrerte stoffgrupper blir stående i tabellen med mengde, grense og status.
+### 2. Tydelig status i input-siden
 
-### 4. Oppdatere rapportforhåndsvisningen
+I inputtabellen for denne vurderingen legges det inn en statuskolonne eller tydelig tekst i overskridelseskolonnen:
 
-I rapportseksjonen «Innmeldingsplikt til DSB» vises samme filtrerte vurderingstabell: kun stoffgrupper med registrert mengde, også de som ligger under grensen.
+```text
+Overskrider
+Overstiger ikke
+```
 
-### 5. Oppdatere Word-eksporten
+For mengder under grensen vises f.eks.:
 
-Word-rapporten får samme logikk som forhåndsvisningen, slik at eksporten viser alle registrerte stoffgrupper og ikke bare de som overskrider innmeldingsgrensen.
+```text
+0 liter (0 %) / Overstiger ikke
+```
+
+eller tilsvarende ryddig statusmerking.
+
+### 3. Oppdatere rapportforhåndsvisningen
+
+I rapporten vises samme komplette vurderingstabell. Stoffgrupper med registrert mengde, men uten overskridelse, får en grønn/nøytral status som viser at mengden ikke overstiger anbefalt DSB-mengde.
+
+### 4. Oppdatere Word-eksporten
+
+Word-rapporten oppdateres med samme logikk og samme statusfelt, slik at eksporten samsvarer med forhåndsvisningen.
+
+### 5. Beholde vurderingstekst kun ved faktisk overskridelse
+
+Automatisk vurderingstekst og konklusjon som omtaler «overskridelse» skal fortsatt bare genereres når minst én stoffgruppe faktisk overstiger anbefalt mengde. Hvis alle oppgitte mengder ligger under anbefalt DSB-mengde, skal tabellen kunne vises uten at teksten feilaktig beskriver en overskridelse.
 
 ## Tekniske detaljer
 
 Filer som endres:
 
 - `src/pages/Brensellagring.tsx`
-  - justere `evaluerInnmelding()` til å returnere en egen visningsliste eller filtrere `grupper` til `sum > 0`
-  - oppdatere tabellen i fanen «Innmelding»
+  - endre `overskridelseRows` fra å filtrere på `row.overskridelse > 0` til å inkludere alle rader med oppgitt mengde
+  - beregne egen indikator for faktisk overskridelse
+  - oppdatere inputtabellen/statusvisningen for «overstiger ikke»
 
 - `src/components/brensellagring/BrensellagringPreview.tsx`
-  - bruke kun innmeldingsgrupper med registrert mengde i rapporttabellen og konklusjonsteksten
+  - oppdatere seksjonen «Vurdering av mengde over anbefalt DSB-mengde» slik at alle oppgitte stoffgrupper vises
+  - vise status for både overskridelse og ikke overskridelse
+  - unngå overskridelsestekst når ingen rader overstiger
 
 - `src/lib/brensellagring-word-export.ts`
-  - bruke samme filtrerte innmeldingsgrupper i Word-tabellen
+  - oppdatere Word-tabellen med statuskolonne/tekst
+  - sikre samme datagrunnlag som i forhåndsvisningen
 
 ## Resultat
 
-Innmeldingsvurderingen blir mer oversiktlig: rapporten dokumenterer alle stoffgrupper som faktisk er registrert med mengde, samtidig som den tydelig skiller mellom «Under grense» og «Innmeldingspliktig». Når ingen mengder er registrert, vises fortsatt meldingen om at totalmengder må fylles inn.
+Rapporten blir mer oversiktlig: alle stoffgrupper med oppgitt mengde dokumenteres i vurderingen, og tabellen viser tydelig om mengden overstiger eller ikke overstiger anbefalt DSB-mengde.
