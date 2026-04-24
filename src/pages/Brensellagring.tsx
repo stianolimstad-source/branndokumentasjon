@@ -851,9 +851,9 @@ const Brensellagring = () => {
             )}
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-6 lg:h-[calc(100vh-200px)]">
+          <div className="grid lg:grid-cols-2 gap-6 lg:h-[calc(100vh-200px)] lg:min-h-0 lg:overflow-hidden">
             {/* ===== LEFT: All content ===== */}
-            <div className="min-w-0 space-y-10 lg:overflow-y-auto lg:pr-4 lg:text-base">
+            <div className="min-w-0 space-y-10 lg:min-h-0 lg:overflow-y-auto lg:pr-4 lg:text-base">
 
           {/* Bygningstype velger */}
           <Card className="shadow-soft mb-6">
@@ -2320,7 +2320,7 @@ const Brensellagring = () => {
             </div>
 
             {/* ===== RIGHT: Document preview (always visible) ===== */}
-            <div className="hidden lg:flex lg:flex-col lg:min-w-0 lg:h-full">
+            <div className="hidden lg:flex lg:flex-col lg:min-w-0 lg:h-full lg:min-h-0">
               <div className="flex items-center justify-between gap-3 mb-3">
                 <div className="flex items-center gap-2">
                   <Eye className="h-4 w-4 text-muted-foreground" />
