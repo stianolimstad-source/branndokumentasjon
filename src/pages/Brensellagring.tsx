@@ -218,6 +218,8 @@ const Brensellagring = () => {
   const [generellBrannenergiMJm2, setGenerellBrannenergiMJm2] = useState("730");
   const [byggBrannenergiInkludert, setByggBrannenergiInkludert] = useState(false);
   const [byggBrannenergiGrenseMJm2, setByggBrannenergiGrenseMJm2] = useState("");
+  const [byggBrannenergiGulvarealM2, setByggBrannenergiGulvarealM2] = useState("");
+  const [byggBrannenergiOmhyllingsflateM2, setByggBrannenergiOmhyllingsflateM2] = useState("");
   const [byggBrannenergiKommentar, setByggBrannenergiKommentar] = useState("");
 
   type BranntekniskeTiltakData = {
@@ -430,6 +432,8 @@ const Brensellagring = () => {
           generellBrannenergiMJm2?: string;
           byggBrannenergiInkludert?: boolean;
           byggBrannenergiGrenseMJm2?: string;
+          byggBrannenergiGulvarealM2?: string;
+          byggBrannenergiOmhyllingsflateM2?: string;
           byggBrannenergiKommentar?: string;
           branntekniskeTiltakInkludert?: boolean;
           branntekniskeTiltak?: Partial<BranntekniskeTiltakData>;
@@ -505,6 +509,8 @@ const Brensellagring = () => {
         setGenerellBrannenergiMJm2(content.generellBrannenergiMJm2 ?? "730");
         setByggBrannenergiInkludert(content.byggBrannenergiInkludert ?? false);
         setByggBrannenergiGrenseMJm2(content.byggBrannenergiGrenseMJm2 ?? "");
+        setByggBrannenergiGulvarealM2(content.byggBrannenergiGulvarealM2 ?? "");
+        setByggBrannenergiOmhyllingsflateM2(content.byggBrannenergiOmhyllingsflateM2 ?? "");
         setByggBrannenergiKommentar(content.byggBrannenergiKommentar ?? "");
         setBranntekniskeTiltakInkludert(content.branntekniskeTiltakInkludert ?? false);
         setBranntekniskeTiltak({
@@ -565,6 +571,8 @@ const Brensellagring = () => {
       generellBrannenergiMJm2,
       byggBrannenergiInkludert,
       byggBrannenergiGrenseMJm2,
+      byggBrannenergiGulvarealM2,
+      byggBrannenergiOmhyllingsflateM2,
       byggBrannenergiKommentar,
       branntekniskeTiltakInkludert,
       branntekniskeTiltak,
@@ -642,6 +650,8 @@ const Brensellagring = () => {
       generellBrannenergiMJm2,
       byggBrannenergiInkludert,
       byggBrannenergiGrenseMJm2,
+      byggBrannenergiGulvarealM2,
+      byggBrannenergiOmhyllingsflateM2,
       byggBrannenergiKommentar,
       branntekniskeTiltakInkludert,
       branntekniskeTiltak,
@@ -1031,42 +1041,90 @@ const Brensellagring = () => {
             </CardContent>
           </Card>
 
-          {/* Brannenergi i salgslokalet – beregning */}
+          {/* Brannenergi i hele bygget – beregning */}
           {(() => {
-            const harMengder = (Object.keys(plannedAmounts) as (keyof PlannedAmounts)[]).some(
-              (k) => parseFloat(plannedAmounts[k]) > 0
-            );
+            const harMengder = (Object.keys(totalAmounts) as (keyof PlannedAmounts)[]).some((k) => parseFloat(totalAmounts[k]) > 0);
             if (!harMengder) return null;
-
-            const bidrag = (Object.keys(plannedAmounts) as (keyof PlannedAmounts)[])
+            const bidrag = (Object.keys(totalAmounts) as (keyof PlannedAmounts)[])
               .map((k) => {
-                const mengde = parseFloat(plannedAmounts[k]) || 0;
+                const mengde = parseFloat(totalAmounts[k]) || 0;
                 if (mengde <= 0) return null;
                 const e = ENERGITETTHET[k];
                 const felt = PLANNED_FELT.find((f) => f.key === k);
-                return {
-                  key: k,
-                  label: felt?.label || k,
-                  enhetInn: felt?.enhet || "",
-                  mengde,
-                  energi: e.verdi,
-                  enhetEnergi: e.enhet,
-                  totalMJ: mengde * e.verdi,
-                };
+                return { key: k, label: felt?.label || k, enhetInn: felt?.enhet || "", mengde, energi: e.verdi, enhetEnergi: e.enhet, totalMJ: mengde * e.verdi };
               })
               .filter((x): x is NonNullable<typeof x> => x !== null);
-
             const tilleggsMJ = bidrag.reduce((sum, b) => sum + b.totalMJ, 0);
             const generellMJm2 = parseFloat(generellBrannenergiMJm2) || 0;
-            const etasjerBeregnet = etasjer.map((et) => {
-              const L = parseFloat(et.lengde);
-              const B = parseFloat(et.bredde);
-              const H = parseFloat(et.hoyde);
-              const gyldig = L > 0 && B > 0 && H > 0;
-              const gulvareal = gyldig ? L * B : 0;
-              const omh = gyldig ? 2 * (L * B) + 2 * (L * H) + 2 * (B * H) : 0;
-              return { ...et, L, B, H, gyldig, gulvareal, omh };
-            });
+            const byggGulvareal = parseFloat(byggBrannenergiGulvarealM2) || 0;
+            const byggOmhylling = parseFloat(byggBrannenergiOmhyllingsflateM2) || 0;
+            const dimGyldig = byggGulvareal > 0 && byggOmhylling > 0;
+            const generellMJ = generellMJm2 * byggGulvareal;
+            const totalMedTilleggMJ = generellMJ + tilleggsMJ;
+            const spesifikkGenerell = dimGyldig ? generellMJ / byggOmhylling : null;
+            const spesifikkTillegg = dimGyldig ? tilleggsMJ / byggOmhylling : null;
+            const spesifikkTotal = dimGyldig ? totalMedTilleggMJ / byggOmhylling : null;
+            const grense = parseFloat(byggBrannenergiGrenseMJm2) || 0;
+            const formatMJ = (v: number) => (v >= 10000 ? Math.round(v / 100) * 100 : Math.round(v)).toLocaleString("nb-NO");
+
+            return (
+              <Card className="shadow-soft mb-6">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <Flame className="h-4 w-4 text-primary" />
+                        Brannenergi i hele bygget
+                      </CardTitle>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Beregnes fra total mengde brannfarlig stoff i hele virksomheten/anlegget, inkludert salgslokale, brannskap og egne brannceller/lagerrom.
+                      </p>
+                    </div>
+                    <Button variant={byggBrannenergiInkludert ? "default" : "outline"} size="sm" className="h-7 text-xs gap-1.5 shrink-0" onClick={() => setByggBrannenergiInkludert((v) => !v)}>
+                      {byggBrannenergiInkludert ? <Check className="h-3.5 w-3.5" /> : <FilePlus2 className="h-3.5 w-3.5" />}
+                      {byggBrannenergiInkludert ? "I dokumentet" : "Legg til i dokument"}
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid sm:grid-cols-3 gap-3">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="bygg-brannenergi-gulvareal" className="text-xs">Byggets gulvareal (m²)</Label>
+                      <Input id="bygg-brannenergi-gulvareal" type="number" min="0" step="any" inputMode="decimal" placeholder="f.eks. 1200" value={byggBrannenergiGulvarealM2} onChange={(e) => setByggBrannenergiGulvarealM2(e.target.value)} className="h-9 text-sm" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="bygg-brannenergi-omhylling" className="text-xs">Byggets omhyllingsflate (m²)</Label>
+                      <Input id="bygg-brannenergi-omhylling" type="number" min="0" step="any" inputMode="decimal" placeholder="f.eks. 2600" value={byggBrannenergiOmhyllingsflateM2} onChange={(e) => setByggBrannenergiOmhyllingsflateM2(e.target.value)} className="h-9 text-sm" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="bygg-brannenergi-grense" className="text-xs">Grense fra brannkonsept (MJ/m²)</Label>
+                      <Input id="bygg-brannenergi-grense" type="number" min="0" step="any" inputMode="decimal" placeholder="F.eks. 400 eller 600" value={byggBrannenergiGrenseMJm2} onChange={(e) => setByggBrannenergiGrenseMJm2(e.target.value)} className="h-9 text-sm" />
+                    </div>
+                  </div>
+                  {!dimGyldig && <p className="text-[11px] text-destructive">Byggets gulvareal og omhyllingsflate må fylles inn for å kunne vurdere brannenergi for hele bygget.</p>}
+                  {dimGyldig && <div className="rounded-md border overflow-hidden"><table className="w-full text-xs"><thead className="bg-muted/50"><tr><th className="text-left px-3 py-2 font-medium">Beregningsdel</th><th className="text-right px-3 py-2 font-medium">Total brannenergi</th><th className="text-right px-3 py-2 font-medium">Spesifikk brannenergi per m² omhyllingsflate</th></tr></thead><tbody><tr className="border-t"><td className="px-3 py-2">Generell brannenergi i bygget</td><td className="px-3 py-2 text-right tabular-nums font-medium">{formatMJ(generellMJ)} MJ</td><td className="px-3 py-2 text-right tabular-nums">{spesifikkGenerell?.toFixed(1)} MJ/m²</td></tr><tr className="border-t"><td className="px-3 py-2">Brannfarlige stoffer i hele bygget</td><td className="px-3 py-2 text-right tabular-nums font-medium">{formatMJ(tilleggsMJ)} MJ</td><td className="px-3 py-2 text-right tabular-nums">{spesifikkTillegg?.toFixed(1)} MJ/m²</td></tr><tr className="border-t bg-primary/5"><td className="px-3 py-2 font-semibold">Sum for hele bygget</td><td className="px-3 py-2 text-right tabular-nums font-semibold">{formatMJ(totalMedTilleggMJ)} MJ</td><td className="px-3 py-2 text-right tabular-nums font-semibold text-primary">{spesifikkTotal?.toFixed(1)} MJ/m²</td></tr></tbody></table></div>}
+                  {grense > 0 && spesifikkTotal !== null && <div className={`rounded-md border p-3 text-sm ${spesifikkTotal <= grense ? "bg-emerald-500/10 border-emerald-500/30" : "bg-destructive/10 border-destructive/30"}`}>{spesifikkTotal <= grense ? "Beregnet brannenergi ligger innenfor angitt nivå i brannkonseptet." : "Beregnet brannenergi overstiger angitt nivå i brannkonseptet og kan kreve ny vurdering av branncellebegrensende konstruksjoner/brannvegger."}</div>}
+                  <div className="rounded-md border overflow-hidden"><div className="bg-muted/50 px-3 py-2 text-xs font-semibold">Brannfarlige stoffer i hele bygget</div><table className="w-full text-xs"><thead className="bg-muted/30"><tr><th className="text-left px-3 py-2 font-medium">Kategori</th><th className="text-right px-3 py-2 font-medium">Mengde</th><th className="text-right px-3 py-2 font-medium">Energi</th><th className="text-right px-3 py-2 font-medium">Sum</th></tr></thead><tbody>{bidrag.map((b) => <tr key={b.key} className="border-t"><td className="px-3 py-2">{b.label}</td><td className="px-3 py-2 text-right tabular-nums">{b.mengde.toLocaleString("nb-NO")} {b.enhetInn}</td><td className="px-3 py-2 text-right tabular-nums text-muted-foreground">{b.energi} {b.enhetEnergi}</td><td className="px-3 py-2 text-right tabular-nums font-medium">{formatMJ(b.totalMJ)} MJ</td></tr>)}</tbody></table></div>
+                  <div className="space-y-1.5"><Label htmlFor="bygg-brannenergi-kommentar" className="text-xs">Kommentar til samlet brannenergi / kontroll mot brannkonsept</Label><Textarea id="bygg-brannenergi-kommentar" placeholder="F.eks. brannenergi lagt til grunn i brannkonseptet, fordeling i brannceller, eller behov for revurdering." value={byggBrannenergiKommentar} onChange={(e) => setByggBrannenergiKommentar(e.target.value)} className="min-h-[70px] text-sm" /></div>
+                </CardContent>
+              </Card>
+            );
+          })()}
+
+          {/* Brannenergi i salgslokalet – beregning */}
+          {(() => {
+            const harMengder = (Object.keys(plannedAmounts) as (keyof PlannedAmounts)[]).some((k) => parseFloat(plannedAmounts[k]) > 0);
+            if (!harMengder) return null;
+            const bidrag = (Object.keys(plannedAmounts) as (keyof PlannedAmounts)[]).map((k) => {
+              const mengde = parseFloat(plannedAmounts[k]) || 0;
+              if (mengde <= 0) return null;
+              const e = ENERGITETTHET[k];
+              const felt = PLANNED_FELT.find((f) => f.key === k);
+              return { key: k, label: felt?.label || k, enhetInn: felt?.enhet || "", mengde, energi: e.verdi, enhetEnergi: e.enhet, totalMJ: mengde * e.verdi };
+            }).filter((x): x is NonNullable<typeof x> => x !== null);
+            const tilleggsMJ = bidrag.reduce((sum, b) => sum + b.totalMJ, 0);
+            const generellMJm2 = parseFloat(generellBrannenergiMJm2) || 0;
+            const etasjerBeregnet = etasjer.map((et) => { const L = parseFloat(et.lengde); const B = parseFloat(et.bredde); const H = parseFloat(et.hoyde); const gyldig = L > 0 && B > 0 && H > 0; const gulvareal = gyldig ? L * B : 0; const omh = gyldig ? 2 * (L * B) + 2 * (L * H) + 2 * (B * H) : 0; return { ...et, L, B, H, gyldig, gulvareal, omh }; });
             const gulvareal = etasjerBeregnet.reduce((s, e) => s + e.gulvareal, 0);
             const omhylling = etasjerBeregnet.reduce((s, e) => s + e.omh, 0);
             const dimGyldig = etasjerBeregnet.some((e) => e.gyldig);
@@ -1076,14 +1134,20 @@ const Brensellagring = () => {
             const spesifikkTillegg = dimGyldig && omhylling > 0 ? tilleggsMJ / omhylling : null;
             const spesifikkTotal = dimGyldig && omhylling > 0 ? totalMedTilleggMJ / omhylling : null;
             const okningProsent = generellMJ > 0 ? (tilleggsMJ / generellMJ) * 100 : null;
-
-            const formatMJ = (v: number) => {
-              const rounded = v >= 10000 ? Math.round(v / 100) * 100 : Math.round(v);
-              return rounded.toLocaleString("nb-NO");
-            };
-
+            const formatMJ = (v: number) => (v >= 10000 ? Math.round(v / 100) * 100 : Math.round(v)).toLocaleString("nb-NO");
             return (
-              <Card className="shadow-soft mb-6">
+              <Card className="shadow-soft mb-6"><CardHeader className="pb-3"><div className="flex items-start justify-between gap-3"><div><CardTitle className="text-base flex items-center gap-2"><Flame className="h-4 w-4 text-primary" />Brannenergi i salgslokalet</CardTitle><p className="text-xs text-muted-foreground mt-1">Viser generell brannenergi i salgslokalet og tillegg fra brannfarlige varer som plasseres i salgslokalet utenfor brannskap/egne brannceller, omregnet til MJ/m² omhyllingsflate.</p></div><Button variant={brannenergiInkludert ? "default" : "outline"} size="sm" className="h-7 text-xs gap-1.5 shrink-0" onClick={() => setBrannenergiInkludert((v) => !v)}>{brannenergiInkludert ? <Check className="h-3.5 w-3.5" /> : <FilePlus2 className="h-3.5 w-3.5" />}{brannenergiInkludert ? "I dokumentet" : "Legg til i dokument"}</Button></div></CardHeader><CardContent className="space-y-4">
+                <div className="space-y-1.5"><Label htmlFor="generell-brannenergi" className="text-xs">Generell brannenergi i salgslokalet (MJ/m² gulvareal)</Label><Input id="generell-brannenergi" type="number" min="0" step="any" inputMode="decimal" value={generellBrannenergiMJm2} onChange={(e) => setGenerellBrannenergiMJm2(e.target.value)} className="h-9 text-sm max-w-xs" /><p className="text-[11px] text-muted-foreground">Standardverdi for salgslokale/kjøpesenter: 730 MJ/m², Byggforsk 321.051.</p></div>
+                <div><div className="flex items-center justify-between mb-1.5"><Label className="text-xs">Innvendige mål for salgslokalet (for gulvareal og omhyllingsflate)</Label><Button type="button" variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={() => setEtasjer((prev) => [...prev, lagEtasje(`Etasje ${prev.length + 1}`)])}><Plus className="h-3.5 w-3.5" />Legg til etasje</Button></div><div className="space-y-2">{etasjerBeregnet.map((et, idx) => <div key={et.id} className="rounded-md border bg-muted/20 p-2.5 space-y-2"><div className="flex items-center gap-2"><Input value={et.navn} onChange={(e) => setEtasjer((prev) => prev.map((p) => (p.id === et.id ? { ...p, navn: e.target.value } : p)))} placeholder={`Etasje ${idx + 1}`} className="h-8 text-sm flex-1" />{etasjer.length > 1 && <Button type="button" variant="ghost" size="sm" className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive" onClick={() => setEtasjer((prev) => prev.filter((p) => p.id !== et.id))} title="Fjern etasje"><Trash2 className="h-3.5 w-3.5" /></Button>}</div><div className="grid grid-cols-3 gap-2">{(["lengde", "bredde", "hoyde"] as const).map((d) => <div key={d} className="relative"><Input type="number" min="0" step="any" inputMode="decimal" placeholder={d === "lengde" ? "Lengde" : d === "bredde" ? "Bredde" : "Høyde"} value={et[d]} onChange={(e) => setEtasjer((prev) => prev.map((p) => (p.id === et.id ? { ...p, [d]: e.target.value } : p)))} className="h-8 pr-7 text-sm" /><span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[11px] text-muted-foreground pointer-events-none">m</span></div>)}</div>{et.gyldig && <p className="text-[11px] text-muted-foreground">Gulvareal: <span className="font-medium text-foreground">{et.gulvareal.toFixed(1)} m²</span> · Omhyllingsflate: <span className="font-medium text-foreground">{et.omh.toFixed(1)} m²</span></p>}</div>)}</div>{dimGyldig ? <p className="text-[11px] text-muted-foreground mt-2">Salgslokalets gulvareal = <span className="font-medium text-foreground">{gulvareal.toFixed(1)} m²</span>. Salgslokalets omhyllingsflate A<sub>t</sub> = <span className="font-medium text-foreground">{omhylling.toFixed(1)} m²</span>.</p> : <p className="text-[11px] text-destructive mt-2">Lengde, bredde og høyde for salgslokalet må fylles inn for å kunne vurdere brannenergi per m² omhyllingsflate.</p>}</div>
+                {dimGyldig && <div className="rounded-md border overflow-hidden"><table className="w-full text-xs"><thead className="bg-muted/50"><tr><th className="text-left px-3 py-2 font-medium">Beregningsdel</th><th className="text-right px-3 py-2 font-medium">Total brannenergi</th><th className="text-right px-3 py-2 font-medium">Spesifikk brannenergi per m² omhyllingsflate</th></tr></thead><tbody><tr className="border-t"><td className="px-3 py-2">Generell brannenergi i salgslokalet</td><td className="px-3 py-2 text-right tabular-nums font-medium">{formatMJ(generellMJ)} MJ</td><td className="px-3 py-2 text-right tabular-nums">{spesifikkGenerell?.toFixed(1)} MJ/m²</td></tr><tr className="border-t"><td className="px-3 py-2">Tillegg fra brannfarlige varer i salgslokalet</td><td className="px-3 py-2 text-right tabular-nums font-medium">{formatMJ(tilleggsMJ)} MJ</td><td className="px-3 py-2 text-right tabular-nums">{spesifikkTillegg?.toFixed(1)} MJ/m²</td></tr><tr className="border-t bg-primary/5"><td className="px-3 py-2 font-semibold">Sum for salgslokalet</td><td className="px-3 py-2 text-right tabular-nums font-semibold">{formatMJ(totalMedTilleggMJ)} MJ</td><td className="px-3 py-2 text-right tabular-nums font-semibold text-primary">{spesifikkTotal?.toFixed(1)} MJ/m²</td></tr></tbody></table></div>}
+                {okningProsent !== null && <div className="rounded-md border bg-muted/30 p-3 text-sm">Økning som følge av brannfarlige varer: <span className="font-semibold text-primary">{okningProsent.toFixed(1)} %</span></div>}
+                <div className="rounded-md border overflow-hidden"><div className="bg-muted/50 px-3 py-2 text-xs font-semibold">Tillegg fra brannfarlige varer i salgslokalet</div><table className="w-full text-xs"><thead className="bg-muted/30"><tr><th className="text-left px-3 py-2 font-medium">Kategori</th><th className="text-right px-3 py-2 font-medium">Mengde</th><th className="text-right px-3 py-2 font-medium">Energi</th><th className="text-right px-3 py-2 font-medium">Sum</th></tr></thead><tbody>{bidrag.map((b) => <tr key={b.key} className="border-t"><td className="px-3 py-2">{b.label}</td><td className="px-3 py-2 text-right tabular-nums">{b.mengde.toLocaleString("nb-NO")} {b.enhetInn}</td><td className="px-3 py-2 text-right tabular-nums text-muted-foreground">{b.energi} {b.enhetEnergi}</td><td className="px-3 py-2 text-right tabular-nums font-medium">{formatMJ(b.totalMJ)} MJ</td></tr>)}</tbody></table></div>
+                <div className="space-y-1.5"><Label htmlFor="brannenergi-kommentar" className="text-xs">Kommentar (valgfritt)</Label><Textarea id="brannenergi-kommentar" placeholder="F.eks. vurdering av om økningen er vesentlig, forutsetninger for salgslokalets areal/romstørrelse, m.m." value={brannenergiKommentar} onChange={(e) => setBrannenergiKommentar(e.target.value)} className="min-h-[60px] text-sm" /></div>
+              </CardContent></Card>
+            );
+          })()}
+
+          <Card className="shadow-soft mb-6">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -1294,73 +1358,6 @@ const Brensellagring = () => {
                       className="min-h-[60px] text-sm"
                     />
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })()}
-
-          {/* Brannenergi i hele bygget – beregning */}
-          {(() => {
-            const harMengder = (Object.keys(totalAmounts) as (keyof PlannedAmounts)[]).some(
-              (k) => parseFloat(totalAmounts[k]) > 0
-            );
-            if (!harMengder) return null;
-
-            const bidrag = (Object.keys(totalAmounts) as (keyof PlannedAmounts)[])
-              .map((k) => {
-                const mengde = parseFloat(totalAmounts[k]) || 0;
-                if (mengde <= 0) return null;
-                const e = ENERGITETTHET[k];
-                const felt = PLANNED_FELT.find((f) => f.key === k);
-                return { key: k, label: felt?.label || k, enhetInn: felt?.enhet || "", mengde, energi: e.verdi, enhetEnergi: e.enhet, totalMJ: mengde * e.verdi };
-              })
-              .filter((x): x is NonNullable<typeof x> => x !== null);
-
-            const tilleggsMJ = bidrag.reduce((sum, b) => sum + b.totalMJ, 0);
-            const generellMJm2 = parseFloat(generellBrannenergiMJm2) || 0;
-            const etasjerBeregnet = etasjer.map((et) => {
-              const L = parseFloat(et.lengde);
-              const B = parseFloat(et.bredde);
-              const H = parseFloat(et.hoyde);
-              const gyldig = L > 0 && B > 0 && H > 0;
-              const gulvareal = gyldig ? L * B : 0;
-              const omh = gyldig ? 2 * (L * B) + 2 * (L * H) + 2 * (B * H) : 0;
-              return { ...et, L, B, H, gyldig, gulvareal, omh };
-            });
-            const gulvareal = etasjerBeregnet.reduce((s, e) => s + e.gulvareal, 0);
-            const omhylling = etasjerBeregnet.reduce((s, e) => s + e.omh, 0);
-            const dimGyldig = etasjerBeregnet.some((e) => e.gyldig);
-            const generellMJ = generellMJm2 * gulvareal;
-            const totalMedTilleggMJ = generellMJ + tilleggsMJ;
-            const spesifikkGenerell = dimGyldig && omhylling > 0 ? generellMJ / omhylling : null;
-            const spesifikkTillegg = dimGyldig && omhylling > 0 ? tilleggsMJ / omhylling : null;
-            const spesifikkTotal = dimGyldig && omhylling > 0 ? totalMedTilleggMJ / omhylling : null;
-            const grense = parseFloat(byggBrannenergiGrenseMJm2) || 0;
-            const formatMJ = (v: number) => (v >= 10000 ? Math.round(v / 100) * 100 : Math.round(v)).toLocaleString("nb-NO");
-
-            return (
-              <Card className="shadow-soft mb-6">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <CardTitle className="text-base flex items-center gap-2"><Flame className="h-4 w-4 text-primary" />Brannenergi i hele bygget</CardTitle>
-                      <p className="text-xs text-muted-foreground mt-1">Beregnes fra total mengde brannfarlig stoff i hele virksomheten/anlegget, inkludert salgslokale, brannskap og egne brannceller/lagerrom.</p>
-                    </div>
-                    <Button variant={byggBrannenergiInkludert ? "default" : "outline"} size="sm" className="h-7 text-xs gap-1.5 shrink-0" onClick={() => setByggBrannenergiInkludert((v) => !v)}>
-                      {byggBrannenergiInkludert ? <Check className="h-3.5 w-3.5" /> : <FilePlus2 className="h-3.5 w-3.5" />}
-                      {byggBrannenergiInkludert ? "I dokumentet" : "Legg til i dokument"}
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="bygg-brannenergi-grense" className="text-xs">Dimensjonerende brannenergi fra brannkonsept (MJ/m² omhyllingsflate)</Label>
-                    <Input id="bygg-brannenergi-grense" type="number" min="0" step="any" inputMode="decimal" placeholder="F.eks. 400 eller 600" value={byggBrannenergiGrenseMJm2} onChange={(e) => setByggBrannenergiGrenseMJm2(e.target.value)} className="h-9 text-sm max-w-xs" />
-                  </div>
-                  {dimGyldig && <div className="rounded-md border overflow-hidden"><table className="w-full text-xs"><thead className="bg-muted/50"><tr><th className="text-left px-3 py-2 font-medium">Beregningsdel</th><th className="text-right px-3 py-2 font-medium">Total brannenergi</th><th className="text-right px-3 py-2 font-medium">Spesifikk brannenergi per m² omhyllingsflate</th></tr></thead><tbody><tr className="border-t"><td className="px-3 py-2">Generell brannenergi i bygget</td><td className="px-3 py-2 text-right tabular-nums font-medium">{formatMJ(generellMJ)} MJ</td><td className="px-3 py-2 text-right tabular-nums">{spesifikkGenerell?.toFixed(1)} MJ/m²</td></tr><tr className="border-t"><td className="px-3 py-2">Brannfarlige stoffer i hele bygget</td><td className="px-3 py-2 text-right tabular-nums font-medium">{formatMJ(tilleggsMJ)} MJ</td><td className="px-3 py-2 text-right tabular-nums">{spesifikkTillegg?.toFixed(1)} MJ/m²</td></tr><tr className="border-t bg-primary/5"><td className="px-3 py-2 font-semibold">Sum for hele bygget</td><td className="px-3 py-2 text-right tabular-nums font-semibold">{formatMJ(totalMedTilleggMJ)} MJ</td><td className="px-3 py-2 text-right tabular-nums font-semibold text-primary">{spesifikkTotal?.toFixed(1)} MJ/m²</td></tr></tbody></table></div>}
-                  {grense > 0 && spesifikkTotal !== null && <div className={`rounded-md border p-3 text-sm ${spesifikkTotal <= grense ? "bg-emerald-500/10 border-emerald-500/30" : "bg-destructive/10 border-destructive/30"}`}>{spesifikkTotal <= grense ? "Beregnet brannenergi ligger innenfor angitt nivå i brannkonseptet." : "Beregnet brannenergi overstiger angitt nivå i brannkonseptet og kan kreve ny vurdering av branncellebegrensende konstruksjoner/brannvegger."}</div>}
-                  <div className="rounded-md border overflow-hidden"><div className="bg-muted/50 px-3 py-2 text-xs font-semibold">Brannfarlige stoffer i hele bygget</div><table className="w-full text-xs"><thead className="bg-muted/30"><tr><th className="text-left px-3 py-2 font-medium">Kategori</th><th className="text-right px-3 py-2 font-medium">Mengde</th><th className="text-right px-3 py-2 font-medium">Energi</th><th className="text-right px-3 py-2 font-medium">Sum</th></tr></thead><tbody>{bidrag.map((b) => <tr key={b.key} className="border-t"><td className="px-3 py-2">{b.label}</td><td className="px-3 py-2 text-right tabular-nums">{b.mengde.toLocaleString("nb-NO")} {b.enhetInn}</td><td className="px-3 py-2 text-right tabular-nums text-muted-foreground">{b.energi} {b.enhetEnergi}</td><td className="px-3 py-2 text-right tabular-nums font-medium">{formatMJ(b.totalMJ)} MJ</td></tr>)}</tbody></table></div>
-                  <div className="space-y-1.5"><Label htmlFor="bygg-brannenergi-kommentar" className="text-xs">Kommentar til samlet brannenergi / kontroll mot brannkonsept</Label><Textarea id="bygg-brannenergi-kommentar" placeholder="F.eks. brannenergi lagt til grunn i brannkonseptet, fordeling i brannceller, eller behov for revurdering." value={byggBrannenergiKommentar} onChange={(e) => setByggBrannenergiKommentar(e.target.value)} className="min-h-[70px] text-sm" /></div>
                 </CardContent>
               </Card>
             );
@@ -2569,6 +2566,8 @@ const Brensellagring = () => {
                   generellBrannenergiMJm2={generellBrannenergiMJm2}
                   byggBrannenergiInkludert={byggBrannenergiInkludert}
                   byggBrannenergiGrenseMJm2={byggBrannenergiGrenseMJm2}
+                  byggBrannenergiGulvarealM2={byggBrannenergiGulvarealM2}
+                  byggBrannenergiOmhyllingsflateM2={byggBrannenergiOmhyllingsflateM2}
                   byggBrannenergiKommentar={byggBrannenergiKommentar}
                   branntekniskeTiltakInkludert={branntekniskeTiltakInkludert}
                   branntekniskeTiltak={branntekniskeTiltak}
