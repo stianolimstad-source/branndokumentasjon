@@ -1192,6 +1192,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                   <th style={{ ...thStyle, textAlign: "right" }}>Anbefalt mengde</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Planlagt mengde</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Overskridelse</th>
+                  <th style={thStyle}>Status</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Vurdert tillatt mengde</th>
                 </tr>
               </thead>
@@ -1201,7 +1202,8 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                     <td style={{ ...tdStyle, fontWeight: 500 }}>{row.stoffgruppe}</td>
                     <td style={{ ...tdStyle, textAlign: "right" }}>{row.anbefaltMengde.toLocaleString("nb-NO")} {row.enhet}</td>
                     <td style={{ ...tdStyle, textAlign: "right" }}>{row.planlagtMengde.toLocaleString("nb-NO")} {row.enhet}</td>
-                    <td style={{ ...tdStyle, textAlign: "right", color: "#b91c1c", fontWeight: 600 }}>{row.overskridelse.toLocaleString("nb-NO")} {row.enhet} ({row.overskridelseProsent.toFixed(0)} %)</td>
+                    <td style={{ ...tdStyle, textAlign: "right", color: row.overskridelse > 0 ? "#b91c1c" : "#64748b", fontWeight: row.overskridelse > 0 ? 600 : 400 }}>{row.overskridelse.toLocaleString("nb-NO")} {row.enhet} ({row.overskridelseProsent.toFixed(0)} %)</td>
+                    <td style={{ ...tdStyle, color: row.overskridelse > 0 ? "#b91c1c" : "#15803d", fontWeight: 600 }}>{row.overskridelse > 0 ? "Overskrider" : "Overstiger ikke"}</td>
                     <td style={{ ...tdStyle, textAlign: "right" }}>{row.vurdertTillattMengde || `${row.planlagtMengde.toLocaleString("nb-NO")} ${row.enhet}`}</td>
                   </tr>
                 ))}
