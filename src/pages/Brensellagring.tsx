@@ -2365,6 +2365,7 @@ const Brensellagring = () => {
                   generellBrannenergiMJm2={generellBrannenergiMJm2}
                   byggBrannenergiInkludert={byggBrannenergiInkludert}
                   byggBrannenergiGrenseMJm2={byggBrannenergiGrenseMJm2}
+                  byggBrannenergiEtasjer={byggBrannenergiEtasjer}
                   byggBrannenergiGulvarealM2={byggBrannenergiGulvarealM2}
                   byggBrannenergiOmhyllingsflateM2={byggBrannenergiOmhyllingsflateM2}
                   byggBrannenergiKommentar={byggBrannenergiKommentar}
