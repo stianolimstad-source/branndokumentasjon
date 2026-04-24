@@ -684,15 +684,18 @@ const Brensellagring = () => {
   // ===== Innmeldingsvurdering basert på total mengde i virksomheten/anlegget =====
   type InnmeldingGruppeStatus = "over" | "under" | "ingen";
   type InnmeldingGruppe = {
-    id: "vaeske_kat12" | "vaeske_kat3" | "diesel";
+    id: "gass" | "vaeske_kat12" | "vaeske_kat3" | "diesel";
     kategori: string;
+    stoffer?: string;
     sum: number;
+    enhet: string;
     grenseLiter: number;
     grenseTekst: string;
     status: InnmeldingGruppeStatus;
     gjenstaende: number;
   };
   const evaluerInnmelding = (): { grupper: InnmeldingGruppe[]; trengerInnmelding: boolean; harMengder: boolean } => {
+    const sumGass = (parseFloat(totalAmounts.gass_kat1) || 0) + (parseFloat(totalAmounts.gass_kat2) || 0);
     const sumKat12 = parseFloat(totalAmounts.vaeske_kat1) || 0;
     const sumKat3 = parseFloat(totalAmounts.vaeske_kat3) || 0;
     const sumDiesel = parseFloat(totalAmounts.diesel_fyringsolje) || 0;
@@ -705,31 +708,48 @@ const Brensellagring = () => {
 
     const grupper: InnmeldingGruppe[] = [
       {
-        id: "vaeske_kat12",
+        id: "gass",
         kategori: INNMELDINGS_GRENSER[0].kategori,
-        sum: sumKat12,
+        stoffer: INNMELDINGS_GRENSER[0].stoffer,
+        sum: sumGass,
+        enhet: "kg",
         grenseLiter: INNMELDINGS_GRENSER[0].grenseLiter,
         grenseTekst: INNMELDINGS_GRENSER[0].grenseTekst,
-        status: lagStatus(sumKat12, INNMELDINGS_GRENSER[0].grenseLiter),
-        gjenstaende: INNMELDINGS_GRENSER[0].grenseLiter - sumKat12,
+        status: lagStatus(sumGass, INNMELDINGS_GRENSER[0].grenseLiter),
+        gjenstaende: INNMELDINGS_GRENSER[0].grenseLiter - sumGass,
+      },
+      {
+        id: "vaeske_kat12",
+        kategori: INNMELDINGS_GRENSER[1].kategori,
+        stoffer: INNMELDINGS_GRENSER[1].stoffer,
+        sum: sumKat12,
+        enhet: "L",
+        grenseLiter: INNMELDINGS_GRENSER[1].grenseLiter,
+        grenseTekst: INNMELDINGS_GRENSER[1].grenseTekst,
+        status: lagStatus(sumKat12, INNMELDINGS_GRENSER[1].grenseLiter),
+        gjenstaende: INNMELDINGS_GRENSER[1].grenseLiter - sumKat12,
       },
       {
         id: "vaeske_kat3",
-        kategori: INNMELDINGS_GRENSER[1].kategori,
+        kategori: INNMELDINGS_GRENSER[2].kategori,
+        stoffer: INNMELDINGS_GRENSER[2].stoffer,
         sum: sumKat3,
-        grenseLiter: INNMELDINGS_GRENSER[1].grenseLiter,
-        grenseTekst: INNMELDINGS_GRENSER[1].grenseTekst,
-        status: lagStatus(sumKat3, INNMELDINGS_GRENSER[1].grenseLiter),
-        gjenstaende: INNMELDINGS_GRENSER[1].grenseLiter - sumKat3,
+        enhet: "L",
+        grenseLiter: INNMELDINGS_GRENSER[2].grenseLiter,
+        grenseTekst: INNMELDINGS_GRENSER[2].grenseTekst,
+        status: lagStatus(sumKat3, INNMELDINGS_GRENSER[2].grenseLiter),
+        gjenstaende: INNMELDINGS_GRENSER[2].grenseLiter - sumKat3,
       },
       {
         id: "diesel",
-        kategori: INNMELDINGS_GRENSER[2].kategori,
+        kategori: INNMELDINGS_GRENSER[3].kategori,
+        stoffer: INNMELDINGS_GRENSER[3].stoffer,
         sum: sumDiesel,
-        grenseLiter: INNMELDINGS_GRENSER[2].grenseLiter,
-        grenseTekst: INNMELDINGS_GRENSER[2].grenseTekst,
-        status: lagStatus(sumDiesel, INNMELDINGS_GRENSER[2].grenseLiter),
-        gjenstaende: INNMELDINGS_GRENSER[2].grenseLiter - sumDiesel,
+        enhet: "L",
+        grenseLiter: INNMELDINGS_GRENSER[3].grenseLiter,
+        grenseTekst: INNMELDINGS_GRENSER[3].grenseTekst,
+        status: lagStatus(sumDiesel, INNMELDINGS_GRENSER[3].grenseLiter),
+        gjenstaende: INNMELDINGS_GRENSER[3].grenseLiter - sumDiesel,
       },
     ];
     const trengerInnmelding = grupper.some((g) => g.status === "over");
