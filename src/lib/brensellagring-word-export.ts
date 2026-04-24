@@ -391,13 +391,14 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
     if (tiltak.generellKommentar.trim()) children.push(...note("Felles kommentar", tiltak.generellKommentar));
   }
 
-  if (data.innmeldingInkludert && data.innmeldingVurdering?.harMengder) {
+  const innmeldingRegistrerteGrupper = data.innmeldingVurdering?.grupper.filter((g) => g.sum > 0) || [];
+  if (data.innmeldingInkludert && innmeldingRegistrerteGrupper.length > 0) {
     children.push(
       section("Innmeldingsplikt til DSB"),
       paragraph(data.innmeldingVurdering.trengerInnmelding ? "Anlegget er innmeldingspliktig til DSB." : "Anlegget er ikke innmeldingspliktig.", { bold: true }),
       table(
         ["Stoffgruppe", "Brannfarlig stoff", "Registrert mengde", "Innmeldingsmengde fra", "Status"],
-        data.innmeldingVurdering.grupper.map((g) => [
+        innmeldingRegistrerteGrupper.map((g) => [
           g.kategori,
           g.stoffer || "—",
           g.sum > 0 ? `${formatNumber(g.sum)} ${g.enhet || "L"}` : "—",
