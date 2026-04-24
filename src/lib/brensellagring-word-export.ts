@@ -422,6 +422,19 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
     );
     if (data.salgslokaleTiltakTekst?.trim()) children.push(...note("Vurdering av høyere mengder / kompenserende tiltak", data.salgslokaleTiltakTekst));
     if (data.salgslokaleKommentar?.trim()) children.push(...note("Kommentar", data.salgslokaleKommentar));
+
+    children.push(
+      section("Plassering av brannfarlig vare"),
+      paragraph("Plassering av brannfarlig vare må vurderes slik at varene ikke påvirker rømningssikkerheten eller øker risikoen for brannspredning mellom ulike stoffgrupper.", { color: "64748B" }),
+      table(
+        ["Forhold", "Anbefalt avstand", "Vurdering"],
+        [
+          ["Avstand til rømningsvei", "Minst 8 meter", "Brannfarlig vare skal ikke plasseres nærmere rømningsvei enn 8 meter."],
+          ["Avstand mellom gass og brannfarlig væske", "Minst 3 meter", "Det er ikke anbefalt at gasser og brannfarlig væske plasseres nærmere hverandre enn 3 meter."],
+        ],
+        [2600, 1900, 4526],
+      ),
+    );
   }
 
   const selected = data.selectedKravIds;
