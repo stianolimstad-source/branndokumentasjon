@@ -134,21 +134,29 @@ const note = (title: string, value: string) => [
   ...multiline(value),
 ];
 
-const cell = (value: string, width: number, options: { header?: boolean; align?: (typeof AlignmentType)[keyof typeof AlignmentType]; bold?: boolean; color?: string } = {}) =>
+type CellValue = string | { text: string; bold?: boolean; color?: string; align?: (typeof AlignmentType)[keyof typeof AlignmentType] };
+
+const cell = (value: CellValue, width: number, options: { header?: boolean; align?: (typeof AlignmentType)[keyof typeof AlignmentType]; bold?: boolean; color?: string } = {}) => {
+  const content = typeof value === "string" ? { text: value } : value;
+  const lines = (content.text || "—").split("\n");
+  return (
   new TableCell({
     width: { size: width, type: WidthType.DXA },
     borders: BORDERS,
     margins: { top: 90, bottom: 90, left: 120, right: 120 },
     shading: options.header ? { fill: "E8EEF5", type: ShadingType.CLEAR } : undefined,
-    children: [
+    children: lines.map((line) =>
       new Paragraph({
-        alignment: options.align,
-        children: [text(value, { bold: options.header || options.bold, size: 18, color: options.color || (options.header ? "1E3A5F" : undefined) })],
+        alignment: content.align || options.align,
+        spacing: { after: line === lines[lines.length - 1] ? 0 : 80 },
+        children: [text(line || " ", { bold: options.header || content.bold || options.bold, size: 18, color: content.color || options.color || (options.header ? "1E3A5F" : undefined) })],
       }),
-    ],
-  });
+    ),
+  })
+  );
+};
 
-const table = (headers: string[], rows: string[][], widths: number[]) =>
+const table = (headers: string[], rows: CellValue[][], widths: number[]) =>
   new Table({
     width: { size: TABLE_WIDTH, type: WidthType.DXA },
     columnWidths: widths,
