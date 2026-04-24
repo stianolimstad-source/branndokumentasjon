@@ -1109,7 +1109,7 @@ const Brensellagring = () => {
                           <td className="py-2 px-3 text-right text-muted-foreground">{g.grenseTekst}</td>
                           <td className="py-2 px-3">
                             {g.status === "over" && <Badge variant="destructive" className="text-xs">Innmeldingspliktig</Badge>}
-                            {g.status === "under" && <Badge className="text-xs bg-emerald-600 hover:bg-emerald-600/90 text-white">Under grense</Badge>}
+                            {g.status === "under" && <Badge variant="outline" className="text-xs">Under grense</Badge>}
                             {g.status === "ingen" && <Badge variant="outline" className="text-xs">Ikke aktuelt</Badge>}
                           </td>
                         </tr>
