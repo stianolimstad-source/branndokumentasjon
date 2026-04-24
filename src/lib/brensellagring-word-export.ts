@@ -475,7 +475,6 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
 
   children.push(
     new Paragraph({ spacing: { before: 360, after: 80 }, border: { top: { style: BorderStyle.SINGLE, size: 4, color: "D9E2EC", space: 8 } }, children: [text("Kilde: DSB Temaveiledning om oppbevaring av farlig stoff og VTEK § 11-8 (TEK17).", { size: 16, color: "64748B" })] }),
-    new Paragraph({ children: [text("Dokumentet er generert automatisk og skal kvalitetssikres av ansvarlig brannrådgiver.", { size: 16, color: "64748B" })] }),
   );
 
   const doc = new Document({
