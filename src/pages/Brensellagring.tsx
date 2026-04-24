@@ -1518,7 +1518,7 @@ const Brensellagring = () => {
               </div>
             )}
             <TabsList className={`grid w-full h-auto gap-1 ${
-              [isTabRelevant("beliggenhet"), isTabRelevant("tanker"), isTabRelevant("oppsamling"), isTabRelevant("roer"), isTabRelevant("innmelding"), isTabRelevant("dokumentasjon")].filter(Boolean).length >= 6
+              [isTabRelevant("beliggenhet"), isTabRelevant("tanker"), isTabRelevant("oppsamling"), isTabRelevant("roer"), isTabRelevant("dokumentasjon")].filter(Boolean).length >= 6
                 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6"
                 : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
             }`}>
@@ -1544,12 +1544,6 @@ const Brensellagring = () => {
                 <TabsTrigger value="roer" className="text-xs py-2">
                   <PipetteIcon className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
                   Rør & ventiler
-                </TabsTrigger>
-              )}
-              {isTabRelevant("innmelding") && (
-                <TabsTrigger value="innmelding" className="text-xs py-2">
-                  <FileText className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
-                  Innmelding
                 </TabsTrigger>
               )}
               {isTabRelevant("dokumentasjon") && (
@@ -1800,152 +1794,6 @@ const Brensellagring = () => {
                       </div>
                     ))}
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* ============ TAB: Innmelding ============ */}
-            <TabsContent value="innmelding" className="space-y-4">
-              <Card className="shadow-soft">
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <FileText className="h-5 w-5 text-primary" />
-                        Innmeldingsplikt til DSB (§ 12)
-                      </CardTitle>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Vurderingen er beregnet automatisk fra «Total mengde brannfarlig stoff i virksomheten/anlegget».
-                      </p>
-                    </div>
-                    <Button
-                      variant={innmeldingInkludert ? "default" : "outline"}
-                      size="sm"
-                      className="h-7 text-xs gap-1.5 shrink-0"
-                      onClick={() => setInnmeldingInkludert((v) => !v)}
-                    >
-                      {innmeldingInkludert ? <Check className="h-3.5 w-3.5" /> : <FilePlus2 className="h-3.5 w-3.5" />}
-                      {innmeldingInkludert ? "I dokumentet" : "Legg til i dokument"}
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Konklusjon */}
-                  {!innmeldingVurdering.harMengder ? (
-                    <div className="p-4 rounded-lg bg-accent/30 border border-border flex items-start gap-3">
-                      <Info className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                      <div className="space-y-1 text-sm">
-                        <p className="font-medium text-foreground">Ingen totalmengder registrert</p>
-                        <p className="text-muted-foreground">
-                          Fyll inn total mengde brannfarlig stoff i virksomheten/anlegget for å vurdere innmeldingsplikt til DSB.
-                        </p>
-                      </div>
-                    </div>
-                  ) : innmeldingVurdering.trengerInnmelding ? (
-                    <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/30 flex items-start gap-3">
-                      <AlertTriangle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
-                      <div className="space-y-1 text-sm">
-                        <p className="font-medium text-destructive">Anlegget er innmeldingspliktig til DSB</p>
-                        <p className="text-foreground/80">
-                          Følgende stoffgruppe(r) overskrider innmeldingsgrensen iht. § 12:
-                        </p>
-                        <ul className="list-disc pl-5 text-foreground/80">
-                          {innmeldingVurdering.grupper.filter((g) => g.status === "over").map((g) => (
-                            <li key={g.id}>
-                              {g.kategori} – registrert mengde {g.sum.toLocaleString("nb-NO")} {g.enhet} (innmeldingsmengde fra {g.grenseTekst})
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="p-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-start gap-3">
-                      <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
-                      <div className="space-y-1 text-sm">
-                        <p className="font-medium text-foreground">Ingen innmeldingsplikt utløst</p>
-                        <p className="text-muted-foreground">
-                          Totalmengdene ligger under grensene i § 12. Anlegget trenger ikke meldes inn til DSB.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Vurderingstabell */}
-                  <div className="border rounded-lg overflow-hidden mt-2">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="bg-muted/50">
-                          <th className="text-left py-2.5 px-3 font-medium">Stoffgruppe</th>
-                          <th className="text-left py-2.5 px-3 font-medium">Brannfarlig stoff</th>
-                          <th className="text-right py-2.5 px-3 font-medium">Registrert mengde</th>
-                          <th className="text-right py-2.5 px-3 font-medium">Innmeldingsmengde fra</th>
-                          <th className="text-left py-2.5 px-3 font-medium">Status</th>
-                          <th className="text-right py-2.5 px-3 font-medium">Margin</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {innmeldingVurdering.grupper.map((g) => (
-                          <tr key={g.id} className="border-t">
-                            <td className="py-2 px-3 font-medium">{g.kategori}</td>
-                            <td className="py-2 px-3 text-muted-foreground max-w-[260px]">{g.stoffer || "—"}</td>
-                            <td className="py-2 px-3 text-right">
-                              {g.sum > 0 ? `${g.sum.toLocaleString("nb-NO")} ${g.enhet}` : "—"}
-                            </td>
-                            <td className="py-2 px-3 text-right text-muted-foreground">
-                              {g.grenseTekst}
-                            </td>
-                            <td className="py-2 px-3">
-                              {g.status === "over" && (
-                                <Badge variant="destructive" className="text-xs">Innmeldingspliktig</Badge>
-                              )}
-                              {g.status === "under" && (
-                                <Badge className="text-xs bg-emerald-600 hover:bg-emerald-600/90 text-white">Under grense</Badge>
-                              )}
-                              {g.status === "ingen" && (
-                                <Badge variant="outline" className="text-xs">Ikke aktuelt</Badge>
-                              )}
-                            </td>
-                            <td className="py-2 px-3 text-right text-xs text-muted-foreground">
-                              {g.status === "under" ? `${g.gjenstaende.toLocaleString("nb-NO")} ${g.enhet} til grensen` : ""}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Hva må gjøres ved overskridelse */}
-                  {innmeldingVurdering.trengerInnmelding && (
-                    <div className="p-4 rounded-lg bg-muted/30 border border-border space-y-2">
-                      <p className="font-medium text-sm text-foreground">Hva må gjøres</p>
-                      <ul className="list-disc pl-5 text-sm text-muted-foreground space-y-1">
-                        <li>Innmelding sendes til DSB senest 3 måneder før idriftsettelse av anlegget.</li>
-                        <li>Skjema fylles ut og sendes via Altinn (DSB sin innmeldingsløsning for farlig stoff).</li>
-                        <li>
-                          Innmeldingen skal inneholde opplysninger om virksomhet, beliggenhet, type og mengde stoff,
-                          tankvolum/-utforming, oppsamling og sikkerhetstiltak.
-                        </li>
-                      </ul>
-                    </div>
-                  )}
-
-                  {/* Kommentar når seksjonen skal legges i dokumentet */}
-                  {innmeldingInkludert && (
-                    <div className="space-y-1.5 pt-1">
-                      <Label className="text-xs">Kommentar (valgfri)</Label>
-                      <Textarea
-                        value={innmeldingKommentar}
-                        onChange={(e) => setInnmeldingKommentar(e.target.value)}
-                        placeholder="F.eks. forutsetninger, planlagt innmeldingsdato, ansvarlig søker …"
-                        className="min-h-[70px] text-sm"
-                      />
-                    </div>
-                  )}
-
-                  <p className="text-xs text-muted-foreground italic">
-                    Kilde: Forskrift om håndtering av brannfarlig, reaksjonsfarlig og trykksatt stoff (FBRT) § 12.
-                    Tabellen viser stoffgrupper der det er registrert mengde.
-                  </p>
                 </CardContent>
               </Card>
             </TabsContent>
