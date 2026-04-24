@@ -218,6 +218,7 @@ const Brensellagring = () => {
   const [generellBrannenergiMJm2, setGenerellBrannenergiMJm2] = useState("730");
   const [byggBrannenergiInkludert, setByggBrannenergiInkludert] = useState(false);
   const [byggBrannenergiGrenseMJm2, setByggBrannenergiGrenseMJm2] = useState("");
+  const [byggBrannenergiEtasjer, setByggBrannenergiEtasjer] = useState<Etasje[]>([lagEtasje("Etasje 1")]);
   const [byggBrannenergiGulvarealM2, setByggBrannenergiGulvarealM2] = useState("");
   const [byggBrannenergiOmhyllingsflateM2, setByggBrannenergiOmhyllingsflateM2] = useState("");
   const [byggBrannenergiKommentar, setByggBrannenergiKommentar] = useState("");
@@ -432,6 +433,7 @@ const Brensellagring = () => {
           generellBrannenergiMJm2?: string;
           byggBrannenergiInkludert?: boolean;
           byggBrannenergiGrenseMJm2?: string;
+          byggBrannenergiEtasjer?: Etasje[];
           byggBrannenergiGulvarealM2?: string;
           byggBrannenergiOmhyllingsflateM2?: string;
           byggBrannenergiKommentar?: string;
@@ -509,6 +511,15 @@ const Brensellagring = () => {
         setGenerellBrannenergiMJm2(content.generellBrannenergiMJm2 ?? "730");
         setByggBrannenergiInkludert(content.byggBrannenergiInkludert ?? false);
         setByggBrannenergiGrenseMJm2(content.byggBrannenergiGrenseMJm2 ?? "");
+        if (content.byggBrannenergiEtasjer && Array.isArray(content.byggBrannenergiEtasjer) && content.byggBrannenergiEtasjer.length > 0) {
+          setByggBrannenergiEtasjer(content.byggBrannenergiEtasjer.map((e, i) => ({
+            id: e.id || (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : Math.random().toString(36).slice(2)),
+            navn: e.navn || `Etasje ${i + 1}`,
+            lengde: e.lengde ?? "",
+            bredde: e.bredde ?? "",
+            hoyde: e.hoyde ?? "",
+          })));
+        }
         setByggBrannenergiGulvarealM2(content.byggBrannenergiGulvarealM2 ?? "");
         setByggBrannenergiOmhyllingsflateM2(content.byggBrannenergiOmhyllingsflateM2 ?? "");
         setByggBrannenergiKommentar(content.byggBrannenergiKommentar ?? "");
