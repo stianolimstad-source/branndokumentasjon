@@ -355,7 +355,8 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const okningProsent = generellMJ > 0 ? (tilleggsMJ / generellMJ) * 100 : null;
   const visBrannenergi = brannenergiInkludert && energiBidrag.length > 0;
   const visByggBrannenergi = byggBrannenergiInkludert && byggEnergiBidrag.length > 0;
-  const visInnmelding = innmeldingInkludert && !!innmeldingVurdering && innmeldingVurdering.harMengder;
+  const innmeldingRegistrerteGrupper = innmeldingVurdering?.grupper.filter((g) => g.sum > 0) || [];
+  const visInnmelding = innmeldingInkludert && !!innmeldingVurdering && innmeldingRegistrerteGrupper.length > 0;
   const branntekniskeTiltakRows = branntekniskeTiltak
     ? [
         {
@@ -808,7 +809,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                     Følgende stoffgruppe(r) overskrider innmeldingsgrensen iht. § 12:
                   </p>
                   <ul style={{ fontSize: 10, color: "#334155", margin: 0, paddingLeft: 18 }}>
-                    {innmeldingVurdering.grupper
+                    {innmeldingRegistrerteGrupper
                       .filter((g) => g.status === "over")
                       .map((g) => (
                         <li key={g.id}>
@@ -837,7 +838,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {innmeldingVurdering.grupper.map((g) => (
+                {innmeldingRegistrerteGrupper.map((g) => (
                   <tr key={g.id}>
                     <td style={{ ...tdStyle, fontWeight: 500 }}>{g.kategori}</td>
                     <td style={tdStyle}>{g.stoffer || "—"}</td>
@@ -880,8 +881,8 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
             )}
 
             <p style={{ fontSize: 9, color: "#94a3b8", fontStyle: "italic", marginBottom: 16 }}>
-              Kilde: Forskrift om håndtering av brannfarlig, reaksjonsfarlig og trykksatt stoff (FBRT) § 12. Gass og
-              aerosoler vurderes ikke mot væskegrensene i denne tabellen.
+              Kilde: Forskrift om håndtering av brannfarlig, reaksjonsfarlig og trykksatt stoff (FBRT) § 12. Tabellen
+              viser stoffgrupper der det er registrert mengde.
             </p>
           </>
         )}
