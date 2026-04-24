@@ -663,6 +663,9 @@ const Brensellagring = () => {
       salgslokaleInkludert: salgslokaleInkludert && valgtBygningstype === "salgslokale",
       salgslokaleKommentar,
       salgslokaleTiltakTekst,
+      plasseringIntroTekst,
+      plasseringRomningsveiTekst,
+      plasseringGassVaeskeTekst,
       totalInkludert,
       totalAmounts,
       totalKommentar,
@@ -1989,6 +1992,42 @@ const Brensellagring = () => {
                       />
                     </div>
 
+                    <div className="space-y-3 rounded-lg border bg-muted/20 p-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <h4 className="text-sm font-medium">Plassering av brannfarlig vare</h4>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Tekstene vises i egen rapportdel og kan tilpasses prosjektet.
+                          </p>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs shrink-0"
+                          onClick={() => {
+                            setPlasseringIntroTekst(getOriginalPlasseringIntro());
+                            setPlasseringRomningsveiTekst(getOriginalPlasseringRomningsvei());
+                            setPlasseringGassVaeskeTekst(getOriginalPlasseringGassVaeske());
+                          }}
+                        >
+                          Original tekst
+                        </Button>
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="plassering-intro" className="text-xs">Innledende vurderingstekst</Label>
+                        <Textarea id="plassering-intro" value={plasseringIntroTekst} onChange={(e) => setPlasseringIntroTekst(e.target.value)} className="min-h-[80px] text-sm" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="plassering-romningsvei" className="text-xs">Avstand til rømningsvei</Label>
+                        <Textarea id="plassering-romningsvei" value={plasseringRomningsveiTekst} onChange={(e) => setPlasseringRomningsveiTekst(e.target.value)} className="min-h-[70px] text-sm" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="plassering-gass-vaeske" className="text-xs">Avstand mellom gass og brannfarlig væske</Label>
+                        <Textarea id="plassering-gass-vaeske" value={plasseringGassVaeskeTekst} onChange={(e) => setPlasseringGassVaeskeTekst(e.target.value)} className="min-h-[70px] text-sm" />
+                      </div>
+                    </div>
+
                     {/* Vis krav-knapper per kategori */}
                     {valgtBygg && (
                       <div className="flex flex-wrap gap-2 pt-1">
@@ -2400,6 +2439,9 @@ const Brensellagring = () => {
                   salgslokaleInkludert={salgslokaleInkludert && valgtBygningstype === "salgslokale"}
                   salgslokaleKommentar={salgslokaleKommentar}
                   salgslokaleTiltakTekst={salgslokaleTiltakTekst}
+                  plasseringIntroTekst={plasseringIntroTekst}
+                  plasseringRomningsveiTekst={plasseringRomningsveiTekst}
+                  plasseringGassVaeskeTekst={plasseringGassVaeskeTekst}
                   totalInkludert={totalInkludert}
                   totalAmounts={totalAmounts}
                   totalKommentar={totalKommentar}
