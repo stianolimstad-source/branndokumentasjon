@@ -2470,6 +2470,9 @@ const Brensellagring = () => {
                   salgslokaleInkludert={salgslokaleInkludert && valgtBygningstype === "salgslokale"}
                   salgslokaleKommentar={salgslokaleKommentar}
                   salgslokaleTiltakTekst={salgslokaleTiltakTekst}
+                  totalInkludert={totalInkludert}
+                  totalAmounts={totalAmounts}
+                  totalKommentar={totalKommentar}
                   plannedInkludert={plannedInkludert}
                   plannedAmounts={plannedAmounts}
                   plannedKommentar={plannedKommentar}
