@@ -1,65 +1,61 @@
-## Plan: Innmeldingsmengder for gass i rapporten
+## Plan: Ta med alle registrerte stoffgrupper i innmeldingsvurderingen
 
-Jeg oppdaterer «Lagring av brannfarlig stoff» slik at innmeldingsvurderingen også viser brannfarlig gass med riktig innmeldingsmengde, slik som i eksempelet du la ved.
+Jeg oppdaterer innmeldingsvurderingen slik at alle stoffgrupper som har fått registrert en mengde vises i vurderingen, også når mengden ligger under innmeldingsgrensen. Dette gir en mer komplett og ryddig oversikt i både input-siden, forhåndsvisningen og Word-rapporten.
 
 ## Hva som endres
 
-### 1. Legge til gass i innmeldingsgrunnlaget
+### 1. Filtrere innmeldingstabellen på registrerte mengder
 
-Dagens innmeldingsvurdering bruker bare væsker/diesel. Jeg legger til en egen stoffgruppe for gass:
-
-```text
-Stoffgruppe: Brannfarlig gass, kategori 1 og 2
-Brannfarlig stoff: LPG (propan, butan), LNG (flytende naturgass), CNG (komprimert naturgass), Naturgass (i rørledning)
-Innmeldingsmengde fra: 400 liter (0,4 m³ beholdervolum)
-```
-
-### 2. Oppdatere beregningen
-
-Innmeldingsvurderingen utvides slik at total mengde gass fra «Total mengde brannfarlig stoff» inngår i vurderingen:
+Dagens vurdering bygger status for alle innmeldingsgrupper, og viser også grupper uten mengde som «Ikke aktuelt». Jeg endrer visningen slik at tabellen bare viser grupper der brukeren faktisk har oppgitt mengde:
 
 ```text
-gass_kat1 + gass_kat2
+Vises:
+- Brannfarlig gass, kategori 1 og 2, hvis gassmengde > 0
+- Brannfarlig væske, kategori 1 og 2, hvis mengde > 0
+- Brannfarlig væske, kategori 3, hvis mengde > 0
+- Diesel og fyringsoljer, hvis mengde > 0
+
+Skjules:
+- Stoffgrupper uten registrert mengde
 ```
 
-Denne sammenlignes mot 400 liter / 0,4 m³ beholdervolum.
+### 2. Beholde status for under/over grense
 
-Merk: dagens gassfelt er oppgitt i kg i brukergrensesnittet. Jeg vil derfor vise vurderingen tydelig som «registrert mengde» mot «innmeldingsmengde fra 400 liter beholdervolum», slik at rapporten ikke later som kg og liter er samme måleenhet.
+For stoffgrupper med registrert mengde vises status uansett om grensen er overskredet:
 
-### 3. Oppdatere innmeldingstabellen i forhåndsvisningen
+```text
+Over grense  -> Innmeldingspliktig
+Under grense -> Under grense
+```
 
-Rapportseksjonen «Innmeldingsplikt til DSB» får en tabell som inkluderer gassraden. Tabellen utvides til å kunne vise:
+Dermed kan rapporten vise f.eks. at det er registrert 50 kg gass selv om dette ikke alene utløser innmelding.
 
-- Stoffgruppe
-- Brannfarlig stoff
-- Total/registrert mengde
-- Innmeldingsmengde fra
-- Status
-- Margin der dette er entydig
+### 3. Oppdatere input-siden
 
-### 4. Oppdatere Word-eksporten
+I fanen «Innmelding» endres tabellen slik at den ikke lenger fylles med irrelevante rader uten mengde. Alle registrerte stoffgrupper blir stående i tabellen med mengde, grense og status.
 
-Word-rapporten får samme gassrad og samme vurderingslogikk som forhåndsvisningen, slik at eksport og forhåndsvisning stemmer overens.
+### 4. Oppdatere rapportforhåndsvisningen
 
-### 5. Oppdatere input-siden
+I rapportseksjonen «Innmeldingsplikt til DSB» vises samme filtrerte vurderingstabell: kun stoffgrupper med registrert mengde, også de som ligger under grensen.
 
-I fanen «Innmelding» oppdateres vurderingstabellen slik at brannfarlig gass vises sammen med væsker/diesel, og slik at innmeldingsgrensen for gass fremgår tydelig.
+### 5. Oppdatere Word-eksporten
 
-## Filer som endres
+Word-rapporten får samme logikk som forhåndsvisningen, slik at eksporten viser alle registrerte stoffgrupper og ikke bare de som overskrider innmeldingsgrensen.
 
-- `src/lib/brensellagring-krav.ts`
-  - legge til innmeldingsgrense for brannfarlig gass
+## Tekniske detaljer
+
+Filer som endres:
 
 - `src/pages/Brensellagring.tsx`
-  - utvide innmeldingsberegningen med gass
-  - vise gass i innmeldingstabellen på input-siden
+  - justere `evaluerInnmelding()` til å returnere en egen visningsliste eller filtrere `grupper` til `sum > 0`
+  - oppdatere tabellen i fanen «Innmelding»
 
 - `src/components/brensellagring/BrensellagringPreview.tsx`
-  - støtte og vise gassraden i rapportforhåndsvisningen
+  - bruke kun innmeldingsgrupper med registrert mengde i rapporttabellen og konklusjonsteksten
 
 - `src/lib/brensellagring-word-export.ts`
-  - støtte og vise gassraden i Word-rapporten
+  - bruke samme filtrerte innmeldingsgrupper i Word-tabellen
 
 ## Resultat
 
-Innmeldingsseksjonen vil vise gass som egen stoffgruppe med innmeldingsmengde fra 400 liter / 0,4 m³ beholdervolum, og rapporten blir mer komplett for virksomheter som lagrer LPG, LNG, CNG eller naturgass.
+Innmeldingsvurderingen blir mer oversiktlig: rapporten dokumenterer alle stoffgrupper som faktisk er registrert med mengde, samtidig som den tydelig skiller mellom «Under grense» og «Innmeldingspliktig». Når ingen mengder er registrert, vises fortsatt meldingen om at totalmengder må fylles inn.

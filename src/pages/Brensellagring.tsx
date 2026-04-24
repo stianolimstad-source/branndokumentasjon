@@ -752,9 +752,10 @@ const Brensellagring = () => {
         gjenstaende: INNMELDINGS_GRENSER[3].grenseLiter - sumDiesel,
       },
     ];
-    const trengerInnmelding = grupper.some((g) => g.status === "over");
-    const harMengder = grupper.some((g) => g.sum > 0);
-    return { grupper, trengerInnmelding, harMengder };
+    const registrerteGrupper = grupper.filter((g) => g.sum > 0);
+    const trengerInnmelding = registrerteGrupper.some((g) => g.status === "over");
+    const harMengder = registrerteGrupper.length > 0;
+    return { grupper: registrerteGrupper, trengerInnmelding, harMengder };
   };
   const innmeldingVurdering = evaluerInnmelding();
 
@@ -1811,7 +1812,7 @@ const Brensellagring = () => {
 
                   <p className="text-xs text-muted-foreground italic">
                     Kilde: Forskrift om håndtering av brannfarlig, reaksjonsfarlig og trykksatt stoff (FBRT) § 12.
-                    Gass og aerosoler vurderes ikke mot væskegrensene over.
+                    Tabellen viser stoffgrupper der det er registrert mengde.
                   </p>
                 </CardContent>
               </Card>
