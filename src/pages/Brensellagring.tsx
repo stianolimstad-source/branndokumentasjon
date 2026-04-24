@@ -2567,6 +2567,9 @@ const Brensellagring = () => {
                   brannenergiInkludert={brannenergiInkludert}
                   brannenergiKommentar={brannenergiKommentar}
                   generellBrannenergiMJm2={generellBrannenergiMJm2}
+                  byggBrannenergiInkludert={byggBrannenergiInkludert}
+                  byggBrannenergiGrenseMJm2={byggBrannenergiGrenseMJm2}
+                  byggBrannenergiKommentar={byggBrannenergiKommentar}
                   branntekniskeTiltakInkludert={branntekniskeTiltakInkludert}
                   branntekniskeTiltak={branntekniskeTiltak}
                   etasjer={etasjer}
