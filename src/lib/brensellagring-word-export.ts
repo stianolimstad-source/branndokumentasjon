@@ -69,6 +69,7 @@ export interface BrensellagringWordData {
   generellBrannenergiMJm2?: string;
   byggBrannenergiInkludert?: boolean;
   byggBrannenergiGrenseMJm2?: string;
+  byggBrannenergiEtasjer?: { id: string; navn: string; lengde: string; bredde: string; hoyde: string }[];
   byggBrannenergiGulvarealM2?: string;
   byggBrannenergiOmhyllingsflateM2?: string;
   byggBrannenergiKommentar?: string;
