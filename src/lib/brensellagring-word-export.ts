@@ -237,7 +237,7 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
         ["Adresse", data.adresse || ""],
         ["Bygningstype", data.valgtBygg?.navn || ""],
         ["Utarbeidet av", data.utarbeidetAv || ""],
-        ["KS", data.ksAnsvarlig || ""],
+        ["KS (kvalitetssikret)", data.ksAnsvarlig || ""],
         ["Dato", new Date().toLocaleDateString("nb-NO")],
         ["Regelverk", "VTEK § 11-8, DSB Temaveiledning om oppbevaring av farlig stoff"],
       ].filter((row) => row[1]),

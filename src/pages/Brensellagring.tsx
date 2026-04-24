@@ -866,7 +866,7 @@ const Brensellagring = () => {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="ksAnsvarlig" className="text-sm">KS / Kontrollert av</Label>
+                <Label htmlFor="ksAnsvarlig" className="text-sm">KS (kvalitetssikret) / Kontrollert av</Label>
                 <Input
                   id="ksAnsvarlig"
                   value={ksAnsvarlig}
