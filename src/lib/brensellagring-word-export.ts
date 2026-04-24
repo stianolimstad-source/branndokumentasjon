@@ -67,6 +67,9 @@ export interface BrensellagringWordData {
   brannenergiInkludert?: boolean;
   brannenergiKommentar?: string;
   generellBrannenergiMJm2?: string;
+  byggBrannenergiInkludert?: boolean;
+  byggBrannenergiGrenseMJm2?: string;
+  byggBrannenergiKommentar?: string;
   etasjer?: { id: string; navn: string; lengde: string; bredde: string; hoyde: string }[];
   innledning?: string;
   energitetthet?: Record<keyof PlannedAmountsData, { verdi: number; enhet: "MJ/kg" | "MJ/L"; kilde: string }>;
@@ -301,6 +304,37 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
   const generellMJ = generellMJm2 * gulvareal;
   const tilleggsMJ = energiBidrag.reduce((sum, row) => sum + row.totalMJ, 0);
   const totalMJ = generellMJ + tilleggsMJ;
+  const byggEnergiBidrag = data.totalAmounts && data.energitetthet
+    ? (Object.keys(plannedLabels) as (keyof PlannedAmountsData)[])
+        .map((key) => {
+          const mengde = Number((data.totalAmounts?.[key] || "").trim());
+          const energi = data.energitetthet?.[key];
+          if (!(mengde > 0) || !energi) return null;
+          return { key, label: plannedLabels[key].label, mengde, enhetInn: plannedLabels[key].enhet, energi: energi.verdi, enhetEnergi: energi.enhet, totalMJ: mengde * energi.verdi };
+        })
+        .filter((row): row is NonNullable<typeof row> => row !== null)
+    : [];
+  const byggTilleggsMJ = byggEnergiBidrag.reduce((sum, row) => sum + row.totalMJ, 0);
+  const byggTotalMJ = generellMJ + byggTilleggsMJ;
+  const byggSpesifikkTotal = omhylling > 0 ? byggTotalMJ / omhylling : null;
+  const byggGrense = Number(data.byggBrannenergiGrenseMJm2) || 0;
+
+  if (data.byggBrannenergiInkludert && byggEnergiBidrag.length > 0) {
+    children.push(
+      section("Brannenergi i hele bygget"),
+      paragraph("Beregningen tar utgangspunkt i total mengde brannfarlig stoff i virksomheten/anlegget, inkludert mengder i salgslokale, brannsikre skap og egne brannceller/lagerrom beregnet for brannfarlig vare. Beregningen benyttes til kontroll mot forutsatt brannenerginivå i brannkonseptet.", { color: "64748B" }),
+      table(
+        ["Brannfarlige stoffer i hele bygget", "Mengde", "Energi", "Bidrag"],
+        byggEnergiBidrag.map((row) => [row.label, `${formatNumber(row.mengde)} ${row.enhetInn}`, `${row.energi} ${row.enhetEnergi}`, `${formatNumber(row.totalMJ)} MJ`]),
+        [3800, 1700, 1700, 1826],
+      ),
+    );
+    if (omhylling > 0) {
+      children.push(table(["Beregningsdel", "Total brannenergi", "Spesifikk brannenergi"], [["Generell brannenergi i bygget", `${formatNumber(generellMJ)} MJ`, `${formatNumber(generellMJ / omhylling, 1)} MJ/m²`], ["Brannfarlige stoffer i hele bygget", `${formatNumber(byggTilleggsMJ)} MJ`, `${formatNumber(byggTilleggsMJ / omhylling, 1)} MJ/m²`], ["Sum for hele bygget", `${formatNumber(byggTotalMJ)} MJ`, `${formatNumber(byggSpesifikkTotal || 0, 1)} MJ/m²`]], [4200, 2400, 2426]));
+      if (byggGrense > 0 && byggSpesifikkTotal !== null) children.push(paragraph(byggSpesifikkTotal <= byggGrense ? `Beregnet brannenergi (${formatNumber(byggSpesifikkTotal, 1)} MJ/m²) ligger innenfor angitt nivå i brannkonseptet (${formatNumber(byggGrense, 1)} MJ/m²).` : `Beregnet brannenergi (${formatNumber(byggSpesifikkTotal, 1)} MJ/m²) overstiger angitt nivå i brannkonseptet (${formatNumber(byggGrense, 1)} MJ/m²) og kan kreve ny vurdering av branncellebegrensende konstruksjoner/brannvegger.`, { bold: true }));
+    }
+    if (data.byggBrannenergiKommentar?.trim()) children.push(...note("Kommentar til samlet brannenergi / kontroll mot brannkonsept", data.byggBrannenergiKommentar));
+  }
 
   if (data.brannenergiInkludert && energiBidrag.length > 0) {
     children.push(
