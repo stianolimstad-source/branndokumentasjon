@@ -69,6 +69,7 @@ export interface BrensellagringWordData {
   generellBrannenergiMJm2?: string;
   byggBrannenergiInkludert?: boolean;
   byggBrannenergiGrenseMJm2?: string;
+  byggBrannenergiEtasjer?: { id: string; navn: string; lengde: string; bredde: string; hoyde: string }[];
   byggBrannenergiGulvarealM2?: string;
   byggBrannenergiOmhyllingsflateM2?: string;
   byggBrannenergiKommentar?: string;
@@ -317,8 +318,15 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
         .filter((row): row is NonNullable<typeof row> => row !== null)
     : [];
   const byggTilleggsMJ = byggEnergiBidrag.reduce((sum, row) => sum + row.totalMJ, 0);
-  const byggGulvareal = Number(data.byggBrannenergiGulvarealM2) || 0;
-  const byggOmhylling = Number(data.byggBrannenergiOmhyllingsflateM2) || 0;
+  const byggEtasjer = (data.byggBrannenergiEtasjer || []).map((et) => {
+    const l = Number(et.lengde) || 0;
+    const b = Number(et.bredde) || 0;
+    const h = Number(et.hoyde) || 0;
+    const gyldig = l > 0 && b > 0 && h > 0;
+    return { ...et, l, b, h, gyldig, gulvareal: gyldig ? l * b : 0, omhylling: gyldig ? 2 * (l * b) + 2 * (l * h) + 2 * (b * h) : 0 };
+  });
+  const byggGulvareal = byggEtasjer.reduce((sum, et) => sum + et.gulvareal, 0) || Number(data.byggBrannenergiGulvarealM2) || 0;
+  const byggOmhylling = byggEtasjer.reduce((sum, et) => sum + et.omhylling, 0) || Number(data.byggBrannenergiOmhyllingsflateM2) || 0;
   const byggGenerellMJ = generellMJm2 * byggGulvareal;
   const byggTotalMJ = byggGenerellMJ + byggTilleggsMJ;
   const byggSpesifikkTotal = byggOmhylling > 0 ? byggTotalMJ / byggOmhylling : null;
@@ -334,6 +342,10 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
         [3800, 1700, 1700, 1826],
       ),
     );
+    const gyldigeByggEtasjer = byggEtasjer.filter((et) => et.gyldig);
+    if (gyldigeByggEtasjer.length > 0) {
+      children.push(table(["Etasje/bygningsdel", "Lengde", "Bredde", "Høyde", "Gulvareal", "Omhyllingsflate"], [...gyldigeByggEtasjer.map((et) => [et.navn || "Etasje", `${formatNumber(et.l)} m`, `${formatNumber(et.b)} m`, `${formatNumber(et.h)} m`, `${formatNumber(et.gulvareal, 1)} m²`, `${formatNumber(et.omhylling, 1)} m²`]), ["Sum", "", "", "", `${formatNumber(byggGulvareal, 1)} m²`, `${formatNumber(byggOmhylling, 1)} m²`]], [1900, 1200, 1200, 1200, 1700, 1826]));
+    }
     if (byggOmhylling > 0) {
       children.push(table(["Beregningsdel", "Total brannenergi", "Spesifikk brannenergi"], [["Generell brannenergi i bygget", `${formatNumber(byggGenerellMJ)} MJ`, `${formatNumber(byggGenerellMJ / byggOmhylling, 1)} MJ/m²`], ["Brannfarlige stoffer i hele bygget", `${formatNumber(byggTilleggsMJ)} MJ`, `${formatNumber(byggTilleggsMJ / byggOmhylling, 1)} MJ/m²`], ["Sum for hele bygget", `${formatNumber(byggTotalMJ)} MJ`, `${formatNumber(byggSpesifikkTotal || 0, 1)} MJ/m²`]], [4200, 2400, 2426]));
       if (byggGrense > 0 && byggSpesifikkTotal !== null) children.push(paragraph(byggSpesifikkTotal <= byggGrense ? `Beregnet brannenergi (${formatNumber(byggSpesifikkTotal, 1)} MJ/m²) ligger innenfor angitt nivå i brannkonseptet (${formatNumber(byggGrense, 1)} MJ/m²).` : `Beregnet brannenergi (${formatNumber(byggSpesifikkTotal, 1)} MJ/m²) overstiger angitt nivå i brannkonseptet (${formatNumber(byggGrense, 1)} MJ/m²) og kan kreve ny vurdering av branncellebegrensende konstruksjoner/brannvegger.`, { bold: true }));

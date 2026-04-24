@@ -1,120 +1,127 @@
-## Plan: Riktig rekkefølge og eget areal for brannenergi i hele bygget
+## Plan: Flere etasjer for brannenergi i hele bygget
 
-Jeg oppdaterer dokumentet «Lagring av brannfarlig stoff» slik at inputtsiden følger samme rekkefølge som rapporten, og slik at beregningen for hele bygget ikke lenger bruker salgslokalets areal.
+Jeg oppdaterer dokumentet «Lagring av brannfarlig stoff» slik at brannenergien for hele bygget kan beregnes med flere etasjer, på samme måte som salgslokalet. Samtidig må den eksisterende build-feilen i `Brensellagring.tsx` ryddes.
 
 ## Hva som endres
 
-### 1. Bytte rekkefølge på inputtsiden
+### 1. Fikse gjeldende build-feil
 
-I dag kommer:
+Det ligger fortsatt en JSX-strukturfeil rundt brannenergi-/kontrollseksjonene i `src/pages/Brensellagring.tsx`. Før funksjonsendringen fullføres rydder jeg opp i denne blokken slik at siden bygger igjen.
 
-```text
-Brannenergi i salgslokalet
-Brannenergi i hele bygget
-```
+### 2. Erstatte enkeltfeltene for hele bygget med etasjer
 
-Jeg bytter dette til:
+Dagens felt:
 
 ```text
-Brannenergi i hele bygget
-Brannenergi i salgslokalet
+Byggets gulvareal (m²)
+Byggets omhyllingsflate (m²)
 ```
 
-Dette gjør at inputtsiden samsvarer med rapportrekkefølgen.
-
-### 2. Eget areal/dimensjonsgrunnlag for hele bygget
-
-Jeg legger til et separat arealgrunnlag for «Brannenergi i hele bygget», uavhengig av etasjene/målene som brukes for salgslokalet.
-
-Ny input i seksjonen «Brannenergi i hele bygget»:
+endres til en etasjeliste for hele bygget:
 
 ```text
-Areal / omhyllingsflate for hele bygget
+Etasje / bygningsdel
+Lengde
+Bredde
+Høyde
 ```
 
-Med egne felt for hele bygget, for eksempel:
-
-- Byggets gulvareal (m²)
-- Byggets omhyllingsflate (m²)
-
-Dette brukes bare til beregningen for hele bygget.
-
-### 3. Beholde eksisterende salgslokaleareal
-
-Eksisterende etasje-/målskjema beholdes for «Brannenergi i salgslokalet» og presiseres som:
+Brukeren kan legge til og fjerne flere etasjer, for eksempel:
 
 ```text
-Innvendige mål for salgslokalet
+1. etasje: 40 m x 25 m x 4 m
+2. etasje: 35 m x 20 m x 3 m
+Kjeller: 30 m x 18 m x 3 m
 ```
 
-Dette arealet skal fortsatt brukes til:
+### 3. Beregne samlet areal og omhyllingsflate for hele bygget
+
+For hver gyldige etasje beregnes:
+
+```text
+Gulvareal = lengde × bredde
+Omhyllingsflate = 2 × (lengde × bredde) + 2 × (lengde × høyde) + 2 × (bredde × høyde)
+```
+
+Deretter summeres dette for hele bygget:
+
+```text
+Hele byggets gulvareal = sum gulvareal for alle etasjer
+Hele byggets omhyllingsflate = sum omhyllingsflate for alle etasjer
+```
+
+Dette brukes bare for «Brannenergi i hele bygget».
+
+### 4. Beholde salgslokalets egne etasjer uendret
+
+Eksisterende etasjeliste for salgslokalet beholdes separat og brukes fortsatt kun til:
 
 - brannenergi i salgslokalet
-- overskridelsesvurdering mot DSB sine mengder for salgslokale, der relevant
+- vurdering av salgslokalets egne mål/areal
 
-### 4. Oppdatere beregningslogikken
-
-Etter endringen blir logikken:
+Det blir altså to uavhengige dimensjonsgrunnlag:
 
 ```text
-Brannenergi i hele bygget
-→ bruker total mengde brannfarlig stoff
-→ bruker eget gulvareal og egen omhyllingsflate for hele bygget
-→ sammenlignes mot grense fra brannkonsept
+Hele bygget
+→ egne etasjer / mål
+→ total mengde brannfarlig stoff
 
-Brannenergi i salgslokalet
-→ bruker mengde utover DSB-veiledningen i salgslokalet
-→ bruker salgslokalets mål/areal
+Salgslokalet
+→ egne etasjer / mål
+→ mengde utover DSB-veiledningen i salgslokalet
 ```
 
-Dette hindrer at brannenergien for hele bygget feilaktig beregnes med salgslokalets areal.
+### 5. Bakoverkompatibel lagring
 
-## Rapport og Word-eksport
+Eksisterende dokumenter med de gamle feltene håndteres slik:
 
-Jeg oppdaterer også rapportforhåndsvisning og Word-eksport slik at «Brannenergi i hele bygget» bruker det nye bygningsarealet/omhyllingsflaten.
+- hvis nye bygningsetasjer finnes, brukes de
+- hvis bare gamle enkeltfelt finnes, vises de som én konvertert etasje/arealgrunnlag der det lar seg gjøre
+- gamle salgslokale-etasjer påvirkes ikke
 
-Rapporten vil fortsatt vise «Brannenergi i hele bygget» før «Brannenergi i salgslokalet».
-
-## Lagring
-
-Ingen databaseendring er nødvendig. Nye felt lagres i eksisterende dokumentinnhold, for eksempel:
+Ingen databaseendring er nødvendig. Nye data lagres i eksisterende dokumentinnhold, for eksempel:
 
 ```ts
-byggBrannenergiGulvarealM2
-byggBrannenergiOmhyllingsflateM2
+byggBrannenergiEtasjer: [
+  { id, navn, lengde, bredde, hoyde }
+]
 ```
 
-Eksisterende dokumenter håndteres bakoverkompatibelt:
+### 6. Oppdatere rapport og Word-eksport
 
-- gamle dokumenter åpnes som før
-- hvis de nye bygningsarealene mangler, vises feltene tomme
-- salgslokalets eksisterende mål beholdes uendret
+Rapportforhåndsvisningen og Word-eksporten oppdateres slik at «Brannenergi i hele bygget» viser:
+
+- tabell med etasjer/bygningsdeler
+- sum gulvareal
+- sum omhyllingsflate
+- total brannenergi for hele bygget
+- spesifikk brannenergi mot grense fra brannkonsept
 
 ## Filer som endres
 
 - `src/pages/Brensellagring.tsx`
-  - flytte «Brannenergi i hele bygget» før «Brannenergi i salgslokalet»
-  - legge til egne arealfelt for hele bygget
-  - lagre/laste de nye feltene
-  - bruke riktig arealgrunnlag i beregningen
-  - sende de nye verdiene til forhåndsvisning og Word-eksport
+  - fikse JSX/build-feilen
+  - legge til egne etasjer for hele bygget
+  - oppdatere lagring/lasting
+  - oppdatere beregning og input-UI
+  - sende nye data til preview og Word-eksport
 
 - `src/components/brensellagring/BrensellagringPreview.tsx`
-  - bruke hele byggets egne arealer i beregningen for «Brannenergi i hele bygget»
-  - beholde salgslokalets mål i beregningen for «Brannenergi i salgslokalet»
+  - støtte flere etasjer for hele bygget
+  - vise tabell og summer i rapporten
 
 - `src/lib/brensellagring-word-export.ts`
-  - bruke hele byggets egne arealer i Word-rapportens beregning
-  - sikre samme beregningsgrunnlag som forhåndsvisningen
+  - støtte flere etasjer for hele bygget i Word-rapporten
+  - bruke samme beregningsgrunnlag som forhåndsvisningen
 
 ## Resultat
 
-Etter endringen blir dokumentet faglig tydeligere:
+Etter endringen kan hele bygget modelleres med flere ulike etasjer, samtidig som salgslokalet fortsatt har sitt eget separate arealgrunnlag:
 
 ```text
-Hele bygget:
-Total mengde + hele byggets areal/omhyllingsflate
+Brannenergi i hele bygget:
+Total mengde + hele byggets etasjer/omhyllingsflate
 
-Salgslokalet:
-Mengde utover DSB-veiledningen + salgslokalets areal/omhyllingsflate
+Brannenergi i salgslokalet:
+Mengde utover DSB + salgslokalets etasjer/omhyllingsflate
 ```

@@ -109,6 +109,7 @@ interface BrensellagringPreviewProps {
   generellBrannenergiMJm2?: string;
   byggBrannenergiInkludert?: boolean;
   byggBrannenergiGrenseMJm2?: string;
+  byggBrannenergiEtasjer?: { id: string; navn: string; lengde: string; bredde: string; hoyde: string }[];
   byggBrannenergiGulvarealM2?: string;
   byggBrannenergiOmhyllingsflateM2?: string;
   byggBrannenergiKommentar?: string;
@@ -189,6 +190,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   generellBrannenergiMJm2 = "730",
   byggBrannenergiInkludert = false,
   byggBrannenergiGrenseMJm2 = "",
+  byggBrannenergiEtasjer = [],
   byggBrannenergiGulvarealM2 = "",
   byggBrannenergiOmhyllingsflateM2 = "",
   byggBrannenergiKommentar = "",
@@ -312,8 +314,17 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         .filter((x): x is NonNullable<typeof x> => x !== null)
     : [];
   const byggTilleggsMJ = byggEnergiBidrag.reduce((s, b) => s + b.totalMJ, 0);
-  const byggGulvareal = parseFloat(byggBrannenergiGulvarealM2) || 0;
-  const byggOmhylling = parseFloat(byggBrannenergiOmhyllingsflateM2) || 0;
+  const byggEtasjerBeregnet = byggBrannenergiEtasjer.map((et) => {
+    const L = parseFloat(et.lengde || "");
+    const B = parseFloat(et.bredde || "");
+    const H = parseFloat(et.hoyde || "");
+    const gyldig = L > 0 && B > 0 && H > 0;
+    const gulvareal = gyldig ? L * B : 0;
+    const omh = gyldig ? 2 * (L * B) + 2 * (L * H) + 2 * (B * H) : 0;
+    return { ...et, L, B, H, gyldig, gulvareal, omh };
+  });
+  const byggGulvareal = byggEtasjerBeregnet.reduce((s, e) => s + e.gulvareal, 0) || parseFloat(byggBrannenergiGulvarealM2) || 0;
+  const byggOmhylling = byggEtasjerBeregnet.reduce((s, e) => s + e.omh, 0) || parseFloat(byggBrannenergiOmhyllingsflateM2) || 0;
   const generellMJm2 = parseFloat(generellBrannenergiMJm2) || 0;
   const etasjerBeregnet = etasjer.map((et) => {
     const L = parseFloat(et.lengde || "");
@@ -580,6 +591,12 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                 ))}
               </tbody>
             </table>
+            {byggEtasjerBeregnet.some((e) => e.gyldig) && (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+                <thead><tr><th style={thStyle}>Etasje/bygningsdel</th><th style={thStyle}>Lengde</th><th style={thStyle}>Bredde</th><th style={thStyle}>Høyde</th><th style={thStyle}>Gulvareal</th><th style={thStyle}>Omhyllingsflate</th></tr></thead>
+                <tbody>{byggEtasjerBeregnet.filter((e) => e.gyldig).map((e) => <tr key={e.id}><td style={{ ...tdStyle, fontWeight: 500 }}>{e.navn || "Etasje"}</td><td style={tdStyle}>{e.L.toLocaleString("nb-NO")} m</td><td style={tdStyle}>{e.B.toLocaleString("nb-NO")} m</td><td style={tdStyle}>{e.H.toLocaleString("nb-NO")} m</td><td style={tdStyle}>{e.gulvareal.toFixed(1)} m²</td><td style={tdStyle}>{e.omh.toFixed(1)} m²</td></tr>)}<tr><td colSpan={4} style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#f1f5f9" }}>Sum</td><td style={{ ...tdStyle, fontWeight: 700, background: "#f1f5f9" }}>{byggGulvareal.toFixed(1)} m²</td><td style={{ ...tdStyle, fontWeight: 700, background: "#f1f5f9" }}>{byggOmhylling.toFixed(1)} m²</td></tr></tbody>
+              </table>
+            )}
             {byggDimGyldig ? (
               <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
                 <thead><tr><th style={thStyle}>Beregningsdel</th><th style={{ ...thStyle, textAlign: "right" }}>Total brannenergi</th><th style={{ ...thStyle, textAlign: "right" }}>Spesifikk brannenergi per m² omhyllingsflate</th></tr></thead>
