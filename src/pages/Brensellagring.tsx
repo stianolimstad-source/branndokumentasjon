@@ -1028,30 +1028,29 @@ const Brensellagring = () => {
           </Card>
 
           {/* Innmeldingsplikt til DSB */}
-          <Card className="shadow-soft mb-6">
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between gap-3">
+          <div className="mt-10 pt-8 border-t mb-10">
+            <div className="flex items-start justify-between gap-3 mb-6">
+              <div className="flex items-center gap-2">
+                <FileText className="h-6 w-6 text-primary" />
                 <div>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-primary" />
-                    Innmeldingsplikt til DSB (§ 12)
-                  </CardTitle>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Vurderingen beregnes automatisk fra «Total mengde brannfarlig stoff i virksomheten/anlegget».
+                  <h3 className="text-xl font-bold">Innmeldingsplikt til DSB</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Vurderingen beregnes automatisk fra total mengde brannfarlig stoff i virksomheten/anlegget
                   </p>
                 </div>
-                <Button
-                  variant={innmeldingInkludert ? "default" : "outline"}
-                  size="sm"
-                  className="h-7 text-xs gap-1.5 shrink-0"
-                  onClick={() => setInnmeldingInkludert((v) => !v)}
-                >
-                  {innmeldingInkludert ? <Check className="h-3.5 w-3.5" /> : <FilePlus2 className="h-3.5 w-3.5" />}
-                  {innmeldingInkludert ? "I dokumentet" : "Legg til i dokument"}
-                </Button>
               </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
+              <Button
+                variant={innmeldingInkludert ? "default" : "outline"}
+                size="sm"
+                className="h-7 text-xs gap-1.5 shrink-0"
+                onClick={() => setInnmeldingInkludert((v) => !v)}
+              >
+                {innmeldingInkludert ? <Check className="h-3.5 w-3.5" /> : <FilePlus2 className="h-3.5 w-3.5" />}
+                {innmeldingInkludert ? "I dokumentet" : "Legg til i dokument"}
+              </Button>
+            </div>
+
+            <div className="space-y-4">
               {!innmeldingVurdering.harMengder ? (
                 <div className="p-4 rounded-lg bg-accent/30 border border-border flex items-start gap-3">
                   <Info className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
@@ -1135,8 +1134,8 @@ const Brensellagring = () => {
               <p className="text-xs text-muted-foreground italic">
                 Kilde: Forskrift om håndtering av brannfarlig, reaksjonsfarlig og trykksatt stoff (FBRT) § 12.
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Planlagt mengde utover DSB sin veiledning */}
           <Card className="shadow-soft mb-6">
