@@ -447,7 +447,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
             )}
             {ksAnsvarlig && (
               <tr>
-                <td style={{ ...tdStyle, fontWeight: 600 }}>KS</td>
+                <td style={{ ...tdStyle, fontWeight: 600 }}>KS (kvalitetssikret)</td>
                 <td style={tdStyle}>{ksAnsvarlig}</td>
               </tr>
             )}
