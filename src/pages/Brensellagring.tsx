@@ -216,6 +216,9 @@ const Brensellagring = () => {
   const [brannenergiInkludert, setBrannenergiInkludert] = useState(false);
   const [brannenergiKommentar, setBrannenergiKommentar] = useState("");
   const [generellBrannenergiMJm2, setGenerellBrannenergiMJm2] = useState("730");
+  const [byggBrannenergiInkludert, setByggBrannenergiInkludert] = useState(false);
+  const [byggBrannenergiGrenseMJm2, setByggBrannenergiGrenseMJm2] = useState("");
+  const [byggBrannenergiKommentar, setByggBrannenergiKommentar] = useState("");
 
   type BranntekniskeTiltakData = {
     brannalarm: { status: string; beskrivelse: string; kommentar: string; rapporttekst: string };
@@ -425,6 +428,9 @@ const Brensellagring = () => {
           brannenergiInkludert?: boolean;
           brannenergiKommentar?: string;
           generellBrannenergiMJm2?: string;
+          byggBrannenergiInkludert?: boolean;
+          byggBrannenergiGrenseMJm2?: string;
+          byggBrannenergiKommentar?: string;
           branntekniskeTiltakInkludert?: boolean;
           branntekniskeTiltak?: Partial<BranntekniskeTiltakData>;
           innledning?: string;
@@ -497,6 +503,9 @@ const Brensellagring = () => {
         setBrannenergiInkludert(content.brannenergiInkludert ?? false);
         setBrannenergiKommentar(content.brannenergiKommentar ?? "");
         setGenerellBrannenergiMJm2(content.generellBrannenergiMJm2 ?? "730");
+        setByggBrannenergiInkludert(content.byggBrannenergiInkludert ?? false);
+        setByggBrannenergiGrenseMJm2(content.byggBrannenergiGrenseMJm2 ?? "");
+        setByggBrannenergiKommentar(content.byggBrannenergiKommentar ?? "");
         setBranntekniskeTiltakInkludert(content.branntekniskeTiltakInkludert ?? false);
         setBranntekniskeTiltak({
           ...TOMME_BRANNTEKNISKE_TILTAK,
@@ -554,6 +563,9 @@ const Brensellagring = () => {
       brannenergiInkludert,
       brannenergiKommentar,
       generellBrannenergiMJm2,
+      byggBrannenergiInkludert,
+      byggBrannenergiGrenseMJm2,
+      byggBrannenergiKommentar,
       branntekniskeTiltakInkludert,
       branntekniskeTiltak,
       innledning,
@@ -628,6 +640,9 @@ const Brensellagring = () => {
       brannenergiInkludert,
       brannenergiKommentar,
       generellBrannenergiMJm2,
+      byggBrannenergiInkludert,
+      byggBrannenergiGrenseMJm2,
+      byggBrannenergiKommentar,
       branntekniskeTiltakInkludert,
       branntekniskeTiltak,
       etasjer,
