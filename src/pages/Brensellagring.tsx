@@ -218,6 +218,8 @@ const Brensellagring = () => {
   const [generellBrannenergiMJm2, setGenerellBrannenergiMJm2] = useState("730");
   const [byggBrannenergiInkludert, setByggBrannenergiInkludert] = useState(false);
   const [byggBrannenergiGrenseMJm2, setByggBrannenergiGrenseMJm2] = useState("");
+  const [byggBrannenergiGulvarealM2, setByggBrannenergiGulvarealM2] = useState("");
+  const [byggBrannenergiOmhyllingsflateM2, setByggBrannenergiOmhyllingsflateM2] = useState("");
   const [byggBrannenergiKommentar, setByggBrannenergiKommentar] = useState("");
 
   type BranntekniskeTiltakData = {
@@ -430,6 +432,8 @@ const Brensellagring = () => {
           generellBrannenergiMJm2?: string;
           byggBrannenergiInkludert?: boolean;
           byggBrannenergiGrenseMJm2?: string;
+          byggBrannenergiGulvarealM2?: string;
+          byggBrannenergiOmhyllingsflateM2?: string;
           byggBrannenergiKommentar?: string;
           branntekniskeTiltakInkludert?: boolean;
           branntekniskeTiltak?: Partial<BranntekniskeTiltakData>;
@@ -505,6 +509,8 @@ const Brensellagring = () => {
         setGenerellBrannenergiMJm2(content.generellBrannenergiMJm2 ?? "730");
         setByggBrannenergiInkludert(content.byggBrannenergiInkludert ?? false);
         setByggBrannenergiGrenseMJm2(content.byggBrannenergiGrenseMJm2 ?? "");
+        setByggBrannenergiGulvarealM2(content.byggBrannenergiGulvarealM2 ?? "");
+        setByggBrannenergiOmhyllingsflateM2(content.byggBrannenergiOmhyllingsflateM2 ?? "");
         setByggBrannenergiKommentar(content.byggBrannenergiKommentar ?? "");
         setBranntekniskeTiltakInkludert(content.branntekniskeTiltakInkludert ?? false);
         setBranntekniskeTiltak({
@@ -565,6 +571,8 @@ const Brensellagring = () => {
       generellBrannenergiMJm2,
       byggBrannenergiInkludert,
       byggBrannenergiGrenseMJm2,
+      byggBrannenergiGulvarealM2,
+      byggBrannenergiOmhyllingsflateM2,
       byggBrannenergiKommentar,
       branntekniskeTiltakInkludert,
       branntekniskeTiltak,
@@ -642,6 +650,8 @@ const Brensellagring = () => {
       generellBrannenergiMJm2,
       byggBrannenergiInkludert,
       byggBrannenergiGrenseMJm2,
+      byggBrannenergiGulvarealM2,
+      byggBrannenergiOmhyllingsflateM2,
       byggBrannenergiKommentar,
       branntekniskeTiltakInkludert,
       branntekniskeTiltak,
@@ -2569,6 +2579,8 @@ const Brensellagring = () => {
                   generellBrannenergiMJm2={generellBrannenergiMJm2}
                   byggBrannenergiInkludert={byggBrannenergiInkludert}
                   byggBrannenergiGrenseMJm2={byggBrannenergiGrenseMJm2}
+                  byggBrannenergiGulvarealM2={byggBrannenergiGulvarealM2}
+                  byggBrannenergiOmhyllingsflateM2={byggBrannenergiOmhyllingsflateM2}
                   byggBrannenergiKommentar={byggBrannenergiKommentar}
                   branntekniskeTiltakInkludert={branntekniskeTiltakInkludert}
                   branntekniskeTiltak={branntekniskeTiltak}
