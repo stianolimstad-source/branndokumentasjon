@@ -107,6 +107,9 @@ interface BrensellagringPreviewProps {
   brannenergiInkludert?: boolean;
   brannenergiKommentar?: string;
   generellBrannenergiMJm2?: string;
+  byggBrannenergiInkludert?: boolean;
+  byggBrannenergiGrenseMJm2?: string;
+  byggBrannenergiKommentar?: string;
   etasjer?: { id: string; navn: string; lengde: string; bredde: string; hoyde: string }[];
   innledning?: string;
   energitetthet?: Record<keyof PlannedAmountsData, { verdi: number; enhet: "MJ/kg" | "MJ/L"; kilde: string }>;
@@ -182,6 +185,9 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   brannenergiInkludert = false,
   brannenergiKommentar = "",
   generellBrannenergiMJm2 = "730",
+  byggBrannenergiInkludert = false,
+  byggBrannenergiGrenseMJm2 = "",
+  byggBrannenergiKommentar = "",
   etasjer = [],
   innledning = "",
   energitetthet,
@@ -290,6 +296,18 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         .filter((x): x is NonNullable<typeof x> => x !== null)
     : [];
   const tilleggsMJ = energiBidrag.reduce((s, b) => s + b.totalMJ, 0);
+  const byggEnergiBidrag = (totalAmounts && energitetthet)
+    ? (Object.keys(PLANNED_LABELS) as (keyof PlannedAmountsData)[])
+        .map((k) => {
+          const m = parseFloat((totalAmounts[k] || "").trim());
+          if (!(m > 0)) return null;
+          const e = energitetthet[k];
+          if (!e) return null;
+          return { key: k, label: PLANNED_LABELS[k].label, enhetInn: PLANNED_LABELS[k].enhet, mengde: m, energi: e.verdi, enhetEnergi: e.enhet, totalMJ: m * e.verdi };
+        })
+        .filter((x): x is NonNullable<typeof x> => x !== null)
+    : [];
+  const byggTilleggsMJ = byggEnergiBidrag.reduce((s, b) => s + b.totalMJ, 0);
   const generellMJm2 = parseFloat(generellBrannenergiMJm2) || 0;
   const etasjerBeregnet = etasjer.map((et) => {
     const L = parseFloat(et.lengde || "");
@@ -305,11 +323,16 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const dimGyldig = etasjerBeregnet.some((e) => e.gyldig);
   const generellMJ = generellMJm2 * gulvareal;
   const totalMedTilleggMJ = generellMJ + tilleggsMJ;
+  const byggTotalMedTilleggMJ = generellMJ + byggTilleggsMJ;
   const spesifikkGenerell = dimGyldig && omhylling > 0 ? generellMJ / omhylling : null;
   const spesifikkTillegg = dimGyldig && omhylling > 0 ? tilleggsMJ / omhylling : null;
   const spesifikkTotal = dimGyldig && omhylling > 0 ? totalMedTilleggMJ / omhylling : null;
+  const byggSpesifikkTillegg = dimGyldig && omhylling > 0 ? byggTilleggsMJ / omhylling : null;
+  const byggSpesifikkTotal = dimGyldig && omhylling > 0 ? byggTotalMedTilleggMJ / omhylling : null;
+  const byggGrense = parseFloat(byggBrannenergiGrenseMJm2) || 0;
   const okningProsent = generellMJ > 0 ? (tilleggsMJ / generellMJ) * 100 : null;
   const visBrannenergi = brannenergiInkludert && energiBidrag.length > 0;
+  const visByggBrannenergi = byggBrannenergiInkludert && byggEnergiBidrag.length > 0;
   const visInnmelding = innmeldingInkludert && !!innmeldingVurdering && innmeldingVurdering.harMengder;
   const branntekniskeTiltakRows = branntekniskeTiltak
     ? [
@@ -343,6 +366,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const sections: { key: string; label: string }[] = [];
   if (visTotal) sections.push({ key: "total", label: "Total mengde brannfarlig stoff" });
   if (visPlanlagt) sections.push({ key: "planlagt", label: "Planlagt mengde utover DSB sin veiledning i salgslokalet" });
+  if (visByggBrannenergi) sections.push({ key: "byggBrannenergi", label: "Brannenergi i hele bygget" });
   if (visBrannenergi) sections.push({ key: "brannenergi", label: "Brannenergi i salgslokalet" });
   if (visBranntekniskeTiltak) sections.push({ key: "branntekniskeTiltak", label: "Branntekniske tiltak i bygget" });
   if (visInnmelding) sections.push({ key: "innmelding", label: "Innmeldingsplikt til DSB" });
