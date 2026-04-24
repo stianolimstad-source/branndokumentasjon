@@ -168,6 +168,15 @@ const Brensellagring = () => {
   const getOriginalSalgslokaleTiltakTekst = () =>
     "Ovennevnte krav til avstander og mengder bør kunne økes noe for brannfarlige væsker, under forutsetning av at salgslokalet er sprinklet og at det fremgår av risikovurderingen at en slik begrenset økning er akseptabel.\n\nVurderingen gjelder kun de angitte mengdene og forutsetningene. Dersom det ønskes lagret mengder utover dette, må mengdene enten plasseres i brannsikre skap/avlukke eller underlegges en ny særskilt risikovurdering. Økning gjelder ikke brannfarlig gass uten særskilt vurdering, da DSB sin anbefalte gassmengde ikke øker tilsvarende med salgslokalets areal.";
   const [salgslokaleTiltakTekst, setSalgslokaleTiltakTekst] = useState(getOriginalSalgslokaleTiltakTekst);
+  const getOriginalPlasseringIntro = () =>
+    "Plassering av brannfarlig vare må vurderes slik at varene ikke påvirker rømningssikkerheten eller øker risikoen for brannspredning mellom ulike stoffgrupper.";
+  const getOriginalPlasseringRomningsvei = () =>
+    "Brannfarlig vare skal ikke plasseres nærmere rømningsvei enn 8 meter.";
+  const getOriginalPlasseringGassVaeske = () =>
+    "Det er ikke anbefalt at gasser og brannfarlig væske plasseres nærmere hverandre enn 3 meter.";
+  const [plasseringIntroTekst, setPlasseringIntroTekst] = useState(getOriginalPlasseringIntro);
+  const [plasseringRomningsveiTekst, setPlasseringRomningsveiTekst] = useState(getOriginalPlasseringRomningsvei);
+  const [plasseringGassVaeskeTekst, setPlasseringGassVaeskeTekst] = useState(getOriginalPlasseringGassVaeske);
 
   // Planlagt mengde utover DSB sin veiledning – per kategori
   type PlannedAmounts = {
@@ -414,6 +423,9 @@ const Brensellagring = () => {
           salgslokaleInkludert?: boolean;
           salgslokaleKommentar?: string;
           salgslokaleTiltakTekst?: string;
+          plasseringIntroTekst?: string;
+          plasseringRomningsveiTekst?: string;
+          plasseringGassVaeskeTekst?: string;
           totalAmounts?: Partial<PlannedAmounts>;
           totalKommentar?: string;
           totalInkludert?: boolean;
@@ -462,6 +474,9 @@ const Brensellagring = () => {
         setSalgslokaleInkludert(content.salgslokaleInkludert ?? false);
         setSalgslokaleKommentar(content.salgslokaleKommentar ?? "");
         setSalgslokaleTiltakTekst(content.salgslokaleTiltakTekst ?? getOriginalSalgslokaleTiltakTekst());
+        setPlasseringIntroTekst(content.plasseringIntroTekst ?? getOriginalPlasseringIntro());
+        setPlasseringRomningsveiTekst(content.plasseringRomningsveiTekst ?? getOriginalPlasseringRomningsvei());
+        setPlasseringGassVaeskeTekst(content.plasseringGassVaeskeTekst ?? getOriginalPlasseringGassVaeske());
         const lagredeTotalMengder = { ...TOMME_MENGDER, ...(content.totalAmounts || {}) };
         const samletTotalKat12 = (parseFloat(lagredeTotalMengder.vaeske_kat1) || 0) + (parseFloat(lagredeTotalMengder.vaeske_kat2) || 0);
         setTotalAmounts({
@@ -564,6 +579,9 @@ const Brensellagring = () => {
       salgslokaleInkludert,
       salgslokaleKommentar,
       salgslokaleTiltakTekst,
+      plasseringIntroTekst,
+      plasseringRomningsveiTekst,
+      plasseringGassVaeskeTekst,
       totalAmounts: { ...totalAmounts, vaeske_kat2: "" },
       totalKommentar,
       totalInkludert,
