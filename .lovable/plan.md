@@ -1,73 +1,57 @@
-## Plan: Vis alle oppgitte mengder i vurdering av anbefalt DSB-mengde
+## Plan: Redigerbar seksjon for «Plassering av brannfarlig vare»
 
-Jeg oppdaterer seksjonen «Vurdering av mengde over anbefalt DSB-mengde» slik at tabellen viser alle stoffgrupper der brukeren har oppgitt en planlagt mengde, også når mengden ikke overstiger anbefalt DSB-mengde.
+Jeg legger inn «Plassering av brannfarlig vare» som en egen del i input-siden, slik at teksten som vises i rapporten kan redigeres før dokumentet lagres/eksporteres.
 
 ## Hva som endres
 
-### 1. Endre beregningsgrunnlaget
+### 1. Legge til redigerbare standardtekster
 
-Dagens logikk filtrerer bort rader som ikke har overskridelse. Jeg endrer dette slik at tabellen inkluderer alle rader der:
+Inputdelen får en egen seksjon under «Største tillatte mengder i salgslokaler – DSB Temaveiledning Kap. 3» med felter for:
 
-```text
-Planlagt mengde > 0
-og
-Anbefalt DSB-mengde finnes (> 0)
-```
+- Innledende vurderingstekst for plassering
+- Vurderingstekst for avstand til rømningsvei, standard: 8 meter
+- Vurderingstekst for avstand mellom gass og brannfarlig væske, standard: 3 meter
 
-Dermed vises både:
+Standardtekstene beholdes som utgangspunkt, men kan endres fritt av brannrådgiver.
 
-```text
-Over anbefalt mengde  -> Overskridelse vises
-Under/lik anbefalt    -> Vises som ikke overskredet
-```
+### 2. Vise redigert tekst i forhåndsvisningen
 
-### 2. Tydelig status i input-siden
+Rapportseksjonen «Plassering av brannfarlig vare» oppdateres til å bruke tekstene fra inputfeltet i stedet for hardkodet tekst.
 
-I inputtabellen for denne vurderingen legges det inn en statuskolonne eller tydelig tekst i overskridelseskolonnen:
+Tabellen beholdes med samme struktur:
 
 ```text
-Overskrider
-Overstiger ikke
+Forhold | Anbefalt avstand | Vurdering
 ```
 
-For mengder under grensen vises f.eks.:
+men kolonnen «Vurdering» henter redigert innhold fra inputdelen.
 
-```text
-0 liter (0 %) / Overstiger ikke
-```
+### 3. Lagre tekstene sammen med dokumentet
 
-eller tilsvarende ryddig statusmerking.
+De redigerte plasseringstekstene lagres i dokumentinnholdet, slik at de kommer tilbake ved senere åpning av samme rapport.
 
-### 3. Oppdatere rapportforhåndsvisningen
+### 4. Oppdatere Word-eksport
 
-I rapporten vises samme komplette vurderingstabell. Stoffgrupper med registrert mengde, men uten overskridelse, får en grønn/nøytral status som viser at mengden ikke overstiger anbefalt DSB-mengde.
-
-### 4. Oppdatere Word-eksporten
-
-Word-rapporten oppdateres med samme logikk og samme statusfelt, slik at eksporten samsvarer med forhåndsvisningen.
-
-### 5. Beholde vurderingstekst kun ved faktisk overskridelse
-
-Automatisk vurderingstekst og konklusjon som omtaler «overskridelse» skal fortsatt bare genereres når minst én stoffgruppe faktisk overstiger anbefalt mengde. Hvis alle oppgitte mengder ligger under anbefalt DSB-mengde, skal tabellen kunne vises uten at teksten feilaktig beskriver en overskridelse.
+Word-eksporten oppdateres til å bruke samme redigerte plasseringstekster som forhåndsvisningen.
 
 ## Tekniske detaljer
 
 Filer som endres:
 
 - `src/pages/Brensellagring.tsx`
-  - endre `overskridelseRows` fra å filtrere på `row.overskridelse > 0` til å inkludere alle rader med oppgitt mengde
-  - beregne egen indikator for faktisk overskridelse
-  - oppdatere inputtabellen/statusvisningen for «overstiger ikke»
+  - legge til state for plasseringstekster
+  - laste inn og lagre tekstene i `fire_concepts.content`
+  - legge inn redigerbar inputseksjon i salgslokale-kortet
+  - sende tekstene til forhåndsvisning og Word-eksport
 
 - `src/components/brensellagring/BrensellagringPreview.tsx`
-  - oppdatere seksjonen «Vurdering av mengde over anbefalt DSB-mengde» slik at alle oppgitte stoffgrupper vises
-  - vise status for både overskridelse og ikke overskridelse
-  - unngå overskridelsestekst når ingen rader overstiger
+  - utvide props med plasseringstekster
+  - bruke redigerte tekster i rapportseksjonen
 
 - `src/lib/brensellagring-word-export.ts`
-  - oppdatere Word-tabellen med statuskolonne/tekst
-  - sikre samme datagrunnlag som i forhåndsvisningen
+  - utvide eksportdata med plasseringstekster
+  - bruke redigerte tekster i Word-tabellen
 
 ## Resultat
 
-Rapporten blir mer oversiktlig: alle stoffgrupper med oppgitt mengde dokumenteres i vurderingen, og tabellen viser tydelig om mengden overstiger eller ikke overstiger anbefalt DSB-mengde.
+«Plassering av brannfarlig vare» blir ikke lenger bare en fast rapporttekst. Den blir synlig og redigerbar i inputdelen, og samme tekst brukes konsekvent i forhåndsvisning, lagret dokument og Word-eksport.

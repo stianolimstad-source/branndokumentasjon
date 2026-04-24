@@ -168,6 +168,15 @@ const Brensellagring = () => {
   const getOriginalSalgslokaleTiltakTekst = () =>
     "Ovennevnte krav til avstander og mengder bør kunne økes noe for brannfarlige væsker, under forutsetning av at salgslokalet er sprinklet og at det fremgår av risikovurderingen at en slik begrenset økning er akseptabel.\n\nVurderingen gjelder kun de angitte mengdene og forutsetningene. Dersom det ønskes lagret mengder utover dette, må mengdene enten plasseres i brannsikre skap/avlukke eller underlegges en ny særskilt risikovurdering. Økning gjelder ikke brannfarlig gass uten særskilt vurdering, da DSB sin anbefalte gassmengde ikke øker tilsvarende med salgslokalets areal.";
   const [salgslokaleTiltakTekst, setSalgslokaleTiltakTekst] = useState(getOriginalSalgslokaleTiltakTekst);
+  const getOriginalPlasseringIntro = () =>
+    "Plassering av brannfarlig vare må vurderes slik at varene ikke påvirker rømningssikkerheten eller øker risikoen for brannspredning mellom ulike stoffgrupper.";
+  const getOriginalPlasseringRomningsvei = () =>
+    "Brannfarlig vare skal ikke plasseres nærmere rømningsvei enn 8 meter.";
+  const getOriginalPlasseringGassVaeske = () =>
+    "Det er ikke anbefalt at gasser og brannfarlig væske plasseres nærmere hverandre enn 3 meter.";
+  const [plasseringIntroTekst, setPlasseringIntroTekst] = useState(getOriginalPlasseringIntro);
+  const [plasseringRomningsveiTekst, setPlasseringRomningsveiTekst] = useState(getOriginalPlasseringRomningsvei);
+  const [plasseringGassVaeskeTekst, setPlasseringGassVaeskeTekst] = useState(getOriginalPlasseringGassVaeske);
 
   // Planlagt mengde utover DSB sin veiledning – per kategori
   type PlannedAmounts = {
@@ -414,6 +423,9 @@ const Brensellagring = () => {
           salgslokaleInkludert?: boolean;
           salgslokaleKommentar?: string;
           salgslokaleTiltakTekst?: string;
+          plasseringIntroTekst?: string;
+          plasseringRomningsveiTekst?: string;
+          plasseringGassVaeskeTekst?: string;
           totalAmounts?: Partial<PlannedAmounts>;
           totalKommentar?: string;
           totalInkludert?: boolean;
@@ -462,6 +474,9 @@ const Brensellagring = () => {
         setSalgslokaleInkludert(content.salgslokaleInkludert ?? false);
         setSalgslokaleKommentar(content.salgslokaleKommentar ?? "");
         setSalgslokaleTiltakTekst(content.salgslokaleTiltakTekst ?? getOriginalSalgslokaleTiltakTekst());
+        setPlasseringIntroTekst(content.plasseringIntroTekst ?? getOriginalPlasseringIntro());
+        setPlasseringRomningsveiTekst(content.plasseringRomningsveiTekst ?? getOriginalPlasseringRomningsvei());
+        setPlasseringGassVaeskeTekst(content.plasseringGassVaeskeTekst ?? getOriginalPlasseringGassVaeske());
         const lagredeTotalMengder = { ...TOMME_MENGDER, ...(content.totalAmounts || {}) };
         const samletTotalKat12 = (parseFloat(lagredeTotalMengder.vaeske_kat1) || 0) + (parseFloat(lagredeTotalMengder.vaeske_kat2) || 0);
         setTotalAmounts({
@@ -564,6 +579,9 @@ const Brensellagring = () => {
       salgslokaleInkludert,
       salgslokaleKommentar,
       salgslokaleTiltakTekst,
+      plasseringIntroTekst,
+      plasseringRomningsveiTekst,
+      plasseringGassVaeskeTekst,
       totalAmounts: { ...totalAmounts, vaeske_kat2: "" },
       totalKommentar,
       totalInkludert,
@@ -645,6 +663,9 @@ const Brensellagring = () => {
       salgslokaleInkludert: salgslokaleInkludert && valgtBygningstype === "salgslokale",
       salgslokaleKommentar,
       salgslokaleTiltakTekst,
+      plasseringIntroTekst,
+      plasseringRomningsveiTekst,
+      plasseringGassVaeskeTekst,
       totalInkludert,
       totalAmounts,
       totalKommentar,
@@ -1971,6 +1992,42 @@ const Brensellagring = () => {
                       />
                     </div>
 
+                    <div className="space-y-3 rounded-lg border bg-muted/20 p-3">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <h4 className="text-sm font-medium">Plassering av brannfarlig vare</h4>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Tekstene vises i egen rapportdel og kan tilpasses prosjektet.
+                          </p>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-7 text-xs shrink-0"
+                          onClick={() => {
+                            setPlasseringIntroTekst(getOriginalPlasseringIntro());
+                            setPlasseringRomningsveiTekst(getOriginalPlasseringRomningsvei());
+                            setPlasseringGassVaeskeTekst(getOriginalPlasseringGassVaeske());
+                          }}
+                        >
+                          Original tekst
+                        </Button>
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="plassering-intro" className="text-xs">Innledende vurderingstekst</Label>
+                        <Textarea id="plassering-intro" value={plasseringIntroTekst} onChange={(e) => setPlasseringIntroTekst(e.target.value)} className="min-h-[80px] text-sm" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="plassering-romningsvei" className="text-xs">Avstand til rømningsvei</Label>
+                        <Textarea id="plassering-romningsvei" value={plasseringRomningsveiTekst} onChange={(e) => setPlasseringRomningsveiTekst(e.target.value)} className="min-h-[70px] text-sm" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label htmlFor="plassering-gass-vaeske" className="text-xs">Avstand mellom gass og brannfarlig væske</Label>
+                        <Textarea id="plassering-gass-vaeske" value={plasseringGassVaeskeTekst} onChange={(e) => setPlasseringGassVaeskeTekst(e.target.value)} className="min-h-[70px] text-sm" />
+                      </div>
+                    </div>
+
                     {/* Vis krav-knapper per kategori */}
                     {valgtBygg && (
                       <div className="flex flex-wrap gap-2 pt-1">
@@ -2382,6 +2439,9 @@ const Brensellagring = () => {
                   salgslokaleInkludert={salgslokaleInkludert && valgtBygningstype === "salgslokale"}
                   salgslokaleKommentar={salgslokaleKommentar}
                   salgslokaleTiltakTekst={salgslokaleTiltakTekst}
+                  plasseringIntroTekst={plasseringIntroTekst}
+                  plasseringRomningsveiTekst={plasseringRomningsveiTekst}
+                  plasseringGassVaeskeTekst={plasseringGassVaeskeTekst}
                   totalInkludert={totalInkludert}
                   totalAmounts={totalAmounts}
                   totalKommentar={totalKommentar}
