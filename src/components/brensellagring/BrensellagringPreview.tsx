@@ -107,6 +107,9 @@ interface BrensellagringPreviewProps {
   brannenergiInkludert?: boolean;
   brannenergiKommentar?: string;
   generellBrannenergiMJm2?: string;
+  byggBrannenergiInkludert?: boolean;
+  byggBrannenergiGrenseMJm2?: string;
+  byggBrannenergiKommentar?: string;
   etasjer?: { id: string; navn: string; lengde: string; bredde: string; hoyde: string }[];
   innledning?: string;
   energitetthet?: Record<keyof PlannedAmountsData, { verdi: number; enhet: "MJ/kg" | "MJ/L"; kilde: string }>;
@@ -182,6 +185,9 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   brannenergiInkludert = false,
   brannenergiKommentar = "",
   generellBrannenergiMJm2 = "730",
+  byggBrannenergiInkludert = false,
+  byggBrannenergiGrenseMJm2 = "",
+  byggBrannenergiKommentar = "",
   etasjer = [],
   innledning = "",
   energitetthet,
@@ -290,6 +296,18 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         .filter((x): x is NonNullable<typeof x> => x !== null)
     : [];
   const tilleggsMJ = energiBidrag.reduce((s, b) => s + b.totalMJ, 0);
+  const byggEnergiBidrag = (totalAmounts && energitetthet)
+    ? (Object.keys(PLANNED_LABELS) as (keyof PlannedAmountsData)[])
+        .map((k) => {
+          const m = parseFloat((totalAmounts[k] || "").trim());
+          if (!(m > 0)) return null;
+          const e = energitetthet[k];
+          if (!e) return null;
+          return { key: k, label: PLANNED_LABELS[k].label, enhetInn: PLANNED_LABELS[k].enhet, mengde: m, energi: e.verdi, enhetEnergi: e.enhet, totalMJ: m * e.verdi };
+        })
+        .filter((x): x is NonNullable<typeof x> => x !== null)
+    : [];
+  const byggTilleggsMJ = byggEnergiBidrag.reduce((s, b) => s + b.totalMJ, 0);
   const generellMJm2 = parseFloat(generellBrannenergiMJm2) || 0;
   const etasjerBeregnet = etasjer.map((et) => {
     const L = parseFloat(et.lengde || "");
@@ -305,11 +323,16 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const dimGyldig = etasjerBeregnet.some((e) => e.gyldig);
   const generellMJ = generellMJm2 * gulvareal;
   const totalMedTilleggMJ = generellMJ + tilleggsMJ;
+  const byggTotalMedTilleggMJ = generellMJ + byggTilleggsMJ;
   const spesifikkGenerell = dimGyldig && omhylling > 0 ? generellMJ / omhylling : null;
   const spesifikkTillegg = dimGyldig && omhylling > 0 ? tilleggsMJ / omhylling : null;
   const spesifikkTotal = dimGyldig && omhylling > 0 ? totalMedTilleggMJ / omhylling : null;
+  const byggSpesifikkTillegg = dimGyldig && omhylling > 0 ? byggTilleggsMJ / omhylling : null;
+  const byggSpesifikkTotal = dimGyldig && omhylling > 0 ? byggTotalMedTilleggMJ / omhylling : null;
+  const byggGrense = parseFloat(byggBrannenergiGrenseMJm2) || 0;
   const okningProsent = generellMJ > 0 ? (tilleggsMJ / generellMJ) * 100 : null;
   const visBrannenergi = brannenergiInkludert && energiBidrag.length > 0;
+  const visByggBrannenergi = byggBrannenergiInkludert && byggEnergiBidrag.length > 0;
   const visInnmelding = innmeldingInkludert && !!innmeldingVurdering && innmeldingVurdering.harMengder;
   const branntekniskeTiltakRows = branntekniskeTiltak
     ? [
@@ -343,6 +366,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   const sections: { key: string; label: string }[] = [];
   if (visTotal) sections.push({ key: "total", label: "Total mengde brannfarlig stoff" });
   if (visPlanlagt) sections.push({ key: "planlagt", label: "Planlagt mengde utover DSB sin veiledning i salgslokalet" });
+  if (visByggBrannenergi) sections.push({ key: "byggBrannenergi", label: "Brannenergi i hele bygget" });
   if (visBrannenergi) sections.push({ key: "brannenergi", label: "Brannenergi i salgslokalet" });
   if (visBranntekniskeTiltak) sections.push({ key: "branntekniskeTiltak", label: "Branntekniske tiltak i bygget" });
   if (visInnmelding) sections.push({ key: "innmelding", label: "Innmeldingsplikt til DSB" });
@@ -518,6 +542,47 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                 <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{plannedKommentar}</p>
               </div>
             )}
+          </>
+        )}
+
+        {visByggBrannenergi && (
+          <>
+            <h2 style={h2}>{secNum("byggBrannenergi")}. Brannenergi i hele bygget</h2>
+            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
+              Beregningen tar utgangspunkt i total mengde brannfarlig stoff i virksomheten/anlegget, inkludert mengder i salgslokale, brannsikre skap og egne brannceller/lagerrom beregnet for brannfarlig vare. Beregningen benyttes til kontroll mot forutsatt brannenerginivå i brannkonseptet.
+            </p>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+              <thead>
+                <tr>
+                  <th style={thStyle}>Brannfarlige stoffer i hele bygget</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Mengde</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Energi</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Bidrag</th>
+                </tr>
+              </thead>
+              <tbody>
+                {byggEnergiBidrag.map((b) => (
+                  <tr key={b.key}>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>{b.label}</td>
+                    <td style={{ ...tdStyle, textAlign: "right" }}>{b.mengde.toLocaleString("nb-NO")} {b.enhetInn}</td>
+                    <td style={{ ...tdStyle, textAlign: "right", color: "#64748b" }}>{b.energi} {b.enhetEnergi}</td>
+                    <td style={{ ...tdStyle, textAlign: "right", fontWeight: 600 }}>{formatMJ(b.totalMJ)} MJ</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {dimGyldig ? (
+              <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+                <thead><tr><th style={thStyle}>Beregningsdel</th><th style={{ ...thStyle, textAlign: "right" }}>Total brannenergi</th><th style={{ ...thStyle, textAlign: "right" }}>Spesifikk brannenergi per m² omhyllingsflate</th></tr></thead>
+                <tbody>
+                  <tr><td style={{ ...tdStyle, fontWeight: 500 }}>Generell brannenergi i bygget</td><td style={{ ...tdStyle, textAlign: "right", fontWeight: 600 }}>{formatMJ(generellMJ)} MJ</td><td style={{ ...tdStyle, textAlign: "right" }}>{spesifikkGenerell?.toFixed(1)} MJ/m²</td></tr>
+                  <tr><td style={{ ...tdStyle, fontWeight: 500 }}>Brannfarlige stoffer i hele bygget</td><td style={{ ...tdStyle, textAlign: "right", fontWeight: 600 }}>{formatMJ(byggTilleggsMJ)} MJ</td><td style={{ ...tdStyle, textAlign: "right" }}>{byggSpesifikkTillegg?.toFixed(1)} MJ/m²</td></tr>
+                  <tr><td style={{ ...tdStyle, fontWeight: 700, background: "#e8eef5", color: "#1e3a5f" }}>Sum for hele bygget</td><td style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#e8eef5", color: "#1e3a5f" }}>{formatMJ(byggTotalMedTilleggMJ)} MJ</td><td style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#e8eef5", color: "#1e3a5f" }}>{byggSpesifikkTotal?.toFixed(1)} MJ/m²</td></tr>
+                </tbody>
+              </table>
+            ) : <p style={{ fontSize: 10, color: "#b91c1c", marginBottom: 12 }}>Lengde, bredde og høyde må fylles inn for å kunne vurdere brannenergi per m² omhyllingsflate.</p>}
+            {byggGrense > 0 && byggSpesifikkTotal !== null && <div style={{ marginBottom: 12, padding: "10px 12px", background: byggSpesifikkTotal <= byggGrense ? "#f0fdf4" : "#fef2f2", borderLeft: `3px solid ${byggSpesifikkTotal <= byggGrense ? "#15803d" : "#b91c1c"}`, borderRadius: 4 }}><p style={{ fontSize: 10, fontWeight: 700, color: byggSpesifikkTotal <= byggGrense ? "#15803d" : "#b91c1c" }}>{byggSpesifikkTotal <= byggGrense ? `Beregnet brannenergi (${byggSpesifikkTotal.toFixed(1)} MJ/m²) ligger innenfor angitt nivå i brannkonseptet (${byggGrense.toLocaleString("nb-NO")} MJ/m²).` : `Beregnet brannenergi (${byggSpesifikkTotal.toFixed(1)} MJ/m²) overstiger angitt nivå i brannkonseptet (${byggGrense.toLocaleString("nb-NO")} MJ/m²) og kan kreve ny vurdering av branncellebegrensende konstruksjoner/brannvegger.`}</p></div>}
+            {byggBrannenergiKommentar.trim() && <div style={{ marginBottom: 12, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}><p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Kommentar til samlet brannenergi / kontroll mot brannkonsept</p><p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{byggBrannenergiKommentar}</p></div>}
           </>
         )}
 
