@@ -1,57 +1,61 @@
-## Plan: Redigerbar seksjon for «Plassering av brannfarlig vare»
+## Plan: Farger og innmeldingsplikt i Word-dokumentet
 
-Jeg legger inn «Plassering av brannfarlig vare» som en egen del i input-siden, slik at teksten som vises i rapporten kan redigeres før dokumentet lagres/eksporteres.
+Jeg oppdaterer Word-eksporten for «Lagring av brannfarlig stoff» slik at den matcher forhåndsvisningen bedre, særlig statusfarger og vurderingstekster.
 
 ## Hva som endres
 
-### 1. Legge til redigerbare standardtekster
+### 1. Ta med farger på status- og vurderingstekster i Word
 
-Inputdelen får en egen seksjon under «Største tillatte mengder i salgslokaler – DSB Temaveiledning Kap. 3» med felter for:
+Word-dokumentet skal få med samme type fargekoding som forhåndsvisningen, blant annet:
 
-- Innledende vurderingstekst for plassering
-- Vurderingstekst for avstand til rømningsvei, standard: 8 meter
-- Vurderingstekst for avstand mellom gass og brannfarlig væske, standard: 3 meter
+- «Tillatt» vises grønt
+- «Ikke tillatt» vises rødt
+- «Innmeldingspliktig» vises rødt
+- «Under grense» vises grønt
+- «Ikke aktuelt» vises dempet/grått
+- «Overskrider» vises rødt
+- «Overstiger ikke» vises grønt
+- viktige konklusjonstekster får tilsvarende farge der previewen bruker farge
 
-Standardtekstene beholdes som utgangspunkt, men kan endres fritt av brannrådgiver.
+### 2. Gjøre Word-tabeller i stand til å fargelegge enkeltceller
 
-### 2. Vise redigert tekst i forhåndsvisningen
+Eksporten bruker i dag en generell tabellfunksjon som stort sett lager alle vanlige celler likt. Jeg utvider denne slik at tabeller kan få farge/bold per celle, uten å ødelegge eksisterende tabeller.
 
-Rapportseksjonen «Plassering av brannfarlig vare» oppdateres til å bruke tekstene fra inputfeltet i stedet for hardkodet tekst.
+### 3. Forbedre innmeldingsplikt i Word-rapporten
 
-Tabellen beholdes med samme struktur:
+Innmeldingsdelen i Word skal speile vurderingen i forhåndsvisningen bedre:
+
+- tydelig konklusjon om anlegget er innmeldingspliktig eller ikke
+- tabell med stoffgrupper der det er registrert mengde
+- statusfarger i tabellen
+- margin/gjenstående mengde til grense for stoffgrupper som ligger under grensen
+- kommentar beholdes dersom den er lagt inn
+- kildehenvisning til FBRT § 12 tas med i seksjonen
+
+### 4. Ta med innmeldingsplikt i vurderingen av mengde over anbefalt DSB-mengde
+
+I seksjonen «Vurdering av mengde over anbefalt DSB-mengde» legger jeg inn en kort vurdering av innmeldingsplikt når innmeldingsdata finnes, slik at rapporten tydelig viser om de totale mengdene også utløser meldeplikt til DSB.
+
+Eksempel på innhold:
 
 ```text
-Forhold | Anbefalt avstand | Vurdering
+Innmeldingsplikt: Basert på registrerte totalmengder er anlegget ikke innmeldingspliktig etter FBRT § 12.
 ```
 
-men kolonnen «Vurdering» henter redigert innhold fra inputdelen.
+eller:
 
-### 3. Lagre tekstene sammen med dokumentet
-
-De redigerte plasseringstekstene lagres i dokumentinnholdet, slik at de kommer tilbake ved senere åpning av samme rapport.
-
-### 4. Oppdatere Word-eksport
-
-Word-eksporten oppdateres til å bruke samme redigerte plasseringstekster som forhåndsvisningen.
+```text
+Innmeldingsplikt: Basert på registrerte totalmengder er anlegget innmeldingspliktig etter FBRT § 12. Følgende stoffgrupper overskrider innmeldingsgrensen: ...
+```
 
 ## Tekniske detaljer
 
-Filer som endres:
-
-- `src/pages/Brensellagring.tsx`
-  - legge til state for plasseringstekster
-  - laste inn og lagre tekstene i `fire_concepts.content`
-  - legge inn redigerbar inputseksjon i salgslokale-kortet
-  - sende tekstene til forhåndsvisning og Word-eksport
-
-- `src/components/brensellagring/BrensellagringPreview.tsx`
-  - utvide props med plasseringstekster
-  - bruke redigerte tekster i rapportseksjonen
+Filen som endres:
 
 - `src/lib/brensellagring-word-export.ts`
-  - utvide eksportdata med plasseringstekster
-  - bruke redigerte tekster i Word-tabellen
+  - utvide `cell`/`table`-hjelpere eller legge til en egen tabellhjelper for celleformattering
+  - bruke fargeverdier fra previewen i relevante Word-celler
+  - utvide innmeldingsseksjonen med margin, kilde og farget status
+  - legge inn innmeldingsvurdering i overskridelsesseksjonen når `innmeldingVurdering` finnes
 
-## Resultat
-
-«Plassering av brannfarlig vare» blir ikke lenger bare en fast rapporttekst. Den blir synlig og redigerbar i inputdelen, og samme tekst brukes konsekvent i forhåndsvisning, lagret dokument og Word-eksport.
+Det trengs ikke databaseendringer.

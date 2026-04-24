@@ -134,21 +134,29 @@ const note = (title: string, value: string) => [
   ...multiline(value),
 ];
 
-const cell = (value: string, width: number, options: { header?: boolean; align?: (typeof AlignmentType)[keyof typeof AlignmentType]; bold?: boolean; color?: string } = {}) =>
+type CellValue = string | { text: string; bold?: boolean; color?: string; align?: (typeof AlignmentType)[keyof typeof AlignmentType] };
+
+const cell = (value: CellValue, width: number, options: { header?: boolean; align?: (typeof AlignmentType)[keyof typeof AlignmentType]; bold?: boolean; color?: string } = {}) => {
+  const content = typeof value === "string" ? { text: value } : value;
+  const lines = (content.text || "—").split("\n");
+  return (
   new TableCell({
     width: { size: width, type: WidthType.DXA },
     borders: BORDERS,
     margins: { top: 90, bottom: 90, left: 120, right: 120 },
     shading: options.header ? { fill: "E8EEF5", type: ShadingType.CLEAR } : undefined,
-    children: [
+    children: lines.map((line) =>
       new Paragraph({
-        alignment: options.align,
-        children: [text(value, { bold: options.header || options.bold, size: 18, color: options.color || (options.header ? "1E3A5F" : undefined) })],
+        alignment: content.align || options.align,
+        spacing: { after: line === lines[lines.length - 1] ? 0 : 80 },
+        children: [text(line || " ", { bold: options.header || content.bold || options.bold, size: 18, color: content.color || options.color || (options.header ? "1E3A5F" : undefined) })],
       }),
-    ],
-  });
+    ),
+  })
+  );
+};
 
-const table = (headers: string[], rows: string[][], widths: number[]) =>
+const table = (headers: string[], rows: CellValue[][], widths: number[]) =>
   new Table({
     width: { size: TABLE_WIDTH, type: WidthType.DXA },
     columnWidths: widths,
@@ -224,6 +232,25 @@ const plannedLabels: Record<keyof PlannedAmountsData, { label: string; enhet: st
 };
 
 const safeFilename = (value: string) => value.replace(/[\\/:*?"<>|]+/g, "").replace(/\s+/g, "_").slice(0, 80);
+
+const innmeldingStatusCell = (status: "over" | "under" | "ingen"): CellValue => {
+  if (status === "over") return { text: "Innmeldingspliktig", bold: true, color: "B91C1C" };
+  if (status === "under") return { text: "Under grense", bold: true, color: "15803D" };
+  return { text: "Ikke aktuelt", color: "94A3B8" };
+};
+
+const innmeldingVurderingTekst = (vurdering?: InnmeldingVurderingData) => {
+  const registrerte = vurdering?.grupper.filter((g) => g.sum > 0) || [];
+  if (!vurdering || registrerte.length === 0) return "";
+  if (!vurdering.trengerInnmelding) {
+    return "Innmeldingsplikt: Basert på registrerte totalmengder er anlegget ikke innmeldingspliktig etter FBRT § 12.";
+  }
+  const over = registrerte
+    .filter((g) => g.status === "over")
+    .map((g) => `${g.kategori} (${formatNumber(g.sum)} ${g.enhet || "L"}, innmeldingsmengde fra ${g.grenseTekst || `${formatNumber(g.grenseLiter)} L`})`)
+    .join(", ");
+  return `Innmeldingsplikt: Basert på registrerte totalmengder er anlegget innmeldingspliktig etter FBRT § 12. Følgende stoffgrupper overskrider innmeldingsgrensen: ${over}.`;
+};
 
 export async function exportBrensellagringToWord(data: BrensellagringWordData) {
   const children: (Paragraph | Table)[] = [];
@@ -398,18 +425,20 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
   if (data.innmeldingInkludert && innmeldingRegistrerteGrupper.length > 0) {
     children.push(
       section("Innmeldingsplikt til DSB"),
-      paragraph(data.innmeldingVurdering.trengerInnmelding ? "Anlegget er innmeldingspliktig til DSB." : "Anlegget er ikke innmeldingspliktig.", { bold: true }),
+      paragraph(data.innmeldingVurdering.trengerInnmelding ? "Anlegget er innmeldingspliktig til DSB." : "Anlegget er ikke innmeldingspliktig.", { bold: true, color: data.innmeldingVurdering.trengerInnmelding ? "B91C1C" : "15803D" }),
       table(
-        ["Stoffgruppe", "Brannfarlig stoff", "Registrert mengde", "Innmeldingsmengde fra", "Status"],
+        ["Stoffgruppe", "Brannfarlig stoff", "Registrert mengde", "Innmeldingsmengde fra", "Status", "Margin"],
         innmeldingRegistrerteGrupper.map((g) => [
           g.kategori,
           g.stoffer || "—",
           g.sum > 0 ? `${formatNumber(g.sum)} ${g.enhet || "L"}` : "—",
           g.grenseTekst || `${formatNumber(g.grenseLiter)} L`,
-          g.status === "over" ? "Innmeldingspliktig" : g.status === "under" ? "Under grense" : "Ikke aktuelt",
+          innmeldingStatusCell(g.status),
+          g.status === "under" ? { text: `${formatNumber(g.gjenstaende)} ${g.enhet || "L"} til grensen`, color: "64748B" } : "",
         ]),
-        [1700, 2850, 1500, 1900, 1076],
+        [1500, 2500, 1400, 1750, 1200, 676],
       ),
+      paragraph("Kilde: Forskrift om håndtering av brannfarlig, reaksjonsfarlig og trykksatt stoff (FBRT) § 12. Tabellen viser stoffgrupper der det er registrert mengde.", { size: 16, color: "94A3B8" }),
     );
     if (data.innmeldingKommentar?.trim()) children.push(...note("Kommentar", data.innmeldingKommentar));
   }
@@ -459,7 +488,7 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
   if (selDok.length > 0) children.push(section("Dokumentasjonskrav"), table(["Type dokumentasjon", "Referanse"], selDok.map((dok) => [dok.type, dok.referanse]), [7026, 2000]));
 
   if (data.visibleSections.has("mengder") && data.valgtBygg) {
-    children.push(section("Tillatte mengder"), table(["Brenseltype", "Maks mengde", "Status"], data.valgtBygg.grenser.map((g) => [g.brenselNavn, g.maksLiter === null && !g.maksKg ? "—" : g.maksKg ? `${formatNumber(g.maksKg)} kg` : `${formatNumber(g.maksLiter || 0)} liter`, g.maksLiter === null && !g.maksKg ? "Ikke tillatt" : "Tillatt"]), [4700, 2200, 2126]));
+    children.push(section("Tillatte mengder"), table(["Brenseltype", "Maks mengde", "Status"], data.valgtBygg.grenser.map((g) => [g.brenselNavn, g.maksLiter === null && !g.maksKg ? "—" : g.maksKg ? `${formatNumber(g.maksKg)} kg` : `${formatNumber(g.maksLiter || 0)} liter`, g.maksLiter === null && !g.maksKg ? { text: "Ikke tillatt", bold: true, color: "DC2626" } : { text: "Tillatt", bold: true, color: "16A34A" }]), [4700, 2200, 2126]));
   }
   if (data.visibleSections.has("konstruksjon") && data.valgtBygg) {
     children.push(section("Konstruksjonskrav"));
@@ -479,13 +508,15 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
           row.stoffgruppe,
           `${formatNumber(row.anbefaltMengde)} ${row.enhet}`,
           `${formatNumber(row.planlagtMengde)} ${row.enhet}`,
-          `${formatNumber(row.overskridelse)} ${row.enhet} (${row.overskridelseProsent.toFixed(0)} %)`,
-          row.overskridelse > 0 ? "Overskrider" : "Overstiger ikke",
+          { text: `${formatNumber(row.overskridelse)} ${row.enhet} (${row.overskridelseProsent.toFixed(0)} %)`, color: row.overskridelse > 0 ? "DC2626" : "64748B" },
+          row.overskridelse > 0 ? { text: "Overskrider", bold: true, color: "DC2626" } : { text: "Overstiger ikke", bold: true, color: "16A34A" },
           row.vurdertTillattMengde || `${formatNumber(row.planlagtMengde)} ${row.enhet}`,
         ]),
         [2100, 1350, 1350, 1600, 1300, 1326],
       ),
     );
+    const innmeldingTekst = innmeldingVurderingTekst(data.innmeldingVurdering);
+    if (innmeldingTekst) children.push(...note("Innmeldingsplikt", innmeldingTekst));
     if (data.overskridelseTiltak?.trim()) children.push(...note("Prosjektspesifikke tiltak", data.overskridelseTiltak));
     if (data.overskridelseVurderingstekst?.trim()) children.push(...note("Vurdering", data.overskridelseVurderingstekst));
     if (data.overskridelseKonklusjon?.trim()) children.push(...note("Konklusjon og avgrensning", data.overskridelseKonklusjon));
