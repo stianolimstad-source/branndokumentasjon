@@ -69,6 +69,8 @@ export interface BrensellagringWordData {
   generellBrannenergiMJm2?: string;
   byggBrannenergiInkludert?: boolean;
   byggBrannenergiGrenseMJm2?: string;
+  byggBrannenergiGulvarealM2?: string;
+  byggBrannenergiOmhyllingsflateM2?: string;
   byggBrannenergiKommentar?: string;
   etasjer?: { id: string; navn: string; lengde: string; bredde: string; hoyde: string }[];
   innledning?: string;
@@ -315,8 +317,11 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
         .filter((row): row is NonNullable<typeof row> => row !== null)
     : [];
   const byggTilleggsMJ = byggEnergiBidrag.reduce((sum, row) => sum + row.totalMJ, 0);
-  const byggTotalMJ = generellMJ + byggTilleggsMJ;
-  const byggSpesifikkTotal = omhylling > 0 ? byggTotalMJ / omhylling : null;
+  const byggGulvareal = Number(data.byggBrannenergiGulvarealM2) || 0;
+  const byggOmhylling = Number(data.byggBrannenergiOmhyllingsflateM2) || 0;
+  const byggGenerellMJ = generellMJm2 * byggGulvareal;
+  const byggTotalMJ = byggGenerellMJ + byggTilleggsMJ;
+  const byggSpesifikkTotal = byggOmhylling > 0 ? byggTotalMJ / byggOmhylling : null;
   const byggGrense = Number(data.byggBrannenergiGrenseMJm2) || 0;
 
   if (data.byggBrannenergiInkludert && byggEnergiBidrag.length > 0) {
@@ -329,8 +334,8 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
         [3800, 1700, 1700, 1826],
       ),
     );
-    if (omhylling > 0) {
-      children.push(table(["Beregningsdel", "Total brannenergi", "Spesifikk brannenergi"], [["Generell brannenergi i bygget", `${formatNumber(generellMJ)} MJ`, `${formatNumber(generellMJ / omhylling, 1)} MJ/m²`], ["Brannfarlige stoffer i hele bygget", `${formatNumber(byggTilleggsMJ)} MJ`, `${formatNumber(byggTilleggsMJ / omhylling, 1)} MJ/m²`], ["Sum for hele bygget", `${formatNumber(byggTotalMJ)} MJ`, `${formatNumber(byggSpesifikkTotal || 0, 1)} MJ/m²`]], [4200, 2400, 2426]));
+    if (byggOmhylling > 0) {
+      children.push(table(["Beregningsdel", "Total brannenergi", "Spesifikk brannenergi"], [["Generell brannenergi i bygget", `${formatNumber(byggGenerellMJ)} MJ`, `${formatNumber(byggGenerellMJ / byggOmhylling, 1)} MJ/m²`], ["Brannfarlige stoffer i hele bygget", `${formatNumber(byggTilleggsMJ)} MJ`, `${formatNumber(byggTilleggsMJ / byggOmhylling, 1)} MJ/m²`], ["Sum for hele bygget", `${formatNumber(byggTotalMJ)} MJ`, `${formatNumber(byggSpesifikkTotal || 0, 1)} MJ/m²`]], [4200, 2400, 2426]));
       if (byggGrense > 0 && byggSpesifikkTotal !== null) children.push(paragraph(byggSpesifikkTotal <= byggGrense ? `Beregnet brannenergi (${formatNumber(byggSpesifikkTotal, 1)} MJ/m²) ligger innenfor angitt nivå i brannkonseptet (${formatNumber(byggGrense, 1)} MJ/m²).` : `Beregnet brannenergi (${formatNumber(byggSpesifikkTotal, 1)} MJ/m²) overstiger angitt nivå i brannkonseptet (${formatNumber(byggGrense, 1)} MJ/m²) og kan kreve ny vurdering av branncellebegrensende konstruksjoner/brannvegger.`, { bold: true }));
     }
     if (data.byggBrannenergiKommentar?.trim()) children.push(...note("Kommentar til samlet brannenergi / kontroll mot brannkonsept", data.byggBrannenergiKommentar));
