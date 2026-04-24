@@ -1,96 +1,184 @@
 
-## Plan: Endre begrepet «Planlagt lagret mengde i bygget» til mengde utover DSB-veiledningen
+## Plan: Skille total mengde fra mengde som overskrider DSB-veiledningen i salgslokalet
 
-Jeg oppdaterer brensellagring-modulen slik at denne delen ikke lenger fremstår som en generell oversikt over all brannfarlig lagring i bygget. Den skal tydelig beskrive at feltet gjelder mengder som ønskes lagret utover DSB sin veiledning, og som ikke allerede håndteres med brannsikre skap eller egne brannceller for brannfarlig vare.
+Jeg endrer brensellagring-dokumentet slik at det får to separate mengdesett:
 
-## Hva som endres
+1. **Total mengde brannfarlig stoff i virksomheten/anlegget**
+   - brukes til vurdering av innmeldingsplikt til DSB
+   - inkluderer alt: butikk/salgslokale, brannsikre skap og egne brannceller/lagerrom beregnet for brannfarlig vare
 
-### 1. Ny tittel i skjemaet
+2. **Planlagt mengde utover DSB sin veiledning i salgslokalet**
+   - brukes til vurdering av overskridelse av DSB-anbefaling for salgslokale
+   - brukes til brannenergiberegningen for salgslokalet
+   - inkluderer kun det som faktisk står i salgslokalet utenfor brannsikre skap og utenfor egne brannceller
 
-Dagens tittel:
+## Hva som endres i skjemaet
 
-```text
-Planlagt lagret mengde i bygget
-```
+### 1. Ny seksjon: Total mengde brannfarlig stoff
 
-endres til for eksempel:
-
-```text
-Planlagt mengde utover DSB sin veiledning
-```
-
-Dette gjør det tydelig at brukeren bare skal registrere mengdene som inngår i avviksvurderingen mot DSB-tabellen.
-
-### 2. Presisering i hjelpetekst
-
-Hjelpeteksten under tittelen endres fra generell lagring til en faglig presisering:
+Jeg legger inn en ny mengdeseksjon før/ved innmeldingsvurderingen:
 
 ```text
-Fyll inn mengder brannfarlig stoff som ønskes lagret utover DSB sin anbefalte mengde. Mengder som oppbevares i brannsikre skap eller i egne brannceller beregnet for brannfarlig vare skal ikke tas med her.
+Total mengde brannfarlig stoff i virksomheten/anlegget
 ```
 
-### 3. Kommentar-placeholder oppdateres
+Denne får samme stoffkategorier som dagens mengdefelt:
 
-Kommentar-feltet justeres slik at det peker på relevant vurderingsgrunnlag:
+- brannfarlig gass kategori 1
+- brannfarlig gass kategori 2
+- brannfarlig væske kategori 1 og 2
+- brannfarlig væske kategori 3
+- diesel/fyringsolje
+- aerosoler
+
+Hjelpeteksten blir tydelig på at dette er **sum av alt**:
 
 ```text
-F.eks. hvor mengdene plasseres, hvorfor de ikke står i brannskap/egen branncelle, og hvilke forutsetninger som gjelder for lagringen.
+Fyll inn samlet mengde brannfarlig stoff i virksomheten/anlegget. Mengder i salgslokale, brannsikre skap og egne brannceller/lagerrom beregnet for brannfarlig vare skal tas med. Disse mengdene brukes til vurdering av innmeldingsplikt til DSB.
 ```
 
-### 4. Forhåndsvisning oppdateres
+### 2. Eksisterende seksjon avgrenses til salgslokalet
 
-I rapportforhåndsvisningen endres seksjonsnavnet tilsvarende:
+Eksisterende seksjon beholdes, men presiseres slik:
 
 ```text
-Planlagt mengde utover DSB sin veiledning
+Planlagt mengde utover DSB sin veiledning i salgslokalet
 ```
 
-Beskrivelsen under overskriften endres til å forklare at tabellen viser mengder som vurderes utover anbefalt DSB-nivå, ikke byggets totale mengde brannfarlig stoff.
-
-Tabellkolonnen «Planlagt mengde» kan beholdes, siden den beskriver mengden innenfor denne vurderingsdelen.
-
-### 5. Word-eksport oppdateres
-
-Word-dokumentet får samme endring som forhåndsvisningen:
-
-- ny seksjonstittel
-- ny forklarende tekst under tittelen
-- samme tabellinnhold som før
-
-Dette sikrer at skjema, forhåndsvisning og nedlastet Word-dokument bruker samme begrepsbruk.
-
-### 6. Relaterte hjelpetekster justeres
-
-Tekster som peker tilbake på den gamle seksjonen oppdateres, blant annet:
+Hjelpeteksten endres til:
 
 ```text
-Vurderingen er beregnet automatisk fra «Planlagt lagret mengde i bygget».
+Fyll inn mengder brannfarlig stoff som ønskes plassert i selve salgslokalet utover DSB sin anbefalte mengde. Mengder som oppbevares i brannsikre skap eller i egne brannceller/lagerrom beregnet for brannfarlig vare skal ikke tas med her.
 ```
 
-endres til:
+## Logikk som endres
+
+### 1. Innmeldingsplikt skal bruke total mengde
+
+Dagens innmeldingsvurdering bruker `plannedAmounts`. Dette endres til ny state, for eksempel:
+
+```ts
+totalAmounts
+```
+
+Da beregnes innmeldingsplikt ut fra totalmengdene, ikke bare mengdene som overskrider anbefalingen i salgslokalet.
+
+Dette påvirker:
+
+- innmeldingsstatus
+- innmeldingstabell
+- tekst i forhåndsvisning
+- Word-eksport
+
+### 2. Overskridelsesvurdering skal fortsatt bruke salgslokale-mengden
+
+Vurderingen av mengde over anbefalt DSB-mengde skal fortsatt bruke dagens mengdefelt, men feltet får tydeligere navn og tekstlig avgrensning:
 
 ```text
-Vurderingen er beregnet automatisk fra «Planlagt mengde utover DSB sin veiledning».
+Planlagt mengde utover DSB sin veiledning i salgslokalet
 ```
 
-Det samme gjelder meldingen som vises dersom ingen mengder er registrert.
+Dette brukes til:
 
-## Teknisk gjennomføring
+- overskridelsesrader
+- automatisk vurderingstekst
+- konklusjon/avgrensning
+- sammenligning mot DSB sine anbefalte salgslokalegrenser
 
-Jeg oppdaterer hovedsakelig:
+### 3. Brannenergi endres fra «i bygget» til «i salgslokalet»
+
+Siden brannenergiberegningen bruker mengdene som står i salgslokalet utenfor brannskap/egne brannceller, endres tekst og overskrift fra:
+
+```text
+Brannenergi i bygget
+```
+
+til:
+
+```text
+Brannenergi i salgslokalet
+```
+
+Relaterte formuleringer endres tilsvarende:
+
+```text
+Generell brannenergi i salgslokalet
+Tillegg fra brannfarlige varer i salgslokalet
+Sum for salgslokalet
+```
+
+## Lagring
+
+Ingen databaseendring er nødvendig. Nye totalmengder lagres i eksisterende dokumentinnhold (`content` JSON), for eksempel:
+
+```ts
+totalAmounts
+totalKommentar
+totalInkludert
+```
+
+Eksisterende dokumenter håndteres bakoverkompatibelt:
+
+- gamle dokumenter åpnes som før
+- hvis `totalAmounts` mangler, starter totalmengdefeltene tomme
+- eksisterende `plannedAmounts` beholdes som salgslokale-/overskridelsesmengder
+
+## Forhåndsvisning
+
+Jeg oppdaterer `BrensellagringPreview.tsx` slik at rapporten kan vise begge mengdesettene:
+
+1. **Total mengde brannfarlig stoff**
+   - egen tabell hvis valgt inn i dokumentet
+   - tydelig tekst om at dette danner grunnlag for innmeldingsplikt
+
+2. **Planlagt mengde utover DSB sin veiledning i salgslokalet**
+   - eksisterende tabell, men med ny overskrift og avgrensning
+
+3. **Brannenergi i salgslokalet**
+   - ny overskrift og oppdaterte forklaringstekster
+
+4. **Innmeldingsplikt til DSB**
+   - forklaring endres til at vurderingen baseres på total mengde i virksomheten/anlegget
+
+## Word-eksport
+
+Jeg oppdaterer `src/lib/brensellagring-word-export.ts` tilsvarende:
+
+- legger til totalmengde-data i eksportinterface
+- skriver egen tabell for total mengde dersom den er valgt inn
+- lar innmeldingsplikt bruke totalmengdene
+- endrer brannenergi-kapittelet til «Brannenergi i salgslokalet»
+- oppdaterer forklaringstekster slik at Word-dokumentet samsvarer med forhåndsvisningen
+
+## Filer som endres
 
 - `src/pages/Brensellagring.tsx`
-  - tittel, hjelpetekst og kommentar-placeholder i inndatafeltet
-  - interne hjelpetekster for innmeldingsplikt og overskridelsesvurdering
-  - kommentarer i koden der de bruker gammel formulering
+  - ny state for totalmengder
+  - ny inndataseksjon for total mengde
+  - lagring/lasting av totalmengder
+  - innmeldingsberegning fra totalmengder
+  - brannenergi-tekst endres til salgslokale
+  - props til forhåndsvisning og Word-eksport oppdateres
 
 - `src/components/brensellagring/BrensellagringPreview.tsx`
-  - seksjonsnavn i dynamisk kapitteloversikt
-  - overskrift og ingress i rapportforhåndsvisningen
+  - nye props for totalmengder
+  - ny rapportseksjon for total mengde
+  - innmeldingsseksjon oppdateres
+  - brannenergi-kapittel omdøpes til salgslokale
 
 - `src/lib/brensellagring-word-export.ts`
-  - seksjonsoverskrift og ingress i Word-eksporten
+  - nye eksportfelt for totalmengder
+  - ny tabell for total mengde
+  - innmeldingsplikt og brannenergi får korrekt datagrunnlag og tekst
 
-## Ingen databaseendring
+## Resultat
 
-Dette er en tekst- og begrepsendring. Eksisterende lagrede mengder og dokumenter berøres ikke strukturelt.
+Etter endringen blir datagrunnlaget faglig riktig:
+
+```text
+Total mengde
+→ brukes til innmeldingsplikt
+
+Mengde utover DSB-veiledningen i salgslokalet
+→ brukes til overskridelsesvurdering og brannenergi i salgslokalet
+```
