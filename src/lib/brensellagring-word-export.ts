@@ -425,18 +425,20 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
   if (data.innmeldingInkludert && innmeldingRegistrerteGrupper.length > 0) {
     children.push(
       section("Innmeldingsplikt til DSB"),
-      paragraph(data.innmeldingVurdering.trengerInnmelding ? "Anlegget er innmeldingspliktig til DSB." : "Anlegget er ikke innmeldingspliktig.", { bold: true }),
+      paragraph(data.innmeldingVurdering.trengerInnmelding ? "Anlegget er innmeldingspliktig til DSB." : "Anlegget er ikke innmeldingspliktig.", { bold: true, color: data.innmeldingVurdering.trengerInnmelding ? "B91C1C" : "15803D" }),
       table(
-        ["Stoffgruppe", "Brannfarlig stoff", "Registrert mengde", "Innmeldingsmengde fra", "Status"],
+        ["Stoffgruppe", "Brannfarlig stoff", "Registrert mengde", "Innmeldingsmengde fra", "Status", "Margin"],
         innmeldingRegistrerteGrupper.map((g) => [
           g.kategori,
           g.stoffer || "—",
           g.sum > 0 ? `${formatNumber(g.sum)} ${g.enhet || "L"}` : "—",
           g.grenseTekst || `${formatNumber(g.grenseLiter)} L`,
-          g.status === "over" ? "Innmeldingspliktig" : g.status === "under" ? "Under grense" : "Ikke aktuelt",
+          innmeldingStatusCell(g.status),
+          g.status === "under" ? { text: `${formatNumber(g.gjenstaende)} ${g.enhet || "L"} til grensen`, color: "64748B" } : "",
         ]),
-        [1700, 2850, 1500, 1900, 1076],
+        [1500, 2500, 1400, 1750, 1200, 676],
       ),
+      paragraph("Kilde: Forskrift om håndtering av brannfarlig, reaksjonsfarlig og trykksatt stoff (FBRT) § 12. Tabellen viser stoffgrupper der det er registrert mengde.", { size: 16, color: "94A3B8" }),
     );
     if (data.innmeldingKommentar?.trim()) children.push(...note("Kommentar", data.innmeldingKommentar));
   }
