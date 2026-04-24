@@ -488,7 +488,7 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
   if (selDok.length > 0) children.push(section("Dokumentasjonskrav"), table(["Type dokumentasjon", "Referanse"], selDok.map((dok) => [dok.type, dok.referanse]), [7026, 2000]));
 
   if (data.visibleSections.has("mengder") && data.valgtBygg) {
-    children.push(section("Tillatte mengder"), table(["Brenseltype", "Maks mengde", "Status"], data.valgtBygg.grenser.map((g) => [g.brenselNavn, g.maksLiter === null && !g.maksKg ? "—" : g.maksKg ? `${formatNumber(g.maksKg)} kg` : `${formatNumber(g.maksLiter || 0)} liter`, g.maksLiter === null && !g.maksKg ? "Ikke tillatt" : "Tillatt"]), [4700, 2200, 2126]));
+    children.push(section("Tillatte mengder"), table(["Brenseltype", "Maks mengde", "Status"], data.valgtBygg.grenser.map((g) => [g.brenselNavn, g.maksLiter === null && !g.maksKg ? "—" : g.maksKg ? `${formatNumber(g.maksKg)} kg` : `${formatNumber(g.maksLiter || 0)} liter`, g.maksLiter === null && !g.maksKg ? { text: "Ikke tillatt", bold: true, color: "DC2626" } : { text: "Tillatt", bold: true, color: "16A34A" }]), [4700, 2200, 2126]));
   }
   if (data.visibleSections.has("konstruksjon") && data.valgtBygg) {
     children.push(section("Konstruksjonskrav"));
@@ -508,13 +508,15 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
           row.stoffgruppe,
           `${formatNumber(row.anbefaltMengde)} ${row.enhet}`,
           `${formatNumber(row.planlagtMengde)} ${row.enhet}`,
-          `${formatNumber(row.overskridelse)} ${row.enhet} (${row.overskridelseProsent.toFixed(0)} %)`,
-          row.overskridelse > 0 ? "Overskrider" : "Overstiger ikke",
+          { text: `${formatNumber(row.overskridelse)} ${row.enhet} (${row.overskridelseProsent.toFixed(0)} %)`, color: row.overskridelse > 0 ? "DC2626" : "64748B" },
+          row.overskridelse > 0 ? { text: "Overskrider", bold: true, color: "DC2626" } : { text: "Overstiger ikke", bold: true, color: "16A34A" },
           row.vurdertTillattMengde || `${formatNumber(row.planlagtMengde)} ${row.enhet}`,
         ]),
         [2100, 1350, 1350, 1600, 1300, 1326],
       ),
     );
+    const innmeldingTekst = innmeldingVurderingTekst(data.innmeldingVurdering);
+    if (innmeldingTekst) children.push(...note("Innmeldingsplikt", innmeldingTekst));
     if (data.overskridelseTiltak?.trim()) children.push(...note("Prosjektspesifikke tiltak", data.overskridelseTiltak));
     if (data.overskridelseVurderingstekst?.trim()) children.push(...note("Vurdering", data.overskridelseVurderingstekst));
     if (data.overskridelseKonklusjon?.trim()) children.push(...note("Konklusjon og avgrensning", data.overskridelseKonklusjon));
