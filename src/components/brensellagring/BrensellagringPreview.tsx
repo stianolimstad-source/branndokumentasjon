@@ -465,7 +465,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
               <thead>
                 <tr>
                   <th style={thStyle}>Kategori</th>
-                  <th style={{ ...thStyle, width: "30%" }}>Planlagt mengde</th>
+                  <th style={{ ...thStyle, width: "30%" }}>Total mengde</th>
                 </tr>
               </thead>
               <tbody>
@@ -498,7 +498,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
               <thead>
                 <tr>
                   <th style={thStyle}>Kategori</th>
-                  <th style={{ ...thStyle, width: "30%" }}>Total mengde</th>
+                  <th style={{ ...thStyle, width: "30%" }}>Planlagt mengde</th>
                 </tr>
               </thead>
               <tbody>
