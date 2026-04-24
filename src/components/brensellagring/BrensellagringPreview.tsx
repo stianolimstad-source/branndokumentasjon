@@ -58,7 +58,9 @@ export interface OverskridelseRowData {
 export type InnmeldingGruppeData = {
   id: string;
   kategori: string;
+  stoffer?: string;
   sum: number;
+  enhet?: string;
   grenseLiter: number;
   grenseTekst: string;
   status: "over" | "under" | "ingen";
@@ -810,8 +812,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                       .filter((g) => g.status === "over")
                       .map((g) => (
                         <li key={g.id}>
-                          {g.kategori} – total mengde {g.sum.toLocaleString("nb-NO")} L (grense{" "}
-                          {g.grenseLiter.toLocaleString("nb-NO")} L)
+                          {g.kategori} – registrert mengde {g.sum.toLocaleString("nb-NO")} {g.enhet || "L"} (innmeldingsmengde fra {g.grenseTekst || `${g.grenseLiter.toLocaleString("nb-NO")} L`})
                         </li>
                       ))}
                   </ul>
@@ -828,8 +829,9 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
               <thead>
                 <tr>
                   <th style={thStyle}>Stoffgruppe</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Total mengde</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Innmeldingsgrense</th>
+                  <th style={thStyle}>Brannfarlig stoff</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Registrert mengde</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Innmeldingsmengde fra</th>
                   <th style={thStyle}>Status</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Margin</th>
                 </tr>
@@ -838,11 +840,12 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                 {innmeldingVurdering.grupper.map((g) => (
                   <tr key={g.id}>
                     <td style={{ ...tdStyle, fontWeight: 500 }}>{g.kategori}</td>
+                    <td style={tdStyle}>{g.stoffer || "—"}</td>
                     <td style={{ ...tdStyle, textAlign: "right" }}>
-                      {g.sum > 0 ? `${g.sum.toLocaleString("nb-NO")} L` : "—"}
+                      {g.sum > 0 ? `${g.sum.toLocaleString("nb-NO")} ${g.enhet || "L"}` : "—"}
                     </td>
                     <td style={{ ...tdStyle, textAlign: "right", color: "#64748b" }}>
-                      {g.grenseLiter.toLocaleString("nb-NO")} L
+                      {g.grenseTekst || `${g.grenseLiter.toLocaleString("nb-NO")} L`}
                     </td>
                     <td style={tdStyle}>
                       {g.status === "over" && (
@@ -854,7 +857,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                       {g.status === "ingen" && <span style={{ color: "#94a3b8" }}>Ikke aktuelt</span>}
                     </td>
                     <td style={{ ...tdStyle, textAlign: "right", color: "#64748b" }}>
-                      {g.status === "under" ? `${g.gjenstaende.toLocaleString("nb-NO")} L til grensen` : ""}
+                      {g.status === "under" ? `${g.gjenstaende.toLocaleString("nb-NO")} ${g.enhet || "L"} til grensen` : ""}
                     </td>
                   </tr>
                 ))}

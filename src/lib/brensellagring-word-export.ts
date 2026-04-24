@@ -396,15 +396,15 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
       section("Innmeldingsplikt til DSB"),
       paragraph(data.innmeldingVurdering.trengerInnmelding ? "Anlegget er innmeldingspliktig til DSB." : "Anlegget er ikke innmeldingspliktig.", { bold: true }),
       table(
-        ["Stoffgruppe", "Total mengde", "Innmeldingsgrense", "Status", "Margin"],
+        ["Stoffgruppe", "Brannfarlig stoff", "Registrert mengde", "Innmeldingsmengde fra", "Status"],
         data.innmeldingVurdering.grupper.map((g) => [
           g.kategori,
-          g.sum > 0 ? `${formatNumber(g.sum)} L` : "—",
-          `${formatNumber(g.grenseLiter)} L`,
+          g.stoffer || "—",
+          g.sum > 0 ? `${formatNumber(g.sum)} ${g.enhet || "L"}` : "—",
+          g.grenseTekst || `${formatNumber(g.grenseLiter)} L`,
           g.status === "over" ? "Innmeldingspliktig" : g.status === "under" ? "Under grense" : "Ikke aktuelt",
-          g.status === "under" ? `${formatNumber(g.gjenstaende)} L til grensen` : "",
         ]),
-        [2600, 1600, 1700, 1700, 1426],
+        [1700, 2850, 1500, 1900, 1076],
       ),
     );
     if (data.innmeldingKommentar?.trim()) children.push(...note("Kommentar", data.innmeldingKommentar));
