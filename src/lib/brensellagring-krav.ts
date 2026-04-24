@@ -599,6 +599,12 @@ export interface InnmeldingsGrense {
 
 export const INNMELDINGS_GRENSER: InnmeldingsGrense[] = [
   {
+    kategori: "Brannfarlig gass, kategori 1 og 2",
+    stoffer: "LPG (propan, butan), LNG (flytende naturgass), CNG (komprimert naturgass), Naturgass (i rørledning)",
+    grenseLiter: 400,
+    grenseTekst: "400 liter (0,4 m³ beholdervolum)",
+  },
+  {
     kategori: "Brannfarlig væske, kategori 1 og 2",
     stoffer: "Metanol, Etanol, Propanol, Bensin, E85",
     grenseLiter: 6000,

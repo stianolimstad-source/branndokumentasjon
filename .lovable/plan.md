@@ -1,127 +1,65 @@
-## Plan: Flere etasjer for brannenergi i hele bygget
+## Plan: Innmeldingsmengder for gass i rapporten
 
-Jeg oppdaterer dokumentet «Lagring av brannfarlig stoff» slik at brannenergien for hele bygget kan beregnes med flere etasjer, på samme måte som salgslokalet. Samtidig må den eksisterende build-feilen i `Brensellagring.tsx` ryddes.
+Jeg oppdaterer «Lagring av brannfarlig stoff» slik at innmeldingsvurderingen også viser brannfarlig gass med riktig innmeldingsmengde, slik som i eksempelet du la ved.
 
 ## Hva som endres
 
-### 1. Fikse gjeldende build-feil
+### 1. Legge til gass i innmeldingsgrunnlaget
 
-Det ligger fortsatt en JSX-strukturfeil rundt brannenergi-/kontrollseksjonene i `src/pages/Brensellagring.tsx`. Før funksjonsendringen fullføres rydder jeg opp i denne blokken slik at siden bygger igjen.
-
-### 2. Erstatte enkeltfeltene for hele bygget med etasjer
-
-Dagens felt:
+Dagens innmeldingsvurdering bruker bare væsker/diesel. Jeg legger til en egen stoffgruppe for gass:
 
 ```text
-Byggets gulvareal (m²)
-Byggets omhyllingsflate (m²)
+Stoffgruppe: Brannfarlig gass, kategori 1 og 2
+Brannfarlig stoff: LPG (propan, butan), LNG (flytende naturgass), CNG (komprimert naturgass), Naturgass (i rørledning)
+Innmeldingsmengde fra: 400 liter (0,4 m³ beholdervolum)
 ```
 
-endres til en etasjeliste for hele bygget:
+### 2. Oppdatere beregningen
+
+Innmeldingsvurderingen utvides slik at total mengde gass fra «Total mengde brannfarlig stoff» inngår i vurderingen:
 
 ```text
-Etasje / bygningsdel
-Lengde
-Bredde
-Høyde
+gass_kat1 + gass_kat2
 ```
 
-Brukeren kan legge til og fjerne flere etasjer, for eksempel:
+Denne sammenlignes mot 400 liter / 0,4 m³ beholdervolum.
 
-```text
-1. etasje: 40 m x 25 m x 4 m
-2. etasje: 35 m x 20 m x 3 m
-Kjeller: 30 m x 18 m x 3 m
-```
+Merk: dagens gassfelt er oppgitt i kg i brukergrensesnittet. Jeg vil derfor vise vurderingen tydelig som «registrert mengde» mot «innmeldingsmengde fra 400 liter beholdervolum», slik at rapporten ikke later som kg og liter er samme måleenhet.
 
-### 3. Beregne samlet areal og omhyllingsflate for hele bygget
+### 3. Oppdatere innmeldingstabellen i forhåndsvisningen
 
-For hver gyldige etasje beregnes:
+Rapportseksjonen «Innmeldingsplikt til DSB» får en tabell som inkluderer gassraden. Tabellen utvides til å kunne vise:
 
-```text
-Gulvareal = lengde × bredde
-Omhyllingsflate = 2 × (lengde × bredde) + 2 × (lengde × høyde) + 2 × (bredde × høyde)
-```
+- Stoffgruppe
+- Brannfarlig stoff
+- Total/registrert mengde
+- Innmeldingsmengde fra
+- Status
+- Margin der dette er entydig
 
-Deretter summeres dette for hele bygget:
+### 4. Oppdatere Word-eksporten
 
-```text
-Hele byggets gulvareal = sum gulvareal for alle etasjer
-Hele byggets omhyllingsflate = sum omhyllingsflate for alle etasjer
-```
+Word-rapporten får samme gassrad og samme vurderingslogikk som forhåndsvisningen, slik at eksport og forhåndsvisning stemmer overens.
 
-Dette brukes bare for «Brannenergi i hele bygget».
+### 5. Oppdatere input-siden
 
-### 4. Beholde salgslokalets egne etasjer uendret
-
-Eksisterende etasjeliste for salgslokalet beholdes separat og brukes fortsatt kun til:
-
-- brannenergi i salgslokalet
-- vurdering av salgslokalets egne mål/areal
-
-Det blir altså to uavhengige dimensjonsgrunnlag:
-
-```text
-Hele bygget
-→ egne etasjer / mål
-→ total mengde brannfarlig stoff
-
-Salgslokalet
-→ egne etasjer / mål
-→ mengde utover DSB-veiledningen i salgslokalet
-```
-
-### 5. Bakoverkompatibel lagring
-
-Eksisterende dokumenter med de gamle feltene håndteres slik:
-
-- hvis nye bygningsetasjer finnes, brukes de
-- hvis bare gamle enkeltfelt finnes, vises de som én konvertert etasje/arealgrunnlag der det lar seg gjøre
-- gamle salgslokale-etasjer påvirkes ikke
-
-Ingen databaseendring er nødvendig. Nye data lagres i eksisterende dokumentinnhold, for eksempel:
-
-```ts
-byggBrannenergiEtasjer: [
-  { id, navn, lengde, bredde, hoyde }
-]
-```
-
-### 6. Oppdatere rapport og Word-eksport
-
-Rapportforhåndsvisningen og Word-eksporten oppdateres slik at «Brannenergi i hele bygget» viser:
-
-- tabell med etasjer/bygningsdeler
-- sum gulvareal
-- sum omhyllingsflate
-- total brannenergi for hele bygget
-- spesifikk brannenergi mot grense fra brannkonsept
+I fanen «Innmelding» oppdateres vurderingstabellen slik at brannfarlig gass vises sammen med væsker/diesel, og slik at innmeldingsgrensen for gass fremgår tydelig.
 
 ## Filer som endres
 
+- `src/lib/brensellagring-krav.ts`
+  - legge til innmeldingsgrense for brannfarlig gass
+
 - `src/pages/Brensellagring.tsx`
-  - fikse JSX/build-feilen
-  - legge til egne etasjer for hele bygget
-  - oppdatere lagring/lasting
-  - oppdatere beregning og input-UI
-  - sende nye data til preview og Word-eksport
+  - utvide innmeldingsberegningen med gass
+  - vise gass i innmeldingstabellen på input-siden
 
 - `src/components/brensellagring/BrensellagringPreview.tsx`
-  - støtte flere etasjer for hele bygget
-  - vise tabell og summer i rapporten
+  - støtte og vise gassraden i rapportforhåndsvisningen
 
 - `src/lib/brensellagring-word-export.ts`
-  - støtte flere etasjer for hele bygget i Word-rapporten
-  - bruke samme beregningsgrunnlag som forhåndsvisningen
+  - støtte og vise gassraden i Word-rapporten
 
 ## Resultat
 
-Etter endringen kan hele bygget modelleres med flere ulike etasjer, samtidig som salgslokalet fortsatt har sitt eget separate arealgrunnlag:
-
-```text
-Brannenergi i hele bygget:
-Total mengde + hele byggets etasjer/omhyllingsflate
-
-Brannenergi i salgslokalet:
-Mengde utover DSB + salgslokalets etasjer/omhyllingsflate
-```
+Innmeldingsseksjonen vil vise gass som egen stoffgruppe med innmeldingsmengde fra 400 liter / 0,4 m³ beholdervolum, og rapporten blir mer komplett for virksomheter som lagrer LPG, LNG, CNG eller naturgass.
