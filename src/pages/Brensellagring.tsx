@@ -822,19 +822,20 @@ const Brensellagring = () => {
     ...row,
     overskridelse: Math.max(0, row.planlagtMengde - row.anbefaltMengde),
     overskridelseProsent: row.anbefaltMengde > 0 ? (Math.max(0, row.planlagtMengde - row.anbefaltMengde) / row.anbefaltMengde) * 100 : 0,
-  })).filter((row) => row.planlagtMengde > 0 && row.anbefaltMengde > 0 && row.overskridelse > 0);
+  })).filter((row) => row.planlagtMengde > 0 && row.anbefaltMengde > 0);
+  const overskridelseRowsMedOverskridelse = overskridelseRows.filter((row) => row.overskridelse > 0);
   const aktiveTiltak = [
     branntekniskeTiltak.brannalarm.status && branntekniskeTiltak.brannalarm.status !== "Ikke installert" && branntekniskeTiltak.brannalarm.status !== "Ikke aktuelt" ? "brannalarmanlegg/tidlig deteksjon" : "",
     branntekniskeTiltak.roykventilasjon.status && branntekniskeTiltak.roykventilasjon.status !== "Ikke installert" && branntekniskeTiltak.roykventilasjon.status !== "Ikke aktuelt" ? "røykventilasjon" : "",
     overskridelseTiltak.trim(),
   ].filter(Boolean);
   const harAutomatiskSlokkeanlegg = branntekniskeTiltak.slokkeanlegg.status && branntekniskeTiltak.slokkeanlegg.status !== "Ikke installert" && branntekniskeTiltak.slokkeanlegg.status !== "Ikke aktuelt";
-  const harVaeskeOverskridelse = overskridelseRows.some((row) => row.id !== "gass");
-  const harGassOverskridelse = overskridelseRows.some((row) => row.id === "gass");
-  const foreslattOverskridelseTekst = overskridelseRows.length > 0
-    ? `Planlagt lagring overstiger anbefalt mengde i DSB sin temaveiledning for ${overskridelseRows.map((r) => `${r.stoffgruppe.toLowerCase()} med ${r.overskridelse.toLocaleString("nb-NO")} ${r.enhet} (${r.overskridelseProsent.toFixed(0)} %)`).join(", ")}. Overskridelsen vurderes som begrenset.${harAutomatiskSlokkeanlegg ? " Bygget er sprinklet/har automatisk slokkeanlegg, noe som reduserer sannsynligheten for videre brannutvikling og begrenser konsekvensene av et branntilløp." : " Lagringen forutsettes gjennomført kontrollert, oversiktlig og i samsvar med beskrevne organisatoriske og branntekniske forutsetninger."}${aktiveTiltak.length > 0 ? ` Det er i tillegg lagt til grunn ${aktiveTiltak.join(", ")}.` : ""}${harVaeskeOverskridelse ? " På denne bakgrunn vurderes den angitte økte mengden brannfarlige væsker som akseptabel for dette bygget, forutsatt at lagringen skjer som beskrevet og at forutsetningene opprettholdes i driftsfasen." : ""}${harGassOverskridelse ? " Økning av brannfarlig gass omfattes ikke av denne generelle vurderingen. DSB sin anbefalte gassmengde øker ikke tilsvarende med bygningens størrelse/areal, noe som tilsier en strengere vurdering for gass. Gassmengder bør derfor ikke økes utover anbefalt mengde uten særskilt vurdering." : ""}`
+  const harVaeskeOverskridelse = overskridelseRowsMedOverskridelse.some((row) => row.id !== "gass");
+  const harGassOverskridelse = overskridelseRowsMedOverskridelse.some((row) => row.id === "gass");
+  const foreslattOverskridelseTekst = overskridelseRowsMedOverskridelse.length > 0
+    ? `Planlagt lagring overstiger anbefalt mengde i DSB sin temaveiledning for ${overskridelseRowsMedOverskridelse.map((r) => `${r.stoffgruppe.toLowerCase()} med ${r.overskridelse.toLocaleString("nb-NO")} ${r.enhet} (${r.overskridelseProsent.toFixed(0)} %)`).join(", ")}. Overskridelsen vurderes som begrenset.${harAutomatiskSlokkeanlegg ? " Bygget er sprinklet/har automatisk slokkeanlegg, noe som reduserer sannsynligheten for videre brannutvikling og begrenser konsekvensene av et branntilløp." : " Lagringen forutsettes gjennomført kontrollert, oversiktlig og i samsvar med beskrevne organisatoriske og branntekniske forutsetninger."}${aktiveTiltak.length > 0 ? ` Det er i tillegg lagt til grunn ${aktiveTiltak.join(", ")}.` : ""}${harVaeskeOverskridelse ? " På denne bakgrunn vurderes den angitte økte mengden brannfarlige væsker som akseptabel for dette bygget, forutsatt at lagringen skjer som beskrevet og at forutsetningene opprettholdes i driftsfasen." : ""}${harGassOverskridelse ? " Økning av brannfarlig gass omfattes ikke av denne generelle vurderingen. DSB sin anbefalte gassmengde øker ikke tilsvarende med bygningens størrelse/areal, noe som tilsier en strengere vurdering for gass. Gassmengder bør derfor ikke økes utover anbefalt mengde uten særskilt vurdering." : ""}`
     : "";
-  const foreslattOverskridelseKonklusjon = overskridelseRows.length > 0
+  const foreslattOverskridelseKonklusjon = overskridelseRowsMedOverskridelse.length > 0
     ? "Vurderingen gjelder kun for dette bygget, de beskrevne mengdene og de angitte forutsetningene. Den innebærer ikke en generell heving av anbefalte DSB-mengder. Dersom det ønskes lagret mengder utover det som er vurdert her, må dette enten plasseres i brannsikre skap/avlukke eller underlegges en ny særskilt risikovurdering."
     : "";
 
@@ -2217,6 +2218,7 @@ const Brensellagring = () => {
                         <th className="text-right px-3 py-2 font-medium">Anbefalt</th>
                         <th className="text-right px-3 py-2 font-medium">Planlagt</th>
                         <th className="text-right px-3 py-2 font-medium">Overskridelse</th>
+                        <th className="text-left px-3 py-2 font-medium">Status</th>
                         <th className="text-left px-3 py-2 font-medium">Vurdert tillatt</th>
                       </tr>
                     </thead>
@@ -2226,7 +2228,16 @@ const Brensellagring = () => {
                           <td className="px-3 py-2 font-medium">{row.stoffgruppe}</td>
                           <td className="px-3 py-2 text-right tabular-nums">{row.anbefaltMengde.toLocaleString("nb-NO")} {row.enhet}</td>
                           <td className="px-3 py-2 text-right tabular-nums">{row.planlagtMengde.toLocaleString("nb-NO")} {row.enhet}</td>
-                          <td className="px-3 py-2 text-right tabular-nums text-destructive">{row.overskridelse.toLocaleString("nb-NO")} {row.enhet} ({row.overskridelseProsent.toFixed(0)} %)</td>
+                          <td className={`px-3 py-2 text-right tabular-nums ${row.overskridelse > 0 ? "text-destructive" : "text-muted-foreground"}`}>
+                            {row.overskridelse.toLocaleString("nb-NO")} {row.enhet} ({row.overskridelseProsent.toFixed(0)} %)
+                          </td>
+                          <td className="px-3 py-2">
+                            {row.overskridelse > 0 ? (
+                              <Badge variant="destructive" className="text-xs">Overskrider</Badge>
+                            ) : (
+                              <Badge className="text-xs bg-emerald-600 hover:bg-emerald-600/90 text-white">Overstiger ikke</Badge>
+                            )}
+                          </td>
                           <td className="px-3 py-2">
                             <Input
                               value={overskridelseVurdertTillattMengde[row.id] || ""}
@@ -2244,7 +2255,7 @@ const Brensellagring = () => {
                 <div className="flex items-start gap-2 p-3 rounded-md bg-accent/30 border border-accent text-xs">
                   <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                   <p className="text-muted-foreground leading-relaxed">
-                    Ingen registrerte planlagte mengder overstiger anbefalt mengde for valgt bygningstype/arealgrunnlag.
+                    Ingen planlagte mengder er registrert for stoffgrupper med anbefalt DSB-mengde for valgt bygningstype/arealgrunnlag.
                   </p>
                 </div>
               )}

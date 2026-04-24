@@ -458,15 +458,16 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
       section("Vurdering av mengde over anbefalt DSB-mengde"),
       paragraph(`Vurderingen sammenligner planlagte mengder med anbefalte mengder i DSB sin temaveiledning.${data.overskridelseArealgrunnlag ? ` Arealgrunnlag for salgslokale: ${data.overskridelseArealgrunnlag} m².` : ""}`, { color: "64748B" }),
       table(
-        ["Stoffgruppe", "Anbefalt", "Planlagt", "Overskridelse", "Vurdert tillatt"],
+        ["Stoffgruppe", "Anbefalt", "Planlagt", "Overskridelse", "Status", "Vurdert tillatt"],
         data.overskridelseRows.map((row) => [
           row.stoffgruppe,
           `${formatNumber(row.anbefaltMengde)} ${row.enhet}`,
           `${formatNumber(row.planlagtMengde)} ${row.enhet}`,
           `${formatNumber(row.overskridelse)} ${row.enhet} (${row.overskridelseProsent.toFixed(0)} %)`,
+          row.overskridelse > 0 ? "Overskrider" : "Overstiger ikke",
           row.vurdertTillattMengde || `${formatNumber(row.planlagtMengde)} ${row.enhet}`,
         ]),
-        [2400, 1550, 1550, 1900, 1626],
+        [2100, 1350, 1350, 1600, 1300, 1326],
       ),
     );
     if (data.overskridelseTiltak?.trim()) children.push(...note("Prosjektspesifikke tiltak", data.overskridelseTiltak));
