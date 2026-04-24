@@ -1518,7 +1518,7 @@ const Brensellagring = () => {
               </div>
             )}
             <TabsList className={`grid w-full h-auto gap-1 ${
-              [isTabRelevant("beliggenhet"), isTabRelevant("tanker"), isTabRelevant("oppsamling"), isTabRelevant("roer"), isTabRelevant("innmelding"), isTabRelevant("dokumentasjon")].filter(Boolean).length >= 6
+              [isTabRelevant("beliggenhet"), isTabRelevant("tanker"), isTabRelevant("oppsamling"), isTabRelevant("roer"), isTabRelevant("dokumentasjon")].filter(Boolean).length >= 6
                 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6"
                 : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
             }`}>
@@ -1544,12 +1544,6 @@ const Brensellagring = () => {
                 <TabsTrigger value="roer" className="text-xs py-2">
                   <PipetteIcon className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
                   Rør & ventiler
-                </TabsTrigger>
-              )}
-              {isTabRelevant("innmelding") && (
-                <TabsTrigger value="innmelding" className="text-xs py-2">
-                  <FileText className="h-3.5 w-3.5 mr-1 hidden sm:inline" />
-                  Innmelding
                 </TabsTrigger>
               )}
               {isTabRelevant("dokumentasjon") && (
