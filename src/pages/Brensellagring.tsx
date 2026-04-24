@@ -1041,6 +1041,47 @@ const Brensellagring = () => {
             </CardContent>
           </Card>
 
+          {/* Brannenergi i hele bygget – beregning */}
+          {(() => {
+            const harMengder = (Object.keys(totalAmounts) as (keyof PlannedAmounts)[]).some(
+              (k) => parseFloat(totalAmounts[k]) > 0
+            );
+            if (!harMengder) return null;
+
+            const bidrag = (Object.keys(totalAmounts) as (keyof PlannedAmounts)[])
+              .map((k) => {
+                const mengde = parseFloat(totalAmounts[k]) || 0;
+                if (mengde <= 0) return null;
+                const e = ENERGITETTHET[k];
+                const felt = PLANNED_FELT.find((f) => f.key === k);
+                return { key: k, label: felt?.label || k, enhetInn: felt?.enhet || "", mengde, energi: e.verdi, enhetEnergi: e.enhet, totalMJ: mengde * e.verdi };
+              })
+              .filter((x): x is NonNullable<typeof x> => x !== null);
+
+            const tilleggsMJ = bidrag.reduce((sum, b) => sum + b.totalMJ, 0);
+            const generellMJm2 = parseFloat(generellBrannenergiMJm2) || 0;
+            const etasjerBeregnet = etasjer.map((et) => {
+              const L = parseFloat(et.lengde);
+              const B = parseFloat(et.bredde);
+              const H = parseFloat(et.hoyde);
+              const gyldig = L > 0 && B > 0 && H > 0;
+              const gulvareal = gyldig ? L * B : 0;
+              const omh = gyldig ? 2 * (L * B) + 2 * (L * H) + 2 * (B * H) : 0;
+              return { ...et, L, B, H, gyldig, gulvareal, omh };
+            });
+            const gulvareal = etasjerBeregnet.reduce((s, e) => s + e.gulvareal, 0);
+            const omhylling = etasjerBeregnet.reduce((s, e) => s + e.omh, 0);
+            const dimGyldig = etasjerBeregnet.some((e) => e.gyldig);
+            const generellMJ = generellMJm2 * gulvareal;
+            const totalMedTilleggMJ = generellMJ + tilleggsMJ;
+            const spesifikkGenerell = dimGyldig && omhylling > 0 ? generellMJ / omhylling : null;
+            const spesifikkTillegg = dimGyldig && omhylling > 0 ? tilleggsMJ / omhylling : null;
+            const spesifikkTotal = dimGyldig && omhylling > 0 ? totalMedTilleggMJ / omhylling : null;
+            const grense = parseFloat(byggBrannenergiGrenseMJm2) || 0;
+            const formatMJ = (v: number) => (v >= 10000 ? Math.round(v / 100) * 100 : Math.round(v)).toLocaleString("nb-NO");
+
+            return (
+    
           {/* Brannenergi i salgslokalet – beregning */}
           {(() => {
             const harMengder = (Object.keys(plannedAmounts) as (keyof PlannedAmounts)[]).some(
@@ -1309,47 +1350,7 @@ const Brensellagring = () => {
             );
           })()}
 
-          {/* Brannenergi i hele bygget – beregning */}
-          {(() => {
-            const harMengder = (Object.keys(totalAmounts) as (keyof PlannedAmounts)[]).some(
-              (k) => parseFloat(totalAmounts[k]) > 0
-            );
-            if (!harMengder) return null;
-
-            const bidrag = (Object.keys(totalAmounts) as (keyof PlannedAmounts)[])
-              .map((k) => {
-                const mengde = parseFloat(totalAmounts[k]) || 0;
-                if (mengde <= 0) return null;
-                const e = ENERGITETTHET[k];
-                const felt = PLANNED_FELT.find((f) => f.key === k);
-                return { key: k, label: felt?.label || k, enhetInn: felt?.enhet || "", mengde, energi: e.verdi, enhetEnergi: e.enhet, totalMJ: mengde * e.verdi };
-              })
-              .filter((x): x is NonNullable<typeof x> => x !== null);
-
-            const tilleggsMJ = bidrag.reduce((sum, b) => sum + b.totalMJ, 0);
-            const generellMJm2 = parseFloat(generellBrannenergiMJm2) || 0;
-            const etasjerBeregnet = etasjer.map((et) => {
-              const L = parseFloat(et.lengde);
-              const B = parseFloat(et.bredde);
-              const H = parseFloat(et.hoyde);
-              const gyldig = L > 0 && B > 0 && H > 0;
-              const gulvareal = gyldig ? L * B : 0;
-              const omh = gyldig ? 2 * (L * B) + 2 * (L * H) + 2 * (B * H) : 0;
-              return { ...et, L, B, H, gyldig, gulvareal, omh };
-            });
-            const gulvareal = etasjerBeregnet.reduce((s, e) => s + e.gulvareal, 0);
-            const omhylling = etasjerBeregnet.reduce((s, e) => s + e.omh, 0);
-            const dimGyldig = etasjerBeregnet.some((e) => e.gyldig);
-            const generellMJ = generellMJm2 * gulvareal;
-            const totalMedTilleggMJ = generellMJ + tilleggsMJ;
-            const spesifikkGenerell = dimGyldig && omhylling > 0 ? generellMJ / omhylling : null;
-            const spesifikkTillegg = dimGyldig && omhylling > 0 ? tilleggsMJ / omhylling : null;
-            const spesifikkTotal = dimGyldig && omhylling > 0 ? totalMedTilleggMJ / omhylling : null;
-            const grense = parseFloat(byggBrannenergiGrenseMJm2) || 0;
-            const formatMJ = (v: number) => (v >= 10000 ? Math.round(v / 100) * 100 : Math.round(v)).toLocaleString("nb-NO");
-
-            return (
-              <Card className="shadow-soft mb-6">
+          <Card className="shadow-soft mb-6">
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-3">
                     <div>
