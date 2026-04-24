@@ -92,6 +92,9 @@ interface BrensellagringPreviewProps {
   salgslokaleInkludert?: boolean;
   salgslokaleKommentar?: string;
   salgslokaleTiltakTekst?: string;
+  totalInkludert?: boolean;
+  totalAmounts?: PlannedAmountsData;
+  totalKommentar?: string;
   plannedInkludert?: boolean;
   plannedAmounts?: PlannedAmountsData;
   plannedKommentar?: string;
@@ -164,6 +167,9 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   salgslokaleInkludert = false,
   salgslokaleKommentar = "",
   salgslokaleTiltakTekst = "",
+  totalInkludert = false,
+  totalAmounts,
+  totalKommentar = "",
   plannedInkludert = false,
   plannedAmounts,
   plannedKommentar = "",
@@ -239,6 +245,17 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
     diesel_fyringsolje: { label: "Diesel / fyringsolje", enhet: "liter" },
     aerosoler: { label: "Aerosoler", enhet: "liter" },
   };
+  const totalRows = totalAmounts
+    ? (Object.keys(PLANNED_LABELS) as (keyof PlannedAmountsData)[])
+        .map((k) => ({
+          key: k,
+          label: PLANNED_LABELS[k].label,
+          enhet: PLANNED_LABELS[k].enhet,
+          verdi: k === "vaeske_kat2" ? "" : (totalAmounts[k] || "").trim(),
+        }))
+        .filter((r) => r.verdi !== "" && parseFloat(r.verdi) > 0)
+    : [];
+  const visTotal = totalInkludert && totalRows.length > 0;
   const plannedRows = plannedAmounts
     ? (Object.keys(PLANNED_LABELS) as (keyof PlannedAmountsData)[])
         .map((k) => ({
@@ -324,8 +341,9 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
 
   // Build visible sections dynamically based on selected items
   const sections: { key: string; label: string }[] = [];
-  if (visPlanlagt) sections.push({ key: "planlagt", label: "Planlagt mengde utover DSB sin veiledning" });
-  if (visBrannenergi) sections.push({ key: "brannenergi", label: "Brannenergi i bygget" });
+  if (visTotal) sections.push({ key: "total", label: "Total mengde brannfarlig stoff" });
+  if (visPlanlagt) sections.push({ key: "planlagt", label: "Planlagt mengde utover DSB sin veiledning i salgslokalet" });
+  if (visBrannenergi) sections.push({ key: "brannenergi", label: "Brannenergi i salgslokalet" });
   if (visBranntekniskeTiltak) sections.push({ key: "branntekniskeTiltak", label: "Branntekniske tiltak i bygget" });
   if (visInnmelding) sections.push({ key: "innmelding", label: "Innmeldingsplikt til DSB" });
   if (salgslokaleInkludert) sections.push({ key: "salgslokale", label: "Største tillatte mengder i salgslokaler" });
@@ -437,11 +455,44 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           </p>
         )}
 
+        {visTotal && (
+          <>
+            <h2 style={h2}>{secNum("total")}. Total mengde brannfarlig stoff</h2>
+            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
+              Oversikt over samlet mengde brannfarlig stoff i virksomheten/anlegget. Mengder i salgslokale, brannsikre skap og egne brannceller/lagerrom beregnet for brannfarlig vare inngår, og danner grunnlag for vurdering av innmeldingsplikt til DSB.
+            </p>
+            <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
+              <thead>
+                <tr>
+                  <th style={thStyle}>Kategori</th>
+                  <th style={{ ...thStyle, width: "30%" }}>Total mengde</th>
+                </tr>
+              </thead>
+              <tbody>
+                {totalRows.map((r) => (
+                  <tr key={r.key}>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>{r.label}</td>
+                    <td style={tdStyle}>
+                      {Number(r.verdi).toLocaleString("nb-NO")} {r.enhet}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {totalKommentar.trim() && (
+              <div style={{ marginBottom: 16, padding: "10px 12px", background: "#f8fafc", borderLeft: "3px solid #1e3a5f", borderRadius: 4 }}>
+                <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 4, color: "#1e3a5f" }}>Kommentar</p>
+                <p style={{ fontSize: 10, color: "#334155", whiteSpace: "pre-wrap" }}>{totalKommentar}</p>
+              </div>
+            )}
+          </>
+        )}
+
         {visPlanlagt && (
           <>
-            <h2 style={h2}>{secNum("planlagt")}. Planlagt mengde utover DSB sin veiledning</h2>
+            <h2 style={h2}>{secNum("planlagt")}. Planlagt mengde utover DSB sin veiledning i salgslokalet</h2>
             <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
-              Oversikt over mengder brannfarlig stoff som vurderes utover DSB sin anbefalte mengde. Mengder i brannsikre skap eller egne brannceller beregnet for brannfarlig vare inngår ikke her.
+              Oversikt over mengder brannfarlig stoff som ønskes plassert i selve salgslokalet utover DSB sin anbefalte mengde. Mengder i brannsikre skap eller egne brannceller/lagerrom beregnet for brannfarlig vare inngår ikke her.
             </p>
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
               <thead>
@@ -472,9 +523,9 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
 
         {visBrannenergi && (
           <>
-            <h2 style={h2}>{secNum("brannenergi")}. Brannenergi i bygget</h2>
+            <h2 style={h2}>{secNum("brannenergi")}. Brannenergi i salgslokalet</h2>
             <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
-              For salgslokale/kjøpesenter er generell brannenergi satt til {generellMJm2.toLocaleString("nb-NO")} MJ/m² gulvareal iht. Byggforsk 321.051 Brannenergi i bygninger. Beregninger og statistiske verdier. Planlagt lagring av brannfarlig vare er vurdert som et tillegg til den statistiske brannenergien i bygget. Begge verdier er omregnet til spesifikk brannenergi per m² omhyllingsflate.
+              For salgslokale/kjøpesenter er generell brannenergi satt til {generellMJm2.toLocaleString("nb-NO")} MJ/m² gulvareal iht. Byggforsk 321.051 Brannenergi i bygninger. Beregninger og statistiske verdier. Brannfarlige varer i salgslokalet utenfor brannskap/egne brannceller er vurdert som et tillegg til den statistiske brannenergien i salgslokalet. Begge verdier er omregnet til spesifikk brannenergi per m² omhyllingsflate.
             </p>
 
             {dimGyldig && (
@@ -514,7 +565,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
               <thead>
                 <tr>
-                  <th style={thStyle}>Tillegg fra brannfarlige varer</th>
+                  <th style={thStyle}>Tillegg fra brannfarlige varer i salgslokalet</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Mengde</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Energi</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Bidrag</th>
@@ -549,17 +600,17 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                 </thead>
                 <tbody>
                   <tr>
-                    <td style={{ ...tdStyle, fontWeight: 500 }}>Generell brannenergi uten brannfarlig lagring</td>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>Generell brannenergi i salgslokalet</td>
                     <td style={{ ...tdStyle, textAlign: "right", fontWeight: 600 }}>{formatMJ(generellMJ)} MJ</td>
                     <td style={{ ...tdStyle, textAlign: "right" }}>{spesifikkGenerell?.toFixed(1)} MJ/m²</td>
                   </tr>
                   <tr>
-                    <td style={{ ...tdStyle, fontWeight: 500 }}>Tillegg fra brannfarlige varer</td>
+                    <td style={{ ...tdStyle, fontWeight: 500 }}>Tillegg fra brannfarlige varer i salgslokalet</td>
                     <td style={{ ...tdStyle, textAlign: "right", fontWeight: 600 }}>{formatMJ(tilleggsMJ)} MJ</td>
                     <td style={{ ...tdStyle, textAlign: "right" }}>{spesifikkTillegg?.toFixed(1)} MJ/m²</td>
                   </tr>
                   <tr>
-                    <td style={{ ...tdStyle, fontWeight: 700, background: "#e8eef5", color: "#1e3a5f" }}>Sum med brannfarlige varer</td>
+                    <td style={{ ...tdStyle, fontWeight: 700, background: "#e8eef5", color: "#1e3a5f" }}>Sum for salgslokalet</td>
                     <td style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#e8eef5", color: "#1e3a5f" }}>{formatMJ(totalMedTilleggMJ)} MJ</td>
                     <td style={{ ...tdStyle, textAlign: "right", fontWeight: 700, background: "#e8eef5", color: "#1e3a5f" }}>{spesifikkTotal?.toFixed(1)} MJ/m²</td>
                   </tr>
@@ -587,7 +638,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
             )}
 
             <p style={{ fontSize: 9, color: "#94a3b8", fontStyle: "italic", marginBottom: 16 }}>
-              Energitettheter for brannfarlige varer er sjablongverdier hentet fra SFPE Handbook of Fire Protection Engineering og NS-EN 1991-1-2. Beregningen brukes kun til indikativ vurdering av brannenergi i bygget.
+              Energitettheter for brannfarlige varer er sjablongverdier hentet fra SFPE Handbook of Fire Protection Engineering og NS-EN 1991-1-2. Beregningen brukes kun til indikativ vurdering av brannenergi i salgslokalet.
             </p>
           </>
         )}
@@ -633,7 +684,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
           <>
             <h2 style={h2}>{secNum("innmelding")}. Innmeldingsplikt til DSB</h2>
             <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
-              Vurdering av innmeldingsplikt etter Forskrift om håndtering av brannfarlig, reaksjonsfarlig og trykksatt stoff (FBRT) § 12, basert på planlagte mengder i bygget.
+              Vurdering av innmeldingsplikt etter Forskrift om håndtering av brannfarlig, reaksjonsfarlig og trykksatt stoff (FBRT) § 12, basert på total mengde brannfarlig stoff i virksomheten/anlegget.
             </p>
 
             {/* Konklusjon */}
@@ -668,7 +719,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                       .filter((g) => g.status === "over")
                       .map((g) => (
                         <li key={g.id}>
-                          {g.kategori} – planlagt {g.sum.toLocaleString("nb-NO")} L (grense{" "}
+                          {g.kategori} – total mengde {g.sum.toLocaleString("nb-NO")} L (grense{" "}
                           {g.grenseLiter.toLocaleString("nb-NO")} L)
                         </li>
                       ))}
@@ -676,7 +727,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                 </>
               ) : (
                 <p style={{ fontSize: 10, color: "#334155" }}>
-                  Planlagte mengder ligger under grensene i § 12.
+                  Totalmengdene ligger under grensene i § 12.
                 </p>
               )}
             </div>
@@ -686,7 +737,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
               <thead>
                 <tr>
                   <th style={thStyle}>Stoffgruppe</th>
-                  <th style={{ ...thStyle, textAlign: "right" }}>Planlagt mengde</th>
+                  <th style={{ ...thStyle, textAlign: "right" }}>Total mengde</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Innmeldingsgrense</th>
                   <th style={thStyle}>Status</th>
                   <th style={{ ...thStyle, textAlign: "right" }}>Margin</th>

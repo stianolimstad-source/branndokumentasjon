@@ -52,6 +52,9 @@ export interface BrensellagringWordData {
   salgslokaleInkludert?: boolean;
   salgslokaleKommentar?: string;
   salgslokaleTiltakTekst?: string;
+  totalInkludert?: boolean;
+  totalAmounts?: PlannedAmountsData;
+  totalKommentar?: string;
   plannedInkludert?: boolean;
   plannedAmounts?: PlannedAmountsData;
   plannedKommentar?: string;
@@ -245,6 +248,21 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
   let sectionNumber = 1;
   const section = (title: string) => heading(`${sectionNumber++}. ${title}`);
 
+  const totalRows = data.totalAmounts
+    ? (Object.keys(plannedLabels) as (keyof PlannedAmountsData)[])
+        .map((key) => ({ key, ...plannedLabels[key], value: key === "vaeske_kat2" ? "" : (data.totalAmounts?.[key] || "").trim() }))
+        .filter((row) => row.value && Number(row.value) > 0)
+    : [];
+
+  if (data.totalInkludert && totalRows.length > 0) {
+    children.push(
+      section("Total mengde brannfarlig stoff"),
+      paragraph("Oversikt over samlet mengde brannfarlig stoff i virksomheten/anlegget. Mengder i salgslokale, brannsikre skap og egne brannceller/lagerrom beregnet for brannfarlig vare inngår, og danner grunnlag for vurdering av innmeldingsplikt til DSB.", { color: "64748B" }),
+      table(["Kategori", "Total mengde"], totalRows.map((row) => [row.label, `${formatNumber(Number(row.value))} ${row.enhet}`]), [6100, 2926]),
+    );
+    if (data.totalKommentar?.trim()) children.push(...note("Kommentar", data.totalKommentar));
+  }
+
   const plannedRows = data.plannedAmounts
     ? (Object.keys(plannedLabels) as (keyof PlannedAmountsData)[])
         .map((key) => ({ key, ...plannedLabels[key], value: key === "vaeske_kat2" ? "" : (data.plannedAmounts?.[key] || "").trim() }))
@@ -253,8 +271,8 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
 
   if (data.plannedInkludert && plannedRows.length > 0) {
     children.push(
-      section("Planlagt mengde utover DSB sin veiledning"),
-      paragraph("Oversikt over mengder brannfarlig stoff som vurderes utover DSB sin anbefalte mengde. Mengder i brannsikre skap eller egne brannceller beregnet for brannfarlig vare inngår ikke her.", { color: "64748B" }),
+      section("Planlagt mengde utover DSB sin veiledning i salgslokalet"),
+      paragraph("Oversikt over mengder brannfarlig stoff som ønskes plassert i selve salgslokalet utover DSB sin anbefalte mengde. Mengder i brannsikre skap eller egne brannceller/lagerrom beregnet for brannfarlig vare inngår ikke her.", { color: "64748B" }),
       table(["Kategori", "Planlagt mengde"], plannedRows.map((row) => [row.label, `${formatNumber(Number(row.value))} ${row.enhet}`]), [6100, 2926]),
     );
     if (data.plannedKommentar?.trim()) children.push(...note("Kommentar", data.plannedKommentar));
@@ -286,9 +304,9 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
 
   if (data.brannenergiInkludert && energiBidrag.length > 0) {
     children.push(
-      section("Brannenergi i bygget"),
+      section("Brannenergi i salgslokalet"),
       table(
-        ["Tillegg fra brannfarlige varer", "Mengde", "Energi", "Bidrag"],
+        ["Tillegg fra brannfarlige varer i salgslokalet", "Mengde", "Energi", "Bidrag"],
         energiBidrag.map((row) => [row.label, `${formatNumber(row.mengde)} ${row.enhetInn}`, `${row.energi} ${row.enhetEnergi}`, `${formatNumber(row.totalMJ)} MJ`]),
         [3800, 1700, 1700, 1826],
       ),
@@ -298,9 +316,9 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
         table(
           ["Beregningsdel", "Total brannenergi", "Spesifikk brannenergi"],
           [
-            ["Generell brannenergi uten brannfarlig lagring", `${formatNumber(generellMJ)} MJ`, `${formatNumber(generellMJ / omhylling, 1)} MJ/m²`],
-            ["Tillegg fra brannfarlige varer", `${formatNumber(tilleggsMJ)} MJ`, `${formatNumber(tilleggsMJ / omhylling, 1)} MJ/m²`],
-            ["Sum med brannfarlige varer", `${formatNumber(totalMJ)} MJ`, `${formatNumber(totalMJ / omhylling, 1)} MJ/m²`],
+            ["Generell brannenergi i salgslokalet", `${formatNumber(generellMJ)} MJ`, `${formatNumber(generellMJ / omhylling, 1)} MJ/m²`],
+            ["Tillegg fra brannfarlige varer i salgslokalet", `${formatNumber(tilleggsMJ)} MJ`, `${formatNumber(tilleggsMJ / omhylling, 1)} MJ/m²`],
+            ["Sum for salgslokalet", `${formatNumber(totalMJ)} MJ`, `${formatNumber(totalMJ / omhylling, 1)} MJ/m²`],
           ],
           [4200, 2400, 2426],
         ),
@@ -327,7 +345,7 @@ export async function exportBrensellagringToWord(data: BrensellagringWordData) {
       section("Innmeldingsplikt til DSB"),
       paragraph(data.innmeldingVurdering.trengerInnmelding ? "Anlegget er innmeldingspliktig til DSB." : "Anlegget er ikke innmeldingspliktig.", { bold: true }),
       table(
-        ["Stoffgruppe", "Planlagt mengde", "Innmeldingsgrense", "Status", "Margin"],
+        ["Stoffgruppe", "Total mengde", "Innmeldingsgrense", "Status", "Margin"],
         data.innmeldingVurdering.grupper.map((g) => [
           g.kategori,
           g.sum > 0 ? `${formatNumber(g.sum)} L` : "—",

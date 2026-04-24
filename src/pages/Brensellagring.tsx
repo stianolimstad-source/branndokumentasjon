@@ -188,6 +188,9 @@ const Brensellagring = () => {
     diesel_fyringsolje: "",
     aerosoler: "",
   };
+  const [totalAmounts, setTotalAmounts] = useState<PlannedAmounts>(TOMME_MENGDER);
+  const [totalKommentar, setTotalKommentar] = useState("");
+  const [totalInkludert, setTotalInkludert] = useState(false);
   const [plannedAmounts, setPlannedAmounts] = useState<PlannedAmounts>(TOMME_MENGDER);
   const [plannedKommentar, setPlannedKommentar] = useState("");
   const [plannedInkludert, setPlannedInkludert] = useState(false);
@@ -405,6 +408,9 @@ const Brensellagring = () => {
           salgslokaleInkludert?: boolean;
           salgslokaleKommentar?: string;
           salgslokaleTiltakTekst?: string;
+          totalAmounts?: Partial<PlannedAmounts>;
+          totalKommentar?: string;
+          totalInkludert?: boolean;
           plannedAmounts?: Partial<PlannedAmounts>;
           plannedKommentar?: string;
           plannedInkludert?: boolean;
@@ -444,6 +450,15 @@ const Brensellagring = () => {
         setSalgslokaleInkludert(content.salgslokaleInkludert ?? false);
         setSalgslokaleKommentar(content.salgslokaleKommentar ?? "");
         setSalgslokaleTiltakTekst(content.salgslokaleTiltakTekst ?? getOriginalSalgslokaleTiltakTekst());
+        const lagredeTotalMengder = { ...TOMME_MENGDER, ...(content.totalAmounts || {}) };
+        const samletTotalKat12 = (parseFloat(lagredeTotalMengder.vaeske_kat1) || 0) + (parseFloat(lagredeTotalMengder.vaeske_kat2) || 0);
+        setTotalAmounts({
+          ...lagredeTotalMengder,
+          vaeske_kat1: samletTotalKat12 > 0 ? String(samletTotalKat12) : "",
+          vaeske_kat2: "",
+        });
+        setTotalKommentar(content.totalKommentar ?? "");
+        setTotalInkludert(content.totalInkludert ?? false);
         const lagredeMengder = { ...TOMME_MENGDER, ...(content.plannedAmounts || {}) };
         const samletKat12 = (parseFloat(lagredeMengder.vaeske_kat1) || 0) + (parseFloat(lagredeMengder.vaeske_kat2) || 0);
         setPlannedAmounts({
@@ -523,6 +538,9 @@ const Brensellagring = () => {
       salgslokaleInkludert,
       salgslokaleKommentar,
       salgslokaleTiltakTekst,
+      totalAmounts: { ...totalAmounts, vaeske_kat2: "" },
+      totalKommentar,
+      totalInkludert,
       plannedAmounts: { ...plannedAmounts, vaeske_kat2: "" },
       plannedKommentar,
       plannedInkludert,
@@ -595,6 +613,9 @@ const Brensellagring = () => {
       salgslokaleInkludert: salgslokaleInkludert && valgtBygningstype === "salgslokale",
       salgslokaleKommentar,
       salgslokaleTiltakTekst,
+      totalInkludert,
+      totalAmounts,
+      totalKommentar,
       plannedInkludert,
       plannedAmounts,
       plannedKommentar,
@@ -622,7 +643,7 @@ const Brensellagring = () => {
   const mengdeNum = parseFloat(mengde) || 0;
   const result = brenselType ? getBrensellagringKrav(brenselType as BrenselType, mengdeNum) : null;
 
-  // ===== Innmeldingsvurdering basert på planlagte mengder =====
+  // ===== Innmeldingsvurdering basert på total mengde i virksomheten/anlegget =====
   type InnmeldingGruppeStatus = "over" | "under" | "ingen";
   type InnmeldingGruppe = {
     id: "vaeske_kat12" | "vaeske_kat3" | "diesel";
@@ -634,9 +655,9 @@ const Brensellagring = () => {
     gjenstaende: number;
   };
   const evaluerInnmelding = (): { grupper: InnmeldingGruppe[]; trengerInnmelding: boolean; harMengder: boolean } => {
-    const sumKat12 = parseFloat(plannedAmounts.vaeske_kat1) || 0;
-    const sumKat3 = parseFloat(plannedAmounts.vaeske_kat3) || 0;
-    const sumDiesel = parseFloat(plannedAmounts.diesel_fyringsolje) || 0;
+    const sumKat12 = parseFloat(totalAmounts.vaeske_kat1) || 0;
+    const sumKat3 = parseFloat(totalAmounts.vaeske_kat3) || 0;
+    const sumDiesel = parseFloat(totalAmounts.diesel_fyringsolje) || 0;
 
     const lagStatus = (sum: number, grense: number): InnmeldingGruppeStatus => {
       if (sum <= 0) return "ingen";
@@ -855,6 +876,76 @@ const Brensellagring = () => {
             </CardContent>
           </Card>
 
+          {/* Total mengde brannfarlig stoff */}
+          <Card className="shadow-soft mb-6">
+            <CardHeader className="pb-3">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Warehouse className="h-4 w-4 text-primary" />
+                    Total mengde brannfarlig stoff i virksomheten/anlegget
+                  </CardTitle>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Fyll inn samlet mengde brannfarlig stoff i virksomheten/anlegget. Mengder i salgslokale, brannsikre skap og egne brannceller/lagerrom beregnet for brannfarlig vare skal tas med. Disse mengdene brukes til vurdering av innmeldingsplikt til DSB.
+                  </p>
+                </div>
+                <Button
+                  variant={totalInkludert ? "default" : "outline"}
+                  size="sm"
+                  className="h-7 text-xs gap-1.5 shrink-0"
+                  onClick={() => setTotalInkludert((v) => !v)}
+                >
+                  {totalInkludert ? <Check className="h-3.5 w-3.5" /> : <FilePlus2 className="h-3.5 w-3.5" />}
+                  {totalInkludert ? "I dokumentet" : "Legg til i dokument"}
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {PLANNED_FELT.map((felt) => (
+                  <div key={felt.key} className="space-y-1">
+                    <Label htmlFor={`total-${felt.key}`} className="text-xs">
+                      {felt.label}
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id={`total-${felt.key}`}
+                        type="number"
+                        min="0"
+                        step="any"
+                        inputMode="decimal"
+                        placeholder="0"
+                        value={totalAmounts[felt.key]}
+                        onChange={(e) =>
+                          setTotalAmounts((prev) => ({ ...prev, [felt.key]: e.target.value }))
+                        }
+                        className="h-9 pr-12 text-sm"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
+                        {felt.enhet}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground leading-snug">
+                      F.eks. {felt.eksempler}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="total-kommentar" className="text-xs">
+                  Kommentar (valgfritt)
+                </Label>
+                <Textarea
+                  id="total-kommentar"
+                  placeholder="F.eks. fordeling mellom salgslokale, brannsikre skap, egne brannceller/lagerrom og øvrige lagringssteder."
+                  value={totalKommentar}
+                  onChange={(e) => setTotalKommentar(e.target.value)}
+                  className="min-h-[70px] text-sm"
+                />
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Planlagt mengde utover DSB sin veiledning */}
           <Card className="shadow-soft mb-6">
             <CardHeader className="pb-3">
@@ -862,10 +953,10 @@ const Brensellagring = () => {
                 <div>
                   <CardTitle className="text-base flex items-center gap-2">
                     <Warehouse className="h-4 w-4 text-primary" />
-                    Planlagt mengde utover DSB sin veiledning
+                    Planlagt mengde utover DSB sin veiledning i salgslokalet
                   </CardTitle>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Fyll inn mengder brannfarlig stoff som ønskes lagret utover DSB sin anbefalte mengde. Mengder som oppbevares i brannsikre skap eller i egne brannceller beregnet for brannfarlig vare skal ikke tas med her.
+                    Fyll inn mengder brannfarlig stoff som ønskes plassert i selve salgslokalet utover DSB sin anbefalte mengde. Mengder som oppbevares i brannsikre skap eller i egne brannceller/lagerrom beregnet for brannfarlig vare skal ikke tas med her.
                   </p>
                 </div>
                 <Button
@@ -925,7 +1016,7 @@ const Brensellagring = () => {
             </CardContent>
           </Card>
 
-          {/* Brannenergi i bygget – beregning */}
+          {/* Brannenergi i salgslokalet – beregning */}
           {(() => {
             const harMengder = (Object.keys(plannedAmounts) as (keyof PlannedAmounts)[]).some(
               (k) => parseFloat(plannedAmounts[k]) > 0
@@ -983,10 +1074,10 @@ const Brensellagring = () => {
                     <div>
                       <CardTitle className="text-base flex items-center gap-2">
                         <Flame className="h-4 w-4 text-primary" />
-                        Brannenergi i bygget
+                        Brannenergi i salgslokalet
                       </CardTitle>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Viser generell brannenergi i salgslokalet og tillegg fra planlagt lagring av brannfarlige varer, omregnet til MJ/m² omhyllingsflate.
+                        Viser generell brannenergi i salgslokalet og tillegg fra brannfarlige varer som plasseres i salgslokalet utenfor brannskap/egne brannceller, omregnet til MJ/m² omhyllingsflate.
                       </p>
                     </div>
                     <Button
@@ -1004,12 +1095,12 @@ const Brensellagring = () => {
                   <div className="flex items-start gap-2 p-3 rounded-md bg-accent/30 border border-accent text-xs">
                     <Info className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                     <p className="text-muted-foreground leading-relaxed">
-                      For salgslokale/kjøpesenter benyttes <span className="font-medium text-foreground">730 MJ/m² gulvareal</span> som statistisk brannenergi iht. <span className="font-medium text-foreground">Byggforsk 321.051 Brannenergi i bygninger. Beregninger og statistiske verdier</span>. Planlagt lagring av brannfarlig vare beregnes som et tillegg til denne brannenergien.
+                      For salgslokale/kjøpesenter benyttes <span className="font-medium text-foreground">730 MJ/m² gulvareal</span> som statistisk brannenergi iht. <span className="font-medium text-foreground">Byggforsk 321.051 Brannenergi i bygninger. Beregninger og statistiske verdier</span>. Brannfarlige varer i salgslokalet utenfor brannskap/egne brannceller beregnes som et tillegg til denne brannenergien.
                     </p>
                   </div>
 
                   <div className="space-y-1.5">
-                    <Label htmlFor="generell-brannenergi" className="text-xs">Generell brannenergi uten brannfarlig lagring (MJ/m² gulvareal)</Label>
+                    <Label htmlFor="generell-brannenergi" className="text-xs">Generell brannenergi i salgslokalet (MJ/m² gulvareal)</Label>
                     <Input
                       id="generell-brannenergi"
                       type="number"
@@ -1122,17 +1213,17 @@ const Brensellagring = () => {
                         </thead>
                         <tbody>
                           <tr className="border-t">
-                            <td className="px-3 py-2">Generell brannenergi uten brannfarlig lagring</td>
+                            <td className="px-3 py-2">Generell brannenergi i salgslokalet</td>
                             <td className="px-3 py-2 text-right tabular-nums font-medium">{formatMJ(generellMJ)} MJ</td>
                             <td className="px-3 py-2 text-right tabular-nums">{spesifikkGenerell?.toFixed(1)} MJ/m²</td>
                           </tr>
                           <tr className="border-t">
-                            <td className="px-3 py-2">Tillegg fra brannfarlige varer</td>
+                            <td className="px-3 py-2">Tillegg fra brannfarlige varer i salgslokalet</td>
                             <td className="px-3 py-2 text-right tabular-nums font-medium">{formatMJ(tilleggsMJ)} MJ</td>
                             <td className="px-3 py-2 text-right tabular-nums">{spesifikkTillegg?.toFixed(1)} MJ/m²</td>
                           </tr>
                           <tr className="border-t bg-primary/5">
-                            <td className="px-3 py-2 font-semibold">Sum med brannfarlige varer</td>
+                            <td className="px-3 py-2 font-semibold">Sum for salgslokalet</td>
                             <td className="px-3 py-2 text-right tabular-nums font-semibold">{formatMJ(totalMedTilleggMJ)} MJ</td>
                             <td className="px-3 py-2 text-right tabular-nums font-semibold text-primary">{spesifikkTotal?.toFixed(1)} MJ/m²</td>
                           </tr>
@@ -1148,7 +1239,7 @@ const Brensellagring = () => {
                   )}
 
                   <div className="rounded-md border overflow-hidden">
-                    <div className="bg-muted/50 px-3 py-2 text-xs font-semibold">Tillegg fra brannfarlige varer</div>
+                    <div className="bg-muted/50 px-3 py-2 text-xs font-semibold">Tillegg fra brannfarlige varer i salgslokalet</div>
                     <table className="w-full text-xs">
                       <thead className="bg-muted/30">
                         <tr>
@@ -1693,7 +1784,7 @@ const Brensellagring = () => {
                         Innmeldingsplikt til DSB (§ 12)
                       </CardTitle>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Vurderingen er beregnet automatisk fra «Planlagt mengde utover DSB sin veiledning».
+                        Vurderingen er beregnet automatisk fra «Total mengde brannfarlig stoff i virksomheten/anlegget».
                       </p>
                     </div>
                     <Button
@@ -1713,9 +1804,9 @@ const Brensellagring = () => {
                     <div className="p-4 rounded-lg bg-accent/30 border border-border flex items-start gap-3">
                       <Info className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                       <div className="space-y-1 text-sm">
-                        <p className="font-medium text-foreground">Ingen planlagte mengder registrert</p>
+                        <p className="font-medium text-foreground">Ingen totalmengder registrert</p>
                         <p className="text-muted-foreground">
-                          Fyll inn planlagte mengder under «Planlagt mengde utover DSB sin veiledning» for å vurdere innmeldingsplikt til DSB.
+                          Fyll inn total mengde brannfarlig stoff i virksomheten/anlegget for å vurdere innmeldingsplikt til DSB.
                         </p>
                       </div>
                     </div>
@@ -1730,7 +1821,7 @@ const Brensellagring = () => {
                         <ul className="list-disc pl-5 text-foreground/80">
                           {innmeldingVurdering.grupper.filter((g) => g.status === "over").map((g) => (
                             <li key={g.id}>
-                              {g.kategori} – planlagt {g.sum.toLocaleString("nb-NO")} L (grense {g.grenseLiter.toLocaleString("nb-NO")} L)
+                              {g.kategori} – total mengde {g.sum.toLocaleString("nb-NO")} L (grense {g.grenseLiter.toLocaleString("nb-NO")} L)
                             </li>
                           ))}
                         </ul>
@@ -1742,7 +1833,7 @@ const Brensellagring = () => {
                       <div className="space-y-1 text-sm">
                         <p className="font-medium text-foreground">Ingen innmeldingsplikt utløst</p>
                         <p className="text-muted-foreground">
-                          De planlagte mengdene ligger under grensene i § 12. Anlegget trenger ikke meldes inn til DSB.
+                          Totalmengdene ligger under grensene i § 12. Anlegget trenger ikke meldes inn til DSB.
                         </p>
                       </div>
                     </div>
@@ -1754,7 +1845,7 @@ const Brensellagring = () => {
                       <thead>
                         <tr className="bg-muted/50">
                           <th className="text-left py-2.5 px-3 font-medium">Stoffgruppe</th>
-                          <th className="text-right py-2.5 px-3 font-medium">Planlagt mengde</th>
+                          <th className="text-right py-2.5 px-3 font-medium">Total mengde</th>
                           <th className="text-right py-2.5 px-3 font-medium">Innmeldingsgrense</th>
                           <th className="text-left py-2.5 px-3 font-medium">Status</th>
                           <th className="text-right py-2.5 px-3 font-medium">Margin</th>
@@ -2315,7 +2406,7 @@ const Brensellagring = () => {
             <Button
               size="default"
               onClick={handleSaveDocument}
-              disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !plannedInkludert && !branntekniskeTiltakInkludert)}
+              disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !totalInkludert && !plannedInkludert && !branntekniskeTiltakInkludert)}
               className="h-11 px-6 shadow-xl"
             >
               <Save className="h-4 w-4 mr-2" />
@@ -2327,7 +2418,7 @@ const Brensellagring = () => {
             <Button
               size="default"
               onClick={handleSaveDocument}
-              disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !plannedInkludert && !branntekniskeTiltakInkludert)}
+              disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !totalInkludert && !plannedInkludert && !branntekniskeTiltakInkludert)}
               className="h-11 px-6 shadow-xl"
             >
               <Save className="h-4 w-4 mr-2" />
@@ -2379,6 +2470,9 @@ const Brensellagring = () => {
                   salgslokaleInkludert={salgslokaleInkludert && valgtBygningstype === "salgslokale"}
                   salgslokaleKommentar={salgslokaleKommentar}
                   salgslokaleTiltakTekst={salgslokaleTiltakTekst}
+                  totalInkludert={totalInkludert}
+                  totalAmounts={totalAmounts}
+                  totalKommentar={totalKommentar}
                   plannedInkludert={plannedInkludert}
                   plannedAmounts={plannedAmounts}
                   plannedKommentar={plannedKommentar}
