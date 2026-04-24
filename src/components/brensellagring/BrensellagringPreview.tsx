@@ -109,6 +109,7 @@ interface BrensellagringPreviewProps {
   generellBrannenergiMJm2?: string;
   byggBrannenergiInkludert?: boolean;
   byggBrannenergiGrenseMJm2?: string;
+  byggBrannenergiEtasjer?: { id: string; navn: string; lengde: string; bredde: string; hoyde: string }[];
   byggBrannenergiGulvarealM2?: string;
   byggBrannenergiOmhyllingsflateM2?: string;
   byggBrannenergiKommentar?: string;
@@ -189,6 +190,7 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   generellBrannenergiMJm2 = "730",
   byggBrannenergiInkludert = false,
   byggBrannenergiGrenseMJm2 = "",
+  byggBrannenergiEtasjer = [],
   byggBrannenergiGulvarealM2 = "",
   byggBrannenergiOmhyllingsflateM2 = "",
   byggBrannenergiKommentar = "",
