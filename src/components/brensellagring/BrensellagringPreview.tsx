@@ -58,7 +58,9 @@ export interface OverskridelseRowData {
 export type InnmeldingGruppeData = {
   id: string;
   kategori: string;
+  stoffer?: string;
   sum: number;
+  enhet?: string;
   grenseLiter: number;
   grenseTekst: string;
   status: "over" | "under" | "ingen";
