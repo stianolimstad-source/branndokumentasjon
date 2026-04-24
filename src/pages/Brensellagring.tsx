@@ -822,19 +822,20 @@ const Brensellagring = () => {
     ...row,
     overskridelse: Math.max(0, row.planlagtMengde - row.anbefaltMengde),
     overskridelseProsent: row.anbefaltMengde > 0 ? (Math.max(0, row.planlagtMengde - row.anbefaltMengde) / row.anbefaltMengde) * 100 : 0,
-  })).filter((row) => row.planlagtMengde > 0 && row.anbefaltMengde > 0 && row.overskridelse > 0);
+  })).filter((row) => row.planlagtMengde > 0 && row.anbefaltMengde > 0);
+  const overskridelseRowsMedOverskridelse = overskridelseRows.filter((row) => row.overskridelse > 0);
   const aktiveTiltak = [
     branntekniskeTiltak.brannalarm.status && branntekniskeTiltak.brannalarm.status !== "Ikke installert" && branntekniskeTiltak.brannalarm.status !== "Ikke aktuelt" ? "brannalarmanlegg/tidlig deteksjon" : "",
     branntekniskeTiltak.roykventilasjon.status && branntekniskeTiltak.roykventilasjon.status !== "Ikke installert" && branntekniskeTiltak.roykventilasjon.status !== "Ikke aktuelt" ? "røykventilasjon" : "",
     overskridelseTiltak.trim(),
   ].filter(Boolean);
   const harAutomatiskSlokkeanlegg = branntekniskeTiltak.slokkeanlegg.status && branntekniskeTiltak.slokkeanlegg.status !== "Ikke installert" && branntekniskeTiltak.slokkeanlegg.status !== "Ikke aktuelt";
-  const harVaeskeOverskridelse = overskridelseRows.some((row) => row.id !== "gass");
-  const harGassOverskridelse = overskridelseRows.some((row) => row.id === "gass");
-  const foreslattOverskridelseTekst = overskridelseRows.length > 0
-    ? `Planlagt lagring overstiger anbefalt mengde i DSB sin temaveiledning for ${overskridelseRows.map((r) => `${r.stoffgruppe.toLowerCase()} med ${r.overskridelse.toLocaleString("nb-NO")} ${r.enhet} (${r.overskridelseProsent.toFixed(0)} %)`).join(", ")}. Overskridelsen vurderes som begrenset.${harAutomatiskSlokkeanlegg ? " Bygget er sprinklet/har automatisk slokkeanlegg, noe som reduserer sannsynligheten for videre brannutvikling og begrenser konsekvensene av et branntilløp." : " Lagringen forutsettes gjennomført kontrollert, oversiktlig og i samsvar med beskrevne organisatoriske og branntekniske forutsetninger."}${aktiveTiltak.length > 0 ? ` Det er i tillegg lagt til grunn ${aktiveTiltak.join(", ")}.` : ""}${harVaeskeOverskridelse ? " På denne bakgrunn vurderes den angitte økte mengden brannfarlige væsker som akseptabel for dette bygget, forutsatt at lagringen skjer som beskrevet og at forutsetningene opprettholdes i driftsfasen." : ""}${harGassOverskridelse ? " Økning av brannfarlig gass omfattes ikke av denne generelle vurderingen. DSB sin anbefalte gassmengde øker ikke tilsvarende med bygningens størrelse/areal, noe som tilsier en strengere vurdering for gass. Gassmengder bør derfor ikke økes utover anbefalt mengde uten særskilt vurdering." : ""}`
+  const harVaeskeOverskridelse = overskridelseRowsMedOverskridelse.some((row) => row.id !== "gass");
+  const harGassOverskridelse = overskridelseRowsMedOverskridelse.some((row) => row.id === "gass");
+  const foreslattOverskridelseTekst = overskridelseRowsMedOverskridelse.length > 0
+    ? `Planlagt lagring overstiger anbefalt mengde i DSB sin temaveiledning for ${overskridelseRowsMedOverskridelse.map((r) => `${r.stoffgruppe.toLowerCase()} med ${r.overskridelse.toLocaleString("nb-NO")} ${r.enhet} (${r.overskridelseProsent.toFixed(0)} %)`).join(", ")}. Overskridelsen vurderes som begrenset.${harAutomatiskSlokkeanlegg ? " Bygget er sprinklet/har automatisk slokkeanlegg, noe som reduserer sannsynligheten for videre brannutvikling og begrenser konsekvensene av et branntilløp." : " Lagringen forutsettes gjennomført kontrollert, oversiktlig og i samsvar med beskrevne organisatoriske og branntekniske forutsetninger."}${aktiveTiltak.length > 0 ? ` Det er i tillegg lagt til grunn ${aktiveTiltak.join(", ")}.` : ""}${harVaeskeOverskridelse ? " På denne bakgrunn vurderes den angitte økte mengden brannfarlige væsker som akseptabel for dette bygget, forutsatt at lagringen skjer som beskrevet og at forutsetningene opprettholdes i driftsfasen." : ""}${harGassOverskridelse ? " Økning av brannfarlig gass omfattes ikke av denne generelle vurderingen. DSB sin anbefalte gassmengde øker ikke tilsvarende med bygningens størrelse/areal, noe som tilsier en strengere vurdering for gass. Gassmengder bør derfor ikke økes utover anbefalt mengde uten særskilt vurdering." : ""}`
     : "";
-  const foreslattOverskridelseKonklusjon = overskridelseRows.length > 0
+  const foreslattOverskridelseKonklusjon = overskridelseRowsMedOverskridelse.length > 0
     ? "Vurderingen gjelder kun for dette bygget, de beskrevne mengdene og de angitte forutsetningene. Den innebærer ikke en generell heving av anbefalte DSB-mengder. Dersom det ønskes lagret mengder utover det som er vurdert her, må dette enten plasseres i brannsikre skap/avlukke eller underlegges en ny særskilt risikovurdering."
     : "";
 
