@@ -94,6 +94,9 @@ interface BrensellagringPreviewProps {
   salgslokaleInkludert?: boolean;
   salgslokaleKommentar?: string;
   salgslokaleTiltakTekst?: string;
+  plasseringIntroTekst?: string;
+  plasseringRomningsveiTekst?: string;
+  plasseringGassVaeskeTekst?: string;
   totalInkludert?: boolean;
   totalAmounts?: PlannedAmountsData;
   totalKommentar?: string;
@@ -175,6 +178,9 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
   salgslokaleInkludert = false,
   salgslokaleKommentar = "",
   salgslokaleTiltakTekst = "",
+  plasseringIntroTekst = "Plassering av brannfarlig vare må vurderes slik at varene ikke påvirker rømningssikkerheten eller øker risikoen for brannspredning mellom ulike stoffgrupper.",
+  plasseringRomningsveiTekst = "Brannfarlig vare skal ikke plasseres nærmere rømningsvei enn 8 meter.",
+  plasseringGassVaeskeTekst = "Det er ikke anbefalt at gasser og brannfarlig væske plasseres nærmere hverandre enn 3 meter.",
   totalInkludert = false,
   totalAmounts,
   totalKommentar = "",
@@ -941,9 +947,11 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
         {salgslokaleInkludert && (
           <>
             <h2 style={h2}>{secNum("plassering")}. Plassering av brannfarlig vare</h2>
-            <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8 }}>
-              Plassering av brannfarlig vare må vurderes slik at varene ikke påvirker rømningssikkerheten eller øker risikoen for brannspredning mellom ulike stoffgrupper.
-            </p>
+            {plasseringIntroTekst.trim() && (
+              <p style={{ fontSize: 10, color: "#64748b", marginBottom: 8, whiteSpace: "pre-wrap" }}>
+                {plasseringIntroTekst}
+              </p>
+            )}
             <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 12 }}>
               <thead>
                 <tr>
@@ -956,12 +964,12 @@ const BrensellagringPreview: React.FC<BrensellagringPreviewProps> = ({
                 <tr>
                   <td style={{ ...tdStyle, fontWeight: 500 }}>Avstand til rømningsvei</td>
                   <td style={tdStyle}>Minst 8 meter</td>
-                  <td style={tdStyle}>Brannfarlig vare skal ikke plasseres nærmere rømningsvei enn 8 meter.</td>
+                  <td style={{ ...tdStyle, whiteSpace: "pre-wrap" }}>{plasseringRomningsveiTekst}</td>
                 </tr>
                 <tr>
                   <td style={{ ...tdStyle, fontWeight: 500 }}>Avstand mellom gass og brannfarlig væske</td>
                   <td style={tdStyle}>Minst 3 meter</td>
-                  <td style={tdStyle}>Det er ikke anbefalt at gasser og brannfarlig væske plasseres nærmere hverandre enn 3 meter.</td>
+                  <td style={{ ...tdStyle, whiteSpace: "pre-wrap" }}>{plasseringGassVaeskeTekst}</td>
                 </tr>
               </tbody>
             </table>
