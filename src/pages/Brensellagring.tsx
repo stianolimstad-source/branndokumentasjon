@@ -1821,7 +1821,7 @@ const Brensellagring = () => {
                         <ul className="list-disc pl-5 text-foreground/80">
                           {innmeldingVurdering.grupper.filter((g) => g.status === "over").map((g) => (
                             <li key={g.id}>
-                              {g.kategori} – planlagt {g.sum.toLocaleString("nb-NO")} L (grense {g.grenseLiter.toLocaleString("nb-NO")} L)
+                              {g.kategori} – total mengde {g.sum.toLocaleString("nb-NO")} L (grense {g.grenseLiter.toLocaleString("nb-NO")} L)
                             </li>
                           ))}
                         </ul>
@@ -2406,7 +2406,7 @@ const Brensellagring = () => {
             <Button
               size="default"
               onClick={handleSaveDocument}
-              disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !plannedInkludert && !branntekniskeTiltakInkludert)}
+              disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !totalInkludert && !plannedInkludert && !branntekniskeTiltakInkludert)}
               className="h-11 px-6 shadow-xl"
             >
               <Save className="h-4 w-4 mr-2" />
@@ -2418,7 +2418,7 @@ const Brensellagring = () => {
             <Button
               size="default"
               onClick={handleSaveDocument}
-              disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !plannedInkludert && !branntekniskeTiltakInkludert)}
+              disabled={isSaving || !selectedProjectId || (!valgtBygningstype && selectedKravIds.size === 0 && !salgslokaleInkludert && !totalInkludert && !plannedInkludert && !branntekniskeTiltakInkludert)}
               className="h-11 px-6 shadow-xl"
             >
               <Save className="h-4 w-4 mr-2" />
