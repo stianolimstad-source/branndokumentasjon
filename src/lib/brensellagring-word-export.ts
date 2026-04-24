@@ -233,6 +233,25 @@ const plannedLabels: Record<keyof PlannedAmountsData, { label: string; enhet: st
 
 const safeFilename = (value: string) => value.replace(/[\\/:*?"<>|]+/g, "").replace(/\s+/g, "_").slice(0, 80);
 
+const innmeldingStatusCell = (status: "over" | "under" | "ingen"): CellValue => {
+  if (status === "over") return { text: "Innmeldingspliktig", bold: true, color: "B91C1C" };
+  if (status === "under") return { text: "Under grense", bold: true, color: "15803D" };
+  return { text: "Ikke aktuelt", color: "94A3B8" };
+};
+
+const innmeldingVurderingTekst = (vurdering?: InnmeldingVurderingData) => {
+  const registrerte = vurdering?.grupper.filter((g) => g.sum > 0) || [];
+  if (!vurdering || registrerte.length === 0) return "";
+  if (!vurdering.trengerInnmelding) {
+    return "Innmeldingsplikt: Basert på registrerte totalmengder er anlegget ikke innmeldingspliktig etter FBRT § 12.";
+  }
+  const over = registrerte
+    .filter((g) => g.status === "over")
+    .map((g) => `${g.kategori} (${formatNumber(g.sum)} ${g.enhet || "L"}, innmeldingsmengde fra ${g.grenseTekst || `${formatNumber(g.grenseLiter)} L`})`)
+    .join(", ");
+  return `Innmeldingsplikt: Basert på registrerte totalmengder er anlegget innmeldingspliktig etter FBRT § 12. Følgende stoffgrupper overskrider innmeldingsgrensen: ${over}.`;
+};
+
 export async function exportBrensellagringToWord(data: BrensellagringWordData) {
   const children: (Paragraph | Table)[] = [];
   const logo = await logoParagraph(data.logoUrl);
