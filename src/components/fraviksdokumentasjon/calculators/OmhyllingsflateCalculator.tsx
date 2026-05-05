@@ -9,11 +9,12 @@ import { AttachedCalculation } from "../BeregningSection";
 
 interface Props {
   onResult?: (calc: AttachedCalculation) => void;
+  onValueChange?: (totalOmhylling: number | null, modus: "noyaktig" | "forenklet") => void;
 }
 
 type Mode = "noyaktig" | "forenklet";
 
-const OmhyllingsflateCalculator = ({ onResult }: Props) => {
+const OmhyllingsflateCalculator = ({ onResult, onValueChange }: Props) => {
   const [mode, setMode] = useState<Mode>("noyaktig");
 
   // Nøyaktig
