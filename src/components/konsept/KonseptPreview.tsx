@@ -249,8 +249,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p><span className="font-bold">2.</span> Grunnlag og forutsetninger</p>
               <p className="ml-4">2.1 Bygningsinformasjon</p>
               <p className="ml-4">2.2 Grunnlagsdokumenter</p>
-              <p className="ml-4">2.3 Branntekniske forutsetninger</p>
-              <p className="ml-4">2.4 Tilleggskrav</p>
+              <p className="ml-4">2.3 Tilleggskrav</p>
               <p><span className="font-bold">3.</span> Brannteknisk tilstandsvurdering</p>
               <p className="ml-4">3.1 Bæreevne og stabilitet</p>
               <p className="ml-4">3.2 Sikkerhet ved eksplosjon</p>
@@ -576,10 +575,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             <p className="ml-4 mb-3">[Liste over tegninger og dokumenter]</p>
           )}
 
-          <h3 className="font-semibold mb-2">2.3 Branntekniske forutsetninger</h3>
-          <p className="ml-4 mb-3">{formData.tiltaksbeskrivelse || "[Branntekniske forutsetninger beskrives]"}</p>
-
-          <h3 className="font-semibold mb-2">2.4 Tilleggskrav</h3>
+          <h3 className="font-semibold mb-2">2.3 Tilleggskrav</h3>
           <p className="ml-4 mb-3 whitespace-pre-wrap">{formData.tilleggskrav || "[Eventuelle tilleggskrav beskrives]"}</p>
           </>
         ) : (

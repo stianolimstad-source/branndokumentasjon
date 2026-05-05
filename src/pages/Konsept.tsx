@@ -1753,8 +1753,7 @@ const Konsept = () => {
               new Paragraph({ text: "    1.3 Kvalitetssikring (KS)", spacing: { after: 30 } }),
               new Paragraph({ text: "    1.3 Bygningsinformasjon", spacing: { after: 30 } }),
               new Paragraph({ text: "    1.4 Grunnlagsdokumenter", spacing: { after: 30 } }),
-              new Paragraph({ text: "    1.5 Branntekniske forutsetninger", spacing: { after: 30 } }),
-              new Paragraph({ text: "    1.6 Tilleggskrav", spacing: { after: 50 } }),
+              new Paragraph({ text: "    1.5 Tilleggskrav", spacing: { after: 50 } }),
               new Paragraph({ children: [new TextRun({ text: "2. Brannteknisk tilstandsvurdering", bold: true, size: 22 })], spacing: { after: 50 } }),
               new Paragraph({ text: "    2.1 § 11-4 Bæreevne og stabilitet", spacing: { after: 30 } }),
               new Paragraph({ text: "    2.2 § 11-5 Sikkerhet ved eksplosjon", spacing: { after: 30 } }),
@@ -2030,15 +2029,7 @@ const Konsept = () => {
                 new Paragraph({ text: "[Liste over tegninger og dokumenter]", spacing: { after: 100 } }),
               ]),
               new Paragraph({
-                children: [new TextRun({ text: "1.5 Branntekniske forutsetninger", bold: true, size: 24 })],
-                spacing: { before: 200, after: 100 },
-              }),
-              new Paragraph({
-                text: formData.tiltaksbeskrivelse || "[Branntekniske forutsetninger beskrives]",
-                spacing: { after: 100 },
-              }),
-              new Paragraph({
-                children: [new TextRun({ text: "1.6 Tilleggskrav", bold: true, size: 24 })],
+                children: [new TextRun({ text: "1.5 Tilleggskrav", bold: true, size: 24 })],
                 spacing: { before: 200, after: 100 },
               }),
               new Paragraph({
