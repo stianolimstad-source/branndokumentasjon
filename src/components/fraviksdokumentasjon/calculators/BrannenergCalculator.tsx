@@ -373,8 +373,8 @@ const BrannenergCalculator = ({ onResult }: Props) => {
                     <Card>
                       <CardHeader className="pb-2"><CardTitle className="text-sm">Omhyllingsflate</CardTitle></CardHeader>
                       <CardContent>
-                        <p className="text-xl font-bold">{omhyllingMode === "beregn" ? "≈ " : ""}{Math.round(omhyllingsflate!)} m²</p>
-                        <p className="text-xs text-muted-foreground mt-1">{omhyllingMode === "beregn" ? "Beregnet (ca.)" : "Oppgitt"}</p>
+                        <p className="text-xl font-bold">{erForenkletOmh ? "≈ " : ""}{Math.round(omhyllingsflate!)} m²</p>
+                        <p className="text-xs text-muted-foreground mt-1">{erForenkletOmh ? "Beregnet (ca.)" : "Nøyaktig"}</p>
                       </CardContent>
                     </Card>
                     <Card className="border-primary/30 bg-primary/5">
