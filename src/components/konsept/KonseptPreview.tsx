@@ -1051,7 +1051,15 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
 
-            {formData.regelverk === "BF85" ? (
+            {formData.nabobyggIkkeRelevant ? (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Nabobygg</td>
+                <td className="border border-gray-400 p-2">
+                  Nabobygg ligger så langt unna at det er vurdert som ikke relevant. Krav til avstand og branncellevegg/brannvegg mot nabobygg er ikke aktuelt.
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIBr</td>
+              </tr>
+            ) : formData.regelverk === "BF85" ? (
               <>
                 {/* BF85 Kap 30:32 */}
                 <tr>
