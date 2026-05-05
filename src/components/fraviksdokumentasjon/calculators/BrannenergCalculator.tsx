@@ -7,6 +7,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AttachedCalculation } from "../BeregningSection";
+import OmhyllingsflateCalculator from "./OmhyllingsflateCalculator";
 
 interface MaterialEntry {
   id: string;
