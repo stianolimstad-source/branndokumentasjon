@@ -1,28 +1,59 @@
 ## Mål
-I omhyllingsflate-verktøyet skal brukeren kunne velge mellom to beregningsmodi:
-1. **Nøyaktig** (dagens) — lengde, bredde, høyde
-2. **Forenklet (ca.)** — kun areal (m²) og høyde (m)
+Brannenergi-verktøyet skal få to modi:
+1. **Materialbasert** (dagens) — beregner Q fra materialer og spesifikk brannenergi per gulvareal.
+2. **Per omhyllingsflate (Tabell 43)** — velger virksomhetstype fra Byggforsks Tabell 43 (statistiske verdier MJ/m² golvflate), og beregner brannenergi per omhyllingsflate.
 
-Brukes når man ikke kjenner eksakte dimensjoner, men har gulvareal fra tegninger.
+## Tabell 43 (fra opplastet bilde)
+Liste over virksomheter med MJ/m² golvflate. Verdier i parentes gjelder lager. Implementeres som array i komponenten:
 
-## Formler (forenklet modus)
-Antar tilnærmet kvadratisk grunnflate:
-- Sidelengde: `s = √areal`
-- Gulvareal = areal
-- Takareal = areal
-- Veggflate ≈ `4 · s · h = 4 · √areal · h`
-- Total omhyllingsflate ≈ `2 · areal + 4 · √areal · h`
+```
+Aluminiumsforedling 200, Antikvitetsbutikk 700, Apotek inkl. lager 800,
+Bakeri 200, Bibliotek 2000, Bilforretning 200, Elektroindustri 600,
+Flyhangar 200, Fotobutikk 300, Frisør 300, Glassproduksjon 100,
+Jernbanestasjon 800, Kafé 400, Kantine 300, Kino 300, Klesbutikk 600,
+Klesproduksjon 500, Kraftstasjon 600, Laboratorier (elektronikk 200, kjemisk 500, metallurgi 200),
+Madrassproduksjon 500, Malingbutikk 1000, Malingproduksjon 4200,
+Maskinfabrikk 200, Museum 300, Møbelforretning 400,
+Papirproduksjon 800 (lager 1100), Plastproduksjon 2000,
+Postkontor 400, Produksjon av elektrisk utstyr 400, Restaurant 300,
+Sjokoladeproduksjon 1000 (lager 6000), Skoproduksjon 500,
+Teater 300, Teppebutikk 800, Teppeprodusent 600 (lager 1700),
+Trykkeri 1000, Vaskeri 200, Våpenproduksjon 300
+```
 
-Resultatet merkes tydelig som "ca."-verdi.
+For virksomheter med lagerverdi: vis et tilleggsvalg "Normal / Lager".
 
-## Endring i `src/components/fraviksdokumentasjon/calculators/OmhyllingsflateCalculator.tsx`
-- Legg til en `Tabs`-komponent (eller to RadioGroup-knapper) øverst: "Nøyaktig" / "Forenklet (ca.)".
-- Forenklet modus viser to felt: `Areal (m²)` og `Høyde (m)`.
-- Felles `result`-state og resultatkort gjenbrukes. I forenklet modus vises en liten badge/tekst "ca." ved totalverdien, og label i AttachedCalculation blir `"Omhyllingsflate (ca.): X m²"`.
-- `inputs` i `AttachedCalculation` reflekterer hvilken modus som ble brukt (areal_m2 + hoyde_m, eller lengde/bredde/høyde) slik at det er sporbart i fraviksdokumentasjon.
-- Grunnlag-boksen får en ekstra linje i forenklet modus som forklarer antakelsen (kvadratisk grunnflate).
+## Modus 2 — UI og logikk
+Felt:
+- **Virksomhet**: `Select` med Tabell 43-liste (label viser navn + MJ/m²).
+- **Bruk**: kun synlig hvis virksomhet har lagerverdi → `Normal` / `Lager`.
+- **Gulvareal (m²)**: `Input number`.
+- **Omhyllingsflate** med to faner:
+  - **Beregn (ca. fra høyde)**: input "Byggehøyde (m)", bruker forenklet formel `A_omh ≈ 2·areal + 4·√areal · høyde` (samme som omhyllingsflate-verktøyet i forenklet modus). Viser beregnet verdi som "≈ X m²".
+  - **Oppgi manuelt**: input "Omhyllingsflate (m²)" med hjelpetekst om å bruke det dedikerte omhyllingsflate-verktøyet.
 
-Ingen endringer kreves i `Verktoy.tsx`, `Omhyllingsflate.tsx`, `BeregningSection.tsx` eller `CalculatorDialog.tsx` — komponenten brukes likt begge steder.
+Beregning:
+- `Q_total = q_gulv · A_gulv` (MJ)
+- `q_omh = Q_total / A_omhylling` (MJ/m²)
+
+Resultatkort:
+- Total brannenergi (MJ)
+- Omhyllingsflate (m²) — merket "≈" hvis beregnet
+- Spesifikk per omhyllingsflate (MJ/m²)
+
+`AttachedCalculation`-objektet inneholder metode, virksomhet, bruks_type, q_gulv, gulvareal, omhyllingsflate-modus, omhyllingsflate, total og spesifikk per omhylling — slik at det er fullt sporbart i fravikdokumentasjon.
+
+## Modus 1 (materialbasert)
+Uendret logikk, men plasseres i `<TabsContent value="materiale">`. Eksisterende `useEffect` for `onResult` flyttes inn i felles useEffect som velger riktig basert på aktiv modus.
+
+## Endring
+- `src/components/fraviksdokumentasjon/calculators/BrannenergCalculator.tsx`:
+  - Legg til `Tabs` rundt hele innholdet ("Materialbasert" / "Per omhyllingsflate (Tabell 43)").
+  - Legg til konstant `virksomhetsTabell` med data fra Tabell 43.
+  - Legg til state for omhylling-modus, virksomhet, bruks-type, gulvareal, byggehøyde, manuell omhylling.
+  - Slå sammen `onResult`-useEffect for begge modus.
+
+Ingen endringer i `Verktoy.tsx`, `Brannenergi.tsx` eller `BeregningSection.tsx` — komponenten brukes likt begge steder (som verktøy-side og som dialog i fravik).
 
 ## Filer som endres
-- `src/components/fraviksdokumentasjon/calculators/OmhyllingsflateCalculator.tsx`
+- `src/components/fraviksdokumentasjon/calculators/BrannenergCalculator.tsx`
