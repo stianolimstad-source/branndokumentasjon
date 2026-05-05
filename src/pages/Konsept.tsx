@@ -3129,7 +3129,21 @@ const Konsept = () => {
                           <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
                           <Select 
                             value={formData.brannseksjonBrannenergi} 
-                            onValueChange={(value) => setFormData({...formData, brannseksjonBrannenergi: value})}
+                            onValueChange={(value) => {
+                              const updates: any = { ...formData, brannseksjonBrannenergi: value };
+                              // Synk til BF85 brannbelastning når relevant (industri/lager) for automatisk bygningsbrannklasse
+                              if (documentType === "tilstandsvurdering" && formData.regelverk === "BF85" && (formData.bygningstype === "Industri" || formData.bygningstype === "Lager")) {
+                                updates.bf85Brannbelastning = value as any;
+                                const result = getBygningsbrannklasse(
+                                  formData.bygningstype as BF85Bygningstype,
+                                  parseInt(formData.etasjer, 10) || 0,
+                                  parseFloat(formData.areal) || 0,
+                                  { brannbelastning: value as any, harBrannalarm: formData.bf85HarBrannalarm }
+                                );
+                                updates.bygningsbrannklasse = (result?.klasse || "") as "" | "1" | "2" | "3" | "4";
+                              }
+                              setFormData(updates);
+                            }}
                           >
                             <SelectTrigger>
                               <SelectValue placeholder="Velg brannenergi..." />
