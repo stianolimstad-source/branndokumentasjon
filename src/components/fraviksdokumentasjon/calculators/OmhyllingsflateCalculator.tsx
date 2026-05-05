@@ -9,11 +9,12 @@ import { AttachedCalculation } from "../BeregningSection";
 
 interface Props {
   onResult?: (calc: AttachedCalculation) => void;
+  onValueChange?: (totalOmhylling: number | null, modus: "noyaktig" | "forenklet") => void;
 }
 
 type Mode = "noyaktig" | "forenklet";
 
-const OmhyllingsflateCalculator = ({ onResult }: Props) => {
+const OmhyllingsflateCalculator = ({ onResult, onValueChange }: Props) => {
   const [mode, setMode] = useState<Mode>("noyaktig");
 
   // Nøyaktig
@@ -64,9 +65,9 @@ const OmhyllingsflateCalculator = ({ onResult }: Props) => {
   };
 
   useEffect(() => {
-    if (result && onResult) {
+    if (result) {
       const erForenklet = result.modus === "forenklet";
-      onResult({
+      onResult?.({
         id: crypto.randomUUID(),
         type: "omhyllingsflate",
         label: erForenklet
@@ -83,6 +84,9 @@ const OmhyllingsflateCalculator = ({ onResult }: Props) => {
         },
         kommentar: erForenklet ? "Forenklet beregning som antar tilnærmet kvadratisk grunnflate." : "",
       });
+      onValueChange?.(result.totalOmhylling, result.modus);
+    } else {
+      onValueChange?.(null, mode);
     }
   }, [result]);
 

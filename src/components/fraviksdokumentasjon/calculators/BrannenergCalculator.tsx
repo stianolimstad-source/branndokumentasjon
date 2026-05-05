@@ -7,6 +7,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AttachedCalculation } from "../BeregningSection";
+import OmhyllingsflateCalculator from "./OmhyllingsflateCalculator";
 
 interface MaterialEntry {
   id: string;
@@ -106,9 +107,7 @@ const BrannenergCalculator = ({ onResult }: Props) => {
   const [virksomhetKey, setVirksomhetKey] = useState<string>("");
   const [bruksType, setBruksType] = useState<"normal" | "lager">("normal");
   const [gulvareal, setGulvareal] = useState("");
-  const [omhyllingMode, setOmhyllingMode] = useState<"manuell" | "beregn">("beregn");
-  const [omhyllingManuell, setOmhyllingManuell] = useState("");
-  const [bygghoyde, setBygghoyde] = useState("");
+  const [omhFraVerktoy, setOmhFraVerktoy] = useState<{ value: number; modus: "noyaktig" | "forenklet" } | null>(null);
 
   const addEntry = (name: string, mjPerKg: number) => {
     setEntries((prev) => [...prev, { id: crypto.randomUUID(), name, brannenergiPerKg: mjPerKg, mengdeKg: 0 }]);
@@ -138,14 +137,8 @@ const BrannenergCalculator = ({ onResult }: Props) => {
     ? (bruksType === "lager" && valgtVirksomhet.lagerMjPerM2 ? valgtVirksomhet.lagerMjPerM2 : valgtVirksomhet.mjPerM2)
     : null;
   const gulvarealNum = parseFloat(gulvareal);
-  const hoydeNum = parseFloat(bygghoyde);
-  const omhyllingManuellNum = parseFloat(omhyllingManuell);
-  const beregnetOmhylling = (!isNaN(gulvarealNum) && gulvarealNum > 0 && !isNaN(hoydeNum) && hoydeNum > 0)
-    ? Math.round((2 * gulvarealNum + 4 * Math.sqrt(gulvarealNum) * hoydeNum) * 100) / 100
-    : null;
-  const omhyllingsflate = omhyllingMode === "beregn"
-    ? beregnetOmhylling
-    : (!isNaN(omhyllingManuellNum) && omhyllingManuellNum > 0 ? omhyllingManuellNum : null);
+  const omhyllingsflate = omhFraVerktoy?.value ?? null;
+  const erForenkletOmh = omhFraVerktoy?.modus === "forenklet";
   const totalMjOmh = qGulv !== null && !isNaN(gulvarealNum) && gulvarealNum > 0 ? qGulv * gulvarealNum : null;
   const spesifikkPerOmhylling = totalMjOmh !== null && omhyllingsflate ? totalMjOmh / omhyllingsflate : null;
   const hasOmhResult = qGulv !== null && totalMjOmh !== null && spesifikkPerOmhylling !== null;
@@ -169,7 +162,7 @@ const BrannenergCalculator = ({ onResult }: Props) => {
         kommentar: "",
       });
     } else if (mode === "omhylling" && hasOmhResult) {
-      const omhEtikett = omhyllingMode === "beregn" ? "ca. " : "";
+      const omhEtikett = erForenkletOmh ? "ca. " : "";
       onResult({
         id: crypto.randomUUID(),
         type: "brannenergi",
@@ -180,15 +173,14 @@ const BrannenergCalculator = ({ onResult }: Props) => {
           bruks_type: bruksType,
           q_gulv_MJ_m2: qGulv!,
           gulvareal_m2: gulvarealNum,
-          omhyllingsflate_modus: omhyllingMode === "beregn" ? "beregnet (ca.)" : "manuelt oppgitt",
+          omhyllingsflate_modus: erForenkletOmh ? "forenklet (ca.)" : "nøyaktig",
           omhyllingsflate_m2: omhyllingsflate!,
-          ...(omhyllingMode === "beregn" ? { byggehoyde_m: hoydeNum } : {}),
         },
         results: {
           total_MJ: Math.round(totalMjOmh!),
           spesifikk_MJ_m2_omhylling: Math.round(spesifikkPerOmhylling!),
         },
-        kommentar: omhyllingMode === "beregn"
+        kommentar: erForenkletOmh
           ? "Omhyllingsflate beregnet forenklet (antar tilnærmet kvadratisk grunnflate)."
           : "",
       });
@@ -196,7 +188,7 @@ const BrannenergCalculator = ({ onResult }: Props) => {
   }, [
     mode,
     totalBrannenergi, spesifikkBrannenergi, hasMaterialResult,
-    hasOmhResult, totalMjOmh, spesifikkPerOmhylling, omhyllingsflate, qGulv, gulvarealNum, hoydeNum, omhyllingMode, bruksType, virksomhetKey,
+    hasOmhResult, totalMjOmh, spesifikkPerOmhylling, omhyllingsflate, erForenkletOmh, qGulv, gulvarealNum, bruksType, virksomhetKey,
   ]);
 
   return (
@@ -357,29 +349,14 @@ const BrannenergCalculator = ({ onResult }: Props) => {
 
               <div className="space-y-3 border-t pt-4">
                 <Label>Omhyllingsflate</Label>
-                <Tabs value={omhyllingMode} onValueChange={(v) => setOmhyllingMode(v as "manuell" | "beregn")}>
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="beregn">Beregn (ca. fra høyde)</TabsTrigger>
-                    <TabsTrigger value="manuell">Oppgi manuelt</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="beregn" className="pt-3 space-y-2">
-                    <Label htmlFor="bygghoyde-omh">Byggehøyde (m)</Label>
-                    <Input id="bygghoyde-omh" type="number" step="0.1" placeholder="f.eks. 3" value={bygghoyde} onChange={(e) => setBygghoyde(e.target.value)} />
-                    <p className="text-xs text-muted-foreground">
-                      Forenklet: A<sub>omh</sub> ≈ 2·areal + 4·√areal · høyde (antar tilnærmet kvadratisk grunnflate).
-                    </p>
-                    {beregnetOmhylling !== null && (
-                      <p className="text-sm">Beregnet omhyllingsflate: <strong>≈ {beregnetOmhylling} m²</strong></p>
-                    )}
-                  </TabsContent>
-                  <TabsContent value="manuell" className="pt-3 space-y-2">
-                    <Label htmlFor="omh-manuell">Omhyllingsflate (m²)</Label>
-                    <Input id="omh-manuell" type="number" step="1" placeholder="f.eks. 520" value={omhyllingManuell} onChange={(e) => setOmhyllingManuell(e.target.value)} />
-                    <p className="text-xs text-muted-foreground">
-                      Bruk Omhyllingsflate-verktøyet (Verktøy → Omhyllingsflate) for nøyaktig beregning, og lim inn verdien her.
-                    </p>
-                  </TabsContent>
-                </Tabs>
+                <p className="text-xs text-muted-foreground">
+                  Beregn omhyllingsflate med samme verktøy som under Verktøy → Omhyllingsflate. Velg "Nøyaktig" om du har lengde × bredde × høyde, eller "Forenklet" om du kun har gulvareal og høyde.
+                </p>
+                <OmhyllingsflateCalculator
+                  onValueChange={(value, modus) =>
+                    setOmhFraVerktoy(value !== null ? { value, modus } : null)
+                  }
+                />
               </div>
 
               {hasOmhResult && (
@@ -396,8 +373,8 @@ const BrannenergCalculator = ({ onResult }: Props) => {
                     <Card>
                       <CardHeader className="pb-2"><CardTitle className="text-sm">Omhyllingsflate</CardTitle></CardHeader>
                       <CardContent>
-                        <p className="text-xl font-bold">{omhyllingMode === "beregn" ? "≈ " : ""}{Math.round(omhyllingsflate!)} m²</p>
-                        <p className="text-xs text-muted-foreground mt-1">{omhyllingMode === "beregn" ? "Beregnet (ca.)" : "Oppgitt"}</p>
+                        <p className="text-xl font-bold">{erForenkletOmh ? "≈ " : ""}{Math.round(omhyllingsflate!)} m²</p>
+                        <p className="text-xs text-muted-foreground mt-1">{erForenkletOmh ? "Beregnet (ca.)" : "Nøyaktig"}</p>
                       </CardContent>
                     </Card>
                     <Card className="border-primary/30 bg-primary/5">
