@@ -1,61 +1,30 @@
-## Plan: Farger og innmeldingsplikt i Word-dokumentet
+# Fjern duplikat brannenergi-felt og vis verdien i rapporten
 
-Jeg oppdaterer Word-eksporten for «Lagring av brannfarlig stoff» slik at den matcher forhåndsvisningen bedre, særlig statusfarger og vurderingstekster.
+## Problem
+I BF85 tilstandsvurdering vises det to felter for spesifikk brannenergi i kapittel 2:
+1. **Kap 2.1 Bygningsinformasjon** – "Spesifikk brannenergi (MJ/m²)" (`formData.brannseksjonBrannenergi`, Konsept.tsx linje 3129).
+2. **Lenger ned i kap 2** (under Grunnlagsdokumenter, kun for bygningstype Industri/Lager) – "Spesifikk brannbelastning (MJ/m²)" (`formData.bf85Brannbelastning`, Konsept.tsx linje 3520).
 
-## Hva som endres
+Verdien fra 2.1 vises heller ikke i forhåndsvisningen for tilstandsvurdering (`KonseptPreview.tsx` linje 512–544).
 
-### 1. Ta med farger på status- og vurderingstekster i Word
+## Løsning
 
-Word-dokumentet skal få med samme type fargekoding som forhåndsvisningen, blant annet:
+### 1. Fjern duplikat-feltet under 2.2 (Konsept.tsx)
+Fjern hele blokken på linje 3517–3545 (`Spesifikk brannbelastning` for industri/lager). Behold `bf85Brannbelastning`-feltet i state for bakoverkompatibilitet, men sett det automatisk fra `brannseksjonBrannenergi`:
+- I `onValueChange` for "Spesifikk brannenergi" under 2.1: når bygningstype er Industri/Lager (BF85), oppdater også `bf85Brannbelastning` med samme verdi og rekalkuler `bygningsbrannklasse` via `getBygningsbrannklasse(...)` (samme kall som finnes i den nåværende duplikat-blokken).
+- Slik beholder vi den automatiske bygningsbrannklasse-beregningen uten å vise dobbelt felt.
 
-- «Tillatt» vises grønt
-- «Ikke tillatt» vises rødt
-- «Innmeldingspliktig» vises rødt
-- «Under grense» vises grønt
-- «Ikke aktuelt» vises dempet/grått
-- «Overskrider» vises rødt
-- «Overstiger ikke» vises grønt
-- viktige konklusjonstekster får tilsvarende farge der previewen bruker farge
-
-### 2. Gjøre Word-tabeller i stand til å fargelegge enkeltceller
-
-Eksporten bruker i dag en generell tabellfunksjon som stort sett lager alle vanlige celler likt. Jeg utvider denne slik at tabeller kan få farge/bold per celle, uten å ødelegge eksisterende tabeller.
-
-### 3. Forbedre innmeldingsplikt i Word-rapporten
-
-Innmeldingsdelen i Word skal speile vurderingen i forhåndsvisningen bedre:
-
-- tydelig konklusjon om anlegget er innmeldingspliktig eller ikke
-- tabell med stoffgrupper der det er registrert mengde
-- statusfarger i tabellen
-- margin/gjenstående mengde til grense for stoffgrupper som ligger under grensen
-- kommentar beholdes dersom den er lagt inn
-- kildehenvisning til FBRT § 12 tas med i seksjonen
-
-### 4. Ta med innmeldingsplikt i vurderingen av mengde over anbefalt DSB-mengde
-
-I seksjonen «Vurdering av mengde over anbefalt DSB-mengde» legger jeg inn en kort vurdering av innmeldingsplikt når innmeldingsdata finnes, slik at rapporten tydelig viser om de totale mengdene også utløser meldeplikt til DSB.
-
-Eksempel på innhold:
-
-```text
-Innmeldingsplikt: Basert på registrerte totalmengder er anlegget ikke innmeldingspliktig etter FBRT § 12.
+### 2. Vis "Spesifikk brannenergi" i forhåndsvisning (KonseptPreview.tsx)
+I tilstand-grenen rundt linje 512–544, legg til en ny rad i bygningsinformasjons-tabellen rett før Bygningsbrannklasse/Risikoklasse:
 ```
-
-eller:
-
-```text
-Innmeldingsplikt: Basert på registrerte totalmengder er anlegget innmeldingspliktig etter FBRT § 12. Følgende stoffgrupper overskrider innmeldingsgrensen: ...
+| Spesifikk brannenergi | <Over 400 / 50–400 / Under 50 MJ/m²> |
 ```
+Mapping fra `formData.brannseksjonBrannenergi`: `"over400"` → "Over 400 MJ/m²", `"50-400"` → "50–400 MJ/m²", `"under50"` → "Under 50 MJ/m²", ellers "[Angis]".
 
-## Tekniske detaljer
+### 3. Word-eksport
+I `src/lib/word-export-chapter3.ts` (eller den filen som genererer kap. 2-tabellen for tilstandsvurdering) legge til samme rad slik at Word-dokumentet matcher forhåndsvisningen.
 
-Filen som endres:
-
-- `src/lib/brensellagring-word-export.ts`
-  - utvide `cell`/`table`-hjelpere eller legge til en egen tabellhjelper for celleformattering
-  - bruke fargeverdier fra previewen i relevante Word-celler
-  - utvide innmeldingsseksjonen med margin, kilde og farget status
-  - legge inn innmeldingsvurdering i overskridelsesseksjonen når `innmeldingVurdering` finnes
-
-Det trengs ikke databaseendringer.
+## Filer som endres
+- `src/pages/Konsept.tsx`
+- `src/components/konsept/KonseptPreview.tsx`
+- `src/lib/word-export-chapter3.ts`

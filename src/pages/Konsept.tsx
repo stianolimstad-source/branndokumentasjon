@@ -1995,6 +1995,7 @@ const Konsept = () => {
                   new TableRow({ children: [createTableCell("Bygningstype", true, 33), createTableCell(formData.bygningstype || "[Angis]")] }),
                   new TableRow({ children: [createTableCell("Bruttoareal", true, 33), createTableCell(`${formData.areal || "[Angis]"} m²`)] }),
                   new TableRow({ children: [createTableCell("Antall etasjer", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
+                  new TableRow({ children: [createTableCell("Spesifikk brannenergi", true, 33), createTableCell(formData.brannseksjonBrannenergi === "over400" ? "Over 400 MJ/m²" : formData.brannseksjonBrannenergi === "50-400" ? "50–400 MJ/m²" : formData.brannseksjonBrannenergi === "under50" ? "Under 50 MJ/m²" : "[Angis]")] }),
                   new TableRow({ children: [createTableCell("Risikoklasse", true, 33), createTableCell(formData.risikoklasse || "[Angis]")] }),
                   new TableRow({ children: [createTableCell("Brannklasse", true, 33), createTableCell(formData.brannklasse || "[Angis]")] }),
                 ],
@@ -2090,6 +2091,7 @@ const Konsept = () => {
                     new TableRow({ children: [createTableCell("Bygningstype", true, 33), createTableCell(formData.bygningstype || "[Angis]")] }),
                     new TableRow({ children: [createTableCell("Bruttoareal", true, 33), createTableCell(`${formData.areal || "[Angis]"} m²`)] }),
                     new TableRow({ children: [createTableCell("Antall etasjer", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
+                    new TableRow({ children: [createTableCell("Spesifikk brannenergi", true, 33), createTableCell(formData.brannseksjonBrannenergi === "over400" ? "Over 400 MJ/m²" : formData.brannseksjonBrannenergi === "50-400" ? "50–400 MJ/m²" : formData.brannseksjonBrannenergi === "under50" ? "Under 50 MJ/m²" : "[Angis]")] }),
                   ],
                 }),
                 new Paragraph({
@@ -2158,6 +2160,7 @@ const Konsept = () => {
                     new TableRow({ children: [createTableCell("Bygningstype", true, 33), createTableCell(formData.bygningstype || "[Angis]")] }),
                     new TableRow({ children: [createTableCell("Bruttoareal", true, 33), createTableCell(`${formData.areal || "[Angis]"} m²`)] }),
                     new TableRow({ children: [createTableCell("Antall etasjer", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
+                    new TableRow({ children: [createTableCell("Spesifikk brannenergi", true, 33), createTableCell(formData.brannseksjonBrannenergi === "over400" ? "Over 400 MJ/m²" : formData.brannseksjonBrannenergi === "50-400" ? "50–400 MJ/m²" : formData.brannseksjonBrannenergi === "under50" ? "Under 50 MJ/m²" : "[Angis]")] }),
                     new TableRow({ children: [createTableCell("Risikoklasse", true, 33), createTableCell(formData.risikoklasse || "[Angis]")] }),
                     new TableRow({
                       children: [
@@ -3129,7 +3132,21 @@ const Konsept = () => {
                           <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
                           <Select 
                             value={formData.brannseksjonBrannenergi} 
-                            onValueChange={(value) => setFormData({...formData, brannseksjonBrannenergi: value})}
+                            onValueChange={(value) => {
+                              const updates: any = { ...formData, brannseksjonBrannenergi: value };
+                              // Synk til BF85 brannbelastning når relevant (industri/lager) for automatisk bygningsbrannklasse
+                              if (documentType === "tilstandsvurdering" && formData.regelverk === "BF85" && (formData.bygningstype === "Industri" || formData.bygningstype === "Lager")) {
+                                updates.bf85Brannbelastning = value as any;
+                                const result = getBygningsbrannklasse(
+                                  formData.bygningstype as BF85Bygningstype,
+                                  parseInt(formData.etasjer, 10) || 0,
+                                  parseFloat(formData.areal) || 0,
+                                  { brannbelastning: value as any, harBrannalarm: formData.bf85HarBrannalarm }
+                                );
+                                updates.bygningsbrannklasse = (result?.klasse || "") as "" | "1" | "2" | "3" | "4";
+                              }
+                              setFormData(updates);
+                            }}
                           >
                             <SelectTrigger>
                               <SelectValue placeholder="Velg brannenergi..." />
@@ -3514,35 +3531,7 @@ const Konsept = () => {
                               </p>
                             </div>
 
-                            {/* Ekstra felt for industri/lager: brannbelastning */}
-                            {(formData.bygningstype === "Industri" || formData.bygningstype === "Lager") && (
-                              <div>
-                                <Label className="text-xs font-medium mb-1 block">Spesifikk brannbelastning (MJ/m²)</Label>
-                                <Select
-                                  value={formData.bf85Brannbelastning}
-                                  onValueChange={(value) => {
-                                    const result = getBygningsbrannklasse(
-                                      formData.bygningstype as BF85Bygningstype,
-                                      parseInt(formData.etasjer, 10) || 0,
-                                      parseFloat(formData.areal) || 0,
-                                      { brannbelastning: value as any, harBrannalarm: formData.bf85HarBrannalarm }
-                                    );
-                                    setFormData({
-                                      ...formData,
-                                      bf85Brannbelastning: value as any,
-                                      bygningsbrannklasse: (result?.klasse || "") as "" | "1" | "2" | "3" | "4",
-                                    });
-                                  }}
-                                >
-                                  <SelectTrigger><SelectValue placeholder="Velg..." /></SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="under50">Under 50 MJ/m²</SelectItem>
-                                    <SelectItem value="50-400">50–400 MJ/m²</SelectItem>
-                                    <SelectItem value="over400">Over 400 MJ/m²</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            )}
+                            {/* Spesifikk brannbelastning settes automatisk fra § 2.1 "Spesifikk brannenergi" */}
 
                             {/* Ekstra felt for kontor: brannalarmanlegg */}
                             {formData.bygningstype === "Kontor" && (
