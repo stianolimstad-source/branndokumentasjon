@@ -387,6 +387,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     rows.push(contentRow("Kommentar", formData.brannspredningKommentar, "-"));
   }
   rows.push(...await tilstandRow(formData, "3_3", "3.3 Brannspredning mellom byggverk"));
+  }
 
   // ===== 3.4 Brannseksjoner =====
   rows.push(sectionHeaderRow("3.4   §11-7 Brannseksjoner"));
