@@ -531,6 +531,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     : formData.brannseksjonBrannenergi === "under50" ? "Under 50 MJ/m²"
                     : "[Angis]"}
                 </td>
+              </tr>
               {isBF85 ? (
               <tr>
                 <td className="border border-gray-400 p-2 font-semibold">Bygningsbrannklasse</td>
