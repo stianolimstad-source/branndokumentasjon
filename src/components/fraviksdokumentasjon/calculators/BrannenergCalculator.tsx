@@ -137,14 +137,8 @@ const BrannenergCalculator = ({ onResult }: Props) => {
     ? (bruksType === "lager" && valgtVirksomhet.lagerMjPerM2 ? valgtVirksomhet.lagerMjPerM2 : valgtVirksomhet.mjPerM2)
     : null;
   const gulvarealNum = parseFloat(gulvareal);
-  const hoydeNum = parseFloat(bygghoyde);
-  const omhyllingManuellNum = parseFloat(omhyllingManuell);
-  const beregnetOmhylling = (!isNaN(gulvarealNum) && gulvarealNum > 0 && !isNaN(hoydeNum) && hoydeNum > 0)
-    ? Math.round((2 * gulvarealNum + 4 * Math.sqrt(gulvarealNum) * hoydeNum) * 100) / 100
-    : null;
-  const omhyllingsflate = omhyllingMode === "beregn"
-    ? beregnetOmhylling
-    : (!isNaN(omhyllingManuellNum) && omhyllingManuellNum > 0 ? omhyllingManuellNum : null);
+  const omhyllingsflate = omhFraVerktoy?.value ?? null;
+  const erForenkletOmh = omhFraVerktoy?.modus === "forenklet";
   const totalMjOmh = qGulv !== null && !isNaN(gulvarealNum) && gulvarealNum > 0 ? qGulv * gulvarealNum : null;
   const spesifikkPerOmhylling = totalMjOmh !== null && omhyllingsflate ? totalMjOmh / omhyllingsflate : null;
   const hasOmhResult = qGulv !== null && totalMjOmh !== null && spesifikkPerOmhylling !== null;
@@ -168,7 +162,7 @@ const BrannenergCalculator = ({ onResult }: Props) => {
         kommentar: "",
       });
     } else if (mode === "omhylling" && hasOmhResult) {
-      const omhEtikett = omhyllingMode === "beregn" ? "ca. " : "";
+      const omhEtikett = erForenkletOmh ? "ca. " : "";
       onResult({
         id: crypto.randomUUID(),
         type: "brannenergi",
@@ -179,15 +173,14 @@ const BrannenergCalculator = ({ onResult }: Props) => {
           bruks_type: bruksType,
           q_gulv_MJ_m2: qGulv!,
           gulvareal_m2: gulvarealNum,
-          omhyllingsflate_modus: omhyllingMode === "beregn" ? "beregnet (ca.)" : "manuelt oppgitt",
+          omhyllingsflate_modus: erForenkletOmh ? "forenklet (ca.)" : "nøyaktig",
           omhyllingsflate_m2: omhyllingsflate!,
-          ...(omhyllingMode === "beregn" ? { byggehoyde_m: hoydeNum } : {}),
         },
         results: {
           total_MJ: Math.round(totalMjOmh!),
           spesifikk_MJ_m2_omhylling: Math.round(spesifikkPerOmhylling!),
         },
-        kommentar: omhyllingMode === "beregn"
+        kommentar: erForenkletOmh
           ? "Omhyllingsflate beregnet forenklet (antar tilnærmet kvadratisk grunnflate)."
           : "",
       });
@@ -195,7 +188,7 @@ const BrannenergCalculator = ({ onResult }: Props) => {
   }, [
     mode,
     totalBrannenergi, spesifikkBrannenergi, hasMaterialResult,
-    hasOmhResult, totalMjOmh, spesifikkPerOmhylling, omhyllingsflate, qGulv, gulvarealNum, hoydeNum, omhyllingMode, bruksType, virksomhetKey,
+    hasOmhResult, totalMjOmh, spesifikkPerOmhylling, omhyllingsflate, erForenkletOmh, qGulv, gulvarealNum, bruksType, virksomhetKey,
   ]);
 
   return (
