@@ -1,23 +1,28 @@
 ## Mål
-I § 3.4 for BF85 (både brannkonsept og tilstandsvurdering) skal "Gjennomsnittlig spesifikk brannbelastning" velges fra intervaller (jf. Tabell 34:23) i stedet for å skrives inn som et nøyaktig tall.
+I omhyllingsflate-verktøyet skal brukeren kunne velge mellom to beregningsmodi:
+1. **Nøyaktig** (dagens) — lengde, bredde, høyde
+2. **Forenklet (ca.)** — kun areal (m²) og høyde (m)
 
-## Intervaller (matcher `bf85TabellRader` i `src/lib/bf85-constants.ts`)
-- under 50 MJ/m²
-- 50 – 200 MJ/m²
-- 200 – 400 MJ/m²
-- over 400 MJ/m²
+Brukes når man ikke kjenner eksakte dimensjoner, men har gulvareal fra tegninger.
 
-## Endring i `src/pages/Konsept.tsx` (linje ~4388–4397)
-Bytt ut `<Input type="number">` for `bf85_34_brannbelastning` med en `<Select>`:
-- Verdier lagres som representativt midtpunkt slik at eksisterende `getBF85BrannveggKravKap34(areal, brannbelastning, tiltak)` (som matcher på intervaller) fortsatt fungerer uendret:
-  - "under 50" → `"25"`
-  - "50–200" → `"125"`
-  - "200–400" → `"300"`
-  - "over 400" → `"500"`
-- Trigger-høyde og styling holdes likt det andre Select-feltet i samme rad ("Tiltak").
-- `value`-bindingen leser fra `formData.bf85_34_brannbelastning` direkte (strengen som lagres er midtpunktet).
+## Formler (forenklet modus)
+Antar tilnærmet kvadratisk grunnflate:
+- Sidelengde: `s = √areal`
+- Gulvareal = areal
+- Takareal = areal
+- Veggflate ≈ `4 · s · h = 4 · √areal · h`
+- Total omhyllingsflate ≈ `2 · areal + 4 · √areal · h`
 
-Ingen endringer kreves i `bf85-constants.ts`, forhåndsvisning eller Word-eksport, siden eksisterende logikk allerede tolker tallet via intervallene i `bf85TabellRader`.
+Resultatet merkes tydelig som "ca."-verdi.
+
+## Endring i `src/components/fraviksdokumentasjon/calculators/OmhyllingsflateCalculator.tsx`
+- Legg til en `Tabs`-komponent (eller to RadioGroup-knapper) øverst: "Nøyaktig" / "Forenklet (ca.)".
+- Forenklet modus viser to felt: `Areal (m²)` og `Høyde (m)`.
+- Felles `result`-state og resultatkort gjenbrukes. I forenklet modus vises en liten badge/tekst "ca." ved totalverdien, og label i AttachedCalculation blir `"Omhyllingsflate (ca.): X m²"`.
+- `inputs` i `AttachedCalculation` reflekterer hvilken modus som ble brukt (areal_m2 + hoyde_m, eller lengde/bredde/høyde) slik at det er sporbart i fraviksdokumentasjon.
+- Grunnlag-boksen får en ekstra linje i forenklet modus som forklarer antakelsen (kvadratisk grunnflate).
+
+Ingen endringer kreves i `Verktoy.tsx`, `Omhyllingsflate.tsx`, `BeregningSection.tsx` eller `CalculatorDialog.tsx` — komponenten brukes likt begge steder.
 
 ## Filer som endres
-- `src/pages/Konsept.tsx`
+- `src/components/fraviksdokumentasjon/calculators/OmhyllingsflateCalculator.tsx`
