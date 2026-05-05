@@ -523,6 +523,14 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 font-semibold">Antall etasjer</td>
                 <td className="border border-gray-400 p-2">{formData.etasjer || "[Angis]"}</td>
               </tr>
+              <tr>
+                <td className="border border-gray-400 p-2 font-semibold">Spesifikk brannenergi</td>
+                <td className="border border-gray-400 p-2">
+                  {formData.brannseksjonBrannenergi === "over400" ? "Over 400 MJ/m²"
+                    : formData.brannseksjonBrannenergi === "50-400" ? "50–400 MJ/m²"
+                    : formData.brannseksjonBrannenergi === "under50" ? "Under 50 MJ/m²"
+                    : "[Angis]"}
+                </td>
               {isBF85 ? (
               <tr>
                 <td className="border border-gray-400 p-2 font-semibold">Bygningsbrannklasse</td>
