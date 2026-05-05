@@ -4387,13 +4387,18 @@ const Konsept = () => {
                             <div className="grid grid-cols-2 gap-3">
                               <div>
                                 <Label className="text-xs font-medium mb-1 block">Gjennomsnittlig spesifikk brannbelastning (MJ/m²)</Label>
-                                <Input
-                                  type="number"
-                                  placeholder="f.eks. 150"
+                                <Select
                                   value={formData.bf85_34_brannbelastning}
-                                  onChange={(e) => setFormData({...formData, bf85_34_brannbelastning: e.target.value})}
-                                  className="h-8 text-xs"
-                                />
+                                  onValueChange={(value) => setFormData({...formData, bf85_34_brannbelastning: value})}
+                                >
+                                  <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Velg intervall..." /></SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="25">Under 50 MJ/m²</SelectItem>
+                                    <SelectItem value="125">50 – 200 MJ/m²</SelectItem>
+                                    <SelectItem value="300">200 – 400 MJ/m²</SelectItem>
+                                    <SelectItem value="500">Over 400 MJ/m²</SelectItem>
+                                  </SelectContent>
+                                </Select>
                               </div>
                               <div>
                                 <Label className="text-xs font-medium mb-1 block">Tiltak</Label>
