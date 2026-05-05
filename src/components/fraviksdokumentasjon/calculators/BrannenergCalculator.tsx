@@ -349,29 +349,14 @@ const BrannenergCalculator = ({ onResult }: Props) => {
 
               <div className="space-y-3 border-t pt-4">
                 <Label>Omhyllingsflate</Label>
-                <Tabs value={omhyllingMode} onValueChange={(v) => setOmhyllingMode(v as "manuell" | "beregn")}>
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="beregn">Beregn (ca. fra høyde)</TabsTrigger>
-                    <TabsTrigger value="manuell">Oppgi manuelt</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="beregn" className="pt-3 space-y-2">
-                    <Label htmlFor="bygghoyde-omh">Byggehøyde (m)</Label>
-                    <Input id="bygghoyde-omh" type="number" step="0.1" placeholder="f.eks. 3" value={bygghoyde} onChange={(e) => setBygghoyde(e.target.value)} />
-                    <p className="text-xs text-muted-foreground">
-                      Forenklet: A<sub>omh</sub> ≈ 2·areal + 4·√areal · høyde (antar tilnærmet kvadratisk grunnflate).
-                    </p>
-                    {beregnetOmhylling !== null && (
-                      <p className="text-sm">Beregnet omhyllingsflate: <strong>≈ {beregnetOmhylling} m²</strong></p>
-                    )}
-                  </TabsContent>
-                  <TabsContent value="manuell" className="pt-3 space-y-2">
-                    <Label htmlFor="omh-manuell">Omhyllingsflate (m²)</Label>
-                    <Input id="omh-manuell" type="number" step="1" placeholder="f.eks. 520" value={omhyllingManuell} onChange={(e) => setOmhyllingManuell(e.target.value)} />
-                    <p className="text-xs text-muted-foreground">
-                      Bruk Omhyllingsflate-verktøyet (Verktøy → Omhyllingsflate) for nøyaktig beregning, og lim inn verdien her.
-                    </p>
-                  </TabsContent>
-                </Tabs>
+                <p className="text-xs text-muted-foreground">
+                  Beregn omhyllingsflate med samme verktøy som under Verktøy → Omhyllingsflate. Velg "Nøyaktig" om du har lengde × bredde × høyde, eller "Forenklet" om du kun har gulvareal og høyde.
+                </p>
+                <OmhyllingsflateCalculator
+                  onValueChange={(value, modus) =>
+                    setOmhFraVerktoy(value !== null ? { value, modus } : null)
+                  }
+                />
               </div>
 
               {hasOmhResult && (
