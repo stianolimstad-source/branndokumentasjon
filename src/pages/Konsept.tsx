@@ -2029,15 +2029,7 @@ const Konsept = () => {
                 new Paragraph({ text: "[Liste over tegninger og dokumenter]", spacing: { after: 100 } }),
               ]),
               new Paragraph({
-                children: [new TextRun({ text: "1.5 Branntekniske forutsetninger", bold: true, size: 24 })],
-                spacing: { before: 200, after: 100 },
-              }),
-              new Paragraph({
-                text: formData.tiltaksbeskrivelse || "[Branntekniske forutsetninger beskrives]",
-                spacing: { after: 100 },
-              }),
-              new Paragraph({
-                children: [new TextRun({ text: "1.6 Tilleggskrav", bold: true, size: 24 })],
+                children: [new TextRun({ text: "1.5 Tilleggskrav", bold: true, size: 24 })],
                 spacing: { before: 200, after: 100 },
               }),
               new Paragraph({
