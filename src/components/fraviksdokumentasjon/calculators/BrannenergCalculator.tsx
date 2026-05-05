@@ -107,9 +107,7 @@ const BrannenergCalculator = ({ onResult }: Props) => {
   const [virksomhetKey, setVirksomhetKey] = useState<string>("");
   const [bruksType, setBruksType] = useState<"normal" | "lager">("normal");
   const [gulvareal, setGulvareal] = useState("");
-  const [omhyllingMode, setOmhyllingMode] = useState<"manuell" | "beregn">("beregn");
-  const [omhyllingManuell, setOmhyllingManuell] = useState("");
-  const [bygghoyde, setBygghoyde] = useState("");
+  const [omhFraVerktoy, setOmhFraVerktoy] = useState<{ value: number; modus: "noyaktig" | "forenklet" } | null>(null);
 
   const addEntry = (name: string, mjPerKg: number) => {
     setEntries((prev) => [...prev, { id: crypto.randomUUID(), name, brannenergiPerKg: mjPerKg, mengdeKg: 0 }]);
