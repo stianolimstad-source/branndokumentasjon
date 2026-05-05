@@ -566,6 +566,7 @@ const Konsept = () => {
     eksplosjon: "",
     bygningshoyde: "", // Høyde på bygget i meter
     avstandNabobygg: "", // Avstand til nabobygg i meter
+    nabobyggIkkeRelevant: false, // Nabobygg ligger så langt unna at det ikke er relevant
     spesifikkBrannenergi: "", // For brannvegg: "inntil400", "400-600", "600-800"
     brannspredning: "",
     brannspredningKommentar: "",
