@@ -65,9 +65,9 @@ const OmhyllingsflateCalculator = ({ onResult, onValueChange }: Props) => {
   };
 
   useEffect(() => {
-    if (result && onResult) {
+    if (result) {
       const erForenklet = result.modus === "forenklet";
-      onResult({
+      onResult?.({
         id: crypto.randomUUID(),
         type: "omhyllingsflate",
         label: erForenklet
@@ -84,6 +84,9 @@ const OmhyllingsflateCalculator = ({ onResult, onValueChange }: Props) => {
         },
         kommentar: erForenklet ? "Forenklet beregning som antar tilnærmet kvadratisk grunnflate." : "",
       });
+      onValueChange?.(result.totalOmhylling, result.modus);
+    } else {
+      onValueChange?.(null, mode);
     }
   }, [result]);
 
