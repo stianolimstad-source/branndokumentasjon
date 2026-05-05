@@ -3528,35 +3528,7 @@ const Konsept = () => {
                               </p>
                             </div>
 
-                            {/* Ekstra felt for industri/lager: brannbelastning */}
-                            {(formData.bygningstype === "Industri" || formData.bygningstype === "Lager") && (
-                              <div>
-                                <Label className="text-xs font-medium mb-1 block">Spesifikk brannbelastning (MJ/m²)</Label>
-                                <Select
-                                  value={formData.bf85Brannbelastning}
-                                  onValueChange={(value) => {
-                                    const result = getBygningsbrannklasse(
-                                      formData.bygningstype as BF85Bygningstype,
-                                      parseInt(formData.etasjer, 10) || 0,
-                                      parseFloat(formData.areal) || 0,
-                                      { brannbelastning: value as any, harBrannalarm: formData.bf85HarBrannalarm }
-                                    );
-                                    setFormData({
-                                      ...formData,
-                                      bf85Brannbelastning: value as any,
-                                      bygningsbrannklasse: (result?.klasse || "") as "" | "1" | "2" | "3" | "4",
-                                    });
-                                  }}
-                                >
-                                  <SelectTrigger><SelectValue placeholder="Velg..." /></SelectTrigger>
-                                  <SelectContent>
-                                    <SelectItem value="under50">Under 50 MJ/m²</SelectItem>
-                                    <SelectItem value="50-400">50–400 MJ/m²</SelectItem>
-                                    <SelectItem value="over400">Over 400 MJ/m²</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                            )}
+                            {/* Spesifikk brannbelastning settes automatisk fra § 2.1 "Spesifikk brannenergi" */}
 
                             {/* Ekstra felt for kontor: brannalarmanlegg */}
                             {formData.bygningstype === "Kontor" && (
