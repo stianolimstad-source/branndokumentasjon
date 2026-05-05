@@ -1,28 +1,20 @@
-# Fjern duplikat brannenergi-felt og vis verdien i rapporten
+## Mål
+I § 3.3 for BF85 (både brannkonsept og tilstandsvurdering) skal det være mulig å markere at nabobygg ikke er relevant (langt unna), slik at man slipper å fylle inn gesimshøyder og avstand.
 
-## Problem
-I BF85 tilstandsvurdering vises det to felter for spesifikk brannenergi i kapittel 2:
-1. **Kap 2.1 Bygningsinformasjon** – "Spesifikk brannenergi (MJ/m²)" (`formData.brannseksjonBrannenergi`, Konsept.tsx linje 3129).
-2. **Lenger ned i kap 2** (under Grunnlagsdokumenter, kun for bygningstype Industri/Lager) – "Spesifikk brannbelastning (MJ/m²)" (`formData.bf85Brannbelastning`, Konsept.tsx linje 3520).
+## Endring i `src/pages/Konsept.tsx` (rundt linje 4118–4236, BF85-grenen i § 3.3)
 
-Verdien fra 2.1 vises heller ikke i forhåndsvisningen for tilstandsvurdering (`KonseptPreview.tsx` linje 512–544).
+1. **Nytt state-felt**: `nabobyggIkkeRelevant: false` i `formData` (initialiseres ved siden av `avstandNabobygg`).
 
-## Løsning
+2. **Ny knapp/bryter** øverst i BF85-blokken, før spørsmålet om brannvegg:
+   - Tekst: "Er nabobygg relevant for vurderingen?"
+   - To alternativer (Select eller toggle): "Ja" / "Nei – ligger langt unna"
+   - Når "Nei" velges: vis en grønn info-boks: *"Nabobygg er vurdert som ikke relevant pga. stor avstand. Krav til branncellevegg / avstand mot nabo er ikke aktuelt."* og skjul resten av BF85-feltene (brannvegg-spørsmål, gesimshøyder, avstand, gruppe-unntak).
 
-### 1. Fjern duplikat-feltet under 2.2 (Konsept.tsx)
-Fjern hele blokken på linje 3517–3545 (`Spesifikk brannbelastning` for industri/lager). Behold `bf85Brannbelastning`-feltet i state for bakoverkompatibilitet, men sett det automatisk fra `brannseksjonBrannenergi`:
-- I `onValueChange` for "Spesifikk brannenergi" under 2.1: når bygningstype er Industri/Lager (BF85), oppdater også `bf85Brannbelastning` med samme verdi og rekalkuler `bygningsbrannklasse` via `getBygningsbrannklasse(...)` (samme kall som finnes i den nåværende duplikat-blokken).
-- Slik beholder vi den automatiske bygningsbrannklasse-beregningen uten å vise dobbelt felt.
+3. **Betinget rendering**: Pakk eksisterende BF85-innhold (linje 4121–4235) i `{!formData.nabobyggIkkeRelevant && (...)}`.
 
-### 2. Vis "Spesifikk brannenergi" i forhåndsvisning (KonseptPreview.tsx)
-I tilstand-grenen rundt linje 512–544, legg til en ny rad i bygningsinformasjons-tabellen rett før Bygningsbrannklasse/Risikoklasse:
-```
-| Spesifikk brannenergi | <Over 400 / 50–400 / Under 50 MJ/m²> |
-```
-Mapping fra `formData.brannseksjonBrannenergi`: `"over400"` → "Over 400 MJ/m²", `"50-400"` → "50–400 MJ/m²", `"under50"` → "Under 50 MJ/m²", ellers "[Angis]".
-
-### 3. Word-eksport
-I `src/lib/word-export-chapter3.ts` (eller den filen som genererer kap. 2-tabellen for tilstandsvurdering) legge til samme rad slik at Word-dokumentet matcher forhåndsvisningen.
+## Endring i forhåndsvisning og Word-eksport
+- `src/components/konsept/KonseptPreview.tsx`: I § 3.3 BF85-grenen, vis kort tekst om at nabobygg ikke er relevant istedenfor avstandsberegning når flagget er satt.
+- `src/lib/word-export-chapter3.ts` (eller tilsvarende kap. 3-eksport): tilsvarende tekst i Word-rapporten.
 
 ## Filer som endres
 - `src/pages/Konsept.tsx`
