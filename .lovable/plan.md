@@ -1,22 +1,23 @@
 ## Mål
-I § 3.3 for BF85 (både brannkonsept og tilstandsvurdering) skal det være mulig å markere at nabobygg ikke er relevant (langt unna), slik at man slipper å fylle inn gesimshøyder og avstand.
+I § 3.4 for BF85 (både brannkonsept og tilstandsvurdering) skal "Gjennomsnittlig spesifikk brannbelastning" velges fra intervaller (jf. Tabell 34:23) i stedet for å skrives inn som et nøyaktig tall.
 
-## Endring i `src/pages/Konsept.tsx` (rundt linje 4118–4236, BF85-grenen i § 3.3)
+## Intervaller (matcher `bf85TabellRader` i `src/lib/bf85-constants.ts`)
+- under 50 MJ/m²
+- 50 – 200 MJ/m²
+- 200 – 400 MJ/m²
+- over 400 MJ/m²
 
-1. **Nytt state-felt**: `nabobyggIkkeRelevant: false` i `formData` (initialiseres ved siden av `avstandNabobygg`).
+## Endring i `src/pages/Konsept.tsx` (linje ~4388–4397)
+Bytt ut `<Input type="number">` for `bf85_34_brannbelastning` med en `<Select>`:
+- Verdier lagres som representativt midtpunkt slik at eksisterende `getBF85BrannveggKravKap34(areal, brannbelastning, tiltak)` (som matcher på intervaller) fortsatt fungerer uendret:
+  - "under 50" → `"25"`
+  - "50–200" → `"125"`
+  - "200–400" → `"300"`
+  - "over 400" → `"500"`
+- Trigger-høyde og styling holdes likt det andre Select-feltet i samme rad ("Tiltak").
+- `value`-bindingen leser fra `formData.bf85_34_brannbelastning` direkte (strengen som lagres er midtpunktet).
 
-2. **Ny knapp/bryter** øverst i BF85-blokken, før spørsmålet om brannvegg:
-   - Tekst: "Er nabobygg relevant for vurderingen?"
-   - To alternativer (Select eller toggle): "Ja" / "Nei – ligger langt unna"
-   - Når "Nei" velges: vis en grønn info-boks: *"Nabobygg er vurdert som ikke relevant pga. stor avstand. Krav til branncellevegg / avstand mot nabo er ikke aktuelt."* og skjul resten av BF85-feltene (brannvegg-spørsmål, gesimshøyder, avstand, gruppe-unntak).
-
-3. **Betinget rendering**: Pakk eksisterende BF85-innhold (linje 4121–4235) i `{!formData.nabobyggIkkeRelevant && (...)}`.
-
-## Endring i forhåndsvisning og Word-eksport
-- `src/components/konsept/KonseptPreview.tsx`: I § 3.3 BF85-grenen, vis kort tekst om at nabobygg ikke er relevant istedenfor avstandsberegning når flagget er satt.
-- `src/lib/word-export-chapter3.ts` (eller tilsvarende kap. 3-eksport): tilsvarende tekst i Word-rapporten.
+Ingen endringer kreves i `bf85-constants.ts`, forhåndsvisning eller Word-eksport, siden eksisterende logikk allerede tolker tallet via intervallene i `bf85TabellRader`.
 
 ## Filer som endres
 - `src/pages/Konsept.tsx`
-- `src/components/konsept/KonseptPreview.tsx`
-- `src/lib/word-export-chapter3.ts`
