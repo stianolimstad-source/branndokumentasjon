@@ -566,6 +566,7 @@ const Konsept = () => {
     eksplosjon: "",
     bygningshoyde: "", // Høyde på bygget i meter
     avstandNabobygg: "", // Avstand til nabobygg i meter
+    nabobyggIkkeRelevant: false, // Nabobygg ligger så langt unna at det ikke er relevant
     spesifikkBrannenergi: "", // For brannvegg: "inntil400", "400-600", "600-800"
     brannspredning: "",
     brannspredningKommentar: "",
@@ -4115,7 +4116,28 @@ const Konsept = () => {
                         )}
                       </div>
 
-                      {formData.regelverk === "BF85" ? (
+                      <div className="p-3 rounded-md border bg-muted/30">
+                        <Label className="text-xs font-medium mb-1 block">Er nabobygg relevant for vurderingen?</Label>
+                        <Select
+                          value={formData.nabobyggIkkeRelevant ? "nei" : "ja"}
+                          onValueChange={(value) => setFormData({...formData, nabobyggIkkeRelevant: value === "nei"})}
+                        >
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ja">Ja – nabobygg skal vurderes</SelectItem>
+                            <SelectItem value="nei">Nei – ligger langt unna</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-xs text-muted-foreground mt-1">Velg "Nei" dersom nabobygg ligger så langt unna at krav til avstand/branncellevegg mot nabo ikke er aktuelt.</p>
+                      </div>
+
+                      {formData.nabobyggIkkeRelevant ? (
+                        <div className="p-3 bg-green-50 border border-green-200 rounded-md dark:bg-green-950 dark:border-green-800">
+                          <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                            Nabobygg er vurdert som ikke relevant pga. stor avstand. Krav til avstand og branncellevegg mot nabobygg er ikke aktuelt.
+                          </p>
+                        </div>
+                      ) : formData.regelverk === "BF85" ? (
                         <>
                           {/* BF85-spesifikk input */}
                           <div>
