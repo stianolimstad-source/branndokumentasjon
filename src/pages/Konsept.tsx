@@ -3133,6 +3133,7 @@ const Konsept = () => {
                               <p className="text-xs text-destructive mt-1">Antall under bakken kan ikke være større enn totalt antall etasjer.</p>
                             )}
                           </div>
+                        </div>
 
                         <div>
                           <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
