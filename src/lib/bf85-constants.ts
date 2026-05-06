@@ -331,6 +331,7 @@ export const getBygningsbrannklasse = (
 
     // ──────────────────── Kap. 34 Industri/Lager ────────────────────
     case "Industri":
+    case "Kraftstasjon":
     case "Lager": {
       // Tabell 34:22
       const bl = options?.brannbelastning || "50-400";
