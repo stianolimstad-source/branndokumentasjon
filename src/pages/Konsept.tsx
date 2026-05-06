@@ -85,6 +85,7 @@ const bygningsTypeRisikoklasseMap: Record<string, string> = {
   "Brannstasjon uten døgnbemanning": "RK2",
   "Driftsbygning med husdyrrom": "RK2",
   "Industri": "RK2",
+  "Kraftstasjon": "RK2",
   "Kantine beregnet for egne ansatte til og med 150 personer": "RK2",
   "Kjemisk fabrikk og kjemikalielager": "RK2",
   "Kontor": "RK2",
