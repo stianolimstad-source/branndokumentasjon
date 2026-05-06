@@ -700,9 +700,15 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2">{formData.areal || "[Angis]"} m²</td>
                 </tr>
                 <tr>
-                  <td className="border border-gray-400 p-2 font-semibold">Antall etasjer</td>
+                  <td className="border border-gray-400 p-2 font-semibold">Antall etasjer (totalt)</td>
                   <td className="border border-gray-400 p-2">{formData.etasjer || "[Angis]"}</td>
                 </tr>
+                {formData.etasjerUnderBakken && parseInt(formData.etasjerUnderBakken, 10) > 0 && (
+                <tr>
+                  <td className="border border-gray-400 p-2 font-semibold">Hvorav under bakken</td>
+                  <td className="border border-gray-400 p-2">{formData.etasjerUnderBakken}</td>
+                </tr>
+                )}
                 <tr>
                   <td className="border border-gray-400 p-2 font-semibold">Risikoklasse</td>
                   <td className="border border-gray-400 p-2">{formData.risikoklasse || "[Angis]"}</td>
