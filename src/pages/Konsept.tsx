@@ -525,6 +525,7 @@ const Konsept = () => {
     areal: "",
     etasjer: "",
     etasjerUnderBakken: "",
+    bygningsinfoKommentar: "",
     // SAK10 felter
     tiltakshaver: "",
     ansvarligSoker: "",
