@@ -2003,6 +2003,7 @@ const Konsept = () => {
                   new TableRow({ children: [createTableCell("Brannklasse", true, 33), createTableCell(formData.brannklasse || "[Angis]")] }),
                 ],
               }),
+              ...(formData.bygningsinfoKommentar ? [new Paragraph({ children: [new TextRun({ text: formData.bygningsinfoKommentar, size: 20 })], spacing: { before: 100, after: 100 } })] : []),
               new Paragraph({
                 children: [new TextRun({ text: "1.4 Grunnlagsdokumenter", bold: true, size: 24 })],
                 spacing: { before: 200, after: 100 },
