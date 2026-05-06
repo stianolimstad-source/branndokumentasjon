@@ -3140,6 +3140,16 @@ const Konsept = () => {
                         </div>
 
                         <div>
+                          <Label className="text-xs font-medium mb-1 block">Kommentar / utfyllende informasjon <span className="text-muted-foreground font-normal ml-1">(valgfritt)</span></Label>
+                          <Textarea
+                            value={formData.bygningsinfoKommentar}
+                            onChange={(e) => setFormData({...formData, bygningsinfoKommentar: e.target.value})}
+                            placeholder="Frivillig: kort utfyllende info om bygningen som tas med under tabellen i rapporten."
+                            rows={3}
+                          />
+                        </div>
+
+                        <div>
                           <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
                           <Select 
                             value={formData.brannseksjonBrannenergi} 
