@@ -746,6 +746,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tbody>
             </table>
           )}
+          {formData.bygningsinfoKommentar && (
+            <p className="text-xs whitespace-pre-wrap mb-3">{formData.bygningsinfoKommentar}</p>
+          )}
 
           <h3 className="font-semibold mb-2">2.2 Grunnlagsdokumenter</h3>
           {grunnlagsdokumenter.length > 0 ? (
