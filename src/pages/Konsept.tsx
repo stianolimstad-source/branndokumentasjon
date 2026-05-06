@@ -5409,7 +5409,7 @@ const Konsept = () => {
                             }
 
                             // BF85 Industri, Kontor, Lager, Garasje, Skur – trapperomkrav
-                            const industriTyper = ["Industri", "Kontor", "Lager", "Garasje", "Skur"];
+                            const industriTyper = ["Industri", "Kraftstasjon", "Kontor", "Lager", "Garasje", "Skur"];
                             if (industriTyper.includes(formData.bygningstype)) {
                               const kravTekst = bf85Floors > 8
                                 ? "Bygning med flere enn 8 etasjer eller med gulv mer enn 22 m over terreng skal ha minst to branntrygge trapperom."
