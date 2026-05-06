@@ -7549,7 +7549,7 @@ const Konsept = () => {
 
                           // Funksjon for å sjekke om en del kvalifiserer for røykvarslere
                           const kanDelVelgeRoykvarsler = (p: typeof allParts39[0]) => {
-                            const erRK2IL = p.rk === "RK2" && p.areal <= 1200 && (p.bygningstype.includes("industri") || p.bygningstype.includes("lager"));
+                            const erRK2IL = p.rk === "RK2" && p.areal <= 1200 && (p.bygningstype.includes("industri") || p.bygningstype.includes("lager") || p.bygningstype.includes("kraftstasjon"));
                             const erRK2K = p.rk === "RK2" && p.areal <= 1200 && p.bygningstype.includes("kontor");
                             const erRK4B = p.rk === "RK4" && (p.bygningstype.includes("bolig") || p.bygningstype.includes("enebolig") || p.bygningstype.includes("rekkehus") || p.bygningstype.includes("kjedehus") || p.bygningstype.includes("fritidsbolig"));
                             const erRK5L = p.rk === "RK5" && p.areal <= 600;
