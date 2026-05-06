@@ -1225,7 +1225,7 @@ const Konsept = () => {
     
     // Unntak: bygg som kan bruke røykvarslere i stedet
     const erRK2IndustriLager = rk === "RK2" && areal <= 1200 && 
-      (bygningstype.includes("industri") || bygningstype.includes("lager"));
+      (bygningstype.includes("industri") || bygningstype.includes("lager") || bygningstype.includes("kraftstasjon"));
     const erRK2Kontor = rk === "RK2" && areal <= 1200 && bygningstype.includes("kontor");
     const erRK4Bolig = rk === "RK4" && 
       (bygningstype.includes("enebolig") || bygningstype.includes("rekkehus") || 
