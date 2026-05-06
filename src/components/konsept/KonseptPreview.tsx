@@ -1294,8 +1294,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <td className="border border-gray-400 p-2 align-top">RIBr</td>
                   </tr>
                 )}
-                {/* BF85 Tabell 34:23 – Industri/Kontor/Garasje/Lager */}
-                {["Industri", "Kontor", "Garasje", "Lager"].includes(formData.bygningstype) && formData.bf85_34_brannbelastning && (() => {
+                {/* BF85 Tabell 34:23 – Industri/Kraftstasjon/Kontor/Garasje/Lager */}
+                {["Industri", "Kraftstasjon", "Kontor", "Garasje", "Lager"].includes(formData.bygningstype) && formData.bf85_34_brannbelastning && (() => {
                   const areal = parseFloat(formData.areal) || 0;
                   const brannbelastning = parseFloat(formData.bf85_34_brannbelastning) || 0;
                   const tiltak = formData.bf85_34_tiltak || "ingen";
