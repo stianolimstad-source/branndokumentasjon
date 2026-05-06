@@ -524,6 +524,7 @@ const Konsept = () => {
     bygningstype: "",
     areal: "",
     etasjer: "",
+    etasjerUnderBakken: "",
     // SAK10 felter
     tiltakshaver: "",
     ansvarligSoker: "",
@@ -1994,7 +1995,8 @@ const Konsept = () => {
                 rows: [
                   new TableRow({ children: [createTableCell("Bygningstype", true, 33), createTableCell(formData.bygningstype || "[Angis]")] }),
                   new TableRow({ children: [createTableCell("Bruttoareal", true, 33), createTableCell(`${formData.areal || "[Angis]"} m²`)] }),
-                  new TableRow({ children: [createTableCell("Antall etasjer", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
+                  new TableRow({ children: [createTableCell("Antall etasjer (totalt)", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
+                  ...(formData.etasjerUnderBakken && parseInt(formData.etasjerUnderBakken, 10) > 0 ? [new TableRow({ children: [createTableCell("Hvorav under bakken", true, 33), createTableCell(formData.etasjerUnderBakken)] })] : []),
                   new TableRow({ children: [createTableCell("Spesifikk brannenergi", true, 33), createTableCell(formData.brannseksjonBrannenergi === "over400" ? "Over 400 MJ/m²" : formData.brannseksjonBrannenergi === "50-400" ? "50–400 MJ/m²" : formData.brannseksjonBrannenergi === "under50" ? "Under 50 MJ/m²" : "[Angis]")] }),
                   new TableRow({ children: [createTableCell("Risikoklasse", true, 33), createTableCell(formData.risikoklasse || "[Angis]")] }),
                   new TableRow({ children: [createTableCell("Brannklasse", true, 33), createTableCell(formData.brannklasse || "[Angis]")] }),
@@ -2082,7 +2084,8 @@ const Konsept = () => {
                   rows: [
                     new TableRow({ children: [createTableCell("Bygningstype", true, 33), createTableCell(formData.bygningstype || "[Angis]")] }),
                     new TableRow({ children: [createTableCell("Bruttoareal", true, 33), createTableCell(`${formData.areal || "[Angis]"} m²`)] }),
-                    new TableRow({ children: [createTableCell("Antall etasjer", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
+                    new TableRow({ children: [createTableCell("Antall etasjer (totalt)", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
+                    ...(formData.etasjerUnderBakken && parseInt(formData.etasjerUnderBakken, 10) > 0 ? [new TableRow({ children: [createTableCell("Hvorav under bakken", true, 33), createTableCell(formData.etasjerUnderBakken)] })] : []),
                     new TableRow({ children: [createTableCell("Spesifikk brannenergi", true, 33), createTableCell(formData.brannseksjonBrannenergi === "over400" ? "Over 400 MJ/m²" : formData.brannseksjonBrannenergi === "50-400" ? "50–400 MJ/m²" : formData.brannseksjonBrannenergi === "under50" ? "Under 50 MJ/m²" : "[Angis]")] }),
                   ],
                 }),
@@ -2151,7 +2154,8 @@ const Konsept = () => {
                   rows: [
                     new TableRow({ children: [createTableCell("Bygningstype", true, 33), createTableCell(formData.bygningstype || "[Angis]")] }),
                     new TableRow({ children: [createTableCell("Bruttoareal", true, 33), createTableCell(`${formData.areal || "[Angis]"} m²`)] }),
-                    new TableRow({ children: [createTableCell("Antall etasjer", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
+                    new TableRow({ children: [createTableCell("Antall etasjer (totalt)", true, 33), createTableCell(formData.etasjer || "[Angis]")] }),
+                    ...(formData.etasjerUnderBakken && parseInt(formData.etasjerUnderBakken, 10) > 0 ? [new TableRow({ children: [createTableCell("Hvorav under bakken", true, 33), createTableCell(formData.etasjerUnderBakken)] })] : []),
                     new TableRow({ children: [createTableCell("Spesifikk brannenergi", true, 33), createTableCell(formData.brannseksjonBrannenergi === "over400" ? "Over 400 MJ/m²" : formData.brannseksjonBrannenergi === "50-400" ? "50–400 MJ/m²" : formData.brannseksjonBrannenergi === "under50" ? "Under 50 MJ/m²" : "[Angis]")] }),
                     new TableRow({ children: [createTableCell("Risikoklasse", true, 33), createTableCell(formData.risikoklasse || "[Angis]")] }),
                     new TableRow({
@@ -3119,7 +3123,21 @@ const Konsept = () => {
                               }}
                             />
                           </div>
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Hvorav under bakken <span className="text-muted-foreground font-normal ml-1">(kjeller)</span></Label>
+                            <Input 
+                              type="number"
+                              min="0"
+                              value={formData.etasjerUnderBakken}
+                              onChange={(e) => setFormData({...formData, etasjerUnderBakken: e.target.value})}
+                            />
+                            {formData.etasjerUnderBakken && formData.etasjer &&
+                              parseInt(formData.etasjerUnderBakken, 10) > parseInt(formData.etasjer, 10) && (
+                              <p className="text-xs text-destructive mt-1">Antall under bakken kan ikke være større enn totalt antall etasjer.</p>
+                            )}
+                          </div>
                         </div>
+
                         <div>
                           <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
                           <Select 
