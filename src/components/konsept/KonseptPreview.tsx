@@ -2055,8 +2055,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 );
               }
 
-              // BF85 Industri, Kontor, Lager, Garasje, Skur – vis automatisk krav
-              const industriTyper = ["Industri", "Kontor", "Lager", "Garasje", "Skur"];
+              // BF85 Industri, Kraftstasjon, Kontor, Lager, Garasje, Skur – vis automatisk krav
+              const industriTyper = ["Industri", "Kraftstasjon", "Kontor", "Lager", "Garasje", "Skur"];
               if (isBF85 && industriTyper.includes(formData.bygningstype) && floors >= 1) {
                 const kravTekst = floors > 8
                   ? "Bygning med flere enn 8 etasjer eller med gulv mer enn 22 m over terreng skal ha minst to branntrygge trapperom."
