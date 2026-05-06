@@ -3217,7 +3217,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                           const alleRk = materialDeler.map(d => d.rk);
                           const alleBkl = materialDeler.map(d => d.bkl);
                           const bygType = (formData.bygningstype || "").toLowerCase();
-                          const isIndustri = bygType.includes("industri") || bygType.includes("lager") || materialDeler.some(d => (d.navn || "").toLowerCase().includes("industri") || (d.navn || "").toLowerCase().includes("lager"));
+                          const isIndustri = bygType.includes("industri") || bygType.includes("lager") || bygType.includes("kraftstasjon") || materialDeler.some(d => { const n = (d.navn || "").toLowerCase(); return n.includes("industri") || n.includes("lager") || n.includes("kraftstasjon"); });
                           const isBoligType = bygType.includes("bolig") || materialDeler.some(d => (d.navn || "").toLowerCase().includes("bolig"));
 
                           // Sandwich filtering - check if any part qualifies
