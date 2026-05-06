@@ -1294,8 +1294,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <td className="border border-gray-400 p-2 align-top">RIBr</td>
                   </tr>
                 )}
-                {/* BF85 Tabell 34:23 – Industri/Kontor/Garasje/Lager */}
-                {["Industri", "Kontor", "Garasje", "Lager"].includes(formData.bygningstype) && formData.bf85_34_brannbelastning && (() => {
+                {/* BF85 Tabell 34:23 – Industri/Kraftstasjon/Kontor/Garasje/Lager */}
+                {["Industri", "Kraftstasjon", "Kontor", "Garasje", "Lager"].includes(formData.bygningstype) && formData.bf85_34_brannbelastning && (() => {
                   const areal = parseFloat(formData.areal) || 0;
                   const brannbelastning = parseFloat(formData.bf85_34_brannbelastning) || 0;
                   const tiltak = formData.bf85_34_tiltak || "ingen";
@@ -2055,8 +2055,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 );
               }
 
-              // BF85 Industri, Kontor, Lager, Garasje, Skur – vis automatisk krav
-              const industriTyper = ["Industri", "Kontor", "Lager", "Garasje", "Skur"];
+              // BF85 Industri, Kraftstasjon, Kontor, Lager, Garasje, Skur – vis automatisk krav
+              const industriTyper = ["Industri", "Kraftstasjon", "Kontor", "Lager", "Garasje", "Skur"];
               if (isBF85 && industriTyper.includes(formData.bygningstype) && floors >= 1) {
                 const kravTekst = floors > 8
                   ? "Bygning med flere enn 8 etasjer eller med gulv mer enn 22 m over terreng skal ha minst to branntrygge trapperom."
@@ -3217,7 +3217,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                           const alleRk = materialDeler.map(d => d.rk);
                           const alleBkl = materialDeler.map(d => d.bkl);
                           const bygType = (formData.bygningstype || "").toLowerCase();
-                          const isIndustri = bygType.includes("industri") || bygType.includes("lager") || materialDeler.some(d => (d.navn || "").toLowerCase().includes("industri") || (d.navn || "").toLowerCase().includes("lager"));
+                          const isIndustri = bygType.includes("industri") || bygType.includes("lager") || bygType.includes("kraftstasjon") || materialDeler.some(d => { const n = (d.navn || "").toLowerCase(); return n.includes("industri") || n.includes("lager") || n.includes("kraftstasjon"); });
                           const isBoligType = bygType.includes("bolig") || materialDeler.some(d => (d.navn || "").toLowerCase().includes("bolig"));
 
                           // Sandwich filtering - check if any part qualifies
@@ -3675,7 +3675,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               const bygningstype = (formData.bygningstype || "").toLowerCase();
               
               const erRK2IndustriLager = rk === "RK2" && areal <= 1200 && 
-                (bygningstype.includes("industri") || bygningstype.includes("lager"));
+                (bygningstype.includes("industri") || bygningstype.includes("lager") || bygningstype.includes("kraftstasjon"));
               const erRK2Kontor = rk === "RK2" && areal <= 1200 && bygningstype.includes("kontor");
               const erRK4Bolig = rk === "RK4" && 
                 (bygningstype.includes("enebolig") || bygningstype.includes("rekkehus") || 

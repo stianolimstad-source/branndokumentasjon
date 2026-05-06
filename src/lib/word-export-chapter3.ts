@@ -913,7 +913,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   const isoRk = formData.risikoklasse || "";
   const isoBkl = formData.brannklasse || "";
   const isoBygType = (formData.bygningstype || "").toLowerCase();
-  const isoIsIndustri = isoBygType.includes("industri") || isoBygType.includes("lager");
+  const isoIsIndustri = isoBygType.includes("industri") || isoBygType.includes("lager") || isoBygType.includes("kraftstasjon");
   const isoIsBolig = isoBygType.includes("bolig");
 
   const sandwichBsd = hasSandwich && (

@@ -1,28 +1,32 @@
 ## Mål
-Legge til et fritt kommentarfelt under 2.1 Bygningsinformasjon (både brannkonsept og tilstandsvurdering, TEK17 og BF85). Teksten skal vises i forhåndsvisningen og i Word-eksporten rett under selve bygningsdata-tabellen.
+Legge til "Kraftstasjon" som valgbar bygningstype i kap. 2.1 for både brannkonsept og tilstandsvurdering, for både TEK17 og BF85. Behandles likt som Industri/håndverk for de generelle branntekniske kravene. Egne særkrav (tilleggskrav) legges inn i en senere iterasjon.
 
 ## Endringer
 
-### 1. `src/pages/Konsept.tsx`
-- Legg til `bygningsinfoKommentar: ""` i `formData`-state (ved siden av `etasjerUnderBakken`).
-- I bygningsdata-skjemaet (under "Hvorav under bakken"-feltet, ca. linje 3112–3160), legg til en `Textarea` med label "Kommentar / utfyllende informasjon" – `rows={3}`, placeholder f.eks. "Frivillig: kort utfyllende info som tas med under tabellen i rapporten".
-- Gjelder uavhengig av om det er TEK17 eller BF85 (feltet ligger på toppnivå i samme seksjon).
+### 1. `src/pages/Konsept.tsx` (TEK17-mapping)
+- I `bygningsTypeRisikoklasseMap` (linje 73): legg til `"Kraftstasjon": "RK2"` (samme risikoklasse som Industri/Trafo).
+- I `<Select>` for bygningstype TEK17 (ca. linje 3061 i hovedform og linje 3267 i bygningsdeler): legg til `<SelectItem value="Kraftstasjon">Kraftstasjon</SelectItem>` rett under "Industri" / under RK2-gruppen.
+- I logikken som sjekker `bygningstype.includes("industri") || bygningstype.includes("lager")` (linje 1227, og evt. tilsvarende steder): utvid til også å matche `"kraftstasjon"`, slik at brannenergi-vurdering og andre industrispesifikke regler aktiveres.
+- I `["Industri", "Kontor", "Garasje", "Lager"].includes(...)` (linje 4410) og lignende lister: legg til `"Kraftstasjon"` der industri behandles.
 
-### 2. `src/components/konsept/KonseptPreview.tsx`
-- Rett under hver av de tre bygningsdata-tabellene under 2.1 (linje 558, 613/623, 740), legg til:
-  ```
-  {formData.bygningsinfoKommentar && (
-    <p className="text-xs whitespace-pre-wrap mb-3">{formData.bygningsinfoKommentar}</p>
-  )}
-  ```
-- Vises ikke når feltet er tomt.
+### 2. `src/lib/bf85-constants.ts` (BF85-mapping)
+- Utvid type `BF85Bygningstype` med `| "Kraftstasjon"`.
+- I `bf85BygningstyperListe` (linje 237): legg til `{ value: "Kraftstasjon", label: "Kraftstasjon", kap: "Kap. 34" }` rett etter Industri.
+- I `getBygningsbrannklasse`-switchen: la `case "Kraftstasjon":` falle gjennom til samme behandling som `"Industri"` (samme tabell, samme brannbelastning-input).
+- Sørg for at alle steder der `bygningstype === "Industri" || bygningstype === "Lager"` brukes (f.eks. for brannbelastning-input i Konsept.tsx linje 3162), inkluderer "Kraftstasjon".
 
-### 3. `src/lib/word-export-chapter3.ts`
-- I de tre Word-tabell-blokkene som genererer 2.1-tabellene, legg til en `Paragraph` rett etter tabellen som skriver ut `formData.bygningsinfoKommentar` (kun hvis satt). Bruk samme stil som annen brødtekst i kapittelet.
+### 3. Konsekvensjusteringer
+- Sjekk `KonseptPreview.tsx` og `word-export-chapter3.ts` for hardkodede sjekker på "Industri"/"Lager" og inkluder "Kraftstasjon" der det styrer industri-spesifikk tekst/tabeller.
+- Ingen endringer i ytterligere kapitler — kraftstasjon arver alt fra industri.
 
-Ingen endringer i beregninger eller annen logikk.
+### 4. Forberedelse for tilleggskrav (kun struktur, ikke innhold)
+- Ingen UI for særkrav i denne iterasjonen. Innholdet kommer i neste runde når du leverer konkrete tilleggskrav.
 
 ## Filer som endres
 - `src/pages/Konsept.tsx`
-- `src/components/konsept/KonseptPreview.tsx`
-- `src/lib/word-export-chapter3.ts`
+- `src/lib/bf85-constants.ts`
+- `src/components/konsept/KonseptPreview.tsx` (kun hvis hardkodede industri-sjekker finnes)
+- `src/lib/word-export-chapter3.ts` (samme)
+
+## Spørsmål før implementering
+Vil du at "Kraftstasjon" skal vises som eget alternativ i nedtrekksmenyen (anbefalt), eller bakes inn under "Industri / kraftstasjon"-label? Planen over forutsetter eget alternativ.

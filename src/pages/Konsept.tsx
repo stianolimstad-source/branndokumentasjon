@@ -85,6 +85,7 @@ const bygningsTypeRisikoklasseMap: Record<string, string> = {
   "Brannstasjon uten døgnbemanning": "RK2",
   "Driftsbygning med husdyrrom": "RK2",
   "Industri": "RK2",
+  "Kraftstasjon": "RK2",
   "Kantine beregnet for egne ansatte til og med 150 personer": "RK2",
   "Kjemisk fabrikk og kjemikalielager": "RK2",
   "Kontor": "RK2",
@@ -1224,7 +1225,7 @@ const Konsept = () => {
     
     // Unntak: bygg som kan bruke røykvarslere i stedet
     const erRK2IndustriLager = rk === "RK2" && areal <= 1200 && 
-      (bygningstype.includes("industri") || bygningstype.includes("lager"));
+      (bygningstype.includes("industri") || bygningstype.includes("lager") || bygningstype.includes("kraftstasjon"));
     const erRK2Kontor = rk === "RK2" && areal <= 1200 && bygningstype.includes("kontor");
     const erRK4Bolig = rk === "RK4" && 
       (bygningstype.includes("enebolig") || bygningstype.includes("rekkehus") || 
@@ -3059,6 +3060,7 @@ const Konsept = () => {
                                 <SelectItem value="Brannstasjon uten døgnbemanning">Brannstasjon uten døgnbemanning</SelectItem>
                                 <SelectItem value="Driftsbygning med husdyrrom">Driftsbygning med husdyrrom</SelectItem>
                                 <SelectItem value="Industri">Industri</SelectItem>
+                                <SelectItem value="Kraftstasjon">Kraftstasjon</SelectItem>
                                 <SelectItem value="Kantine beregnet for egne ansatte til og med 150 personer">Kantine beregnet for egne ansatte til og med 150 personer</SelectItem>
                                 <SelectItem value="Kjemisk fabrikk og kjemikalielager">Kjemisk fabrikk og kjemikalielager</SelectItem>
                                 <SelectItem value="Kontor">Kontor</SelectItem>
@@ -3159,7 +3161,7 @@ const Konsept = () => {
                             onValueChange={(value) => {
                               const updates: any = { ...formData, brannseksjonBrannenergi: value };
                               // Synk til BF85 brannbelastning når relevant (industri/lager) for automatisk bygningsbrannklasse
-                              if (documentType === "tilstandsvurdering" && formData.regelverk === "BF85" && (formData.bygningstype === "Industri" || formData.bygningstype === "Lager")) {
+                              if (documentType === "tilstandsvurdering" && formData.regelverk === "BF85" && (formData.bygningstype === "Industri" || formData.bygningstype === "Lager" || formData.bygningstype === "Kraftstasjon")) {
                                 updates.bf85Brannbelastning = value as any;
                                 const result = getBygningsbrannklasse(
                                   formData.bygningstype as BF85Bygningstype,
@@ -3257,6 +3259,7 @@ const Konsept = () => {
                                         <SelectItem value="Brannstasjon uten døgnbemanning">Brannstasjon uten døgnbemanning</SelectItem>
                                         <SelectItem value="Driftsbygning med husdyrrom">Driftsbygning med husdyrrom</SelectItem>
                                         <SelectItem value="Industri">Industri</SelectItem>
+                                        <SelectItem value="Kraftstasjon">Kraftstasjon</SelectItem>
                                         <SelectItem value="Kantine beregnet for egne ansatte til og med 150 personer">Kantine til og med 150 personer</SelectItem>
                                         <SelectItem value="Kjemisk fabrikk og kjemikalielager">Kjemisk fabrikk og kjemikalielager</SelectItem>
                                         <SelectItem value="Kontor">Kontor</SelectItem>
@@ -4407,7 +4410,7 @@ const Konsept = () => {
                       })()}
 
                       {/* BF85 Kap 34: Industri, Kontor, Garasje, Lager – Tabell 34:23 */}
-                      {formData.regelverk === "BF85" && ["Industri", "Kontor", "Garasje", "Lager"].includes(formData.bygningstype) && (() => {
+                      {formData.regelverk === "BF85" && ["Industri", "Kraftstasjon", "Kontor", "Garasje", "Lager"].includes(formData.bygningstype) && (() => {
                         const areal = parseFloat(formData.areal) || 0;
                         const brannbelastning = parseFloat(formData.bf85_34_brannbelastning) || 0;
                         const tiltak = formData.bf85_34_tiltak || "ingen";
@@ -5406,7 +5409,7 @@ const Konsept = () => {
                             }
 
                             // BF85 Industri, Kontor, Lager, Garasje, Skur – trapperomkrav
-                            const industriTyper = ["Industri", "Kontor", "Lager", "Garasje", "Skur"];
+                            const industriTyper = ["Industri", "Kraftstasjon", "Kontor", "Lager", "Garasje", "Skur"];
                             if (industriTyper.includes(formData.bygningstype)) {
                               const kravTekst = bf85Floors > 8
                                 ? "Bygning med flere enn 8 etasjer eller med gulv mer enn 22 m over terreng skal ha minst to branntrygge trapperom."
@@ -7546,7 +7549,7 @@ const Konsept = () => {
 
                           // Funksjon for å sjekke om en del kvalifiserer for røykvarslere
                           const kanDelVelgeRoykvarsler = (p: typeof allParts39[0]) => {
-                            const erRK2IL = p.rk === "RK2" && p.areal <= 1200 && (p.bygningstype.includes("industri") || p.bygningstype.includes("lager"));
+                            const erRK2IL = p.rk === "RK2" && p.areal <= 1200 && (p.bygningstype.includes("industri") || p.bygningstype.includes("lager") || p.bygningstype.includes("kraftstasjon"));
                             const erRK2K = p.rk === "RK2" && p.areal <= 1200 && p.bygningstype.includes("kontor");
                             const erRK4B = p.rk === "RK4" && (p.bygningstype.includes("bolig") || p.bygningstype.includes("enebolig") || p.bygningstype.includes("rekkehus") || p.bygningstype.includes("kjedehus") || p.bygningstype.includes("fritidsbolig"));
                             const erRK5L = p.rk === "RK5" && p.areal <= 600;
@@ -7562,7 +7565,7 @@ const Konsept = () => {
                           const etasjer = parseInt(formData.etasjer) || 1;
                           
                           const erRK2IndustriLager = rk === "RK2" && areal <= 1200 && 
-                            (bygningstype.includes("industri") || bygningstype.includes("lager"));
+                            (bygningstype.includes("industri") || bygningstype.includes("lager") || bygningstype.includes("kraftstasjon"));
                           const erRK2Kontor = rk === "RK2" && areal <= 1200 && bygningstype.includes("kontor");
                           const erRK4Bolig = rk === "RK4" && 
                             (bygningstype.includes("enebolig") || bygningstype.includes("rekkehus") || 
