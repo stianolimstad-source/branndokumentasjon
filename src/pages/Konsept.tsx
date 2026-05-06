@@ -4410,7 +4410,7 @@ const Konsept = () => {
                       })()}
 
                       {/* BF85 Kap 34: Industri, Kontor, Garasje, Lager – Tabell 34:23 */}
-                      {formData.regelverk === "BF85" && ["Industri", "Kontor", "Garasje", "Lager"].includes(formData.bygningstype) && (() => {
+                      {formData.regelverk === "BF85" && ["Industri", "Kraftstasjon", "Kontor", "Garasje", "Lager"].includes(formData.bygningstype) && (() => {
                         const areal = parseFloat(formData.areal) || 0;
                         const brannbelastning = parseFloat(formData.bf85_34_brannbelastning) || 0;
                         const tiltak = formData.bf85_34_tiltak || "ingen";
