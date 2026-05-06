@@ -3060,6 +3060,7 @@ const Konsept = () => {
                                 <SelectItem value="Brannstasjon uten døgnbemanning">Brannstasjon uten døgnbemanning</SelectItem>
                                 <SelectItem value="Driftsbygning med husdyrrom">Driftsbygning med husdyrrom</SelectItem>
                                 <SelectItem value="Industri">Industri</SelectItem>
+                                <SelectItem value="Kraftstasjon">Kraftstasjon</SelectItem>
                                 <SelectItem value="Kantine beregnet for egne ansatte til og med 150 personer">Kantine beregnet for egne ansatte til og med 150 personer</SelectItem>
                                 <SelectItem value="Kjemisk fabrikk og kjemikalielager">Kjemisk fabrikk og kjemikalielager</SelectItem>
                                 <SelectItem value="Kontor">Kontor</SelectItem>
