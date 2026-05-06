@@ -2194,6 +2194,7 @@ const Konsept = () => {
                     }),
                   ],
                 }),
+                ...(formData.bygningsinfoKommentar ? [new Paragraph({ children: [new TextRun({ text: formData.bygningsinfoKommentar, size: 20 })], spacing: { before: 100, after: 100 } })] : []),
               ]),
               new Paragraph({
                 children: [new TextRun({ text: "2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker", bold: true, size: 24 })],
