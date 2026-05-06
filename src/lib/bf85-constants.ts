@@ -223,6 +223,7 @@ export type BF85Bygningstype =
   | "Barnehage"
   | "Forsamlingslokale"
   | "Industri"
+  | "Kraftstasjon"
   | "Lager"
   | "Kontor"
   | "Garasje"
