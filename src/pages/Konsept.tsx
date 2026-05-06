@@ -3161,7 +3161,7 @@ const Konsept = () => {
                             onValueChange={(value) => {
                               const updates: any = { ...formData, brannseksjonBrannenergi: value };
                               // Synk til BF85 brannbelastning når relevant (industri/lager) for automatisk bygningsbrannklasse
-                              if (documentType === "tilstandsvurdering" && formData.regelverk === "BF85" && (formData.bygningstype === "Industri" || formData.bygningstype === "Lager")) {
+                              if (documentType === "tilstandsvurdering" && formData.regelverk === "BF85" && (formData.bygningstype === "Industri" || formData.bygningstype === "Lager" || formData.bygningstype === "Kraftstasjon")) {
                                 updates.bf85Brannbelastning = value as any;
                                 const result = getBygningsbrannklasse(
                                   formData.bygningstype as BF85Bygningstype,
