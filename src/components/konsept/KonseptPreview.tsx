@@ -624,6 +624,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   </tr>
                 </tbody>
               </table>
+              {formData.bygningsinfoKommentar && (
+                <p className="text-xs whitespace-pre-wrap mb-3">{formData.bygningsinfoKommentar}</p>
+              )}
             </>
           ) : formData.harFlereRisikoklasser && bygningsdeler.length > 0 ? (
             <>
