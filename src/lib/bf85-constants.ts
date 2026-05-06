@@ -241,6 +241,7 @@ export const bf85BygningstyperListe: { value: BF85Bygningstype; label: string; k
   { value: "Barnehage", label: "Barnehage / fritidshjem", kap: "Kap. 32" },
   { value: "Forsamlingslokale", label: "Forsamlingslokale", kap: "Kap. 33" },
   { value: "Industri", label: "Industri / håndverk", kap: "Kap. 34" },
+  { value: "Kraftstasjon", label: "Kraftstasjon", kap: "Kap. 34" },
   { value: "Lager", label: "Lager", kap: "Kap. 34" },
   { value: "Kontor", label: "Kontor", kap: "Kap. 34" },
   { value: "Garasje", label: "Garasje", kap: "Kap. 34" },
