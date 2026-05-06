@@ -3120,7 +3120,20 @@ const Konsept = () => {
                               }}
                             />
                           </div>
-                        </div>
+                          <div>
+                            <Label className="text-xs font-medium mb-1 block">Hvorav under bakken <span className="text-muted-foreground font-normal ml-1">(kjeller)</span></Label>
+                            <Input 
+                              type="number"
+                              min="0"
+                              value={formData.etasjerUnderBakken}
+                              onChange={(e) => setFormData({...formData, etasjerUnderBakken: e.target.value})}
+                            />
+                            {formData.etasjerUnderBakken && formData.etasjer &&
+                              parseInt(formData.etasjerUnderBakken, 10) > parseInt(formData.etasjer, 10) && (
+                              <p className="text-xs text-destructive mt-1">Antall under bakken kan ikke være større enn totalt antall etasjer.</p>
+                            )}
+                          </div>
+
                         <div>
                           <Label className="text-xs font-medium mb-1 block">Spesifikk brannenergi (MJ/m²)</Label>
                           <Select 
