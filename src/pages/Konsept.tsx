@@ -525,6 +525,7 @@ const Konsept = () => {
     areal: "",
     etasjer: "",
     etasjerUnderBakken: "",
+    bygningsinfoKommentar: "",
     // SAK10 felter
     tiltakshaver: "",
     ansvarligSoker: "",
@@ -2002,6 +2003,7 @@ const Konsept = () => {
                   new TableRow({ children: [createTableCell("Brannklasse", true, 33), createTableCell(formData.brannklasse || "[Angis]")] }),
                 ],
               }),
+              ...(formData.bygningsinfoKommentar ? [new Paragraph({ children: [new TextRun({ text: formData.bygningsinfoKommentar, size: 20 })], spacing: { before: 100, after: 100 } })] : []),
               new Paragraph({
                 children: [new TextRun({ text: "1.4 Grunnlagsdokumenter", bold: true, size: 24 })],
                 spacing: { before: 200, after: 100 },
@@ -2089,6 +2091,7 @@ const Konsept = () => {
                     new TableRow({ children: [createTableCell("Spesifikk brannenergi", true, 33), createTableCell(formData.brannseksjonBrannenergi === "over400" ? "Over 400 MJ/m²" : formData.brannseksjonBrannenergi === "50-400" ? "50–400 MJ/m²" : formData.brannseksjonBrannenergi === "under50" ? "Under 50 MJ/m²" : "[Angis]")] }),
                   ],
                 }),
+                ...(formData.bygningsinfoKommentar ? [new Paragraph({ children: [new TextRun({ text: formData.bygningsinfoKommentar, size: 20 })], spacing: { before: 100, after: 100 } })] : []),
                 new Paragraph({
                   children: [new TextRun({ text: "Bygget inneholder flere bygningsdeler med ulike risikoklasser:", italics: true, size: 20 })],
                   spacing: { before: 100, after: 100 },
@@ -2191,6 +2194,7 @@ const Konsept = () => {
                     }),
                   ],
                 }),
+                ...(formData.bygningsinfoKommentar ? [new Paragraph({ children: [new TextRun({ text: formData.bygningsinfoKommentar, size: 20 })], spacing: { before: 100, after: 100 } })] : []),
               ]),
               new Paragraph({
                 children: [new TextRun({ text: "2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker", bold: true, size: 24 })],
@@ -3136,6 +3140,16 @@ const Konsept = () => {
                               <p className="text-xs text-destructive mt-1">Antall under bakken kan ikke være større enn totalt antall etasjer.</p>
                             )}
                           </div>
+                        </div>
+
+                        <div>
+                          <Label className="text-xs font-medium mb-1 block">Kommentar / utfyllende informasjon <span className="text-muted-foreground font-normal ml-1">(valgfritt)</span></Label>
+                          <Textarea
+                            value={formData.bygningsinfoKommentar}
+                            onChange={(e) => setFormData({...formData, bygningsinfoKommentar: e.target.value})}
+                            placeholder="Frivillig: kort utfyllende info om bygningen som tas med under tabellen i rapporten."
+                            rows={3}
+                          />
                         </div>
 
                         <div>
