@@ -3122,7 +3122,7 @@ const Konsept = () => {
                               </Label>
                             </div>
                             <p className="text-xs text-muted-foreground pl-6">
-                              Hukes av: Inkluderer krav om nødlysanlegg etter FEA-F § 26 i kap. 3.9 (gjelder stasjoner i fjell og under dagen). Krav etter FEA-F § 25 om uavhengig nødbelysning og anbefaling om håndlykter tas alltid med for kraftstasjoner.
+                              Hukes av: Inkluderer krav om nødlysanlegg etter FEA-F § 26 i kap. 3.9, samt innledningstekst om redningsrom (jf. FEA-F § 26) – gjelder stasjoner i fjell og under dagen. Krav etter FEA-F § 25 om uavhengig nødbelysning, anbefaling om håndlykter, samt avsnittene om plassering, utforming og utstyr for redningsrom tas alltid med for kraftstasjoner.
                             </p>
                           </div>
                         )}
