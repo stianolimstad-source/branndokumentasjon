@@ -4480,6 +4480,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                          if (!erBoligBygg) return <li>Alle selvlukkende dører til og i rømningsvei skal ha dørautomatikk for å sikre at åpningskraften ikke overstiger 30 N.</li>;
                          return null;
                        })()}
+                      {(() => {
+                        const erKraftstasjon = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                          || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+                        return erKraftstasjon ? <li>For kraftstasjon: alle dører til og i rømningsvei skal slå ut i rømningsretning.</li> : null;
+                      })()}
                       <li>Utadslående dør i yttervegg som er utgang eller rømningsvei, må ikke kunne blokkeres av snø eller is. Takoverbygg, snøfangere på tak og lignende vil kunne forhindre dette.</li>
                       {strømTid && (
                         <li>Avbruddsfri strømforsyning må fungere i minst {strømTid} i byggverk i {bk === "BKL1" ? "brannklasse 1" : `brannklasse ${bk.replace("BKL", "")}`}.</li>
