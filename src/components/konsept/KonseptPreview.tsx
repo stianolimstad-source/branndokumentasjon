@@ -4180,7 +4180,14 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       {formData.dorerTilbakerømning && <li>Dør til rømningsvei må ha et låsesystem som gjør det mulig å vende tilbake dersom rømningsveien skulle være blokkert, med mindre andre tiltak gir tilsvarende sikkerhet.</li>}
                       <li>Dør til rømningsvei kan være låst når byggverket har brannalarmanlegg og låsesystemet åpnes automatisk ved alarm. I tillegg må det være tydelig merket knapp for manuell åpning av døren. Det kan aksepteres inntil 10 sekunder tidsforsinkelse på den manuelle åpningsmekanismen.</li>
                       {formData.dorerNattlaser && <li>Nattlåser må utføres slik at de ikke kommer i strid med kravene til sikker rømning.</li>}
-                      {formData.dorerLiteAntallPersoner && <li>Dør til rømningsvei fra branncelle beregnet for et lite antall personer kan slå mot rømningsretning. Med et lite antall personer menes inntil 10. Brannceller med et lite antall personer kan for eksempel være boenhet, sykerom, hotellrom, og mindre kontorlokaler og salgslokaler.</li>}
+                      {(() => {
+                        const erKraftstasjon = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                          || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+                        if (erKraftstasjon) {
+                          return <li>For kraftstasjon: alle dører til og i rømningsvei skal slå ut i rømningsretning.</li>;
+                        }
+                        return formData.dorerLiteAntallPersoner ? <li>Dør til rømningsvei fra branncelle beregnet for et lite antall personer kan slå mot rømningsretning. Med et lite antall personer menes inntil 10. Brannceller med et lite antall personer kan for eksempel være boenhet, sykerom, hotellrom, og mindre kontorlokaler og salgslokaler.</li> : null;
+                      })()}
                       <li>Utadslående dør i yttervegg som er utgang eller rømningsvei, må ikke kunne blokkeres av snø eller is. Takoverbygg, snøfangere på tak og lignende vil kunne forhindre dette.</li>
                       {strømTid && <li>Avbruddsfri strømforsyning må fungere i minst {strømTid} i byggverk i {strømBKL}.</li>}
                     </ul>
@@ -4473,6 +4480,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                          if (!erBoligBygg) return <li>Alle selvlukkende dører til og i rømningsvei skal ha dørautomatikk for å sikre at åpningskraften ikke overstiger 30 N.</li>;
                          return null;
                        })()}
+                      {(() => {
+                        const erKraftstasjon = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                          || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+                        return erKraftstasjon ? <li>For kraftstasjon: alle dører til og i rømningsvei skal slå ut i rømningsretning.</li> : null;
+                      })()}
                       <li>Utadslående dør i yttervegg som er utgang eller rømningsvei, må ikke kunne blokkeres av snø eller is. Takoverbygg, snøfangere på tak og lignende vil kunne forhindre dette.</li>
                       {strømTid && (
                         <li>Avbruddsfri strømforsyning må fungere i minst {strømTid} i byggverk i {bk === "BKL1" ? "brannklasse 1" : `brannklasse ${bk.replace("BKL", "")}`}.</li>
