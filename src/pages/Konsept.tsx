@@ -7145,7 +7145,22 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
-                    {renderTilstandPanel("3_7")}
+                     {(() => {
+                       const erKraftstasjon = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                         || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+                       return (
+                         <KraftstasjonTilleggskravCard kapittel="3.7" visible={erKraftstasjon}>
+                           <div className="text-xs space-y-1">
+                             <p className="font-medium text-foreground">Følgende tilleggskrav inkluderes automatisk i rapporten:</p>
+                             <ul className="list-disc pl-5 space-y-0.5 text-muted-foreground">
+                               <li><span className="font-medium text-foreground">Kabler (kulverter, sjakter og kabeltunneler):</span> separasjon, brannbeskyttelse, kabelstiger, horisontale/vertikale seksjoner og brannhemmende belegg.</li>
+                               <li><span className="font-medium text-foreground">Ventilasjonsanlegg:</span> ikke brannspjeld med smeltesikring – automatiske spjeld som sikrer rask avstengning og hindrer røykspredning før temperaturen er blitt høy.</li>
+                             </ul>
+                           </div>
+                         </KraftstasjonTilleggskravCard>
+                       );
+                     })()}
+                     {renderTilstandPanel("3_7")}
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-8" label={`3.8 ${formData.regelverk === "BF85" ? "Rømning og redning (§ 11-11)" : "§ 11-11 Rømning og redning"}`}>
                     <div className="space-y-2">
