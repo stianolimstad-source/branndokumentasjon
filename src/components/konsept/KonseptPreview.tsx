@@ -4196,6 +4196,21 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </tr>
               );
             })()}
+            {(() => {
+              const erKraftstasjon310 = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+              if (!erKraftstasjon310) return null;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Kraftstasjon – utganger fra rom med høyspentanlegg</td>
+                  <td className="border border-gray-400 p-2">
+                    <p>Inneholder rommet både mineraloljefylte apparater og betjeningsorganer for høyspenning, kreves det utgangsmulighet som beskrevet ovenfor fra begge ender av rommet (vanligvis endene av betjeningsgangen).</p>
+                    <p className="mt-2">Det kreves bare én utgang hvis avstanden fra ethvert av betjeningsorganene til utgangen har en samlet lengde på maks 4 m. I den samlede lengde skal kun medregnes de deler av gangen hvor den frie gangbredden ut for felt med mineraloljefylte apparater er mindre enn 2 m.</p>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK / RIE</td>
+                </tr>
+              );
+            })()}
             {formData.utgangBranncelle && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top font-medium">Utganger</td>

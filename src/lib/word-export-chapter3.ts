@@ -1313,6 +1313,20 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     }
     rows.push(contentRowMultiLine("Dører til rømningsvei", lines, "ARK / RIE"));
   }
+  {
+    const erKraftstasjon310 = ((formData.bygningstype || "") as string).toLowerCase().includes("kraftstasjon")
+      || ((formData.bygningsdeler || []) as any[]).some((d: any) => ((d.bygningstype || "") as string).toLowerCase().includes("kraftstasjon"));
+    if (erKraftstasjon310) {
+      rows.push(contentRowMultiLine(
+        "Kraftstasjon – utganger fra rom med høyspentanlegg",
+        [
+          "Inneholder rommet både mineraloljefylte apparater og betjeningsorganer for høyspenning, kreves det utgangsmulighet som beskrevet ovenfor fra begge ender av rommet (vanligvis endene av betjeningsgangen).",
+          "Det kreves bare én utgang hvis avstanden fra ethvert av betjeningsorganene til utgangen har en samlet lengde på maks 4 m. I den samlede lengde skal kun medregnes de deler av gangen hvor den frie gangbredden ut for felt med mineraloljefylte apparater er mindre enn 2 m.",
+        ],
+        "ARK / RIE"
+      ));
+    }
+  }
   if (formData.utgangBranncelle) {
     rows.push(contentRow("Utganger", formData.utgangBranncelle, "ARK"));
   }
