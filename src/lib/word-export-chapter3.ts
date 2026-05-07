@@ -1174,6 +1174,19 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
       "RIE"
     ));
   }
+  {
+    const erKraftstasjon39 = ((formData.bygningstype || "") as string).toLowerCase().includes("kraftstasjon")
+      || ((formData.bygningsdeler || []) as any[]).some((d: any) => ((d.bygningstype || "") as string).toLowerCase().includes("kraftstasjon"));
+    if (erKraftstasjon39) {
+      const lines: string[] = [];
+      if (formData.kraftstasjonUnderFjell) {
+        lines.push("Stasjoner i fjell og under dagen skal ha nødlysanlegg, (jf. FEA-F § 26).");
+      }
+      lines.push("Kraftstasjoner og andre større stasjoner med høyspenningsanlegg skal være forsynt med nødbelysning som forsynes fra en kilde som er uavhengig av høyspenningsanlegget (nødstrøm), (jf. FEA-F § 25).");
+      lines.push("Nødbelysning basert på kraftforsyning fra sentral batteribank eller aggregat er ikke tilfredsstillende alene. Det anbefales derfor i tillegg å montere nødbelysning bestående av håndlykter med batterier under kontinuerlig ladning, opphengt på sentrale steder. Disse vil også være praktiske ved innsats i anlegget.");
+      rows.push(contentRowMultiLine("Nødbelysning – kraftstasjon", lines, "RIE"));
+    }
+  }
   if (formData.tilretteleggingKommentar) {
     rows.push(contentRow("Kommentar", formData.tilretteleggingKommentar, "-"));
   }
