@@ -3108,6 +3108,18 @@ const Konsept = () => {
                             </Select>
                           )}
                         </div>
+                        {((formData.bygningstype || "").toLowerCase().includes("kraftstasjon")) && (
+                          <div className="flex items-center gap-2 rounded-md border border-input bg-muted/30 px-3 py-2">
+                            <Checkbox
+                              id="kraftstasjonUnderFjell"
+                              checked={!!formData.kraftstasjonUnderFjell}
+                              onCheckedChange={(checked) => setFormData({...formData, kraftstasjonUnderFjell: checked as boolean})}
+                            />
+                            <Label htmlFor="kraftstasjonUnderFjell" className="text-xs font-medium cursor-pointer">
+                              Kraftstasjon under fjell eller under dagen
+                            </Label>
+                          </div>
+                        )}
                         <div className="grid grid-cols-2 gap-2">
                           <div>
                             <Label className="text-xs font-medium mb-1 block">Bruttoareal (m²)</Label>
