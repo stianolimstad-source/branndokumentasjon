@@ -577,6 +577,15 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     }
   }
 
+  // Dører i rømningsvei – kraftstasjon
+  {
+    const erKraftstasjonDor = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+      || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+    if (erKraftstasjonDor) {
+      rows.push(contentRow("Dører i rømningsvei – kraftstasjon", "For dører i rømningsvei anbefales det dører med vindu for å kunne oppdage personell, røyk eller brann.", "ARK"));
+    }
+  }
+
   // Vinduskrav
   if (formData.vinduskravRelevant) {
     rows.push(contentRow("Vinduskrav", "Vindu med brannmotstand må ikke kunne åpnes i vanlig brukstilstand.", "ARK"));
