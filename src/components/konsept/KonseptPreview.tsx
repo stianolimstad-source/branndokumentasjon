@@ -1932,11 +1932,18 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
               if (!erKraftstasjonDor) return null;
               return (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Dører i rømningsvei – kraftstasjon</td>
-                  <td className="border border-gray-400 p-2">For dører i rømningsvei anbefales det dører med vindu for å kunne oppdage personell, røyk eller brann.</td>
-                  <td className="border border-gray-400 p-2 align-top">ARK</td>
-                </tr>
+                <>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Dører i rømningsvei – kraftstasjon</td>
+                    <td className="border border-gray-400 p-2">For dører i rømningsvei anbefales det dører med vindu for å kunne oppdage personell, røyk eller brann.</td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Dør til rom for høyspenningsanlegg – kraftstasjon</td>
+                    <td className="border border-gray-400 p-2">Dører til rom for høyspenningsanlegg skal ha selvlukker.</td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
+                </>
               );
             })()}
             {/* Vinduskrav */}

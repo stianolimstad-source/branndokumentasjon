@@ -583,6 +583,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
       || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
     if (erKraftstasjonDor) {
       rows.push(contentRow("Dører i rømningsvei – kraftstasjon", "For dører i rømningsvei anbefales det dører med vindu for å kunne oppdage personell, røyk eller brann.", "ARK"));
+      rows.push(contentRow("Dør til rom for høyspenningsanlegg – kraftstasjon", "Dører til rom for høyspenningsanlegg skal ha selvlukker.", "ARK"));
     }
   }
 
