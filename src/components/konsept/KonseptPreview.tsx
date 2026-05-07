@@ -1943,6 +1943,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <td className="border border-gray-400 p-2">Dører til rom for høyspenningsanlegg skal ha selvlukker.</td>
                     <td className="border border-gray-400 p-2 align-top">ARK</td>
                   </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Dører til teknisk rom – kraftstasjon</td>
+                    <td className="border border-gray-400 p-2">Dører til teknisk rom skal være utadslående for å sikre rømningsveier.</td>
+                    <td className="border border-gray-400 p-2 align-top">ARK</td>
+                  </tr>
                 </>
               );
             })()}

@@ -1,30 +1,21 @@
 ## Mål
-Legge til ny seksjon "Transformatorrom" i kap. 3.9 for kraftstasjoner (BF85 og TEK17, brannkonsept og tilstandsvurdering). Vises automatisk når bygningstype/bygningsdel er Kraftstasjon (samme `erKraftstasjon`-sjekk som de øvrige radene).
+Legge til ny rad "Dører til teknisk rom" i kap. 3.5 for kraftstasjoner (BF85 og TEK17, brannkonsept og tilstandsvurdering). Vises automatisk når bygningstype/bygningsdel er Kraftstasjon, sammen med de øvrige kraftstasjon-spesifikke dørradene.
 
 ## Tekstinnhold (ny rad)
 
-**Forhold:** Transformatorrom – kraftstasjon
-**Ansvar:** RIE
-
-**Løsning:**
-
-Rom med oljefylte transformatorer, slokkespoler og lignende skal være utført med terskel, steinfilter, oljekum eller lignende, slik at oljen ikke kan renne ut av rommet. Rom med mineraloljefylte transformatorer med samlet ytelse over 1600 kVA, skal ha effektivt automatisk brannslokkingsanlegg eller oljegrube eller annen utførelse med samme brannslokkende effekt.
-
-Oljegrube utføres med steinfilter med tykkelse min. 400 millimeter. Det bør nyttes renvasket stein med størrelse 60–90 millimeter, fortrinnsvis elvestein. Oljekum og eventuell tilleggstank skal romme hele oljemengden og eventuell slokkevæske. Dette innebærer at det må være kontroll over hvor mye slokkevæske som kan bli benyttet, særlig i automatiske slokkeanlegg. Det anbefales å tilrettelegge for tømming av oljegrube fra sikkert område, for eksempel rør (OBS! ikke plastrør) som føres ut av anlegget til tank/sluk for oppsug til tankbiler. I anlegg i fjell/under dagen kan en mulig løsning være å plassere oppsamlingstank lavt i anlegget, for eksempel i turbinkjelleren. Der hvor flere transformatorer har felles oljegrube, er det tilstrekkelig at volumet dekker den største transformatoren, dersom en brann ikke kan spre seg mellom transformatorene (jf. FEA-F § 25).
-
-For å unngå at olje sprer seg utenfor transformatorcellen i tilfeller hvor transformatorkassen sprenges, bør transformatorcellen ha så høy terskel eller andre avgrensninger at rommet over steinfilteret kan oppta minst halvparten av transformatorens oljemengde. Dette er særlig viktig hvor en utblåsing kan skje i retning mot utganger, nødutganger eller steder hvor personer oppholder seg.
-
-Dører inn til transformatorcellene og mellom cellene skal minimum være selvlukkende branndører. Der transformatorcellen er adskilt fra resten av anlegget med store porter, bør det monteres dør i porten.
+**Forhold:** Dører til teknisk rom – kraftstasjon  
+**Løsning:** Dører til teknisk rom skal være utadslående for å sikre rømningsveier.  
+**Ansvar:** ARK
 
 ## Vilkår for visning
-Vises når bygningstype eller noen av bygningsdelene har "Kraftstasjon" (samme `erKraftstasjon`-sjekk som benyttes for `Nødbelysning – kraftstasjon` og `Redningsrom – kraftstasjon` i kap. 3.9).
+Samme `erKraftstasjonDor`-sjekk som benyttes for de eksisterende kraftstasjon-radene i kap. 3.5 (bygningstype eller bygningsdel inneholder "Kraftstasjon").
 
 ## Tekniske endringer
 
-### `src/components/konsept/KonseptPreview.tsx` (kap. 3.9)
-Legge til ny `<tr>` rett etter "Redningsrom – kraftstasjon"-blokken (rundt linje 3887), med samme struktur (font-medium på forhold, avsnittsdelt løsning med `<p className="mt-2">`, dørseksjon som siste avsnitt). Ansvar = RIE.
+### `src/components/konsept/KonseptPreview.tsx` (kap. 3.5)
+Inne i eksisterende `erKraftstasjonDor`-blokk (rundt linje 1934), legge til en tredje `<tr>` rett etter "Dør til rom for høyspenningsanlegg – kraftstasjon". Samme styling: `font-medium` implisitt via td-layout, ansvar = ARK.
 
-### `src/lib/word-export-chapter3.ts` (kap. 3.9)
-Tilsvarende `contentRowMultiLine("Transformatorrom – kraftstasjon", lines, "RIE")` rett etter `Redningsrom – kraftstasjon`-blokken (rundt linje 1221), med samme `erKraftstasjon39`-betingelse.
+### `src/lib/word-export-chapter3.ts` (kap. 3.5)
+Inne i samme `erKraftstasjonDor`-blokk (rundt linje 584), legge til `rows.push(contentRow("Dører til teknisk rom – kraftstasjon", "Dører til teknisk rom skal være utadslående for å sikre rømningsveier.", "ARK"));` rett etter høyspenningsanlegg-raden.
 
 Ingen endringer i datamodell eller input-side.
