@@ -6667,7 +6667,21 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
-                    {renderTilstandPanel("3_5")}
+                     {(() => {
+                       const erKraftstasjon = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                         || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+                       return (
+                         <KraftstasjonTilleggskravCard kapittel="3.5" visible={erKraftstasjon}>
+                           <div className="text-xs space-y-1">
+                             <p className="font-medium text-foreground">Følgende tilleggskrav inkluderes automatisk i rapporten:</p>
+                             <ul className="list-disc pl-5 space-y-0.5 text-muted-foreground">
+                               <li>Dører til teknisk rom skal være utadslående for å sikre rømningsveier.</li>
+                             </ul>
+                           </div>
+                         </KraftstasjonTilleggskravCard>
+                       );
+                     })()}
+                     {renderTilstandPanel("3_5")}
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-6" label={`3.6 ${formData.regelverk === "BF85" ? "Kledninger og overflater (:42)" : "§ 11-9 Materialer og produkter"}`}>
                     <div className="space-y-2">
