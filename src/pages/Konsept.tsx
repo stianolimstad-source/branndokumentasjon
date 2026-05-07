@@ -8411,10 +8411,21 @@ const Konsept = () => {
                                 <Checkbox id="dorerNattlaser" checked={formData.dorerNattlaser} onCheckedChange={(checked) => setFormData({...formData, dorerNattlaser: checked as boolean})} />
                                 <Label htmlFor="dorerNattlaser" className="text-xs cursor-pointer">Nattlåser er relevant</Label>
                               </div>
-                              <div className="flex items-center space-x-2">
-                                <Checkbox id="dorerLiteAntallPersoner" checked={formData.dorerLiteAntallPersoner} onCheckedChange={(checked) => setFormData({...formData, dorerLiteAntallPersoner: checked as boolean})} />
-                                <Label htmlFor="dorerLiteAntallPersoner" className="text-xs cursor-pointer">Dør kan slå mot rømningsretning (lite antall personer)</Label>
-                              </div>
+                              {(() => {
+                                const erKraftstasjon = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                                  || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+                                return (
+                                  <>
+                                    <div className="flex items-center space-x-2">
+                                      <Checkbox id="dorerLiteAntallPersoner" disabled={erKraftstasjon} checked={erKraftstasjon ? false : formData.dorerLiteAntallPersoner} onCheckedChange={(checked) => setFormData({...formData, dorerLiteAntallPersoner: checked as boolean})} />
+                                      <Label htmlFor="dorerLiteAntallPersoner" className="text-xs cursor-pointer">Dør kan slå mot rømningsretning (lite antall personer)</Label>
+                                    </div>
+                                    {erKraftstasjon && (
+                                      <p className="text-[11px] text-muted-foreground italic ml-6">Gjelder ikke for kraftstasjon — alle dører til og i rømningsvei skal slå ut i rømningsretning.</p>
+                                    )}
+                                  </>
+                                );
+                              })()}
                             </div>
                           </div>
                         );

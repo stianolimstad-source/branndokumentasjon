@@ -1,32 +1,32 @@
 ## Mål
-Legge til "Kraftstasjon" som valgbar bygningstype i kap. 2.1 for både brannkonsept og tilstandsvurdering, for både TEK17 og BF85. Behandles likt som Industri/håndverk for de generelle branntekniske kravene. Egne særkrav (tilleggskrav) legges inn i en senere iterasjon.
+For kraftstasjoner skal dører til og i rømningsvei alltid slå ut i rømningsretningen — unntaket "lite antall personer" gjelder ikke. Dette skal håndteres automatisk i kap. 3.10 (§11-13 / Kap. 30:71–73) for både brannkonsept og tilstandsvurdering, både TEK17 og BF85.
 
 ## Endringer
 
-### 1. `src/pages/Konsept.tsx` (TEK17-mapping)
-- I `bygningsTypeRisikoklasseMap` (linje 73): legg til `"Kraftstasjon": "RK2"` (samme risikoklasse som Industri/Trafo).
-- I `<Select>` for bygningstype TEK17 (ca. linje 3061 i hovedform og linje 3267 i bygningsdeler): legg til `<SelectItem value="Kraftstasjon">Kraftstasjon</SelectItem>` rett under "Industri" / under RK2-gruppen.
-- I logikken som sjekker `bygningstype.includes("industri") || bygningstype.includes("lager")` (linje 1227, og evt. tilsvarende steder): utvid til også å matche `"kraftstasjon"`, slik at brannenergi-vurdering og andre industrispesifikke regler aktiveres.
-- I `["Industri", "Kontor", "Garasje", "Lager"].includes(...)` (linje 4410) og lignende lister: legg til `"Kraftstasjon"` der industri behandles.
+### 1. Form (`src/pages/Konsept.tsx`, ~linje 8410–8418)
+- Oppdag om bygningstype (eller noen av bygningsdelene) er "Kraftstasjon".
+- Hvis ja:
+  - Deaktiver checkboxen "Dør kan slå mot rømningsretning (lite antall personer)" (`disabled` + tving `dorerLiteAntallPersoner = false`).
+  - Vis liten hjelpetekst under: "Gjelder ikke for kraftstasjon — alle dører til og i rømningsvei skal slå ut i rømningsretning."
 
-### 2. `src/lib/bf85-constants.ts` (BF85-mapping)
-- Utvid type `BF85Bygningstype` med `| "Kraftstasjon"`.
-- I `bf85BygningstyperListe` (linje 237): legg til `{ value: "Kraftstasjon", label: "Kraftstasjon", kap: "Kap. 34" }` rett etter Industri.
-- I `getBygningsbrannklasse`-switchen: la `case "Kraftstasjon":` falle gjennom til samme behandling som `"Industri"` (samme tabell, samme brannbelastning-input).
-- Sørg for at alle steder der `bygningstype === "Industri" || bygningstype === "Lager"` brukes (f.eks. for brannbelastning-input i Konsept.tsx linje 3162), inkluderer "Kraftstasjon".
+### 2. Preview (`src/components/konsept/KonseptPreview.tsx`)
+- I kap. 3.10 "Dører til rømningsvei" (~linje 4183):
+  - Skjul `dorerLiteAntallPersoner`-li-elementet hvis kraftstasjon.
+  - Legg til ny obligatorisk linje når kraftstasjon: "Alle dører til og i rømningsvei skal slå ut i rømningsretning."
+- Samme tillegg vurderes i kap. 3.11 "Dør i rømningsvei" (~linje 4463) for konsistens.
+- Gjelder uavhengig av `isBF85` siden samme tabell brukes.
 
-### 3. Konsekvensjusteringer
-- Sjekk `KonseptPreview.tsx` og `word-export-chapter3.ts` for hardkodede sjekker på "Industri"/"Lager" og inkluder "Kraftstasjon" der det styrer industri-spesifikk tekst/tabeller.
-- Ingen endringer i ytterligere kapitler — kraftstasjon arver alt fra industri.
+### 3. Word-eksport (`src/lib/word-export-chapter3.ts`, ~linje 1298–1300)
+- Speil samme logikk: skjul "lite antall personer"-bullet for kraftstasjon, og legg til ny bullet "Alle dører til og i rømningsvei skal slå ut i rømningsretning."
 
-### 4. Forberedelse for tilleggskrav (kun struktur, ikke innhold)
-- Ingen UI for særkrav i denne iterasjonen. Innholdet kommer i neste runde når du leverer konkrete tilleggskrav.
+### 4. Deteksjonshelper
+- Definer en lokal `erKraftstasjon`-sjekk: hovedbygning eller noen `bygningsdeler[i].bygningstype` lik `"Kraftstasjon"` (case-insensitive). Brukes i alle tre filer.
 
 ## Filer som endres
 - `src/pages/Konsept.tsx`
-- `src/lib/bf85-constants.ts`
-- `src/components/konsept/KonseptPreview.tsx` (kun hvis hardkodede industri-sjekker finnes)
-- `src/lib/word-export-chapter3.ts` (samme)
+- `src/components/konsept/KonseptPreview.tsx`
+- `src/lib/word-export-chapter3.ts`
 
-## Spørsmål før implementering
-Vil du at "Kraftstasjon" skal vises som eget alternativ i nedtrekksmenyen (anbefalt), eller bakes inn under "Industri / kraftstasjon"-label? Planen over forutsetter eget alternativ.
+## Spørsmål
+1. Skal regelen også gjelde i kap. 3.11 (§11-14 Rømningsvei) "Dør i rømningsvei"? Planen foreslår ja for konsistens.
+2. Hvis bygget har flere bygningsdeler hvor bare én er kraftstasjon — skal regelen vises generelt, eller kun nevnes for kraftstasjon-delen? Planen foreslår å vise det generelt med formulering "For kraftstasjon: alle dører til og i rømningsvei skal slå ut i rømningsretning."
