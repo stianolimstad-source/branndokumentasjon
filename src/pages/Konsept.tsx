@@ -3110,15 +3110,20 @@ const Konsept = () => {
                           )}
                         </div>
                         {((formData.bygningstype || "").toLowerCase().includes("kraftstasjon")) && (
-                          <div className="flex items-center gap-2 rounded-md border border-input bg-muted/30 px-3 py-2">
-                            <Checkbox
-                              id="kraftstasjonUnderFjell"
-                              checked={!!formData.kraftstasjonUnderFjell}
-                              onCheckedChange={(checked) => setFormData({...formData, kraftstasjonUnderFjell: checked as boolean})}
-                            />
-                            <Label htmlFor="kraftstasjonUnderFjell" className="text-xs font-medium cursor-pointer">
-                              Kraftstasjon under fjell eller under dagen
-                            </Label>
+                          <div className="rounded-md border border-input bg-muted/30 px-3 py-2 space-y-1">
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id="kraftstasjonUnderFjell"
+                                checked={!!formData.kraftstasjonUnderFjell}
+                                onCheckedChange={(checked) => setFormData({...formData, kraftstasjonUnderFjell: checked as boolean})}
+                              />
+                              <Label htmlFor="kraftstasjonUnderFjell" className="text-xs font-medium cursor-pointer">
+                                Kraftstasjon under fjell eller under dagen
+                              </Label>
+                            </div>
+                            <p className="text-xs text-muted-foreground pl-6">
+                              Hukes av: Inkluderer krav om nødlysanlegg etter FEA-F § 26 i kap. 3.9 (gjelder stasjoner i fjell og under dagen). Krav etter FEA-F § 25 om uavhengig nødbelysning og anbefaling om håndlykter tas alltid med for kraftstasjoner.
+                            </p>
                           </div>
                         )}
                         <div className="grid grid-cols-2 gap-2">
