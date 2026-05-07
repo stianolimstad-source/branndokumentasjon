@@ -3462,13 +3462,38 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
               if (!erKraftstasjon37) return null;
               return (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top font-medium">Rom for høyspenningsanlegg</td>
-                  <td className="border border-gray-400 p-2">
-                    <p>Foran spenningsførende deler i apparatanlegg skal det anbringes dør, plate eller lignende beskyttelse, (jf. FEA-F § 39).</p>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">RIE</td>
-                </tr>
+                <>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top font-medium">Rom for høyspenningsanlegg</td>
+                    <td className="border border-gray-400 p-2">
+                      <p>Foran spenningsførende deler i apparatanlegg skal det anbringes dør, plate eller lignende beskyttelse, (jf. FEA-F § 39).</p>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIE</td>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top font-medium">Kabler (kulverter, sjakter og kabeltunneler) – kraftstasjon</td>
+                    <td className="border border-gray-400 p-2">
+                      <p>Kabler skal være forlagt slik at de er beskyttet mot skade fra brann, trykkpåkjenninger mv.</p>
+                      <p className="mt-2">Kabler for nødkraftanlegg, styringsanlegg og samband mellom stasjonsinngang og redningsrom skal være forlagt adskilt fra hverandre og adskilt fra andre kabler. Med adskilt menes et lysbuebeskyttende mekanisk skille. Likeverdig med dette godtas "brannsikker" kabel (jf. FEA-F §26).</p>
+                      <p className="mt-2">Nedenfor er listet eksempler på sannsynlighet og/eller konsekvensreduserende tiltak:</p>
+                      <ul className="list-disc pl-4 mt-1">
+                        <li>Ulike kabeltyper bør skilles på forskjellige kabelstiger for å unngå at brann i en kraftkabel skader andre kabler</li>
+                        <li>Kabelforlegning i kabelkanaler/kabeltunneler som brukes som rømningsveier og/eller friskluftinntak bør seksjoneres</li>
+                      </ul>
+                      <p className="mt-2">Unngå å legge viktige kabler nærmest taket da temperaturen ved brann normalt blir høyest der. Hovedregelen ved plassering av ulike kabeltyper på forskjellige kabelstiger over hverandre er at man legger kraftkabler på øverste stige og styre-/kontrollkabler på nederste stige. I kabelkulverter/-kanaler og andre større forlegninger med mange kabelstiger over hverandre, bør man sørge for at man har en avstand på minst 300 mm mellom stigene.</p>
+                      <ul className="list-disc pl-4 mt-1">
+                        <li>Det legges bare ett lag kraftkabler på hyller og kabelbroer. Mellom kraftkablene bør det dessuten være en avstand på ca. halvparten av kabelens diameter</li>
+                        <li>Horisontale avskjerminger med en plate av samme bredde som kabelstigen og plassert like under</li>
+                        <li>Store og høye vertikale forlegninger bør seksjoneres. I tillegg må det fokuseres mot god festing</li>
+                        <li>Kabelstiger bør kuttes på begge sider av gjennomføringer for å unngå varmegjennomgang og bevegelse gjennom brannskillet</li>
+                        <li>Kabler bør føres utenom brannfarlige områder</li>
+                        <li>Lange kabelkulverter bør deles opp ved hjelp av brannsikre vegger og brannklassifiserte gjennomføringer. Dersom ventilasjon av rom eller forhold gjør det nødvendig, kan branndører settes i åpen stilling på holdemagnet tilkoblet brannalarmanlegg</li>
+                        <li>Kablers brannmotstand kan økes ved å påføre kabler brannhemmende maling</li>
+                      </ul>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIE</td>
+                  </tr>
+                </>
               );
             })()}
             {formData.installasjonerKommentar && (
