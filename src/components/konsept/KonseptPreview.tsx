@@ -4504,7 +4504,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2 align-top font-medium">Panikkbeslag</td>
                   <td className="border border-gray-400 p-2">
                     {erKraftstasjon
-                      ? "For kraftstasjon må dør i rømningsvei være utført for sikker rømning ved at døren kan åpnes manuelt med ett grep og uten bruk av nøkkel (panikkbeslag iht. NS-EN 1125). For rom med høyspentanlegg skal beslaget være utformet slik at det kan betjenes med kne, albue eller annen kroppsdel, slik at dør kan åpnes uten bruk av hender."
+                      ? "For kraftstasjon må dør i rømningsvei være utført for sikker rømning ved at døren kan åpnes manuelt med ett grep og uten bruk av nøkkel (panikkbeslag iht. NS-EN 1125). For rom med høyspentanlegg skal beslaget være utformet slik at det kan betjenes med kne, albue eller annen kroppsdel, slik at dør kan åpnes uten bruk av hender. Beslaget skal også kunne benyttes av personer som åler eller kryper, og må derfor være vertikalmontert slik at det kan betjenes uansett høyde."
                       : "Dør i rømningsvei i byggverk i risikoklasse 5 og 6 må være utført for sikker rømning ved at døren må kunne åpnes manuelt med ett grep og uten bruk av nøkkel, jf. figur 6."}
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
