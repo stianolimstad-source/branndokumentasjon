@@ -1329,6 +1329,19 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     "Rømningsvei skal på en oversiktlig og lettfattelig måte føre til et sikkert sted. Den skal ha tilstrekkelig bredde og høyde og være utført som egen branncelle tilrettelagt for rask og effektiv rømning.",
     "-"
   ));
+  {
+    const erKraftstasjonRV = ((formData.bygningstype || "") as string).toLowerCase().includes("kraftstasjon")
+      || ((formData.bygningsdeler || []) as any[]).some((d: any) => ((d.bygningstype || "") as string).toLowerCase().includes("kraftstasjon"));
+    if (formData.romningsveiPanikkbeslag || erKraftstasjonRV) {
+      rows.push(contentRow(
+        "Panikkbeslag",
+        erKraftstasjonRV
+          ? "For kraftstasjon må dør i rømningsvei være utført for sikker rømning ved at døren kan åpnes manuelt med ett grep og uten bruk av nøkkel (panikkbeslag iht. NS-EN 1125). For rom med høyspentanlegg skal beslaget være utformet slik at det kan betjenes med kne, albue eller annen kroppsdel, slik at dør kan åpnes uten bruk av hender."
+          : "Dør i rømningsvei i byggverk i risikoklasse 5 og 6 må være utført for sikker rømning ved at døren må kunne åpnes manuelt med ett grep og uten bruk av nøkkel, jf. figur 6.",
+        "ARK"
+      ));
+    }
+  }
   if (formData.romningsvei) {
     rows.push(contentRow("Beskrivelse", formData.romningsvei, "ARK"));
   }
