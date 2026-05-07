@@ -1,15 +1,27 @@
 ## Mål
-Utvid panikkbeslag-teksten for kraftstasjon (kap. 3.11) med tilleggskrav for rom med høyspentanlegg: beslaget må også kunne benyttes av personer som åler/kryper, dvs. vertikalmontert slik at det kan betjenes uansett høyde.
+Legg til automatisk tekst i kap. 3.10 (Utgang fra branncelle) for kraftstasjoner i både brannkonsept og tilstandsvurdering — for både TEK17 og BF85. Teksten gjelder rom med både mineraloljefylte apparater og betjeningsorganer for høyspenning.
 
-## Endringer
+## Tekst som skal legges til (ny rad i tabellen)
 
-### 1. `src/components/konsept/KonseptPreview.tsx` (~linje 4507)
-Utvid eksisterende kraftstasjon-tekst til:
-> "For kraftstasjon må dør i rømningsvei være utført for sikker rømning ved at døren kan åpnes manuelt med ett grep og uten bruk av nøkkel (panikkbeslag iht. NS-EN 1125). For rom med høyspentanlegg skal beslaget være utformet slik at det kan betjenes med kne, albue eller annen kroppsdel, slik at dør kan åpnes uten bruk av hender. Beslaget skal også kunne benyttes av personer som åler eller kryper, og må derfor være vertikalmontert slik at det kan betjenes uansett høyde."
+**Tittel:** "Kraftstasjon – utganger fra rom med høyspentanlegg"
 
-### 2. `src/lib/word-export-chapter3.ts` (~linje 1339)
-Speil samme utvidede tekst i Word-eksportens panikkbeslag-rad.
+**Innhold:**
+> Inneholder rommet både mineraloljefylte apparater og betjeningsorganer for høyspenning, kreves det utgangsmulighet som beskrevet ovenfor fra begge ender av rommet (vanligvis endene av betjeningsgangen).
+>
+> Det kreves bare én utgang hvis avstanden fra ethvert av betjeningsorganene til utgangen har en samlet lengde på maks 4 m. I den samlede lengde skal kun medregnes de deler av gangen hvor den frie gangbredden ut for felt med mineraloljefylte apparater er mindre enn 2 m.
+
+**Ansvar:** ARK / RIE
+
+## Hvor
+
+### 1. `src/components/konsept/KonseptPreview.tsx` (kap. 3.10, ~linje 4197)
+Legg til en ny `<tr>`-rad rett etter "Dører til rømningsvei"-blokken, conditional på `erKraftstasjon` (samme helper som brukes andre steder i filen — sjekker `bygningstype` og `bygningsdeler`). Vises uavhengig av TEK17/BF85 (regelen gjelder begge). Tilstandsvurdering bruker samme komponent (`Tilstandsvurdering.tsx` er bare en wrapper rundt Konsept), så endringen dekker begge automatisk.
+
+### 2. `src/lib/word-export-chapter3.ts` (kap. 3.10, ~linje 1186)
+Speil samme rad i Word-eksport: legg til conditional row med `erKraftstasjonRV`-helperen som allerede er definert i filen.
 
 ## Filer som endres
 - `src/components/konsept/KonseptPreview.tsx`
 - `src/lib/word-export-chapter3.ts`
+
+Ingen nye form-felt — utløses automatisk av kraftstasjon-bygningstype.
