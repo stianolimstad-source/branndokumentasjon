@@ -1,23 +1,21 @@
 ## Mål
-Legge til anbefaling om dører med vindu i rømningsvei for kraftstasjoner (både BF85 og TEK17, brannkonsept og tilstandsvurdering). Vises i kap. 3.5 i tilknytning til "Dørkrav".
+Legge til at dører til rom for høyspenningsanlegg skal ha selvlukker. Gjelder kraftstasjoner (BF85 og TEK17, brannkonsept og tilstandsvurdering), kap. 3.5.
 
-## Tekst som legges inn
-> For dører i rømningsvei anbefales det dører med vindu for å kunne oppdage personell, røyk eller brann.
+## Tekst
+> Dører til rom for høyspenningsanlegg skal ha selvlukker.
 
 ## Vilkår for visning
-Vises automatisk når `bygningstype` eller noen `bygningsdeler[].bygningstype` inneholder "Kraftstasjon" (samme `erKraftstasjon`-sjekk som brukes andre steder i preview/word-export). Ingen nye formfelt.
+Vises automatisk når bygningstype eller noen av bygningsdelene har "Kraftstasjon" (samme `erKraftstasjon`-sjekk som benyttes i øvrige kraftstasjon-rader).
 
 ## Tekniske endringer
 
-### `src/components/konsept/KonseptPreview.tsx` (kap. 3.5, etter "Dørkrav"-raden ~linje 1928)
-Legge til en ny `<tr>` rett etter den eksisterende dørkrav-raden (gjelder både BF85- og TEK17-greinene):
-- Forhold-celle: "Dører i rømningsvei – kraftstasjon"
-- Løsning-celle: anbefalingsteksten over.
-- Ansvar-celle: "ARK"
+### `src/components/konsept/KonseptPreview.tsx` (kap. 3.5)
+Legge til en ny `<tr>` rett etter den eksisterende "Dører i rømningsvei – kraftstasjon"-raden:
+- Forhold: "Dør til rom for høyspenningsanlegg – kraftstasjon"
+- Løsning: teksten over
+- Ansvar: "ARK"
 
-Raden rendres betinget på `erKraftstasjon`-sjekken.
+### `src/lib/word-export-chapter3.ts` (kap. 3.5)
+Tilsvarende `contentRow(...)` direkte etter den eksisterende kraftstasjon-rad-blokken, med samme betingelse.
 
-### `src/lib/word-export-chapter3.ts` (kap. 3.5, etter dørkrav-blokken)
-Tilsvarende `contentRow("Dører i rømningsvei – kraftstasjon", "<tekst>", "ARK")` som legges til når `erKraftstasjon` er sann, slik at Word-eksporten matcher previewen.
-
-Ingen endringer i datamodell, og ingen endringer på input-siden (gjelder automatisk for kraftstasjon).
+Ingen endringer i datamodell eller input-side.
