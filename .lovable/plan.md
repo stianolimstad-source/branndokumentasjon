@@ -1,24 +1,22 @@
 ## Mål
-Legg til automatisk tekst i kap. 3.10 (Utgang fra branncelle) for kraftstasjoner i både brannkonsept og tilstandsvurdering — for både TEK17 og BF85. Teksten gjelder rom med både mineraloljefylte apparater og betjeningsorganer for høyspenning.
+Legg til automatisk innhold i kap. 3.7 (Tekniske installasjoner) for kraftstasjoner i både brannkonsept og tilstandsvurdering — for både TEK17 og BF85.
 
-## Tekst som skal legges til (ny rad i tabellen)
+## Tekst som skal legges til
 
-**Tittel:** "Kraftstasjon – utganger fra rom med høyspentanlegg"
+**Underoverskrift:** "Rom for høyspenningsanlegg"
 
 **Innhold:**
-> Inneholder rommet både mineraloljefylte apparater og betjeningsorganer for høyspenning, kreves det utgangsmulighet som beskrevet ovenfor fra begge ender av rommet (vanligvis endene av betjeningsgangen).
->
-> Det kreves bare én utgang hvis avstanden fra ethvert av betjeningsorganene til utgangen har en samlet lengde på maks 4 m. I den samlede lengde skal kun medregnes de deler av gangen hvor den frie gangbredden ut for felt med mineraloljefylte apparater er mindre enn 2 m.
+> Foran spenningsførende deler i apparatanlegg skal det anbringes dør, plate eller lignende beskyttelse, (jf. FEA-F § 39).
 
-**Ansvar:** ARK / RIE
+**Ansvar:** RIE
 
 ## Hvor
 
-### 1. `src/components/konsept/KonseptPreview.tsx` (kap. 3.10, ~linje 4197)
-Legg til en ny `<tr>`-rad rett etter "Dører til rømningsvei"-blokken, conditional på `erKraftstasjon` (samme helper som brukes andre steder i filen — sjekker `bygningstype` og `bygningsdeler`). Vises uavhengig av TEK17/BF85 (regelen gjelder begge). Tilstandsvurdering bruker samme komponent (`Tilstandsvurdering.tsx` er bare en wrapper rundt Konsept), så endringen dekker begge automatisk.
+### 1. `src/components/konsept/KonseptPreview.tsx` (kap. 3.7)
+Legg til en ny `<tr>`-rad i 3.7-tabellen, conditional på `erKraftstasjon` (samme helper-mønster: sjekker `bygningstype` og `bygningsdeler`). Vises uavhengig av TEK17/BF85. Tilstandsvurdering bruker samme komponent, så endringen dekker begge.
 
-### 2. `src/lib/word-export-chapter3.ts` (kap. 3.10, ~linje 1186)
-Speil samme rad i Word-eksport: legg til conditional row med `erKraftstasjonRV`-helperen som allerede er definert i filen.
+### 2. `src/lib/word-export-chapter3.ts` (kap. 3.7)
+Speil samme rad i Word-eksport.
 
 ## Filer som endres
 - `src/components/konsept/KonseptPreview.tsx`

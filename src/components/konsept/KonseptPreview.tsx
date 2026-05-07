@@ -3432,6 +3432,20 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 )}
               </>
             )}
+            {(() => {
+              const erKraftstasjon37 = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+              if (!erKraftstasjon37) return null;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Rom for høyspenningsanlegg</td>
+                  <td className="border border-gray-400 p-2">
+                    <p>Foran spenningsførende deler i apparatanlegg skal det anbringes dør, plate eller lignende beskyttelse, (jf. FEA-F § 39).</p>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIE</td>
+                </tr>
+              );
+            })()}
             {formData.installasjonerKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
