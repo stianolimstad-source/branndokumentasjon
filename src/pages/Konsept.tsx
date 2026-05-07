@@ -7359,7 +7359,22 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
-                    {renderTilstandPanel("3_8")}
+                     {(() => {
+                       const erKraftstasjon = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                         || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+                       return (
+                         <KraftstasjonTilleggskravCard kapittel="3.8" visible={erKraftstasjon}>
+                           <div className="text-xs space-y-1">
+                             <p className="font-medium text-foreground">Følgende tilleggskrav gjelder for kraftstasjoner:</p>
+                             <ul className="list-disc pl-5 space-y-0.5 text-muted-foreground">
+                               <li>Alle dører til og i rømningsvei skal slå ut i rømningsretning (unntak om "lite antall personer" gjelder ikke).</li>
+                               <li>Krav til panikkbeslag (NS-EN 1125) er påkrevd.</li>
+                             </ul>
+                           </div>
+                         </KraftstasjonTilleggskravCard>
+                       );
+                     })()}
+                     {renderTilstandPanel("3_8")}
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-9" label={`3.9 ${formData.regelverk === "BF85" ? "Tilrettelegging for rømning (§ 11-12)" : "§ 11-12 Tilrettelegging for rømning"}`}>
                     <div className="space-y-4">
