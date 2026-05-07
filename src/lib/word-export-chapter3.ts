@@ -1219,6 +1219,16 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
       rrLines.push("• Førstehjelpsutstyr og båre.");
       rrLines.push("• Samband til utenforliggende bemannet vaktsted (f.eks. driftssentral) og til inngangen/portalbygg. Sambandsmidlene skal være uavhengig av stasjonsstrømforsyningen og må være beskyttet mot skade fra brann, overspenning mv.");
       rows.push(contentRowMultiLine("Redningsrom – kraftstasjon", rrLines, "RIE"));
+
+      const trLines: string[] = [];
+      trLines.push("Rom med oljefylte transformatorer, slokkespoler og lignende skal være utført med terskel, steinfilter, oljekum eller lignende, slik at oljen ikke kan renne ut av rommet. Rom med mineraloljefylte transformatorer med samlet ytelse over 1600 kVA, skal ha effektivt automatisk brannslokkingsanlegg eller oljegrube eller annen utførelse med samme brannslokkende effekt.");
+      trLines.push("");
+      trLines.push("Oljegrube utføres med steinfilter med tykkelse min. 400 millimeter. Det bør nyttes renvasket stein med størrelse 60–90 millimeter, fortrinnsvis elvestein. Oljekum og eventuell tilleggstank skal romme hele oljemengden og eventuell slokkevæske. Dette innebærer at det må være kontroll over hvor mye slokkevæske som kan bli benyttet, særlig i automatiske slokkeanlegg. Det anbefales å tilrettelegge for tømming av oljegrube fra sikkert område, for eksempel rør (OBS! ikke plastrør) som føres ut av anlegget til tank/sluk for oppsug til tankbiler. I anlegg i fjell/under dagen kan en mulig løsning være å plassere oppsamlingstank lavt i anlegget, for eksempel i turbinkjelleren. Der hvor flere transformatorer har felles oljegrube, er det tilstrekkelig at volumet dekker den største transformatoren, dersom en brann ikke kan spre seg mellom transformatorene (jf. FEA-F § 25).");
+      trLines.push("");
+      trLines.push("For å unngå at olje sprer seg utenfor transformatorcellen i tilfeller hvor transformatorkassen sprenges, bør transformatorcellen ha så høy terskel eller andre avgrensninger at rommet over steinfilteret kan oppta minst halvparten av transformatorens oljemengde. Dette er særlig viktig hvor en utblåsing kan skje i retning mot utganger, nødutganger eller steder hvor personer oppholder seg.");
+      trLines.push("");
+      trLines.push("Dører inn til transformatorcellene og mellom cellene skal minimum være selvlukkende branndører. Der transformatorcellen er adskilt fra resten av anlegget med store porter, bør det monteres dør i porten.");
+      rows.push(contentRowMultiLine("Transformatorrom – kraftstasjon", trLines, "RIE"));
     }
   }
   if (formData.tilretteleggingKommentar) {
