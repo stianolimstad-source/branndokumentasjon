@@ -3813,6 +3813,25 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
             )}
+            {(() => {
+              const erKraftstasjon39 = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+              if (!erKraftstasjon39) return null;
+              const underFjell = !!formData.kraftstasjonUnderFjell;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Nødbelysning – kraftstasjon</td>
+                  <td className="border border-gray-400 p-2">
+                    {underFjell && (
+                      <p>Stasjoner i fjell og under dagen skal ha nødlysanlegg, (jf. FEA-F § 26).</p>
+                    )}
+                    <p className={underFjell ? "mt-2" : ""}>Kraftstasjoner og andre større stasjoner med høyspenningsanlegg skal være forsynt med nødbelysning som forsynes fra en kilde som er uavhengig av høyspenningsanlegget (nødstrøm), (jf. FEA-F § 25).</p>
+                    <p className="mt-2">Nødbelysning basert på kraftforsyning fra sentral batteribank eller aggregat er ikke tilfredsstillende alene. Det anbefales derfor i tillegg å montere nødbelysning bestående av håndlykter med batterier under kontinuerlig ladning, opphengt på sentrale steder. Disse vil også være praktiske ved innsats i anlegget.</p>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIE</td>
+                </tr>
+              );
+            })()}
             {formData.tilretteleggingKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
