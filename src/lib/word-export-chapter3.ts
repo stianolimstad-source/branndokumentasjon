@@ -1076,6 +1076,24 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
         "Foran spenningsførende deler i apparatanlegg skal det anbringes dør, plate eller lignende beskyttelse, (jf. FEA-F § 39).",
         "RIE"
       ));
+      rows.push(contentRowMultiLine("Kabler (kulverter, sjakter og kabeltunneler) – kraftstasjon", [
+        "Kabler skal være forlagt slik at de er beskyttet mot skade fra brann, trykkpåkjenninger mv.",
+        "",
+        "Kabler for nødkraftanlegg, styringsanlegg og samband mellom stasjonsinngang og redningsrom skal være forlagt adskilt fra hverandre og adskilt fra andre kabler. Med adskilt menes et lysbuebeskyttende mekanisk skille. Likeverdig med dette godtas \"brannsikker\" kabel (jf. FEA-F §26).",
+        "",
+        "Nedenfor er listet eksempler på sannsynlighet og/eller konsekvensreduserende tiltak:",
+        "• Ulike kabeltyper bør skilles på forskjellige kabelstiger for å unngå at brann i en kraftkabel skader andre kabler",
+        "• Kabelforlegning i kabelkanaler/kabeltunneler som brukes som rømningsveier og/eller friskluftinntak bør seksjoneres",
+        "",
+        "Unngå å legge viktige kabler nærmest taket da temperaturen ved brann normalt blir høyest der. Hovedregelen ved plassering av ulike kabeltyper på forskjellige kabelstiger over hverandre er at man legger kraftkabler på øverste stige og styre-/kontrollkabler på nederste stige. I kabelkulverter/-kanaler og andre større forlegninger med mange kabelstiger over hverandre, bør man sørge for at man har en avstand på minst 300 mm mellom stigene.",
+        "• Det legges bare ett lag kraftkabler på hyller og kabelbroer. Mellom kraftkablene bør det dessuten være en avstand på ca. halvparten av kabelens diameter",
+        "• Horisontale avskjerminger med en plate av samme bredde som kabelstigen og plassert like under",
+        "• Store og høye vertikale forlegninger bør seksjoneres. I tillegg må det fokuseres mot god festing",
+        "• Kabelstiger bør kuttes på begge sider av gjennomføringer for å unngå varmegjennomgang og bevegelse gjennom brannskillet",
+        "• Kabler bør føres utenom brannfarlige områder",
+        "• Lange kabelkulverter bør deles opp ved hjelp av brannsikre vegger og brannklassifiserte gjennomføringer. Dersom ventilasjon av rom eller forhold gjør det nødvendig, kan branndører settes i åpen stilling på holdemagnet tilkoblet brannalarmanlegg",
+        "• Kablers brannmotstand kan økes ved å påføre kabler brannhemmende maling",
+      ], "RIE"));
     }
   }
 
