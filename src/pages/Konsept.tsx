@@ -30,6 +30,7 @@ import KonseptPreview from "@/components/konsept/KonseptPreview";
 import { UploadConceptDialog } from "@/components/konsept/UploadConceptDialog";
 import { buildChapter3Table } from "@/lib/word-export-chapter3";
 import TilstandsvurderingPanel, { TilstandData, emptyTilstand } from "@/components/konsept/TilstandsvurderingPanel";
+import KraftstasjonTilleggskravCard from "@/components/konsept/KraftstasjonTilleggskravCard";
 
 const SectionCollapsible = ({ label, defaultOpen = false, forceOpen, previewId, children }: { label: string; defaultOpen?: boolean; forceOpen?: boolean; previewId?: string; children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
@@ -6666,7 +6667,21 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
-                    {renderTilstandPanel("3_5")}
+                     {(() => {
+                       const erKraftstasjon = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                         || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+                       return (
+                         <KraftstasjonTilleggskravCard kapittel="3.5" visible={erKraftstasjon}>
+                           <div className="text-xs space-y-1">
+                             <p className="font-medium text-foreground">Følgende tilleggskrav inkluderes automatisk i rapporten:</p>
+                             <ul className="list-disc pl-5 space-y-0.5 text-muted-foreground">
+                               <li>Dører til teknisk rom skal være utadslående for å sikre rømningsveier.</li>
+                             </ul>
+                           </div>
+                         </KraftstasjonTilleggskravCard>
+                       );
+                     })()}
+                     {renderTilstandPanel("3_5")}
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-6" label={`3.6 ${formData.regelverk === "BF85" ? "Kledninger og overflater (:42)" : "§ 11-9 Materialer og produkter"}`}>
                     <div className="space-y-2">
@@ -7130,7 +7145,22 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
-                    {renderTilstandPanel("3_7")}
+                     {(() => {
+                       const erKraftstasjon = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                         || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+                       return (
+                         <KraftstasjonTilleggskravCard kapittel="3.7" visible={erKraftstasjon}>
+                           <div className="text-xs space-y-1">
+                             <p className="font-medium text-foreground">Følgende tilleggskrav inkluderes automatisk i rapporten:</p>
+                             <ul className="list-disc pl-5 space-y-0.5 text-muted-foreground">
+                               <li><span className="font-medium text-foreground">Kabler (kulverter, sjakter og kabeltunneler):</span> separasjon, brannbeskyttelse, kabelstiger, horisontale/vertikale seksjoner og brannhemmende belegg.</li>
+                               <li><span className="font-medium text-foreground">Ventilasjonsanlegg:</span> ikke brannspjeld med smeltesikring – automatiske spjeld som sikrer rask avstengning og hindrer røykspredning før temperaturen er blitt høy.</li>
+                             </ul>
+                           </div>
+                         </KraftstasjonTilleggskravCard>
+                       );
+                     })()}
+                     {renderTilstandPanel("3_7")}
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-8" label={`3.8 ${formData.regelverk === "BF85" ? "Rømning og redning (§ 11-11)" : "§ 11-11 Rømning og redning"}`}>
                     <div className="space-y-2">
@@ -7329,7 +7359,22 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
-                    {renderTilstandPanel("3_8")}
+                     {(() => {
+                       const erKraftstasjon = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                         || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+                       return (
+                         <KraftstasjonTilleggskravCard kapittel="3.8" visible={erKraftstasjon}>
+                           <div className="text-xs space-y-1">
+                             <p className="font-medium text-foreground">Følgende tilleggskrav gjelder for kraftstasjoner:</p>
+                             <ul className="list-disc pl-5 space-y-0.5 text-muted-foreground">
+                               <li>Alle dører til og i rømningsvei skal slå ut i rømningsretning (unntak om "lite antall personer" gjelder ikke).</li>
+                               <li>Krav til panikkbeslag (NS-EN 1125) er påkrevd.</li>
+                             </ul>
+                           </div>
+                         </KraftstasjonTilleggskravCard>
+                       );
+                     })()}
+                     {renderTilstandPanel("3_8")}
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-9" label={`3.9 ${formData.regelverk === "BF85" ? "Tilrettelegging for rømning (§ 11-12)" : "§ 11-12 Tilrettelegging for rømning"}`}>
                     <div className="space-y-4">
@@ -8004,7 +8049,24 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
-                    {renderTilstandPanel("3_9")}
+                     {(() => {
+                       const erKraftstasjon = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                         || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+                       return (
+                         <KraftstasjonTilleggskravCard kapittel="3.9" visible={erKraftstasjon}>
+                           <div className="text-xs space-y-1">
+                             <p className="font-medium text-foreground">Følgende tilleggskrav inkluderes automatisk for kraftstasjoner:</p>
+                             <ul className="list-disc pl-5 space-y-0.5 text-muted-foreground">
+                               <li>Krav etter <span className="font-medium text-foreground">FEA-F § 25</span> om uavhengig nødbelysning.</li>
+                               <li>Anbefaling om håndlykter.</li>
+                               <li>Avsnitt om plassering, utforming og utstyr for redningsrom.</li>
+                               <li>Hvis "Kraftstasjon under fjell eller under dagen" er huket av i metadata: i tillegg krav om nødlysanlegg etter <span className="font-medium text-foreground">FEA-F § 26</span> og innledningstekst om redningsrom.</li>
+                             </ul>
+                           </div>
+                         </KraftstasjonTilleggskravCard>
+                       );
+                     })()}
+                     {renderTilstandPanel("3_9")}
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-10" label={`3.10 ${formData.regelverk === "BF85" ? "Utgang fra branncelle (§ 11-13)" : "§ 11-13 Utgang fra branncelle"}`}>
                     <div className="space-y-2">
