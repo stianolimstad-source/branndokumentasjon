@@ -1185,6 +1185,30 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
       lines.push("Kraftstasjoner og andre større stasjoner med høyspenningsanlegg skal være forsynt med nødbelysning som forsynes fra en kilde som er uavhengig av høyspenningsanlegget (nødstrøm), (jf. FEA-F § 25).");
       lines.push("Nødbelysning basert på kraftforsyning fra sentral batteribank eller aggregat er ikke tilfredsstillende alene. Det anbefales derfor i tillegg å montere nødbelysning bestående av håndlykter med batterier under kontinuerlig ladning, opphengt på sentrale steder. Disse vil også være praktiske ved innsats i anlegget.");
       rows.push(contentRowMultiLine("Nødbelysning – kraftstasjon", lines, "RIE"));
+
+      const rrLines: string[] = [];
+      if (formData.kraftstasjonUnderFjell) {
+        rrLines.push("I kraft-, transformator- og omformerstasjoner i fjell og under dagen hvor det ikke er anordnet minst to uavhengige rømningsveier, skal det være innredet redningsrom. I store kraftstasjoner og/eller når forholdene ligger til rette for det, bør det innredes ett eller flere redningsrom (jf. FEA-F § 26).");
+        rrLines.push("");
+        rrLines.push("Redningsrommet må være et reelt alternativ til hovedrømningsvei, det forutsettes derfor at selskapet nøye vurderer plassering og utforming.");
+        rrLines.push("");
+      }
+      rrLines.push("Plassering");
+      rrLines.push("Redningsrommene gis en hensiktsmessig og sikker plassering i forhold til mulige skadesteder, og fortrinnsvis slik at det er tilfredsstillende adkomst med skadet personell på båre.");
+      rrLines.push("");
+      rrLines.push("Plassering i forhold til transformatorer og koblingsanlegg bør veie tungt i vurderingen ved valg av plassering av redningsrom.");
+      rrLines.push("");
+      rrLines.push("Utforming");
+      rrLines.push("Redningsrom skal være røyktett og egen branncelle, og utformet slik at det er intakt etter en eksplosjon (jf. FEA-F § 26).");
+      rrLines.push("");
+      rrLines.push("For å minimere personellets eksponering for røyk og gasser, anbefales det å alltid ha døren til redningsrommet lukket, eventuelt med selvlukkende dør koblet til brannalarmanlegget.");
+      rrLines.push("");
+      rrLines.push("Utstyr");
+      rrLines.push("Redningsrommene (jf. FEA-F § 26) skal være utstyrt med:");
+      rrLines.push("• Luftbeholdning som dekker minst 4 timers forbruk for det antall personer som rommet er dimensjonert for. Det skal tas hensyn til lokale forhold som lengde på adkomsttunnel, rommets plassering i stasjonen, forventet tid før hjelp når frem mv.");
+      rrLines.push("• Førstehjelpsutstyr og båre.");
+      rrLines.push("• Samband til utenforliggende bemannet vaktsted (f.eks. driftssentral) og til inngangen/portalbygg. Sambandsmidlene skal være uavhengig av stasjonsstrømforsyningen og må være beskyttet mot skade fra brann, overspenning mv.");
+      rows.push(contentRowMultiLine("Redningsrom – kraftstasjon", rrLines, "RIE"));
     }
   }
   if (formData.tilretteleggingKommentar) {

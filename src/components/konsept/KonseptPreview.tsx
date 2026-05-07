@@ -3832,6 +3832,39 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </tr>
               );
             })()}
+            {(() => {
+              const erKraftstasjonRR = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+              if (!erKraftstasjonRR) return null;
+              const underFjell = !!formData.kraftstasjonUnderFjell;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Redningsrom – kraftstasjon</td>
+                  <td className="border border-gray-400 p-2">
+                    {underFjell && (
+                      <>
+                        <p>I kraft-, transformator- og omformerstasjoner i fjell og under dagen hvor det ikke er anordnet minst to uavhengige rømningsveier, skal det være innredet redningsrom. I store kraftstasjoner og/eller når forholdene ligger til rette for det, bør det innredes ett eller flere redningsrom (jf. FEA-F § 26).</p>
+                        <p className="mt-2">Redningsrommet må være et reelt alternativ til hovedrømningsvei, det forutsettes derfor at selskapet nøye vurderer plassering og utforming.</p>
+                      </>
+                    )}
+                    <p className={underFjell ? "mt-3 font-semibold" : "font-semibold"}>Plassering</p>
+                    <p>Redningsrommene gis en hensiktsmessig og sikker plassering i forhold til mulige skadesteder, og fortrinnsvis slik at det er tilfredsstillende adkomst med skadet personell på båre.</p>
+                    <p className="mt-2">Plassering i forhold til transformatorer og koblingsanlegg bør veie tungt i vurderingen ved valg av plassering av redningsrom.</p>
+                    <p className="mt-3 font-semibold">Utforming</p>
+                    <p>Redningsrom skal være røyktett og egen branncelle, og utformet slik at det er intakt etter en eksplosjon (jf. FEA-F § 26).</p>
+                    <p className="mt-2">For å minimere personellets eksponering for røyk og gasser, anbefales det å alltid ha døren til redningsrommet lukket, eventuelt med selvlukkende dør koblet til brannalarmanlegget.</p>
+                    <p className="mt-3 font-semibold">Utstyr</p>
+                    <p>Redningsrommene (jf. FEA-F § 26) skal være utstyrt med:</p>
+                    <ul className="list-disc pl-5 mt-1 space-y-1">
+                      <li>Luftbeholdning som dekker minst 4 timers forbruk for det antall personer som rommet er dimensjonert for. Det skal tas hensyn til lokale forhold som lengde på adkomsttunnel, rommets plassering i stasjonen, forventet tid før hjelp når frem mv.</li>
+                      <li>Førstehjelpsutstyr og båre.</li>
+                      <li>Samband til utenforliggende bemannet vaktsted (f.eks. driftssentral) og til inngangen/portalbygg. Sambandsmidlene skal være uavhengig av stasjonsstrømforsyningen og må være beskyttet mot skade fra brann, overspenning mv.</li>
+                    </ul>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIE</td>
+                </tr>
+              );
+            })()}
             {formData.tilretteleggingKommentar && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Kommentar</td>
