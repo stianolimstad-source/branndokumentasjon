@@ -30,6 +30,7 @@ import KonseptPreview from "@/components/konsept/KonseptPreview";
 import { UploadConceptDialog } from "@/components/konsept/UploadConceptDialog";
 import { buildChapter3Table } from "@/lib/word-export-chapter3";
 import TilstandsvurderingPanel, { TilstandData, emptyTilstand } from "@/components/konsept/TilstandsvurderingPanel";
+import KraftstasjonTilleggskravCard from "@/components/konsept/KraftstasjonTilleggskravCard";
 
 const SectionCollapsible = ({ label, defaultOpen = false, forceOpen, previewId, children }: { label: string; defaultOpen?: boolean; forceOpen?: boolean; previewId?: string; children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
