@@ -1295,7 +1295,11 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     if (formData.dorerNattlaser) {
       lines.push("• Nattlåser må utføres slik at de ikke kommer i strid med kravene til sikker rømning.");
     }
-    if (formData.dorerLiteAntallPersoner) {
+    const erKraftstasjonDor = ((formData.bygningstype || "") as string).toLowerCase().includes("kraftstasjon")
+      || ((formData.bygningsdeler || []) as any[]).some((d: any) => ((d.bygningstype || "") as string).toLowerCase().includes("kraftstasjon"));
+    if (erKraftstasjonDor) {
+      lines.push("• For kraftstasjon: alle dører til og i rømningsvei skal slå ut i rømningsretning.");
+    } else if (formData.dorerLiteAntallPersoner) {
       lines.push("• Dør til rømningsvei fra branncelle beregnet for et lite antall personer kan slå mot rømningsretning. Med et lite antall personer menes inntil 10. Brannceller med et lite antall personer kan for eksempel være boenhet, sykerom, hotellrom, og mindre kontorlokaler og salgslokaler.");
     }
     lines.push(
