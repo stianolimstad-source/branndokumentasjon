@@ -8576,16 +8576,28 @@ const Konsept = () => {
                       </div>
 
                       {/* Panikkbeslag */}
-                      <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
-                        <Checkbox 
-                          id="romningsveiPanikkbeslag"
-                          checked={formData.romningsveiPanikkbeslag}
-                          onCheckedChange={(checked) => setFormData({...formData, romningsveiPanikkbeslag: checked === true})}
-                        />
-                        <Label htmlFor="romningsveiPanikkbeslag" className="text-xs cursor-pointer">
-                          Krav til panikkbeslag er relevant (RK5/RK6/skoler)
-                        </Label>
-                      </div>
+                      {(() => {
+                        const erKraftstasjon = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                          || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+                        return (
+                          <div className="flex flex-col gap-1 p-2 bg-muted/50 rounded">
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id="romningsveiPanikkbeslag"
+                                disabled={erKraftstasjon}
+                                checked={erKraftstasjon ? true : formData.romningsveiPanikkbeslag}
+                                onCheckedChange={(checked) => setFormData({...formData, romningsveiPanikkbeslag: checked === true})}
+                              />
+                              <Label htmlFor="romningsveiPanikkbeslag" className="text-xs cursor-pointer">
+                                Krav til panikkbeslag er relevant (RK5/RK6/skoler)
+                              </Label>
+                            </div>
+                            {erKraftstasjon && (
+                              <p className="text-[11px] text-muted-foreground italic ml-6">Påkrevd for kraftstasjon (NS-EN 1125).</p>
+                            )}
+                          </div>
+                        );
+                      })()}
 
                       {/* Bekreftelse på automatiske krav inkludert i rapporten */}
                       {(() => {
