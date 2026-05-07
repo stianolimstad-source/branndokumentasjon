@@ -1056,6 +1056,18 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     rows.push(contentRow("Generelt", formData.installasjoner || "[Installasjoner beskrives]", "RIV"));
   }
 
+  {
+    const erKraftstasjon37 = ((formData.bygningstype || "") as string).toLowerCase().includes("kraftstasjon")
+      || ((formData.bygningsdeler || []) as any[]).some((d: any) => ((d.bygningstype || "") as string).toLowerCase().includes("kraftstasjon"));
+    if (erKraftstasjon37) {
+      rows.push(contentRow(
+        "Rom for høyspenningsanlegg",
+        "Foran spenningsførende deler i apparatanlegg skal det anbringes dør, plate eller lignende beskyttelse, (jf. FEA-F § 39).",
+        "RIE"
+      ));
+    }
+  }
+
   if (formData.installasjonerKommentar) {
     rows.push(contentRow("Kommentar", formData.installasjonerKommentar, "-"));
   }
