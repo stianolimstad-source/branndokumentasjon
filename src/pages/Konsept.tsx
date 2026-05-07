@@ -8049,7 +8049,24 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
-                    {renderTilstandPanel("3_9")}
+                     {(() => {
+                       const erKraftstasjon = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                         || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+                       return (
+                         <KraftstasjonTilleggskravCard kapittel="3.9" visible={erKraftstasjon}>
+                           <div className="text-xs space-y-1">
+                             <p className="font-medium text-foreground">Følgende tilleggskrav inkluderes automatisk for kraftstasjoner:</p>
+                             <ul className="list-disc pl-5 space-y-0.5 text-muted-foreground">
+                               <li>Krav etter <span className="font-medium text-foreground">FEA-F § 25</span> om uavhengig nødbelysning.</li>
+                               <li>Anbefaling om håndlykter.</li>
+                               <li>Avsnitt om plassering, utforming og utstyr for redningsrom.</li>
+                               <li>Hvis "Kraftstasjon under fjell eller under dagen" er huket av i metadata: i tillegg krav om nødlysanlegg etter <span className="font-medium text-foreground">FEA-F § 26</span> og innledningstekst om redningsrom.</li>
+                             </ul>
+                           </div>
+                         </KraftstasjonTilleggskravCard>
+                       );
+                     })()}
+                     {renderTilstandPanel("3_9")}
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-10" label={`3.10 ${formData.regelverk === "BF85" ? "Utgang fra branncelle (§ 11-13)" : "§ 11-13 Utgang fra branncelle"}`}>
                     <div className="space-y-2">
