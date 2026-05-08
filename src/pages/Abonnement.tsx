@@ -152,7 +152,7 @@ const Abonnement = () => {
         )}
 
         <p className="text-center text-xs text-muted-foreground mt-8">
-          Pristabellen er foreløpig satt opp som plassholder. Endelig pris settes før lansering.
+          Priser inkluderer MVA. Betaling håndteres av Paddle (Merchant of Record).
         </p>
       </div>
 
