@@ -1682,7 +1682,7 @@ const Konsept = () => {
       styles: {
         default: {
           document: {
-            run: { font: "Verdana", size: 20 },
+            run: { font: theme.fontFamily, size: 20 },
           },
         },
       },
