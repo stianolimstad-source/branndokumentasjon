@@ -152,7 +152,13 @@ export default function MalvalgPanel({ groupId, groupName, logoUrl, profileLogoU
               <button
                 key={t.id}
                 type="button"
-                onClick={() => setTemplate(t.id)}
+                onClick={() => {
+                  setTemplate(t.id);
+                  const d = getTemplateDefaults(t.id);
+                  setPrimary(d.primary_color);
+                  setAccent(d.accent_color);
+                  setFont(d.font_family);
+                }}
                 className={`text-left rounded-lg border-2 p-4 transition ${
                   selected ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
                 }`}
