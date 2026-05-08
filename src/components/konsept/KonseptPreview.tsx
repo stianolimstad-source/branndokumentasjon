@@ -131,6 +131,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   return (
     <div className="space-y-8 py-4">
       {/* Forside */}
+      {!hideCover && (
       <div className={pageStyle} style={pageWidth}>
         <div className="flex flex-col items-center justify-center pt-8 pb-8" style={{ minHeight: '260mm' }}>
         {logoUrl && (
@@ -158,6 +159,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         </div>
         <PageFooter pageNum={pageForside} />
       </div>
+      )}
 
       {/* Sammendrag - egen side */}
       {hasSammendrag && (
