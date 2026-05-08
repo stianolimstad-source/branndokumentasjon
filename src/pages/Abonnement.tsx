@@ -232,6 +232,31 @@ const Abonnement = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog open={confirmSwitch !== null} onOpenChange={(o) => !o && setConfirmSwitch(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirmSwitch === "to_yearly" ? "Bytt til årlig plan?" : "Bytt til månedlig plan?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmSwitch === "to_yearly"
+                ? "Endringen trer i kraft umiddelbart. Paddle pro-raterer differansen mellom månedlig og årlig pris for resten av inneværende periode, slik at du kun betaler differansen nå."
+                : "Endringen trer i kraft ved neste fornyelse. Du beholder årlig plan ut inneværende periode, og blir deretter fakturert månedlig."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actionLoading}>Avbryt</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); if (confirmSwitch) runSwitch(confirmSwitch); }}
+              disabled={actionLoading}
+            >
+              {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              Bekreft bytte
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
