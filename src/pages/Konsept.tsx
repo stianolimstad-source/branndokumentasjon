@@ -1547,6 +1547,8 @@ const Konsept = () => {
     const { resolveDocumentTheme } = await import("@/lib/document-templates");
     const theme = await resolveDocumentTheme(selectedProjectId, logoUrl, user?.id);
     const coverLogoUrl = theme.logoUrl ?? logoUrl;
+    // Apply company template accent to chapter-3 section row shading
+    setChapter3Theme(theme.accentColor);
 
     // Fetch logo for header
     let logoBuffer: ArrayBuffer | null = null;
