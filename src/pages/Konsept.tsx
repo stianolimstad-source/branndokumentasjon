@@ -28,7 +28,7 @@ import SendToKSDialog from "@/components/konsept/SendToKSDialog";
 import UpdateKSButton from "@/components/konsept/UpdateKSButton";
 import KonseptPreview from "@/components/konsept/KonseptPreview";
 import { UploadConceptDialog } from "@/components/konsept/UploadConceptDialog";
-import { buildChapter3Table } from "@/lib/word-export-chapter3";
+import { buildChapter3Table, setChapter3Theme } from "@/lib/word-export-chapter3";
 import TilstandsvurderingPanel, { TilstandData, emptyTilstand } from "@/components/konsept/TilstandsvurderingPanel";
 import KraftstasjonTilleggskravCard from "@/components/konsept/KraftstasjonTilleggskravCard";
 
