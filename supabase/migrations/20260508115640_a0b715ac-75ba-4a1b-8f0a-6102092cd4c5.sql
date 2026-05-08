@@ -1,0 +1,1 @@
+ALTER TABLE public.contact_groups ADD COLUMN IF NOT EXISTS template_settings jsonb NOT NULL DEFAULT '{}'::jsonb;
