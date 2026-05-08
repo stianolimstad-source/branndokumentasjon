@@ -359,7 +359,11 @@ const KvalitativAnalyse = () => {
                     <CardDescription>Fraviksdokumentasjonen oppdateres i sanntid</CardDescription>
                   </div>
                   {canDownload && (
-                    <Button variant="outline" size="sm" onClick={() => exportKvalitativWord(fravikEntries, dokumentNavn, logoUrl, projectData, profileData, sammendrag)}>
+                    <Button variant="outline" size="sm" onClick={async () => {
+                      const { resolveDocumentTheme } = await import("@/lib/document-templates");
+                      const theme = await resolveDocumentTheme(projectId, logoUrl);
+                      await exportKvalitativWord(fravikEntries, dokumentNavn, logoUrl, projectData, profileData, sammendrag, theme);
+                    }}>
                       <Download className="h-4 w-4 mr-2" />
                       Last ned Word
                     </Button>
