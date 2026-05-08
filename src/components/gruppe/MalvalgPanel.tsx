@@ -242,6 +242,26 @@ export default function MalvalgPanel({ groupId, groupName, logoUrl, initial, onS
           </div>
         </div>
 
+        {/* Live preview */}
+        <div className="space-y-3 pt-2">
+          <div className="flex items-center justify-between">
+            <Label>Forhåndsvisning</Label>
+            <span className="text-xs text-muted-foreground">
+              Visuell forhåndsvisning — endelig layout vises i Word.
+            </span>
+          </div>
+          <div className="rounded-lg bg-muted/40 p-6 flex justify-center">
+            <MalForhandsvisning
+              template={template}
+              primary={primary}
+              accent={accent}
+              font={font}
+              logoUrl={logoUrl}
+              groupName={groupName}
+            />
+          </div>
+        </div>
+
         <div className="flex flex-wrap gap-3 pt-2">
           <Button onClick={handleSave} disabled={saving}>
             {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Check className="h-4 w-4 mr-2" />}
