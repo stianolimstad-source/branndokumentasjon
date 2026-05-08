@@ -46,10 +46,15 @@ Deno.serve(async (req) => {
     if (!priceData.data?.length) throw new Error(`Price not found: ${newPriceId}`);
     const paddlePriceId = priceData.data[0].id as string;
 
-    // Upgrade (monthly -> yearly) bills immediately with proration.
-    // Downgrade (yearly -> monthly) takes effect at next renewal.
+    // Trial subscriptions cannot change billing cycle with immediate proration.
+    // During trial, Paddle only allows do_not_bill and applies the new plan
+    // when the trial converts.
     const isUpgrade = sub.price_id === 'branndok_pro_monthly' && newPriceId === 'branndok_pro_yearly';
-    const prorationBillingMode = isUpgrade ? 'prorated_immediately' : 'do_not_bill';
+    const prorationBillingMode = sub.status === 'trialing'
+      ? 'do_not_bill'
+      : isUpgrade
+        ? 'prorated_immediately'
+        : 'do_not_bill';
 
     const res = await gatewayFetch(env, `/subscriptions/${sub.paddle_subscription_id}`, {
       method: 'PATCH',

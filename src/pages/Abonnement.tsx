@@ -111,6 +111,14 @@ const Abonnement = () => {
     : priceId === MONTHLY_ID ? "Månedlig (500 kr/mnd)"
     : null;
 
+  const switchDescription = confirmSwitch === "to_yearly"
+    ? status === "trialing"
+      ? `Du er i prøveperiode. Den årlige planen aktiveres når prøveperioden utløper${currentPeriodEnd ? ` ${new Date(currentPeriodEnd).toLocaleDateString("nb-NO")}` : ""}. Ingen ekstra fakturering skjer nå.`
+      : "Endringen trer i kraft umiddelbart. Paddle pro-raterer differansen mellom månedlig og årlig pris for resten av inneværende periode, slik at du kun betaler differansen nå."
+    : status === "trialing"
+      ? `Du er i prøveperiode. Den månedlige planen aktiveres når prøveperioden utløper${currentPeriodEnd ? ` ${new Date(currentPeriodEnd).toLocaleDateString("nb-NO")}` : ""}.`
+      : "Endringen trer i kraft ved neste fornyelse. Du beholder årlig plan ut inneværende periode, og blir deretter fakturert månedlig.";
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
       <PaymentTestModeBanner />
@@ -239,11 +247,7 @@ const Abonnement = () => {
             <AlertDialogTitle>
               {confirmSwitch === "to_yearly" ? "Bytt til årlig plan?" : "Bytt til månedlig plan?"}
             </AlertDialogTitle>
-            <AlertDialogDescription>
-              {confirmSwitch === "to_yearly"
-                ? "Endringen trer i kraft umiddelbart. Paddle pro-raterer differansen mellom månedlig og årlig pris for resten av inneværende periode, slik at du kun betaler differansen nå."
-                : "Endringen trer i kraft ved neste fornyelse. Du beholder årlig plan ut inneværende periode, og blir deretter fakturert månedlig."}
-            </AlertDialogDescription>
+            <AlertDialogDescription>{switchDescription}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={actionLoading}>Avbryt</AlertDialogCancel>
