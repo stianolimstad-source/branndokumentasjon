@@ -1,31 +1,30 @@
-## Problem
+## Plan
 
-Når brukeren klikker "Administrer abonnement" åpnes en ny fane med teksten "Åpner kundeportal…", men den navigerer aldri videre til Paddle-portalen.
+1. Endre portal-flyten i `src/pages/Abonnement.tsx` slik at en ny fane åpnes synkront i selve klikket, før noen `await`-kall skjer.
+2. Hente portal-URL-en etterpå og sende den inn i den allerede åpnede fanen med `location.replace(...)`, uten å skrive placeholder-HTML inn i vinduet.
+3. Beholde robust fallback: hvis ny fane ikke kan åpnes, send brukeren til kundeportalen i samme fane.
+4. Beholde lastetilstand på knappen så flere klikk ikke oppretter flere faner.
+5. Verifisere at avbestillingslenken brukes riktig, siden backend allerede returnerer korrekt `cancelSubscription`-URL.
 
-Edge-funksjonen `customer-portal` fungerer korrekt (loggene viser at den genererer gyldige `cancelSubscription`-URL-er fra Paddle). Problemet ligger i frontend i `src/pages/Abonnement.tsx`.
+## Hvorfor dette bør løse problemet
 
-## Årsak
+- Nettverkskallet lykkes allerede og returnerer korrekt kundeportal-URL.
+- Autorisasjonen sendes også riktig i preview.
+- Det som sannsynligvis blir blokkert er `window.open(...)` fordi det skjer etter et async-kall og dermed ikke lenger regnes som en direkte brukerhandling.
+- Forrige forsøk med forhåndsåpning hang trolig fordi blankvinduet fikk skrevet inn eget innhold før navigering.
 
-Dagens `openPortal`-funksjon bruker en "pre-open popup"-strategi:
-1. Åpner et tomt vindu (`window.open("")`)
-2. Skriver placeholder-HTML i den nye fanen
-3. Venter på edge-funksjonen
-4. Kaller `popup.location.replace(data.url)`
+## Tekniske detaljer
 
-Å skrive `innerHTML` i en nyåpnet `about:blank`-fane setter dokumentet i en "loading"-tilstand som hindrer påfølgende navigering, og lar fanen henge på placeholder-teksten.
+- Ikke gjøre endringer i backend-funksjonen med mindre verifisering viser at feil URL velges.
+- Frontend-løsningen skal bruke mønsteret:
+  - `const popup = window.open("", "_blank", "noopener,noreferrer")` direkte i klikkhandleren
+  - hente portal-URL
+  - `popup.location.replace(url)` når svaret kommer
+  - fallback til `window.location.href = url` hvis popup er blokkert eller mangler
+- Unngå `document.write`, `innerHTML` eller annen manipulering av det blanke popup-vinduet.
 
-## Løsning
+## Validering
 
-Forenkle flyten i `src/pages/Abonnement.tsx`:
-
-1. Fjern pre-open popup-strategien helt.
-2. Hent portal-URL først via `supabase.functions.invoke("customer-portal")`.
-3. Når URL-en er hentet, åpne portalen i ny fane: `window.open(data.url, "_blank", "noopener,noreferrer")`.
-4. Hvis `window.open` returnerer `null` (popup blokkert), fall tilbake til `window.top.location.href = data.url` slik at brukeren havner på Paddle i samme fane.
-5. Behold `portalLoading`-state og spinner i knappen, og vis en toast-feilmelding hvis edge-funksjonen feiler.
-
-Backend (`supabase/functions/customer-portal/index.ts`) er korrekt satt opp og trenger ingen endringer – den returnerer `cancelSubscription`-URL fra Paddle's customer portal session, som er den riktige måten å avslutte abonnement på.
-
-## Filer som endres
-
-- `src/pages/Abonnement.tsx` – kun `openPortal`-funksjonen
+- Test at knappen åpner kundeportalen uten popup-blokkering.
+- Test at avbestillingssiden faktisk vises, ikke bare en tom fane.
+- Test fallback til samme fane hvis nettleseren nekter popup.
