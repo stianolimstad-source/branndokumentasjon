@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Flame, LogIn, LogOut, FolderOpen, Users, Bell, X, Menu, User, ClipboardCheck, LayoutDashboard } from "lucide-react";
+import { Flame, LogIn, LogOut, FolderOpen, Users, Bell, X, Menu, User, ClipboardCheck, LayoutDashboard, CreditCard } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -96,6 +96,10 @@ const AppHeader = () => {
                     <DropdownMenuItem onClick={() => navigate("/min-profil")}>
                       <User className="h-4 w-4 mr-2" />
                       Min profil
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/abonnement")}>
+                      <CreditCard className="h-4 w-4 mr-2" />
+                      Abonnement
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={signOut}>
