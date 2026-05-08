@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Save, Upload, Trash2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Save, Upload, Trash2, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,6 +27,9 @@ const MinProfil = () => {
     phone: "",
     education: "",
   });
+  const [themedGroups, setThemedGroups] = useState<{ id: string; name: string }[]>([]);
+  const [defaultTemplateGroupId, setDefaultTemplateGroupId] = useState<string>("none");
+  const [savingTemplate, setSavingTemplate] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -34,8 +38,30 @@ const MinProfil = () => {
     }
     if (user) {
       fetchProfile();
+      fetchTemplateGroups();
     }
   }, [user, loading]);
+
+  const fetchTemplateGroups = async () => {
+    if (!user) return;
+    const { data: memberships } = await supabase
+      .from("group_members")
+      .select("group_id")
+      .eq("user_id", user.id);
+    const groupIds = (memberships ?? []).map((m: any) => m.group_id);
+    if (groupIds.length === 0) {
+      setThemedGroups([]);
+      return;
+    }
+    const { data: groups } = await supabase
+      .from("contact_groups")
+      .select("id, name, template_settings")
+      .in("id", groupIds);
+    const themed = (groups ?? []).filter(
+      (g: any) => g.template_settings && Object.keys(g.template_settings).length > 0,
+    );
+    setThemedGroups(themed.map((g: any) => ({ id: g.id, name: g.name })));
+  };
 
   const fetchProfile = async () => {
     const { data } = await supabase
@@ -54,8 +80,25 @@ const MinProfil = () => {
         education: (data as any).education || "",
       });
       setLogoUrl((data as any).logo_url || null);
+      setDefaultTemplateGroupId((data as any).default_template_group_id || "none");
     } else {
       setProfile((p) => ({ ...p, email: user!.email || "" }));
+    }
+  };
+
+  const handleTemplateChange = async (value: string) => {
+    if (!user) return;
+    setDefaultTemplateGroupId(value);
+    setSavingTemplate(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ default_template_group_id: value === "none" ? null : value } as any)
+      .eq("id", user.id);
+    setSavingTemplate(false);
+    if (error) {
+      toast({ title: "Feil", description: "Kunne ikke lagre dokumentmal", variant: "destructive" });
+    } else {
+      toast({ title: "Dokumentmal lagret" });
     }
   };
 
@@ -185,6 +228,38 @@ const MinProfil = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Document template */}
+        {themedGroups.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                Dokumentmal
+              </CardTitle>
+              <CardDescription>
+                Velg hvilken bedrifts visuelle mal som skal brukes på dokumentene dine. Tilhører du kun
+                én bedrift med mal, brukes den automatisk.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 max-w-md">
+                <Label>Standard mal</Label>
+                <Select value={defaultTemplateGroupId} onValueChange={handleTemplateChange} disabled={savingTemplate}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Egen mal (standard)</SelectItem>
+                    {themedGroups.map((g) => (
+                      <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Profile info */}
         <Card>

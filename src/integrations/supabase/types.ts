@@ -314,6 +314,7 @@ export type Database = {
         Row: {
           company: string | null
           created_at: string
+          default_template_group_id: string | null
           education: string | null
           email: string | null
           full_name: string | null
@@ -326,6 +327,7 @@ export type Database = {
         Insert: {
           company?: string | null
           created_at?: string
+          default_template_group_id?: string | null
           education?: string | null
           email?: string | null
           full_name?: string | null
@@ -338,6 +340,7 @@ export type Database = {
         Update: {
           company?: string | null
           created_at?: string
+          default_template_group_id?: string | null
           education?: string | null
           email?: string | null
           full_name?: string | null

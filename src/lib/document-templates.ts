@@ -64,15 +64,27 @@ const stripHash = (c: string) => c.replace(/^#/, "").toUpperCase();
  *
  * Priority:
  *   1. If the project is shared with a contact_group, use that group's template_settings + logo.
- *   2. Otherwise return the default "klassisk" theme with the user's profile logo (legacy fallback).
+ *   2. Else if user has a `default_template_group_id` and is member of that group, use it.
+ *   3. Else if user is member of exactly one group with template_settings, use it automatically.
+ *   4. Otherwise return the default "klassisk" theme with the user's profile logo.
  */
 export async function resolveDocumentTheme(
   projectId: string | null | undefined,
   profileLogoUrl?: string | null,
+  userId?: string | null,
 ): Promise<ResolvedTheme> {
   let settings: TemplateSettings = {};
   let logoUrl: string | null = profileLogoUrl ?? null;
   let companyName: string | null = null;
+  let resolvedFromGroup = false;
+
+  const applyGroup = (group: any) => {
+    if (!group) return;
+    settings = (group.template_settings || {}) as TemplateSettings;
+    if (group.logo_url) logoUrl = group.logo_url;
+    companyName = group.name || null;
+    resolvedFromGroup = true;
+  };
 
   if (projectId) {
     try {
@@ -90,10 +102,46 @@ export async function resolveDocumentTheme(
           .select("name, logo_url, template_settings")
           .eq("id", groupId)
           .maybeSingle();
-        if (group) {
-          settings = ((group as any).template_settings || {}) as TemplateSettings;
-          if ((group as any).logo_url) logoUrl = (group as any).logo_url;
-          companyName = (group as any).name || null;
+        applyGroup(group);
+      }
+    } catch {
+      // Ignore — fall back to defaults
+    }
+  }
+
+  if (!resolvedFromGroup && userId) {
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("default_template_group_id")
+        .eq("id", userId)
+        .maybeSingle();
+      const defaultGroupId = (profile as any)?.default_template_group_id as string | null;
+
+      if (defaultGroupId) {
+        const { data: group } = await supabase
+          .from("contact_groups")
+          .select("name, logo_url, template_settings")
+          .eq("id", defaultGroupId)
+          .maybeSingle();
+        applyGroup(group);
+      }
+
+      if (!resolvedFromGroup) {
+        const { data: memberships } = await supabase
+          .from("group_members")
+          .select("group_id")
+          .eq("user_id", userId);
+        const groupIds = (memberships ?? []).map((m: any) => m.group_id);
+        if (groupIds.length > 0) {
+          const { data: groups } = await supabase
+            .from("contact_groups")
+            .select("name, logo_url, template_settings")
+            .in("id", groupIds);
+          const themed = (groups ?? []).filter(
+            (g: any) => g.template_settings && Object.keys(g.template_settings).length > 0,
+          );
+          if (themed.length === 1) applyGroup(themed[0]);
         }
       }
     } catch {

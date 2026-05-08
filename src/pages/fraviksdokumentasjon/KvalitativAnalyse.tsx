@@ -361,7 +361,7 @@ const KvalitativAnalyse = () => {
                   {canDownload && (
                     <Button variant="outline" size="sm" onClick={async () => {
                       const { resolveDocumentTheme } = await import("@/lib/document-templates");
-                      const theme = await resolveDocumentTheme(projectId, logoUrl);
+                      const theme = await resolveDocumentTheme(projectId, logoUrl, user?.id);
                       await exportKvalitativWord(fravikEntries, dokumentNavn, logoUrl, projectData, profileData, sammendrag, theme);
                     }}>
                       <Download className="h-4 w-4 mr-2" />
