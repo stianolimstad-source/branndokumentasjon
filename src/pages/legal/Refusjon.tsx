@@ -3,10 +3,16 @@ const Refusjon = () => (
     <h1>Refusjonspolicy</h1>
     <p><em>Sist oppdatert: 8. mai 2026</em></p>
 
-    <h2>30 dagers pengene-tilbake-garanti</h2>
+    <h2>14 dagers pengene-tilbake-garanti</h2>
     <p>
-      Vi tilbyr 30 dagers pengene-tilbake-garanti på alle abonnementer. Er du
-      ikke fornøyd, kan du be om full refusjon innen 30 dager etter kjøpsdato.
+      Vi tilbyr 14 dagers pengene-tilbake-garanti på alle abonnementer. Er du
+      ikke fornøyd, kan du be om full refusjon innen 14 dager etter kjøpsdato.
+    </p>
+    <p>
+      Refusjonsperioden tilsvarer den 14 dager lange gratis prøveperioden. Du
+      kan teste tjenesten gratis i 14 dager før du belastes — etter at en
+      betaling er gjennomført, gis det ikke refusjon for endring av mening
+      utover de første 14 dagene.
     </p>
 
     <h2>Slik ber du om refusjon</h2>
