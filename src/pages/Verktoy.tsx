@@ -1,6 +1,7 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, MoveVertical, Box, Users, Zap, Shield, Maximize, Wind, Bot, Activity } from "lucide-react";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Flame, MoveVertical, Box, Users, Zap, Shield, Maximize, Wind, Bot, Activity, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useIsFullAccess } from "@/hooks/useIsFullAccess";
 
 
 const tools = [
@@ -57,14 +58,16 @@ const tools = [
     title: "Brannsimulering",
     description: "Forenklet to-sonemodell for brannvekst, røykutvikling og røyklagshøyde i tidlig fase.",
     href: "/verktoy/brannsimulering",
+    locked: true,
   },
   {
     icon: Bot,
     title: "AI Brannkonsulent",
     description: "Still spørsmål om branntekniske krav fra TEK17, VTEK17 og BF85",
     href: "/tek17-assistent",
+    locked: true,
   },
-];
+] as const;
 
 const Verktoy = () => {
   return (
