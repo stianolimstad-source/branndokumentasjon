@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
 import AddMemberDialog from "@/components/gruppe/AddMemberDialog";
+import MalvalgPanel from "@/components/gruppe/MalvalgPanel";
+import { TemplateSettings } from "@/lib/document-templates";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
