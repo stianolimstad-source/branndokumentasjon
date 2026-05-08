@@ -464,6 +464,16 @@ const GruppeDetalj = () => {
                   />
                 </CardContent>
               </Card>
+
+              <div className="mt-6">
+                <MalvalgPanel
+                  groupId={id!}
+                  groupName={groupName}
+                  logoUrl={groupLogoUrl}
+                  initial={templateSettings}
+                  onSaved={(s) => setTemplateSettings(s)}
+                />
+              </div>
             </TabsContent>
           )}
         </Tabs>
