@@ -264,7 +264,7 @@ export default function MalvalgPanel({ groupId, groupName, logoUrl, profileLogoU
               primary={primary}
               accent={accent}
               font={font}
-              logoUrl={logoUrl}
+              logoUrl={logoUrl ?? profileLogoUrl ?? null}
               groupName={groupName}
             />
           </div>
