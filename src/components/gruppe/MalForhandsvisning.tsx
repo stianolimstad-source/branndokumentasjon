@@ -37,6 +37,30 @@ export default function MalForhandsvisning({
     </div>
   );
 
+  const LogoOrPlaceholder = ({
+    className,
+    onDark = false,
+  }: {
+    className?: string;
+    onDark?: boolean;
+  }) =>
+    logoUrl ? (
+      <img
+        src={logoUrl}
+        alt=""
+        className={`object-contain ${onDark ? "bg-white p-1 rounded" : ""} ${className ?? ""}`}
+      />
+    ) : (
+      <div
+        className={`flex items-center justify-center text-[8px] uppercase tracking-widest border border-dashed rounded ${
+          onDark ? "border-white/40 text-white/70" : "border-gray-300 text-gray-400"
+        } ${className ?? ""}`}
+        style={{ minHeight: 28, minWidth: 80 }}
+      >
+        Logo
+      </div>
+    );
+
   const Footer = () => (
     <div
       className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-6 py-2 text-[8px]"
