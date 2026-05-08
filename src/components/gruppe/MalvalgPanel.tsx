@@ -19,6 +19,7 @@ import {
   buildSectionHeading,
   defaultDocStyles,
   fetchLogoBuffer,
+  getTemplateDefaults,
 } from "@/lib/document-templates";
 import MalForhandsvisning from "./MalForhandsvisning";
 
@@ -26,13 +27,14 @@ interface Props {
   groupId: string;
   groupName: string;
   logoUrl: string | null;
+  profileLogoUrl?: string | null;
   initial: TemplateSettings;
   onSaved?: (s: TemplateSettings) => void;
 }
 
 const ensureHash = (c: string) => (c.startsWith("#") ? c : `#${c}`);
 
-export default function MalvalgPanel({ groupId, groupName, logoUrl, initial, onSaved }: Props) {
+export default function MalvalgPanel({ groupId, groupName, logoUrl, profileLogoUrl, initial, onSaved }: Props) {
   const { toast } = useToast();
   const [template, setTemplate] = useState<TemplateId>(initial.template ?? "klassisk");
   const [primary, setPrimary] = useState(ensureHash(initial.primary_color ?? "#1A4D8C"));
