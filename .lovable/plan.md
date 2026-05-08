@@ -1,98 +1,44 @@
-
-# Bedriftsmaler for dokumenter
-
 ## Mål
-Gjøre det mulig for bedrifter (grupper) å gi sine egne dokumenter et eget visuelt uttrykk — uten å endre fagligt innhold. Vi starter med 3 standardmaler som vises som eksempler. Tilpassede maler kan lages på bestilling senere.
 
-## Hvordan det fungerer for brukeren
+Vise en visuell forhåndsvisning av valgt mal **direkte på bedriftssiden** i `MalvalgPanel`, slik at brukeren ser endringer (farger, skrift, logo, forside-stil) umiddelbart — uten å måtte laste ned Word-filen. Word-forhåndsvisning beholdes som ekstra valg.
 
-1. **Gruppe-admin** går til "Mine kontakter → Gruppe → Innstillinger" og velger en mal for bedriften:
-   - **Klassisk** (blå/grå, Calibri, enkel forside)
-   - **Moderne** (mørk aksent, Arial, fullsides farget forside med logo)
-   - **Minimalistisk** (sort/hvit, Georgia, ren typografisk forside)
-2. Admin kan i tillegg justere:
-   - **Logo** (bruker eksisterende `contact_groups.logo_url`)
-   - **Primærfarge** og **aksentfarge** (hex)
-   - **Skrifttype** (dropdown: Arial, Calibri, Georgia, Times New Roman)
-3. **Når et dokument eksporteres til Word**:
-   - Hvis prosjektet er delt med en gruppe → bruk gruppens mal
-   - Ellers → bruk brukerens egen profil (uendret oppførsel, fallback)
-4. En **forhåndsvisning** vises ved siden av valget slik at admin ser hvordan en eksempelside ser ut.
+## Hva som lages
 
-## Omfang i denne iterasjonen
+Ny komponent `src/components/gruppe/MalForhandsvisning.tsx` som rendrer en HTML/CSS-mockup av et A4-dokument med:
 
-Berørte eksport-filer:
-- `src/lib/ks-word-export.ts` (Brannkonsept)
-- `src/lib/kvalitativ-word-export.ts` (Fraviksdokumentasjon)
-- Tilstandsvurdering-eksport (lokalisert i tilsvarende fil i Tilstandsvurdering-flyten)
+- **Forside** (cover) — tittel, undertittel, prosjektnavn, dato, logo, plassert etter mal-stilen (klassisk = sentrert med farget bånd, moderne = venstrejustert med stor fargeblokk, minimalistisk = sober tekst på hvit).
+- **Topp-/bunntekst** — liten logo + dokumentnavn / sidetall i valgt aksentfarge.
+- **Eksempelinnhold** — én H1 ("1. Innledning"), brødtekst, én H2, en liten tabellrad — alt med valgt skrifttype og farger.
 
-Ikke i denne omgang: brensellagring, tilbud, oppdragsbekreftelse (lett å legge til etterpå med samme mekanisme).
+Forhåndsvisningen oppdateres **live** mens brukeren endrer mal/farger/skrift (via React state i `MalvalgPanel`).
 
-## Teknisk design
+## Plassering i UI
 
-### Database
-Ny kolonne på `contact_groups`:
+I `MalvalgPanel` legges en ny seksjon under fargevelgerne, over knapperaden:
+
+```text
+[Mal-kort: Klassisk | Moderne | Minimalistisk]
+[Primærfarge] [Aksentfarge] [Skrifttype]
+─────────── Forhåndsvisning ───────────
+[ A4-mockup med live oppdatering ]
+[Lagre] [Forhåndsvis i Word]
 ```
-template_settings jsonb default '{}'::jsonb
-```
-Struktur:
-```json
-{
-  "template": "klassisk" | "moderne" | "minimalistisk",
-  "primary_color": "#1a4d8c",
-  "accent_color": "#3b82f6",
-  "font_family": "Arial"
-}
-```
-Logo finnes allerede i `logo_url`. Ingen endringer i RLS — eksisterende policies dekker.
 
-### Ny modul: `src/lib/document-templates.ts`
-Definerer:
-```ts
-export type TemplateId = "klassisk" | "moderne" | "minimalistisk";
-export interface DocumentTemplate {
-  id: TemplateId;
-  name: string;
-  // Fargepalett (med defaults som overstyres av group settings)
-  primaryColor: string;
-  accentColor: string;
-  fontFamily: string;
-  // Layout-funksjoner som bygger docx-elementer:
-  buildCoverPage(opts: { title, subtitle, projectName, logoBuffer?, date }): Paragraph[];
-  buildHeader(opts): Header;
-  buildFooter(opts): Footer;
-  buildSectionHeading(text, level): Paragraph;
-  buildTableHeaderShading(): { fill, type };
-}
-```
-Tre konkrete implementasjoner i samme fil.
+Mockupen vises som et "papirark" med skygge (`shadow-elegant`, `aspect-[1/1.414]`) skalert til ca. 480px bredt på desktop, full bredde på mobil.
 
-### Hjelper: `resolveDocumentTheme(projectId)`
-Henter:
-1. Brukerens profil (eksisterende kall)
-2. Sjekker `project_shares` → `contact_groups.template_settings + logo_url` for prosjektets gruppe
-3. Returnerer en sammensatt `ResolvedTheme` (template + farger + font + logo URL)
+## Teknisk
 
-### Refaktor av eksport-filer
-Hver `*-word-export.ts` tar i mot et `theme: ResolvedTheme`-argument og bruker `template.buildCoverPage(...)`, `template.buildHeader(...)` osv. i stedet for hardkodet stil. Innholdslogikken (paragrafer, tabeller, fagdata) er uendret.
+- Ren React/Tailwind, ingen ekstra avhengigheter.
+- Tre layout-varianter (en per `TemplateId`) styres med en `switch` inne i `MalForhandsvisning`.
+- Bruker samme `primary`, `accent`, `font`, `logoUrl`, `groupName` som allerede finnes i `MalvalgPanel`-state — sendes som props.
+- Logo lastes via vanlig `<img src={logoUrl}>` (ikke buffer) — raskt og uten Supabase-kall.
+- Ingen endringer i `document-templates.ts`, ingen endringer i Word-eksporten, ingen DB-endringer.
 
-### UI
-Ny komponent `src/components/gruppe/MalvalgPanel.tsx` som rendres på `GruppeDetalj`-siden (kun synlig for admin):
-- 3 mal-kort med miniatyrbilde
-- Color pickers (primær + aksent)
-- Font dropdown
-- "Lagre"-knapp + "Forhåndsvis i Word" som genererer en demo-DOCX
-- Info-boks: "Trenger din bedrift en helt skreddersydd mal? Ta kontakt for tilbud."
+## Filer
 
-## Tekniske begrensninger
-- Logo må være PNG/JPG (ikke SVG) for `ImageRun` i docx.
-- Forhåndsvisningen er en miniatyr (statisk PNG i `src/assets/templates/`), ikke en live render.
-- Tilpassede maler "på bestilling" implementeres senere som ekstra `TemplateId`-er.
+- **Ny:** `src/components/gruppe/MalForhandsvisning.tsx`
+- **Endret:** `src/components/gruppe/MalvalgPanel.tsx` — importer og rendre `<MalForhandsvisning ... />` med live state.
 
-## Leveransesteg
-1. SQL-migrering: legg til `template_settings` på `contact_groups`.
-2. Lag `src/lib/document-templates.ts` med 3 maler og hjelperen `resolveDocumentTheme`.
-3. Generer 3 miniatyrer til `src/assets/templates/`.
-4. Bygg `MalvalgPanel.tsx` og hekt den på `GruppeDetalj`.
-5. Refaktorer `ks-word-export.ts`, `kvalitativ-word-export.ts` og tilstandsvurdering-eksport til å bruke `theme`.
-6. Oppdater eksport-anropene (i Konsept/Tilstandsvurdering/Fravik-sider) til å hente theme via `resolveDocumentTheme(projectId)` før kall.
+## Bemerkning om presisjon
+
+HTML-forhåndsvisningen er en **visuell tilnærming**, ikke en pixelperfekt Word-rendering. Word-knappen beholdes for nøyaktig kontroll. Dette kommuniseres med en liten label: *"Visuell forhåndsvisning — endelig layout vises i Word."*
