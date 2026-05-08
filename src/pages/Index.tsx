@@ -190,6 +190,30 @@ const Index = () => {
                 </Card>
               );
             }
+            const isLocked = (feature as any).locked && !isFullAccess;
+            if (isLocked) {
+              return (
+                <Card
+                  key={feature.title}
+                  className="shadow-soft relative overflow-hidden opacity-75 cursor-not-allowed"
+                  title="Under utvikling – tilgang begrenset"
+                >
+                  <CardHeader>
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted mb-4">
+                      <feature.icon className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <CardTitle className="text-muted-foreground">{feature.title}</CardTitle>
+                    <CardDescription>{feature.description}</CardDescription>
+                  </CardHeader>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/70 backdrop-blur-[1px]">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-background border shadow-medium">
+                      <Lock className="h-7 w-7 text-muted-foreground" />
+                    </div>
+                    <p className="mt-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">Under utvikling</p>
+                  </div>
+                </Card>
+              );
+            }
             return (
               <Link key={feature.title} to={feature.href} className="block">
                 <Card className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer group">
