@@ -1,41 +1,40 @@
-## Diagnose
+## Mål
 
-Logoen er lagret i databasen for gruppen `Olimstad Brannrådgivning AS` med URL:
-```
-.../company-logos/64b0032f-…/logo.png
-```
-Men selve filen i Storage heter `logo-1776873754963.png` (med tidsstempel). URL-en peker derfor på en fil som ikke finnes (HTTP 400). Profilens logo URL er korrekt og inneholder tidsstemplet navn + cache-buster.
+1. Fjerne firmanavn (groupName) som tekst i forhåndsvisningen — logoen står for identiteten.
+2. Vise et helt testbrannkonsept (forside + flere innholdssider) som brukeren kan skrolle gjennom for å se hvordan malen vil ta seg ut i ferdig dokument.
 
-Sannsynligvis ble gruppens `logo_url` satt fra en eldre versjon av profil-logoen (uten tidsstempel) som siden er erstattet. Resultat: brutt bilde i topp-banner, i logo-kortet, i forhåndsvisningen — alle bruker `groupLogoUrl`.
+## Endringer
 
-## Fiks
+### `src/components/gruppe/MalForhandsvisning.tsx` (omskriving)
 
-### 1. Reparer dataen (engangs-migrering)
-Oppdater alle rader i `contact_groups` der `logo_url` peker på Supabase storage uten tidsstempel ved å sette den til eierens profil-logo (eller `NULL` hvis profilen ikke har en). Konkret: for `Olimstad Brannrådgivning AS` kopierer vi `profiles.logo_url` for `user_id = 64b0032f-…` inn i gruppens `logo_url`. Generelt SQL:
+- Fjern alle steder der `groupName` rendres som tekst i forsiden (de små "uppercase tracking" labels). Beholder fortsatt logoplasseringen som før — én logo per mal-stil. `groupName` brukes kun i sidefoten på hver side (diskré nederst), siden Word-malen også bruker det der.
+- Bytt fra én A4-side til en vertikal stack av A4-sider (samme `Page`-wrapper, men flere instanser stacket med `space-y-6`). Beholder `aspectRatio: 1/1.414` per side så forholdene stemmer.
+- Wrapperen i `MalvalgPanel` får `max-h-[80vh] overflow-y-auto` slik at man kan scrolle innenfor previewet.
+- Sidesett per mal-stil (`klassisk`, `moderne`, `minimalistisk`) — 4 sider hver, med samme typografi/farger som i dag, men nytt innhold:
+  1. **Forside** — logo, "Brannkonsept", undertittel, prosjektnavn, dato. Ingen firmanavn-tekst.
+  2. **Innholdsfortegnelse** — kapittel 1–6 (Innledning, Forutsetninger, Branntekniske ytelser, Rømning og redning, Slokking og varsling, Vedlegg).
+  3. **Innholdsside 1** — "1. Innledning" + "2. Forutsetninger" med flere paragrafer eksempeltekst og en liten faktatabell (risikoklasse, brannklasse, antall etasjer).
+  4. **Innholdsside 2** — "3. Branntekniske ytelser" med en tabell (Forhold / Løsning / Ansvar) med 3–4 rader eksempel, slik den ser ut i ekte rapporter.
+- Felles komponenter: `Page`, `LogoOrPlaceholder`, `Header` (smal topplinje med kun logo + accent-strek, uten firmanavn), `Footer` (kun sidetall + dato — fjerner groupName-teksten der også for å unngå dobling, eller lar den stå diskré; jeg lar foten ha kun sidetall + dato for et renere uttrykk siden logo allerede identifiserer firmaet).
+- Sidetall settes dynamisk per side ("Side 1", "Side 2" osv.).
+- Tabeller stiles med `primary` for headerlinje og `accent` for radskillelinjer slik at fargevalget vises tydelig på flere sider.
 
-```sql
-update contact_groups cg
-set logo_url = p.logo_url
-from profiles p
-where cg.user_id = p.id
-  and cg.logo_url is not null
-  and cg.logo_url not like '%logo-%'   -- gamle URL-er uten tidsstempel
-  and p.logo_url is not null;
-```
+### `src/components/gruppe/MalvalgPanel.tsx` (mindre justering)
 
-### 2. Hardfør UI-en mot brutte logoer
-Legg til `onError`-fallback i bilde-elementene som viser logoen:
+- Endre preview-containeren (linje 261) fra `flex justify-center` til en scroll-container:
+  ```
+  <div className="rounded-lg bg-muted/40 p-6 max-h-[80vh] overflow-y-auto">
+    <div className="flex flex-col items-center gap-6">
+      <MalForhandsvisning ... />
+    </div>
+  </div>
+  ```
+- Oppdater hjelpeteksten til: "Bla gjennom for å se hele malen — endelig layout vises i Word."
 
-- **GruppeDetalj** — to steder (topp-banner og "Gruppelogo"-kort): hvis `groupLogoUrl` feiler å laste, bruk `profileLogoUrl` automatisk (kun visuelt, ikke lagre).
-- **MalForhandsvisning** — alle tre malene: img har `onError` som setter en `failed`-state og viser plassholderen i stedet for et brutt bilde-ikon.
+### `Props`-grensesnittet
 
-### 3. Fikse opplastings-flyten for fremtiden
-I `handleLogoUpload`: navngi filen med tidsstempel (`logo-${Date.now()}.${ext}`) slik at upserts ikke kolliderer med browser-cache, og bruk samme URL i `getPublicUrl` etterpå. Det samme grepet som profil-uploaden allerede bruker.
+- Beholdes uendret. `groupName` mottas fortsatt (brukes evt. i alt-tekst), men rendres ikke som synlig tekst i forsiden.
 
-## Filer
+## Ikke berørt
 
-- **Ny migrering:** `supabase/migrations/...sql` — fix-spørringen over.
-- **Endret:** `src/pages/GruppeDetalj.tsx` — `onError` på de to logo-bildene + tidsstempel i opplastings-stien.
-- **Endret:** `src/components/gruppe/MalForhandsvisning.tsx` — `useState<failed>`-flag og `onError` i `LogoOrPlaceholder`.
-
-Ingen RLS- eller skjemaendringer.
+- Word-eksport, fargevalg-logikk, logo-fallback, lagring, mal-defaults. Kun visuell forhåndsvisning endres.
