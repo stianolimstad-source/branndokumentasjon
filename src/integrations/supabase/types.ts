@@ -585,6 +585,54 @@ export type Database = {
           },
         ]
       }
+      subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean | null
+          created_at: string | null
+          current_period_end: string | null
+          current_period_start: string | null
+          environment: string
+          id: string
+          paddle_customer_id: string
+          paddle_subscription_id: string
+          price_id: string
+          product_id: string
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          environment?: string
+          id?: string
+          paddle_customer_id: string
+          paddle_subscription_id: string
+          price_id: string
+          product_id: string
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean | null
+          created_at?: string | null
+          current_period_end?: string | null
+          current_period_start?: string | null
+          environment?: string
+          id?: string
+          paddle_customer_id?: string
+          paddle_subscription_id?: string
+          price_id?: string
+          product_id?: string
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           assigned_by: string
@@ -650,6 +698,10 @@ export type Database = {
         Returns: undefined
       }
       get_user_group_ids: { Args: { _user_id: string }; Returns: string[] }
+      has_active_subscription: {
+        Args: { check_env?: string; user_uuid: string }
+        Returns: boolean
+      }
       is_group_admin: {
         Args: { _group_id: string; _user_id: string }
         Returns: boolean
