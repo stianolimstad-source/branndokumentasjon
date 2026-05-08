@@ -100,6 +100,17 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   const themeFont = theme?.fontFamily ? `${theme.fontFamily}, Verdana, Geneva, sans-serif` : 'Verdana, Geneva, sans-serif';
   const themePrimary = theme?.primaryColor ? `#${theme.primaryColor}` : undefined;
   const themeAccent = theme?.accentColor ? `#${theme.accentColor}` : undefined;
+  // Soft tinted background derived from accent color, used to theme section header rows
+  const hexToRgba = (hex: string, alpha: number) => {
+    const h = hex.replace('#', '');
+    const r = parseInt(h.substring(0, 2), 16);
+    const g = parseInt(h.substring(2, 4), 16);
+    const b = parseInt(h.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+  const sectionRowBg = themeAccent ? hexToRgba(themeAccent, 0.18) : '#DBEAFE';
+  const sectionRowStyle = { background: sectionRowBg };
+  const chapterHeadingColor = themePrimary ?? '#00a3e0';
   const pageStyle = "bg-white text-black p-10 rounded-lg shadow-md text-sm border border-gray-200 mx-auto relative";
   const pageWidth = { maxWidth: '210mm', minHeight: '297mm', paddingBottom: '40px', fontFamily: themeFont };
   const hasSammendrag = !!formData.sammendrag;
