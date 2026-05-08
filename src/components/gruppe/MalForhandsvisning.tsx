@@ -158,7 +158,17 @@ export default function MalForhandsvisning({
         className="bg-white text-black shadow-elegant rounded-sm w-full"
         style={{ maxWidth: 800, padding: 32 }}
       >
-        <KonseptPreview formData={{}} logoUrl={logoUrl} hideCover />
+        <KonseptPreview
+          formData={{}}
+          logoUrl={logoUrl}
+          hideCover
+          theme={{
+            template,
+            primaryColor: primary.replace(/^#/, ""),
+            accentColor: accent.replace(/^#/, ""),
+            fontFamily: font,
+          }}
+        />
       </div>
     </div>
   );
