@@ -433,14 +433,14 @@ export async function exportKvalitativWord(
   });
 
   const doc = new Document({
-    styles: {
-      default: {
-        document: {
-          run: { font: "Verdana", size: 20 },
-        },
+    styles: defaultDocStyles(resolvedTheme),
+    sections: [
+      {
+        headers: { default: buildHeader(resolvedTheme, { logo, documentLabel: "Fraviksdokumentasjon" }) },
+        footers: { default: buildFooter(resolvedTheme) },
+        children: elements,
       },
-    },
-    sections: [{ children: elements }],
+    ],
   });
   const blob = await Packer.toBlob(doc);
   saveAs(blob, `${dokumentNavn || "Fraviksdokumentasjon"}.docx`);
