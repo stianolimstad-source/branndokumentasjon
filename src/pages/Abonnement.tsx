@@ -48,7 +48,7 @@ const Abonnement = () => {
       toast({ title: "Feil", description: "Kunne ikke åpne kundeportalen.", variant: "destructive" });
       return;
     }
-    window.open(data.url, "_blank");
+    window.location.href = data.url;
   };
 
   return (
