@@ -455,10 +455,12 @@ const Konsept = () => {
         const t = await resolveDocumentTheme(selectedProjectId, logoUrl, user?.id);
         if (!cancelled) {
           setPreviewTheme({
+            template: t.template,
             primaryColor: t.primaryColor,
             accentColor: t.accentColor,
             fontFamily: t.fontFamily,
             logoUrl: t.logoUrl ?? null,
+            companyName: t.companyName ?? null,
           });
         }
       } catch (e) {
