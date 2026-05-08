@@ -1,35 +1,27 @@
 ## Mål
+Endre abonnementsprisene til norske kroner og oppdatere visningen på `/abonnement`.
 
-Fjern hele "kundeportal"-flyten (som åpner ekstern fane og ofte blokkeres) og la brukeren si opp abonnementet med ett klikk inne i appen — på samme måte som kjøp gjøres direkte via Paddle uten omveier. Tilgangen beholdes ut inneværende periode.
+## Nye priser
 
-## Slik blir det for brukeren
+| Plan | Ny pris | Gammel pris |
+|---|---|---|
+| Månedlig | **500 NOK / mnd** | $9 USD |
+| Årlig | **5 000 NOK / år** | 90 NOK (feilsatt) |
 
-På `/abonnement`, når abonnementet er aktivt:
-- Knapp: **"Si opp abonnement"** (rød/outline).
-- Klikk åpner en bekreftelsesdialog: *"Er du sikker på at du vil si opp? Du beholder tilgang ut perioden frem til {dato}."* — med valg "Avbryt" / "Si opp".
-- Ved bekreftelse: kall til backend, toast "Abonnementet er sagt opp", og kortet oppdateres til å vise "utløper {dato}" (status `cancel_at_period_end`).
-- Hvis abonnementet allerede er satt til opphør: vis i stedet en **"Gjenoppta abonnement"**-knapp som angrer oppsigelsen.
+Årlig gir ~17 % rabatt (tilsvarer 10 måneder, 2 mnd gratis).
 
-Ingen ny fane, ingen ekstern portal.
+## Endringer
 
-## Teknisk
+### 1. Paddle (via API)
+- `PATCH /prices/pri_01kr36xghzd11md9nt7bt5g4yb` (månedlig) → `unit_price: { amount: "50000", currency_code: "NOK" }`
+- `PATCH /prices/pri_01kr36xgy8dgkbagept52qeg4z` (årlig) → `unit_price: { amount: "500000", currency_code: "NOK" }`
 
-**Ny edge function `cancel-subscription`** (basert på samme mønster som `customer-portal`):
-- Verifiserer JWT, finner brukerens nyeste rad i `subscriptions` for valgt `environment`.
-- Body: `{ environment, action: "cancel" | "resume" }`.
-- `cancel`: `POST /subscriptions/{id}/cancel` med `effective_from: "next_billing_period"` via `getPaddleClient(env).subscriptions.cancel(...)`.
-- `resume`: `PATCH /subscriptions/{id}` med `scheduled_change: null` for å fjerne planlagt oppsigelse.
-- Returnerer `{ ok: true }`. Webhooken `subscription.updated` / `subscription.canceled` oppdaterer DB-raden (allerede implementert i `payments-webhook`), og `useSubscription` plukker opp endringen via realtime.
+Dette gjøres i sandbox nå. Når du publiserer synces det automatisk til live.
 
-**Frontend `src/pages/Abonnement.tsx`:**
-- Fjern `openPortal`, `portalLoading`, `window.open`-logikken og `ExternalLink`-knappen.
-- Legg til `AlertDialog` (samme mønster som `MineProsjekter.tsx`) for bekreftelse.
-- Vis "Si opp abonnement" når `!cancelAtPeriodEnd`, og "Gjenoppta abonnement" når `cancelAtPeriodEnd`.
-- Kall `supabase.functions.invoke("cancel-subscription", { body: { environment, action } })`, så `refresh()` + toast.
-- Behold visning av "utløper {dato}" som allerede finnes.
+### 2. Frontend: `src/pages/Abonnement.tsx`
+- Månedlig kort: `price="500 kr"`, `period="/mnd"`
+- Årlig kort: `price="5 000 kr"`, `period="/år"`, badge `"Spar ~17%"`
+- Fjern plassholder-tekst nederst ("Pristabellen er foreløpig…")
 
-**Slett:** `supabase/functions/customer-portal/index.ts` (ikke lenger i bruk).
-
-## Utenfor scope
-- Bytte plan / oppgradering — kan legges til senere som egen knapp.
-- Oppdatere betalingskort — Paddle håndterer dette automatisk ved neste fornyelse hvis kortet er utløpt; tar vi hvis behovet kommer.
+## Skatt (informativt)
+Du trenger ikke gjøre noe spesielt. Paddle er Merchant of Record — de håndterer MVA mot kundene og utbetaler nettobeløp til deg. Du fører bare inntekten som vanlig i regnskapet.
