@@ -255,7 +255,7 @@ export default function MalvalgPanel({ groupId, groupName, logoUrl, profileLogoU
           <div className="flex items-center justify-between">
             <Label>Forhåndsvisning</Label>
             <span className="text-xs text-muted-foreground">
-              Bla gjennom for å se hele malen — endelig layout vises i Word.
+              Forhåndsvisning av et tomt testkonsept med alle TEK17-deler — endelig innhold fylles ut per prosjekt.
             </span>
           </div>
           <div className="rounded-lg bg-muted/40 p-6 max-h-[80vh] overflow-y-auto">

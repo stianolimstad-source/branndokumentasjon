@@ -1,40 +1,28 @@
 ## Mål
 
-1. Fjerne firmanavn (groupName) som tekst i forhåndsvisningen — logoen står for identiteten.
-2. Vise et helt testbrannkonsept (forside + flere innholdssider) som brukeren kan skrolle gjennom for å se hvordan malen vil ta seg ut i ferdig dokument.
+I stedet for de 4 håndlagde sidene i `MalForhandsvisning.tsx`, vis et komplett testbrannkonsept ved å gjenbruke selve `KonseptPreview` (samme komponent som brukes på konseptsiden). Da får man se alle TEK17-delene (kapittel 1–6, alle §11-krav, rømning, slokking osv.) eksakt slik de vil rendres i et ekte konsept, bare med tomt innhold.
 
 ## Endringer
 
-### `src/components/gruppe/MalForhandsvisning.tsx` (omskriving)
+### `src/components/gruppe/MalForhandsvisning.tsx`
+- Fjern de fire egendefinerte sidene (Cover/TOC/Content1/Content2) og all tilhørende kode (Page-wrapper, Cover-varianter, dummy-tabeller).
+- Behold `LogoOrPlaceholder`-fallback-logikken (`imgFailed`).
+- Render i stedet:
+  1. Én cover-side på toppen som viser logo + valgt template-stil (klassisk/moderne/minimalistisk) — slik at man ser primær/aksent/font på forsiden.
+  2. Under coveret: `<KonseptPreview formData={{}} logoUrl={logoUrl} />` pakket i en hvit A4-bredde-container (`max-w-[800px]`, hvit bakgrunn, skygge) slik at det ser ut som dokumentpapir.
+- Hele stacken ligger fortsatt i `flex flex-col items-center gap-6`, og scrollingen håndteres av `MalvalgPanel` sin `max-h-[80vh] overflow-y-auto`.
 
-- Fjern alle steder der `groupName` rendres som tekst i forsiden (de små "uppercase tracking" labels). Beholder fortsatt logoplasseringen som før — én logo per mal-stil. `groupName` brukes kun i sidefoten på hver side (diskré nederst), siden Word-malen også bruker det der.
-- Bytt fra én A4-side til en vertikal stack av A4-sider (samme `Page`-wrapper, men flere instanser stacket med `space-y-6`). Beholder `aspectRatio: 1/1.414` per side så forholdene stemmer.
-- Wrapperen i `MalvalgPanel` får `max-h-[80vh] overflow-y-auto` slik at man kan scrolle innenfor previewet.
-- Sidesett per mal-stil (`klassisk`, `moderne`, `minimalistisk`) — 4 sider hver, med samme typografi/farger som i dag, men nytt innhold:
-  1. **Forside** — logo, "Brannkonsept", undertittel, prosjektnavn, dato. Ingen firmanavn-tekst.
-  2. **Innholdsfortegnelse** — kapittel 1–6 (Innledning, Forutsetninger, Branntekniske ytelser, Rømning og redning, Slokking og varsling, Vedlegg).
-  3. **Innholdsside 1** — "1. Innledning" + "2. Forutsetninger" med flere paragrafer eksempeltekst og en liten faktatabell (risikoklasse, brannklasse, antall etasjer).
-  4. **Innholdsside 2** — "3. Branntekniske ytelser" med en tabell (Forhold / Løsning / Ansvar) med 3–4 rader eksempel, slik den ser ut i ekte rapporter.
-- Felles komponenter: `Page`, `LogoOrPlaceholder`, `Header` (smal topplinje med kun logo + accent-strek, uten firmanavn), `Footer` (kun sidetall + dato — fjerner groupName-teksten der også for å unngå dobling, eller lar den stå diskré; jeg lar foten ha kun sidetall + dato for et renere uttrykk siden logo allerede identifiserer firmaet).
-- Sidetall settes dynamisk per side ("Side 1", "Side 2" osv.).
-- Tabeller stiles med `primary` for headerlinje og `accent` for radskillelinjer slik at fargevalget vises tydelig på flere sider.
+### `src/components/gruppe/MalvalgPanel.tsx`
+- Oppdater hjelpeteksten til: "Forhåndsvisning av et tomt testkonsept med alle TEK17-deler — endelig innhold fylles ut per prosjekt."
+- Ingen andre endringer (props uendret).
 
-### `src/components/gruppe/MalvalgPanel.tsx` (mindre justering)
+## Tekniske notater
 
-- Endre preview-containeren (linje 261) fra `flex justify-center` til en scroll-container:
-  ```
-  <div className="rounded-lg bg-muted/40 p-6 max-h-[80vh] overflow-y-auto">
-    <div className="flex flex-col items-center gap-6">
-      <MalForhandsvisning ... />
-    </div>
-  </div>
-  ```
-- Oppdater hjelpeteksten til: "Bla gjennom for å se hele malen — endelig layout vises i Word."
+- `KonseptPreview` aksepterer allerede `logoUrl` som prop og rendrer alle seksjoner uavhengig av om data finnes (tomme felter vises som tomme, men strukturen er komplett).
+- Template-fargene (primær/aksent/font) påvirker fortsatt cover-siden i forhåndsvisningen. Selve `KonseptPreview` bruker faste stiler — det er bevisst, fordi den speiler hvordan konseptet faktisk genereres på siden i dag. Word-eksporten styres separat av `document-templates.ts` og er allerede tema-bevisst.
+- Ingen DB- eller backend-endringer.
 
-### `Props`-grensesnittet
+## Hva brukeren ser etterpå
 
-- Beholdes uendret. `groupName` mottas fortsatt (brukes evt. i alt-tekst), men rendres ikke som synlig tekst i forsiden.
-
-## Ikke berørt
-
-- Word-eksport, fargevalg-logikk, logo-fallback, lagring, mal-defaults. Kun visuell forhåndsvisning endres.
+- En A4-stor forside i valgt mal (logo + farger + font).
+- Deretter et fullt scrollbart testkonsept med alle kapitler (1 Innledning, 2 Bygningsdata, 3 Branntekniske krav §11-4 til §11-17, 4 Utførelse/drift, 5 Revisjonshistorikk, 6 Litteratur) — tomt, men strukturelt komplett.
