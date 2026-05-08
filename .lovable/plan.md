@@ -1,28 +1,28 @@
-# Plan for å fikse planbytte på abonnementssiden
+# Plan: Side-ved-side planer + sperre nedgradering fra årlig
 
-## Hva som skjer nå
-- Backend-bytte til årlig plan ser ut til å fungere.
-- Databasen viser allerede `branndok_pro_yearly` for abonnementet ditt i testmiljøet.
-- Feilen du ser nå kommer sannsynligvis av at frontend fortsatt viser gammel plan et øyeblikk, eller at samme bytte trigges en gang til og svarer med «Du er allerede på denne planen».
+## Endringer i `src/pages/Abonnement.tsx`
 
-## Jeg vil gjøre
-1. Oppdatere `Abonnement`-siden slik at planbytte håndteres idempotent i UI.
-   - Hvis backend svarer at brukeren allerede er på valgt plan, skal siden behandle det som vellykket og oppdatere visningen i stedet for å vise feil.
-   - Hindre dobbeltkjøring fra dialog/knapp mens forespørselen pågår.
+1. **Vis alltid begge planer side-ved-side** (samme grid som ved første kjøp), uavhengig av om brukeren er innlogget med aktivt abonnement.
+   - Prisene (500 kr/mnd, 5 000 kr/år) vises tydelig på begge kort i alle tilstander.
+   - Beholder "Spar ~17%"-merket på årlig.
 
-2. Gjøre oppdateringen av abonnementsdata mer robust.
-   - Tvinge en umiddelbar refresh av `useSubscription` etter vellykket planbytte.
-   - Sørge for at realtime/polling ikke etterlater UI i gammel tilstand rett etter byttet.
+2. **Tilstandsavhengige knapper på hvert plan-kort**:
+   - Ingen aktivt abonnement: "Start gratis prøveperiode" (som i dag).
+   - Aktivt abonnement på den planen kortet representerer: vis "Din nåværende plan" (deaktivert), pluss status (Prøveperiode / Aktivt / Utløper dato).
+   - På månedlig (når bruker er på månedlig): "Bytt til årlig" på årskortet (oppgradering).
+   - **På månedlig (når bruker er på årlig): knappen er deaktivert** med tekst "Tilgjengelig ved neste fornyelse" og en hjelpetekst "Du har allerede betalt for et år. Du kan bytte til månedlig ved neste fornyelse."
+     - Trial-årlig er unntak: tillates fremdeles bytte (ingen reell betaling skjedd ennå). Logikken: deaktiver kun når `status === "active"` og `priceId === YEARLY_ID`.
+   - Eier (`status === "owner"`) får ingen handlingsknapper på kortene.
 
-3. Forbedre brukerbeskjeden på abonnementssiden.
-   - Ved prøveperiode: vise at årlig plan er valgt og trer i kraft når prøveperioden utløper.
-   - Unngå generisk feiltoast når resultatet egentlig er at byttet allerede er registrert.
+3. **Egen "Administrer abonnement"-seksjon under kortene** (erstatter dagens store kort) for å samle status-info og oppsigelse/gjenopptakelse:
+   - Viser status, gjeldende plan og periode-slutt.
+   - Si opp / Gjenoppta-knapp.
+   - Holder feature-listen ute herfra siden den allerede står på plan-kortene.
 
-4. Verifisere flyten etter endring.
-   - Teste edge-funksjonen igjen.
-   - Kontrollere at siden viser riktig plan etter bytte uten ny feiltoast.
+4. **Bevare eksisterende dialoger** (`confirmCancel`, `confirmSwitch`) og logikk for `runSwitch`/`runAction` uendret.
 
 ## Tekniske detaljer
-- `change-subscription-plan` returnerer nå korrekt for trial-bytte, men kan også returnere en «allerede på denne planen»-melding ved nytt kall.
-- `subscriptions`-tabellen viser allerede årlig plan for brukeren, så problemet er nå primært i frontend-synkronisering og feilhåndtering.
-- Endringene vil være begrenset til abonnementsflyten og ikke påvirke annen betalingslogikk.
+
+- `canDowngradeToMonthly = priceId === YEARLY_ID && status === "trialing"` — eneste tilfellet hvor nedgrader-knappen er aktiv.
+- Plankortet får en ny prop `state: "purchase" | "current" | "switch" | "locked"` som styrer knapp-tekst/-stil.
+- Ingen endringer i edge-funksjoner eller database.

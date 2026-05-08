@@ -3,7 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Check, Loader2, XCircle, RotateCcw, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
+import { Check, Loader2, XCircle, RotateCcw, ArrowUpCircle, Lock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
@@ -25,6 +25,12 @@ const FEATURES = [
 
 const MONTHLY_ID = "branndok_pro_monthly";
 const YEARLY_ID = "branndok_pro_yearly";
+
+type CardState =
+  | { kind: "purchase" }
+  | { kind: "current"; statusText: string }
+  | { kind: "switch"; target: "to_yearly" | "to_monthly" }
+  | { kind: "locked"; reason: string };
 
 const Abonnement = () => {
   const { user, loading: authLoading } = useAuth();
@@ -68,7 +74,6 @@ const Abonnement = () => {
           ? "Du beholder tilgang ut inneværende periode."
           : "Abonnementet vil fornyes som vanlig.",
       });
-      // Webhook oppdaterer DB; poll noen ganger som backup
       const t = setInterval(() => refresh(), 2000);
       setTimeout(() => clearInterval(t), 15000);
     } finally {
@@ -111,9 +116,30 @@ const Abonnement = () => {
     }
   };
 
-  const currentPlanLabel = priceId === YEARLY_ID ? "Årlig (5 000 kr/år)"
-    : priceId === MONTHLY_ID ? "Månedlig (500 kr/mnd)"
-    : null;
+  const periodLabel = currentPeriodEnd
+    ? `${cancelAtPeriodEnd ? "utløper" : "fornyes"} ${new Date(currentPeriodEnd).toLocaleDateString("nb-NO")}`
+    : "";
+
+  const stateFor = (cardPlan: typeof MONTHLY_ID | typeof YEARLY_ID): CardState => {
+    if (!isActive || status === "owner") return { kind: "purchase" };
+    if (priceId === cardPlan) {
+      const statusText = [statusLabel(status), periodLabel].filter(Boolean).join(" · ");
+      return { kind: "current", statusText };
+    }
+    // User is on the OTHER plan
+    if (cardPlan === YEARLY_ID && priceId === MONTHLY_ID) {
+      return { kind: "switch", target: "to_yearly" };
+    }
+    if (cardPlan === MONTHLY_ID && priceId === YEARLY_ID) {
+      // Allow downgrade only during trial — after real payment, lock until renewal
+      if (status === "trialing") return { kind: "switch", target: "to_monthly" };
+      return {
+        kind: "locked",
+        reason: "Du har allerede betalt for et helt år. Du kan bytte til månedlig ved neste fornyelse.",
+      };
+    }
+    return { kind: "purchase" };
+  };
 
   const switchDescription = confirmSwitch === "to_yearly"
     ? status === "trialing"
@@ -121,7 +147,9 @@ const Abonnement = () => {
       : "Endringen trer i kraft umiddelbart. Paddle pro-raterer differansen mellom månedlig og årlig pris for resten av inneværende periode, slik at du kun betaler differansen nå."
     : status === "trialing"
       ? `Du er i prøveperiode. Den månedlige planen aktiveres når prøveperioden utløper${currentPeriodEnd ? ` ${new Date(currentPeriodEnd).toLocaleDateString("nb-NO")}` : ""}.`
-      : "Endringen trer i kraft ved neste fornyelse. Du beholder årlig plan ut inneværende periode, og blir deretter fakturert månedlig.";
+      : "Endringen trer i kraft ved neste fornyelse.";
+
+  const showManage = isActive && status !== "owner";
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
@@ -135,85 +163,106 @@ const Abonnement = () => {
         {authLoading || loading ? (
           <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin" /></div>
         ) : !user ? (
-          <Card className="max-w-md mx-auto text-center">
-            <CardHeader>
-              <CardTitle>Logg inn for å abonnere</CardTitle>
-              <CardDescription>Du må være innlogget for å starte abonnementet.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link to="/auth"><Button>Logg inn</Button></Link>
-            </CardContent>
-          </Card>
-        ) : isActive ? (
-          <Card className="max-w-xl mx-auto">
-            <CardHeader>
-              <CardTitle>Du har aktivt abonnement</CardTitle>
-              <CardDescription>
-                Status: <span className="font-medium">{statusLabel(status)}</span>
-                {currentPlanLabel && (
-                  <> · Plan: <span className="font-medium">{currentPlanLabel}</span></>
-                )}
-                {currentPeriodEnd && (
-                  <> · {cancelAtPeriodEnd ? "utløper" : "fornyes"} {new Date(currentPeriodEnd).toLocaleDateString("nb-NO")}</>
-                )}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <ul className="space-y-2">
-                {FEATURES.map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary" />{f}
-                  </li>
-                ))}
-              </ul>
-              {status !== "owner" && !cancelAtPeriodEnd && priceId === MONTHLY_ID && (
-                <Button onClick={() => setConfirmSwitch("to_yearly")} className="w-full" disabled={actionLoading}>
-                  <ArrowUpCircle className="h-4 w-4 mr-2" />
-                  Bytt til årlig (spar ~17%)
-                </Button>
-              )}
-              {status !== "owner" && !cancelAtPeriodEnd && priceId === YEARLY_ID && (
-                <Button onClick={() => setConfirmSwitch("to_monthly")} variant="outline" className="w-full" disabled={actionLoading}>
-                  <ArrowDownCircle className="h-4 w-4 mr-2" />
-                  Bytt til månedlig
-                </Button>
-              )}
-              {status !== "owner" && (
-                cancelAtPeriodEnd ? (
-                  <Button onClick={() => runAction("resume")} variant="outline" className="w-full" disabled={actionLoading}>
-                    {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RotateCcw className="h-4 w-4 mr-2" />}
-                    Gjenoppta abonnement
-                  </Button>
-                ) : (
-                  <Button onClick={() => setConfirmCancel(true)} variant="outline" className="w-full" disabled={actionLoading}>
-                    {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <XCircle className="h-4 w-4 mr-2" />}
-                    Si opp abonnement
-                  </Button>
-                )
-              )}
-            </CardContent>
-          </Card>
+          <>
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              <PlanCard
+                title="Månedlig"
+                price="500 kr"
+                period="/mnd"
+                priceId={MONTHLY_ID}
+                state={{ kind: "purchase" }}
+                onPurchase={openCheckout}
+                onSwitch={() => {}}
+                actionLoading={false}
+                checkoutLoading={checkoutLoading}
+              />
+              <PlanCard
+                title="Årlig"
+                price="5 000 kr"
+                period="/år"
+                badge="Spar ~17%"
+                priceId={YEARLY_ID}
+                state={{ kind: "purchase" }}
+                onPurchase={openCheckout}
+                onSwitch={() => {}}
+                actionLoading={false}
+                checkoutLoading={checkoutLoading}
+                recommended
+              />
+            </div>
+            <Card className="max-w-md mx-auto text-center">
+              <CardHeader>
+                <CardTitle>Logg inn for å abonnere</CardTitle>
+                <CardDescription>Du må være innlogget for å starte abonnementet.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Link to="/auth"><Button>Logg inn</Button></Link>
+              </CardContent>
+            </Card>
+          </>
         ) : (
-          <div className="grid md:grid-cols-2 gap-6">
-            <PlanCard
-              title="Månedlig"
-              price="500 kr"
-              period="/mnd"
-              priceId={MONTHLY_ID}
-              onSelect={openCheckout}
-              loading={checkoutLoading}
-            />
-            <PlanCard
-              title="Årlig"
-              price="5 000 kr"
-              period="/år"
-              badge="Spar ~17%"
-              priceId={YEARLY_ID}
-              onSelect={openCheckout}
-              loading={checkoutLoading}
-              recommended
-            />
-          </div>
+          <>
+            <div className="grid md:grid-cols-2 gap-6">
+              <PlanCard
+                title="Månedlig"
+                price="500 kr"
+                period="/mnd"
+                priceId={MONTHLY_ID}
+                state={stateFor(MONTHLY_ID)}
+                onPurchase={openCheckout}
+                onSwitch={(t) => setConfirmSwitch(t)}
+                actionLoading={actionLoading}
+                checkoutLoading={checkoutLoading}
+              />
+              <PlanCard
+                title="Årlig"
+                price="5 000 kr"
+                period="/år"
+                badge="Spar ~17%"
+                priceId={YEARLY_ID}
+                state={stateFor(YEARLY_ID)}
+                onPurchase={openCheckout}
+                onSwitch={(t) => setConfirmSwitch(t)}
+                actionLoading={actionLoading}
+                checkoutLoading={checkoutLoading}
+                recommended
+              />
+            </div>
+
+            {status === "owner" && (
+              <Card className="mt-6 max-w-2xl mx-auto">
+                <CardHeader>
+                  <CardTitle>Eier (full tilgang)</CardTitle>
+                  <CardDescription>Du har full tilgang til alle verktøy uten abonnement.</CardDescription>
+                </CardHeader>
+              </Card>
+            )}
+
+            {showManage && (
+              <Card className="mt-6 max-w-2xl mx-auto">
+                <CardHeader>
+                  <CardTitle>Administrer abonnement</CardTitle>
+                  <CardDescription>
+                    Status: <span className="font-medium">{statusLabel(status)}</span>
+                    {currentPeriodEnd && <> · {periodLabel}</>}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {cancelAtPeriodEnd ? (
+                    <Button onClick={() => runAction("resume")} variant="outline" className="w-full" disabled={actionLoading}>
+                      {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RotateCcw className="h-4 w-4 mr-2" />}
+                      Gjenoppta abonnement
+                    </Button>
+                  ) : (
+                    <Button onClick={() => setConfirmCancel(true)} variant="outline" className="w-full" disabled={actionLoading}>
+                      {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <XCircle className="h-4 w-4 mr-2" />}
+                      Si opp abonnement
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </>
         )}
 
         <p className="text-center text-xs text-muted-foreground mt-8">
@@ -287,36 +336,86 @@ interface PlanCardProps {
   priceId: string;
   badge?: string;
   recommended?: boolean;
-  loading: boolean;
-  onSelect: (priceId: string) => void;
+  state: CardState;
+  checkoutLoading: boolean;
+  actionLoading: boolean;
+  onPurchase: (priceId: string) => void;
+  onSwitch: (target: "to_yearly" | "to_monthly") => void;
 }
 
-const PlanCard = ({ title, price, period, priceId, badge, recommended, loading, onSelect }: PlanCardProps) => (
-  <Card className={recommended ? "border-primary shadow-medium" : ""}>
-    <CardHeader>
-      <div className="flex items-center justify-between">
-        <CardTitle>{title}</CardTitle>
-        {badge && <span className="text-xs font-semibold px-2 py-1 rounded-full bg-primary/10 text-primary">{badge}</span>}
-      </div>
-      <div className="flex items-baseline gap-1 pt-2">
-        <span className="text-4xl font-bold">{price}</span>
-        <span className="text-muted-foreground">{period}</span>
-      </div>
-      <CardDescription>14 dagers gratis prøveperiode</CardDescription>
-    </CardHeader>
-    <CardContent className="space-y-4">
-      <ul className="space-y-2">
-        {FEATURES.map((f) => (
-          <li key={f} className="flex items-center gap-2 text-sm">
-            <Check className="h-4 w-4 text-primary" />{f}
-          </li>
-        ))}
-      </ul>
-      <Button className="w-full" onClick={() => onSelect(priceId)} disabled={loading}>
-        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Start gratis prøveperiode"}
-      </Button>
-    </CardContent>
-  </Card>
-);
+const PlanCard = ({ title, price, period, priceId, badge, recommended, state, checkoutLoading, actionLoading, onPurchase, onSwitch }: PlanCardProps) => {
+  const isCurrent = state.kind === "current";
+  return (
+    <Card className={`${recommended ? "border-primary shadow-medium" : ""} ${isCurrent ? "ring-2 ring-primary" : ""}`}>
+      <CardHeader>
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle>{title}</CardTitle>
+          <div className="flex items-center gap-2">
+            {isCurrent && (
+              <span className="text-xs font-semibold px-2 py-1 rounded-full bg-primary text-primary-foreground">
+                Din plan
+              </span>
+            )}
+            {badge && <span className="text-xs font-semibold px-2 py-1 rounded-full bg-primary/10 text-primary">{badge}</span>}
+          </div>
+        </div>
+        <div className="flex items-baseline gap-1 pt-2">
+          <span className="text-4xl font-bold">{price}</span>
+          <span className="text-muted-foreground">{period}</span>
+        </div>
+        <CardDescription>
+          {state.kind === "current" ? state.statusText : "14 dagers gratis prøveperiode"}
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <ul className="space-y-2">
+          {FEATURES.map((f) => (
+            <li key={f} className="flex items-center gap-2 text-sm">
+              <Check className="h-4 w-4 text-primary" />{f}
+            </li>
+          ))}
+        </ul>
+
+        {state.kind === "purchase" && (
+          <Button className="w-full" onClick={() => onPurchase(priceId)} disabled={checkoutLoading}>
+            {checkoutLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Start gratis prøveperiode"}
+          </Button>
+        )}
+
+        {state.kind === "current" && (
+          <Button className="w-full" variant="secondary" disabled>
+            <Check className="h-4 w-4 mr-2" />
+            Din nåværende plan
+          </Button>
+        )}
+
+        {state.kind === "switch" && (
+          <Button
+            className="w-full"
+            onClick={() => onSwitch(state.target)}
+            disabled={actionLoading}
+            variant={state.target === "to_yearly" ? "default" : "outline"}
+          >
+            {actionLoading
+              ? <Loader2 className="h-4 w-4 animate-spin" />
+              : state.target === "to_yearly"
+                ? <><ArrowUpCircle className="h-4 w-4 mr-2" />Bytt til årlig (spar ~17%)</>
+                : <>Bytt til månedlig</>}
+          </Button>
+        )}
+
+        {state.kind === "locked" && (
+          <div className="space-y-2">
+            <Button className="w-full" variant="outline" disabled>
+              <Lock className="h-4 w-4 mr-2" />
+              Tilgjengelig ved neste fornyelse
+            </Button>
+            <p className="text-xs text-muted-foreground text-center">{state.reason}</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
 
 export default Abonnement;
