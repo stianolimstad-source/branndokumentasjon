@@ -24,6 +24,7 @@ interface KonseptPreviewProps {
   logoUrl?: string | null;
   authorInfo?: { name: string; company: string } | null;
   documentType?: "brannkonsept" | "tilstandsvurdering";
+  hideCover?: boolean;
 }
 
 const gradColors: Record<string, { bg: string; text: string; label: string }> = {
