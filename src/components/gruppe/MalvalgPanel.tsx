@@ -281,6 +281,10 @@ export default function MalvalgPanel({ groupId, groupName, logoUrl, profileLogoU
           </Button>
         </div>
 
+        <div className="rounded-lg border bg-primary/5 p-4 text-sm text-muted-foreground">
+          Medlemmer i denne bedriften kan velge denne malen som standard fra <span className="font-medium text-foreground">Min profil → Dokumentmal</span>. Tilhører de kun én bedrift med mal, brukes den automatisk.
+        </div>
+
         <div className="rounded-lg border border-dashed bg-muted/40 p-4 text-sm text-muted-foreground">
           <p className="font-medium text-foreground mb-1">Trenger dere noe helt eget?</p>
           Vi kan lage en skreddersydd mal som speiler bedriftens eksisterende grafiske profil — egen forside, skrifter,
