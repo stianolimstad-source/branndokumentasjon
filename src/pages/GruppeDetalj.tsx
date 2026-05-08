@@ -470,6 +470,7 @@ const GruppeDetalj = () => {
                   groupId={id!}
                   groupName={groupName}
                   logoUrl={groupLogoUrl}
+                  profileLogoUrl={profileLogoUrl}
                   initial={templateSettings}
                   onSaved={(s) => setTemplateSettings(s)}
                 />
