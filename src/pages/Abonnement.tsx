@@ -80,6 +80,7 @@ const Abonnement = () => {
   const runSwitch = async (target: "to_yearly" | "to_monthly") => {
     if (actionLoading) return;
     setActionLoading(true);
+    setConfirmSwitch(null);
     try {
       const newPriceId = target === "to_yearly" ? YEARLY_ID : MONTHLY_ID;
       const { data, error } = await supabase.functions.invoke("change-subscription-plan", {
@@ -93,17 +94,20 @@ const Abonnement = () => {
         });
         return;
       }
+      const isTrial = status === "trialing";
       toast({
         title: target === "to_yearly" ? "Byttet til årlig plan" : "Byttet til månedlig plan",
-        description: target === "to_yearly"
-          ? "Endringen trer i kraft umiddelbart. Differansen er pro-ratert."
-          : "Endringen trer i kraft ved neste fornyelse.",
+        description: isTrial
+          ? "Den nye planen aktiveres når prøveperioden utløper."
+          : target === "to_yearly"
+            ? "Endringen trer i kraft umiddelbart. Differansen er pro-ratert."
+            : "Endringen trer i kraft ved neste fornyelse.",
       });
+      await refresh();
       const t = setInterval(() => refresh(), 2000);
       setTimeout(() => clearInterval(t), 15000);
     } finally {
       setActionLoading(false);
-      setConfirmSwitch(null);
     }
   };
 

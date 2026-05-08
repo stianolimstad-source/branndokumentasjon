@@ -38,7 +38,12 @@ Deno.serve(async (req) => {
       .limit(1)
       .maybeSingle();
     if (!sub?.paddle_subscription_id) throw new Error('Ingen aktivt abonnement funnet');
-    if (sub.price_id === newPriceId) throw new Error('Du er allerede på denne planen');
+    if (sub.price_id === newPriceId) {
+      return new Response(JSON.stringify({ ok: true, alreadyOnPlan: true }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Resolve external_id -> Paddle price id
     const priceRes = await gatewayFetch(env, `/prices?external_id=${encodeURIComponent(newPriceId)}`);
