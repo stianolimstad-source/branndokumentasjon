@@ -422,6 +422,7 @@ const Konsept = () => {
   const [newProjectData, setNewProjectData] = useState({ name: "", description: "", address: "" });
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [authorInfo, setAuthorInfo] = useState<{ name: string; company: string } | null>(null);
+  const [previewTheme, setPreviewTheme] = useState<{ primaryColor: string; accentColor: string; fontFamily: string; logoUrl: string | null } | null>(null);
 
   // Auto-open create project dialog only for authenticated users when ?new=true
   useEffect(() => {
