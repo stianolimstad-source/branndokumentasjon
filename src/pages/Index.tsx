@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Plus, FolderOpen, ShieldCheck, BarChart3, GitCompare, Shield, LayoutDashboard, Warehouse, Receipt, Handshake, Building, Search, Check, ArrowLeft } from "lucide-react";
+import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Plus, FolderOpen, ShieldCheck, BarChart3, GitCompare, Shield, LayoutDashboard, Warehouse, Receipt, Handshake, Building, Search, Check, ArrowLeft, Lock } from "lucide-react";
+import { useIsFullAccess } from "@/hooks/useIsFullAccess";
 import { BYGNINGSTYPER } from "@/lib/brensellagring-krav";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -104,26 +105,32 @@ const Index = () => {
       title: "Tilbud",
       description: "Lag og eksporter profesjonelle pristilbud til kunder",
       href: "/tilbud",
+      locked: true,
     },
     {
       icon: Handshake,
       title: "Oppdragsbekreftelse",
       description: "Lag formelle oppdragsbekreftelser med omfang og vilkår",
       href: "/oppdragsbekreftelse",
+      locked: true,
     },
     {
       icon: ShieldCheck,
       title: "Sikkerhetsrutiner",
       description: "Rutiner og maler for kvalitetssikring ved prosjektering",
       href: "/sikkerhetsrutiner",
+      locked: true,
     },
     {
       icon: BookOpen,
       title: "Eksempelkatalog",
       description: "Bibliotek med løsninger og konstruksjoner",
       href: "/eksempelkatalog",
+      locked: true,
     },
-  ];
+  ] as const;
+
+  const isFullAccess = useIsFullAccess();
 
   return (
     <div className="min-h-screen bg-gradient-subtle overflow-x-hidden">
