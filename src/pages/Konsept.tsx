@@ -446,6 +446,28 @@ const Konsept = () => {
     }
   }, [user]);
 
+  // Resolve document theme (group template / personal default) for preview & export
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { resolveDocumentTheme } = await import("@/lib/document-templates");
+        const t = await resolveDocumentTheme(selectedProjectId, logoUrl, user?.id);
+        if (!cancelled) {
+          setPreviewTheme({
+            primaryColor: t.primaryColor,
+            accentColor: t.accentColor,
+            fontFamily: t.fontFamily,
+            logoUrl: t.logoUrl ?? null,
+          });
+        }
+      } catch (e) {
+        if (!cancelled) setPreviewTheme(null);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [selectedProjectId, user?.id, logoUrl]);
+
   const handleCreateProject = async () => {
     if (!newProjectData.name.trim()) {
       toast({ title: "Mangler navn", description: "Vennligst skriv inn et prosjektnavn", variant: "destructive" });
