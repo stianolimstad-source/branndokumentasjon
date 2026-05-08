@@ -81,15 +81,11 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/mine-prosjekter" element={<MineProsjekter />} />
-            <Route path="/prosjekt/:id" element={<ProsjektDetalj />} />
             <Route path="/mine-oppgaver" element={<MineOppgaver />} />
             <Route path="/ks-gjennomgang" element={<KSGjennomgang />} />
             <Route path="/mine-kontakter" element={<MineKontakter />} />
             <Route path="/mine-kontakter/gruppe/:id" element={<GruppeDetalj />} />
-            <Route path="/fraviksdokumentasjon/kvalitativ" element={<KvalitativAnalyse />} />
             <Route path="/min-profil" element={<MinProfil />} />
-            <Route path="/brensellagring" element={<Brensellagring />} />
             <Route path="/sikkerhetsrutiner" element={<RequireFullAccess><Sikkerhetsrutiner /></RequireFullAccess>} />
             <Route path="/eksempelkatalog" element={<RequireFullAccess><Eksempelkatalog /></RequireFullAccess>} />
             <Route path="/eksempelkatalog/branncellevegger" element={<RequireFullAccess><BranntekniskeKonstruksjoner /></RequireFullAccess>} />
