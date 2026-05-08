@@ -255,10 +255,10 @@ export default function MalvalgPanel({ groupId, groupName, logoUrl, profileLogoU
           <div className="flex items-center justify-between">
             <Label>Forhåndsvisning</Label>
             <span className="text-xs text-muted-foreground">
-              Visuell forhåndsvisning — endelig layout vises i Word.
+              Bla gjennom for å se hele malen — endelig layout vises i Word.
             </span>
           </div>
-          <div className="rounded-lg bg-muted/40 p-6 flex justify-center">
+          <div className="rounded-lg bg-muted/40 p-6 max-h-[80vh] overflow-y-auto">
             <MalForhandsvisning
               template={template}
               primary={primary}
