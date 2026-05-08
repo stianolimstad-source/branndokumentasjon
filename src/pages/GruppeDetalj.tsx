@@ -87,6 +87,7 @@ const GruppeDetalj = () => {
       setGroupName(groupRes.data.name);
       setGroupDescription(groupRes.data.description);
       setGroupLogoUrl((groupRes.data as any).logo_url || null);
+      setLogoFailed(false);
       setTemplateSettings(((groupRes.data as any).template_settings || {}) as TemplateSettings);
     }
 
