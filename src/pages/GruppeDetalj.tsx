@@ -166,18 +166,22 @@ const GruppeDetalj = () => {
       return;
     }
     setUploading(true);
-    const ext = file.name.split(".").pop();
-    const filePath = `groups/${id}/logo.${ext}`;
-    await supabase.storage.from("company-logos").remove([filePath]);
+    const ext = (file.name.split(".").pop() || "png").toLowerCase();
+    const filePath = `groups/${id}/logo-${Date.now()}.${ext}`;
     const { error: uploadError } = await supabase.storage.from("company-logos").upload(filePath, file, { upsert: true });
     if (uploadError) {
       toast.error("Kunne ikke laste opp logo");
       setUploading(false);
       return;
     }
-    const { data: urlData } = supabase.storage.from("company-logos").getPublicUrl(filePath);
-    await supabase.from("contact_groups").update({ logo_url: urlData.publicUrl } as any).eq("id", id);
-    setGroupLogoUrl(urlData.publicUrl);
+    // Best-effort cleanup of older logo files for this group
+    const { data: existing } = await supabase.storage.from("company-logos").list(`groups/${id}`);
+    const stale = (existing || []).map((f) => `groups/${id}/${f.name}`).filter((p) => p !== filePath);
+    if (stale.length) await supabase.storage.from("company-logos").remove(stale);
+    const publicUrl = `${supabase.storage.from("company-logos").getPublicUrl(filePath).data.publicUrl}?v=${Date.now()}`;
+    await supabase.from("contact_groups").update({ logo_url: publicUrl } as any).eq("id", id);
+    setGroupLogoUrl(publicUrl);
+    setLogoFailed(false);
     setUploading(false);
     toast.success("Logo lastet opp");
   };
