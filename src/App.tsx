@@ -41,6 +41,7 @@ import TEK17Chat from "./components/tek17/TEK17Chat";
 import Tilbud from "./pages/Tilbud";
 import Oppdragsbekreftelse from "./pages/Oppdragsbekreftelse";
 import NotFound from "./pages/NotFound";
+import RequireFullAccess from "./components/RequireFullAccess";
 
 const queryClient = new QueryClient();
 
@@ -80,13 +81,13 @@ const App = () => (
             <Route path="/fraviksdokumentasjon/kvalitativ" element={<KvalitativAnalyse />} />
             <Route path="/min-profil" element={<MinProfil />} />
             <Route path="/brensellagring" element={<Brensellagring />} />
-            <Route path="/sikkerhetsrutiner" element={<Sikkerhetsrutiner />} />
-            <Route path="/eksempelkatalog" element={<Eksempelkatalog />} />
-            <Route path="/eksempelkatalog/branncellevegger" element={<BranntekniskeKonstruksjoner />} />
-            <Route path="/eksempelkatalog/brannfarlige-stoffer" element={<BrannfarligeStoffer />} />
+            <Route path="/sikkerhetsrutiner" element={<RequireFullAccess><Sikkerhetsrutiner /></RequireFullAccess>} />
+            <Route path="/eksempelkatalog" element={<RequireFullAccess><Eksempelkatalog /></RequireFullAccess>} />
+            <Route path="/eksempelkatalog/branncellevegger" element={<RequireFullAccess><BranntekniskeKonstruksjoner /></RequireFullAccess>} />
+            <Route path="/eksempelkatalog/brannfarlige-stoffer" element={<RequireFullAccess><BrannfarligeStoffer /></RequireFullAccess>} />
             <Route path="/tek17-assistent" element={<TEK17Assistent />} />
-            <Route path="/tilbud" element={<Tilbud />} />
-            <Route path="/oppdragsbekreftelse" element={<Oppdragsbekreftelse />} />
+            <Route path="/tilbud" element={<RequireFullAccess><Tilbud /></RequireFullAccess>} />
+            <Route path="/oppdragsbekreftelse" element={<RequireFullAccess><Oppdragsbekreftelse /></RequireFullAccess>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
