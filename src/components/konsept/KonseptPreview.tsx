@@ -89,7 +89,7 @@ const TilstandTableRow = ({ data, sectionLabel, colSpan = 3 }: { data: TilstandD
   );
 };
 
-const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannkonsept" }: KonseptPreviewProps) => {
+const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannkonsept", hideCover = false }: KonseptPreviewProps) => {
   // Ensure arrays have defaults
   const bygningsdeler = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
   const grunnlagsdokumenter = Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : [];
