@@ -20,6 +20,7 @@ import {
   defaultDocStyles,
   fetchLogoBuffer,
 } from "@/lib/document-templates";
+import MalForhandsvisning from "./MalForhandsvisning";
 
 interface Props {
   groupId: string;
