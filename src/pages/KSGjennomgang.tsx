@@ -226,7 +226,7 @@ const KSGjennomgang = () => {
     const date = new Date(cpData[0].updated_at || cpData[0].created_at).toLocaleDateString("nb-NO");
 
     const { resolveDocumentTheme } = await import("@/lib/document-templates");
-    const theme = await resolveDocumentTheme(projectId, (profile as any)?.logo_url || null);
+    const theme = await resolveDocumentTheme(projectId, (profile as any)?.logo_url || null, user?.id);
 
     await exportKSToWord({
       conceptName: conceptName,
