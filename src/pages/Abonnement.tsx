@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,6 +28,7 @@ const Abonnement = () => {
   const { openCheckout, loading: checkoutLoading } = usePaddleCheckout();
   const { toast } = useToast();
   const [params, setParams] = useSearchParams();
+  const [portalLoading, setPortalLoading] = useState(false);
 
   useEffect(() => {
     if (params.get("checkout") === "success") {
@@ -41,22 +42,41 @@ const Abonnement = () => {
   }, []);
 
   const openPortal = async () => {
+    if (portalLoading) return;
+
+    setPortalLoading(true);
+    const popup = window.open("", "_blank");
+
+    if (popup) {
+      popup.opener = null;
+      popup.document.title = "Åpner kundeportal…";
+      popup.document.body.innerHTML = "<p style='font-family: sans-serif; padding: 24px;'>Åpner kundeportal…</p>";
+    }
+
     const { data, error } = await supabase.functions.invoke("customer-portal", {
       body: { environment: getPaddleEnvironment() },
     });
+
     if (error || !data?.url) {
+      popup?.close();
       toast({ title: "Feil", description: "Kunne ikke åpne kundeportalen.", variant: "destructive" });
+      setPortalLoading(false);
       return;
     }
-    const win = window.open(data.url, "_blank", "noopener,noreferrer");
-    if (!win) {
-      // Popup blocked — fall back to navigating top-level (escapes preview iframe)
-      try {
-        window.top!.location.href = data.url;
-      } catch {
-        window.location.href = data.url;
-      }
+
+    if (popup) {
+      popup.location.replace(data.url);
+      setPortalLoading(false);
+      return;
     }
+
+    try {
+      window.top!.location.href = data.url;
+    } catch {
+      window.location.href = data.url;
+    }
+
+    setPortalLoading(false);
   };
 
   return (
@@ -100,8 +120,9 @@ const Abonnement = () => {
                 ))}
               </ul>
               {status !== "owner" && (
-                <Button onClick={openPortal} variant="outline" className="w-full">
-                  <ExternalLink className="h-4 w-4 mr-2" />Administrer abonnement
+                <Button onClick={openPortal} variant="outline" className="w-full" disabled={portalLoading}>
+                  {portalLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <ExternalLink className="h-4 w-4 mr-2" />}
+                  Administrer abonnement
                 </Button>
               )}
             </CardContent>
