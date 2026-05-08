@@ -49,10 +49,11 @@ export default function MalForhandsvisning({
     className?: string;
     onDark?: boolean;
   }) =>
-    logoUrl ? (
+    showLogo ? (
       <img
-        src={logoUrl}
+        src={logoUrl!}
         alt=""
+        onError={() => setImgFailed(true)}
         className={`object-contain ${onDark ? "bg-white p-1 rounded" : ""} ${className ?? ""}`}
       />
     ) : (
