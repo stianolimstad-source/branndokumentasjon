@@ -48,6 +48,7 @@ const GruppeDetalj = () => {
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState<string | null>(null);
   const [groupLogoUrl, setGroupLogoUrl] = useState<string | null>(null);
+  const [logoFailed, setLogoFailed] = useState(false);
   const [templateSettings, setTemplateSettings] = useState<TemplateSettings>({});
   const [profileLogoUrl, setProfileLogoUrl] = useState<string | null>(null);
   const [members, setMembers] = useState<GroupMember[]>([]);
