@@ -23,6 +23,10 @@ export default function MalForhandsvisning({
   const subtitle = "Eksempel på dokumentutseende";
   const projectName = "Demo Prosjekt AS – Kontorbygg";
 
+  const [imgFailed, setImgFailed] = useState(false);
+  useEffect(() => setImgFailed(false), [logoUrl]);
+  const showLogo = logoUrl && !imgFailed;
+
   // Common page wrapper (A4 ratio 1:1.414)
   const Page = ({ children }: { children: React.ReactNode }) => (
     <div
