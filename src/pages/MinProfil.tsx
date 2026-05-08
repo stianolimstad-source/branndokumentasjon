@@ -229,6 +229,38 @@ const MinProfil = () => {
           </CardContent>
         </Card>
 
+        {/* Document template */}
+        {themedGroups.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                Dokumentmal
+              </CardTitle>
+              <CardDescription>
+                Velg hvilken bedrifts visuelle mal som skal brukes på dokumentene dine. Tilhører du kun
+                én bedrift med mal, brukes den automatisk.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 max-w-md">
+                <Label>Standard mal</Label>
+                <Select value={defaultTemplateGroupId} onValueChange={handleTemplateChange} disabled={savingTemplate}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Egen mal (standard)</SelectItem>
+                    {themedGroups.map((g) => (
+                      <SelectItem key={g.id} value={g.id}>{g.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Profile info */}
         <Card>
           <CardHeader>
