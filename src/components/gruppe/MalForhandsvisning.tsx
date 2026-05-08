@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { TemplateId } from "@/lib/document-templates";
 
 interface Props {
