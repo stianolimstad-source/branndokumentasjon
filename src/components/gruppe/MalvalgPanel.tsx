@@ -20,6 +20,7 @@ import {
   defaultDocStyles,
   fetchLogoBuffer,
 } from "@/lib/document-templates";
+import MalForhandsvisning from "./MalForhandsvisning";
 
 interface Props {
   groupId: string;
@@ -238,6 +239,26 @@ export default function MalvalgPanel({ groupId, groupName, logoUrl, initial, onS
                 ))}
               </SelectContent>
             </Select>
+          </div>
+        </div>
+
+        {/* Live preview */}
+        <div className="space-y-3 pt-2">
+          <div className="flex items-center justify-between">
+            <Label>Forhåndsvisning</Label>
+            <span className="text-xs text-muted-foreground">
+              Visuell forhåndsvisning — endelig layout vises i Word.
+            </span>
+          </div>
+          <div className="rounded-lg bg-muted/40 p-6 flex justify-center">
+            <MalForhandsvisning
+              template={template}
+              primary={primary}
+              accent={accent}
+              font={font}
+              logoUrl={logoUrl}
+              groupName={groupName}
+            />
           </div>
         </div>
 
