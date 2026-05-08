@@ -1,28 +1,21 @@
-# Plan: Side-ved-side planer + sperre nedgradering fra årlig
+## Mål
 
-## Endringer i `src/pages/Abonnement.tsx`
+Endre refusjonspolicyen fra 30 til 14 dagers pengene-tilbake-garanti, slik at den matcher prøveperioden. Etter prøveperioden gis det ikke refusjon for endring av mening.
 
-1. **Vis alltid begge planer side-ved-side** (samme grid som ved første kjøp), uavhengig av om brukeren er innlogget med aktivt abonnement.
-   - Prisene (500 kr/mnd, 5 000 kr/år) vises tydelig på begge kort i alle tilstander.
-   - Beholder "Spar ~17%"-merket på årlig.
+## Endringer
 
-2. **Tilstandsavhengige knapper på hvert plan-kort**:
-   - Ingen aktivt abonnement: "Start gratis prøveperiode" (som i dag).
-   - Aktivt abonnement på den planen kortet representerer: vis "Din nåværende plan" (deaktivert), pluss status (Prøveperiode / Aktivt / Utløper dato).
-   - På månedlig (når bruker er på månedlig): "Bytt til årlig" på årskortet (oppgradering).
-   - **På månedlig (når bruker er på årlig): knappen er deaktivert** med tekst "Tilgjengelig ved neste fornyelse" og en hjelpetekst "Du har allerede betalt for et år. Du kan bytte til månedlig ved neste fornyelse."
-     - Trial-årlig er unntak: tillates fremdeles bytte (ingen reell betaling skjedd ennå). Logikken: deaktiver kun når `status === "active"` og `priceId === YEARLY_ID`.
-   - Eier (`status === "owner"`) får ingen handlingsknapper på kortene.
+**Fil: `src/pages/legal/Refusjon.tsx`**
 
-3. **Egen "Administrer abonnement"-seksjon under kortene** (erstatter dagens store kort) for å samle status-info og oppsigelse/gjenopptakelse:
-   - Viser status, gjeldende plan og periode-slutt.
-   - Si opp / Gjenoppta-knapp.
-   - Holder feature-listen ute herfra siden den allerede står på plan-kortene.
+1. Endre overskriften "30 dagers pengene-tilbake-garanti" → "14 dagers pengene-tilbake-garanti".
+2. Endre brødteksten "innen 30 dager etter kjøpsdato" → "innen 14 dager etter kjøpsdato".
+3. Legg til en kort, tydelig setning som forklarer sammenhengen med prøveperioden, f.eks.:
+   > "Refusjonsperioden tilsvarer den 14 dager lange gratis prøveperioden. Du kan teste tjenesten gratis i 14 dager før du belastes — etter at en betaling er gjennomført, gis ikke refusjon for endring av mening."
+4. Oppdater "Sist oppdatert"-datoen til dagens dato.
 
-4. **Bevare eksisterende dialoger** (`confirmCancel`, `confirmSwitch`) og logikk for `runSwitch`/`runAction` uendret.
+## Andre steder å sjekke
 
-## Tekniske detaljer
+Sjekk om "30 dager" / "30 dagers pengene-tilbake-garanti" nevnes andre steder i appen (landingsside, prising, FAQ, abonnementsside). Hvis ja, oppdater disse til 14 dager for konsistens.
 
-- `canDowngradeToMonthly = priceId === YEARLY_ID && status === "trialing"` — eneste tilfellet hvor nedgrader-knappen er aktiv.
-- Plankortet får en ny prop `state: "purchase" | "current" | "switch" | "locked"` som styrer knapp-tekst/-stil.
-- Ingen endringer i edge-funksjoner eller database.
+## Paddle-krav
+
+14 dager er innenfor Paddles tillatte intervall (14–90 dager). Policyen forblir godkjent for readiness check. Vi unngår fortsatt forbudte fraser som "no refunds" / "all sales final" — refusjon innen 14 dager er fortsatt garantert.
