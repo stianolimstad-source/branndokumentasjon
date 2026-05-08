@@ -1,82 +1,42 @@
 ## Mål
-På inputsiden i `/konsept` (brannkonsept) og `/tilstandsvurdering` skal vi visuelt skille mellom **generelle krav** etter BF85/TEK17 og **tilleggskrav for kraftstasjoner** (hentet fra "Veiledning om brannsikkerhet i kraftstasjoner"). Brukeren skal lett se hva som er ekstra for kraftstasjoner.
+Lås tilgang til de fire seksjonene **Tilbud**, **Oppdragsbekreftelse**, **Sikkerhetsrutiner** og **Eksempelkatalog** for alle brukere unntatt `stianolimstad@gmail.com`. Ulåste brukere skal se et tydelig hengelås-overlay på kortene på forsiden, og blir blokkert fra rutene.
 
-Skillet vises kun når bygningstype/bygningsdel = Kraftstasjon (som i dag). Ingen endringer i preview eller Word-eksport — kun input-UI.
+## Endringer
 
-## Visuell løsning
+### 1. Ny hook: `src/hooks/useIsFullAccess.ts`
+Returnerer `true` kun hvis innlogget bruker har e-post `stianolimstad@gmail.com`. Brukes som sentral porten for alle "under utvikling"-funksjoner.
 
-For hver av seksjonene 3.1–3.14 i `src/pages/Konsept.tsx` der det finnes kraftstasjon-spesifikke felter, samles disse i et eget kort under de generelle kravene:
-
-```
-┌─ Generelle krav (BF85 / TEK17) ──────────┐
-│ [eksisterende felter]                    │
-└──────────────────────────────────────────┘
-
-┌─ ⚡ Tilleggskrav for kraftstasjon ───────┐  (ny seksjon, kun synlig
-│ Kilde: Veiledning om brannsikkerhet i    │   når Kraftstasjon valgt)
-│ kraftstasjoner                           │
-│                                          │
-│ [kraftstasjon-spesifikke felter]         │
-└──────────────────────────────────────────┘
-```
-
-Stil: `Card` med `border-primary/40`, lett bakgrunn (`bg-primary/5`), liten badge "Kraftstasjon" og kildehenvisning i header. Følger eksisterende design-tokens (ingen direkte farger).
-
-## Felles helper
-
-Ny gjenbrukbar komponent `KraftstasjonTilleggskravCard` (i `src/components/konsept/KraftstasjonTilleggskravCard.tsx`):
-
-```tsx
-<KraftstasjonTilleggskravCard kapittel="3.7" visible={erKraftstasjon}>
-  {/* kraftstasjon-felter */}
-</KraftstasjonTilleggskravCard>
-```
-
-Props: `kapittel`, `visible`, `children`, valgfri `kildeTekst` (default: "Veiledning om brannsikkerhet i kraftstasjoner"). Returnerer `null` når `!visible`.
-
-Dette gir konsekvent visuell merking i alle 14 kapitler uten å duplisere markup.
-
-## Kapittelvis omstrukturering
-
-Følgende eksisterende kraftstasjon-felter flyttes inn i tilleggskravkortet for sitt kapittel (selve logikken/state-feltene endres ikke — kun visuell innramming og plassering):
-
-- **3.5 Brannceller**: rad/innstilling for "Dører til teknisk rom skal være utadslående" (lagt til nylig)
-- **3.7 Tekniske installasjoner**:
-  - Kabler (kulverter, sjakter, kabeltunneler)
-  - Ventilasjonsanlegg – brannspjeld (automatiske spjeld, ikke smeltesikring)
-- **3.8 Rømning og redning** (linjer ~8430–8615):
-  - "Dører lite antall personer" (deaktivert for kraftstasjon med forklaringstekst)
-  - "Panikkbeslag" (påkrevd NS-EN 1125)
-  - "Kraftstasjon under fjell eller under dagen" (sjekkboks ~linje 3112) flyttes hit hvis den hører hjemme i 3.8/3.9, eller forblir i sin nåværende metadata-seksjon men får tydelig kraftstasjon-merking via samme komponent (se "Avklaring" nedenfor)
-- **3.9 Tilrettelegging for rømning**: redningsrom (FEA-F § 26), nødlysanlegg (FEA-F § 25/26), håndlykter — alt som styres av `kraftstasjonUnderFjell` / kraftstasjon-detektering
-
-Kapitler **3.1, 3.2, 3.3, 3.4, 3.6, 3.10, 3.11, 3.12, 3.13, 3.14** har i dag ingen kraftstasjon-spesifikke felter. Der legges det **ikke** inn tomt kort — komponenten returnerer `null`. Strukturen er klar for fremtidige tilleggskrav (vi kan legge inn et plassholder-kommentar `{/* TODO: kraftstasjon-tilleggskrav for 3.X */}` i hver seksjon for å gjøre det tydelig hvor de skal inn).
-
-## Detektering
-
-Bruk allerede etablert mønster:
 ```ts
-const erKraftstasjon =
-  (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
-  || (formData.bygningsdeler || []).some(
-       (d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon")
-     );
+export const useIsFullAccess = () => {
+  const { user } = useAuth();
+  return user?.email?.toLowerCase() === "stianolimstad@gmail.com";
+};
 ```
 
-Eksponeres som lokal variabel der det trengs (eller via en liten `useErKraftstasjon`-hook hvis det blir mange call sites).
+### 2. Ny komponent: `src/components/LockedFeatureCard.tsx`
+Wrapper rundt et eksisterende `Card` som legger på:
+- Et halvtransparent overlay
+- Stort sentralt `Lock`-ikon (lucide-react)
+- Liten tekst: "Under utvikling"
+- Fjerner `cursor-pointer` og hindrer klikk (ingen `<Link>`-wrapping)
+- Tooltip ved hover: "Tilgang begrenset under utvikling"
 
-## Avklaring underveis
+### 3. `src/pages/Index.tsx`
+- Importer `useIsFullAccess` og `LockedFeatureCard`.
+- Marker disse fire features som `locked: true` i features-array: Tilbud, Oppdragsbekreftelse, Sikkerhetsrutiner, Eksempelkatalog.
+- I render-loopen: hvis `feature.locked && !isFullAccess`, render kortet uten `<Link>` med hengelås-overlay i stedet.
 
-"Kraftstasjon under fjell eller under dagen"-sjekkboksen (linje 3112) ligger i dag i bygningstype-/metadata-seksjonen og styrer innhold i kap. 3.9. Den **forblir der** (det er en metadata-bryter, ikke et kapittelkrav), men får visuell kraftstasjon-merking via samme styling.
+### 4. Rute-beskyttelse (defense-in-depth)
+Hvis bruker likevel navigerer direkte til `/tilbud`, `/oppdragsbekreftelse`, `/sikkerhetsrutiner`, `/eksempelkatalog`, `/eksempelkatalog/branncellevegger` eller `/eksempelkatalog/brannfarlige-stoffer`:
+- Vis en låst tilstand (stort hengelås-ikon, tekst "Denne delen er under utvikling og krever utvidet tilgang", knapp tilbake til forsiden).
 
-## Tekniske endringer (filer)
+Implementeres ved å legge en sjekk øverst i hver av de fire side-komponentene (eller en felles `<RequireFullAccess>`-wrapper i `App.tsx` rundt rutene). Anbefaler felles wrapper for å unngå duplisert kode.
 
-1. **Ny fil**: `src/components/konsept/KraftstasjonTilleggskravCard.tsx` — gjenbrukbar wrapper-komponent med Card + badge + kildetekst.
-2. **`src/pages/Konsept.tsx`**: Wrappe eksisterende kraftstasjon-spesifikke input-blokker i 3.5, 3.7, 3.8, 3.9 med `<KraftstasjonTilleggskravCard>`. Ingen endring i state/feltlogikk.
-3. **Ingen endringer** i `KonseptPreview.tsx`, `word-export-chapter3.ts` eller datamodell.
+### 5. Det som IKKE endres
+- Ingen endringer i RLS, database, eller backend — dette er kun en UI-gating for synlighet/test-modus. (Si fra hvis du vil at jeg også skal håndheve på serversiden senere.)
+- Andre seksjoner (Brannkonsept, Tilstandsvurdering, Verktøy, Fravik, Brannfarlig lagring, m.fl.) forblir uendret.
+- E-postsjekken er hardkodet — enkel å utvide til en liste senere når flere skal få full tilgang.
 
-## Ut av scope
-
-- Endringer i preview eller Word-eksport
-- Nye kraftstasjon-krav (kun omorganisering av eksisterende)
-- Endringer i validerings-/forretningslogikk
+## Resultat
+- `stianolimstad@gmail.com` ser alt som før.
+- Alle andre (innloggede og ikke-innloggede) ser hengelås-overlay på de fire kortene på forsiden, og en låst skjerm hvis de prøver å navigere direkte til rutene.
