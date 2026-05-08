@@ -1570,27 +1570,6 @@ const Konsept = () => {
         }
       } catch {}
     }
-    if (logoUrl) {
-      try {
-        const res = await fetch(logoUrl);
-        if (res.ok) {
-          logoBuffer = await res.arrayBuffer();
-          // Get natural dimensions to preserve aspect ratio
-          const img = new Image();
-          await new Promise<void>((resolve) => {
-            img.onload = () => {
-              const maxWidth = 400;
-              const ratio = img.naturalWidth / img.naturalHeight;
-              const w = Math.min(img.naturalWidth, maxWidth);
-              logoDimensions = { width: w, height: Math.round(w / ratio) };
-              resolve();
-            };
-            img.onerror = () => resolve();
-            img.src = logoUrl;
-          });
-        }
-      } catch {}
-    }
 
     // Load avgrensning image if present
     let avgrensningImageData: { buffer: ArrayBuffer; width: number; height: number } | null = null;
