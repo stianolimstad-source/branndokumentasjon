@@ -3,7 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Check, Loader2, XCircle, RotateCcw } from "lucide-react";
+import { Check, Loader2, XCircle, RotateCcw, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
@@ -23,14 +23,18 @@ const FEATURES = [
   "AI-assistert utfylling",
 ];
 
+const MONTHLY_ID = "branndok_pro_monthly";
+const YEARLY_ID = "branndok_pro_yearly";
+
 const Abonnement = () => {
   const { user, loading: authLoading } = useAuth();
-  const { isActive, loading, status, currentPeriodEnd, cancelAtPeriodEnd, refresh } = useSubscription();
+  const { isActive, loading, status, priceId, currentPeriodEnd, cancelAtPeriodEnd, refresh } = useSubscription();
   const { openCheckout, loading: checkoutLoading } = usePaddleCheckout();
   const { toast } = useToast();
   const [params, setParams] = useSearchParams();
   const [actionLoading, setActionLoading] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
+  const [confirmSwitch, setConfirmSwitch] = useState<null | "to_yearly" | "to_monthly">(null);
 
   useEffect(() => {
     if (params.get("checkout") === "success") {
@@ -73,6 +77,40 @@ const Abonnement = () => {
     }
   };
 
+  const runSwitch = async (target: "to_yearly" | "to_monthly") => {
+    if (actionLoading) return;
+    setActionLoading(true);
+    try {
+      const newPriceId = target === "to_yearly" ? YEARLY_ID : MONTHLY_ID;
+      const { data, error } = await supabase.functions.invoke("change-subscription-plan", {
+        body: { environment: getPaddleEnvironment(), newPriceId },
+      });
+      if (error || !data?.ok) {
+        toast({
+          title: "Feil",
+          description: "Kunne ikke bytte plan. Prøv igjen senere.",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: target === "to_yearly" ? "Byttet til årlig plan" : "Byttet til månedlig plan",
+        description: target === "to_yearly"
+          ? "Endringen trer i kraft umiddelbart. Differansen er pro-ratert."
+          : "Endringen trer i kraft ved neste fornyelse.",
+      });
+      const t = setInterval(() => refresh(), 2000);
+      setTimeout(() => clearInterval(t), 15000);
+    } finally {
+      setActionLoading(false);
+      setConfirmSwitch(null);
+    }
+  };
+
+  const currentPlanLabel = priceId === YEARLY_ID ? "Årlig (5 000 kr/år)"
+    : priceId === MONTHLY_ID ? "Månedlig (500 kr/mnd)"
+    : null;
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
       <PaymentTestModeBanner />
@@ -100,6 +138,9 @@ const Abonnement = () => {
               <CardTitle>Du har aktivt abonnement</CardTitle>
               <CardDescription>
                 Status: <span className="font-medium">{statusLabel(status)}</span>
+                {currentPlanLabel && (
+                  <> · Plan: <span className="font-medium">{currentPlanLabel}</span></>
+                )}
                 {currentPeriodEnd && (
                   <> · {cancelAtPeriodEnd ? "utløper" : "fornyes"} {new Date(currentPeriodEnd).toLocaleDateString("nb-NO")}</>
                 )}
@@ -113,6 +154,18 @@ const Abonnement = () => {
                   </li>
                 ))}
               </ul>
+              {status !== "owner" && !cancelAtPeriodEnd && priceId === MONTHLY_ID && (
+                <Button onClick={() => setConfirmSwitch("to_yearly")} className="w-full" disabled={actionLoading}>
+                  <ArrowUpCircle className="h-4 w-4 mr-2" />
+                  Bytt til årlig (spar ~17%)
+                </Button>
+              )}
+              {status !== "owner" && !cancelAtPeriodEnd && priceId === YEARLY_ID && (
+                <Button onClick={() => setConfirmSwitch("to_monthly")} variant="outline" className="w-full" disabled={actionLoading}>
+                  <ArrowDownCircle className="h-4 w-4 mr-2" />
+                  Bytt til månedlig
+                </Button>
+              )}
               {status !== "owner" && (
                 cancelAtPeriodEnd ? (
                   <Button onClick={() => runAction("resume")} variant="outline" className="w-full" disabled={actionLoading}>
@@ -134,7 +187,7 @@ const Abonnement = () => {
               title="Månedlig"
               price="500 kr"
               period="/mnd"
-              priceId="branndok_pro_monthly"
+              priceId={MONTHLY_ID}
               onSelect={openCheckout}
               loading={checkoutLoading}
             />
@@ -143,7 +196,7 @@ const Abonnement = () => {
               price="5 000 kr"
               period="/år"
               badge="Spar ~17%"
-              priceId="branndok_pro_yearly"
+              priceId={YEARLY_ID}
               onSelect={openCheckout}
               loading={checkoutLoading}
               recommended
@@ -175,6 +228,31 @@ const Abonnement = () => {
             >
               {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
               Si opp
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={confirmSwitch !== null} onOpenChange={(o) => !o && setConfirmSwitch(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirmSwitch === "to_yearly" ? "Bytt til årlig plan?" : "Bytt til månedlig plan?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmSwitch === "to_yearly"
+                ? "Endringen trer i kraft umiddelbart. Paddle pro-raterer differansen mellom månedlig og årlig pris for resten av inneværende periode, slik at du kun betaler differansen nå."
+                : "Endringen trer i kraft ved neste fornyelse. Du beholder årlig plan ut inneværende periode, og blir deretter fakturert månedlig."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actionLoading}>Avbryt</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); if (confirmSwitch) runSwitch(confirmSwitch); }}
+              disabled={actionLoading}
+            >
+              {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              Bekreft bytte
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
