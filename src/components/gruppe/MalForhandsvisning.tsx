@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { TemplateId } from "@/lib/document-templates";
 
 interface Props {
@@ -22,6 +23,10 @@ export default function MalForhandsvisning({
   const subtitle = "Eksempel på dokumentutseende";
   const projectName = "Demo Prosjekt AS – Kontorbygg";
 
+  const [imgFailed, setImgFailed] = useState(false);
+  useEffect(() => setImgFailed(false), [logoUrl]);
+  const showLogo = logoUrl && !imgFailed;
+
   // Common page wrapper (A4 ratio 1:1.414)
   const Page = ({ children }: { children: React.ReactNode }) => (
     <div
@@ -44,10 +49,11 @@ export default function MalForhandsvisning({
     className?: string;
     onDark?: boolean;
   }) =>
-    logoUrl ? (
+    showLogo ? (
       <img
-        src={logoUrl}
+        src={logoUrl!}
         alt=""
+        onError={() => setImgFailed(true)}
         className={`object-contain ${onDark ? "bg-white p-1 rounded" : ""} ${className ?? ""}`}
       />
     ) : (

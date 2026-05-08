@@ -1,35 +1,41 @@
-## Problem
+## Diagnose
 
-1. **Fargene endres ikke** når man klikker på en mal-knapp (Klassisk / Moderne / Minimalistisk). I dag oppdateres bare `template`-state, mens primær- og aksentfarge + skrift forblir det forrige valget. Brukeren forventer at malens forhåndsdefinerte farger lastes inn umiddelbart.
+Logoen er lagret i databasen for gruppen `Olimstad Brannrådgivning AS` med URL:
+```
+.../company-logos/64b0032f-…/logo.png
+```
+Men selve filen i Storage heter `logo-1776873754963.png` (med tidsstempel). URL-en peker derfor på en fil som ikke finnes (HTTP 400). Profilens logo URL er korrekt og inneholder tidsstemplet navn + cache-buster.
 
-2. **Logoen vises ikke** stabilt i forhåndsvisningen:
-   - I "moderne" plasseres logoen på en mørk fargeblokk med kun `bg-white/10` bakgrunn — en mørk logo blir nesten usynlig.
-   - Hvis gruppen ikke har lastet opp logo brukes ingen logo i det hele tatt, selv om brukeren har en profil-logo som naturlig fallback.
-   - I dag vises forhåndsvisningen kun med logo dersom `logoUrl` finnes — ingen "fallback"/plassholder, og brukeren har sagt at logoen "alltid" skal med på bedriftens dokumentmal.
+Sannsynligvis ble gruppens `logo_url` satt fra en eldre versjon av profil-logoen (uten tidsstempel) som siden er erstattet. Resultat: brutt bilde i topp-banner, i logo-kortet, i forhåndsvisningen — alle bruker `groupLogoUrl`.
 
-## Endringer
+## Fiks
 
-### `MalvalgPanel.tsx`
-Når en mal-knapp klikkes, hent malens default-verdier fra `document-templates.ts` og oppdater `primary`, `accent` og `font` samtidig. Brukeren kan deretter justere fargene videre om ønsket. Fargevelger og forhåndsvisning oppdateres umiddelbart.
+### 1. Reparer dataen (engangs-migrering)
+Oppdater alle rader i `contact_groups` der `logo_url` peker på Supabase storage uten tidsstempel ved å sette den til eierens profil-logo (eller `NULL` hvis profilen ikke har en). Konkret: for `Olimstad Brannrådgivning AS` kopierer vi `profiles.logo_url` for `user_id = 64b0032f-…` inn i gruppens `logo_url`. Generelt SQL:
 
-Også: ta inn `profileLogoUrl` (brukerens egen logo fra profilen) som fallback-prop. Hvis gruppen ikke har en egen logo, bruk profil-logoen i forhåndsvisningen — slik at det alltid vises noe.
+```sql
+update contact_groups cg
+set logo_url = p.logo_url
+from profiles p
+where cg.user_id = p.id
+  and cg.logo_url is not null
+  and cg.logo_url not like '%logo-%'   -- gamle URL-er uten tidsstempel
+  and p.logo_url is not null;
+```
 
-### `GruppeDetalj.tsx`
-Send med `profileLogoUrl` til `MalvalgPanel` (verdien finnes allerede i state).
+### 2. Hardfør UI-en mot brutte logoer
+Legg til `onError`-fallback i bilde-elementene som viser logoen:
 
-### `MalForhandsvisning.tsx`
-- Bruk effektiv logo: `logoUrl ?? profileLogoUrl`.
-- I "moderne"-malen: gi logo-wrapperen en hvit bakgrunn (`bg-white`) i stedet for `bg-white/10`, slik at både lyse og mørke logoer er synlige på den mørke fargeblokken.
-- Hvis ingen logo finnes overhodet, vis en liten plassholder ("Logo") med stiplet ramme og en hint-tekst ("Last opp logo for å se den på malen") i stedet for tom plass.
+- **GruppeDetalj** — to steder (topp-banner og "Gruppelogo"-kort): hvis `groupLogoUrl` feiler å laste, bruk `profileLogoUrl` automatisk (kun visuelt, ikke lagre).
+- **MalForhandsvisning** — alle tre malene: img har `onError` som setter en `failed`-state og viser plassholderen i stedet for et brutt bilde-ikon.
 
-### Eksponere defaults
-I `document-templates.ts` eksporter `DEFAULTS`-mappingen (eller en helper `getTemplateDefaults(id)`) så `MalvalgPanel` kan hente farger ved bytte av mal uten å duplisere verdier.
+### 3. Fikse opplastings-flyten for fremtiden
+I `handleLogoUpload`: navngi filen med tidsstempel (`logo-${Date.now()}.${ext}`) slik at upserts ikke kolliderer med browser-cache, og bruk samme URL i `getPublicUrl` etterpå. Det samme grepet som profil-uploaden allerede bruker.
 
 ## Filer
 
-- **Endret:** `src/lib/document-templates.ts` — eksporter `getTemplateDefaults(template)`
-- **Endret:** `src/components/gruppe/MalvalgPanel.tsx` — oppdater farger/skrift ved mal-bytte; ta inn `profileLogoUrl`
-- **Endret:** `src/components/gruppe/MalForhandsvisning.tsx` — fallback-logo og synlig wrapper i "moderne"; plassholder hvis ingen logo
-- **Endret:** `src/pages/GruppeDetalj.tsx` — send `profileLogoUrl`-prop
+- **Ny migrering:** `supabase/migrations/...sql` — fix-spørringen over.
+- **Endret:** `src/pages/GruppeDetalj.tsx` — `onError` på de to logo-bildene + tidsstempel i opplastings-stien.
+- **Endret:** `src/components/gruppe/MalForhandsvisning.tsx` — `useState<failed>`-flag og `onError` i `LogoOrPlaceholder`.
 
-Ingen DB- eller eksport-endringer.
+Ingen RLS- eller skjemaendringer.

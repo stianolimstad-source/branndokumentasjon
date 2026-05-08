@@ -48,6 +48,7 @@ const GruppeDetalj = () => {
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState<string | null>(null);
   const [groupLogoUrl, setGroupLogoUrl] = useState<string | null>(null);
+  const [logoFailed, setLogoFailed] = useState(false);
   const [templateSettings, setTemplateSettings] = useState<TemplateSettings>({});
   const [profileLogoUrl, setProfileLogoUrl] = useState<string | null>(null);
   const [members, setMembers] = useState<GroupMember[]>([]);
@@ -86,6 +87,7 @@ const GruppeDetalj = () => {
       setGroupName(groupRes.data.name);
       setGroupDescription(groupRes.data.description);
       setGroupLogoUrl((groupRes.data as any).logo_url || null);
+      setLogoFailed(false);
       setTemplateSettings(((groupRes.data as any).template_settings || {}) as TemplateSettings);
     }
 
@@ -165,18 +167,22 @@ const GruppeDetalj = () => {
       return;
     }
     setUploading(true);
-    const ext = file.name.split(".").pop();
-    const filePath = `groups/${id}/logo.${ext}`;
-    await supabase.storage.from("company-logos").remove([filePath]);
+    const ext = (file.name.split(".").pop() || "png").toLowerCase();
+    const filePath = `groups/${id}/logo-${Date.now()}.${ext}`;
     const { error: uploadError } = await supabase.storage.from("company-logos").upload(filePath, file, { upsert: true });
     if (uploadError) {
       toast.error("Kunne ikke laste opp logo");
       setUploading(false);
       return;
     }
-    const { data: urlData } = supabase.storage.from("company-logos").getPublicUrl(filePath);
-    await supabase.from("contact_groups").update({ logo_url: urlData.publicUrl } as any).eq("id", id);
-    setGroupLogoUrl(urlData.publicUrl);
+    // Best-effort cleanup of older logo files for this group
+    const { data: existing } = await supabase.storage.from("company-logos").list(`groups/${id}`);
+    const stale = (existing || []).map((f) => `groups/${id}/${f.name}`).filter((p) => p !== filePath);
+    if (stale.length) await supabase.storage.from("company-logos").remove(stale);
+    const publicUrl = `${supabase.storage.from("company-logos").getPublicUrl(filePath).data.publicUrl}?v=${Date.now()}`;
+    await supabase.from("contact_groups").update({ logo_url: publicUrl } as any).eq("id", id);
+    setGroupLogoUrl(publicUrl);
+    setLogoFailed(false);
     setUploading(false);
     toast.success("Logo lastet opp");
   };
@@ -185,6 +191,7 @@ const GruppeDetalj = () => {
     if (!profileLogoUrl || !id) return;
     await supabase.from("contact_groups").update({ logo_url: profileLogoUrl } as any).eq("id", id);
     setGroupLogoUrl(profileLogoUrl);
+    setLogoFailed(false);
     toast.success("Profillogo brukt for gruppen");
   };
 
@@ -222,11 +229,19 @@ const GruppeDetalj = () => {
 
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <div className="flex items-center gap-4 mb-6">
-          {groupLogoUrl && (
-            <div className="h-14 w-14 rounded-lg border bg-white flex items-center justify-center p-1 shrink-0">
-              <img src={groupLogoUrl} alt="Gruppelogo" className="max-h-full max-w-full object-contain" />
-            </div>
-          )}
+          {(() => {
+            const shown = logoFailed ? profileLogoUrl : (groupLogoUrl ?? profileLogoUrl);
+            return shown ? (
+              <div className="h-14 w-14 rounded-lg border bg-white flex items-center justify-center p-1 shrink-0">
+                <img
+                  src={shown}
+                  alt="Gruppelogo"
+                  className="max-h-full max-w-full object-contain"
+                  onError={() => setLogoFailed(true)}
+                />
+              </div>
+            ) : null;
+          })()}
           <div>
             <h2 className="text-3xl font-bold">{groupName}</h2>
             {groupDescription && <p className="text-muted-foreground mt-1">{groupDescription}</p>}
@@ -433,7 +448,12 @@ const GruppeDetalj = () => {
                   {groupLogoUrl ? (
                     <div className="flex items-center gap-4">
                       <div className="h-20 w-40 border rounded-md flex items-center justify-center bg-white p-2">
-                        <img src={groupLogoUrl} alt="Gruppelogo" className="max-h-full max-w-full object-contain" />
+                        <img
+                          src={logoFailed ? (profileLogoUrl ?? groupLogoUrl) : groupLogoUrl}
+                          alt="Gruppelogo"
+                          className="max-h-full max-w-full object-contain"
+                          onError={() => setLogoFailed(true)}
+                        />
                       </div>
                       <Button variant="outline" size="sm" onClick={handleRemoveLogo} disabled={uploading}>
                         <Trash2 className="h-4 w-4 mr-2" />
