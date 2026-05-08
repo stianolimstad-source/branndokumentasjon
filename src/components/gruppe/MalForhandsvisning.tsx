@@ -77,9 +77,7 @@ export default function MalForhandsvisning({
         {/* Top color band */}
         <div style={{ background: primary, height: 14 }} />
         <div className="flex flex-col items-center text-center px-8 pt-16">
-          {logoUrl && (
-            <img src={logoUrl} alt="" className="max-h-16 mb-8 object-contain" />
-          )}
+          <LogoOrPlaceholder className="max-h-16 mb-8" />
           <div
             className="text-[10px] uppercase tracking-[0.3em] mb-3"
             style={{ color: accent }}
