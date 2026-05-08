@@ -191,6 +191,7 @@ const GruppeDetalj = () => {
     if (!profileLogoUrl || !id) return;
     await supabase.from("contact_groups").update({ logo_url: profileLogoUrl } as any).eq("id", id);
     setGroupLogoUrl(profileLogoUrl);
+    setLogoFailed(false);
     toast.success("Profillogo brukt for gruppen");
   };
 
