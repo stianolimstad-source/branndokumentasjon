@@ -86,6 +86,7 @@ const GruppeDetalj = () => {
       setGroupName(groupRes.data.name);
       setGroupDescription(groupRes.data.description);
       setGroupLogoUrl((groupRes.data as any).logo_url || null);
+      setTemplateSettings(((groupRes.data as any).template_settings || {}) as TemplateSettings);
     }
 
     // Fetch user's own profile logo
