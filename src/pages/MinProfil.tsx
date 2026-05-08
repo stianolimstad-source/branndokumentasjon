@@ -80,8 +80,25 @@ const MinProfil = () => {
         education: (data as any).education || "",
       });
       setLogoUrl((data as any).logo_url || null);
+      setDefaultTemplateGroupId((data as any).default_template_group_id || "none");
     } else {
       setProfile((p) => ({ ...p, email: user!.email || "" }));
+    }
+  };
+
+  const handleTemplateChange = async (value: string) => {
+    if (!user) return;
+    setDefaultTemplateGroupId(value);
+    setSavingTemplate(true);
+    const { error } = await supabase
+      .from("profiles")
+      .update({ default_template_group_id: value === "none" ? null : value } as any)
+      .eq("id", user.id);
+    setSavingTemplate(false);
+    if (error) {
+      toast({ title: "Feil", description: "Kunne ikke lagre dokumentmal", variant: "destructive" });
+    } else {
+      toast({ title: "Dokumentmal lagret" });
     }
   };
 
