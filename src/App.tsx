@@ -67,7 +67,7 @@ const App = () => (
             <Route path="/verktoy/brannmotstand" element={<Brannmotstand />} />
             <Route path="/verktoy/brannareal" element={<Brannareal />} />
             <Route path="/verktoy/roykventilasjon" element={<RoykventilasjonPage />} />
-            <Route path="/verktoy/brannsimulering" element={<Brannsimulering />} />
+            <Route path="/verktoy/brannsimulering" element={<RequireFullAccess><Brannsimulering /></RequireFullAccess>} />
             
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/auth" element={<Auth />} />
@@ -85,7 +85,7 @@ const App = () => (
             <Route path="/eksempelkatalog" element={<RequireFullAccess><Eksempelkatalog /></RequireFullAccess>} />
             <Route path="/eksempelkatalog/branncellevegger" element={<RequireFullAccess><BranntekniskeKonstruksjoner /></RequireFullAccess>} />
             <Route path="/eksempelkatalog/brannfarlige-stoffer" element={<RequireFullAccess><BrannfarligeStoffer /></RequireFullAccess>} />
-            <Route path="/tek17-assistent" element={<TEK17Assistent />} />
+            <Route path="/tek17-assistent" element={<RequireFullAccess><TEK17Assistent /></RequireFullAccess>} />
             <Route path="/tilbud" element={<RequireFullAccess><Tilbud /></RequireFullAccess>} />
             <Route path="/oppdragsbekreftelse" element={<RequireFullAccess><Oppdragsbekreftelse /></RequireFullAccess>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
