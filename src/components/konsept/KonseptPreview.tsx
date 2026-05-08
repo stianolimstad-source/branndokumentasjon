@@ -24,6 +24,7 @@ interface KonseptPreviewProps {
   logoUrl?: string | null;
   authorInfo?: { name: string; company: string } | null;
   documentType?: "brannkonsept" | "tilstandsvurdering";
+  hideCover?: boolean;
 }
 
 const gradColors: Record<string, { bg: string; text: string; label: string }> = {
@@ -88,7 +89,7 @@ const TilstandTableRow = ({ data, sectionLabel, colSpan = 3 }: { data: TilstandD
   );
 };
 
-const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannkonsept" }: KonseptPreviewProps) => {
+const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannkonsept", hideCover = false }: KonseptPreviewProps) => {
   // Ensure arrays have defaults
   const bygningsdeler = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
   const grunnlagsdokumenter = Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : [];
@@ -130,6 +131,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   return (
     <div className="space-y-8 py-4">
       {/* Forside */}
+      {!hideCover && (
       <div className={pageStyle} style={pageWidth}>
         <div className="flex flex-col items-center justify-center pt-8 pb-8" style={{ minHeight: '260mm' }}>
         {logoUrl && (
@@ -157,6 +159,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         </div>
         <PageFooter pageNum={pageForside} />
       </div>
+      )}
 
       {/* Sammendrag - egen side */}
       {hasSammendrag && (
