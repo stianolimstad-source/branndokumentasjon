@@ -1,41 +1,31 @@
-## Mål
-Aktiver betalt abonnement via Paddle (Lovables innebygde løsning) slik at brukere må abonnere for å få full tilgang til verktøyene. Gratis brukere får kun lese-/visningstilgang.
+## Problem
 
-## Hva blir satt opp
+Når brukeren klikker "Administrer abonnement" åpnes en ny fane med teksten "Åpner kundeportal…", men den navigerer aldri videre til Paddle-portalen.
 
-### 1. Aktivere Paddle-betalinger
-- Aktiverer Lovables innebygde Paddle-integrasjon (du trenger ikke egen Paddle-konto for å starte – sandbox/test opprettes automatisk).
-- Pris settes senere av deg i Paddle-dashbordet. Vi setter opp én plan med både månedlig og årlig pris.
-- For å gå live må du verifisere virksomheten din i Paddle.
+Edge-funksjonen `customer-portal` fungerer korrekt (loggene viser at den genererer gyldige `cancelSubscription`-URL-er fra Paddle). Problemet ligger i frontend i `src/pages/Abonnement.tsx`.
 
-### 2. Database
-- Ny tabell `subscribers` (user_id, email, subscribed, subscription_tier, subscription_end, trial_end, paddle_customer_id, paddle_subscription_id, updated_at) med RLS – kun egen rad lesbar.
-- Hjelpefunksjon `has_active_subscription(uuid)` (security definer) som returnerer true hvis bruker har aktivt abonnement, er i prøveperiode, eller er stianolimstad@gmail.com.
+## Årsak
 
-### 3. Edge functions
-- `create-checkout` – starter Paddle-checkout for valgt plan (månedlig/årlig), inkl. 14 dagers trial.
-- `check-subscription` – sjekker status mot Paddle og oppdaterer `subscribers`.
-- `customer-portal` – åpner Paddle kundeportal for å si opp/endre.
-- `paddle-webhook` – mottar `subscription.created/updated/canceled` og oppdaterer `subscribers`.
+Dagens `openPortal`-funksjon bruker en "pre-open popup"-strategi:
+1. Åpner et tomt vindu (`window.open("")`)
+2. Skriver placeholder-HTML i den nye fanen
+3. Venter på edge-funksjonen
+4. Kaller `popup.location.replace(data.url)`
 
-### 4. Tilgangskontroll i frontend
-- Ny hook `useSubscription()` som henter abonnementstatus.
-- Ny `RequireSubscription`-wrapper (samme mønster som `RequireFullAccess`) – viser hengelås-overlegg + "Start abonnement"-knapp på sider som krever abonnement.
-- "Kun lesing/visning"-modell:
-  - **Gratis tilgang**: Brukere kan navigere, åpne verktøy/sider, og se eksisterende UI.
-  - **Krever abonnement** (eller stianolimstad@gmail.com): opprette/lagre prosjekter, opprette/lagre konsept, tilstandsvurdering, fravik, brensellagring, eksport av Word/PDF, AI-kall.
-- Eksisterende `useCanDownload` og `useIsFullAccess` flettes med abonnementstatus.
+Å skrive `innerHTML` i en nyåpnet `about:blank`-fane setter dokumentet i en "loading"-tilstand som hindrer påfølgende navigering, og lar fanen henge på placeholder-teksten.
 
-### 5. Ny "Abonnement"-side (`/abonnement`)
-- Viser nåværende status (gratis / prøveperiode med dager igjen / aktiv / utløpt).
-- To pris-kort (månedlig / årlig) med "Start 14 dagers gratis prøve"-knapp som åpner Paddle-checkout i nytt vindu.
-- "Administrer abonnement"-knapp (åpner Paddle kundeportal) for aktive abonnenter.
-- Lenke til `/abonnement` legges i `AppHeader` (brukermeny) og som CTA på låste områder.
+## Løsning
 
-### 6. Etter publisering
-- Du får en Paddle-webhook-URL som må limes inn i Paddle-dashbordet.
-- Du oppretter selve produktet/prisene i Paddle (vi gir deg veiledning og Paddle Product/Price ID feltene legges som secrets).
+Forenkle flyten i `src/pages/Abonnement.tsx`:
 
-## Det som IKKE inngår nå
-- Faktisk pris og produkt opprettes av deg i Paddle etter aktivering.
-- Vi rører ikke eksisterende hengelåser på Tilbud/Oppdragsbekreftelse/Sikkerhetsrutiner/Eksempelkatalog/Brannsimulering/AI Brannkonsulent – disse forblir låst til stianolimstad@gmail.com.
+1. Fjern pre-open popup-strategien helt.
+2. Hent portal-URL først via `supabase.functions.invoke("customer-portal")`.
+3. Når URL-en er hentet, åpne portalen i ny fane: `window.open(data.url, "_blank", "noopener,noreferrer")`.
+4. Hvis `window.open` returnerer `null` (popup blokkert), fall tilbake til `window.top.location.href = data.url` slik at brukeren havner på Paddle i samme fane.
+5. Behold `portalLoading`-state og spinner i knappen, og vis en toast-feilmelding hvis edge-funksjonen feiler.
+
+Backend (`supabase/functions/customer-portal/index.ts`) er korrekt satt opp og trenger ingen endringer – den returnerer `cancelSubscription`-URL fra Paddle's customer portal session, som er den riktige måten å avslutte abonnement på.
+
+## Filer som endres
+
+- `src/pages/Abonnement.tsx` – kun `openPortal`-funksjonen

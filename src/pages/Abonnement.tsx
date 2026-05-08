@@ -43,40 +43,27 @@ const Abonnement = () => {
 
   const openPortal = async () => {
     if (portalLoading) return;
-
     setPortalLoading(true);
-    const popup = window.open("", "_blank");
-
-    if (popup) {
-      popup.opener = null;
-      popup.document.title = "Åpner kundeportal…";
-      popup.document.body.innerHTML = "<p style='font-family: sans-serif; padding: 24px;'>Åpner kundeportal…</p>";
-    }
 
     const { data, error } = await supabase.functions.invoke("customer-portal", {
       body: { environment: getPaddleEnvironment() },
     });
 
-    if (error || !data?.url) {
-      popup?.close();
-      toast({ title: "Feil", description: "Kunne ikke åpne kundeportalen.", variant: "destructive" });
-      setPortalLoading(false);
-      return;
-    }
-
-    if (popup) {
-      popup.location.replace(data.url);
-      setPortalLoading(false);
-      return;
-    }
-
-    try {
-      window.top!.location.href = data.url;
-    } catch {
-      window.location.href = data.url;
-    }
-
     setPortalLoading(false);
+
+    if (error || !data?.url) {
+      toast({ title: "Feil", description: "Kunne ikke åpne kundeportalen.", variant: "destructive" });
+      return;
+    }
+
+    const win = window.open(data.url, "_blank", "noopener,noreferrer");
+    if (!win) {
+      try {
+        window.top!.location.href = data.url;
+      } catch {
+        window.location.href = data.url;
+      }
+    }
   };
 
   return (
