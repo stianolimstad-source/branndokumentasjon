@@ -138,40 +138,6 @@ const Abonnement = () => {
               <CardTitle>Du har aktivt abonnement</CardTitle>
               <CardDescription>
                 Status: <span className="font-medium">{statusLabel(status)}</span>
-                {currentPeriodEnd && (
-                  <> · {cancelAtPeriodEnd ? "utløper" : "fornyes"} {new Date(currentPeriodEnd).toLocaleDateString("nb-NO")}</>
-                )}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <ul className="space-y-2">
-                {FEATURES.map((f) => (
-                  <li key={f} className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary" />{f}
-                  </li>
-                ))}
-              </ul>
-              {status !== "owner" && (
-                cancelAtPeriodEnd ? (
-                  <Button onClick={() => runAction("resume")} variant="outline" className="w-full" disabled={actionLoading}>
-                    {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RotateCcw className="h-4 w-4 mr-2" />}
-                    Gjenoppta abonnement
-                  </Button>
-                ) : (
-                  <Button onClick={() => setConfirmCancel(true)} variant="outline" className="w-full" disabled={actionLoading}>
-                    {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <XCircle className="h-4 w-4 mr-2" />}
-                    Si opp abonnement
-                  </Button>
-                )
-              )}
-            </CardContent>
-          </Card>
-        ) : (
-          <Card className="max-w-xl mx-auto">
-            <CardHeader>
-              <CardTitle>Du har aktivt abonnement</CardTitle>
-              <CardDescription>
-                Status: <span className="font-medium">{statusLabel(status)}</span>
                 {currentPlanLabel && (
                   <> · Plan: <span className="font-medium">{currentPlanLabel}</span></>
                 )}
