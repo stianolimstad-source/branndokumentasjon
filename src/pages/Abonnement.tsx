@@ -48,7 +48,15 @@ const Abonnement = () => {
       toast({ title: "Feil", description: "Kunne ikke åpne kundeportalen.", variant: "destructive" });
       return;
     }
-    window.location.href = data.url;
+    const win = window.open(data.url, "_blank", "noopener,noreferrer");
+    if (!win) {
+      // Popup blocked — fall back to navigating top-level (escapes preview iframe)
+      try {
+        window.top!.location.href = data.url;
+      } catch {
+        window.location.href = data.url;
+      }
+    }
   };
 
   return (

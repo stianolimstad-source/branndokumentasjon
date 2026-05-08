@@ -43,7 +43,13 @@ Deno.serve(async (req) => {
       sub.paddle_customer_id as string,
       [sub.paddle_subscription_id as string]
     );
-    return new Response(JSON.stringify({ url: portalSession.urls.general.overview }), {
+    console.log('Portal session urls:', JSON.stringify(portalSession.urls));
+    const subUrl = portalSession.urls.subscriptions?.[0];
+    const url =
+      subUrl?.cancelSubscription ||
+      subUrl?.updateSubscriptionPaymentMethod ||
+      portalSession.urls.general.overview;
+    return new Response(JSON.stringify({ url }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
