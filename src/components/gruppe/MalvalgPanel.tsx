@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ColorPicker } from "@/components/ui/color-picker";
 import { Check, Loader2, Sparkles, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -204,15 +205,10 @@ export default function MalvalgPanel({ groupId, groupName, logoUrl, profileLogoU
           <div className="space-y-2">
             <Label>Primærfarge</Label>
             <div className="flex items-center gap-2">
-              <Input
-                type="color"
-                value={primary}
-                onChange={(e) => setPrimary(e.target.value)}
-                className="h-10 w-14 p-1 cursor-pointer"
-              />
+              <ColorPicker value={primary} onChange={setPrimary} />
               <Input
                 value={primary}
-                onChange={(e) => setPrimary(e.target.value)}
+                onChange={(e) => setPrimary(ensureHash(e.target.value))}
                 className="font-mono uppercase"
               />
             </div>
@@ -220,15 +216,10 @@ export default function MalvalgPanel({ groupId, groupName, logoUrl, profileLogoU
           <div className="space-y-2">
             <Label>Aksentfarge</Label>
             <div className="flex items-center gap-2">
-              <Input
-                type="color"
-                value={accent}
-                onChange={(e) => setAccent(e.target.value)}
-                className="h-10 w-14 p-1 cursor-pointer"
-              />
+              <ColorPicker value={accent} onChange={setAccent} />
               <Input
                 value={accent}
-                onChange={(e) => setAccent(e.target.value)}
+                onChange={(e) => setAccent(ensureHash(e.target.value))}
                 className="font-mono uppercase"
               />
             </div>
