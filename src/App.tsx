@@ -60,10 +60,14 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <PaymentTestModeBanner />
+          <PastDueBanner />
           <AppHeader />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/abonnement" element={<Abonnement />} />
+            <Route path="/vilkar" element={<Vilkar />} />
+            <Route path="/refusjon" element={<Refusjon />} />
+            <Route path="/personvern" element={<Personvern />} />
             <Route path="/konsept" element={<RequireSubscription feature="Brannkonsept"><Konsept /></RequireSubscription>} />
             <Route path="/tilstandsvurdering" element={<RequireSubscription feature="Tilstandsvurdering"><Tilstandsvurdering /></RequireSubscription>} />
             <Route path="/brensellagring" element={<RequireSubscription feature="Brensellagring"><Brensellagring /></RequireSubscription>} />
