@@ -27,6 +27,9 @@ const MinProfil = () => {
     phone: "",
     education: "",
   });
+  const [themedGroups, setThemedGroups] = useState<{ id: string; name: string }[]>([]);
+  const [defaultTemplateGroupId, setDefaultTemplateGroupId] = useState<string>("none");
+  const [savingTemplate, setSavingTemplate] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
