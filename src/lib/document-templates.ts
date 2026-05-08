@@ -46,6 +46,15 @@ const DEFAULTS: Record<TemplateId, Required<Omit<TemplateSettings, "template">>>
   minimalistisk: { primary_color: "111111", accent_color: "555555", font_family: "Georgia" },
 };
 
+export function getTemplateDefaults(template: TemplateId) {
+  const d = DEFAULTS[template];
+  return {
+    primary_color: `#${d.primary_color}`,
+    accent_color: `#${d.accent_color}`,
+    font_family: d.font_family,
+  };
+}
+
 const stripHash = (c: string) => c.replace(/^#/, "").toUpperCase();
 
 // ---------- Theme resolver ----------
