@@ -45,6 +45,10 @@ import RequireFullAccess from "./components/RequireFullAccess";
 import RequireSubscription from "./components/RequireSubscription";
 import Abonnement from "./pages/Abonnement";
 import { PaymentTestModeBanner } from "./components/PaymentTestModeBanner";
+import { PastDueBanner } from "./components/PastDueBanner";
+import Vilkar from "./pages/legal/Vilkar";
+import Refusjon from "./pages/legal/Refusjon";
+import Personvern from "./pages/legal/Personvern";
 
 const queryClient = new QueryClient();
 
@@ -56,10 +60,14 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <PaymentTestModeBanner />
+          <PastDueBanner />
           <AppHeader />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/abonnement" element={<Abonnement />} />
+            <Route path="/vilkar" element={<Vilkar />} />
+            <Route path="/refusjon" element={<Refusjon />} />
+            <Route path="/personvern" element={<Personvern />} />
             <Route path="/konsept" element={<RequireSubscription feature="Brannkonsept"><Konsept /></RequireSubscription>} />
             <Route path="/tilstandsvurdering" element={<RequireSubscription feature="Tilstandsvurdering"><Tilstandsvurdering /></RequireSubscription>} />
             <Route path="/brensellagring" element={<RequireSubscription feature="Brensellagring"><Brensellagring /></RequireSubscription>} />

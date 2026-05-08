@@ -495,7 +495,16 @@ const Index = () => {
               </a>
             </div>
           </div>
-          <p className="text-center text-xs text-muted-foreground mt-4">Branndokumentasjon.no – Regelverksforankret dokumentasjon for brannsikkerhet</p>
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 mt-4 text-xs text-muted-foreground">
+            <Link to="/vilkar" className="hover:text-foreground transition-colors">Vilkår</Link>
+            <span>·</span>
+            <Link to="/refusjon" className="hover:text-foreground transition-colors">Refusjonspolicy</Link>
+            <span>·</span>
+            <Link to="/personvern" className="hover:text-foreground transition-colors">Personvern</Link>
+            <span>·</span>
+            <Link to="/abonnement" className="hover:text-foreground transition-colors">Abonnement</Link>
+          </div>
+          <p className="text-center text-xs text-muted-foreground mt-2">Branndokumentasjon.no – Regelverksforankret dokumentasjon for brannsikkerhet</p>
         </div>
       </footer>
     </div>
