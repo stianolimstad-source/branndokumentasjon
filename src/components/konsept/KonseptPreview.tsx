@@ -100,6 +100,17 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   const themeFont = theme?.fontFamily ? `${theme.fontFamily}, Verdana, Geneva, sans-serif` : 'Verdana, Geneva, sans-serif';
   const themePrimary = theme?.primaryColor ? `#${theme.primaryColor}` : undefined;
   const themeAccent = theme?.accentColor ? `#${theme.accentColor}` : undefined;
+  // Soft tinted background derived from accent color, used to theme section header rows
+  const hexToRgba = (hex: string, alpha: number) => {
+    const h = hex.replace('#', '');
+    const r = parseInt(h.substring(0, 2), 16);
+    const g = parseInt(h.substring(2, 4), 16);
+    const b = parseInt(h.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+  const sectionRowBg = themeAccent ? hexToRgba(themeAccent, 0.18) : '#DBEAFE';
+  const sectionRowStyle = { background: sectionRowBg };
+  const chapterHeadingColor = themePrimary ?? '#00a3e0';
   const pageStyle = "bg-white text-black p-10 rounded-lg shadow-md text-sm border border-gray-200 mx-auto relative";
   const pageWidth = { maxWidth: '210mm', minHeight: '297mm', paddingBottom: '40px', fontFamily: themeFont };
   const hasSammendrag = !!formData.sammendrag;
@@ -870,7 +881,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {isBF85 ? (
               /* ── BF85: Tabell 30:41 ── */
               <>
-                <tr id="preview-3-1" className="bg-blue-100">
+                <tr id="preview-3-1" style={sectionRowStyle}>
                   <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
                     {sp}.1 &nbsp;&nbsp; Kap. 30:41 Bæreevne og stabilitet (Bygningsbrannklasse) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-4 Bæreevne og stabilitet)</span>
                   </td>
@@ -930,7 +941,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </>
             ) : formData.harFlereRisikoklasser && bygningsdeler.length > 0 ? (
               <>
-                <tr id="preview-3-1" className="bg-blue-100">
+                <tr id="preview-3-1" style={sectionRowStyle}>
                   <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
                     {sp}.1 &nbsp;&nbsp; §11-4 Bæreevne og stabilitet
                   </td>
@@ -1022,7 +1033,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </>
             ) : (
               <>
-                <tr id="preview-3-1" className="bg-blue-100">
+                <tr id="preview-3-1" style={sectionRowStyle}>
                   <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
                     {sp}.1 &nbsp;&nbsp; §11-4 Bæreevne og stabilitet
                   </td>
@@ -1091,7 +1102,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.2 §11-5 Sikkerhet ved eksplosjon */}
-            <tr id="preview-3-2" className="bg-blue-100">
+            <tr id="preview-3-2" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
                 {sp}.2 &nbsp;&nbsp; {formData.regelverk === "BF85" ? <>Sikkerhet ved eksplosjon <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-5 Sikkerhet ved eksplosjon)</span></> : "§11-5 Sikkerhet ved eksplosjon"}
               </td>
@@ -1145,7 +1156,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.3 §11-6 / BF85 :32 Brannspredning mellom byggverk */}
-            <tr id="preview-3-3" className="bg-blue-100">
+            <tr id="preview-3-3" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
                 {sp}.3 &nbsp;&nbsp; {formData.regelverk === "BF85" ? <>Avstand mellom bygninger (Kap. 30:32) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-6 Tiltak mot brannspredning mellom byggverk)</span></> : "§11-6 Brannspredning mellom byggverk"}
               </td>
@@ -1346,7 +1357,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.4 §11-7 Brannseksjoner / BF85 Kap 30:6 Brannteknisk oppdeling */}
-            <tr id="preview-3-4" className="bg-blue-100">
+            <tr id="preview-3-4" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.4 &nbsp;&nbsp; {isBF85 ? <>Brannteknisk oppdeling (Kap. 30:6) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-7 Brannseksjoner)</span></> : "§11-7 Brannseksjoner"}</td>
             </tr>
             <tr className="bg-gray-100">
@@ -1618,7 +1629,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.5 §11-8 Brannceller */}
-            <tr id="preview-3-5" className="bg-blue-100">
+            <tr id="preview-3-5" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.5 &nbsp;&nbsp; {isBF85 ? <>Branncelleinndeling (Kap. 30:63–65) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-8 Brannceller)</span></> : "§11-8 Brannceller"}</td>
             </tr>
             <tr className="bg-gray-100">
@@ -2737,7 +2748,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.6 §11-9 Materialer og produkter */}
-            <tr id="preview-3-6" className="bg-blue-100">
+            <tr id="preview-3-6" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.6 &nbsp;&nbsp; {isBF85 ? <>Kledninger og overflater for vegger og tak (:42) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-9 Materialer og produkters egenskaper ved brann)</span></> : "§11-9 Materialer og produkters egenskaper ved brann"}</td>
             </tr>
             <tr className="bg-gray-100">
@@ -3407,7 +3418,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
 
             {/* 3.7 §11-10 Tekniske installasjoner */}
-            <tr id="preview-3-7" className="bg-blue-100">
+            <tr id="preview-3-7" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.7 &nbsp;&nbsp; {isBF85 ? <>Ventilasjon og installasjoner (Kap. 47) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-10 Tekniske installasjoner)</span></> : "§11-10 Tekniske installasjoner"}</td>
             </tr>
             <tr className="bg-gray-100">
@@ -3595,7 +3606,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         <table className="w-full border-collapse border border-gray-400 text-xs mt-4">
           <tbody>
             {/* 3.8 §11-11 Generelle krav om rømning */}
-            <tr id="preview-3-8" className="bg-blue-100">
+            <tr id="preview-3-8" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.8 &nbsp;&nbsp; {isBF85 ? <>Rømningsvei – generelle krav (Kap. 30:7) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-11 Generelle krav om rømning og redning)</span></> : "§11-11 Generelle krav om rømning og redning"}</td>
             </tr>
             <tr className="bg-gray-100">
@@ -3637,7 +3648,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
 
             {/* 3.9 §11-12 Tilrettelegging for rømning */}
-            <tr id="preview-3-9" className="bg-blue-100">
+            <tr id="preview-3-9" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.9 &nbsp;&nbsp; {isBF85 ? <>Brannalarmanlegg og røykvarsler (Kap. 31–39) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-12 Tiltak for å påvirke rømnings- og redningstider)</span></> : "§11-12 Tilrettelegging for rømning og redning"}</td>
             </tr>
             <tr className="bg-gray-100">
@@ -4028,7 +4039,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
 
             {/* 3.10 §11-13 Utgang fra branncelle */}
-            <tr id="preview-3-10" className="bg-blue-100">
+            <tr id="preview-3-10" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.10 &nbsp;&nbsp; {isBF85 ? <>Utganger og rømningsveier fra branncelle (Kap. 30:71–73) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-13 Utgang fra branncelle)</span></> : "§11-13 Utgang fra branncelle"}</td>
             </tr>
             <tr className="bg-gray-100">
@@ -4492,7 +4503,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             })()}
 
             {/* 3.11 §11-14 Rømningsvei */}
-            <tr id="preview-3-11" className="bg-blue-100">
+            <tr id="preview-3-11" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.11 &nbsp;&nbsp; {isBF85 ? <>Trapperom og heissjakt (Kap. 30:7/30:41) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-14 Rømningsvei)</span></> : "§11-14 Rømningsvei"}</td>
             </tr>
             <tr className="bg-gray-100">
@@ -4762,7 +4773,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
 
             {/* 3.12 §11-15 Tilrettelegging for redning av husdyr */}
-            <tr id="preview-3-12" className="bg-blue-100">
+            <tr id="preview-3-12" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.12 &nbsp;&nbsp; {isBF85 ? <>Tilrettelegging for redning av husdyr <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-15)</span></> : "§11-15 Tilrettelegging for redning av husdyr"}</td>
             </tr>
             {formData.husdyrRedningRelevant ? (
@@ -4854,7 +4865,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.13 §11-16 Manuell slokking */}
-            <tr id="preview-3-13" className="bg-blue-100">
+            <tr id="preview-3-13" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.13 &nbsp;&nbsp; {isBF85 ? <>Slokkingsredskap og slokkingsvann (Kap. 30:93/31–39) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-16 Tilrettelegging for manuell slokking)</span></> : "§11-16 Tilrettelegging for manuell slokking"}</td>
             </tr>
             <tr className="bg-gray-100">
@@ -4975,7 +4986,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.14 §11-17 Tilrettelegging for slokkemannskap */}
-            <tr id="preview-3-14" className="bg-blue-100">
+            <tr id="preview-3-14" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.14 &nbsp;&nbsp; {isBF85 ? <>Atkomst for brannvesenet (Kap. 30:92/94/95) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-17 Tilrettelegging for slokkemannskap)</span></> : "§11-17 Tilrettelegging for slokkemannskap"}</td>
             </tr>
             <tr className="bg-gray-100">
@@ -5118,7 +5129,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       {documentType !== "tilstandsvurdering" && (
       <>
       <section className="mb-6">
-        <h2 id="preview-kap4" className="font-bold mb-3" style={{ color: "#00a3e0" }}>4. Utførelses- og driftsfasen</h2>
+        <h2 id="preview-kap4" className="font-bold mb-3" style={{ color: chapterHeadingColor }}>4. Utførelses- og driftsfasen</h2>
         
         <h3 className="font-semibold mb-2">4.1 Utførelsesfasen</h3>
         <p className="ml-4 mb-1 font-semibold">Til innkjøpsfasen</p>

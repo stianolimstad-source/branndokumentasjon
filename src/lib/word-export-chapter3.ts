@@ -11,9 +11,38 @@ const tableBorders = {
 };
 
 // Shading matching preview: bg-blue-100 = #DBEAFE, bg-blue-50 = #EFF6FF, bg-gray-100 = #F3F4F6
-const sectionShading = { type: ShadingType.SOLID, color: "DBEAFE", fill: "DBEAFE" };
-const subSectionShading = { type: ShadingType.SOLID, color: "EFF6FF", fill: "EFF6FF" };
+// These are mutated by setChapter3Theme() before each export so that section/sub-section
+// rows reflect the current company template's accent color.
+let sectionShading = { type: ShadingType.SOLID, color: "DBEAFE", fill: "DBEAFE" };
+let subSectionShading = { type: ShadingType.SOLID, color: "EFF6FF", fill: "EFF6FF" };
 const headerShading = { type: ShadingType.SOLID, color: "F3F4F6", fill: "F3F4F6" };
+
+// Convert hex like "F97316" to a lighter pastel hex string (no #) by mixing toward white.
+function tintHex(hex: string, amount: number): string {
+  const h = hex.replace("#", "");
+  if (h.length !== 6) return "DBEAFE";
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  const mix = (c: number) => Math.round(c + (255 - c) * amount).toString(16).padStart(2, "0");
+  return (mix(r) + mix(g) + mix(b)).toUpperCase();
+}
+
+/**
+ * Apply the company template's accent color to chapter-3 section/sub-section row shading.
+ * Pass the accent hex (with or without leading #). If null/undefined, falls back to default blue.
+ */
+export function setChapter3Theme(accentHex: string | null | undefined) {
+  if (!accentHex) {
+    sectionShading = { type: ShadingType.SOLID, color: "DBEAFE", fill: "DBEAFE" };
+    subSectionShading = { type: ShadingType.SOLID, color: "EFF6FF", fill: "EFF6FF" };
+    return;
+  }
+  const section = tintHex(accentHex, 0.78);
+  const sub = tintHex(accentHex, 0.9);
+  sectionShading = { type: ShadingType.SOLID, color: section, fill: section };
+  subSectionShading = { type: ShadingType.SOLID, color: sub, fill: sub };
+}
 
 function cell(text: string, bold = false, width?: number, shading?: typeof sectionShading): TableCell {
   return new TableCell({

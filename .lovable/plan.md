@@ -1,56 +1,50 @@
-## Problem
-Forhåndsvisningen og Word-eksporten av et faktisk brannkonsept/tilstandsvurdering matcher ikke `MalForhandsvisning` i bedriftsmalen. Den faktiske forsiden viser bare logo + caps-tittel + en tynn aksentlinje **over** tittelen, mens malen viser:
-- Topp-stripe i primærfarge (klassisk)
-- Stor mixed-case tittel ("Brannkonsept", ikke "BRANNKONSEPT") i primærfargen
-- Italic undertittel ("Eksempel på dokumentutseende" → bruk reell tagline/prosjekttype)
-- Aksentlinje **under** tittelen
-- Prosjektnavn + dato sentrert
-- Footer-stripe nederst med dato + sidetall
-
-I tillegg har malen 3 varianter (`klassisk`, `moderne`, `minimalistisk`) — KonseptPreview rendrer kun én layout uavhengig av valgt mal.
+# Plan: Mal-farger gjennom hele rapporten + bedre fargevelger
 
 ## Mål
-La forsiden i `KonseptPreview` (skjerm) og forsiden i `exportToWord` (Word-fil) speile `MalForhandsvisning` for valgt template, slik at det brukeren ser i bedriftsmal-fanen er nøyaktig det de får i sitt brannkonsept/tilstandsvurdering.
+1. Når en bedrift velger mal (Klassisk/Moderne/Minimalistisk) skal **alle** farger i rapporten reflektere dette — ikke bare forsiden. Eksempel: kapitteloverskrifter (3.1, 3.2 osv.) som i dag er lyseblå (`bg-blue-100`, `#00a3e0`) skal bli oransje under «Moderne», grå under «Minimalistisk», osv.
+2. Fargevalg-feltene under «Dokumentmal for bedriften» skal vise en **ordentlig fargevelger med palett og hex-input** i stedet for OS-ens innebygde glidebryter/fargehjul som er vanskelig å bruke.
 
-## Endringer
+## Del 1 — Tematisering av rapportinnhold
 
-### 1. `src/components/konsept/KonseptPreview.tsx` — Ny forside per template
-- Utvid `theme`-prop til også å inneholde `template?: TemplateId`.
-- Erstatt nåværende forside-blokk (linje 134–162) med tre varianter, kopiert fra `MalForhandsvisning`:
-  - **klassisk**: topp-stripe i primærfarge (h ≈ 14px), logo sentrert, tittel mixed-case stor + bold i `primaryColor`, italic undertittel hvis tilgjengelig, kort aksentlinje under tittel, prosjektnavn (bold) + adresse + dato sentrert, "Utarbeidet av"-blokk, footer-stripe nederst med tynn `borderTop accentColor`, dato venstre / "Side 1" høyre.
-  - **moderne**: venstre kolonne (35 % bredde) i primærfarge med logo (negative bg) + dato + versjon. Høyre kolonne med liten aksent-bar over tittel, mixed-case tittel i primærfarge, undertittel i `accentColor`, prosjektnavn + "Utarbeidet av".
-  - **minimalistisk**: ren layout, logo øverst venstre, lett skrift i primærfarge, undertittel i grått, full-bredde tynn aksentlinje, prosjektnavn venstre / dato høyre.
-- Bruk `documentType === "tilstandsvurdering" ? "Tilstandsvurdering" : "Brannkonsept"` som tittel (mixed case, ikke caps).
-- Hvis `theme` mangler (gjeste-/standardtilfelle uten bedriftsmal): bruk klassisk variant med default-farger fra `getTemplateDefaults("klassisk")` slik at vi alltid har noe konsistent.
-- Behold `hideCover`-prop intakt (brukt fra `MalForhandsvisning` for å unngå dobbel forside).
+**`KonseptPreview.tsx`** (forhåndsvisning på skjerm)
+- Bruke `theme.accentColor` som bakgrunn for alle seksjonsoverskrift-rader (`bg-blue-100` → inline `style={{ background: themeAccentSoft }}`). Lager en lys variant av accent (f.eks. 18 % opacitet) for å bevare lesbarheten.
+- Erstatte hardkodet `#00a3e0` på kapitteloverskrifter (Kap 4 «Utførelses- og driftsfasen» m.fl.) med `theme.primaryColor`.
+- Innføre to hjelpere øverst i komponenten:
+  - `themeAccentSoft = hexToRgba(theme.accentColor, 0.18)` — for rad-bakgrunner
+  - `themeHeading = theme.primaryColor` — for h2-overskrifter
+- Søke gjennom hele filen og bytte ut alle 24 forekomster av `bg-blue-100` og `#00a3e0`.
 
-### 2. `src/pages/Konsept.tsx` — Pass `template` videre
-- I effekten som setter `previewTheme`, lagre også `template` fra `resolveDocumentTheme`-resultatet.
-- Send hele `theme` (inkl. template) til `<KonseptPreview ... />`.
+**`src/lib/word-export-chapter3.ts`** (Word-eksport av kap. 3)
+- Erstatte hardkodet lyseblå skygge på seksjonsoverskrift-rader med `theme.accentColor` (lys variant via `tint` eller en utregnet pastell-hex). Funksjonen tar allerede inn et tema/objekt — utvide signaturen ved behov.
 
-### 3. `src/pages/Konsept.tsx` — Word-eksportens forside per template
-I `exportToWord` (etter at `theme` er resolvert), erstatt dagens forside-bygging (logo → caps tittel → aksentlinje → prosjekt/forfatter/dato) med template-basert konstruksjon:
+**`Konsept.tsx`** (Word-eksport av forsider/øvrige kapitler)
+- Bytte gjenværende hardkodede blåtoner i kapitteloverskrifter til `theme.primaryColor`.
 
-- **klassisk** (default): 
-  - Tom Paragraph med `shading: { fill: theme.primaryColor }` og liten high-spacing for å simulere topp-stripe (Word kan ikke true full-bleed, men vi får tilnærmet effekt med en tynn shaded paragraph over hele bredden).
-  - Logo sentrert.
-  - Mixed-case tittel "Brannkonsept"/"Tilstandsvurdering" i `primaryColor`, font fra `theme.fontFamily`, size 56.
-  - Aksentlinje (Paragraph med `border.bottom`, color = `accentColor`, smal).
-  - Prosjektnavn (bold), adresse, dato.
-  - "Utarbeidet av"-blokk uendret.
-  - Footer (allerede definert) får ekstra `borderTop` i accentColor — eller vi behold dagens footer (sidetall) og hopper over.
-- **moderne**: drop venstre-kolonne (komplisert i Word) — i stedet en tydelig topp-stripe + tittel venstrejustert + accent-bar.
-- **minimalistisk**: ingen stripe, lett tittelfont, full-bredde aksentlinje under metadata.
+**Tilstandsvurdering & Fraviksdokumentasjon**
+- Samme prinsipp anvendes der disse modulene har tilsvarende blå seksjonsbakgrunner. Holdes enkelt: kun farge-substitusjoner, ingen layoutendringer.
 
-For å holde implementeringen håndterlig: lag en hjelpefunksjon `buildCoverParagraphs(theme, opts)` lokalt i `exportToWord` som returnerer riktig array av `Paragraph` basert på `theme.template`.
+## Del 2 — Forbedret fargevelger
 
-### 4. Tilpass eksisterende "andre tittel-paragraph" på Innholdsfortegnelse-siden
-Den blir også rammet av template-fonten/fargen vi allerede satte; ingen ekstra endring nødvendig der.
+**Ny komponent `src/components/ui/color-picker.tsx`**
+- Popover (shadcn) som åpnes når man klikker på en fargeruta.
+- Innhold:
+  - Palett med ~12 forhåndsvalgte profesjonelle farger (blå, marinblå, oransje, rød, grønn, grå, sort osv.)
+  - Hex-input under paletten for finjustering
+  - Liten live-rute som viser valgt farge
+- Ingen OS-fargehjul/glidebryter.
+- Avhengighet: ingen ekstra pakke nødvendig — bygges med eksisterende Popover/Input.
 
-## Avgrensninger
-- Vi tema-styler fortsatt **kun forsiden** + standard font + TOC-tittelen i Word. Resten av rapportens kapitler beholder sin nåværende layout (kommer i senere runde).
-- Topp-stripen i Word blir en smal shaded paragraph (Word støtter ikke ekte full-bleed bakgrunn uten section-tricks). Visuelt nær nok.
-- Hvis brukeren ikke har en bedriftsmal, brukes klassisk default — samme som malens preview viser.
+**`MalvalgPanel.tsx`**
+- Bytte ut `<Input type="color" />` for primær- og aksentfarge med den nye `<ColorPicker value={...} onChange={...} />`.
+- Beholde hex-tekstfelt ved siden av som i dag, slik at brukere kan lime inn egne koder.
 
-## Resultat
-Forhåndsvisning av et faktisk brannkonsept eller tilstandsvurdering ser nå likt ut som forhåndsvisningen i bedriftsmalen for valgt template. Word-fila som lastes ned følger samme forsidestruktur.
+## Tekniske detaljer
+
+- Hex→rgba-hjelper plasseres i `src/lib/utils.ts` (eller lokalt i preview-fil) for å lage pastell-bakgrunner uten å endre `theme.accentColor` selv.
+- Ingen DB-/skjema-endringer. Tema-feltet i `contact_groups.template_settings` brukes som før.
+- Mørk modus: pastell-bakgrunnen baseres på accent-fargen og fungerer i begge moduser siden tabellinnhold uansett rendres på hvit "papir"-bakgrunn i forhåndsvisningen.
+
+## Hva som ikke endres
+- Selve mal-strukturen (Klassisk/Moderne/Minimalistisk forsider) — den ble nettopp ferdigstilt.
+- Lagrings-/delings-logikk for maler.
+- Oppsett av tilstandsvurdering eller faglig innhold.
