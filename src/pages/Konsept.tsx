@@ -422,6 +422,7 @@ const Konsept = () => {
   const [newProjectData, setNewProjectData] = useState({ name: "", description: "", address: "" });
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [authorInfo, setAuthorInfo] = useState<{ name: string; company: string } | null>(null);
+  const [previewTheme, setPreviewTheme] = useState<{ primaryColor: string; accentColor: string; fontFamily: string; logoUrl: string | null } | null>(null);
 
   // Auto-open create project dialog only for authenticated users when ?new=true
   useEffect(() => {
@@ -444,6 +445,28 @@ const Konsept = () => {
       });
     }
   }, [user]);
+
+  // Resolve document theme (group template / personal default) for preview & export
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { resolveDocumentTheme } = await import("@/lib/document-templates");
+        const t = await resolveDocumentTheme(selectedProjectId, logoUrl, user?.id);
+        if (!cancelled) {
+          setPreviewTheme({
+            primaryColor: t.primaryColor,
+            accentColor: t.accentColor,
+            fontFamily: t.fontFamily,
+            logoUrl: t.logoUrl ?? null,
+          });
+        }
+      } catch (e) {
+        if (!cancelled) setPreviewTheme(null);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [selectedProjectId, user?.id, logoUrl]);
 
   const handleCreateProject = async () => {
     if (!newProjectData.name.trim()) {
@@ -1478,7 +1501,8 @@ const Konsept = () => {
     );
   };
 
-  const renderPreview = () => <KonseptPreview formData={{...formData, onUpdateField: (field: string, value: any) => setFormData(prev => ({...prev, [field]: value}))}} logoUrl={logoUrl} authorInfo={authorInfo} documentType={documentType} />;
+  const previewLogoUrl = previewTheme?.logoUrl ?? logoUrl;
+  const renderPreview = () => <KonseptPreview formData={{...formData, onUpdateField: (field: string, value: any) => setFormData(prev => ({...prev, [field]: value}))}} logoUrl={previewLogoUrl} authorInfo={authorInfo} documentType={documentType} theme={previewTheme} />;
 
   const exportToWord = async () => {
     const tableBorders = {
@@ -1517,12 +1541,17 @@ const Konsept = () => {
       });
     };
 
+    // Resolve document theme (group / personal default) for branding
+    const { resolveDocumentTheme } = await import("@/lib/document-templates");
+    const theme = await resolveDocumentTheme(selectedProjectId, logoUrl, user?.id);
+    const coverLogoUrl = theme.logoUrl ?? logoUrl;
+
     // Fetch logo for header
     let logoBuffer: ArrayBuffer | null = null;
     let logoDimensions = { width: 300, height: 150 };
-    if (logoUrl) {
+    if (coverLogoUrl) {
       try {
-        const res = await fetch(logoUrl);
+        const res = await fetch(coverLogoUrl);
         if (res.ok) {
           logoBuffer = await res.arrayBuffer();
           // Get natural dimensions to preserve aspect ratio
@@ -1536,7 +1565,7 @@ const Konsept = () => {
               resolve();
             };
             img.onerror = () => resolve();
-            img.src = logoUrl;
+            img.src = coverLogoUrl;
           });
         }
       } catch {}
@@ -1577,10 +1606,22 @@ const Konsept = () => {
     }
 
     coverPageChildren.push(new Paragraph({
-      text: documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT",
       heading: HeadingLevel.TITLE,
       alignment: AlignmentType.CENTER,
-      spacing: { before: logoBuffer ? 200 : 1200, after: 200 },
+      spacing: { before: logoBuffer ? 200 : 1200, after: 120 },
+      children: [new TextRun({
+        text: documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT",
+        bold: true,
+        color: theme.primaryColor,
+        font: theme.fontFamily,
+      })],
+    }));
+    // Accent line under title
+    coverPageChildren.push(new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 200 },
+      border: { bottom: { style: BorderStyle.SINGLE, size: 18, color: theme.accentColor, space: 1 } },
+      children: [new TextRun({ text: "" })],
     }));
 
     if (formData.prosjektnavn) {
@@ -1641,7 +1682,7 @@ const Konsept = () => {
       styles: {
         default: {
           document: {
-            run: { font: "Verdana", size: 20 },
+            run: { font: theme.fontFamily, size: 20 },
           },
         },
       },
@@ -1741,10 +1782,15 @@ const Konsept = () => {
           footers: wordFooter,
           children: [
             new Paragraph({
-              text: documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT",
               heading: HeadingLevel.TITLE,
               alignment: AlignmentType.CENTER,
               spacing: { after: 400 },
+              children: [new TextRun({
+                text: documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT",
+                bold: true,
+                color: theme.primaryColor,
+                font: theme.fontFamily,
+              })],
             }),
 
             // Innholdsfortegnelse

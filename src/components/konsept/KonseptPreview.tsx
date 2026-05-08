@@ -25,6 +25,7 @@ interface KonseptPreviewProps {
   authorInfo?: { name: string; company: string } | null;
   documentType?: "brannkonsept" | "tilstandsvurdering";
   hideCover?: boolean;
+  theme?: { primaryColor: string; accentColor: string; fontFamily: string } | null;
 }
 
 const gradColors: Record<string, { bg: string; text: string; label: string }> = {
@@ -89,15 +90,18 @@ const TilstandTableRow = ({ data, sectionLabel, colSpan = 3 }: { data: TilstandD
   );
 };
 
-const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannkonsept", hideCover = false }: KonseptPreviewProps) => {
+const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannkonsept", hideCover = false, theme }: KonseptPreviewProps) => {
   // Ensure arrays have defaults
   const bygningsdeler = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
   const grunnlagsdokumenter = Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : [];
   const branncelleTyper = Array.isArray(formData.branncelleTyper) ? formData.branncelleTyper : [];
   const baereevneUnntak = Array.isArray(formData.baereevneUnntak) ? formData.baereevneUnntak : [];
 
+  const themeFont = theme?.fontFamily ? `${theme.fontFamily}, Verdana, Geneva, sans-serif` : 'Verdana, Geneva, sans-serif';
+  const themePrimary = theme?.primaryColor ? `#${theme.primaryColor}` : undefined;
+  const themeAccent = theme?.accentColor ? `#${theme.accentColor}` : undefined;
   const pageStyle = "bg-white text-black p-10 rounded-lg shadow-md text-sm border border-gray-200 mx-auto relative";
-  const pageWidth = { maxWidth: '210mm', minHeight: '297mm', paddingBottom: '40px', fontFamily: 'Verdana, Geneva, sans-serif' };
+  const pageWidth = { maxWidth: '210mm', minHeight: '297mm', paddingBottom: '40px', fontFamily: themeFont };
   const hasSammendrag = !!formData.sammendrag;
   const isTilstand = documentType === "tilstandsvurdering";
   const isBF85 = isTilstand && formData.regelverk === "BF85";
@@ -139,7 +143,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             <img src={logoUrl} alt="Firmalogo" className="max-h-64 max-w-[600px] object-contain" />
           </div>
         )}
-        <h1 className="text-3xl font-bold text-center mb-4 tracking-wide">
+        {themeAccent && (
+          <div style={{ width: 120, height: 3, background: themeAccent, marginBottom: 24, borderRadius: 2 }} />
+        )}
+        <h1 className="text-3xl font-bold text-center mb-4 tracking-wide" style={themePrimary ? { color: themePrimary } : undefined}>
           {documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT"}
         </h1>
         {formData.prosjektnavn && (
