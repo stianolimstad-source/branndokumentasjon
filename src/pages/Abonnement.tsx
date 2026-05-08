@@ -23,14 +23,18 @@ const FEATURES = [
   "AI-assistert utfylling",
 ];
 
+const MONTHLY_ID = "branndok_pro_monthly";
+const YEARLY_ID = "branndok_pro_yearly";
+
 const Abonnement = () => {
   const { user, loading: authLoading } = useAuth();
-  const { isActive, loading, status, currentPeriodEnd, cancelAtPeriodEnd, refresh } = useSubscription();
+  const { isActive, loading, status, priceId, currentPeriodEnd, cancelAtPeriodEnd, refresh } = useSubscription();
   const { openCheckout, loading: checkoutLoading } = usePaddleCheckout();
   const { toast } = useToast();
   const [params, setParams] = useSearchParams();
   const [actionLoading, setActionLoading] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
+  const [confirmSwitch, setConfirmSwitch] = useState<null | "to_yearly" | "to_monthly">(null);
 
   useEffect(() => {
     if (params.get("checkout") === "success") {
