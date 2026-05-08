@@ -1,42 +1,41 @@
 ## Mål
-Lås tilgang til de fire seksjonene **Tilbud**, **Oppdragsbekreftelse**, **Sikkerhetsrutiner** og **Eksempelkatalog** for alle brukere unntatt `stianolimstad@gmail.com`. Ulåste brukere skal se et tydelig hengelås-overlay på kortene på forsiden, og blir blokkert fra rutene.
+Aktiver betalt abonnement via Paddle (Lovables innebygde løsning) slik at brukere må abonnere for å få full tilgang til verktøyene. Gratis brukere får kun lese-/visningstilgang.
 
-## Endringer
+## Hva blir satt opp
 
-### 1. Ny hook: `src/hooks/useIsFullAccess.ts`
-Returnerer `true` kun hvis innlogget bruker har e-post `stianolimstad@gmail.com`. Brukes som sentral porten for alle "under utvikling"-funksjoner.
+### 1. Aktivere Paddle-betalinger
+- Aktiverer Lovables innebygde Paddle-integrasjon (du trenger ikke egen Paddle-konto for å starte – sandbox/test opprettes automatisk).
+- Pris settes senere av deg i Paddle-dashbordet. Vi setter opp én plan med både månedlig og årlig pris.
+- For å gå live må du verifisere virksomheten din i Paddle.
 
-```ts
-export const useIsFullAccess = () => {
-  const { user } = useAuth();
-  return user?.email?.toLowerCase() === "stianolimstad@gmail.com";
-};
-```
+### 2. Database
+- Ny tabell `subscribers` (user_id, email, subscribed, subscription_tier, subscription_end, trial_end, paddle_customer_id, paddle_subscription_id, updated_at) med RLS – kun egen rad lesbar.
+- Hjelpefunksjon `has_active_subscription(uuid)` (security definer) som returnerer true hvis bruker har aktivt abonnement, er i prøveperiode, eller er stianolimstad@gmail.com.
 
-### 2. Ny komponent: `src/components/LockedFeatureCard.tsx`
-Wrapper rundt et eksisterende `Card` som legger på:
-- Et halvtransparent overlay
-- Stort sentralt `Lock`-ikon (lucide-react)
-- Liten tekst: "Under utvikling"
-- Fjerner `cursor-pointer` og hindrer klikk (ingen `<Link>`-wrapping)
-- Tooltip ved hover: "Tilgang begrenset under utvikling"
+### 3. Edge functions
+- `create-checkout` – starter Paddle-checkout for valgt plan (månedlig/årlig), inkl. 14 dagers trial.
+- `check-subscription` – sjekker status mot Paddle og oppdaterer `subscribers`.
+- `customer-portal` – åpner Paddle kundeportal for å si opp/endre.
+- `paddle-webhook` – mottar `subscription.created/updated/canceled` og oppdaterer `subscribers`.
 
-### 3. `src/pages/Index.tsx`
-- Importer `useIsFullAccess` og `LockedFeatureCard`.
-- Marker disse fire features som `locked: true` i features-array: Tilbud, Oppdragsbekreftelse, Sikkerhetsrutiner, Eksempelkatalog.
-- I render-loopen: hvis `feature.locked && !isFullAccess`, render kortet uten `<Link>` med hengelås-overlay i stedet.
+### 4. Tilgangskontroll i frontend
+- Ny hook `useSubscription()` som henter abonnementstatus.
+- Ny `RequireSubscription`-wrapper (samme mønster som `RequireFullAccess`) – viser hengelås-overlegg + "Start abonnement"-knapp på sider som krever abonnement.
+- "Kun lesing/visning"-modell:
+  - **Gratis tilgang**: Brukere kan navigere, åpne verktøy/sider, og se eksisterende UI.
+  - **Krever abonnement** (eller stianolimstad@gmail.com): opprette/lagre prosjekter, opprette/lagre konsept, tilstandsvurdering, fravik, brensellagring, eksport av Word/PDF, AI-kall.
+- Eksisterende `useCanDownload` og `useIsFullAccess` flettes med abonnementstatus.
 
-### 4. Rute-beskyttelse (defense-in-depth)
-Hvis bruker likevel navigerer direkte til `/tilbud`, `/oppdragsbekreftelse`, `/sikkerhetsrutiner`, `/eksempelkatalog`, `/eksempelkatalog/branncellevegger` eller `/eksempelkatalog/brannfarlige-stoffer`:
-- Vis en låst tilstand (stort hengelås-ikon, tekst "Denne delen er under utvikling og krever utvidet tilgang", knapp tilbake til forsiden).
+### 5. Ny "Abonnement"-side (`/abonnement`)
+- Viser nåværende status (gratis / prøveperiode med dager igjen / aktiv / utløpt).
+- To pris-kort (månedlig / årlig) med "Start 14 dagers gratis prøve"-knapp som åpner Paddle-checkout i nytt vindu.
+- "Administrer abonnement"-knapp (åpner Paddle kundeportal) for aktive abonnenter.
+- Lenke til `/abonnement` legges i `AppHeader` (brukermeny) og som CTA på låste områder.
 
-Implementeres ved å legge en sjekk øverst i hver av de fire side-komponentene (eller en felles `<RequireFullAccess>`-wrapper i `App.tsx` rundt rutene). Anbefaler felles wrapper for å unngå duplisert kode.
+### 6. Etter publisering
+- Du får en Paddle-webhook-URL som må limes inn i Paddle-dashbordet.
+- Du oppretter selve produktet/prisene i Paddle (vi gir deg veiledning og Paddle Product/Price ID feltene legges som secrets).
 
-### 5. Det som IKKE endres
-- Ingen endringer i RLS, database, eller backend — dette er kun en UI-gating for synlighet/test-modus. (Si fra hvis du vil at jeg også skal håndheve på serversiden senere.)
-- Andre seksjoner (Brannkonsept, Tilstandsvurdering, Verktøy, Fravik, Brannfarlig lagring, m.fl.) forblir uendret.
-- E-postsjekken er hardkodet — enkel å utvide til en liste senere når flere skal få full tilgang.
-
-## Resultat
-- `stianolimstad@gmail.com` ser alt som før.
-- Alle andre (innloggede og ikke-innloggede) ser hengelås-overlay på de fire kortene på forsiden, og en låst skjerm hvis de prøver å navigere direkte til rutene.
+## Det som IKKE inngår nå
+- Faktisk pris og produkt opprettes av deg i Paddle etter aktivering.
+- Vi rører ikke eksisterende hengelåser på Tilbud/Oppdragsbekreftelse/Sikkerhetsrutiner/Eksempelkatalog/Brannsimulering/AI Brannkonsulent – disse forblir låst til stianolimstad@gmail.com.
