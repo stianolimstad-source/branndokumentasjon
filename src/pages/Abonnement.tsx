@@ -167,12 +167,61 @@ const Abonnement = () => {
             </CardContent>
           </Card>
         ) : (
+          <Card className="max-w-xl mx-auto">
+            <CardHeader>
+              <CardTitle>Du har aktivt abonnement</CardTitle>
+              <CardDescription>
+                Status: <span className="font-medium">{statusLabel(status)}</span>
+                {currentPlanLabel && (
+                  <> · Plan: <span className="font-medium">{currentPlanLabel}</span></>
+                )}
+                {currentPeriodEnd && (
+                  <> · {cancelAtPeriodEnd ? "utløper" : "fornyes"} {new Date(currentPeriodEnd).toLocaleDateString("nb-NO")}</>
+                )}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <ul className="space-y-2">
+                {FEATURES.map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary" />{f}
+                  </li>
+                ))}
+              </ul>
+              {status !== "owner" && !cancelAtPeriodEnd && priceId === MONTHLY_ID && (
+                <Button onClick={() => setConfirmSwitch("to_yearly")} className="w-full" disabled={actionLoading}>
+                  <ArrowUpCircle className="h-4 w-4 mr-2" />
+                  Bytt til årlig (spar ~17%)
+                </Button>
+              )}
+              {status !== "owner" && !cancelAtPeriodEnd && priceId === YEARLY_ID && (
+                <Button onClick={() => setConfirmSwitch("to_monthly")} variant="outline" className="w-full" disabled={actionLoading}>
+                  <ArrowDownCircle className="h-4 w-4 mr-2" />
+                  Bytt til månedlig
+                </Button>
+              )}
+              {status !== "owner" && (
+                cancelAtPeriodEnd ? (
+                  <Button onClick={() => runAction("resume")} variant="outline" className="w-full" disabled={actionLoading}>
+                    {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RotateCcw className="h-4 w-4 mr-2" />}
+                    Gjenoppta abonnement
+                  </Button>
+                ) : (
+                  <Button onClick={() => setConfirmCancel(true)} variant="outline" className="w-full" disabled={actionLoading}>
+                    {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <XCircle className="h-4 w-4 mr-2" />}
+                    Si opp abonnement
+                  </Button>
+                )
+              )}
+            </CardContent>
+          </Card>
+        ) : (
           <div className="grid md:grid-cols-2 gap-6">
             <PlanCard
               title="Månedlig"
               price="500 kr"
               period="/mnd"
-              priceId="branndok_pro_monthly"
+              priceId={MONTHLY_ID}
               onSelect={openCheckout}
               loading={checkoutLoading}
             />
@@ -181,7 +230,7 @@ const Abonnement = () => {
               price="5 000 kr"
               period="/år"
               badge="Spar ~17%"
-              priceId="branndok_pro_yearly"
+              priceId={YEARLY_ID}
               onSelect={openCheckout}
               loading={checkoutLoading}
               recommended
