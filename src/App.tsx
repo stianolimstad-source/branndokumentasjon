@@ -37,7 +37,7 @@ import BrannfarligeStoffer from "./pages/eksempelkatalog/BrannfarligeStoffer";
 import ResetPassword from "./pages/ResetPassword";
 import Brensellagring from "./pages/Brensellagring";
 import TEK17Assistent from "./pages/TEK17Assistent";
-import TEK17Chat from "./components/tek17/TEK17Chat";
+
 import Tilbud from "./pages/Tilbud";
 import Oppdragsbekreftelse from "./pages/Oppdragsbekreftelse";
 import NotFound from "./pages/NotFound";
