@@ -181,9 +181,7 @@ export default function MalForhandsvisning({
   return (
     <Page>
       <div className="px-10 pt-20">
-        {logoUrl && (
-          <img src={logoUrl} alt="" className="max-h-10 mb-16 object-contain" />
-        )}
+        <LogoOrPlaceholder className="max-h-10 mb-16" />
         <div className="text-[9px] uppercase tracking-[0.4em] mb-4" style={{ color: "#888" }}>
           {groupName}
         </div>
