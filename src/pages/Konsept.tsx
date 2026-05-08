@@ -1606,10 +1606,22 @@ const Konsept = () => {
     }
 
     coverPageChildren.push(new Paragraph({
-      text: documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT",
       heading: HeadingLevel.TITLE,
       alignment: AlignmentType.CENTER,
-      spacing: { before: logoBuffer ? 200 : 1200, after: 200 },
+      spacing: { before: logoBuffer ? 200 : 1200, after: 120 },
+      children: [new TextRun({
+        text: documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT",
+        bold: true,
+        color: theme.primaryColor,
+        font: theme.fontFamily,
+      })],
+    }));
+    // Accent line under title
+    coverPageChildren.push(new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 200 },
+      border: { bottom: { style: BorderStyle.SINGLE, size: 18, color: theme.accentColor, space: 1 } },
+      children: [new TextRun({ text: "" })],
     }));
 
     if (formData.prosjektnavn) {
