@@ -143,7 +143,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             <img src={logoUrl} alt="Firmalogo" className="max-h-64 max-w-[600px] object-contain" />
           </div>
         )}
-        <h1 className="text-3xl font-bold text-center mb-4 tracking-wide">
+        {themeAccent && (
+          <div style={{ width: 120, height: 3, background: themeAccent, marginBottom: 24, borderRadius: 2 }} />
+        )}
+        <h1 className="text-3xl font-bold text-center mb-4 tracking-wide" style={themePrimary ? { color: themePrimary } : undefined}>
           {documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT"}
         </h1>
         {formData.prosjektnavn && (
