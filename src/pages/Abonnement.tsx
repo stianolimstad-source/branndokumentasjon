@@ -132,7 +132,7 @@ const Abonnement = () => {
           <div className="grid md:grid-cols-2 gap-6">
             <PlanCard
               title="Månedlig"
-              price="$9"
+              price="500 kr"
               period="/mnd"
               priceId="branndok_pro_monthly"
               onSelect={openCheckout}
@@ -140,7 +140,7 @@ const Abonnement = () => {
             />
             <PlanCard
               title="Årlig"
-              price="$90"
+              price="5 000 kr"
               period="/år"
               badge="Spar ~17%"
               priceId="branndok_pro_yearly"
