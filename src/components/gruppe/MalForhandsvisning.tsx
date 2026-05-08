@@ -37,6 +37,30 @@ export default function MalForhandsvisning({
     </div>
   );
 
+  const LogoOrPlaceholder = ({
+    className,
+    onDark = false,
+  }: {
+    className?: string;
+    onDark?: boolean;
+  }) =>
+    logoUrl ? (
+      <img
+        src={logoUrl}
+        alt=""
+        className={`object-contain ${onDark ? "bg-white p-1 rounded" : ""} ${className ?? ""}`}
+      />
+    ) : (
+      <div
+        className={`flex items-center justify-center text-[8px] uppercase tracking-widest border border-dashed rounded ${
+          onDark ? "border-white/40 text-white/70" : "border-gray-300 text-gray-400"
+        } ${className ?? ""}`}
+        style={{ minHeight: 28, minWidth: 80 }}
+      >
+        Logo
+      </div>
+    );
+
   const Footer = () => (
     <div
       className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-6 py-2 text-[8px]"
@@ -53,9 +77,7 @@ export default function MalForhandsvisning({
         {/* Top color band */}
         <div style={{ background: primary, height: 14 }} />
         <div className="flex flex-col items-center text-center px-8 pt-16">
-          {logoUrl && (
-            <img src={logoUrl} alt="" className="max-h-16 mb-8 object-contain" />
-          )}
+          <LogoOrPlaceholder className="max-h-16 mb-8" />
           <div
             className="text-[10px] uppercase tracking-[0.3em] mb-3"
             style={{ color: accent }}
@@ -108,13 +130,7 @@ export default function MalForhandsvisning({
             style={{ background: primary, color: "#fff" }}
           >
             <div>
-              {logoUrl && (
-                <img
-                  src={logoUrl}
-                  alt=""
-                  className="max-h-12 mb-6 object-contain bg-white/10 p-1 rounded"
-                />
-              )}
+              <LogoOrPlaceholder className="max-h-12 mb-6" onDark />
               <div className="text-[8px] uppercase tracking-widest opacity-80">
                 {groupName}
               </div>
@@ -165,9 +181,7 @@ export default function MalForhandsvisning({
   return (
     <Page>
       <div className="px-10 pt-20">
-        {logoUrl && (
-          <img src={logoUrl} alt="" className="max-h-10 mb-16 object-contain" />
-        )}
+        <LogoOrPlaceholder className="max-h-10 mb-16" />
         <div className="text-[9px] uppercase tracking-[0.4em] mb-4" style={{ color: "#888" }}>
           {groupName}
         </div>

@@ -1,44 +1,35 @@
-## Mål
+## Problem
 
-Vise en visuell forhåndsvisning av valgt mal **direkte på bedriftssiden** i `MalvalgPanel`, slik at brukeren ser endringer (farger, skrift, logo, forside-stil) umiddelbart — uten å måtte laste ned Word-filen. Word-forhåndsvisning beholdes som ekstra valg.
+1. **Fargene endres ikke** når man klikker på en mal-knapp (Klassisk / Moderne / Minimalistisk). I dag oppdateres bare `template`-state, mens primær- og aksentfarge + skrift forblir det forrige valget. Brukeren forventer at malens forhåndsdefinerte farger lastes inn umiddelbart.
 
-## Hva som lages
+2. **Logoen vises ikke** stabilt i forhåndsvisningen:
+   - I "moderne" plasseres logoen på en mørk fargeblokk med kun `bg-white/10` bakgrunn — en mørk logo blir nesten usynlig.
+   - Hvis gruppen ikke har lastet opp logo brukes ingen logo i det hele tatt, selv om brukeren har en profil-logo som naturlig fallback.
+   - I dag vises forhåndsvisningen kun med logo dersom `logoUrl` finnes — ingen "fallback"/plassholder, og brukeren har sagt at logoen "alltid" skal med på bedriftens dokumentmal.
 
-Ny komponent `src/components/gruppe/MalForhandsvisning.tsx` som rendrer en HTML/CSS-mockup av et A4-dokument med:
+## Endringer
 
-- **Forside** (cover) — tittel, undertittel, prosjektnavn, dato, logo, plassert etter mal-stilen (klassisk = sentrert med farget bånd, moderne = venstrejustert med stor fargeblokk, minimalistisk = sober tekst på hvit).
-- **Topp-/bunntekst** — liten logo + dokumentnavn / sidetall i valgt aksentfarge.
-- **Eksempelinnhold** — én H1 ("1. Innledning"), brødtekst, én H2, en liten tabellrad — alt med valgt skrifttype og farger.
+### `MalvalgPanel.tsx`
+Når en mal-knapp klikkes, hent malens default-verdier fra `document-templates.ts` og oppdater `primary`, `accent` og `font` samtidig. Brukeren kan deretter justere fargene videre om ønsket. Fargevelger og forhåndsvisning oppdateres umiddelbart.
 
-Forhåndsvisningen oppdateres **live** mens brukeren endrer mal/farger/skrift (via React state i `MalvalgPanel`).
+Også: ta inn `profileLogoUrl` (brukerens egen logo fra profilen) som fallback-prop. Hvis gruppen ikke har en egen logo, bruk profil-logoen i forhåndsvisningen — slik at det alltid vises noe.
 
-## Plassering i UI
+### `GruppeDetalj.tsx`
+Send med `profileLogoUrl` til `MalvalgPanel` (verdien finnes allerede i state).
 
-I `MalvalgPanel` legges en ny seksjon under fargevelgerne, over knapperaden:
+### `MalForhandsvisning.tsx`
+- Bruk effektiv logo: `logoUrl ?? profileLogoUrl`.
+- I "moderne"-malen: gi logo-wrapperen en hvit bakgrunn (`bg-white`) i stedet for `bg-white/10`, slik at både lyse og mørke logoer er synlige på den mørke fargeblokken.
+- Hvis ingen logo finnes overhodet, vis en liten plassholder ("Logo") med stiplet ramme og en hint-tekst ("Last opp logo for å se den på malen") i stedet for tom plass.
 
-```text
-[Mal-kort: Klassisk | Moderne | Minimalistisk]
-[Primærfarge] [Aksentfarge] [Skrifttype]
-─────────── Forhåndsvisning ───────────
-[ A4-mockup med live oppdatering ]
-[Lagre] [Forhåndsvis i Word]
-```
-
-Mockupen vises som et "papirark" med skygge (`shadow-elegant`, `aspect-[1/1.414]`) skalert til ca. 480px bredt på desktop, full bredde på mobil.
-
-## Teknisk
-
-- Ren React/Tailwind, ingen ekstra avhengigheter.
-- Tre layout-varianter (en per `TemplateId`) styres med en `switch` inne i `MalForhandsvisning`.
-- Bruker samme `primary`, `accent`, `font`, `logoUrl`, `groupName` som allerede finnes i `MalvalgPanel`-state — sendes som props.
-- Logo lastes via vanlig `<img src={logoUrl}>` (ikke buffer) — raskt og uten Supabase-kall.
-- Ingen endringer i `document-templates.ts`, ingen endringer i Word-eksporten, ingen DB-endringer.
+### Eksponere defaults
+I `document-templates.ts` eksporter `DEFAULTS`-mappingen (eller en helper `getTemplateDefaults(id)`) så `MalvalgPanel` kan hente farger ved bytte av mal uten å duplisere verdier.
 
 ## Filer
 
-- **Ny:** `src/components/gruppe/MalForhandsvisning.tsx`
-- **Endret:** `src/components/gruppe/MalvalgPanel.tsx` — importer og rendre `<MalForhandsvisning ... />` med live state.
+- **Endret:** `src/lib/document-templates.ts` — eksporter `getTemplateDefaults(template)`
+- **Endret:** `src/components/gruppe/MalvalgPanel.tsx` — oppdater farger/skrift ved mal-bytte; ta inn `profileLogoUrl`
+- **Endret:** `src/components/gruppe/MalForhandsvisning.tsx` — fallback-logo og synlig wrapper i "moderne"; plassholder hvis ingen logo
+- **Endret:** `src/pages/GruppeDetalj.tsx` — send `profileLogoUrl`-prop
 
-## Bemerkning om presisjon
-
-HTML-forhåndsvisningen er en **visuell tilnærming**, ikke en pixelperfekt Word-rendering. Word-knappen beholdes for nøyaktig kontroll. Dette kommuniseres med en liten label: *"Visuell forhåndsvisning — endelig layout vises i Word."*
+Ingen DB- eller eksport-endringer.

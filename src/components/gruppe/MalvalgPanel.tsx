@@ -19,6 +19,7 @@ import {
   buildSectionHeading,
   defaultDocStyles,
   fetchLogoBuffer,
+  getTemplateDefaults,
 } from "@/lib/document-templates";
 import MalForhandsvisning from "./MalForhandsvisning";
 
@@ -26,13 +27,14 @@ interface Props {
   groupId: string;
   groupName: string;
   logoUrl: string | null;
+  profileLogoUrl?: string | null;
   initial: TemplateSettings;
   onSaved?: (s: TemplateSettings) => void;
 }
 
 const ensureHash = (c: string) => (c.startsWith("#") ? c : `#${c}`);
 
-export default function MalvalgPanel({ groupId, groupName, logoUrl, initial, onSaved }: Props) {
+export default function MalvalgPanel({ groupId, groupName, logoUrl, profileLogoUrl, initial, onSaved }: Props) {
   const { toast } = useToast();
   const [template, setTemplate] = useState<TemplateId>(initial.template ?? "klassisk");
   const [primary, setPrimary] = useState(ensureHash(initial.primary_color ?? "#1A4D8C"));
@@ -150,7 +152,13 @@ export default function MalvalgPanel({ groupId, groupName, logoUrl, initial, onS
               <button
                 key={t.id}
                 type="button"
-                onClick={() => setTemplate(t.id)}
+                onClick={() => {
+                  setTemplate(t.id);
+                  const d = getTemplateDefaults(t.id);
+                  setPrimary(d.primary_color);
+                  setAccent(d.accent_color);
+                  setFont(d.font_family);
+                }}
                 className={`text-left rounded-lg border-2 p-4 transition ${
                   selected ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
                 }`}
@@ -256,7 +264,7 @@ export default function MalvalgPanel({ groupId, groupName, logoUrl, initial, onS
               primary={primary}
               accent={accent}
               font={font}
-              logoUrl={logoUrl}
+              logoUrl={logoUrl ?? profileLogoUrl ?? null}
               groupName={groupName}
             />
           </div>
