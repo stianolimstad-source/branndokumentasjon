@@ -1,6 +1,15 @@
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, ImageRun } from "docx";
 import { saveAs } from "file-saver";
 import { FravikEntry } from "@/components/fraviksdokumentasjon/FravikEntryForm";
+import {
+  ResolvedTheme,
+  buildResolvedTheme,
+  buildCoverPage,
+  buildHeader,
+  buildFooter,
+  defaultDocStyles,
+  fetchLogoBuffer,
+} from "@/lib/document-templates";
 
 
 const borderStyle = {
