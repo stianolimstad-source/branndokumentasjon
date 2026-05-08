@@ -442,7 +442,12 @@ const GruppeDetalj = () => {
                   {groupLogoUrl ? (
                     <div className="flex items-center gap-4">
                       <div className="h-20 w-40 border rounded-md flex items-center justify-center bg-white p-2">
-                        <img src={groupLogoUrl} alt="Gruppelogo" className="max-h-full max-w-full object-contain" />
+                        <img
+                          src={logoFailed ? (profileLogoUrl ?? groupLogoUrl) : groupLogoUrl}
+                          alt="Gruppelogo"
+                          className="max-h-full max-w-full object-contain"
+                          onError={() => setLogoFailed(true)}
+                        />
                       </div>
                       <Button variant="outline" size="sm" onClick={handleRemoveLogo} disabled={uploading}>
                         <Trash2 className="h-4 w-4 mr-2" />
