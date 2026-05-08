@@ -45,6 +45,10 @@ import RequireFullAccess from "./components/RequireFullAccess";
 import RequireSubscription from "./components/RequireSubscription";
 import Abonnement from "./pages/Abonnement";
 import { PaymentTestModeBanner } from "./components/PaymentTestModeBanner";
+import { PastDueBanner } from "./components/PastDueBanner";
+import Vilkar from "./pages/legal/Vilkar";
+import Refusjon from "./pages/legal/Refusjon";
+import Personvern from "./pages/legal/Personvern";
 
 const queryClient = new QueryClient();
 
