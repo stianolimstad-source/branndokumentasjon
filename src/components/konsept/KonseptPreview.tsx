@@ -25,7 +25,7 @@ interface KonseptPreviewProps {
   authorInfo?: { name: string; company: string } | null;
   documentType?: "brannkonsept" | "tilstandsvurdering";
   hideCover?: boolean;
-  theme?: { primaryColor: string; accentColor: string; fontFamily: string } | null;
+  theme?: { template?: "klassisk" | "moderne" | "minimalistisk"; primaryColor: string; accentColor: string; fontFamily: string; companyName?: string | null } | null;
 }
 
 const gradColors: Record<string, { bg: string; text: string; label: string }> = {
