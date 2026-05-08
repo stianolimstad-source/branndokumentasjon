@@ -77,6 +77,40 @@ const Abonnement = () => {
     }
   };
 
+  const runSwitch = async (target: "to_yearly" | "to_monthly") => {
+    if (actionLoading) return;
+    setActionLoading(true);
+    try {
+      const newPriceId = target === "to_yearly" ? YEARLY_ID : MONTHLY_ID;
+      const { data, error } = await supabase.functions.invoke("change-subscription-plan", {
+        body: { environment: getPaddleEnvironment(), newPriceId },
+      });
+      if (error || !data?.ok) {
+        toast({
+          title: "Feil",
+          description: "Kunne ikke bytte plan. Prøv igjen senere.",
+          variant: "destructive",
+        });
+        return;
+      }
+      toast({
+        title: target === "to_yearly" ? "Byttet til årlig plan" : "Byttet til månedlig plan",
+        description: target === "to_yearly"
+          ? "Endringen trer i kraft umiddelbart. Differansen er pro-ratert."
+          : "Endringen trer i kraft ved neste fornyelse.",
+      });
+      const t = setInterval(() => refresh(), 2000);
+      setTimeout(() => clearInterval(t), 15000);
+    } finally {
+      setActionLoading(false);
+      setConfirmSwitch(null);
+    }
+  };
+
+  const currentPlanLabel = priceId === YEARLY_ID ? "Årlig (5 000 kr/år)"
+    : priceId === MONTHLY_ID ? "Månedlig (500 kr/mnd)"
+    : null;
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
       <PaymentTestModeBanner />
