@@ -1782,10 +1782,15 @@ const Konsept = () => {
           footers: wordFooter,
           children: [
             new Paragraph({
-              text: documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT",
               heading: HeadingLevel.TITLE,
               alignment: AlignmentType.CENTER,
               spacing: { after: 400 },
+              children: [new TextRun({
+                text: documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT",
+                bold: true,
+                color: theme.primaryColor,
+                font: theme.fontFamily,
+              })],
             }),
 
             // Innholdsfortegnelse
