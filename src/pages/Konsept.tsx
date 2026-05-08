@@ -1541,9 +1541,35 @@ const Konsept = () => {
       });
     };
 
+    // Resolve document theme (group / personal default) for branding
+    const { resolveDocumentTheme } = await import("@/lib/document-templates");
+    const theme = await resolveDocumentTheme(selectedProjectId, logoUrl, user?.id);
+    const coverLogoUrl = theme.logoUrl ?? logoUrl;
+
     // Fetch logo for header
     let logoBuffer: ArrayBuffer | null = null;
     let logoDimensions = { width: 300, height: 150 };
+    if (coverLogoUrl) {
+      try {
+        const res = await fetch(coverLogoUrl);
+        if (res.ok) {
+          logoBuffer = await res.arrayBuffer();
+          // Get natural dimensions to preserve aspect ratio
+          const img = new Image();
+          await new Promise<void>((resolve) => {
+            img.onload = () => {
+              const maxWidth = 400;
+              const ratio = img.naturalWidth / img.naturalHeight;
+              const w = Math.min(img.naturalWidth, maxWidth);
+              logoDimensions = { width: w, height: Math.round(w / ratio) };
+              resolve();
+            };
+            img.onerror = () => resolve();
+            img.src = coverLogoUrl;
+          });
+        }
+      } catch {}
+    }
     if (logoUrl) {
       try {
         const res = await fetch(logoUrl);
