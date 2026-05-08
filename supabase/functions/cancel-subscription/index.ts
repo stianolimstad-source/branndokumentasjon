@@ -1,5 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import { getPaddleClient, type PaddleEnv } from '../_shared/paddle.ts';
+import { getPaddleClient, gatewayFetch, type PaddleEnv } from '../_shared/paddle.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -19,10 +19,11 @@ Deno.serve(async (req) => {
     const token = authHeader.replace('Bearer ', '');
     const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
     if (claimsError || !claimsData?.claims?.sub) throw new Error('Not authenticated');
-    const user = { id: claimsData.claims.sub as string };
+    const userId = claimsData.claims.sub as string;
 
-    const { environment } = await req.json();
+    const { environment, action } = await req.json();
     const env = (environment || 'sandbox') as PaddleEnv;
+    const act = (action || 'cancel') as 'cancel' | 'resume';
 
     const admin = createClient(
       Deno.env.get('SUPABASE_URL')!,
@@ -30,31 +31,38 @@ Deno.serve(async (req) => {
     );
     const { data: sub } = await admin
       .from('subscriptions')
-      .select('paddle_customer_id, paddle_subscription_id')
-      .eq('user_id', user.id)
+      .select('paddle_subscription_id, status')
+      .eq('user_id', userId)
       .eq('environment', env)
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
-    if (!sub) throw new Error('Ingen aktivt abonnement funnet');
+    if (!sub?.paddle_subscription_id) throw new Error('Ingen aktivt abonnement funnet');
 
-    const paddle = getPaddleClient(env);
-    const portalSession = await paddle.customerPortalSessions.create(
-      sub.paddle_customer_id as string,
-      [sub.paddle_subscription_id as string]
-    );
-    console.log('Portal session urls:', JSON.stringify(portalSession.urls));
-    const subUrl = portalSession.urls.subscriptions?.[0];
-    const url =
-      subUrl?.cancelSubscription ||
-      subUrl?.updateSubscriptionPaymentMethod ||
-      portalSession.urls.general.overview;
-    return new Response(JSON.stringify({ url }), {
+    const subId = sub.paddle_subscription_id as string;
+
+    if (act === 'cancel') {
+      const paddle = getPaddleClient(env);
+      await paddle.subscriptions.cancel(subId, { effectiveFrom: 'next_billing_period' });
+    } else {
+      // Remove scheduled cancellation
+      const res = await gatewayFetch(env, `/subscriptions/${subId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ scheduled_change: null }),
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`Paddle resume failed: ${text}`);
+      }
+    }
+
+    return new Response(JSON.stringify({ ok: true }), {
       status: 200,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Unknown error';
+    console.error('cancel-subscription error:', msg);
     return new Response(JSON.stringify({ error: msg }), {
       status: 400,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
