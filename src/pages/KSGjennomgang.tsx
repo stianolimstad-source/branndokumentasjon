@@ -225,6 +225,9 @@ const KSGjennomgang = () => {
 
     const date = new Date(cpData[0].updated_at || cpData[0].created_at).toLocaleDateString("nb-NO");
 
+    const { resolveDocumentTheme } = await import("@/lib/document-templates");
+    const theme = await resolveDocumentTheme(projectId, (profile as any)?.logo_url || null);
+
     await exportKSToWord({
       conceptName: conceptName,
       reviewType: type,
@@ -238,6 +241,7 @@ const KSGjennomgang = () => {
       },
       date,
       logoUrl: (profile as any)?.logo_url || null,
+      theme,
     });
 
     toast({ title: "Lastet ned", description: `${type === "egenkontroll" ? "Egenkontroll" : "Sidemannskontroll"} lastet ned som Word-fil` });

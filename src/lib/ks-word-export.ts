@@ -7,13 +7,22 @@ import {
   TextRun,
   WidthType,
   AlignmentType,
-  BorderStyle,
   HeadingLevel,
   ShadingType,
   Packer,
-  ImageRun,
 } from "docx";
 import { saveAs } from "file-saver";
+import {
+  ResolvedTheme,
+  buildResolvedTheme,
+  buildCoverPage,
+  buildHeader,
+  buildFooter,
+  buildSectionHeading,
+  defaultDocStyles,
+  fetchLogoBuffer,
+  tableHeaderShading,
+} from "@/lib/document-templates";
 
 interface CheckpointData {
   section_key: string;
@@ -36,42 +45,54 @@ interface ExportOptions {
   reviewer: ReviewerInfo;
   date: string;
   logoUrl?: string | null;
+  theme?: ResolvedTheme;
 }
 
 const statusText = (status: string) => {
   switch (status) {
-    case "ok": return "OK";
-    case "feil": return "Feil/mangel";
-    default: return "Ikke vurdert";
+    case "ok":
+      return "OK";
+    case "feil":
+      return "Feil/mangel";
+    default:
+      return "Ikke vurdert";
   }
 };
 
-const headerCell = (text: string, width?: number): TableCell =>
-  new TableCell({
-    children: [new Paragraph({ children: [new TextRun({ text, bold: true, size: 20, color: "FFFFFF" })] })],
-    shading: { fill: "2563EB", type: ShadingType.SOLID, color: "2563EB" },
-    width: width ? { size: width, type: WidthType.PERCENTAGE } : undefined,
-  });
-
-const cell = (text: string, width?: number, bold = false): TableCell =>
-  new TableCell({
-    children: [new Paragraph({ children: [new TextRun({ text, size: 20, bold })] })],
-    width: width ? { size: width, type: WidthType.PERCENTAGE } : undefined,
-  });
-
 export const exportKSToWord = async (options: ExportOptions) => {
   const { conceptName, reviewType, checkpoints, chapters, reviewer, date, logoUrl } = options;
+  const theme: ResolvedTheme = options.theme ?? buildResolvedTheme({}, logoUrl ?? null, reviewer.company || null);
 
   const title = reviewType === "egenkontroll" ? "Egenkontroll" : "Sidemannskontroll";
 
-  // Fetch logo
-  let logoBuffer: ArrayBuffer | null = null;
-  if (logoUrl) {
-    try {
-      const res = await fetch(logoUrl);
-      if (res.ok) logoBuffer = await res.arrayBuffer();
-    } catch {}
-  }
+  const logo = await fetchLogoBuffer(theme.logoUrl ?? logoUrl ?? null);
+
+  const headerCell = (text: string, width?: number): TableCell =>
+    new TableCell({
+      children: [
+        new Paragraph({
+          children: [new TextRun({ text, bold: true, size: 20, color: "FFFFFF", font: theme.fontFamily })],
+        }),
+      ],
+      shading: tableHeaderShading(theme),
+      width: width ? { size: width, type: WidthType.PERCENTAGE } : undefined,
+    });
+
+  const cell = (text: string, width?: number, bold = false): TableCell =>
+    new TableCell({
+      children: [new Paragraph({ children: [new TextRun({ text, size: 20, bold, font: theme.fontFamily })] })],
+      width: width ? { size: width, type: WidthType.PERCENTAGE } : undefined,
+    });
+
+  // Cover page
+  const cover = buildCoverPage(theme, {
+    title: `${title} – ${conceptName}`,
+    subtitle: "Kvalitetssikring av brannkonsept",
+    projectName: conceptName,
+    authorLine: `${reviewer.name || reviewer.email}${reviewer.company ? ` · ${reviewer.company}` : ""}`,
+    date,
+    logo,
+  });
 
   // Info table
   const infoTable = new Table({
@@ -91,18 +112,11 @@ export const exportKSToWord = async (options: ExportOptions) => {
   const chapterSections: (Paragraph | Table)[] = [];
 
   for (const chapter of chapters) {
-    chapterSections.push(
-      new Paragraph({ text: "", spacing: { before: 200 } }),
-      new Paragraph({ text: chapter.title, heading: HeadingLevel.HEADING_2 }),
-    );
+    chapterSections.push(buildSectionHeading(theme, chapter.title, 2));
 
     const rows = [
       new TableRow({
-        children: [
-          headerCell("Punkt", 40),
-          headerCell("Status", 20),
-          headerCell("Kommentar", 40),
-        ],
+        children: [headerCell("Punkt", 40), headerCell("Status", 20), headerCell("Kommentar", 40)],
       }),
     ];
 
@@ -119,53 +133,36 @@ export const exportKSToWord = async (options: ExportOptions) => {
       );
     }
 
-    chapterSections.push(
-      new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows }),
-    );
+    chapterSections.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows }));
   }
 
   // Summary
   const okCount = Object.values(checkpoints).filter((c) => c.status === "ok").length;
   const feilCount = Object.values(checkpoints).filter((c) => c.status === "feil").length;
-  const pendingCount = Object.values(checkpoints).filter((c) => c.status !== "ok" && c.status !== "feil").length;
-
-  const headerElements: (Paragraph | Table)[] = [];
-  if (logoBuffer) {
-    headerElements.push(new Paragraph({
-      alignment: AlignmentType.CENTER,
-      spacing: { after: 200 },
-      children: [new ImageRun({ data: logoBuffer, transformation: { width: 200, height: 60 }, type: "png" })],
-    }));
-  }
+  const pendingCount = Object.values(checkpoints).filter(
+    (c) => c.status !== "ok" && c.status !== "feil",
+  ).length;
 
   const doc = new Document({
-    styles: {
-      default: {
-        document: {
-          run: { font: "Verdana", size: 20 },
-        },
-      },
-    },
+    styles: defaultDocStyles(theme),
     sections: [
       {
+        headers: { default: buildHeader(theme, { logo, documentLabel: title }) },
+        footers: { default: buildFooter(theme) },
         children: [
-          ...headerElements,
-          new Paragraph({
-            text: `${title} – ${conceptName}`,
-            heading: HeadingLevel.HEADING_1,
-            alignment: AlignmentType.CENTER,
-          }),
+          ...cover,
+          buildSectionHeading(theme, `${title} – ${conceptName}`),
           new Paragraph({ text: "", spacing: { before: 200 } }),
           infoTable,
           new Paragraph({ text: "", spacing: { before: 300 } }),
           new Paragraph({
-            text: `Oppsummering: ${okCount} OK, ${feilCount} Feil/mangel, ${pendingCount} Ikke vurdert`,
             spacing: { before: 200 },
             children: [
               new TextRun({
                 text: `Oppsummering: ${okCount} OK, ${feilCount} Feil/mangel, ${pendingCount} Ikke vurdert`,
                 bold: true,
                 size: 22,
+                font: theme.fontFamily,
               }),
             ],
           }),
@@ -179,3 +176,6 @@ export const exportKSToWord = async (options: ExportOptions) => {
   const filename = `${title.toLowerCase().replace(/\s/g, "-")}_${conceptName.replace(/\s+/g, "_")}_${date}.docx`;
   saveAs(blob, filename);
 };
+
+// Re-export AlignmentType / HeadingLevel / ShadingType to avoid unused warnings if tree-shaking complains
+export { AlignmentType, HeadingLevel, ShadingType };

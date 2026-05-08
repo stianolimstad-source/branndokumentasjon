@@ -1,6 +1,15 @@
 import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Table, TableRow, TableCell, WidthType, BorderStyle, ImageRun } from "docx";
 import { saveAs } from "file-saver";
 import { FravikEntry } from "@/components/fraviksdokumentasjon/FravikEntryForm";
+import {
+  ResolvedTheme,
+  buildResolvedTheme,
+  buildCoverPage,
+  buildHeader,
+  buildFooter,
+  defaultDocStyles,
+  fetchLogoBuffer,
+} from "@/lib/document-templates";
 
 
 const borderStyle = {
@@ -211,41 +220,36 @@ export async function exportKvalitativWord(
   projectData?: { name?: string; address?: string | null } | null,
   profileData?: { full_name?: string; company?: string; title?: string; education?: string } | null,
   sammendrag?: string,
+  theme?: ResolvedTheme,
 ) {
   const elements: (Paragraph | Table)[] = [];
-  const logoData = await fetchLogoData(logoUrl || null);
+  const resolvedTheme: ResolvedTheme =
+    theme ?? buildResolvedTheme({}, logoUrl ?? null, profileData?.company ?? null);
+  const logo = await fetchLogoBuffer(resolvedTheme.logoUrl ?? logoUrl ?? null);
 
-  // Logo
-  if (logoData) {
-    elements.push(new Paragraph({
-      alignment: AlignmentType.CENTER,
-      spacing: { after: 200 },
-      children: [new ImageRun({ data: logoData.buffer, transformation: { width: logoData.width, height: logoData.height }, type: "png" })],
-    }));
-  }
-
-  // Title
-  elements.push(new Paragraph({
-    alignment: AlignmentType.CENTER,
-    spacing: { after: 100 },
-    children: [new TextRun({ text: "FRAVIKSDOKUMENTASJON", bold: true, size: 32 })],
-  }));
-  elements.push(new Paragraph({
-    alignment: AlignmentType.CENTER,
-    spacing: { after: 400 },
-    children: [new TextRun({ text: "Kvalitativ analyse iht. Byggforsk 321.026 kap. 6", size: 20, color: "888888" })],
-  }));
+  // Cover page
+  const authorText =
+    (profileData?.full_name || "") + (profileData?.title ? `, ${profileData.title}` : "");
+  const cover = buildCoverPage(resolvedTheme, {
+    title: "Fraviksdokumentasjon",
+    subtitle: "Kvalitativ analyse iht. Byggforsk 321.026 kap. 6",
+    projectName: projectData?.name || dokumentNavn,
+    authorLine: authorText || undefined,
+    date: new Date().toLocaleDateString("nb-NO"),
+    logo,
+  });
+  elements.push(...cover);
 
   // Prosjektinfo
-  elements.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Prosjektinfo" })] }));
+  elements.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: "Prosjektinfo", font: resolvedTheme.fontFamily, color: resolvedTheme.primaryColor, bold: true })] }));
   const summaryRows: TableRow[] = [
     new TableRow({ children: [makeCell("Prosjekt", true, 35), makeCell(projectData?.name || "[Prosjektnavn]", false, 65)] }),
   ];
   if (projectData?.address) {
     summaryRows.push(new TableRow({ children: [makeCell("Adresse", true, 35), makeCell(projectData.address, false, 65)] }));
   }
-  const authorText = (profileData?.full_name || "[Navn]") + (profileData?.title ? `, ${profileData.title}` : "");
-  summaryRows.push(new TableRow({ children: [makeCell("Utarbeidet av", true, 35), makeCell(authorText, false, 65)] }));
+  const authorTextRow = (profileData?.full_name || "[Navn]") + (profileData?.title ? `, ${profileData.title}` : "");
+  summaryRows.push(new TableRow({ children: [makeCell("Utarbeidet av", true, 35), makeCell(authorTextRow, false, 65)] }));
   if (profileData?.company) {
     summaryRows.push(new TableRow({ children: [makeCell("Firma", true, 35), makeCell(profileData.company, false, 65)] }));
   }
@@ -429,14 +433,14 @@ export async function exportKvalitativWord(
   });
 
   const doc = new Document({
-    styles: {
-      default: {
-        document: {
-          run: { font: "Verdana", size: 20 },
-        },
+    styles: defaultDocStyles(resolvedTheme),
+    sections: [
+      {
+        headers: { default: buildHeader(resolvedTheme, { logo, documentLabel: "Fraviksdokumentasjon" }) },
+        footers: { default: buildFooter(resolvedTheme) },
+        children: elements,
       },
-    },
-    sections: [{ children: elements }],
+    ],
   });
   const blob = await Packer.toBlob(doc);
   saveAs(blob, `${dokumentNavn || "Fraviksdokumentasjon"}.docx`);

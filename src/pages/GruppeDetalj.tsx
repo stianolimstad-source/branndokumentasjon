@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
 import AddMemberDialog from "@/components/gruppe/AddMemberDialog";
+import MalvalgPanel from "@/components/gruppe/MalvalgPanel";
+import { TemplateSettings } from "@/lib/document-templates";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -46,6 +48,7 @@ const GruppeDetalj = () => {
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState<string | null>(null);
   const [groupLogoUrl, setGroupLogoUrl] = useState<string | null>(null);
+  const [templateSettings, setTemplateSettings] = useState<TemplateSettings>({});
   const [profileLogoUrl, setProfileLogoUrl] = useState<string | null>(null);
   const [members, setMembers] = useState<GroupMember[]>([]);
   const [memberProfiles, setMemberProfiles] = useState<Record<string, MemberProfile>>({});
@@ -83,6 +86,7 @@ const GruppeDetalj = () => {
       setGroupName(groupRes.data.name);
       setGroupDescription(groupRes.data.description);
       setGroupLogoUrl((groupRes.data as any).logo_url || null);
+      setTemplateSettings(((groupRes.data as any).template_settings || {}) as TemplateSettings);
     }
 
     // Fetch user's own profile logo
@@ -460,6 +464,16 @@ const GruppeDetalj = () => {
                   />
                 </CardContent>
               </Card>
+
+              <div className="mt-6">
+                <MalvalgPanel
+                  groupId={id!}
+                  groupName={groupName}
+                  logoUrl={groupLogoUrl}
+                  initial={templateSettings}
+                  onSaved={(s) => setTemplateSettings(s)}
+                />
+              </div>
             </TabsContent>
           )}
         </Tabs>
