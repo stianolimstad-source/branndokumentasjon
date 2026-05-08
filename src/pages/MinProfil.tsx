@@ -38,8 +38,30 @@ const MinProfil = () => {
     }
     if (user) {
       fetchProfile();
+      fetchTemplateGroups();
     }
   }, [user, loading]);
+
+  const fetchTemplateGroups = async () => {
+    if (!user) return;
+    const { data: memberships } = await supabase
+      .from("group_members")
+      .select("group_id")
+      .eq("user_id", user.id);
+    const groupIds = (memberships ?? []).map((m: any) => m.group_id);
+    if (groupIds.length === 0) {
+      setThemedGroups([]);
+      return;
+    }
+    const { data: groups } = await supabase
+      .from("contact_groups")
+      .select("id, name, template_settings")
+      .in("id", groupIds);
+    const themed = (groups ?? []).filter(
+      (g: any) => g.template_settings && Object.keys(g.template_settings).length > 0,
+    );
+    setThemedGroups(themed.map((g: any) => ({ id: g.id, name: g.name })));
+  };
 
   const fetchProfile = async () => {
     const { data } = await supabase
