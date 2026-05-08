@@ -130,13 +130,7 @@ export default function MalForhandsvisning({
             style={{ background: primary, color: "#fff" }}
           >
             <div>
-              {logoUrl && (
-                <img
-                  src={logoUrl}
-                  alt=""
-                  className="max-h-12 mb-6 object-contain bg-white/10 p-1 rounded"
-                />
-              )}
+              <LogoOrPlaceholder className="max-h-12 mb-6" onDark />
               <div className="text-[8px] uppercase tracking-widest opacity-80">
                 {groupName}
               </div>
