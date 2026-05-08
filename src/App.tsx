@@ -42,6 +42,9 @@ import Tilbud from "./pages/Tilbud";
 import Oppdragsbekreftelse from "./pages/Oppdragsbekreftelse";
 import NotFound from "./pages/NotFound";
 import RequireFullAccess from "./components/RequireFullAccess";
+import RequireSubscription from "./components/RequireSubscription";
+import Abonnement from "./pages/Abonnement";
+import { PaymentTestModeBanner } from "./components/PaymentTestModeBanner";
 
 const queryClient = new QueryClient();
 
@@ -52,11 +55,17 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <PaymentTestModeBanner />
           <AppHeader />
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/konsept" element={<Konsept />} />
-            <Route path="/tilstandsvurdering" element={<Tilstandsvurdering />} />
+            <Route path="/abonnement" element={<Abonnement />} />
+            <Route path="/konsept" element={<RequireSubscription feature="Brannkonsept"><Konsept /></RequireSubscription>} />
+            <Route path="/tilstandsvurdering" element={<RequireSubscription feature="Tilstandsvurdering"><Tilstandsvurdering /></RequireSubscription>} />
+            <Route path="/brensellagring" element={<RequireSubscription feature="Brensellagring"><Brensellagring /></RequireSubscription>} />
+            <Route path="/fraviksdokumentasjon/kvalitativ" element={<RequireSubscription feature="Fraviksdokumentasjon"><KvalitativAnalyse /></RequireSubscription>} />
+            <Route path="/mine-prosjekter" element={<RequireSubscription feature="Prosjekter"><MineProsjekter /></RequireSubscription>} />
+            <Route path="/prosjekt/:id" element={<RequireSubscription feature="Prosjekter"><ProsjektDetalj /></RequireSubscription>} />
             <Route path="/verktoy" element={<Verktoy />} />
             <Route path="/verktoy/romningsvei" element={<Romningsvei />} />
             <Route path="/verktoy/straling" element={<Straling />} />
@@ -72,15 +81,11 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/mine-prosjekter" element={<MineProsjekter />} />
-            <Route path="/prosjekt/:id" element={<ProsjektDetalj />} />
             <Route path="/mine-oppgaver" element={<MineOppgaver />} />
             <Route path="/ks-gjennomgang" element={<KSGjennomgang />} />
             <Route path="/mine-kontakter" element={<MineKontakter />} />
             <Route path="/mine-kontakter/gruppe/:id" element={<GruppeDetalj />} />
-            <Route path="/fraviksdokumentasjon/kvalitativ" element={<KvalitativAnalyse />} />
             <Route path="/min-profil" element={<MinProfil />} />
-            <Route path="/brensellagring" element={<Brensellagring />} />
             <Route path="/sikkerhetsrutiner" element={<RequireFullAccess><Sikkerhetsrutiner /></RequireFullAccess>} />
             <Route path="/eksempelkatalog" element={<RequireFullAccess><Eksempelkatalog /></RequireFullAccess>} />
             <Route path="/eksempelkatalog/branncellevegger" element={<RequireFullAccess><BranntekniskeKonstruksjoner /></RequireFullAccess>} />
