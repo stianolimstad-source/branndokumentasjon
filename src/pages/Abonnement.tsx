@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Loader2, ExternalLink } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Check, Loader2, XCircle, RotateCcw } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
@@ -28,7 +29,8 @@ const Abonnement = () => {
   const { openCheckout, loading: checkoutLoading } = usePaddleCheckout();
   const { toast } = useToast();
   const [params, setParams] = useSearchParams();
-  const [portalLoading, setPortalLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [confirmCancel, setConfirmCancel] = useState(false);
 
   useEffect(() => {
     if (params.get("checkout") === "success") {
@@ -41,38 +43,33 @@ const Abonnement = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const openPortal = async () => {
-    if (portalLoading) return;
-    const popup = window.open("about:blank", "_blank");
-    if (popup) {
-      popup.opener = null;
-    }
-
-    setPortalLoading(true);
-
+  const runAction = async (action: "cancel" | "resume") => {
+    if (actionLoading) return;
+    setActionLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("customer-portal", {
-        body: { environment: getPaddleEnvironment() },
+      const { data, error } = await supabase.functions.invoke("cancel-subscription", {
+        body: { environment: getPaddleEnvironment(), action },
       });
-
-      if (error || !data?.url) {
-        popup?.close();
-        toast({ title: "Feil", description: "Kunne ikke åpne kundeportalen.", variant: "destructive" });
+      if (error || !data?.ok) {
+        toast({
+          title: "Feil",
+          description: action === "cancel" ? "Kunne ikke si opp abonnementet." : "Kunne ikke gjenoppta abonnementet.",
+          variant: "destructive",
+        });
         return;
       }
-
-      if (popup && !popup.closed) {
-        popup.location.replace(data.url);
-        return;
-      }
-
-      try {
-        window.top!.location.href = data.url;
-      } catch {
-        window.location.href = data.url;
-      }
+      toast({
+        title: action === "cancel" ? "Abonnementet er sagt opp" : "Abonnementet er gjenopptatt",
+        description: action === "cancel"
+          ? "Du beholder tilgang ut inneværende periode."
+          : "Abonnementet vil fornyes som vanlig.",
+      });
+      // Webhook oppdaterer DB; poll noen ganger som backup
+      const t = setInterval(() => refresh(), 2000);
+      setTimeout(() => clearInterval(t), 15000);
     } finally {
-      setPortalLoading(false);
+      setActionLoading(false);
+      setConfirmCancel(false);
     }
   };
 
@@ -117,10 +114,17 @@ const Abonnement = () => {
                 ))}
               </ul>
               {status !== "owner" && (
-                <Button onClick={openPortal} variant="outline" className="w-full" disabled={portalLoading}>
-                  {portalLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <ExternalLink className="h-4 w-4 mr-2" />}
-                  Administrer abonnement
-                </Button>
+                cancelAtPeriodEnd ? (
+                  <Button onClick={() => runAction("resume")} variant="outline" className="w-full" disabled={actionLoading}>
+                    {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RotateCcw className="h-4 w-4 mr-2" />}
+                    Gjenoppta abonnement
+                  </Button>
+                ) : (
+                  <Button onClick={() => setConfirmCancel(true)} variant="outline" className="w-full" disabled={actionLoading}>
+                    {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <XCircle className="h-4 w-4 mr-2" />}
+                    Si opp abonnement
+                  </Button>
+                )
               )}
             </CardContent>
           </Card>
@@ -151,6 +155,30 @@ const Abonnement = () => {
           Pristabellen er foreløpig satt opp som plassholder. Endelig pris settes før lansering.
         </p>
       </div>
+
+      <AlertDialog open={confirmCancel} onOpenChange={setConfirmCancel}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Si opp abonnement?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Du beholder tilgang ut inneværende periode
+              {currentPeriodEnd && <> frem til {new Date(currentPeriodEnd).toLocaleDateString("nb-NO")}</>}.
+              Du kan gjenoppta abonnementet når som helst før det utløper.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actionLoading}>Avbryt</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); runAction("cancel"); }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={actionLoading}
+            >
+              {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              Si opp
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

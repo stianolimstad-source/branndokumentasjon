@@ -1,30 +1,35 @@
-## Plan
+## Mål
 
-1. Endre portal-flyten i `src/pages/Abonnement.tsx` slik at en ny fane åpnes synkront i selve klikket, før noen `await`-kall skjer.
-2. Hente portal-URL-en etterpå og sende den inn i den allerede åpnede fanen med `location.replace(...)`, uten å skrive placeholder-HTML inn i vinduet.
-3. Beholde robust fallback: hvis ny fane ikke kan åpnes, send brukeren til kundeportalen i samme fane.
-4. Beholde lastetilstand på knappen så flere klikk ikke oppretter flere faner.
-5. Verifisere at avbestillingslenken brukes riktig, siden backend allerede returnerer korrekt `cancelSubscription`-URL.
+Fjern hele "kundeportal"-flyten (som åpner ekstern fane og ofte blokkeres) og la brukeren si opp abonnementet med ett klikk inne i appen — på samme måte som kjøp gjøres direkte via Paddle uten omveier. Tilgangen beholdes ut inneværende periode.
 
-## Hvorfor dette bør løse problemet
+## Slik blir det for brukeren
 
-- Nettverkskallet lykkes allerede og returnerer korrekt kundeportal-URL.
-- Autorisasjonen sendes også riktig i preview.
-- Det som sannsynligvis blir blokkert er `window.open(...)` fordi det skjer etter et async-kall og dermed ikke lenger regnes som en direkte brukerhandling.
-- Forrige forsøk med forhåndsåpning hang trolig fordi blankvinduet fikk skrevet inn eget innhold før navigering.
+På `/abonnement`, når abonnementet er aktivt:
+- Knapp: **"Si opp abonnement"** (rød/outline).
+- Klikk åpner en bekreftelsesdialog: *"Er du sikker på at du vil si opp? Du beholder tilgang ut perioden frem til {dato}."* — med valg "Avbryt" / "Si opp".
+- Ved bekreftelse: kall til backend, toast "Abonnementet er sagt opp", og kortet oppdateres til å vise "utløper {dato}" (status `cancel_at_period_end`).
+- Hvis abonnementet allerede er satt til opphør: vis i stedet en **"Gjenoppta abonnement"**-knapp som angrer oppsigelsen.
 
-## Tekniske detaljer
+Ingen ny fane, ingen ekstern portal.
 
-- Ikke gjøre endringer i backend-funksjonen med mindre verifisering viser at feil URL velges.
-- Frontend-løsningen skal bruke mønsteret:
-  - `const popup = window.open("", "_blank", "noopener,noreferrer")` direkte i klikkhandleren
-  - hente portal-URL
-  - `popup.location.replace(url)` når svaret kommer
-  - fallback til `window.location.href = url` hvis popup er blokkert eller mangler
-- Unngå `document.write`, `innerHTML` eller annen manipulering av det blanke popup-vinduet.
+## Teknisk
 
-## Validering
+**Ny edge function `cancel-subscription`** (basert på samme mønster som `customer-portal`):
+- Verifiserer JWT, finner brukerens nyeste rad i `subscriptions` for valgt `environment`.
+- Body: `{ environment, action: "cancel" | "resume" }`.
+- `cancel`: `POST /subscriptions/{id}/cancel` med `effective_from: "next_billing_period"` via `getPaddleClient(env).subscriptions.cancel(...)`.
+- `resume`: `PATCH /subscriptions/{id}` med `scheduled_change: null` for å fjerne planlagt oppsigelse.
+- Returnerer `{ ok: true }`. Webhooken `subscription.updated` / `subscription.canceled` oppdaterer DB-raden (allerede implementert i `payments-webhook`), og `useSubscription` plukker opp endringen via realtime.
 
-- Test at knappen åpner kundeportalen uten popup-blokkering.
-- Test at avbestillingssiden faktisk vises, ikke bare en tom fane.
-- Test fallback til samme fane hvis nettleseren nekter popup.
+**Frontend `src/pages/Abonnement.tsx`:**
+- Fjern `openPortal`, `portalLoading`, `window.open`-logikken og `ExternalLink`-knappen.
+- Legg til `AlertDialog` (samme mønster som `MineProsjekter.tsx`) for bekreftelse.
+- Vis "Si opp abonnement" når `!cancelAtPeriodEnd`, og "Gjenoppta abonnement" når `cancelAtPeriodEnd`.
+- Kall `supabase.functions.invoke("cancel-subscription", { body: { environment, action } })`, så `refresh()` + toast.
+- Behold visning av "utløper {dato}" som allerede finnes.
+
+**Slett:** `supabase/functions/customer-portal/index.ts` (ikke lenger i bruk).
+
+## Utenfor scope
+- Bytte plan / oppgradering — kan legges til senere som egen knapp.
+- Oppdatere betalingskort — Paddle håndterer dette automatisk ved neste fornyelse hvis kortet er utløpt; tar vi hvis behovet kommer.
