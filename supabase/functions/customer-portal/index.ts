@@ -16,9 +16,10 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_ANON_KEY')!,
       { global: { headers: { Authorization: authHeader } } }
     );
-    const { data: userData } = await supabase.auth.getUser();
-    const user = userData.user;
-    if (!user) throw new Error('Not authenticated');
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims?.sub) throw new Error('Not authenticated');
+    const user = { id: claimsData.claims.sub as string };
 
     const { environment } = await req.json();
     const env = (environment || 'sandbox') as PaddleEnv;
