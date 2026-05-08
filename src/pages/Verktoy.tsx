@@ -70,10 +70,9 @@ const tools = [
 ] as const;
 
 const Verktoy = () => {
+  const isFullAccess = useIsFullAccess();
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      
-
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto space-y-6">
           <div>
@@ -84,19 +83,41 @@ const Verktoy = () => {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tools.map((tool) => (
-              <Link key={tool.title} to={tool.href} className="block">
-                <Card className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer group h-full">
-                  <CardHeader>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-3 group-hover:bg-primary/20 transition-colors">
-                      <tool.icon className="h-6 w-6 text-primary" />
+            {tools.map((tool) => {
+              const isLocked = (tool as any).locked && !isFullAccess;
+              if (isLocked) {
+                return (
+                  <Card key={tool.title} className="shadow-soft relative overflow-hidden opacity-75 cursor-not-allowed h-full" title="Under utvikling – tilgang begrenset">
+                    <CardHeader>
+                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted mb-3">
+                        <tool.icon className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                      <CardTitle className="text-base text-muted-foreground">{tool.title}</CardTitle>
+                      <CardDescription className="text-sm">{tool.description}</CardDescription>
+                    </CardHeader>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/70 backdrop-blur-[1px]">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-background border shadow-medium">
+                        <Lock className="h-7 w-7 text-muted-foreground" />
+                      </div>
+                      <p className="mt-2 text-xs font-medium text-muted-foreground uppercase tracking-wide">Under utvikling</p>
                     </div>
-                    <CardTitle className="text-base">{tool.title}</CardTitle>
-                    <CardDescription className="text-sm">{tool.description}</CardDescription>
-                  </CardHeader>
-                </Card>
-              </Link>
-            ))}
+                  </Card>
+                );
+              }
+              return (
+                <Link key={tool.title} to={tool.href} className="block">
+                  <Card className="shadow-soft hover:shadow-medium transition-shadow cursor-pointer group h-full">
+                    <CardHeader>
+                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-3 group-hover:bg-primary/20 transition-colors">
+                        <tool.icon className="h-6 w-6 text-primary" />
+                      </div>
+                      <CardTitle className="text-base">{tool.title}</CardTitle>
+                      <CardDescription className="text-sm">{tool.description}</CardDescription>
+                    </CardHeader>
+                  </Card>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>
