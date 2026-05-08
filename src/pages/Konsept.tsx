@@ -422,7 +422,7 @@ const Konsept = () => {
   const [newProjectData, setNewProjectData] = useState({ name: "", description: "", address: "" });
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [authorInfo, setAuthorInfo] = useState<{ name: string; company: string } | null>(null);
-  const [previewTheme, setPreviewTheme] = useState<{ primaryColor: string; accentColor: string; fontFamily: string; logoUrl: string | null } | null>(null);
+  const [previewTheme, setPreviewTheme] = useState<{ template: "klassisk" | "moderne" | "minimalistisk"; primaryColor: string; accentColor: string; fontFamily: string; logoUrl: string | null; companyName: string | null } | null>(null);
 
   // Auto-open create project dialog only for authenticated users when ?new=true
   useEffect(() => {
@@ -455,10 +455,12 @@ const Konsept = () => {
         const t = await resolveDocumentTheme(selectedProjectId, logoUrl, user?.id);
         if (!cancelled) {
           setPreviewTheme({
+            template: t.template,
             primaryColor: t.primaryColor,
             accentColor: t.accentColor,
             fontFamily: t.fontFamily,
             logoUrl: t.logoUrl ?? null,
+            companyName: t.companyName ?? null,
           });
         }
       } catch (e) {
@@ -1596,31 +1598,51 @@ const Konsept = () => {
 
     // Build cover page elements
     const coverPageChildren: Paragraph[] = [];
-    
+    const tplId = theme.template ?? "klassisk";
+    const titleText = documentType === "tilstandsvurdering" ? "Tilstandsvurdering" : "Brannkonsept";
+
+    // Top accent stripe (klassisk only — visual match with preview)
+    if (tplId === "klassisk") {
+      coverPageChildren.push(new Paragraph({
+        spacing: { before: 0, after: 400 },
+        shading: { type: ShadingType.CLEAR, color: "auto", fill: theme.primaryColor },
+        children: [new TextRun({ text: "", size: 8 })],
+      }));
+    } else if (tplId === "moderne") {
+      // Short accent bar
+      coverPageChildren.push(new Paragraph({
+        alignment: AlignmentType.LEFT,
+        spacing: { before: 800, after: 300 },
+        border: { bottom: { style: BorderStyle.SINGLE, size: 24, color: theme.accentColor, space: 1 } },
+        children: [new TextRun({ text: "" })],
+      }));
+    }
+
     if (logoBuffer) {
       coverPageChildren.push(new Paragraph({
-        alignment: AlignmentType.CENTER,
+        alignment: tplId === "minimalistisk" ? AlignmentType.LEFT : AlignmentType.CENTER,
         children: [new ImageRun({ data: logoBuffer, transformation: logoDimensions, type: "png" })],
-        spacing: { before: 800, after: 400 },
+        spacing: { before: tplId === "klassisk" ? 400 : 200, after: 400 },
       }));
     }
 
     coverPageChildren.push(new Paragraph({
       heading: HeadingLevel.TITLE,
-      alignment: AlignmentType.CENTER,
+      alignment: tplId === "minimalistisk" ? AlignmentType.LEFT : (tplId === "moderne" ? AlignmentType.LEFT : AlignmentType.CENTER),
       spacing: { before: logoBuffer ? 200 : 1200, after: 120 },
       children: [new TextRun({
-        text: documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT",
-        bold: true,
+        text: titleText,
+        bold: tplId !== "minimalistisk",
         color: theme.primaryColor,
         font: theme.fontFamily,
+        size: tplId === "minimalistisk" ? 64 : 56,
       })],
     }));
     // Accent line under title
     coverPageChildren.push(new Paragraph({
-      alignment: AlignmentType.CENTER,
+      alignment: tplId === "minimalistisk" ? AlignmentType.LEFT : (tplId === "moderne" ? AlignmentType.LEFT : AlignmentType.CENTER),
       spacing: { after: 200 },
-      border: { bottom: { style: BorderStyle.SINGLE, size: 18, color: theme.accentColor, space: 1 } },
+      border: { bottom: { style: BorderStyle.SINGLE, size: tplId === "minimalistisk" ? 6 : 18, color: theme.accentColor, space: 1 } },
       children: [new TextRun({ text: "" })],
     }));
 

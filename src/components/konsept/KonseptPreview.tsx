@@ -25,7 +25,7 @@ interface KonseptPreviewProps {
   authorInfo?: { name: string; company: string } | null;
   documentType?: "brannkonsept" | "tilstandsvurdering";
   hideCover?: boolean;
-  theme?: { primaryColor: string; accentColor: string; fontFamily: string } | null;
+  theme?: { template?: "klassisk" | "moderne" | "minimalistisk"; primaryColor: string; accentColor: string; fontFamily: string; companyName?: string | null } | null;
 }
 
 const gradColors: Record<string, { bg: string; text: string; label: string }> = {
@@ -135,38 +135,106 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
   return (
     <div className="space-y-8 py-4">
       {/* Forside */}
-      {!hideCover && (
-      <div className={pageStyle} style={pageWidth}>
-        <div className="flex flex-col items-center justify-center pt-8 pb-8" style={{ minHeight: '260mm' }}>
-        {logoUrl && (
-          <div className="mb-8">
-            <img src={logoUrl} alt="Firmalogo" className="max-h-64 max-w-[600px] object-contain" />
+      {!hideCover && (() => {
+        const tpl = theme?.template ?? "klassisk";
+        const primary = themePrimary ?? "#1A4D8C";
+        const accent = themeAccent ?? "#3B82F6";
+        const font = themeFont;
+        const today = new Date().toLocaleDateString("nb-NO", { year: "numeric", month: "long", day: "numeric" });
+        const title = documentType === "tilstandsvurdering" ? "Tilstandsvurdering" : "Brannkonsept";
+        const subtitle = formData.adresse || "";
+        const projectName = formData.prosjektnavn || "";
+
+        const Logo = ({ className, onDark = false }: { className?: string; onDark?: boolean }) =>
+          logoUrl ? (
+            <img
+              src={logoUrl}
+              alt="Firmalogo"
+              className={`object-contain ${onDark ? "bg-white p-1 rounded" : ""} ${className ?? ""}`}
+            />
+          ) : null;
+
+        const Footer = () => (
+          <div
+            className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-8 py-2 text-[10px]"
+            style={{ borderTop: `1px solid ${accent}`, color: "#666" }}
+          >
+            <span>{today}</span>
+            <span>Side {pageForside}</span>
           </div>
-        )}
-        {themeAccent && (
-          <div style={{ width: 120, height: 3, background: themeAccent, marginBottom: 24, borderRadius: 2 }} />
-        )}
-        <h1 className="text-3xl font-bold text-center mb-4 tracking-wide" style={themePrimary ? { color: themePrimary } : undefined}>
-          {documentType === "tilstandsvurdering" ? "TILSTANDSVURDERING" : "BRANNKONSEPT"}
-        </h1>
-        {formData.prosjektnavn && (
-          <p className="text-lg text-center text-gray-700 mb-2">{formData.prosjektnavn}</p>
-        )}
-        {formData.adresse && (
-          <p className="text-base text-center text-gray-500 mb-6">{formData.adresse}</p>
-        )}
-        {authorInfo && (authorInfo.name || authorInfo.company) && (
-          <div className="mt-8 text-center text-sm text-gray-600">
-            <p className="font-semibold">Utarbeidet av</p>
-            {authorInfo.name && <p>{authorInfo.name}</p>}
-            {authorInfo.company && <p>{authorInfo.company}</p>}
+        );
+
+        const AuthorBlock = () =>
+          authorInfo && (authorInfo.name || authorInfo.company) ? (
+            <div className="mt-8 text-center text-sm" style={{ color: "#444" }}>
+              <p className="font-semibold">Utarbeidet av</p>
+              {authorInfo.name && <p>{authorInfo.name}</p>}
+              {authorInfo.company && <p>{authorInfo.company}</p>}
+            </div>
+          ) : null;
+
+        if (tpl === "moderne") {
+          return (
+            <div className={pageStyle} style={{ ...pageWidth, padding: 0, overflow: "hidden" }}>
+              <div className="flex" style={{ minHeight: "260mm" }}>
+                <div className="w-[35%] flex flex-col justify-between p-8" style={{ background: primary, color: "#fff" }}>
+                  <Logo className="max-h-24" onDark />
+                  <div className="text-[11px] opacity-80">
+                    <div>{today}</div>
+                    <div className="mt-1">Versjon 1.0</div>
+                  </div>
+                </div>
+                <div className="flex-1 p-10 flex flex-col">
+                  <div className="w-14 h-1 mb-8" style={{ background: accent }} />
+                  <h1 className="text-5xl font-bold leading-tight mb-3" style={{ color: primary, fontFamily: font }}>{title}</h1>
+                  {subtitle && <div className="text-base mb-12" style={{ color: accent }}>{subtitle}</div>}
+                  <div className="text-sm font-medium" style={{ color: "#222" }}>{projectName}</div>
+                  <AuthorBlock />
+                </div>
+              </div>
+              <Footer />
+            </div>
+          );
+        }
+
+        if (tpl === "minimalistisk") {
+          return (
+            <div className={pageStyle} style={pageWidth}>
+              <div className="px-8 pt-24" style={{ minHeight: "240mm" }}>
+                <Logo className="max-h-16 mb-28" />
+                <h1 className="text-6xl font-light mb-4 tracking-tight" style={{ color: primary, fontFamily: font }}>{title}</h1>
+                {subtitle && <div className="text-base mb-24" style={{ color: "#666" }}>{subtitle}</div>}
+                <div className="w-full h-[1px] mb-4" style={{ background: accent, opacity: 0.5 }} />
+                <div className="flex justify-between text-[12px]" style={{ color: "#333" }}>
+                  <span>{projectName}</span>
+                  <span>{today}</span>
+                </div>
+                <AuthorBlock />
+              </div>
+              <Footer />
+            </div>
+          );
+        }
+
+        // klassisk (default)
+        return (
+          <div className={pageStyle} style={{ ...pageWidth, padding: 0, overflow: "hidden" }}>
+            <div style={{ background: primary, height: 18 }} />
+            <div className="flex flex-col items-center text-center px-12 pt-28 pb-24" style={{ minHeight: "calc(260mm - 18px)" }}>
+              <Logo className="max-h-28 mb-12" />
+              <h1 className="text-5xl font-bold mb-3" style={{ color: primary, fontFamily: font }}>{title}</h1>
+              {subtitle && <div className="text-base italic mb-16" style={{ color: "#444" }}>{subtitle}</div>}
+              <div className="w-24 h-[2px] mb-8" style={{ background: accent }} />
+              <div className="text-sm space-y-1" style={{ color: "#222" }}>
+                {projectName && <div className="font-semibold">{projectName}</div>}
+                <div>{today}</div>
+              </div>
+              <AuthorBlock />
+            </div>
+            <Footer />
           </div>
-        )}
-        <p className="mt-4 text-xs text-gray-400">{new Date().toLocaleDateString("nb-NO", { year: "numeric", month: "long", day: "numeric" })}</p>
-        </div>
-        <PageFooter pageNum={pageForside} />
-      </div>
-      )}
+        );
+      })()}
 
       {/* Sammendrag - egen side */}
       {hasSammendrag && (
