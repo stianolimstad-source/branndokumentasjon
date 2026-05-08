@@ -223,11 +223,19 @@ const GruppeDetalj = () => {
 
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         <div className="flex items-center gap-4 mb-6">
-          {groupLogoUrl && (
-            <div className="h-14 w-14 rounded-lg border bg-white flex items-center justify-center p-1 shrink-0">
-              <img src={groupLogoUrl} alt="Gruppelogo" className="max-h-full max-w-full object-contain" />
-            </div>
-          )}
+          {(() => {
+            const shown = logoFailed ? profileLogoUrl : (groupLogoUrl ?? profileLogoUrl);
+            return shown ? (
+              <div className="h-14 w-14 rounded-lg border bg-white flex items-center justify-center p-1 shrink-0">
+                <img
+                  src={shown}
+                  alt="Gruppelogo"
+                  className="max-h-full max-w-full object-contain"
+                  onError={() => setLogoFailed(true)}
+                />
+              </div>
+            ) : null;
+          })()}
           <div>
             <h2 className="text-3xl font-bold">{groupName}</h2>
             {groupDescription && <p className="text-muted-foreground mt-1">{groupDescription}</p>}
