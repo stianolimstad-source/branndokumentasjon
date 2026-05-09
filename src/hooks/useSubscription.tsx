@@ -3,7 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { getStripeEnvironment } from "@/lib/stripe";
 
-const FULL_ACCESS_EMAILS = ["stianolimstad@gmail.com"];
+const FULL_ACCESS_EMAILS = [
+  "stianolimstad@gmail.com",
+  "stian.olimstad@xn--olimstadbrannrdgivning-15b.no",
+];
 
 export interface SubscriptionState {
   loading: boolean;
