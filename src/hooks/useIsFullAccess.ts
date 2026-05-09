@@ -1,6 +1,9 @@
 import { useAuth } from "@/hooks/useAuth";
 
-const FULL_ACCESS_EMAILS = ["stianolimstad@gmail.com"];
+const FULL_ACCESS_EMAILS = [
+  "stianolimstad@gmail.com",
+  "stian.olimstad@xn--olimstadbrannrdgivning-15b.no",
+];
 
 export const useIsFullAccess = () => {
   const { user } = useAuth();
