@@ -187,6 +187,9 @@ Deno.serve(async (req) => {
       case "invoice.payment_failed":
         await handleInvoicePaymentFailed(event.data.object, env);
         break;
+      case "invoice.payment_succeeded":
+        await handleInvoicePaymentSucceeded(event.data.object, env);
+        break;
       default:
         console.log("Unhandled event:", event.type);
     }
