@@ -132,11 +132,7 @@ const Abonnement = () => {
       return { kind: "switch", target: "to_yearly" };
     }
     if (cardPlan === MONTHLY_ID && priceId === YEARLY_ID) {
-      if (status === "trialing") return { kind: "switch", target: "to_monthly" };
-      return {
-        kind: "locked",
-        reason: "Du har allerede betalt for et helt år. Du kan bytte til månedlig ved neste fornyelse.",
-      };
+      return { kind: "switch", target: "to_monthly" };
     }
     return { kind: "purchase" };
   };
