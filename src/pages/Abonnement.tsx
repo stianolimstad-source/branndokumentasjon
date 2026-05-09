@@ -11,7 +11,7 @@ import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { useToast } from "@/hooks/use-toast";
-import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+
 
 const FEATURES = [
   "Ubegrensede prosjekter",
