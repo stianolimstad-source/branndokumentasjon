@@ -1,14 +1,14 @@
 ## Mål
 
-Utloggede brukere / brukere uten abonnement skal ikke se popupen "Start nytt brannkonsept / Mine prosjekter" når de trykker på Brannkonsepter-kortet på forsiden. De skal gå direkte til `/konsept`, som viser "Krever abonnement"-skjermen.
+Samme oppførsel for Brannfarlig lagring som for Brannkonsepter: hvis brukeren ikke har aktivt abonnement, naviger direkte til `/brensellagring` (som viser "Krever abonnement"-skjermen) i stedet for å åpne prosjektvelger-popupen.
 
 ## Endring
 
 ### `src/pages/Index.tsx`
 
-Importer `useSubscription` og bruk `isActive` i klikk-håndteringen for Brannkonsepter-kortet (`feature.href === "dialog"`):
+I klikk-håndteringen for `feature.href === "brensellagring-dialog"`:
 
-- Hvis `isActive === true` → åpne popupen som i dag.
-- Hvis ikke → `navigate("/konsept")` direkte, slik at `RequireSubscription`-komponenten viser låseskjermen med "Logg inn"-knapp.
+- Hvis `isSubActive === true` → åpne `setShowBrensellagringDialog(true)` som i dag.
+- Hvis ikke → `navigate("/brensellagring")` direkte.
 
-Kun Brannkonsepter-popupen endres. Tilstandsvurdering, Fravik og Brensellagring beholdes uendret (brukeren nevnte kun konsepter).
+Tilstandsvurdering og Fravik beholdes uendret.
