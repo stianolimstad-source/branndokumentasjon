@@ -1,18 +1,24 @@
-## Mål
-Gi `stian.olimstad@olimstadbrannrådgivning.no` (jobb-konto) samme fulle tilgang som `stianolimstad@gmail.com` — uten Stripe-abonnement.
+## Oppdatere abonnementssiden med redusert pris-info
 
-## Endring
-Legge til e-posten i listen `FULL_ACCESS_EMAILS` på to steder:
+### Bakgrunn
+Programmet er under utvikling og prisen er derfor redusert. Brukeren skal informeres tydelig om at dagens pris er midlertidig, og hva den ordinære prisen blir.
 
-1. `src/hooks/useSubscription.tsx` (linje 6) — styrer `isActive` og abonnementsstatus
-2. `src/hooks/useIsFullAccess.ts` (linje 3) — styrer øvrige tilgangssjekker (bl.a. nedlasting via `useCanDownload`)
+### Endringer
 
-E-posten lagres i punycode-form siden Supabase-auth normaliserer det norske tegnet (`å`) til ASCII:
-`stian.olimstad@xn--olimstadbrannrdgivning-15b.no`
+#### 1. Info-banner under tittel
+Legge til et synlig info-alert under `<h1>Abonnement</h1>` på `src/pages/Abonnement.tsx` med tekst:
+> **Introduksjonspris** — Programmet er under utvikling. Prisen vil øke til 1 000 kr per måned per bruker når programmet er ferdig (forventet høsten 2027).
 
-Sammenligningen er allerede `toLowerCase()` i `useSubscription`. Jeg legger inn punycode-varianten i begge listene for å være sikker på at det matcher uansett hvordan auth-systemet returnerer adressen.
+#### 2. Vis fremtidig pris på priskortene
+På begge priskortene (månedlig og årlig), ved siden av dagens pris, vise den fremtidige ordinære prisen med gjennomstreking for å tydeliggjøre rabatten:
+- Månedlig: ~~1 000 kr~~ → 500 kr
+- Årlig: ~~10 000 kr~~ → 5 000 kr (antatt, basert på samme forhold)
 
-## Ikke i scope
-- Ingen DB-endringer
-- Ingen endring i Stripe-flyt
-- Velkomst-e-post (venter fortsatt på DNS hos domene.no)
+#### 3. Oppdatere bunntekst
+Evt. justere den eksisterende bunnteksten for å forsterke at dagens pris er introduksjonspris.
+
+### Tekniske detaljer
+- Kun frontend-endring i `src/pages/Abonnement.tsx`
+- Bruker eksisterende `<Alert>`-komponent fra `@/components/ui/alert`
+- Ingen database- eller Stripe-endringer nødvendig
+- Prisene i Stripe (500/5000) beholdes som de er — dette er ren informasjon til brukeren

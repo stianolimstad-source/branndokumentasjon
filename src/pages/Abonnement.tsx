@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Check, Loader2, XCircle, RotateCcw, ArrowUpCircle, CreditCard } from "lucide-react";
+import { Check, Loader2, XCircle, RotateCcw, ArrowUpCircle, CreditCard, Sparkles } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
@@ -170,10 +171,21 @@ const Abonnement = () => {
   return (
     <div className="min-h-screen bg-gradient-subtle">
       <div className="container mx-auto px-4 py-12 max-w-5xl">
-        <div className="text-center mb-10">
+        <div className="text-center mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold mb-3">Abonnement</h1>
           <p className="text-muted-foreground">Full tilgang til alle verktøy. 14 dagers gratis prøveperiode.</p>
         </div>
+
+        <Alert className="mb-8 border-primary/40 bg-primary/5">
+          <Sparkles className="h-4 w-4 text-primary" />
+          <AlertTitle className="text-primary">Introduksjonspris – programmet er under utvikling</AlertTitle>
+          <AlertDescription className="text-foreground/80">
+            Du får nå tilgang til en sterkt redusert pris mens vi bygger ut funksjonaliteten.
+            Når programmet er ferdig (forventet høsten 2027) vil ordinær pris bli{" "}
+            <span className="font-semibold">1 000 kr per måned per bruker</span>.
+            Eksisterende abonnenter vil bli varslet i god tid før eventuell prisendring.
+          </AlertDescription>
+        </Alert>
 
         {authLoading || loading ? (
           <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin" /></div>
