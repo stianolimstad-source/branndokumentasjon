@@ -175,12 +175,18 @@ const Index = () => {
                   if (!isSubActive) { navigate("/konsept"); return; }
                   setShowConceptDialog(true);
                 }
-                else if (feature.href === "tilstand-dialog") setShowTilstandDialog(true);
+                else if (feature.href === "tilstand-dialog") {
+                  if (!isSubActive) { navigate("/tilstandsvurdering"); return; }
+                  setShowTilstandDialog(true);
+                }
                 else if (feature.href === "brensellagring-dialog") {
                   if (!isSubActive) { navigate("/brensellagring"); return; }
                   setShowBrensellagringDialog(true);
                 }
-                else setShowFravikDialog(true);
+                else {
+                  if (!isSubActive) { navigate("/fraviksdokumentasjon/kvalitativ"); return; }
+                  setShowFravikDialog(true);
+                }
               };
               return (
                 <Card
