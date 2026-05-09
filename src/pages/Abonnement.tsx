@@ -143,7 +143,7 @@ const Abonnement = () => {
       : "Endringen trer i kraft umiddelbart. Differansen mellom månedlig og årlig pris pro-rateres for resten av inneværende periode, slik at du kun betaler differansen nå."
     : status === "trialing"
       ? `Du er i prøveperiode. Den månedlige planen aktiveres når prøveperioden utløper${currentPeriodEnd ? ` ${new Date(currentPeriodEnd).toLocaleDateString("nb-NO")}` : ""}.`
-      : "Endringen trer i kraft ved neste fornyelse.";
+      : `Du beholder årlig plan ut betalt periode${currentPeriodEnd ? ` (${new Date(currentPeriodEnd).toLocaleDateString("nb-NO")})` : ""}, og går automatisk over til månedlig ved neste fornyelse. Ingen refusjon for gjenværende årlig periode.`;
 
   const showManage = isActive && status !== "owner";
 
