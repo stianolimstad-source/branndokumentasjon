@@ -21,7 +21,7 @@ const FEATURES = [
   "Fraviksdokumentasjon (kvalitativ analyse)",
   "Brensellagring (DSB)",
   "Alle beregningsverktøy",
-  "Eksport til Word og PDF",
+  "Eksport til Word (PDF kommer senere)",
 ];
 
 const MONTHLY_ID = "pro_monthly";
