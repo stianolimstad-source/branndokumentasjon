@@ -22,7 +22,6 @@ const FEATURES = [
   "Brensellagring (DSB)",
   "Alle beregningsverktøy",
   "Eksport til Word og PDF",
-  "AI-assistert utfylling",
 ];
 
 const MONTHLY_ID = "pro_monthly";

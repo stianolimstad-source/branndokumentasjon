@@ -1,24 +1,24 @@
-## Oppdatere abonnementssiden med redusert pris-info
+## Rette opp innhold på abonnementssiden
 
 ### Bakgrunn
-Programmet er under utvikling og prisen er derfor redusert. Brukeren skal informeres tydelig om at dagens pris er midlertidig, og hva den ordinære prisen blir.
+Brukeren påpeker at det står ting på abonnementssiden som ikke stemmer med hva produktet faktisk gjør. Alt skal være hardkodet og verifisert — ingenting skal være "gjettet" eller hintet om AI-funksjonalitet vi ikke har. I tillegg skal AI Brannkonsulent (under Beregningsverktøy) være låst for brukere uten spesiell tilgang.
 
 ### Endringer
 
-#### 1. Info-banner under tittel
-Legge til et synlig info-alert under `<h1>Abonnement</h1>` på `src/pages/Abonnement.tsx` med tekst:
-> **Introduksjonspris** — Programmet er under utvikling. Prisen vil øke til 1 000 kr per måned per bruker når programmet er ferdig (forventet høsten 2027).
+#### 1. `src/pages/Abonnement.tsx` — fjerne AI-påstand fra featurelisten
+I `FEATURES`-arrayen (linje 17–26) fjernes oppføringen:
+- `"AI-assistert utfylling"`
 
-#### 2. Vis fremtidig pris på priskortene
-På begge priskortene (månedlig og årlig), ved siden av dagens pris, vise den fremtidige ordinære prisen med gjennomstreking for å tydeliggjøre rabatten:
-- Månedlig: ~~1 000 kr~~ → 500 kr
-- Årlig: ~~10 000 kr~~ → 5 000 kr (antatt, basert på samme forhold)
+Dette er den eneste posten som antyder AI-funksjonalitet i abonnementet, og den stemmer ikke med produktet i dag. De øvrige punktene (prosjekter, brannkonsept, tilstandsvurdering, fravik, brensellagring, beregningsverktøy, Word/PDF-eksport) beholdes.
 
-#### 3. Oppdatere bunntekst
-Evt. justere den eksisterende bunnteksten for å forsterke at dagens pris er introduksjonspris.
+#### 2. AI Brannkonsulent — bekrefte at den er låst
+Verifisert at funksjonen allerede er låst på to nivåer:
+- `src/pages/Verktoy.tsx`: kortet har `locked: true` og vises med låseoverlay for brukere uten full tilgang.
+- `src/App.tsx` linje 101: ruten `/tek17-assistent` er pakket inn i `<RequireFullAccess>`.
+
+Ingen kodeendring nødvendig her — låsingen virker som ønsket. Nevnes kun for sporbarhet.
 
 ### Tekniske detaljer
-- Kun frontend-endring i `src/pages/Abonnement.tsx`
-- Bruker eksisterende `<Alert>`-komponent fra `@/components/ui/alert`
-- Ingen database- eller Stripe-endringer nødvendig
-- Prisene i Stripe (500/5000) beholdes som de er — dette er ren informasjon til brukeren
+- Kun frontend-endring (én linje fjernes i `FEATURES`-arrayen).
+- Ingen endringer i database, Stripe, edge functions eller ruter.
+- Introduksjonspris-banneret og priskortene beholdes som de er.
