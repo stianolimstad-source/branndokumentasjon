@@ -1,0 +1,1 @@
+DELETE FROM public.subscriptions WHERE stripe_subscription_id = 'sub_01kr395r0vktyd2g96yzca2fwm' AND user_id = '037333a4-0ddc-4048-a20c-d7a62bbe2d8f';
