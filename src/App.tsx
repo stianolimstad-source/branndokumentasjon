@@ -74,16 +74,16 @@ const App = () => (
             <Route path="/fraviksdokumentasjon/kvalitativ" element={<RequireSubscription feature="Fraviksdokumentasjon"><KvalitativAnalyse /></RequireSubscription>} />
             <Route path="/mine-prosjekter" element={<RequireSubscription feature="Prosjekter"><MineProsjekter /></RequireSubscription>} />
             <Route path="/prosjekt/:id" element={<RequireSubscription feature="Prosjekter"><ProsjektDetalj /></RequireSubscription>} />
-            <Route path="/verktoy" element={<Verktoy />} />
-            <Route path="/verktoy/romningsvei" element={<Romningsvei />} />
-            <Route path="/verktoy/straling" element={<Straling />} />
-            <Route path="/verktoy/flammehoyde" element={<Flammehoyde />} />
-            <Route path="/verktoy/omhyllingsflate" element={<Omhyllingsflate />} />
-            <Route path="/verktoy/persontall" element={<Persontall />} />
-            <Route path="/verktoy/brannenergi" element={<Brannenergi />} />
-            <Route path="/verktoy/brannmotstand" element={<Brannmotstand />} />
-            <Route path="/verktoy/brannareal" element={<Brannareal />} />
-            <Route path="/verktoy/roykventilasjon" element={<RoykventilasjonPage />} />
+            <Route path="/verktoy" element={<RequireSubscription feature="Beregningsverktøy"><Verktoy /></RequireSubscription>} />
+            <Route path="/verktoy/romningsvei" element={<RequireSubscription feature="Beregningsverktøy"><Romningsvei /></RequireSubscription>} />
+            <Route path="/verktoy/straling" element={<RequireSubscription feature="Beregningsverktøy"><Straling /></RequireSubscription>} />
+            <Route path="/verktoy/flammehoyde" element={<RequireSubscription feature="Beregningsverktøy"><Flammehoyde /></RequireSubscription>} />
+            <Route path="/verktoy/omhyllingsflate" element={<RequireSubscription feature="Beregningsverktøy"><Omhyllingsflate /></RequireSubscription>} />
+            <Route path="/verktoy/persontall" element={<RequireSubscription feature="Beregningsverktøy"><Persontall /></RequireSubscription>} />
+            <Route path="/verktoy/brannenergi" element={<RequireSubscription feature="Beregningsverktøy"><Brannenergi /></RequireSubscription>} />
+            <Route path="/verktoy/brannmotstand" element={<RequireSubscription feature="Beregningsverktøy"><Brannmotstand /></RequireSubscription>} />
+            <Route path="/verktoy/brannareal" element={<RequireSubscription feature="Beregningsverktøy"><Brannareal /></RequireSubscription>} />
+            <Route path="/verktoy/roykventilasjon" element={<RequireSubscription feature="Beregningsverktøy"><RoykventilasjonPage /></RequireSubscription>} />
             <Route path="/verktoy/brannsimulering" element={<RequireFullAccess><Brannsimulering /></RequireFullAccess>} />
             
             <Route path="/dashboard" element={<Dashboard />} />
