@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Check, Loader2, XCircle, RotateCcw, ArrowUpCircle, Lock } from "lucide-react";
+import { Check, Loader2, XCircle, RotateCcw, ArrowUpCircle, CreditCard } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
@@ -30,8 +30,7 @@ const YEARLY_ID = "pro_yearly";
 type CardState =
   | { kind: "purchase" }
   | { kind: "current"; statusText: string }
-  | { kind: "switch"; target: "to_yearly" | "to_monthly" }
-  | { kind: "locked"; reason: string };
+  | { kind: "switch"; target: "to_yearly" | "to_monthly" };
 
 const Abonnement = () => {
   const { user, loading: authLoading } = useAuth();
@@ -85,6 +84,26 @@ const Abonnement = () => {
     }
   };
 
+  const openPortal = async () => {
+    if (actionLoading) return;
+    setActionLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-portal-session", {
+        body: {
+          environment: getStripeEnvironment(),
+          returnUrl: `${window.location.origin}/abonnement`,
+        },
+      });
+      if (error || !data?.url) {
+        toast({ title: "Feil", description: "Kunne ikke åpne betalingsportalen.", variant: "destructive" });
+        return;
+      }
+      window.open(data.url as string, "_blank", "noopener,noreferrer");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const runSwitch = async (target: "to_yearly" | "to_monthly") => {
     if (actionLoading) return;
     setActionLoading(true);
@@ -133,11 +152,7 @@ const Abonnement = () => {
       return { kind: "switch", target: "to_yearly" };
     }
     if (cardPlan === MONTHLY_ID && priceId === YEARLY_ID) {
-      if (status === "trialing") return { kind: "switch", target: "to_monthly" };
-      return {
-        kind: "locked",
-        reason: "Du har allerede betalt for et helt år. Du kan bytte til månedlig ved neste fornyelse.",
-      };
+      return { kind: "switch", target: "to_monthly" };
     }
     return { kind: "purchase" };
   };
@@ -148,7 +163,7 @@ const Abonnement = () => {
       : "Endringen trer i kraft umiddelbart. Differansen mellom månedlig og årlig pris pro-rateres for resten av inneværende periode, slik at du kun betaler differansen nå."
     : status === "trialing"
       ? `Du er i prøveperiode. Den månedlige planen aktiveres når prøveperioden utløper${currentPeriodEnd ? ` ${new Date(currentPeriodEnd).toLocaleDateString("nb-NO")}` : ""}.`
-      : "Endringen trer i kraft ved neste fornyelse.";
+      : `Du beholder årlig plan ut betalt periode${currentPeriodEnd ? ` (${new Date(currentPeriodEnd).toLocaleDateString("nb-NO")})` : ""}, og går automatisk over til månedlig ved neste fornyelse. Ingen refusjon for gjenværende årlig periode.`;
 
   const showManage = isActive && status !== "owner";
 
@@ -248,7 +263,11 @@ const Abonnement = () => {
                     {currentPeriodEnd && <> · {periodLabel}</>}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-2">
+                  <Button onClick={openPortal} className="w-full" disabled={actionLoading}>
+                    {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <CreditCard className="h-4 w-4 mr-2" />}
+                    Administrer betaling og fakturaer
+                  </Button>
                   {cancelAtPeriodEnd ? (
                     <Button onClick={() => runAction("resume")} variant="outline" className="w-full" disabled={actionLoading}>
                       {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RotateCcw className="h-4 w-4 mr-2" />}
@@ -260,6 +279,9 @@ const Abonnement = () => {
                       Si opp abonnement
                     </Button>
                   )}
+                  <p className="text-xs text-muted-foreground text-center pt-1">
+                    Bytt kort, last ned kvitteringer og se fakturahistorikk i betalingsportalen (åpnes i ny fane).
+                  </p>
                 </CardContent>
               </Card>
             )}
@@ -416,15 +438,6 @@ const PlanCard = ({ title, price, period, priceId, badge, recommended, state, ch
           </Button>
         )}
 
-        {state.kind === "locked" && (
-          <div className="space-y-2">
-            <Button className="w-full" variant="outline" disabled>
-              <Lock className="h-4 w-4 mr-2" />
-              Tilgjengelig ved neste fornyelse
-            </Button>
-            <p className="text-xs text-muted-foreground text-center">{state.reason}</p>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
