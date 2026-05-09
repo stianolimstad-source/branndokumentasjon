@@ -1,14 +1,14 @@
 ## Mål
 
-Samme oppførsel for Brannfarlig lagring som for Brannkonsepter: hvis brukeren ikke har aktivt abonnement, naviger direkte til `/brensellagring` (som viser "Krever abonnement"-skjermen) i stedet for å åpne prosjektvelger-popupen.
+Samme oppførsel for Tilstandsvurdering og Fraviksdokumentasjon på forsiden: hvis brukeren ikke har aktivt abonnement, naviger direkte til abonnement-låseskjermen i stedet for å åpne valg-popupen.
 
 ## Endring
 
 ### `src/pages/Index.tsx`
 
-I klikk-håndteringen for `feature.href === "brensellagring-dialog"`:
+I `handleClick` for feature-kortene:
 
-- Hvis `isSubActive === true` → åpne `setShowBrensellagringDialog(true)` som i dag.
-- Hvis ikke → `navigate("/brensellagring")` direkte.
+- `tilstand-dialog`: hvis `!isSubActive` → `navigate("/tilstandsvurdering")`, ellers `setShowTilstandDialog(true)`.
+- `fravik-dialog` (else-grenen): hvis `!isSubActive` → `navigate("/fraviksdokumentasjon/kvalitativ")`, ellers `setShowFravikDialog(true)`.
 
-Tilstandsvurdering og Fravik beholdes uendret.
+Begge målruter er allerede beskyttet av `RequireSubscription`, og viser dermed "Krever abonnement"-skjermen med "Logg inn"-knapp.
