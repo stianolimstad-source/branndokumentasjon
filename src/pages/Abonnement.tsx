@@ -30,8 +30,7 @@ const YEARLY_ID = "pro_yearly";
 type CardState =
   | { kind: "purchase" }
   | { kind: "current"; statusText: string }
-  | { kind: "switch"; target: "to_yearly" | "to_monthly" }
-  | { kind: "locked"; reason: string };
+  | { kind: "switch"; target: "to_yearly" | "to_monthly" };
 
 const Abonnement = () => {
   const { user, loading: authLoading } = useAuth();
