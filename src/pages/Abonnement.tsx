@@ -411,15 +411,6 @@ const PlanCard = ({ title, price, period, priceId, badge, recommended, state, ch
           </Button>
         )}
 
-        {state.kind === "locked" && (
-          <div className="space-y-2">
-            <Button className="w-full" variant="outline" disabled>
-              <Lock className="h-4 w-4 mr-2" />
-              Tilgjengelig ved neste fornyelse
-            </Button>
-            <p className="text-xs text-muted-foreground text-center">{state.reason}</p>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
