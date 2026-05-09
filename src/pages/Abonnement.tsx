@@ -84,6 +84,26 @@ const Abonnement = () => {
     }
   };
 
+  const openPortal = async () => {
+    if (actionLoading) return;
+    setActionLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-portal-session", {
+        body: {
+          environment: getStripeEnvironment(),
+          returnUrl: `${window.location.origin}/abonnement`,
+        },
+      });
+      if (error || !data?.url) {
+        toast({ title: "Feil", description: "Kunne ikke åpne betalingsportalen.", variant: "destructive" });
+        return;
+      }
+      window.open(data.url as string, "_blank", "noopener,noreferrer");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const runSwitch = async (target: "to_yearly" | "to_monthly") => {
     if (actionLoading) return;
     setActionLoading(true);
