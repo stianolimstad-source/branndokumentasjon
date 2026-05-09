@@ -195,6 +195,7 @@ const Abonnement = () => {
               <PlanCard
                 title="Månedlig"
                 price="500 kr"
+                originalPrice="1 000 kr"
                 period="/mnd"
                 priceId={MONTHLY_ID}
                 state={{ kind: "purchase" }}
@@ -206,6 +207,7 @@ const Abonnement = () => {
               <PlanCard
                 title="Årlig"
                 price="5 000 kr"
+                originalPrice="10 000 kr"
                 period="/år"
                 badge="Spar ~17%"
                 priceId={YEARLY_ID}
@@ -233,6 +235,7 @@ const Abonnement = () => {
               <PlanCard
                 title="Månedlig"
                 price="500 kr"
+                originalPrice="1 000 kr"
                 period="/mnd"
                 priceId={MONTHLY_ID}
                 state={stateFor(MONTHLY_ID)}
@@ -244,6 +247,7 @@ const Abonnement = () => {
               <PlanCard
                 title="Årlig"
                 price="5 000 kr"
+                originalPrice="10 000 kr"
                 period="/år"
                 badge="Spar ~17%"
                 priceId={YEARLY_ID}
