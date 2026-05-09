@@ -1,30 +1,14 @@
 ## Mål
 
-Beregningsverktøyene skal kreve aktivt abonnement på lik linje med Brannkonsept. Brensellagring (brannfarlig lagring) har allerede dette, men skal verifiseres at meldingen vises korrekt for utloggede brukere.
+Utloggede brukere / brukere uten abonnement skal ikke se popupen "Start nytt brannkonsept / Mine prosjekter" når de trykker på Brannkonsepter-kortet på forsiden. De skal gå direkte til `/konsept`, som viser "Krever abonnement"-skjermen.
 
-## Endringer
+## Endring
 
-### `src/App.tsx` – pakk inn verktøy-rutene i `RequireSubscription`
+### `src/pages/Index.tsx`
 
-Følgende ruter får `<RequireSubscription feature="Beregningsverktøy">…</RequireSubscription>`:
+Importer `useSubscription` og bruk `isActive` i klikk-håndteringen for Brannkonsepter-kortet (`feature.href === "dialog"`):
 
-- `/verktoy` (oversikten)
-- `/verktoy/romningsvei`
-- `/verktoy/straling`
-- `/verktoy/flammehoyde`
-- `/verktoy/omhyllingsflate`
-- `/verktoy/persontall`
-- `/verktoy/brannenergi`
-- `/verktoy/brannmotstand`
-- `/verktoy/brannareal`
-- `/verktoy/roykventilasjon`
+- Hvis `isActive === true` → åpne popupen som i dag.
+- Hvis ikke → `navigate("/konsept")` direkte, slik at `RequireSubscription`-komponenten viser låseskjermen med "Logg inn"-knapp.
 
-Rutene som allerede er låst med `RequireFullAccess` (`/verktoy/brannsimulering`, `/tek17-assistent`) beholdes uendret – de er strengere låst og påvirkes ikke.
-
-### Brensellagring
-
-`/brensellagring` har allerede `RequireSubscription`. Ingen kodeendring, men bekreftet at `RequireSubscription`-komponenten viser tydelig "Logg inn"-knapp når brukeren ikke er logget inn, og "Se abonnement" når innlogget uten aktivt abonnement. Dette dekker brukerens krav om at man får beskjed når man trykker på Brannfarlig lagring uten å være logget inn.
-
-## Resultat
-
-Utloggede brukere som klikker på et beregningsverktøy eller Brannfarlig lagring får samme låseskjerm som ved Brannkonsept, med tydelig "Logg inn"-knapp og henvisning til 14 dagers gratis prøveperiode.
+Kun Brannkonsepter-popupen endres. Tilstandsvurdering, Fravik og Brensellagring beholdes uendret (brukeren nevnte kun konsepter).
