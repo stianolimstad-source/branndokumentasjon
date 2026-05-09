@@ -3,12 +3,13 @@ import { Link, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Check, Loader2, XCircle, RotateCcw, ArrowUpCircle, Lock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
-import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { supabase } from "@/integrations/supabase/client";
-import { getPaddleEnvironment } from "@/lib/paddle";
+import { getStripeEnvironment } from "@/lib/stripe";
 import { useToast } from "@/hooks/use-toast";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 
@@ -23,8 +24,8 @@ const FEATURES = [
   "AI-assistert utfylling",
 ];
 
-const MONTHLY_ID = "branndok_pro_monthly";
-const YEARLY_ID = "branndok_pro_yearly";
+const MONTHLY_ID = "pro_monthly";
+const YEARLY_ID = "pro_yearly";
 
 type CardState =
   | { kind: "purchase" }
@@ -35,7 +36,7 @@ type CardState =
 const Abonnement = () => {
   const { user, loading: authLoading } = useAuth();
   const { isActive, loading, status, priceId, currentPeriodEnd, cancelAtPeriodEnd, refresh } = useSubscription();
-  const { openCheckout, loading: checkoutLoading } = usePaddleCheckout();
+  const { openCheckout, closeCheckout, isOpen: checkoutOpen, checkoutElement, loading: checkoutLoading } = useStripeCheckout();
   const { toast } = useToast();
   const [params, setParams] = useSearchParams();
   const [actionLoading, setActionLoading] = useState(false);
@@ -48,7 +49,9 @@ const Abonnement = () => {
       const t = setInterval(() => refresh(), 2000);
       setTimeout(() => clearInterval(t), 20000);
       params.delete("checkout");
+      params.delete("session_id");
       setParams(params, { replace: true });
+      closeCheckout();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -58,7 +61,7 @@ const Abonnement = () => {
     setActionLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke("cancel-subscription", {
-        body: { environment: getPaddleEnvironment(), action },
+        body: { environment: getStripeEnvironment(), action },
       });
       if (error || !data?.ok) {
         toast({
@@ -89,7 +92,7 @@ const Abonnement = () => {
     try {
       const newPriceId = target === "to_yearly" ? YEARLY_ID : MONTHLY_ID;
       const { data, error } = await supabase.functions.invoke("change-subscription-plan", {
-        body: { environment: getPaddleEnvironment(), newPriceId },
+        body: { environment: getStripeEnvironment(), newPriceId },
       });
       if (error || !data?.ok) {
         toast({
@@ -126,12 +129,10 @@ const Abonnement = () => {
       const statusText = [statusLabel(status), periodLabel].filter(Boolean).join(" · ");
       return { kind: "current", statusText };
     }
-    // User is on the OTHER plan
     if (cardPlan === YEARLY_ID && priceId === MONTHLY_ID) {
       return { kind: "switch", target: "to_yearly" };
     }
     if (cardPlan === MONTHLY_ID && priceId === YEARLY_ID) {
-      // Allow downgrade only during trial — after real payment, lock until renewal
       if (status === "trialing") return { kind: "switch", target: "to_monthly" };
       return {
         kind: "locked",
@@ -144,7 +145,7 @@ const Abonnement = () => {
   const switchDescription = confirmSwitch === "to_yearly"
     ? status === "trialing"
       ? `Du er i prøveperiode. Den årlige planen aktiveres når prøveperioden utløper${currentPeriodEnd ? ` ${new Date(currentPeriodEnd).toLocaleDateString("nb-NO")}` : ""}. Ingen ekstra fakturering skjer nå.`
-      : "Endringen trer i kraft umiddelbart. Paddle pro-raterer differansen mellom månedlig og årlig pris for resten av inneværende periode, slik at du kun betaler differansen nå."
+      : "Endringen trer i kraft umiddelbart. Differansen mellom månedlig og årlig pris pro-rateres for resten av inneværende periode, slik at du kun betaler differansen nå."
     : status === "trialing"
       ? `Du er i prøveperiode. Den månedlige planen aktiveres når prøveperioden utløper${currentPeriodEnd ? ` ${new Date(currentPeriodEnd).toLocaleDateString("nb-NO")}` : ""}.`
       : "Endringen trer i kraft ved neste fornyelse.";
@@ -171,7 +172,7 @@ const Abonnement = () => {
                 period="/mnd"
                 priceId={MONTHLY_ID}
                 state={{ kind: "purchase" }}
-                onPurchase={openCheckout}
+                onPurchase={(id) => openCheckout(id)}
                 onSwitch={() => {}}
                 actionLoading={false}
                 checkoutLoading={checkoutLoading}
@@ -183,7 +184,7 @@ const Abonnement = () => {
                 badge="Spar ~17%"
                 priceId={YEARLY_ID}
                 state={{ kind: "purchase" }}
-                onPurchase={openCheckout}
+                onPurchase={(id) => openCheckout(id)}
                 onSwitch={() => {}}
                 actionLoading={false}
                 checkoutLoading={checkoutLoading}
@@ -209,7 +210,7 @@ const Abonnement = () => {
                 period="/mnd"
                 priceId={MONTHLY_ID}
                 state={stateFor(MONTHLY_ID)}
-                onPurchase={openCheckout}
+                onPurchase={(id) => openCheckout(id)}
                 onSwitch={(t) => setConfirmSwitch(t)}
                 actionLoading={actionLoading}
                 checkoutLoading={checkoutLoading}
@@ -221,7 +222,7 @@ const Abonnement = () => {
                 badge="Spar ~17%"
                 priceId={YEARLY_ID}
                 state={stateFor(YEARLY_ID)}
-                onPurchase={openCheckout}
+                onPurchase={(id) => openCheckout(id)}
                 onSwitch={(t) => setConfirmSwitch(t)}
                 actionLoading={actionLoading}
                 checkoutLoading={checkoutLoading}
@@ -266,9 +267,20 @@ const Abonnement = () => {
         )}
 
         <p className="text-center text-xs text-muted-foreground mt-8">
-          Priser inkluderer MVA. Betaling håndteres av Paddle (Merchant of Record).
+          Priser er oppgitt inkl. mva. Selger: Olimstad Brannrådgivning AS.
         </p>
       </div>
+
+      <Dialog open={checkoutOpen} onOpenChange={(o) => !o && closeCheckout()}>
+        <DialogContent className="max-w-3xl p-0 overflow-hidden">
+          <DialogHeader className="px-6 pt-6">
+            <DialogTitle>Fullfør bestilling</DialogTitle>
+          </DialogHeader>
+          <div className="p-2 sm:p-4 max-h-[80vh] overflow-y-auto">
+            {checkoutElement}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog open={confirmCancel} onOpenChange={setConfirmCancel}>
         <AlertDialogContent>

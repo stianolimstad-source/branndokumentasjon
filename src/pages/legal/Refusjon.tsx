@@ -17,25 +17,13 @@ const Refusjon = () => (
 
     <h2>Slik ber du om refusjon</h2>
     <p>
-      Bestillinger og betalinger håndteres av vår forhandler Paddle.com.
-      Refusjoner behandles av Paddle på vegne av oss. Du kan be om refusjon ved å:
+      Send oss en epost på{" "}
+      <a href="mailto:stian.olimstad@xn--olimstadbrannrdgivning-15b.no">
+        stian.olimstad@olimstadbrannrådgivning.no
+      </a>{" "}
+      med bestillingsnummer eller e-postadressen som er tilknyttet abonnementet,
+      så behandler vi forespørselen din innen rimelig tid.
     </p>
-    <ul>
-      <li>
-        Logge inn på{" "}
-        <a href="https://paddle.net" target="_blank" rel="noopener noreferrer">
-          paddle.net
-        </a>{" "}
-        og bruke kvitteringen din til å starte en refusjonsforespørsel, eller
-      </li>
-      <li>
-        Sende oss en epost på{" "}
-        <a href="mailto:stian.olimstad@xn--olimstadbrannrdgivning-15b.no">
-          stian.olimstad@olimstadbrannrådgivning.no
-        </a>{" "}
-        med bestillingsnummer.
-      </li>
-    </ul>
 
     <h2>Prøveperiode</h2>
     <p>

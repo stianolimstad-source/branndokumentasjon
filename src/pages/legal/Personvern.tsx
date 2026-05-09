@@ -16,7 +16,7 @@ const Personvern = () => (
       <li><strong>Innhold du legger inn:</strong> prosjekter, dokumenter, bilder, vurderinger</li>
       <li><strong>Bruksdata:</strong> innloggingstidspunkt, IP-adresse, nettleser, enhetsinformasjon, hendelseslogger</li>
       <li><strong>Supporthenvendelser:</strong> meldinger du sender til oss</li>
-      <li><strong>Faktureringsdata:</strong> håndteres i sin helhet av Paddle (se punkt 4)</li>
+      <li><strong>Faktureringsdata:</strong> håndteres av vår betalingsleverandør Stripe (se punkt 4)</li>
     </ul>
 
     <h2>3. Formål og behandlingsgrunnlag</h2>
@@ -32,8 +32,8 @@ const Personvern = () => (
     <p>Vi deler opplysninger med følgende kategorier mottakere:</p>
     <ul>
       <li>
-        <strong>Paddle.com Market Limited</strong> — Merchant of Record for salg,
-        abonnementshåndtering, betalinger, mva og fakturering.
+        <strong>Stripe Payments Europe Ltd</strong> — betalingsleverandør for
+        kortbetaling og abonnementshåndtering (databehandler).
       </li>
       <li>
         <strong>Supabase / Lovable Cloud</strong> — drift, hosting og database
@@ -62,7 +62,7 @@ const Personvern = () => (
     <p>
       Vi lagrer opplysninger så lenge du har en aktiv konto, og inntil 90 dager
       etter sletting for å håndtere tvister og lovpålagte krav. Faktureringsdata
-      hos Paddle lagres i henhold til norsk regnskapslovgivning (5 år).
+      lagres i henhold til norsk regnskapslovgivning (5 år).
     </p>
 
     <h2>7. Sikkerhet</h2>
