@@ -171,7 +171,10 @@ const Index = () => {
           {features.map((feature) => {
             if (feature.href === "dialog" || feature.href === "fravik-dialog" || feature.href === "tilstand-dialog" || feature.href === "brensellagring-dialog") {
               const handleClick = () => {
-                if (feature.href === "dialog") setShowConceptDialog(true);
+                if (feature.href === "dialog") {
+                  if (!isSubActive) { navigate("/konsept"); return; }
+                  setShowConceptDialog(true);
+                }
                 else if (feature.href === "tilstand-dialog") setShowTilstandDialog(true);
                 else if (feature.href === "brensellagring-dialog") setShowBrensellagringDialog(true);
                 else setShowFravikDialog(true);
