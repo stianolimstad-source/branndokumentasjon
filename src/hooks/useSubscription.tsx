@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { getPaddleEnvironment } from "@/lib/paddle";
+import { getStripeEnvironment } from "@/lib/stripe";
 
 const FULL_ACCESS_EMAILS = ["stianolimstad@gmail.com"];
 
@@ -33,7 +33,7 @@ export function useSubscription(): SubscriptionState {
       .from("subscriptions")
       .select("*")
       .eq("user_id", user.id)
-      .eq("environment", getPaddleEnvironment())
+      .eq("environment", getStripeEnvironment())
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();

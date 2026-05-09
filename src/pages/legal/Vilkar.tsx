@@ -65,14 +65,12 @@ const Vilkar = () => (
 
     <h2>9. Betaling og abonnement</h2>
     <p>
-      Bestillinger gjennomføres via vår forhandler Paddle.com. Paddle.com er
-      Merchant of Record og håndterer alle betalinger, fakturering, mva og
-      kundeservice for kjøpsrelaterte spørsmål. For betalingsvilkår, fornyelse,
-      oppsigelse og refusjon vises til{" "}
-      <a href="https://www.paddle.com/legal/checkout-buyer-terms" target="_blank" rel="noopener noreferrer">
-        Paddles kjøpervilkår
-      </a>{" "}
-      og vår <a href="/refusjon">Refusjonspolicy</a>.
+      Abonnementet faktureres forskuddsvis (månedlig eller årlig) og fornyes
+      automatisk inntil det sies opp. Priser er oppgitt inkl. mva. Betaling
+      gjennomføres av vår betalingsleverandør Stripe. Selger er Olimstad
+      Brannrådgivning AS og er ansvarlig for kundeforholdet, fakturering, mva
+      og kundeservice. For oppsigelse og refusjon vises til vår{" "}
+      <a href="/refusjon">Refusjonspolicy</a>.
     </p>
 
     <h2>10. Suspensjon og oppsigelse</h2>
