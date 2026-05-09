@@ -377,6 +377,7 @@ function statusLabel(status: string | null) {
 interface PlanCardProps {
   title: string;
   price: string;
+  originalPrice?: string;
   period: string;
   priceId: string;
   badge?: string;
@@ -388,7 +389,7 @@ interface PlanCardProps {
   onSwitch: (target: "to_yearly" | "to_monthly") => void;
 }
 
-const PlanCard = ({ title, price, period, priceId, badge, recommended, state, checkoutLoading, actionLoading, onPurchase, onSwitch }: PlanCardProps) => {
+const PlanCard = ({ title, price, originalPrice, period, priceId, badge, recommended, state, checkoutLoading, actionLoading, onPurchase, onSwitch }: PlanCardProps) => {
   const isCurrent = state.kind === "current";
   return (
     <Card className={`${recommended ? "border-primary shadow-medium" : ""} ${isCurrent ? "ring-2 ring-primary" : ""}`}>
@@ -404,10 +405,18 @@ const PlanCard = ({ title, price, period, priceId, badge, recommended, state, ch
             {badge && <span className="text-xs font-semibold px-2 py-1 rounded-full bg-primary/10 text-primary">{badge}</span>}
           </div>
         </div>
-        <div className="flex items-baseline gap-1 pt-2">
+        <div className="flex items-baseline gap-2 pt-2 flex-wrap">
+          {originalPrice && (
+            <span className="text-lg text-muted-foreground line-through">{originalPrice}</span>
+          )}
           <span className="text-4xl font-bold">{price}</span>
           <span className="text-muted-foreground">{period}</span>
         </div>
+        {originalPrice && (
+          <p className="text-xs text-primary font-medium pt-1">
+            Introduksjonspris – ordinær pris fra høsten 2027
+          </p>
+        )}
         <CardDescription>
           {state.kind === "current" ? state.statusText : "14 dagers gratis prøveperiode"}
         </CardDescription>
