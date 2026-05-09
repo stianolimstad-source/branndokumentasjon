@@ -176,7 +176,10 @@ const Index = () => {
                   setShowConceptDialog(true);
                 }
                 else if (feature.href === "tilstand-dialog") setShowTilstandDialog(true);
-                else if (feature.href === "brensellagring-dialog") setShowBrensellagringDialog(true);
+                else if (feature.href === "brensellagring-dialog") {
+                  if (!isSubActive) { navigate("/brensellagring"); return; }
+                  setShowBrensellagringDialog(true);
+                }
                 else setShowFravikDialog(true);
               };
               return (
