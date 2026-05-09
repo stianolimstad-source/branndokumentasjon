@@ -1,62 +1,27 @@
 ## Mål
+La `stianolimstad@hotmail.com` starte helt på nytt med tom abonnementsstatus, slik at "Start gratis prøveperiode" vises og hele kjøpsflyten kan testes igjen.
 
-Bytte ut Paddle med Lovables innebygde Stripe-integrasjon. Vipps aktiveres i Stripe-dashbordet etter at kontoen er verifisert. Ingen aktive abonnenter, så ingen migrering av brukerdata kreves.
+## Hva som finnes nå
+Én rad i `subscriptions` for denne brukeren:
+- `stripe_subscription_id`: `sub_01kr395r0vktyd2g96yzca2fwm`
+- `status`: `trialing`, `cancel_at_period_end: true`
+- `environment`: `sandbox`, `current_period_end`: 2026-05-22
+
+Dette er en ekte Stripe sandbox-prøveperiode (ikke Paddle).
 
 ## Steg
 
-### 1. Aktivere Stripe Payments
-- Aktivere Lovables innebygde Stripe-integrasjon (ingen API-nøkkel kreves fra deg).
-- Opprette de samme to produktene som finnes i Paddle:
-  - **Branndok Pro Månedlig** — 500 kr/mnd
-  - **Branndok Pro Årlig** — 5 000 kr/år
-- Begge med 14 dagers gratis prøveperiode.
+1. **Kanseller abonnementet i Stripe sandbox** via en engangs `supabase--curl_edge_functions`-kall mot `cancel-subscription` med din innloggede sesjon — nei, går ikke siden vi er logget inn som annen bruker. I stedet: kall Stripe direkte fra en kort skript-kjøring i sandbox via en midlertidig edge-funksjon-curl, eller enklere — sett `status='canceled'` og fjerne raden lokalt, og la Stripe sandbox-suben "henge" (sandboxen er kun for test, ingen kostnad).
 
-### 2. Bygge om frontend til Stripe
-- Erstatte `src/lib/paddle.ts` med Stripe-klient (`src/lib/stripe.ts`).
-- Erstatte `src/hooks/usePaddleCheckout.ts` med `useStripeCheckout.ts`.
-- Oppdatere `src/hooks/useSubscription.tsx` til å lese fra Stripe-baserte abonnementsrader.
-- Oppdatere `src/pages/Abonnement.tsx`:
-  - Bytte ut Paddle-checkout med Stripe Checkout (redirect-flow).
-  - Bytte ut "kanseller/gjenoppta/bytt plan"-kall til nye Stripe edge functions.
-- Erstatte `src/components/PaymentTestModeBanner.tsx` slik at den leser Stripe test-mode i stedet for Paddle-token.
+2. **Slett DB-raden** via en migrasjon (DELETE-statement med eksplisitt `stripe_subscription_id`-filter for sikkerhet). Webhook vil ikke gjenskape raden så lenge ingen ny Stripe-event kommer.
 
-### 3. Bygge om backend (edge functions)
-Erstatte tre Paddle-funksjoner med tilsvarende Stripe-funksjoner:
-- `cancel-subscription` → bruker Stripe API
-- `change-subscription-plan` → bruker Stripe API (proration ved oppgradering)
-- `payments-webhook` → verifiserer Stripe-webhook signatur, oppdaterer `subscriptions`-tabellen
-- `get-paddle-price` slettes (ikke nødvendig — Stripe price IDs brukes direkte)
+3. **Gjenåpne preview** og logg inn som `stianolimstad@hotmail.com`. Du skal nå se de to plan-kortene med "Start gratis prøveperiode"-knapp og ingen "Administrer abonnement"-seksjon.
 
-### 4. Database
-- Beholde `subscriptions`-tabellen, men:
-  - Endre kolonnenavn: `paddle_subscription_id` → `stripe_subscription_id`, `paddle_customer_id` → `stripe_customer_id`.
-  - Beholde `environment`-kolonne ("test"/"live").
-- Tabellen er allerede tom (ingen aktive abonnenter), så migrering er trygg.
+## Teknisk note
+Vi sletter bare DB-raden. Den gamle Stripe sandbox-suben blir liggende inaktiv i sandbox (utløper 22. mai uansett, ingen reell kostnad). Hvis du vil ha den helt ryddet kan jeg legge til ett ekstra steg som kaller Stripe API for å kansellere suben umiddelbart — si fra om du ønsker det.
 
-### 5. Rydde opp
-- Slette Paddle-spesifikke filer: `supabase/functions/_shared/paddle.ts`, gamle Paddle-edge-functions.
-- Fjerne Paddle-pakken fra `package.json`.
-- Beholde Paddle-secrets i Supabase (de skader ikke noe — kan slettes manuelt senere).
-
-### 6. Vipps (etter Stripe er live)
-Vipps krever at Stripe-kontoen er verifisert først (samme prosess som Paddle: identitetsbekreftelse, bankdetaljer). Etter verifisering:
-- Aktivere Vipps som betalingsmetode i Stripe-dashbordet → **Settings → Payment methods → Vipps**.
-- Vipps dukker da automatisk opp som valg i checkout-en — ingen kodeendringer trengs.
-
-## Hva du må gjøre selv
-
-1. **I Stripe-dashbordet etter aktivering:** fylle ut samme info som i Paddle (org.nr., bankkonto i NOK, kontaktperson). Stripe verifiserer typisk på 1–2 dager.
-2. **Etter verifisering:** aktivere Vipps i Stripe-innstillingene.
-3. **Før publisering:** teste hele flyten i preview med Stripes testkort (`4242 4242 4242 4242`).
-
-## Hva som ikke endres
-
-- All annen funksjonalitet (brannkonsept, fraviksdokumentasjon, tilstandsvurdering osv.) er upåvirket.
-- Eier-tilgang for `stianolimstad@gmail.com` (full tilgang uten abonnement) bevares.
-- Prøveperiode på 14 dager bevares.
-- Pris og produktnavn er identiske.
-
-## Risiko
-
-- **Mellomperiode uten betaling:** Mens Stripe-kontoen verifiseres (1–2 dager), vil ikke live-checkout fungere. Du kan fortsatt teste i preview. Anbefaling: ikke publiser før Stripe er verifisert.
-- **Webhook-oppsett:** Lovable håndterer dette automatisk når Stripe aktiveres.
+## Etter implementering
+Test ny flyt:
+1. `/abonnement` → "Start gratis prøveperiode" på månedlig
+2. Kortnummer `4242 4242 4242 4242`, utløp `12/30`, CVC `123`
+3. Verifiser at status blir "Prøveperiode" og at "Administrer betaling og fakturaer"-knappen dukker opp
