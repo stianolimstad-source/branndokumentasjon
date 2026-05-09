@@ -19,6 +19,7 @@ interface ProjectOption { id: string; name: string; address: string | null; }
 
 const Index = () => {
   const { user, loading } = useAuth();
+  const { isActive: isSubActive } = useSubscription();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showConceptDialog, setShowConceptDialog] = useState(false);
