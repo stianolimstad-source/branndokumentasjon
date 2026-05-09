@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 import DashboardPanel from "@/components/dashboard/DashboardPanel";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -18,6 +19,7 @@ interface ProjectOption { id: string; name: string; address: string | null; }
 
 const Index = () => {
   const { user, loading } = useAuth();
+  const { isActive: isSubActive } = useSubscription();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showConceptDialog, setShowConceptDialog] = useState(false);
@@ -169,7 +171,10 @@ const Index = () => {
           {features.map((feature) => {
             if (feature.href === "dialog" || feature.href === "fravik-dialog" || feature.href === "tilstand-dialog" || feature.href === "brensellagring-dialog") {
               const handleClick = () => {
-                if (feature.href === "dialog") setShowConceptDialog(true);
+                if (feature.href === "dialog") {
+                  if (!isSubActive) { navigate("/konsept"); return; }
+                  setShowConceptDialog(true);
+                }
                 else if (feature.href === "tilstand-dialog") setShowTilstandDialog(true);
                 else if (feature.href === "brensellagring-dialog") setShowBrensellagringDialog(true);
                 else setShowFravikDialog(true);
