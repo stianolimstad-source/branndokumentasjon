@@ -67,7 +67,6 @@ Deno.serve(async (req) => {
     await stripe.subscriptions.update(sub.stripe_subscription_id as string, {
       items: [{ id: itemId, price: stripePriceId }],
       proration_behavior: prorationBehavior,
-      ...(subscription.status === "trialing" && { trial_end: "now" === "" ? undefined : (subscription as any).trial_end }),
     });
 
     return new Response(JSON.stringify({ ok: true }), {
