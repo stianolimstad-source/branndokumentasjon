@@ -123,6 +123,22 @@ async function handleSubscriptionDeleted(subscription: any, env: StripeEnv) {
   }
 }
 
+async function handleInvoicePaymentSucceeded(invoice: any, env: StripeEnv) {
+  const subscriptionId = invoice.subscription;
+  if (!subscriptionId) return;
+  // Skip $0 invoices (trial start) and the very first paid invoice (handled via subscription.created)
+  if (!invoice.amount_paid || invoice.amount_paid === 0) return;
+  if (invoice.billing_reason && !["subscription_cycle", "subscription_update"].includes(invoice.billing_reason)) return;
+  const userId = await findUserIdBySubscription(subscriptionId);
+  if (!userId) return;
+  await notify(
+    userId,
+    "payment_succeeded",
+    "Betaling mottatt",
+    "Abonnementet er fornyet. Takk for betalingen!",
+  );
+}
+
 async function handleInvoicePaymentFailed(invoice: any, env: StripeEnv) {
   const subscriptionId = invoice.subscription;
   if (!subscriptionId) return;
