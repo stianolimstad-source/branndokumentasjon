@@ -263,7 +263,11 @@ const Abonnement = () => {
                     {currentPeriodEnd && <> · {periodLabel}</>}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-2">
+                  <Button onClick={openPortal} className="w-full" disabled={actionLoading}>
+                    {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <CreditCard className="h-4 w-4 mr-2" />}
+                    Administrer betaling og fakturaer
+                  </Button>
                   {cancelAtPeriodEnd ? (
                     <Button onClick={() => runAction("resume")} variant="outline" className="w-full" disabled={actionLoading}>
                       {actionLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RotateCcw className="h-4 w-4 mr-2" />}
@@ -275,6 +279,9 @@ const Abonnement = () => {
                       Si opp abonnement
                     </Button>
                   )}
+                  <p className="text-xs text-muted-foreground text-center pt-1">
+                    Bytt kort, last ned kvitteringer og se fakturahistorikk i betalingsportalen (åpnes i ny fane).
+                  </p>
                 </CardContent>
               </Card>
             )}
