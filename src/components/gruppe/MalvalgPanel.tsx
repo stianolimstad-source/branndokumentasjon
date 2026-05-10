@@ -570,14 +570,6 @@ export default function MalvalgPanel({ groupId, groupName, logoUrl, profileLogoU
         </div>
       </CardContent>
 
-      <NyMalDialog
-        open={showNew}
-        onOpenChange={setShowNew}
-        groupId={groupId}
-        existingCount={templates.length}
-        onCreated={handleCreated}
-      />
-
       <AlertDialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
