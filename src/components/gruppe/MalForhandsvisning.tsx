@@ -185,6 +185,7 @@ export default function MalForhandsvisning({
             primaryColor: primary.replace(/^#/, ""),
             accentColor: accent.replace(/^#/, ""),
             fontFamily: font,
+            extras: { topbar_height: extras.topbar_height },
           }}
         />
       </div>
