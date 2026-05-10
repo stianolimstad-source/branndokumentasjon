@@ -292,8 +292,23 @@ export interface CoverOptions {
 
 export function buildCoverPage(theme: ResolvedTheme, opts: CoverOptions): Paragraph[] {
   const out: Paragraph[] = [];
-  const { template, primaryColor, accentColor, fontFamily, companyName } = theme;
+  const { template, primaryColor, accentColor, fontFamily, companyName, extras } = theme;
   const titleSize = template === "minimalistisk" ? 56 : 48;
+
+  // Decorative top bar (configurable via extras.topbar_height)
+  const topbarPx = TOPBAR_PX[extras.topbar_height];
+  if (topbarPx > 0) {
+    // Convert px ~ to docx border size (eighths of a point). 1px ≈ 0.75pt → size = px * 6
+    out.push(
+      new Paragraph({
+        spacing: { before: 0, after: 200 },
+        border: {
+          bottom: { style: BorderStyle.SINGLE, size: Math.max(6, Math.round(topbarPx * 6)), color: primaryColor, space: 1 },
+        },
+        children: [],
+      }),
+    );
+  }
 
   // Logo
   if (opts.logo) {
