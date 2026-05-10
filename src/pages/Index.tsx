@@ -174,7 +174,7 @@ const Index = () => {
       </section>
 
       {/* Features Grid */}
-      <section className="container mx-auto px-4 py-12">
+      <section className="container mx-auto px-3 sm:px-4 py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {features.map((feature) => {
             if (feature.href === "dialog" || feature.href === "fravik-dialog" || feature.href === "tilstand-dialog" || feature.href === "brensellagring-dialog") {
