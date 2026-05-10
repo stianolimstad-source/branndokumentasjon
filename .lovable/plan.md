@@ -1,60 +1,25 @@
-# "Mer info"-knapp og info-side
-
 ## Mål
-Legge til en liten "Mer info"-knapp under hero-teksten på forsiden (kun synlig for ikke-innloggede besøkende), som tar brukeren til en ny side `/om` med en utfyllende beskrivelse av Branndokumentasjon.no.
+Fjerne den åpne SELECT-policyen på `profiles` som lar alle innloggede brukere lese alle profiler, og erstatte den med en sikker server-side funksjon som kun returnerer minimal info (id, navn, e-post) for én spesifikk e-post om gangen.
 
-## 1. Knapp på forsiden
-I `src/pages/Index.tsx` (rundt linje 156–164, i ikke-innlogget-grenen):
-- Under `<p>` med teksten "Komplett verktøykasse…" legges en `<Link to="/om">` med `Button variant="outline" size="sm"` og ikon `Info` fra lucide. Tekst: "Mer info".
-- Sentreres under teksten med litt topp-margin (`pt-2`).
+## Endringer
 
-## 2. Ny side `src/pages/Om.tsx`
-Rute: `/om`. Bruker eksisterende global `AppHeader`. Layout `container max-w-3xl`, samme `bg-gradient-subtle` som Kontakt-siden.
+### 1. Database (migrasjon)
+- **Fjern policy** `"Authenticated users can lookup profiles by email"` på `public.profiles`.
+- **Behold** eksisterende sikre policies (`Users can view own profile`, `Users can view group member profiles`, `Users can insert/update own profile`).
+- **Opprett SECURITY DEFINER-funksjon** `public.lookup_profile_by_email(_email text)` som:
+  - Krever innlogget bruker (`auth.uid() IS NOT NULL`).
+  - Returnerer kun `id`, `full_name`, `email` for nøyaktig én treff.
+  - Returnerer ingenting (tom) hvis e-post ikke finnes — ingen lekkasje av andre felt som `phone`, `company`, `logo_url`, `title`, `education`.
 
-### Innhold (norsk, profesjonell tone)
+### 2. Frontend-tilpasning
+Oppdater stedene som slår opp profiler på e-post for å bruke den nye RPC-funksjonen i stedet for direkte tabell-spørring:
+- `src/components/gruppe/AddMemberDialog.tsx` — bytt `.from("profiles").select(...).eq("email", ...)` til `supabase.rpc("lookup_profile_by_email", { _email: ... })`.
+- Søk gjennom resten av kodebasen etter andre steder som gjør oppslag på `profiles` via e-post (f.eks. kontakt-/deling-flyt) og oppdater tilsvarende.
 
-**Tittel:** Om Branndokumentasjon.no
+### 3. Verifisering
+- Test "Legg til medlem"-dialogen: oppslag på eksisterende e-post skal fortsatt fungere.
+- Test at oppslag på ukjent e-post gir riktig feilmelding ("Ingen bruker funnet").
+- Bekreft at sikkerhetsfunnet `profiles_public_readable` markeres som løst.
 
-**Ingress:**
-> Branndokumentasjon.no er et komplett digitalt verktøy laget av en brannrådgiver for brannrådgivere. Appen samler hele arbeidsflyten – fra brannkonseptet starter, via beregninger og fraviksanalyser, til ferdig dokumentasjon leveres til kunde.
-
-**Seksjoner (hver med ikon + tittel + brødtekst i `Card`):**
-
-1. **For hvem? — `Users`-ikon**
-   Branndokumentasjon.no er utviklet for brannrådgivere, branntekniske prosjekterende og rådgivende ingeniører som jobber med brannprosjektering, tilstandsvurderinger og brannteknisk dokumentasjon. Verktøyet egner seg både for selvstendige rådgivere og rådgiverfirmaer som ønsker å effektivisere arbeidsflyten og heve kvaliteten på leveransene.
-
-2. **Brannkonsept etter TEK17 — `FileText`-ikon**
-   Lag komplette brannkonsepter forankret i TEK17, VTEK og relevante byggforskrifter. Appen genererer strukturerte kapitler om bæreevne, brannspredning, branncellearealer, rømning, slokkeanlegg, manuell slokking og innsatsmannskap – med automatisk sammenstilling av krav på tvers av flere bygningsdeler.
-
-3. **Tilstandsvurdering av eksisterende bygg — `ClipboardCheck`-ikon**
-   Utfør branntekniske tilstandsvurderinger etter NS 3424, med støtte for både moderne TEK-bygg og eldre bygg etter Byggeforskrift 1985 (BF85). Bilder med EXIF-rotasjon, tilstandsgrader og kapittelstruktur håndteres automatisk i rapporten.
-
-4. **Fraviksdokumentasjon — `FileWarning`-ikon**
-   Kvalitative og kvantitative fraviksanalyser etter Byggforsk 321.026, med integrerte beregningsverktøy (stråling, flammehøyde, brannenergi, persontall, brannmotstand m.m.) som dokumenteres direkte inn i analysen.
-
-5. **Beregningsverktøy — `Calculator`-ikon**
-   Et bibliotek av branntekniske beregningsverktøy: Solid Flame stråling, Heskestad flammehøyde, brannmotstand etter additiv komponentmetode, brannareal og røykventilasjon etter HO-3/2000, eksplosjonsavlastning, brensellagring etter DSB, og mer.
-
-6. **Samarbeid og kvalitetssikring — `ShieldCheck`-ikon**
-   Del prosjekter med kollegaer og grupper, tildel oppgaver, og kjør egen- og sidemannskontroll med snapshot. Logoer og maler kan tilpasses per gruppe slik at ferdig Word-/PDF-dokumentasjon får riktig profil.
-
-7. **Eksempelkatalog — `BookOpen`-ikon**
-   Bla i en katalog av verifiserte løsninger for branntekniske konstruksjoner og brannfarlige stoffer, med referanser til SINTEF, Norgips og relevante kilder.
-
-**Avsluttende CTA-blokk:**
-> Vil du prøve verktøyet eller har spørsmål? [Opprett konto] [Kontakt oss]
-
-To knapper: `Link to="/auth"` og `Link to="/kontakt"`.
-
-## 3. Rute
-Legge til `<Route path="/om" element={<Om />} />` i `src/App.tsx`.
-
-## Tekniske detaljer
-- Bruker semantiske design-tokens (ingen hardkodede farger).
-- Ikoner i `bg-primary/10 text-primary`-bokser, samme stil som Kontakt-siden.
-- Responsivt med `max-w-3xl` container.
-- Ingen backend-endringer.
-
-## Ute av scope
-- Lenke i header eller meny (kun knapp på forsiden).
-- Skjema, video, eller bilder.
+## Resultat
+Etter endringen kan ingen innlogget bruker lenger laste ned hele profil-tabellen. Gruppeinvitasjon via e-post fungerer som før, men avslører kun id + navn for den spesifikke e-posten som slås opp — ikke telefon, firma eller andre personopplysninger.
