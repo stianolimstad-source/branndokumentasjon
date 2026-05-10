@@ -264,6 +264,12 @@ const GruppeDetalj = () => {
                 Logo
               </TabsTrigger>
             )}
+            {isAdmin && (
+              <TabsTrigger value="maler" className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4" />
+                Maler
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="medlemmer">
