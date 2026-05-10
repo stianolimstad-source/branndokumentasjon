@@ -84,9 +84,9 @@ const AppHeader = () => {
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      <Menu className="h-4 w-4 mr-2" />
-                      Meny
+                    <Button variant="outline" size="sm" className="px-2 sm:px-3">
+                      <Menu className="h-4 w-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Meny</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56 z-50 bg-popover">
