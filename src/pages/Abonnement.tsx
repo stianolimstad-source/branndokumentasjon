@@ -209,14 +209,15 @@ const Abonnement = () => {
                 price="5 000 kr"
                 originalPrice="10 000 kr"
                 period="/år"
-                badge="Spar ~17%"
+                badge={YEARLY_LOCKED ? "Kommer snart" : "Spar ~17%"}
                 priceId={YEARLY_ID}
                 state={{ kind: "purchase" }}
                 onPurchase={(id) => openCheckout(id)}
                 onSwitch={() => {}}
                 actionLoading={false}
                 checkoutLoading={checkoutLoading}
-                recommended
+                recommended={!YEARLY_LOCKED}
+                locked={YEARLY_LOCKED}
               />
             </div>
             <Card className="max-w-md mx-auto text-center">
