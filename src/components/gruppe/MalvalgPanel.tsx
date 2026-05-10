@@ -38,7 +38,6 @@ import {
   getTemplateDefaults,
 } from "@/lib/document-templates";
 import MalForhandsvisning from "./MalForhandsvisning";
-import NyMalDialog from "./NyMalDialog";
 
 interface Props {
   groupId: string;
