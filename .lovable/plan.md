@@ -1,32 +1,31 @@
 ## Mål
-Fjerne muligheten for at en innlogget bruker kan legge seg selv inn i en hvilken som helst gruppe (spesielt som admin). Kun gruppe-administratorer skal kunne legge til medlemmer.
+Legge til manglende UPDATE-policy på storage-bøtta `tilstandsvurdering-images` slik at kun eieren av en fil (basert på mappenavn = bruker-id) kan overskrive sine egne bilder.
 
 ## Endring (kun database)
 
-Erstatt INSERT-policyen på `public.group_members`:
+Opprette én ny RLS-policy på `storage.objects`:
 
-**Før:**
+```sql
+CREATE POLICY "Users can update own tilstandsvurdering images"
+ON storage.objects
+FOR UPDATE
+TO authenticated
+USING (
+  bucket_id = 'tilstandsvurdering-images'
+  AND (storage.foldername(name))[1] = auth.uid()::text
+)
+WITH CHECK (
+  bucket_id = 'tilstandsvurdering-images'
+  AND (storage.foldername(name))[1] = auth.uid()::text
+);
 ```
-WITH CHECK: auth.uid() = user_id OR is_group_admin(group_id, auth.uid())
-```
-
-**Etter:**
-```
-WITH CHECK: is_group_admin(group_id, auth.uid())
-```
-
-Dette betyr:
-- Kun eksisterende admins kan legge til nye medlemmer i en gruppe.
-- Den første admin (gruppe-oppretter) legges fortsatt til automatisk via triggeren `auto_add_group_admin`, som kjører med SECURITY DEFINER og dermed ikke berøres av RLS — så oppretting av nye grupper fungerer som før.
-- "Legg til medlem"-dialogen fungerer som før, fordi den brukes av admin.
 
 ## Hva endres ikke
-- DELETE-policyen beholdes som den er (`auth.uid() = user_id OR is_group_admin(...)`), slik at brukere fortsatt kan **forlate** en gruppe selv.
-- Ingen frontend-endringer nødvendig.
+- Ingen frontend-endringer.
+- Eksisterende INSERT-, SELECT- og DELETE-policyer beholdes uendret.
+- Bøtta forblir public (lesbar for visning i rapporter).
 
 ## Verifisering
-- Opprett ny gruppe → oppretter blir automatisk admin (trigger).
-- Som admin: legg til medlem via dialog → fungerer.
-- Som vanlig bruker: forsøk å selv-insert i annen gruppe via direkte spørring → blokkeres av RLS.
-- Forlat gruppe → fungerer fortsatt.
-- Marker sikkerhetsfunnet `group_members_privilege_escalation` som løst.
+- Last opp et bilde som bruker A → fungerer.
+- Forsøk å overskrive bilde fra bruker A som bruker B → blokkeres.
+- Marker sikkerhetsfunnet `tilstandsvurdering_images_no_update_policy` som løst.
