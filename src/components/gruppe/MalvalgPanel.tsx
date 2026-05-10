@@ -324,8 +324,8 @@ export default function MalvalgPanel({ groupId, groupName, logoUrl, profileLogoU
         <div>
           <div className="flex items-center justify-between mb-3">
             <Label className="text-sm font-medium">Mine maler</Label>
-            <Button size="sm" variant="outline" onClick={() => setShowNew(true)}>
-              <Plus className="h-4 w-4 mr-1" /> Ny mal
+            <Button size="sm" variant="outline" onClick={handleCreate} disabled={creating}>
+              {creating ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Plus className="h-4 w-4 mr-1" />} Ny mal
             </Button>
           </div>
           {loading ? (
