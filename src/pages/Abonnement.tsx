@@ -388,6 +388,7 @@ interface PlanCardProps {
   priceId: string;
   badge?: string;
   recommended?: boolean;
+  locked?: boolean;
   state: CardState;
   checkoutLoading: boolean;
   actionLoading: boolean;
@@ -395,7 +396,7 @@ interface PlanCardProps {
   onSwitch: (target: "to_yearly" | "to_monthly") => void;
 }
 
-const PlanCard = ({ title, price, originalPrice, period, priceId, badge, recommended, state, checkoutLoading, actionLoading, onPurchase, onSwitch }: PlanCardProps) => {
+const PlanCard = ({ title, price, originalPrice, period, priceId, badge, recommended, locked, state, checkoutLoading, actionLoading, onPurchase, onSwitch }: PlanCardProps) => {
   const isCurrent = state.kind === "current";
   return (
     <Card className={`${recommended ? "border-primary shadow-medium" : ""} ${isCurrent ? "ring-2 ring-primary" : ""}`}>
