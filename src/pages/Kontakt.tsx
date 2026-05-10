@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Phone } from "lucide-react";
+import { Mail, Phone, FileCog, Handshake } from "lucide-react";
 
 const Kontakt = () => {
   return (
@@ -44,7 +44,45 @@ const Kontakt = () => {
           </CardContent>
         </Card>
 
-        {/* Mer innhold (om oss / info) kan legges til her senere */}
+        <div className="space-y-6 mt-6">
+          <Card className="shadow-soft">
+            <CardHeader>
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <FileCog className="h-5 w-5" />
+                </div>
+                <div>
+                  <CardTitle>Egne maler og spesialløsninger</CardTitle>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground leading-relaxed">
+                Trenger bedriften din egne maler eller andre spesialløsninger for å bruke
+                Branndokumentasjon.no? Ta kontakt, så finner vi en løsning som passer dere.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-soft">
+            <CardHeader>
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <Handshake className="h-5 w-5" />
+                </div>
+                <div>
+                  <CardTitle>Samarbeid og videreutvikling</CardTitle>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground leading-relaxed">
+                Har du innspill, ønsker å samarbeide om videreutvikling av produktet, eller
+                vurderer å investere? Vi tar gjerne en uforpliktende prat.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
