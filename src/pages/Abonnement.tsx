@@ -437,32 +437,46 @@ const PlanCard = ({ title, price, originalPrice, period, priceId, badge, recomme
           ))}
         </ul>
 
-        {state.kind === "purchase" && (
-          <Button className="w-full" onClick={() => onPurchase(priceId)} disabled={checkoutLoading}>
-            {checkoutLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Start gratis prøveperiode"}
-          </Button>
-        )}
+        {locked ? (
+          <>
+            <Button className="w-full" variant="secondary" disabled>
+              <Lock className="h-4 w-4 mr-2" />
+              Kommer snart
+            </Button>
+            <p className="text-xs text-muted-foreground text-center">
+              Årlig abonnement åpnes senere. Velg månedlig i mellomtiden.
+            </p>
+          </>
+        ) : (
+          <>
+            {state.kind === "purchase" && (
+              <Button className="w-full" onClick={() => onPurchase(priceId)} disabled={checkoutLoading}>
+                {checkoutLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Start gratis prøveperiode"}
+              </Button>
+            )}
 
-        {state.kind === "current" && (
-          <Button className="w-full" variant="secondary" disabled>
-            <Check className="h-4 w-4 mr-2" />
-            Din nåværende plan
-          </Button>
-        )}
+            {state.kind === "current" && (
+              <Button className="w-full" variant="secondary" disabled>
+                <Check className="h-4 w-4 mr-2" />
+                Din nåværende plan
+              </Button>
+            )}
 
-        {state.kind === "switch" && (
-          <Button
-            className="w-full"
-            onClick={() => onSwitch(state.target)}
-            disabled={actionLoading}
-            variant={state.target === "to_yearly" ? "default" : "outline"}
-          >
-            {actionLoading
-              ? <Loader2 className="h-4 w-4 animate-spin" />
-              : state.target === "to_yearly"
-                ? <><ArrowUpCircle className="h-4 w-4 mr-2" />Bytt til årlig (spar ~17%)</>
-                : <>Bytt til månedlig</>}
-          </Button>
+            {state.kind === "switch" && (
+              <Button
+                className="w-full"
+                onClick={() => onSwitch(state.target)}
+                disabled={actionLoading}
+                variant={state.target === "to_yearly" ? "default" : "outline"}
+              >
+                {actionLoading
+                  ? <Loader2 className="h-4 w-4 animate-spin" />
+                  : state.target === "to_yearly"
+                    ? <><ArrowUpCircle className="h-4 w-4 mr-2" />Bytt til årlig (spar ~17%)</>
+                    : <>Bytt til månedlig</>}
+              </Button>
+            )}
+          </>
         )}
 
       </CardContent>
