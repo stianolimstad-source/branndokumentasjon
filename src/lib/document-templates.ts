@@ -24,11 +24,37 @@ export const TEMPLATE_OPTIONS: { id: TemplateId; name: string; description: stri
 
 export const FONT_OPTIONS = ["Arial", "Calibri", "Georgia", "Times New Roman", "Verdana"];
 
+export type TopbarHeight = "off" | "thin" | "thick" | "extra";
+export type LogoPosition = "left" | "center" | "right" | "hidden";
+export type DateFormat = "no-short" | "no-long" | "iso";
+export type CoverSpacing = "small" | "standard" | "large";
+
+export interface TemplateExtras {
+  topbar_height?: TopbarHeight;
+  logo_position?: LogoPosition;
+  footer_show_company?: boolean;
+  footer_show_page?: boolean;
+  footer_show_date?: boolean;
+  date_format?: DateFormat;
+  cover_spacing?: CoverSpacing;
+}
+
+export const DEFAULT_EXTRAS: Required<TemplateExtras> = {
+  topbar_height: "thick",
+  logo_position: "right",
+  footer_show_company: true,
+  footer_show_page: true,
+  footer_show_date: true,
+  date_format: "no-short",
+  cover_spacing: "standard",
+};
+
 export interface TemplateSettings {
   template?: TemplateId;
   primary_color?: string;
   accent_color?: string;
   font_family?: string;
+  extras?: TemplateExtras;
 }
 
 export interface ResolvedTheme {
@@ -38,13 +64,27 @@ export interface ResolvedTheme {
   fontFamily: string;
   logoUrl: string | null;
   companyName: string | null;
+  extras: Required<TemplateExtras>;
 }
 
-const DEFAULTS: Record<TemplateId, Required<Omit<TemplateSettings, "template">>> = {
+const DEFAULTS: Record<TemplateId, Required<Omit<TemplateSettings, "template" | "extras">>> = {
   klassisk: { primary_color: "1A4D8C", accent_color: "3B82F6", font_family: "Calibri" },
   moderne: { primary_color: "0F172A", accent_color: "F97316", font_family: "Arial" },
   minimalistisk: { primary_color: "111111", accent_color: "555555", font_family: "Georgia" },
 };
+
+export const TOPBAR_PX: Record<TopbarHeight, number> = {
+  off: 0,
+  thin: 18,
+  thick: 36,
+  extra: 54,
+};
+
+export function formatDate(d: Date, fmt: DateFormat): string {
+  if (fmt === "iso") return d.toISOString().slice(0, 10);
+  if (fmt === "no-long") return d.toLocaleDateString("nb-NO", { day: "numeric", month: "long", year: "numeric" });
+  return d.toLocaleDateString("nb-NO");
+}
 
 export function getTemplateDefaults(template: TemplateId) {
   const d = DEFAULTS[template];
@@ -78,11 +118,53 @@ export async function resolveDocumentTheme(
   let companyName: string | null = null;
   let resolvedFromGroup = false;
 
-  const applyGroup = (group: any) => {
-    if (!group) return;
-    settings = (group.template_settings || {}) as TemplateSettings;
-    if (group.logo_url) logoUrl = group.logo_url;
-    companyName = group.name || null;
+  // Helper: pick the group's default custom template if it exists, else fall back to template_settings
+  const fetchGroupSettings = async (groupId: string): Promise<{ name: string | null; logo_url: string | null; settings: TemplateSettings } | null> => {
+    const { data: group } = await supabase
+      .from("contact_groups")
+      .select("name, logo_url, template_settings")
+      .eq("id", groupId)
+      .maybeSingle();
+    if (!group) return null;
+
+    // Look for a custom default template
+    try {
+      const { data: customDefault } = await supabase
+        .from("group_templates" as any)
+        .select("base_template, primary_color, accent_color, font_family, settings")
+        .eq("group_id", groupId)
+        .eq("is_default", true)
+        .maybeSingle();
+      if (customDefault) {
+        const c = customDefault as any;
+        return {
+          name: (group as any).name ?? null,
+          logo_url: (group as any).logo_url ?? null,
+          settings: {
+            template: c.base_template as TemplateId,
+            primary_color: c.primary_color,
+            accent_color: c.accent_color,
+            font_family: c.font_family,
+            extras: (c.settings || {}) as TemplateExtras,
+          },
+        };
+      }
+    } catch {
+      // table may not exist yet in some envs — fall back
+    }
+
+    return {
+      name: (group as any).name ?? null,
+      logo_url: (group as any).logo_url ?? null,
+      settings: ((group as any).template_settings || {}) as TemplateSettings,
+    };
+  };
+
+  const applyGroup = (g: { name: string | null; logo_url: string | null; settings: TemplateSettings } | null) => {
+    if (!g) return;
+    settings = g.settings;
+    if (g.logo_url) logoUrl = g.logo_url;
+    companyName = g.name;
     resolvedFromGroup = true;
   };
 
@@ -97,12 +179,7 @@ export async function resolveDocumentTheme(
 
       const groupId = shares?.[0]?.group_id;
       if (groupId) {
-        const { data: group } = await supabase
-          .from("contact_groups")
-          .select("name, logo_url, template_settings")
-          .eq("id", groupId)
-          .maybeSingle();
-        applyGroup(group);
+        applyGroup(await fetchGroupSettings(groupId));
       }
     } catch {
       // Ignore — fall back to defaults
@@ -119,12 +196,7 @@ export async function resolveDocumentTheme(
       const defaultGroupId = (profile as any)?.default_template_group_id as string | null;
 
       if (defaultGroupId) {
-        const { data: group } = await supabase
-          .from("contact_groups")
-          .select("name, logo_url, template_settings")
-          .eq("id", defaultGroupId)
-          .maybeSingle();
-        applyGroup(group);
+        applyGroup(await fetchGroupSettings(defaultGroupId));
       }
 
       if (!resolvedFromGroup) {
@@ -133,15 +205,18 @@ export async function resolveDocumentTheme(
           .select("group_id")
           .eq("user_id", userId);
         const groupIds = (memberships ?? []).map((m: any) => m.group_id);
-        if (groupIds.length > 0) {
+        if (groupIds.length === 1) {
+          applyGroup(await fetchGroupSettings(groupIds[0]));
+        } else if (groupIds.length > 1) {
+          // Pick any group with non-empty template_settings
           const { data: groups } = await supabase
             .from("contact_groups")
-            .select("name, logo_url, template_settings")
+            .select("id, template_settings")
             .in("id", groupIds);
           const themed = (groups ?? []).filter(
             (g: any) => g.template_settings && Object.keys(g.template_settings).length > 0,
           );
-          if (themed.length === 1) applyGroup(themed[0]);
+          if (themed.length === 1) applyGroup(await fetchGroupSettings((themed[0] as any).id));
         }
       }
     } catch {
@@ -166,6 +241,7 @@ export function buildResolvedTheme(
     fontFamily: settings?.font_family || d.font_family,
     logoUrl,
     companyName,
+    extras: { ...DEFAULT_EXTRAS, ...(settings?.extras ?? {}) },
   };
 }
 
@@ -216,8 +292,23 @@ export interface CoverOptions {
 
 export function buildCoverPage(theme: ResolvedTheme, opts: CoverOptions): Paragraph[] {
   const out: Paragraph[] = [];
-  const { template, primaryColor, accentColor, fontFamily, companyName } = theme;
+  const { template, primaryColor, accentColor, fontFamily, companyName, extras } = theme;
   const titleSize = template === "minimalistisk" ? 56 : 48;
+
+  // Decorative top bar (configurable via extras.topbar_height)
+  const topbarPx = TOPBAR_PX[extras.topbar_height];
+  if (topbarPx > 0) {
+    // Convert px ~ to docx border size (eighths of a point). 1px ≈ 0.75pt → size = px * 6
+    out.push(
+      new Paragraph({
+        spacing: { before: 0, after: 200 },
+        border: {
+          bottom: { style: BorderStyle.SINGLE, size: Math.max(6, Math.round(topbarPx * 6)), color: primaryColor, space: 1 },
+        },
+        children: [],
+      }),
+    );
+  }
 
   // Logo
   if (opts.logo) {
@@ -316,21 +407,24 @@ export function buildCoverPage(theme: ResolvedTheme, opts: CoverOptions): Paragr
 
 export function buildHeader(theme: ResolvedTheme, opts: { logo?: { buffer: ArrayBuffer; width: number; height: number } | null; documentLabel?: string }): Header {
   const children: Paragraph[] = [];
-  if (opts.logo) {
-    // Smaller version for header
+  const pos = theme.extras.logo_position;
+  const align =
+    pos === "left" ? AlignmentType.LEFT : pos === "center" ? AlignmentType.CENTER : AlignmentType.RIGHT;
+
+  if (pos !== "hidden" && opts.logo) {
     const ratio = opts.logo.height / opts.logo.width;
     const w = Math.min(120, opts.logo.width);
     const h = Math.max(18, Math.round(w * ratio));
     children.push(
       new Paragraph({
-        alignment: AlignmentType.RIGHT,
+        alignment: align,
         children: [new ImageRun({ data: opts.logo.buffer, transformation: { width: w, height: h }, type: "png" })],
       }),
     );
-  } else if (opts.documentLabel) {
+  } else if (pos !== "hidden" && opts.documentLabel) {
     children.push(
       new Paragraph({
-        alignment: AlignmentType.RIGHT,
+        alignment: align,
         children: [new TextRun({ text: opts.documentLabel, size: 18, color: theme.primaryColor, font: theme.fontFamily })],
       }),
     );
@@ -341,19 +435,29 @@ export function buildHeader(theme: ResolvedTheme, opts: { logo?: { buffer: Array
 }
 
 export function buildFooter(theme: ResolvedTheme): Footer {
+  const { footer_show_company, footer_show_page, footer_show_date, date_format } = theme.extras;
+  const left = footer_show_date ? formatDate(new Date(), date_format) : "";
+  const center = footer_show_company ? (theme.companyName ?? "") : "";
+  const right = footer_show_page ? "Side " : "";
+
+  // Single centered line if only one element, otherwise three-column with tabs
+  const runs: TextRun[] = [];
+  if (left) runs.push(new TextRun({ text: left, size: 16, color: "888888", font: theme.fontFamily }));
+  if (center) {
+    if (runs.length) runs.push(new TextRun({ text: "   •   ", size: 16, color: "AAAAAA", font: theme.fontFamily }));
+    runs.push(new TextRun({ text: center, size: 16, color: "888888", font: theme.fontFamily }));
+  }
+  if (right) {
+    if (runs.length) runs.push(new TextRun({ text: "   •   ", size: 16, color: "AAAAAA", font: theme.fontFamily }));
+    runs.push(new TextRun({ text: right, size: 16, color: "888888", font: theme.fontFamily }));
+  }
+
   return new Footer({
     children: [
       new Paragraph({
         alignment: AlignmentType.CENTER,
         border: { top: { style: BorderStyle.SINGLE, size: 6, color: theme.accentColor, space: 4 } },
-        children: [
-          new TextRun({
-            text: theme.companyName ?? "",
-            size: 16,
-            color: "888888",
-            font: theme.fontFamily,
-          }),
-        ],
+        children: runs.length ? runs : [new TextRun({ text: "", font: theme.fontFamily })],
       }),
     ],
   });

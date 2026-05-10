@@ -25,7 +25,7 @@ interface KonseptPreviewProps {
   authorInfo?: { name: string; company: string } | null;
   documentType?: "brannkonsept" | "tilstandsvurdering";
   hideCover?: boolean;
-  theme?: { template?: "klassisk" | "moderne" | "minimalistisk"; primaryColor: string; accentColor: string; fontFamily: string; companyName?: string | null } | null;
+  theme?: { template?: "klassisk" | "moderne" | "minimalistisk"; primaryColor: string; accentColor: string; fontFamily: string; companyName?: string | null; extras?: { topbar_height?: "off" | "thin" | "thick" | "extra" } } | null;
 }
 
 const gradColors: Record<string, { bg: string; text: string; label: string }> = {
@@ -230,7 +230,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         // klassisk (default)
         return (
           <div className={pageStyle} style={{ ...pageWidth, padding: 0, overflow: "hidden" }}>
-            <div style={{ background: primary, height: 36 }} />
+            {(() => { const tb = ({ off: 0, thin: 18, thick: 36, extra: 54 } as const)[theme?.extras?.topbar_height ?? "thick"]; return tb > 0 ? <div style={{ background: primary, height: tb }} /> : null; })()}
             <div className="flex flex-col items-center text-center px-12 pt-28 pb-24" style={{ minHeight: "calc(260mm - 18px)" }}>
               <Logo className="max-h-28 mb-12" />
               <h1 className="text-5xl font-bold mb-3" style={{ color: primary, fontFamily: font }}>{title}</h1>

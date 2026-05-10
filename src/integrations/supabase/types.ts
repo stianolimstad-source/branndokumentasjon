@@ -277,6 +277,59 @@ export type Database = {
           },
         ]
       }
+      group_templates: {
+        Row: {
+          accent_color: string
+          base_template: string
+          created_at: string
+          font_family: string
+          group_id: string
+          id: string
+          is_default: boolean
+          name: string
+          primary_color: string
+          settings: Json
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          accent_color: string
+          base_template: string
+          created_at?: string
+          font_family: string
+          group_id: string
+          id?: string
+          is_default?: boolean
+          name: string
+          primary_color: string
+          settings?: Json
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          accent_color?: string
+          base_template?: string
+          created_at?: string
+          font_family?: string
+          group_id?: string
+          id?: string
+          is_default?: boolean
+          name?: string
+          primary_color?: string
+          settings?: Json
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_templates_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "contact_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string

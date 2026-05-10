@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TemplateId } from "@/lib/document-templates";
+import { TemplateId, TemplateExtras, DEFAULT_EXTRAS, TOPBAR_PX, formatDate } from "@/lib/document-templates";
 import KonseptPreview from "@/components/konsept/KonseptPreview";
 
 interface Props {
@@ -9,6 +9,7 @@ interface Props {
   font: string;
   logoUrl: string | null;
   groupName: string;
+  extras?: TemplateExtras;
 }
 
 export default function MalForhandsvisning({
@@ -18,8 +19,10 @@ export default function MalForhandsvisning({
   font,
   logoUrl,
   groupName,
+  extras: extrasProp,
 }: Props) {
-  const today = new Date().toLocaleDateString("nb-NO");
+  const extras = { ...DEFAULT_EXTRAS, ...(extrasProp ?? {}) };
+  const today = formatDate(new Date(), extras.date_format);
   const title = "Brannkonsept";
   const subtitle = "Eksempel på dokumentutseende";
   const projectName = "Demo Prosjekt AS – Kontorbygg";
@@ -55,6 +58,12 @@ export default function MalForhandsvisning({
 
   // ---------- Cover page (themed by template) ----------
 
+  const footerParts = [
+    extras.footer_show_date ? today : null,
+    extras.footer_show_company ? groupName : null,
+    extras.footer_show_page ? "Side 1" : null,
+  ].filter(Boolean) as string[];
+
   const CoverWrap = ({ children }: { children: React.ReactNode }) => (
     <div
       className="relative mx-auto bg-white text-black shadow-elegant rounded-sm overflow-hidden"
@@ -66,20 +75,29 @@ export default function MalForhandsvisning({
       }}
     >
       {children}
-      <div
-        className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-8 py-2 text-[10px]"
-        style={{ borderTop: `1px solid ${accent}`, color: "#666" }}
-      >
-        <span>{today}</span>
-        <span>Side 1</span>
-      </div>
+      {footerParts.length > 0 && (
+        <div
+          className="absolute bottom-0 left-0 right-0 flex items-center justify-center gap-3 px-8 py-2 text-[10px]"
+          style={{ borderTop: `1px solid ${accent}`, color: "#666" }}
+        >
+          {footerParts.map((p, i) => (
+            <span key={i} className="flex items-center gap-3">
+              {i > 0 && <span style={{ color: "#bbb" }}>•</span>}
+              {p}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 
+  const topbarPx = TOPBAR_PX[extras.topbar_height];
+  const coverTopPad = extras.cover_spacing === "small" ? 56 : extras.cover_spacing === "large" ? 160 : 112;
+
   const CoverKlassisk = () => (
     <CoverWrap>
-      <div style={{ background: primary, height: 36 }} />
-      <div className="flex flex-col items-center text-center px-12 pt-28">
+      {topbarPx > 0 && <div style={{ background: primary, height: topbarPx }} />}
+      <div className="flex flex-col items-center text-center px-12" style={{ paddingTop: coverTopPad }}>
         <LogoOrPlaceholder className="max-h-28 mb-12" />
         <h1 className="text-5xl font-bold mb-3" style={{ color: primary, fontFamily: font }}>
           {title}
@@ -167,6 +185,7 @@ export default function MalForhandsvisning({
             primaryColor: primary.replace(/^#/, ""),
             accentColor: accent.replace(/^#/, ""),
             fontFamily: font,
+            extras: { topbar_height: extras.topbar_height },
           }}
         />
       </div>
