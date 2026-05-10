@@ -1,33 +1,36 @@
-## Problem
+## Mål
+Lås den årlige abonnementsplanen midlertidig på `/abonnement`. Månedlig plan forblir den eneste kjøpbare planen inntil videre. Ingen endringer i Stripe-priser eller backend – kun UI.
 
-På mobilvisning (390px) blir høyre side av forsiden kuttet. Hovedårsaken er den globale `AppHeader`: logo + tittel + flere knapper med tekst (Kontakt, Tema, Bell, Meny / Logg inn) tar mer plass enn 390px tillater og presses ut av skjermen. I tillegg har "Velkommen tilbake / Fullt dashboard"-raden på forsiden tekst som kan overflowe.
+## Endringer i `src/pages/Abonnement.tsx`
 
-## Endringer (kun frontend / presentasjon)
+1. **Legg til en konstant** `YEARLY_LOCKED = true` øverst slik at vi enkelt kan skru på årlig igjen senere ved å sette den til `false`.
 
-### 1. `src/components/AppHeader.tsx`
-Gjør header responsiv uten å fjerne funksjonalitet:
-- **Logo-tittel**: Skjul tekst "Branndokumentasjon.no" på `< sm` (vis bare flammeikonet). Behold full tekst fra `sm:` og oppover.
-- **Kontakt-knapp** (kun synlig på "/"): På mobil → ikon-only (`size="icon"`), behold label fra `sm:`.
-- **Meny-knapp** (innlogget): På mobil → ikon-only (skjul "Meny"-label, fjern `mr-2` på ikon), behold label fra `sm:`.
-- **Logg inn-knapp** (utlogget): På mobil → ikon-only, label fra `sm:`.
-- Reduser `gap-2` til `gap-1` på mobil for høyre-gruppen (`gap-1 sm:gap-2`).
-- Reduser ytre container-padding på mobil (`px-3 sm:px-4`) for å gi litt ekstra plass.
+2. **Skjul "Spar ~17%"-badge** og fjern `recommended`-uthevingen fra årlig-kortet når låst.
 
-### 2. `src/pages/Index.tsx`
-Sikre at heltest-raden ikke skaper overflow:
-- "Velkommen tilbake"-raden: la `flex` wrappe på mobil (`flex-col sm:flex-row sm:items-center sm:justify-between gap-3`) slik at "Fullt dashboard"-knappen havner under på smale skjermer.
-- Reduser hero-section vertikal padding på mobil (`py-8 sm:py-16`) for å hindre at innholdet skyves langt ned.
-- Container-padding: `px-3 sm:px-4` for mer breddebudsjett.
+3. **Erstatt knappen i årlig-kortet** med en deaktivert "Kommer snart"-knapp (med låseikon). Bruk `disabled` + tydelig tekst:
+   - Tittel-badge: "Kommer snart" i stedet for "Spar ~17%"
+   - Knapp: `<Button disabled>Kommer snart</Button>`
+   - Liten beskrivelse under: "Årlig abonnement åpnes senere."
 
-### 3. `src/App.css` (opprydding)
-Fjern den ubrukte Vite-default-CSS-en (`#root { max-width: 1280px; padding: 2rem; text-align: center; ... }`). Filen er ikke importert noe sted, men forvirrer fremtidige endringer. Erstatt med en tom kommentar eller slett innholdet.
+4. **Layout-justering**: Når årlig er låst, vis månedlig-kortet sentrert og smalere (f.eks. `max-w-md mx-auto`) slik at siden ikke ser tom ut, i stedet for to-kolonners grid. Behold årlig-kortet synlig som "kommer snart" til høyre på desktop (grid beholdes), men uten kjøpsmulighet — dette signaliserer at det kommer.
 
-## Verifisering
-- Vis forsiden på 390px: header skal ha alle knapper synlige uten kutt; tittel-tekst skjult, kun ikon vises.
-- Sjekk både utlogget (Kontakt + Tema + Logg inn) og innlogget (Tema + Bell + Meny) tilstand.
-- Test på 360px (Galaxy S) og 414px (iPhone Pro Max) at ingenting kuttes og ingen horisontal scroll oppstår.
-- Sjekk at desktop (≥`sm` 640px) ser ut som før med all tekst på knapper.
+   Anbefalt: behold 2-kolonners grid med begge kortene synlige, men årlig-kortet er låst. Dette gir best forventningsstyring.
+
+5. **Nåværende abonnenter på årlig**: Hvis en bruker allerede har årlig (`priceId === YEARLY_ID`), skal kortet fortsatt vises som "Din plan" med riktig status og administrasjonsmuligheter (avbestill/fornye via portal). De skal IKKE blokkeres. Logikken `stateFor(YEARLY_ID)` returnerer `current` for disse — vi viser da kortet normalt uten "Kommer snart"-låsen.
+
+6. **Skjul "Bytt til årlig"-mulighet**: I `stateFor`, når `cardPlan === YEARLY_ID && priceId === MONTHLY_ID && YEARLY_LOCKED`, returner `{ kind: "purchase" }` men i UI vis låst "Kommer snart" i stedet (siden brukeren ikke skal kunne bytte til en låst plan).
+
+## Logikk-oppsummering for årlig-kortet
+- Hvis bruker har YEARLY allerede → vis normalt som "Din plan" (admin)
+- Ellers (uansett om innlogget eller ikke, månedlig eller ingen abonnement) → vis låst "Kommer snart"-versjon
 
 ## Ikke i scope
-- Ingen endringer i forretningslogikk, datakilder, RLS eller routing.
-- Ingen endring av selve dashboardpanelet eller funksjonskortene (de wrapper allerede til 1 kolonne på mobil).
+- Ingen endringer i Stripe-produkter, priser, edge-funksjoner eller database
+- Ingen endringer i `useSubscription`, `useStripeCheckout` eller webhook-håndtering
+- Ingen endringer i `MONTHLY_ID`/`YEARLY_ID`-konstantene
+
+## Verifisering
+- Ikke innlogget: månedlig kjøpbar, årlig viser "Kommer snart"
+- Innlogget uten abonnement: månedlig kjøpbar, årlig låst
+- Innlogget med månedlig: ingen "Bytt til årlig"-knapp, årlig viser "Kommer snart"
+- Innlogget med årlig (legacy): årlig viser "Din plan" + admin
