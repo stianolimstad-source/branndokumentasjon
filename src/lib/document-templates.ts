@@ -24,11 +24,37 @@ export const TEMPLATE_OPTIONS: { id: TemplateId; name: string; description: stri
 
 export const FONT_OPTIONS = ["Arial", "Calibri", "Georgia", "Times New Roman", "Verdana"];
 
+export type TopbarHeight = "off" | "thin" | "thick" | "extra";
+export type LogoPosition = "left" | "center" | "right" | "hidden";
+export type DateFormat = "no-short" | "no-long" | "iso";
+export type CoverSpacing = "small" | "standard" | "large";
+
+export interface TemplateExtras {
+  topbar_height?: TopbarHeight;
+  logo_position?: LogoPosition;
+  footer_show_company?: boolean;
+  footer_show_page?: boolean;
+  footer_show_date?: boolean;
+  date_format?: DateFormat;
+  cover_spacing?: CoverSpacing;
+}
+
+export const DEFAULT_EXTRAS: Required<TemplateExtras> = {
+  topbar_height: "thick",
+  logo_position: "right",
+  footer_show_company: true,
+  footer_show_page: true,
+  footer_show_date: true,
+  date_format: "no-short",
+  cover_spacing: "standard",
+};
+
 export interface TemplateSettings {
   template?: TemplateId;
   primary_color?: string;
   accent_color?: string;
   font_family?: string;
+  extras?: TemplateExtras;
 }
 
 export interface ResolvedTheme {
@@ -38,13 +64,27 @@ export interface ResolvedTheme {
   fontFamily: string;
   logoUrl: string | null;
   companyName: string | null;
+  extras: Required<TemplateExtras>;
 }
 
-const DEFAULTS: Record<TemplateId, Required<Omit<TemplateSettings, "template">>> = {
+const DEFAULTS: Record<TemplateId, Required<Omit<TemplateSettings, "template" | "extras">>> = {
   klassisk: { primary_color: "1A4D8C", accent_color: "3B82F6", font_family: "Calibri" },
   moderne: { primary_color: "0F172A", accent_color: "F97316", font_family: "Arial" },
   minimalistisk: { primary_color: "111111", accent_color: "555555", font_family: "Georgia" },
 };
+
+export const TOPBAR_PX: Record<TopbarHeight, number> = {
+  off: 0,
+  thin: 18,
+  thick: 36,
+  extra: 54,
+};
+
+export function formatDate(d: Date, fmt: DateFormat): string {
+  if (fmt === "iso") return d.toISOString().slice(0, 10);
+  if (fmt === "no-long") return d.toLocaleDateString("nb-NO", { day: "numeric", month: "long", year: "numeric" });
+  return d.toLocaleDateString("nb-NO");
+}
 
 export function getTemplateDefaults(template: TemplateId) {
   const d = DEFAULTS[template];
