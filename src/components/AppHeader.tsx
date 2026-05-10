@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Flame, LogIn, LogOut, FolderOpen, Users, Bell, X, Menu, User, ClipboardCheck, LayoutDashboard, CreditCard } from "lucide-react";
+import { Flame, LogIn, LogOut, FolderOpen, Users, Bell, X, Menu, User, ClipboardCheck, LayoutDashboard, CreditCard, Mail } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useNotifications } from "@/hooks/useNotifications";
 
@@ -11,6 +11,8 @@ const AppHeader = () => {
   const { user, loading, signOut } = useAuth();
   const { notifications, unreadCount, markAllRead, deleteNotification } = useNotifications();
   const navigate = useNavigate();
+  const location = useLocation();
+  const showContactLink = location.pathname === "/";
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -23,6 +25,14 @@ const AppHeader = () => {
             <h1 className="text-base sm:text-xl font-bold truncate">Branndokumentasjon.no</h1>
           </Link>
           <div className="flex items-center gap-2">
+            {showContactLink && (
+              <Link to="/kontakt">
+                <Button variant="ghost" size="sm">
+                  <Mail className="h-4 w-4 mr-2" />
+                  Kontakt
+                </Button>
+              </Link>
+            )}
             <ThemeToggle />
             {loading ? null : user ? (
               <div className="flex items-center gap-2">
