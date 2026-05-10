@@ -19,8 +19,10 @@ export default function MalForhandsvisning({
   font,
   logoUrl,
   groupName,
+  extras: extrasProp,
 }: Props) {
-  const today = new Date().toLocaleDateString("nb-NO");
+  const extras = { ...DEFAULT_EXTRAS, ...(extrasProp ?? {}) };
+  const today = formatDate(new Date(), extras.date_format);
   const title = "Brannkonsept";
   const subtitle = "Eksempel på dokumentutseende";
   const projectName = "Demo Prosjekt AS – Kontorbygg";
