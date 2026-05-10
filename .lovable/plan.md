@@ -1,25 +1,32 @@
 ## Mål
-Fjerne den åpne SELECT-policyen på `profiles` som lar alle innloggede brukere lese alle profiler, og erstatte den med en sikker server-side funksjon som kun returnerer minimal info (id, navn, e-post) for én spesifikk e-post om gangen.
+Fjerne muligheten for at en innlogget bruker kan legge seg selv inn i en hvilken som helst gruppe (spesielt som admin). Kun gruppe-administratorer skal kunne legge til medlemmer.
 
-## Endringer
+## Endring (kun database)
 
-### 1. Database (migrasjon)
-- **Fjern policy** `"Authenticated users can lookup profiles by email"` på `public.profiles`.
-- **Behold** eksisterende sikre policies (`Users can view own profile`, `Users can view group member profiles`, `Users can insert/update own profile`).
-- **Opprett SECURITY DEFINER-funksjon** `public.lookup_profile_by_email(_email text)` som:
-  - Krever innlogget bruker (`auth.uid() IS NOT NULL`).
-  - Returnerer kun `id`, `full_name`, `email` for nøyaktig én treff.
-  - Returnerer ingenting (tom) hvis e-post ikke finnes — ingen lekkasje av andre felt som `phone`, `company`, `logo_url`, `title`, `education`.
+Erstatt INSERT-policyen på `public.group_members`:
 
-### 2. Frontend-tilpasning
-Oppdater stedene som slår opp profiler på e-post for å bruke den nye RPC-funksjonen i stedet for direkte tabell-spørring:
-- `src/components/gruppe/AddMemberDialog.tsx` — bytt `.from("profiles").select(...).eq("email", ...)` til `supabase.rpc("lookup_profile_by_email", { _email: ... })`.
-- Søk gjennom resten av kodebasen etter andre steder som gjør oppslag på `profiles` via e-post (f.eks. kontakt-/deling-flyt) og oppdater tilsvarende.
+**Før:**
+```
+WITH CHECK: auth.uid() = user_id OR is_group_admin(group_id, auth.uid())
+```
 
-### 3. Verifisering
-- Test "Legg til medlem"-dialogen: oppslag på eksisterende e-post skal fortsatt fungere.
-- Test at oppslag på ukjent e-post gir riktig feilmelding ("Ingen bruker funnet").
-- Bekreft at sikkerhetsfunnet `profiles_public_readable` markeres som løst.
+**Etter:**
+```
+WITH CHECK: is_group_admin(group_id, auth.uid())
+```
 
-## Resultat
-Etter endringen kan ingen innlogget bruker lenger laste ned hele profil-tabellen. Gruppeinvitasjon via e-post fungerer som før, men avslører kun id + navn for den spesifikke e-posten som slås opp — ikke telefon, firma eller andre personopplysninger.
+Dette betyr:
+- Kun eksisterende admins kan legge til nye medlemmer i en gruppe.
+- Den første admin (gruppe-oppretter) legges fortsatt til automatisk via triggeren `auto_add_group_admin`, som kjører med SECURITY DEFINER og dermed ikke berøres av RLS — så oppretting av nye grupper fungerer som før.
+- "Legg til medlem"-dialogen fungerer som før, fordi den brukes av admin.
+
+## Hva endres ikke
+- DELETE-policyen beholdes som den er (`auth.uid() = user_id OR is_group_admin(...)`), slik at brukere fortsatt kan **forlate** en gruppe selv.
+- Ingen frontend-endringer nødvendig.
+
+## Verifisering
+- Opprett ny gruppe → oppretter blir automatisk admin (trigger).
+- Som admin: legg til medlem via dialog → fungerer.
+- Som vanlig bruker: forsøk å selv-insert i annen gruppe via direkte spørring → blokkeres av RLS.
+- Forlat gruppe → fungerer fortsatt.
+- Marker sikkerhetsfunnet `group_members_privilege_escalation` som løst.
