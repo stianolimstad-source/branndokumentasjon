@@ -213,16 +213,48 @@ export default function MalvalgPanel({ groupId, groupName, logoUrl, profileLogoU
     await loadTemplates();
   };
 
-  const handleCreated = async (newId: string) => {
-    setShowNew(false);
-    await loadTemplates();
-    // Try to load the newly created row
-    const { data } = await supabase
+  const handleCreate = async () => {
+    setCreating(true);
+    const d = getTemplateDefaults("klassisk");
+    // Find next available "Ny mal" name
+    const existingNames = new Set(templates.map((t) => t.name));
+    let candidate = "Ny mal";
+    let i = 2;
+    while (existingNames.has(candidate)) {
+      candidate = `Ny mal ${i++}`;
+    }
+    const { data, error } = await supabase
       .from("group_templates" as any)
+      .insert({
+        group_id: groupId,
+        name: candidate,
+        base_template: "klassisk",
+        primary_color: d.primary_color,
+        accent_color: d.accent_color,
+        font_family: d.font_family,
+        settings: DEFAULT_EXTRAS,
+        is_default: templates.length === 0,
+        sort_order: templates.length,
+      } as any)
       .select("id, name, base_template, primary_color, accent_color, font_family, settings, is_default, sort_order")
-      .eq("id", newId)
-      .maybeSingle();
-    if (data) loadIntoEditor(data as unknown as GroupTemplateRow);
+      .single();
+    setCreating(false);
+    if (error) {
+      toast({ title: "Kunne ikke opprette mal", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Mal opprettet" });
+    await loadTemplates();
+    if (data) {
+      loadIntoEditor(data as unknown as GroupTemplateRow);
+      // Focus name input shortly after render
+      setTimeout(() => {
+        const el = document.getElementById("tpl-name") as HTMLInputElement | null;
+        el?.focus();
+        el?.select();
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 80);
+    }
   };
 
   const handlePreview = async () => {
