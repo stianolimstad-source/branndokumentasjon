@@ -50,6 +50,7 @@ import Vilkar from "./pages/legal/Vilkar";
 import Refusjon from "./pages/legal/Refusjon";
 import Personvern from "./pages/legal/Personvern";
 import Kontakt from "./pages/Kontakt";
+import Om from "./pages/Om";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +71,7 @@ const App = () => (
             <Route path="/refusjon" element={<Refusjon />} />
             <Route path="/personvern" element={<Personvern />} />
             <Route path="/kontakt" element={<Kontakt />} />
+            <Route path="/om" element={<Om />} />
             <Route path="/konsept" element={<RequireSubscription feature="Brannkonsept"><Konsept /></RequireSubscription>} />
             <Route path="/tilstandsvurdering" element={<RequireSubscription feature="Tilstandsvurdering"><Tilstandsvurdering /></RequireSubscription>} />
             <Route path="/brensellagring" element={<RequireSubscription feature="Brensellagring"><Brensellagring /></RequireSubscription>} />
