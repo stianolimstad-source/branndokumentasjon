@@ -26,6 +26,7 @@ const FEATURES = [
 
 const MONTHLY_ID = "pro_monthly";
 const YEARLY_ID = "pro_yearly";
+const YEARLY_LOCKED = true;
 
 type CardState =
   | { kind: "purchase" }
