@@ -407,21 +407,24 @@ export function buildCoverPage(theme: ResolvedTheme, opts: CoverOptions): Paragr
 
 export function buildHeader(theme: ResolvedTheme, opts: { logo?: { buffer: ArrayBuffer; width: number; height: number } | null; documentLabel?: string }): Header {
   const children: Paragraph[] = [];
-  if (opts.logo) {
-    // Smaller version for header
+  const pos = theme.extras.logo_position;
+  const align =
+    pos === "left" ? AlignmentType.LEFT : pos === "center" ? AlignmentType.CENTER : AlignmentType.RIGHT;
+
+  if (pos !== "hidden" && opts.logo) {
     const ratio = opts.logo.height / opts.logo.width;
     const w = Math.min(120, opts.logo.width);
     const h = Math.max(18, Math.round(w * ratio));
     children.push(
       new Paragraph({
-        alignment: AlignmentType.RIGHT,
+        alignment: align,
         children: [new ImageRun({ data: opts.logo.buffer, transformation: { width: w, height: h }, type: "png" })],
       }),
     );
-  } else if (opts.documentLabel) {
+  } else if (pos !== "hidden" && opts.documentLabel) {
     children.push(
       new Paragraph({
-        alignment: AlignmentType.RIGHT,
+        alignment: align,
         children: [new TextRun({ text: opts.documentLabel, size: 18, color: theme.primaryColor, font: theme.fontFamily })],
       }),
     );
@@ -432,19 +435,29 @@ export function buildHeader(theme: ResolvedTheme, opts: { logo?: { buffer: Array
 }
 
 export function buildFooter(theme: ResolvedTheme): Footer {
+  const { footer_show_company, footer_show_page, footer_show_date, date_format } = theme.extras;
+  const left = footer_show_date ? formatDate(new Date(), date_format) : "";
+  const center = footer_show_company ? (theme.companyName ?? "") : "";
+  const right = footer_show_page ? "Side " : "";
+
+  // Single centered line if only one element, otherwise three-column with tabs
+  const runs: TextRun[] = [];
+  if (left) runs.push(new TextRun({ text: left, size: 16, color: "888888", font: theme.fontFamily }));
+  if (center) {
+    if (runs.length) runs.push(new TextRun({ text: "   •   ", size: 16, color: "AAAAAA", font: theme.fontFamily }));
+    runs.push(new TextRun({ text: center, size: 16, color: "888888", font: theme.fontFamily }));
+  }
+  if (right) {
+    if (runs.length) runs.push(new TextRun({ text: "   •   ", size: 16, color: "AAAAAA", font: theme.fontFamily }));
+    runs.push(new TextRun({ text: right, size: 16, color: "888888", font: theme.fontFamily }));
+  }
+
   return new Footer({
     children: [
       new Paragraph({
         alignment: AlignmentType.CENTER,
         border: { top: { style: BorderStyle.SINGLE, size: 6, color: theme.accentColor, space: 4 } },
-        children: [
-          new TextRun({
-            text: theme.companyName ?? "",
-            size: 16,
-            color: "888888",
-            font: theme.fontFamily,
-          }),
-        ],
+        children: runs.length ? runs : [new TextRun({ text: "", font: theme.fontFamily })],
       }),
     ],
   });
