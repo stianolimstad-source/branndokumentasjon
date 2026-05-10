@@ -150,7 +150,7 @@ const Abonnement = () => {
       return { kind: "current", statusText };
     }
     if (cardPlan === YEARLY_ID && priceId === MONTHLY_ID) {
-      return { kind: "switch", target: "to_yearly" };
+      return YEARLY_LOCKED ? { kind: "purchase" } : { kind: "switch", target: "to_yearly" };
     }
     if (cardPlan === MONTHLY_ID && priceId === YEARLY_ID) {
       return { kind: "switch", target: "to_monthly" };
