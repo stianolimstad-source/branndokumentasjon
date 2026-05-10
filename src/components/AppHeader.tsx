@@ -124,9 +124,9 @@ const AppHeader = () => {
               </div>
             ) : (
               <Link to="/auth">
-                <Button size="sm">
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Logg inn
+                <Button size="sm" className="px-2 sm:px-3">
+                  <LogIn className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Logg inn</span>
                 </Button>
               </Link>
             )}
