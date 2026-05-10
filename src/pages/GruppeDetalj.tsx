@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Shield, ShieldOff, User, FolderOpen, Building, FileText, ChevronDown, ChevronRight, UserPlus, ArrowLeft, Upload, Trash2, ImageIcon } from "lucide-react";
+import { Users, Shield, ShieldOff, User, FolderOpen, Building, FileText, ChevronDown, ChevronRight, UserPlus, ArrowLeft, Upload, Trash2, ImageIcon, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
