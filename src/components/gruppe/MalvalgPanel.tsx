@@ -69,7 +69,7 @@ export default function MalvalgPanel({ groupId, groupName, logoUrl, profileLogoU
   const [templates, setTemplates] = useState<GroupTemplateRow[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [showNew, setShowNew] = useState(false);
+  const [creating, setCreating] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<GroupTemplateRow | null>(null);
 
   // Editor state — bound to currently active template
