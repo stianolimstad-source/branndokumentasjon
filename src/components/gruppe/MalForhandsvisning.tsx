@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TemplateId } from "@/lib/document-templates";
+import { TemplateId, TemplateExtras, DEFAULT_EXTRAS, TOPBAR_PX, formatDate } from "@/lib/document-templates";
 import KonseptPreview from "@/components/konsept/KonseptPreview";
 
 interface Props {
@@ -9,6 +9,7 @@ interface Props {
   font: string;
   logoUrl: string | null;
   groupName: string;
+  extras?: TemplateExtras;
 }
 
 export default function MalForhandsvisning({
