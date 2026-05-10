@@ -23,18 +23,17 @@ const AddMemberDialog = ({ open, onOpenChange, groupId, existingUserIds, onMembe
     if (!email.trim()) return;
     setLoading(true);
 
-    // Look up user by email in profiles
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("id, email, full_name")
-      .eq("email", email.trim().toLowerCase())
-      .maybeSingle();
+    // Secure server-side lookup (returns only id/full_name/email for the matching email)
+    const { data: lookupRows, error: profileError } = await supabase
+      .rpc("lookup_profile_by_email", { _email: email.trim() });
 
     if (profileError) {
       toast.error("Feil ved oppslag av bruker");
       setLoading(false);
       return;
     }
+
+    const profile = Array.isArray(lookupRows) ? lookupRows[0] : null;
 
     if (!profile) {
       toast.error("Ingen bruker funnet med denne e-postadressen. Brukeren må ha en konto først.");
