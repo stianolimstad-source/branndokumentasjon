@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Shield, User, FolderOpen, Building, FileText, ChevronDown, ChevronRight, UserPlus, ArrowLeft, Upload, Trash2, ImageIcon } from "lucide-react";
+import { Users, Shield, ShieldOff, User, FolderOpen, Building, FileText, ChevronDown, ChevronRight, UserPlus, ArrowLeft, Upload, Trash2, ImageIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
@@ -286,6 +286,8 @@ const GruppeDetalj = () => {
                 {members.map((member) => {
                   const profile = memberProfiles[member.user_id];
                   const isCurrentUser = member.user_id === user?.id;
+                  const memberIsAdmin = member.role === "admin";
+                  const adminCount = members.filter((m) => m.role === "admin").length;
                   return (
                     <Card key={member.id} className="shadow-soft">
                       <CardContent className="py-4 flex items-center justify-between">
@@ -306,18 +308,61 @@ const GruppeDetalj = () => {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          {member.role === "admin" && (
+                          {memberIsAdmin && (
                             <Badge variant="outline" className="flex items-center gap-1">
                               <Shield className="h-3 w-3" />
                               Admin
                             </Badge>
                           )}
-                          {isCurrentUser && member.role !== "admin" && (
+                          {isAdmin && !isCurrentUser && !memberIsAdmin && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={async () => {
+                                const { error } = await supabase
+                                  .from("group_members")
+                                  .update({ role: "admin" })
+                                  .eq("id", member.id);
+                                if (error) {
+                                  toast.error("Kunne ikke gi admin-rettigheter");
+                                } else {
+                                  toast.success("Medlemmet er nå admin");
+                                  fetchGroupData();
+                                }
+                              }}
+                            >
+                              <Shield className="h-4 w-4 mr-1" />
+                              Gjør til admin
+                            </Button>
+                          )}
+                          {isAdmin && !isCurrentUser && memberIsAdmin && adminCount > 1 && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={async () => {
+                                const { error } = await supabase
+                                  .from("group_members")
+                                  .update({ role: "member" })
+                                  .eq("id", member.id);
+                                if (error) {
+                                  toast.error("Kunne ikke fjerne admin-rettigheter");
+                                } else {
+                                  toast.success("Admin-rettigheter fjernet");
+                                  fetchGroupData();
+                                }
+                              }}
+                            >
+                              <ShieldOff className="h-4 w-4 mr-1" />
+                              Fjern admin
+                            </Button>
+                          )}
+                          {isCurrentUser && (
                             <Button
                               variant="ghost"
                               size="sm"
                               className="text-destructive hover:text-destructive"
                               onClick={async () => {
+                                const wasOnlyAdmin = memberIsAdmin && adminCount === 1 && members.length > 1;
                                 const { error } = await supabase
                                   .from("group_members")
                                   .delete()
@@ -325,7 +370,11 @@ const GruppeDetalj = () => {
                                 if (error) {
                                   toast.error("Kunne ikke forlate gruppen");
                                 } else {
-                                  toast.success("Du har forlatt gruppen");
+                                  if (wasOnlyAdmin) {
+                                    toast.success("Du har forlatt gruppen. Neste medlem ble automatisk admin.");
+                                  } else {
+                                    toast.success("Du har forlatt gruppen");
+                                  }
                                   navigate("/mine-kontakter");
                                 }
                               }}
@@ -333,7 +382,7 @@ const GruppeDetalj = () => {
                               Forlat gruppe
                             </Button>
                           )}
-                          {isAdmin && !isCurrentUser && (
+                          {isAdmin && !isCurrentUser && !memberIsAdmin && (
                             <Button
                               variant="ghost"
                               size="sm"
