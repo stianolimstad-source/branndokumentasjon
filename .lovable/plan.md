@@ -1,29 +1,20 @@
-## Endring: Fjern popup ved «Ny mal»
+## Endring: Egen «Maler»-fane (skill ut fra Logo)
 
-I dag åpner knappen «Ny mal» en dialog (`NyMalDialog`) hvor man velger navn og baselayout før malen opprettes. Editoren under listen brukes deretter til finjustering.
-
-Vi forenkler dette slik at klikk på «Ny mal» oppretter malen umiddelbart og laster den rett inn i editoren under listen — all videre tilpasning (navn, baselayout, farger, font, layout-extras) skjer på samme side, slik den allerede gjør i dag.
+I dag ligger malstyringen (`MalvalgPanel`) under fanen «Logo» sammen med opplasting av gruppelogo. Vi flytter den ut til en egen fane slik at administratorer har én tydelig knapp/fane for hver oppgave.
 
 ### Hva endres
 
-**`src/components/gruppe/MalvalgPanel.tsx`**
-- Fjern `NyMalDialog`-import og `showNew`-state.
-- Knappen «Ny mal» kaller en ny `handleCreate`-funksjon som:
-  1. Setter inn en ny rad i `group_templates` med defaults: `name = "Ny mal"` (eller "Ny mal 2", "Ny mal 3"… hvis navnet allerede finnes), `base_template = "klassisk"`, farger/font fra `getTemplateDefaults("klassisk")`, `settings = DEFAULT_EXTRAS`, `is_default = false` hvis det finnes en standard fra før, ellers `true`, `sort_order = max + 1`.
-  2. Refresher listen og laster den nye malen inn i editoren (`loadIntoEditor`).
-  3. Scroller editoren inn i view og fokuserer navn-input slik at brukeren med en gang kan endre navnet.
-- Behold `handleCreated` ikke lenger relevant — fjernes.
-
-**`src/components/gruppe/NyMalDialog.tsx`**
-- Slettes (filen er ikke lenger i bruk noe sted).
+**`src/pages/GruppeDetalj.tsx`**
+- Legg til en ny `<TabsTrigger value="maler">` ved siden av «Logo» (kun synlig for `isAdmin`), med ikon `Sparkles` (eller `FileText`/`LayoutTemplate`) og label «Maler».
+- Opprett `<TabsContent value="maler">` som inneholder kun `MalvalgPanel`-komponenten (med samme props som i dag).
+- Fjern `MalvalgPanel` fra `<TabsContent value="innstillinger">` (Logo-fanen) — den fanen inneholder kun gruppelogo-håndteringen.
 
 ### Hva er IKKE påvirket
 
-- Editoren under listen (navn, baselayout-kort, farger, font, layout-tilpasninger, lagre, forhåndsvis Word) er uendret.
-- «Sett som standard», «Slett» og bekreftelsesdialog for sletting beholdes.
-- Database-skjema og RLS er uendret — vi bruker samme `INSERT` som dialogen brukte.
-- Andre komponenter som lytter til `onSaved` påvirkes ikke.
+- `MalvalgPanel` selv (intern oppførsel, opprettelse av ny mal, lagring osv.) er uendret.
+- Logo-håndtering, medlemmer- og delte prosjekter-fanene er uendret.
+- Ingen endringer i database eller backend.
 
 ### Resultat
 
-Ett klikk på «Ny mal» → ny mal vises i listen og er allerede åpen i editoren klar for redigering. Ingen modal i mellom.
+Adminbrukere får tre faner i tillegg til medlemmer/delte: **Logo** og **Maler** står som hver sin separate inngang. Dette gjør det enklere å finne malene og holder Logo-fanen fokusert på sitt formål.

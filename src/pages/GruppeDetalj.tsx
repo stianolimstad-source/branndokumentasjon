@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Users, Shield, ShieldOff, User, FolderOpen, Building, FileText, ChevronDown, ChevronRight, UserPlus, ArrowLeft, Upload, Trash2, ImageIcon } from "lucide-react";
+import { Users, Shield, ShieldOff, User, FolderOpen, Building, FileText, ChevronDown, ChevronRight, UserPlus, ArrowLeft, Upload, Trash2, ImageIcon, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
@@ -262,6 +262,12 @@ const GruppeDetalj = () => {
               <TabsTrigger value="innstillinger" className="flex items-center gap-2">
                 <ImageIcon className="h-4 w-4" />
                 Logo
+              </TabsTrigger>
+            )}
+            {isAdmin && (
+              <TabsTrigger value="maler" className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4" />
+                Maler
               </TabsTrigger>
             )}
           </TabsList>
@@ -534,16 +540,19 @@ const GruppeDetalj = () => {
                 </CardContent>
               </Card>
 
-              <div className="mt-6">
-                <MalvalgPanel
-                  groupId={id!}
-                  groupName={groupName}
-                  logoUrl={groupLogoUrl}
-                  profileLogoUrl={profileLogoUrl}
-                  initial={templateSettings}
-                  onSaved={(s) => setTemplateSettings(s)}
-                />
-              </div>
+            </TabsContent>
+          )}
+
+          {isAdmin && (
+            <TabsContent value="maler">
+              <MalvalgPanel
+                groupId={id!}
+                groupName={groupName}
+                logoUrl={groupLogoUrl}
+                profileLogoUrl={profileLogoUrl}
+                initial={templateSettings}
+                onSaved={(s) => setTemplateSettings(s)}
+              />
             </TabsContent>
           )}
         </Tabs>
