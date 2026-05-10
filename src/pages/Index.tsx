@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Plus, FolderOpen, ShieldCheck, BarChart3, GitCompare, Shield, LayoutDashboard, Warehouse, Receipt, Handshake, Building, Search, Check, ArrowLeft, Lock } from "lucide-react";
+import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Plus, FolderOpen, ShieldCheck, BarChart3, GitCompare, Shield, LayoutDashboard, Warehouse, Receipt, Handshake, Building, Search, Check, ArrowLeft, Lock, Info } from "lucide-react";
 import { useIsFullAccess } from "@/hooks/useIsFullAccess";
 import { BYGNINGSTYPER } from "@/lib/brensellagring-krav";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -161,6 +161,14 @@ const Index = () => {
               Komplett verktøykasse for konsepter, vurderinger og beregninger. 
               Spar tid og forbedre kvaliteten på dine leveranser.
             </p>
+            <div className="pt-2">
+              <Link to="/om">
+                <Button variant="outline" size="sm">
+                  <Info className="h-4 w-4 mr-2" />
+                  Mer info
+                </Button>
+              </Link>
+            </div>
           </div>
         )}
       </section>

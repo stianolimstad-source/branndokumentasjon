@@ -1,27 +1,60 @@
-# Utvide kontaktsiden med info-seksjoner
+# "Mer info"-knapp og info-side
 
 ## Mål
-Legge til to informasjonsbokser på `/kontakt` som forklarer hva man kan ta kontakt om.
+Legge til en liten "Mer info"-knapp under hero-teksten på forsiden (kun synlig for ikke-innloggede besøkende), som tar brukeren til en ny side `/om` med en utfyllende beskrivelse av Branndokumentasjon.no.
 
-## Endring
-Kun `src/pages/Kontakt.tsx` oppdateres. Under det eksisterende kontaktinfo-kortet legges to nye `Card`-blokker:
+## 1. Knapp på forsiden
+I `src/pages/Index.tsx` (rundt linje 156–164, i ikke-innlogget-grenen):
+- Under `<p>` med teksten "Komplett verktøykasse…" legges en `<Link to="/om">` med `Button variant="outline" size="sm"` og ikon `Info` fra lucide. Tekst: "Mer info".
+- Sentreres under teksten med litt topp-margin (`pt-2`).
 
-### 1. "Egne maler og spesialløsninger"
-Ikon: `FileCog` (lucide).
-Tekst:
-> Trenger bedriften din egne maler eller andre spesialløsninger for å bruke Branndokumentasjon.no? Ta kontakt, så finner vi en løsning som passer dere.
+## 2. Ny side `src/pages/Om.tsx`
+Rute: `/om`. Bruker eksisterende global `AppHeader`. Layout `container max-w-3xl`, samme `bg-gradient-subtle` som Kontakt-siden.
 
-### 2. "Samarbeid og videreutvikling"
-Ikon: `Handshake` (lucide).
-Tekst:
-> Har du innspill, ønsker å samarbeide om videreutvikling av produktet, eller vurderer å investere? Vi tar gjerne en uforpliktende prat.
+### Innhold (norsk, profesjonell tone)
 
-## Layout
-- Samme `max-w-2xl` container som i dag.
-- `space-y-6` mellom kortene.
-- Ikon i venstre kolonne (samme stil som e-post/telefon-radene: rund/avrundet `bg-primary/10 text-primary`-boks), tittel + brødtekst i høyre kolonne.
-- Følger eksisterende design (semantiske tokens, `shadow-soft`).
+**Tittel:** Om Branndokumentasjon.no
+
+**Ingress:**
+> Branndokumentasjon.no er et komplett digitalt verktøy laget av en brannrådgiver for brannrådgivere. Appen samler hele arbeidsflyten – fra brannkonseptet starter, via beregninger og fraviksanalyser, til ferdig dokumentasjon leveres til kunde.
+
+**Seksjoner (hver med ikon + tittel + brødtekst i `Card`):**
+
+1. **For hvem? — `Users`-ikon**
+   Branndokumentasjon.no er utviklet for brannrådgivere, branntekniske prosjekterende og rådgivende ingeniører som jobber med brannprosjektering, tilstandsvurderinger og brannteknisk dokumentasjon. Verktøyet egner seg både for selvstendige rådgivere og rådgiverfirmaer som ønsker å effektivisere arbeidsflyten og heve kvaliteten på leveransene.
+
+2. **Brannkonsept etter TEK17 — `FileText`-ikon**
+   Lag komplette brannkonsepter forankret i TEK17, VTEK og relevante byggforskrifter. Appen genererer strukturerte kapitler om bæreevne, brannspredning, branncellearealer, rømning, slokkeanlegg, manuell slokking og innsatsmannskap – med automatisk sammenstilling av krav på tvers av flere bygningsdeler.
+
+3. **Tilstandsvurdering av eksisterende bygg — `ClipboardCheck`-ikon**
+   Utfør branntekniske tilstandsvurderinger etter NS 3424, med støtte for både moderne TEK-bygg og eldre bygg etter Byggeforskrift 1985 (BF85). Bilder med EXIF-rotasjon, tilstandsgrader og kapittelstruktur håndteres automatisk i rapporten.
+
+4. **Fraviksdokumentasjon — `FileWarning`-ikon**
+   Kvalitative og kvantitative fraviksanalyser etter Byggforsk 321.026, med integrerte beregningsverktøy (stråling, flammehøyde, brannenergi, persontall, brannmotstand m.m.) som dokumenteres direkte inn i analysen.
+
+5. **Beregningsverktøy — `Calculator`-ikon**
+   Et bibliotek av branntekniske beregningsverktøy: Solid Flame stråling, Heskestad flammehøyde, brannmotstand etter additiv komponentmetode, brannareal og røykventilasjon etter HO-3/2000, eksplosjonsavlastning, brensellagring etter DSB, og mer.
+
+6. **Samarbeid og kvalitetssikring — `ShieldCheck`-ikon**
+   Del prosjekter med kollegaer og grupper, tildel oppgaver, og kjør egen- og sidemannskontroll med snapshot. Logoer og maler kan tilpasses per gruppe slik at ferdig Word-/PDF-dokumentasjon får riktig profil.
+
+7. **Eksempelkatalog — `BookOpen`-ikon**
+   Bla i en katalog av verifiserte løsninger for branntekniske konstruksjoner og brannfarlige stoffer, med referanser til SINTEF, Norgips og relevante kilder.
+
+**Avsluttende CTA-blokk:**
+> Vil du prøve verktøyet eller har spørsmål? [Opprett konto] [Kontakt oss]
+
+To knapper: `Link to="/auth"` og `Link to="/kontakt"`.
+
+## 3. Rute
+Legge til `<Route path="/om" element={<Om />} />` i `src/App.tsx`.
+
+## Tekniske detaljer
+- Bruker semantiske design-tokens (ingen hardkodede farger).
+- Ikoner i `bg-primary/10 text-primary`-bokser, samme stil som Kontakt-siden.
+- Responsivt med `max-w-3xl` container.
+- Ingen backend-endringer.
 
 ## Ute av scope
-- Kontaktskjema (kun visning av info i denne omgangen).
-- Endring av header/rute (allerede på plass).
+- Lenke i header eller meny (kun knapp på forsiden).
+- Skjema, video, eller bilder.
