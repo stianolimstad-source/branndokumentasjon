@@ -118,11 +118,53 @@ export async function resolveDocumentTheme(
   let companyName: string | null = null;
   let resolvedFromGroup = false;
 
-  const applyGroup = (group: any) => {
-    if (!group) return;
-    settings = (group.template_settings || {}) as TemplateSettings;
-    if (group.logo_url) logoUrl = group.logo_url;
-    companyName = group.name || null;
+  // Helper: pick the group's default custom template if it exists, else fall back to template_settings
+  const fetchGroupSettings = async (groupId: string): Promise<{ name: string | null; logo_url: string | null; settings: TemplateSettings } | null> => {
+    const { data: group } = await supabase
+      .from("contact_groups")
+      .select("name, logo_url, template_settings")
+      .eq("id", groupId)
+      .maybeSingle();
+    if (!group) return null;
+
+    // Look for a custom default template
+    try {
+      const { data: customDefault } = await supabase
+        .from("group_templates" as any)
+        .select("base_template, primary_color, accent_color, font_family, settings")
+        .eq("group_id", groupId)
+        .eq("is_default", true)
+        .maybeSingle();
+      if (customDefault) {
+        const c = customDefault as any;
+        return {
+          name: (group as any).name ?? null,
+          logo_url: (group as any).logo_url ?? null,
+          settings: {
+            template: c.base_template as TemplateId,
+            primary_color: c.primary_color,
+            accent_color: c.accent_color,
+            font_family: c.font_family,
+            extras: (c.settings || {}) as TemplateExtras,
+          },
+        };
+      }
+    } catch {
+      // table may not exist yet in some envs — fall back
+    }
+
+    return {
+      name: (group as any).name ?? null,
+      logo_url: (group as any).logo_url ?? null,
+      settings: ((group as any).template_settings || {}) as TemplateSettings,
+    };
+  };
+
+  const applyGroup = (g: { name: string | null; logo_url: string | null; settings: TemplateSettings } | null) => {
+    if (!g) return;
+    settings = g.settings;
+    if (g.logo_url) logoUrl = g.logo_url;
+    companyName = g.name;
     resolvedFromGroup = true;
   };
 
@@ -137,12 +179,7 @@ export async function resolveDocumentTheme(
 
       const groupId = shares?.[0]?.group_id;
       if (groupId) {
-        const { data: group } = await supabase
-          .from("contact_groups")
-          .select("name, logo_url, template_settings")
-          .eq("id", groupId)
-          .maybeSingle();
-        applyGroup(group);
+        applyGroup(await fetchGroupSettings(groupId));
       }
     } catch {
       // Ignore — fall back to defaults
@@ -159,12 +196,7 @@ export async function resolveDocumentTheme(
       const defaultGroupId = (profile as any)?.default_template_group_id as string | null;
 
       if (defaultGroupId) {
-        const { data: group } = await supabase
-          .from("contact_groups")
-          .select("name, logo_url, template_settings")
-          .eq("id", defaultGroupId)
-          .maybeSingle();
-        applyGroup(group);
+        applyGroup(await fetchGroupSettings(defaultGroupId));
       }
 
       if (!resolvedFromGroup) {
@@ -173,15 +205,18 @@ export async function resolveDocumentTheme(
           .select("group_id")
           .eq("user_id", userId);
         const groupIds = (memberships ?? []).map((m: any) => m.group_id);
-        if (groupIds.length > 0) {
+        if (groupIds.length === 1) {
+          applyGroup(await fetchGroupSettings(groupIds[0]));
+        } else if (groupIds.length > 1) {
+          // Pick any group with non-empty template_settings
           const { data: groups } = await supabase
             .from("contact_groups")
-            .select("name, logo_url, template_settings")
+            .select("id, template_settings")
             .in("id", groupIds);
           const themed = (groups ?? []).filter(
             (g: any) => g.template_settings && Object.keys(g.template_settings).length > 0,
           );
-          if (themed.length === 1) applyGroup(themed[0]);
+          if (themed.length === 1) applyGroup(await fetchGroupSettings((themed[0] as any).id));
         }
       }
     } catch {
@@ -206,6 +241,7 @@ export function buildResolvedTheme(
     fontFamily: settings?.font_family || d.font_family,
     logoUrl,
     companyName,
+    extras: { ...DEFAULT_EXTRAS, ...(settings?.extras ?? {}) },
   };
 }
 
