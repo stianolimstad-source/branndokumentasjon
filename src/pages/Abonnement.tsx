@@ -250,14 +250,15 @@ const Abonnement = () => {
                 price="5 000 kr"
                 originalPrice="10 000 kr"
                 period="/år"
-                badge="Spar ~17%"
+                badge={YEARLY_LOCKED && stateFor(YEARLY_ID).kind !== "current" ? "Kommer snart" : "Spar ~17%"}
                 priceId={YEARLY_ID}
                 state={stateFor(YEARLY_ID)}
                 onPurchase={(id) => openCheckout(id)}
                 onSwitch={(t) => setConfirmSwitch(t)}
                 actionLoading={actionLoading}
                 checkoutLoading={checkoutLoading}
-                recommended
+                recommended={!YEARLY_LOCKED || stateFor(YEARLY_ID).kind === "current"}
+                locked={YEARLY_LOCKED && stateFor(YEARLY_ID).kind !== "current"}
               />
             </div>
 
