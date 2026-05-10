@@ -16,18 +16,21 @@ const AppHeader = () => {
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-primary">
+      <div className="container mx-auto px-3 sm:px-4 py-4">
+        <div className="flex items-center justify-between gap-2">
+          <Link to="/" className="flex items-center gap-2 min-w-0">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-primary">
               <Flame className="h-6 w-6 text-primary-foreground" />
             </div>
-            <h1 className="text-base sm:text-xl font-bold truncate">Branndokumentasjon.no</h1>
+            <h1 className="hidden sm:block text-base sm:text-xl font-bold truncate">Branndokumentasjon.no</h1>
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {showContactLink && (
               <Link to="/kontakt">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="icon" className="sm:hidden" aria-label="Kontakt">
+                  <Mail className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
                   <Mail className="h-4 w-4 mr-2" />
                   Kontakt
                 </Button>
@@ -81,9 +84,9 @@ const AppHeader = () => {
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      <Menu className="h-4 w-4 mr-2" />
-                      Meny
+                    <Button variant="outline" size="sm" className="px-2 sm:px-3">
+                      <Menu className="h-4 w-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Meny</span>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56 z-50 bg-popover">
@@ -121,9 +124,9 @@ const AppHeader = () => {
               </div>
             ) : (
               <Link to="/auth">
-                <Button size="sm">
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Logg inn
+                <Button size="sm" className="px-2 sm:px-3">
+                  <LogIn className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Logg inn</span>
                 </Button>
               </Link>
             )}

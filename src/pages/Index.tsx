@@ -138,12 +138,12 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-subtle overflow-x-hidden">
 
       {/* Hero / Dashboard Section */}
-      <section className="container mx-auto px-4 py-16">
+      <section className="container mx-auto px-3 sm:px-4 py-8 sm:py-16">
         {user ? (
           <div className="max-w-6xl mx-auto space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <h2 className="text-2xl sm:text-3xl font-bold">Velkommen tilbake</h2>
-              <Link to="/dashboard">
+              <Link to="/dashboard" className="self-start sm:self-auto">
                 <Button variant="outline" size="sm">
                   <LayoutDashboard className="h-4 w-4 mr-2" />
                   Fullt dashboard
@@ -174,7 +174,7 @@ const Index = () => {
       </section>
 
       {/* Features Grid */}
-      <section className="container mx-auto px-4 py-12">
+      <section className="container mx-auto px-3 sm:px-4 py-12">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {features.map((feature) => {
             if (feature.href === "dialog" || feature.href === "fravik-dialog" || feature.href === "tilstand-dialog" || feature.href === "brensellagring-dialog") {
