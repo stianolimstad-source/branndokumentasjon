@@ -78,7 +78,7 @@ export default function MalForhandsvisning({
 
   const CoverKlassisk = () => (
     <CoverWrap>
-      <div style={{ background: primary, height: 18 }} />
+      <div style={{ background: primary, height: 36 }} />
       <div className="flex flex-col items-center text-center px-12 pt-28">
         <LogoOrPlaceholder className="max-h-28 mb-12" />
         <h1 className="text-5xl font-bold mb-3" style={{ color: primary, fontFamily: font }}>
