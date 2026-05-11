@@ -2698,7 +2698,10 @@ const Konsept = () => {
                           tekst += metode;
 
                           if (aktiveTiltak.length > 0) {
-                            tekst += `\n\nFølgende aktive branntekniske tiltak er forutsatt: ${aktiveTiltak.join(", ")}.`;
+                            const punkter = aktiveTiltak
+                              .map(t => `- ${t.charAt(0).toUpperCase()}${t.slice(1)}`)
+                              .join("\n");
+                            tekst += `\n\nFølgende aktive branntekniske tiltak er forutsatt:\n${punkter}`;
                           }
 
                           if (formData.prosjekteringsmetode === "analyse" || formData.prosjekteringsmetode === "blanding") {
