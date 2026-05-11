@@ -2438,6 +2438,9 @@ const Konsept = () => {
   // men kan ikke lagre, dele, sende til KS eller laste ned.
   const isDemoMode = !authLoading && !user;
 
+  // Lås kap. 2-6 inntil regelverk er valgt (gjelder kun tilstandsvurdering)
+  const regelverkLocked = documentType === "tilstandsvurdering" && !formData.regelverk;
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
 
