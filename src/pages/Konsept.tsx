@@ -8129,12 +8129,15 @@ const Konsept = () => {
                          <KraftstasjonTilleggskravCard kapittel="3.9" visible={erKraftstasjon}>
                            <div className="text-xs space-y-1">
                              <p className="font-medium text-foreground">Følgende tilleggskrav inkluderes automatisk for kraftstasjoner:</p>
-                             <ul className="list-disc pl-5 space-y-0.5 text-muted-foreground">
-                               <li>Krav etter <span className="font-medium text-foreground">FEA-F § 25</span> om uavhengig nødbelysning.</li>
-                               <li>Anbefaling om håndlykter.</li>
-                               <li>Avsnitt om plassering, utforming og utstyr for redningsrom.</li>
-                               <li>Hvis "Kraftstasjon under fjell eller under dagen" er huket av i metadata: i tillegg krav om nødlysanlegg etter <span className="font-medium text-foreground">FEA-F § 26</span> og innledningstekst om redningsrom.</li>
-                             </ul>
+                              <ul className="list-disc pl-5 space-y-0.5 text-muted-foreground">
+                                <li>Krav etter <span className="font-medium text-foreground">FEA-F § 25</span> om uavhengig nødbelysning.</li>
+                                <li>Anbefaling om håndlykter.</li>
+                                <li>Avsnitt om plassering, utforming og utstyr for redningsrom.</li>
+                                <li>Hvis "Kraftstasjon under fjell eller under dagen" er huket av i metadata: i tillegg krav om nødlysanlegg etter <span className="font-medium text-foreground">FEA-F § 26</span> og innledningstekst om redningsrom.</li>
+                                {documentType === "tilstandsvurdering" && formData.regelverk === "BF85" && (
+                                  <li>For tilstandsvurdering etter BF85: i tillegg avsnitt om <span className="font-medium text-foreground">brannalarmanlegg i kraftforsyningsanlegg i fjell og under dagen</span> (jf. FOBTOT § 2.1, FEA-F § 25.3 og Beredskapsforskriften § 6.4).</li>
+                                )}
+                              </ul>
                            </div>
                          </KraftstasjonTilleggskravCard>
                        );
