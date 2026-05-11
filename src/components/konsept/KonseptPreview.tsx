@@ -3645,6 +3645,20 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_8"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_8"]} sectionLabel="3.8 Rømning og redning" />
             )}
+            {(() => {
+              const erKraftstasjon38 = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+              if (!erKraftstasjon38) return null;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Arrangement og besøk – kraftstasjon</td>
+                  <td className="border border-gray-400 p-2">
+                    Ved større besøk fra grupper, skoleelever, konserter eller lignende arrangement i fjellhall/kraftstasjon skal godkjenning fra lokalt brannvesen foreligge før arrangementet avholdes.
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">Tiltakshaver/Driftsansvarlig</td>
+                </tr>
+              );
+            })()}
 
 
             {/* 3.9 §11-12 Tilrettelegging for rømning */}
