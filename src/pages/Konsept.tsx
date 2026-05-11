@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Flame, ArrowLeft, FileDown, Download, Save, LogIn, X, Plus, AlertTriangle, ChevronDown, ChevronRight, Eye, RefreshCw, Sparkles, Upload } from "lucide-react";
+import { Flame, ArrowLeft, FileDown, Download, Save, LogIn, X, Plus, AlertTriangle, ChevronDown, ChevronRight, Eye, RefreshCw, Sparkles, Upload, Lock } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
@@ -2438,6 +2438,9 @@ const Konsept = () => {
   // men kan ikke lagre, dele, sende til KS eller laste ned.
   const isDemoMode = !authLoading && !user;
 
+  // Lås kap. 2-6 inntil regelverk er valgt (gjelder kun tilstandsvurdering)
+  const regelverkLocked = documentType === "tilstandsvurdering" && !formData.regelverk;
+
   return (
     <div className="min-h-screen bg-gradient-subtle">
 
@@ -3036,15 +3039,21 @@ const Konsept = () => {
                 </AccordionItem>
 
                 {/* Kapittel 2: Grunnlag og forutsetninger */}
-                <AccordionItem value="kap2" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
-                  <div className="flex items-center bg-blue-50 hover:bg-blue-100 px-4 py-3">
-                    <AccordionTrigger className="text-lg font-bold text-blue-800 flex-1 p-0 hover:no-underline">
+                <AccordionItem value="kap2" disabled={regelverkLocked} className={`border-2 border-blue-200 rounded-lg mb-4 overflow-hidden ${regelverkLocked ? 'opacity-60' : ''}`}>
+                  <div className={`flex items-center bg-blue-50 ${regelverkLocked ? 'cursor-not-allowed' : 'hover:bg-blue-100'} px-4 py-3`} title={regelverkLocked ? 'Velg regelverk i kap. 1 for å låse opp' : undefined}>
+                    <AccordionTrigger disabled={regelverkLocked} className="text-lg font-bold text-blue-800 flex-1 p-0 hover:no-underline disabled:cursor-not-allowed">
                       <span className="flex items-center gap-3">
                         <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">2</span>
                         Grunnlag og forutsetninger
+                        {regelverkLocked && (
+                          <span className="flex items-center gap-1 text-xs font-normal text-muted-foreground ml-2">
+                            <Lock className="h-3.5 w-3.5" />
+                            Velg regelverk i kap. 1 for å låse opp
+                          </span>
+                        )}
                       </span>
                     </AccordionTrigger>
-                    <button type="button" onClick={(e) => { e.stopPropagation(); document.getElementById('preview-kap2')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="p-1.5 ml-2 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors" title="Gå til i forhåndsvisning">
+                    <button type="button" disabled={regelverkLocked} onClick={(e) => { e.stopPropagation(); document.getElementById('preview-kap2')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="p-1.5 ml-2 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed" title="Gå til i forhåndsvisning">
                       <Eye className="h-3.5 w-3.5" />
                     </button>
                   </div>
@@ -3895,15 +3904,21 @@ const Konsept = () => {
                 </AccordionItem>
 
                 {/* Kapittel 3: Branntekniske ytelseskrav */}
-                <AccordionItem value="kap3" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
-                  <div className="flex items-center bg-blue-50 hover:bg-blue-100 px-4 py-3">
-                    <AccordionTrigger className="text-lg font-bold text-blue-800 flex-1 p-0 hover:no-underline">
+                <AccordionItem value="kap3" disabled={regelverkLocked} className={`border-2 border-blue-200 rounded-lg mb-4 overflow-hidden ${regelverkLocked ? 'opacity-60' : ''}`}>
+                  <div className={`flex items-center bg-blue-50 ${regelverkLocked ? 'cursor-not-allowed' : 'hover:bg-blue-100'} px-4 py-3`} title={regelverkLocked ? 'Velg regelverk i kap. 1 for å låse opp' : undefined}>
+                    <AccordionTrigger disabled={regelverkLocked} className="text-lg font-bold text-blue-800 flex-1 p-0 hover:no-underline disabled:cursor-not-allowed">
                       <span className="flex items-center gap-3">
                         <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">3</span>
                         Branntekniske ytelseskrav
+                        {regelverkLocked && (
+                          <span className="flex items-center gap-1 text-xs font-normal text-muted-foreground ml-2">
+                            <Lock className="h-3.5 w-3.5" />
+                            Velg regelverk i kap. 1 for å låse opp
+                          </span>
+                        )}
                       </span>
                     </AccordionTrigger>
-                    <button type="button" onClick={(e) => { e.stopPropagation(); document.getElementById('preview-kap3')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="p-1.5 ml-2 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors" title="Gå til i forhåndsvisning">
+                    <button type="button" disabled={regelverkLocked} onClick={(e) => { e.stopPropagation(); document.getElementById('preview-kap3')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="p-1.5 ml-2 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed" title="Gå til i forhåndsvisning">
                       <Eye className="h-3.5 w-3.5" />
                     </button>
                   </div>
@@ -9197,15 +9212,21 @@ const Konsept = () => {
                 )}
 
                 {/* Kapittel 5: Revisjonshistorikk */}
-                <AccordionItem value="kap5" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
-                  <div className="flex items-center bg-blue-50 hover:bg-blue-100 px-4 py-3">
-                    <AccordionTrigger className="text-lg font-bold text-blue-800 flex-1 p-0 hover:no-underline">
+                <AccordionItem value="kap5" disabled={regelverkLocked} className={`border-2 border-blue-200 rounded-lg mb-4 overflow-hidden ${regelverkLocked ? 'opacity-60' : ''}`}>
+                  <div className={`flex items-center bg-blue-50 ${regelverkLocked ? 'cursor-not-allowed' : 'hover:bg-blue-100'} px-4 py-3`} title={regelverkLocked ? 'Velg regelverk i kap. 1 for å låse opp' : undefined}>
+                    <AccordionTrigger disabled={regelverkLocked} className="text-lg font-bold text-blue-800 flex-1 p-0 hover:no-underline disabled:cursor-not-allowed">
                       <span className="flex items-center gap-3">
                         <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">5</span>
                         Revisjonshistorikk
+                        {regelverkLocked && (
+                          <span className="flex items-center gap-1 text-xs font-normal text-muted-foreground ml-2">
+                            <Lock className="h-3.5 w-3.5" />
+                            Velg regelverk i kap. 1 for å låse opp
+                          </span>
+                        )}
                       </span>
                     </AccordionTrigger>
-                    <button type="button" onClick={(e) => { e.stopPropagation(); document.getElementById('preview-kap5')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="p-1.5 ml-2 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors" title="Gå til i forhåndsvisning">
+                    <button type="button" disabled={regelverkLocked} onClick={(e) => { e.stopPropagation(); document.getElementById('preview-kap5')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="p-1.5 ml-2 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed" title="Gå til i forhåndsvisning">
                       <Eye className="h-3.5 w-3.5" />
                     </button>
                   </div>
@@ -9297,15 +9318,21 @@ const Konsept = () => {
                 </AccordionItem>
 
                 {/* Kapittel 6: Litteraturhenvisninger */}
-                <AccordionItem value="kap6" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
-                  <div className="flex items-center bg-blue-50 hover:bg-blue-100 px-4 py-3">
-                    <AccordionTrigger className="text-lg font-bold text-blue-800 flex-1 p-0 hover:no-underline">
+                <AccordionItem value="kap6" disabled={regelverkLocked} className={`border-2 border-blue-200 rounded-lg mb-4 overflow-hidden ${regelverkLocked ? 'opacity-60' : ''}`}>
+                  <div className={`flex items-center bg-blue-50 ${regelverkLocked ? 'cursor-not-allowed' : 'hover:bg-blue-100'} px-4 py-3`} title={regelverkLocked ? 'Velg regelverk i kap. 1 for å låse opp' : undefined}>
+                    <AccordionTrigger disabled={regelverkLocked} className="text-lg font-bold text-blue-800 flex-1 p-0 hover:no-underline disabled:cursor-not-allowed">
                       <span className="flex items-center gap-3">
                         <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">6</span>
                         Litteraturhenvisninger
+                        {regelverkLocked && (
+                          <span className="flex items-center gap-1 text-xs font-normal text-muted-foreground ml-2">
+                            <Lock className="h-3.5 w-3.5" />
+                            Velg regelverk i kap. 1 for å låse opp
+                          </span>
+                        )}
                       </span>
                     </AccordionTrigger>
-                    <button type="button" onClick={(e) => { e.stopPropagation(); document.getElementById('preview-kap6')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="p-1.5 ml-2 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors" title="Gå til i forhåndsvisning">
+                    <button type="button" disabled={regelverkLocked} onClick={(e) => { e.stopPropagation(); document.getElementById('preview-kap6')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="p-1.5 ml-2 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed" title="Gå til i forhåndsvisning">
                       <Eye className="h-3.5 w-3.5" />
                     </button>
                   </div>
