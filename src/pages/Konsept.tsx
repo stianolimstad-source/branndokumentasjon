@@ -9318,15 +9318,21 @@ const Konsept = () => {
                 </AccordionItem>
 
                 {/* Kapittel 6: Litteraturhenvisninger */}
-                <AccordionItem value="kap6" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
-                  <div className="flex items-center bg-blue-50 hover:bg-blue-100 px-4 py-3">
-                    <AccordionTrigger className="text-lg font-bold text-blue-800 flex-1 p-0 hover:no-underline">
+                <AccordionItem value="kap6" disabled={regelverkLocked} className={`border-2 border-blue-200 rounded-lg mb-4 overflow-hidden ${regelverkLocked ? 'opacity-60' : ''}`}>
+                  <div className={`flex items-center bg-blue-50 ${regelverkLocked ? 'cursor-not-allowed' : 'hover:bg-blue-100'} px-4 py-3`} title={regelverkLocked ? 'Velg regelverk i kap. 1 for å låse opp' : undefined}>
+                    <AccordionTrigger disabled={regelverkLocked} className="text-lg font-bold text-blue-800 flex-1 p-0 hover:no-underline disabled:cursor-not-allowed">
                       <span className="flex items-center gap-3">
                         <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">6</span>
                         Litteraturhenvisninger
+                        {regelverkLocked && (
+                          <span className="flex items-center gap-1 text-xs font-normal text-muted-foreground ml-2">
+                            <Lock className="h-3.5 w-3.5" />
+                            Velg regelverk i kap. 1 for å låse opp
+                          </span>
+                        )}
                       </span>
                     </AccordionTrigger>
-                    <button type="button" onClick={(e) => { e.stopPropagation(); document.getElementById('preview-kap6')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="p-1.5 ml-2 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors" title="Gå til i forhåndsvisning">
+                    <button type="button" disabled={regelverkLocked} onClick={(e) => { e.stopPropagation(); document.getElementById('preview-kap6')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} className="p-1.5 ml-2 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors disabled:opacity-50 disabled:cursor-not-allowed" title="Gå til i forhåndsvisning">
                       <Eye className="h-3.5 w-3.5" />
                     </button>
                   </div>
