@@ -1,36 +1,17 @@
 ## Problem
-For tilstandsvurderinger etter BF85 vises knappen (checkbox) for «Universell utforming» i kapittel 2.1. Dette er ikke relevant for BF85, da universell utforming (TEK17 § 12-13) ikke fantes i Byggeforskrift 1985.
+I kap. 3.5 Brannceller i tilstandsvurdering etter BF85 vises «p. Tekniske rom som betjener flere andre brannceller…» med hele TEK17-teksten i listen man huker av. For BF85 ønsker brukeren at dette punktet skal være kortet ned til kun «p. Tekniske rom og ventilasjonsrom», siden det i BF85-konteksten ikke er TEK17 sin definisjon som er relevant.
 
 ## Løsning
+Bruk en kortere label for `tekniske_rom`-punktet når `formData.regelverk === "BF85"`. Endringen gjøres kun i visning – `id`-en og lagret data forblir uendret, slik at vi unngår migrasjon.
 
-### 1. Inputside – `src/pages/Konsept.tsx`
-Skjul «Universell utforming»-checkboxene når `formData.regelverk === "BF85"`.
+### 1. Inputside – `src/pages/Konsept.tsx` (linje 4942–4961)
+I `branncelleTyperListe.map(...)` brukes `type.label` direkte. Lag en hjelpefunksjon (inline) som returnerer `"p. Tekniske rom og ventilasjonsrom"` når `formData.regelverk === "BF85"` og `type.id === "tekniske_rom"`, ellers `type.label`. Erstatt `{type.label}` med dette resultatet.
 
-**Sted 1 – linje 3311–3322:**  
-Checkbox under del 1 når `harFlereRisikoklasser` er valgt. Wrap med `{formData.regelverk !== "BF85" && ...}`.
+### 2. Forhåndsvisning – `src/components/konsept/KonseptPreview.tsx` (linje 1928–1941)
+I tabellen «Følgende rom/lokaler skal være egne brannceller» rendres `type.label` for hver valgte typeId. Bruk samme betingelse: hvis `formData.regelverk === "BF85"` og `typeId === "tekniske_rom"`, vis «p. Tekniske rom og ventilasjonsrom», ellers `type.label`.
 
-**Sted 2 – linje 3451–3460:**  
-Checkbox for hver bygningsdel. Wrap med samme betingelse.
-
-**Sted 3 – linje 3551–3565:**  
-Checkbox når `!harFlereRisikoklasser` (enkeltbygg). Wrap med samme betingelse.
-
-### 2. Forhåndsvisning – `src/components/konsept/KonseptPreview.tsx`
-Skjul visning av universell utforming i tabellene når `formData.regelverk === "BF85"`.
-
-**Sted 1 – linje 768:**  
-Kolonneheader «Univ. utforming» i bygningsdeler-tabellen. Skjul kolonne og juster `colSpan` på oppsummeringsraden under (linje 811).
-
-**Sted 2 – linje 787 og 806:**  
-Celleverdier for universell utforming i bygningsdeler-tabellen. Skjul cellene.
-
-**Sted 3 – linje 865–870:**  
-Egen rad «Universell utforming» i enkeltbygg-tabellen. Skjul hele raden.
-
-### 3. Eventuell tilpasning av kolonnetall
-Når «Univ. utforming»-kolonnen fjernes fra bygningsdeler-tabellen, må `colSpan={6}` på tiltaksklasse-raden (linje 811) justeres til `colSpan={5}`.
-
-## Ingen endring
-- Ingen DB- eller skjemaendringer.
-- Ingen påvirkning på beregninger (feltet i `formData` beholdes, bare ikke vises).
-- Word-eksport oppdateres ikke som del av denne endringen.
+## Ingen endringer
+- Ingen DB-/skjemaendringer.
+- Eget «Tekniske rom A 60»-avsnitt under (linje 1709 i preview) berøres ikke – det er fortsatt korrekt for BF85.
+- Word-eksport berøres ikke i denne omgang.
+- TEK17-visningen er uendret.

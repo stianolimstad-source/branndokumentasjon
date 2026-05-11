@@ -4957,7 +4957,7 @@ const Konsept = () => {
                                   htmlFor={`branncelle-${type.id}`} 
                                   className="text-xs leading-tight cursor-pointer"
                                 >
-                                  {type.label}
+                                  {formData.regelverk === "BF85" && type.id === "tekniske_rom" ? "p. Tekniske rom og ventilasjonsrom" : type.label}
                                 </label>
                               </div>
                               {type.id === "husdyrrom" && formData.branncelleTyper.includes("husdyrrom") && (
