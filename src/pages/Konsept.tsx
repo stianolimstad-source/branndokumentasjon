@@ -2644,7 +2644,10 @@ const Konsept = () => {
                         </div>
                       )}
 
+              {(() => { return null; })()}
               <Accordion type="multiple" defaultValue={[]} className="w-full">
+                {/* Lås kap. 2-6 til regelverk er valgt (kun tilstandsvurdering) */}
+                {/* regelverkLocked beregnes inline der det trengs */}
                 {/* Sammendrag */}
                 <AccordionItem value="sammendrag" className="border-2 border-blue-200 rounded-lg mb-4 overflow-hidden">
                   <div className="flex items-center bg-blue-50 hover:bg-blue-100 px-4 py-3">
