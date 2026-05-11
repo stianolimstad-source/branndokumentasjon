@@ -3774,18 +3774,18 @@ const Konsept = () => {
                                 </SelectContent>
                               </Select>
                               {formData.regelverk === "BF85" && formData.bygningsbrannklasse && (() => {
-                                const bklMap: Record<string, string> = { "1": "BKL 3", "2": "BKL 2", "3": "BKL 1", "4": "ingen direkte tilsvarende brannklasse" };
+                                const bklMap: Record<string, string> = { "1": "3", "2": "2", "3": "1", "4": "" };
                                 const bkl = bklMap[formData.bygningsbrannklasse];
                                 const rk = bygningsTypeRisikoklasseMap[formData.bygningstype] || "";
                                 return (
-                                  <div className="mt-2 p-2 rounded-md bg-muted/50 text-xs text-muted-foreground">
-                                    <div>
-                                      <span className="font-medium text-foreground">Tilsvarende i TEK17:</span>{" "}
+                                  <div className="mt-2 p-3 rounded-md bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 text-xs">
+                                    <div className="font-semibold text-blue-900 dark:text-blue-200 mb-1">Tilsvarende klassifisering etter TEK17</div>
+                                    <div className="text-foreground">
                                       {formData.bygningsbrannklasse === "4"
-                                        ? "ingen direkte tilsvarende brannklasse i TEK17 (typisk mindre/uklassifiserte bygg under BKL 1)"
-                                        : <>Brannklasse {bkl.replace("BKL ", "")}{rk && <>, Risikoklasse {rk.replace("RK", "")} ({formData.bygningstype})</>}</>}
+                                        ? "Ingen direkte tilsvarende brannklasse i TEK17 (typisk mindre/uklassifiserte bygg under BKL 1)."
+                                        : <>Brannklasse <strong>BKL {bkl}</strong>{rk && <>, Risikoklasse <strong>{rk}</strong> ({formData.bygningstype})</>}</>}
                                     </div>
-                                    <div className="italic mt-1">Mappingen er veiledende – BF85 og TEK17 har ulike inndelingsprinsipper.</div>
+                                    <div className="italic text-muted-foreground mt-1">Veiledende mapping – BF85 og TEK17 har ulike inndelingsprinsipper.</div>
                                   </div>
                                 );
                               })()}

@@ -1,28 +1,33 @@
-## Mål
-Når BF85 er valgt i tilstandsvurdering og bygningsbrannklasse er satt i kap. 2, vis en liten info-boks rett under select-feltet som viser hva valget tilsvarer i TEK17 (brannklasse + risikoklasse).
+## Problem
+TEK17-tilsvarende info som ble lagt til under BBK-velgeren i kap. 2 vises ikke tydelig nok, og finnes ikke i forhåndsvisningen i det hele tatt.
 
-## Mapping (BF85 → TEK17)
+## Løsning
 
-**Brannklasse (BKL) – fra valgt bygningsbrannklasse:**
-BF85 har omvendt nummerering av TEK17 (BBK 1 = strengest).
+### 1. Inputside – `src/pages/Konsept.tsx` (rundt linje 3776–3791)
+Beholder eksisterende info-boks men gjør den tydeligere:
+- Større padding, sterkere bakgrunn (`bg-blue-50 dark:bg-blue-950/30`, border)
+- Tekst i `text-foreground` (ikke muted) slik at den faktisk synes
+- Tydeligere overskrift "Tilsvarende klassifisering etter TEK17"
+
+Mapping:
 - BBK 1 → BKL 3
 - BBK 2 → BKL 2
 - BBK 3 → BKL 1
-- BBK 4 → ingen direkte tilsvarende (mindre/uklassifiserte bygg under TEK17 sin BKL 1)
+- BBK 4 → ingen direkte tilsvarende brannklasse i TEK17
 
-**Risikoklasse (RK):** slås opp via eksisterende `bygningsTypeRisikoklasseMap[formData.bygningstype]`. Hvis bygningstype mangler, utelates RK fra teksten.
+Risikoklasse hentes fra `bygningsTypeRisikoklasseMap[formData.bygningstype]`.
 
-## Endring i `src/pages/Konsept.tsx`
-Etter `<Select>` for bygningsbrannklasse (rundt linje 3776, innenfor `</div>`), legg til en liten info-boks (`bg-muted/50`, `text-xs`, padding) som viser:
+### 2. Forhåndsvisning – `src/components/konsept/KonseptPreview.tsx`
 
-> **Tilsvarende i TEK17:** Brannklasse {bkl}, Risikoklasse {rk} ({bygningstype})
-> *Mappingen er veiledende – BF85 og TEK17 har ulike inndelingsprinsipper.*
+**Tilstandsvurdering-grenen (linje 629–633):** Utvid raden for "Bygningsbrannklasse" med en ny rad rett under:
+> **Tilsvarende etter TEK17:** Brannklasse {x}, Risikoklasse {y} ({bygningstype})
+> *Veiledende mapping – BF85 og TEK17 har ulike inndelingsprinsipper.*
 
-For BBK 4: vis "ingen direkte tilsvarende brannklasse i TEK17".
+**Brannkonsept BF85-grenen (linje 706–715):** Samme tilleggsrad i tabellen for "Bygningsbrannklasse (BF85)".
 
-Vises kun når `formData.regelverk === "BF85"` og `formData.bygningsbrannklasse` er satt.
+Begge bruker samme mapping som inputsiden. Vises kun når `formData.bygningsbrannklasse` er satt.
 
 ## Ingen endring
 - Ingen DB- eller skjemaendringer.
-- Ingen påvirkning på beregninger eller rapporteksport – ren visningsinformasjon i UI.
-- Brannkonsept-modus uberørt.
+- Ingen påvirkning på beregninger.
+- Word-eksport kan oppdateres senere ved behov; ikke del av dette punktet.

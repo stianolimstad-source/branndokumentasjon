@@ -627,10 +627,29 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </td>
               </tr>
               {isBF85 ? (
+              <>
               <tr>
                 <td className="border border-gray-400 p-2 font-semibold">Bygningsbrannklasse</td>
                 <td className="border border-gray-400 p-2">{formData.bygningsbrannklasse ? `Bygningsbrannklasse ${formData.bygningsbrannklasse}` : "[Angis]"}</td>
               </tr>
+              {formData.bygningsbrannklasse && (() => {
+                const bklMap: Record<string, string> = { "1": "3", "2": "2", "3": "1", "4": "" };
+                const bkl = bklMap[formData.bygningsbrannklasse];
+                const rkMap: Record<string, string> = { "Bolig": "RK4", "Boligblokk": "RK4", "Hotell": "RK6", "Sykehus": "RK6", "Sykehjem": "RK6", "Pleieinstitusjon": "RK6", "Kontor": "RK2", "Skole": "RK3", "Barnehage": "RK3", "Forsamlingslokale": "RK5", "Handelsbygg": "RK5", "Industri": "RK2", "Lager": "RK2", "Kraftstasjon": "RK2", "Garasje": "RK2" };
+                const rk = rkMap[formData.bygningstype] || "";
+                return (
+                  <tr>
+                    <td className="border border-gray-400 p-2 font-semibold align-top">Tilsvarende etter TEK17</td>
+                    <td className="border border-gray-400 p-2">
+                      {formData.bygningsbrannklasse === "4"
+                        ? "Ingen direkte tilsvarende brannklasse i TEK17."
+                        : <>Brannklasse <strong>BKL {bkl}</strong>{rk && <>, Risikoklasse <strong>{rk}</strong> ({formData.bygningstype})</>}</>}
+                      <div className="italic text-gray-600 text-[10px] mt-1">Veiledende mapping – BF85 og TEK17 har ulike inndelingsprinsipper.</div>
+                    </td>
+                  </tr>
+                );
+              })()}
+              </>
               ) : (
               <>
               <tr>
@@ -711,6 +730,23 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       {formData.bygningsbrannklasse ? `Bygningsbrannklasse ${formData.bygningsbrannklasse}` : "[Angis]"}
                     </td>
                   </tr>
+                  {formData.bygningsbrannklasse && (() => {
+                    const bklMap: Record<string, string> = { "1": "3", "2": "2", "3": "1", "4": "" };
+                    const bkl = bklMap[formData.bygningsbrannklasse];
+                    const rkMap: Record<string, string> = { "Bolig": "RK4", "Boligblokk": "RK4", "Hotell": "RK6", "Sykehus": "RK6", "Sykehjem": "RK6", "Pleieinstitusjon": "RK6", "Kontor": "RK2", "Skole": "RK3", "Barnehage": "RK3", "Forsamlingslokale": "RK5", "Handelsbygg": "RK5", "Industri": "RK2", "Lager": "RK2", "Kraftstasjon": "RK2", "Garasje": "RK2" };
+                    const rk = rkMap[formData.bygningstype] || "";
+                    return (
+                      <tr>
+                        <td className="border border-gray-400 p-2 font-semibold align-top">Tilsvarende etter TEK17</td>
+                        <td className="border border-gray-400 p-2">
+                          {formData.bygningsbrannklasse === "4"
+                            ? "Ingen direkte tilsvarende brannklasse i TEK17."
+                            : <>Brannklasse <strong>BKL {bkl}</strong>{rk && <>, Risikoklasse <strong>{rk}</strong> ({formData.bygningstype})</>}</>}
+                          <div className="italic text-gray-600 text-[10px] mt-1">Veiledende mapping – BF85 og TEK17 har ulike inndelingsprinsipper.</div>
+                        </td>
+                      </tr>
+                    );
+                  })()}
                 </tbody>
               </table>
               {formData.bygningsinfoKommentar && (
