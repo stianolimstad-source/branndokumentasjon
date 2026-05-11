@@ -1148,6 +1148,17 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     rows.push(contentRow("Kommentar", formData.romningSikkerhetKommentar, "-"));
   }
   rows.push(...await tilstandRow(formData, "3_8", "3.8 Rømning og redning"));
+  {
+    const erKraftstasjon38 = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+      || (Array.isArray(formData.bygningsdeler) && formData.bygningsdeler.some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon")));
+    if (erKraftstasjon38) {
+      rows.push(contentRow(
+        "Arrangement og besøk – kraftstasjon",
+        "Ved større besøk fra grupper, skoleelever, konserter eller lignende arrangement i fjellhall/kraftstasjon skal godkjenning fra lokalt brannvesen foreligge før arrangementet avholdes.",
+        "Tiltakshaver/Driftsansvarlig"
+      ));
+    }
+  }
 
   // ===== 3.9 Tilrettelegging for rømning og redning =====
   rows.push(sectionHeaderRow("3.9   §11-12 Tilrettelegging for rømning og redning"));

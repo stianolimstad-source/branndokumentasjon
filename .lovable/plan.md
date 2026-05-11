@@ -1,20 +1,28 @@
-## Endring: Egen «Maler»-fane (skill ut fra Logo)
+## Mål
+Legge til et automatisk krav under kap. 3.8 (Rømning og redning) for kraftstasjoner: Ved større besøk fra grupper, skoleelever, konserter eller lignende arrangement i fjellhall skal godkjenning fra lokalt brannvesen foreligge.
 
-I dag ligger malstyringen (`MalvalgPanel`) under fanen «Logo» sammen med opplasting av gruppelogo. Vi flytter den ut til en egen fane slik at administratorer har én tydelig knapp/fane for hver oppgave.
+## Når skal raden vises
+Når ett av følgende stemmer:
+- `formData.bygningstype` inneholder "kraftstasjon", eller
+- en av `formData.bygningsdeler` har `bygningstype` som inneholder "kraftstasjon".
 
-### Hva endres
+Raden vises uavhengig av TEK17/BF85 (samme tilleggskrav), og uavhengig av om kraftstasjonen er under fjell – men teksten formuleres som arrangement "i fjellhall/kraftstasjon".
 
-**`src/pages/GruppeDetalj.tsx`**
-- Legg til en ny `<TabsTrigger value="maler">` ved siden av «Logo» (kun synlig for `isAdmin`), med ikon `Sparkles` (eller `FileText`/`LayoutTemplate`) og label «Maler».
-- Opprett `<TabsContent value="maler">` som inneholder kun `MalvalgPanel`-komponenten (med samme props som i dag).
-- Fjern `MalvalgPanel` fra `<TabsContent value="innstillinger">` (Logo-fanen) — den fanen inneholder kun gruppelogo-håndteringen.
+## Endringer
 
-### Hva er IKKE påvirket
+### 1. `src/components/konsept/KonseptPreview.tsx` (kap. 3.8, etter linje 3647)
+Legge til ny rad rett etter eksisterende «Kommentar»-rad i 3.8:
 
-- `MalvalgPanel` selv (intern oppførsel, opprettelse av ny mal, lagring osv.) er uendret.
-- Logo-håndtering, medlemmer- og delte prosjekter-fanene er uendret.
-- Ingen endringer i database eller backend.
+- Forhold: "Arrangement og besøk – kraftstasjon"
+- Løsning: "Ved større besøk fra grupper, skoleelever, konserter eller lignende arrangement i fjellhall/kraftstasjon skal godkjenning fra lokalt brannvesen foreligge før arrangementet avholdes."
+- Ansvar: "Tiltakshaver/Driftsansvarlig"
 
-### Resultat
+Raden pakkes inn i `KraftstasjonTilleggskravCard`-stil eller, for å passe inn i tabellen, vises som en vanlig `<tr>` med samme markørstil som de øvrige kraftstasjon-radene i kap. 3.7 (gult/primary-fargekoding er ikke nødvendig – det holder med tydelig "– kraftstasjon"-suffix i Forhold-kolonnen, slik som i 3.7-radene).
 
-Adminbrukere får tre faner i tillegg til medlemmer/delte: **Logo** og **Maler** står som hver sin separate inngang. Dette gjør det enklere å finne malene og holder Logo-fanen fokusert på sitt formål.
+### 2. `src/lib/word-export-chapter3.ts` (etter linje 1148)
+Legge til samme rad i Word-eksporten via `contentRow(...)`, med samme betingelse for kraftstasjon, slik at HTML- og Word-output er identisk.
+
+## Ingen endringer
+- Ingen DB-/skjema-endringer.
+- Ingen nye felt i `formData`.
+- Ingen endringer for andre bygningstyper.
