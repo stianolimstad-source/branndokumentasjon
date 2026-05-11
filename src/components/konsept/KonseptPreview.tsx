@@ -3972,6 +3972,26 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
             )}
             {(() => {
+              const erKS = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+              if (!erKS || formData.documentType !== "tilstandsvurdering" || formData.regelverk !== "BF85") return null;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Brannalarmanlegg – kraftstasjon</td>
+                  <td className="border border-gray-400 p-2">
+                    <p>Det skal være brannalarmanlegg i alle kraftforsyningsanlegg i fjell og under dagen (jf. FOBTOT § 2.1 jf. FEA-F § 25.3). Automatisk brannalarm skal installeres i alle rom i den delen av bygget hvor driftssentralen med tilbehør er installert. Denne skal også varsle eventuell hjemmevakt (jf. Beredskapsforskriften § 6.4, pkt. e).</p>
+                    <p className="mt-2">Vedlikehold og periodisk tilstandskontroll av brannalarmanlegg skal utføres av kvalifisert personell (kan ivaretas av egne ansatte som er kvalifisert for dette, for eksempel ved FG-godkjenning eller lignende).</p>
+                    <p className="mt-2">Konsekvensreduserende tiltak kan være:</p>
+                    <ul className="list-disc pl-5 mt-1 space-y-1">
+                      <li>Å montere brannalarmanlegg som varsler både personell som kan befinne seg i stasjonen og vaktpersonell på driftssentralen, samt eventuelt direkte til brannvesen.</li>
+                      <li>Å koble brannalarmanlegget mot røyk- og brannspjeld samt dører/luker slik at spredning av røyk og brann unngås (se Ventilasjonsanlegg, kap. 3.7).</li>
+                    </ul>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIE</td>
+                </tr>
+              );
+            })()}
+            {(() => {
               const erKraftstasjon39 = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
                 || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
               if (!erKraftstasjon39) return null;

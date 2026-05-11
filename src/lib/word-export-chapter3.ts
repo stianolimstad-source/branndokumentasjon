@@ -1248,6 +1248,18 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     const erKraftstasjon39 = ((formData.bygningstype || "") as string).toLowerCase().includes("kraftstasjon")
       || ((formData.bygningsdeler || []) as any[]).some((d: any) => ((d.bygningstype || "") as string).toLowerCase().includes("kraftstasjon"));
     if (erKraftstasjon39) {
+      // Brannalarmanlegg – kun for tilstandsvurdering etter BF85
+      if (formData.documentType === "tilstandsvurdering" && formData.regelverk === "BF85") {
+        rows.push(contentRowMultiLine("Brannalarmanlegg – kraftstasjon", [
+          "Det skal være brannalarmanlegg i alle kraftforsyningsanlegg i fjell og under dagen (jf. FOBTOT § 2.1 jf. FEA-F § 25.3). Automatisk brannalarm skal installeres i alle rom i den delen av bygget hvor driftssentralen med tilbehør er installert. Denne skal også varsle eventuell hjemmevakt (jf. Beredskapsforskriften § 6.4, pkt. e).",
+          "",
+          "Vedlikehold og periodisk tilstandskontroll av brannalarmanlegg skal utføres av kvalifisert personell (kan ivaretas av egne ansatte som er kvalifisert for dette, for eksempel ved FG-godkjenning eller lignende).",
+          "",
+          "Konsekvensreduserende tiltak kan være:",
+          "• Å montere brannalarmanlegg som varsler både personell som kan befinne seg i stasjonen og vaktpersonell på driftssentralen, samt eventuelt direkte til brannvesen.",
+          "• Å koble brannalarmanlegget mot røyk- og brannspjeld samt dører/luker slik at spredning av røyk og brann unngås (se Ventilasjonsanlegg, kap. 3.7).",
+        ], "RIE"));
+      }
       const lines: string[] = [];
       if (formData.kraftstasjonUnderFjell) {
         lines.push("Stasjoner i fjell og under dagen skal ha nødlysanlegg, (jf. FEA-F § 26).");
