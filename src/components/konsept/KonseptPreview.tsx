@@ -765,7 +765,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <th className="border border-gray-400 p-2 text-left">Risikoklasse</th>
                     <th className="border border-gray-400 p-2 text-left">Brannklasse</th>
                     <th className="border border-gray-400 p-2 text-left">Brannenergi</th>
-                    <th className="border border-gray-400 p-2 text-left">Univ. utforming</th>
+                    {formData.regelverk !== "BF85" && (
+                      <th className="border border-gray-400 p-2 text-left">Univ. utforming</th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -784,7 +786,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                         <td className="border border-gray-400 p-2">{formData.risikoklasse || "-"}</td>
                         <td className="border border-gray-400 p-2">{del1Brannklasse || "-"}</td>
                         <td className="border border-gray-400 p-2">{del1BrannenergiLabel}</td>
-                        <td className="border border-gray-400 p-2">{formData.universellUtforming ? "Ja" : "Nei"}</td>
+                        {formData.regelverk !== "BF85" && (
+                          <td className="border border-gray-400 p-2">{formData.universellUtforming ? "Ja" : "Nei"}</td>
+                        )}
                       </tr>
                     );
                   })()}
@@ -803,13 +807,15 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                         <td className="border border-gray-400 p-2">{del.risikoklasse || "-"}</td>
                         <td className="border border-gray-400 p-2">{delBrannklasse || "-"}</td>
                         <td className="border border-gray-400 p-2">{brannenergiLabel}</td>
-                        <td className="border border-gray-400 p-2">{del.universellUtforming ? "Ja" : "Nei"}</td>
+                        {formData.regelverk !== "BF85" && (
+                          <td className="border border-gray-400 p-2">{del.universellUtforming ? "Ja" : "Nei"}</td>
+                        )}
                       </tr>
                     );
                   })}
                    <tr>
                     <td className="border border-gray-400 p-2 font-semibold" colSpan={2}>Tiltaksklasse</td>
-                    <td className="border border-gray-400 p-2" colSpan={6}>
+                    <td className="border border-gray-400 p-2" colSpan={formData.regelverk === "BF85" ? 5 : 6}>
                       {formData.tiltaksklasse || "[Angis]"}
                       {formData.tiltaksklasseBegrunnelse && (
                         <p className="text-xs italic mt-1">Begrunnelse: {formData.tiltaksklasseBegrunnelse}</p>
@@ -862,12 +868,14 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     )}
                   </td>
                 </tr>
+                {formData.regelverk !== "BF85" && (
                 <tr>
                   <td className="border border-gray-400 p-2 font-semibold">Universell utforming</td>
                   <td className="border border-gray-400 p-2">
                     {formData.universellUtforming ? "Ja" : "Nei"}
                   </td>
                 </tr>
+                )}
               </tbody>
             </table>
           )}
