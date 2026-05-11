@@ -3773,6 +3773,22 @@ const Konsept = () => {
                                   <SelectItem value="4">Bygningsbrannklasse 4</SelectItem>
                                 </SelectContent>
                               </Select>
+                              {formData.regelverk === "BF85" && formData.bygningsbrannklasse && (() => {
+                                const bklMap: Record<string, string> = { "1": "BKL 3", "2": "BKL 2", "3": "BKL 1", "4": "ingen direkte tilsvarende brannklasse" };
+                                const bkl = bklMap[formData.bygningsbrannklasse];
+                                const rk = bygningsTypeRisikoklasseMap[formData.bygningstype] || "";
+                                return (
+                                  <div className="mt-2 p-2 rounded-md bg-muted/50 text-xs text-muted-foreground">
+                                    <div>
+                                      <span className="font-medium text-foreground">Tilsvarende i TEK17:</span>{" "}
+                                      {formData.bygningsbrannklasse === "4"
+                                        ? "ingen direkte tilsvarende brannklasse i TEK17 (typisk mindre/uklassifiserte bygg under BKL 1)"
+                                        : <>Brannklasse {bkl.replace("BKL ", "")}{rk && <>, Risikoklasse {rk.replace("RK", "")} ({formData.bygningstype})</>}</>}
+                                    </div>
+                                    <div className="italic mt-1">Mappingen er veiledende – BF85 og TEK17 har ulike inndelingsprinsipper.</div>
+                                  </div>
+                                );
+                              })()}
                             </div>
                           </div>
                             );
