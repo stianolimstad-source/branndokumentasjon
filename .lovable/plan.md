@@ -1,21 +1,28 @@
 ## Mål
-For tilstandsvurderinger: lås kapittel 2–6 inntil regelverk er valgt i kap. 1. Gjelder ikke brannkonsept.
+Når BF85 er valgt i tilstandsvurdering og bygningsbrannklasse er satt i kap. 2, vis en liten info-boks rett under select-feltet som viser hva valget tilsvarer i TEK17 (brannklasse + risikoklasse).
 
-## Endringer i `src/pages/Konsept.tsx`
+## Mapping (BF85 → TEK17)
 
-For hver `<AccordionItem value="kap2|kap3|kap4|kap5|kap6">` (linjer ca. 3039, 3898, 9152, 9200, og kap6):
+**Brannklasse (BKL) – fra valgt bygningsbrannklasse:**
+BF85 har omvendt nummerering av TEK17 (BBK 1 = strengest).
+- BBK 1 → BKL 3
+- BBK 2 → BKL 2
+- BBK 3 → BKL 1
+- BBK 4 → ingen direkte tilsvarende (mindre/uklassifiserte bygg under TEK17 sin BKL 1)
 
-1. Beregn `regelverkLocked = documentType === "tilstandsvurdering" && !formData.regelverk`.
-2. På `AccordionItem`: legg til `disabled={regelverkLocked}` og betinget className for redusert opacity (`opacity-60`).
-3. På `AccordionTrigger`: bytt ut bare når låst – vis i tillegg en `Lock`-ikon (lucide-react) og hjelpetekst: *"Velg regelverk i kap. 1 for å låse opp"*.
-4. Skjul `AccordionContent` når låst (rendrer ingenting / `forceMount={false}`), eller alternativt ikke åpne (Radix Accordion respekterer ikke `disabled` på Item, så vi løser det ved å:
-   - sette `value` i `Accordion` slik at låste kapitler ikke kan settes som åpne
-   - styrer via `onValueChange`: blokker bytte til kap2-6 hvis låst).
+**Risikoklasse (RK):** slås opp via eksisterende `bygningsTypeRisikoklasseMap[formData.bygningstype]`. Hvis bygningstype mangler, utelates RK fra teksten.
 
-### Implementasjon
-Konverter Accordion fra ukontrollert til kontrollert (`type="multiple"`, `value`/`onValueChange`). I `onValueChange` filtreres låste kapitler ut. AccordionTrigger får en `Lock`-ikon + tooltip-tekst når låst, og hover/cursor settes til `not-allowed`.
+## Endring i `src/pages/Konsept.tsx`
+Etter `<Select>` for bygningsbrannklasse (rundt linje 3776, innenfor `</div>`), legg til en liten info-boks (`bg-muted/50`, `text-xs`, padding) som viser:
+
+> **Tilsvarende i TEK17:** Brannklasse {bkl}, Risikoklasse {rk} ({bygningstype})
+> *Mappingen er veiledende – BF85 og TEK17 har ulike inndelingsprinsipper.*
+
+For BBK 4: vis "ingen direkte tilsvarende brannklasse i TEK17".
+
+Vises kun når `formData.regelverk === "BF85"` og `formData.bygningsbrannklasse` er satt.
 
 ## Ingen endring
-- Brannkonsept-modus er uberørt.
-- Kap. 1 (med regelverk-velgeren) og sammendrag-seksjonen forblir åpne.
-- Ingen DB-/skjemaendringer.
+- Ingen DB- eller skjemaendringer.
+- Ingen påvirkning på beregninger eller rapporteksport – ren visningsinformasjon i UI.
+- Brannkonsept-modus uberørt.
