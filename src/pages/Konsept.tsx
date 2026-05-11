@@ -3308,7 +3308,7 @@ const Konsept = () => {
                             </div>
                           );
                         })()}
-                        {formData.harFlereRisikoklasser && (
+                        {formData.harFlereRisikoklasser && formData.regelverk !== "BF85" && (
                           <div className="flex items-start gap-2 mt-2">
                             <Checkbox
                               id="universellUtformingDel1"
@@ -3448,6 +3448,7 @@ const Konsept = () => {
                                       <SelectContent><SelectItem value="over400">Over 400 MJ/m²</SelectItem><SelectItem value="50-400">50-400 MJ/m²</SelectItem><SelectItem value="under50">Under 50 MJ/m²</SelectItem></SelectContent>
                                     </Select>
                                   </div>
+                                  {formData.regelverk !== "BF85" && (
                                   <div className="flex items-start gap-2">
                                     <Checkbox
                                       id={`universellUtformingDel${index + 2}`}
@@ -3458,6 +3459,7 @@ const Konsept = () => {
                                       Universell utforming (åpningskraft dører maks 30 N, jf. § 12-13)
                                     </Label>
                                   </div>
+                                  )}
                                 </div>
                               );
                             })}
@@ -3548,7 +3550,7 @@ const Konsept = () => {
                       )}
                     </div>
                     )}
-                    {!formData.harFlereRisikoklasser && (
+                    {!formData.harFlereRisikoklasser && formData.regelverk !== "BF85" && (
                     <div className="space-y-2 mt-2">
                       <Label className="text-xs font-medium">Universell utforming</Label>
                       <div className="flex items-start gap-2">
