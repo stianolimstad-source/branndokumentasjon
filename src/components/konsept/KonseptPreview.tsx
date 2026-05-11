@@ -1932,7 +1932,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <ul className="list-none space-y-1">
                     {branncelleTyper.map((typeId: string) => {
                       const type = branncelleTyperListe.find(t => t.id === typeId);
-                      return type ? <li key={typeId} className="text-sm">{type.label}</li> : null;
+                      if (!type) return null;
+                      const label = formData.regelverk === "BF85" && type.id === "tekniske_rom" ? "p. Tekniske rom og ventilasjonsrom" : type.label;
+                      return <li key={typeId} className="text-sm">{label}</li>;
                     })}
                   </ul>
                 </td>
