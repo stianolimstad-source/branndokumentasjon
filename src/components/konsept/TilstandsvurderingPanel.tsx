@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { ImagePlus, X, Loader2, Plus, Trash2 } from "lucide-react";
+import { ImagePlus, X, Loader2, Plus, Trash2, ClipboardCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -335,43 +335,63 @@ const TilstandsvurderingPanel = ({ sectionKey, sectionLabel, data, onChange }: T
     kind: "tiltak" | "fravik",
     label: string,
     helpText: string,
-    accent: { wrapper: string; chip: string },
+    accent: { wrapper: string; chip: string; header: string },
   ) => {
     const k = kind === "tiltak" ? tiltak : fravik;
     const liste = k.avvik || [];
     return (
-      <div className={`p-3 rounded-md border ${accent.wrapper}`}>
-        <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${accent.chip}`}>{label}</p>
-        <p className="text-[11px] text-muted-foreground mb-3">{helpText}</p>
+      <div className={`rounded-lg border-2 overflow-hidden shadow-sm ${accent.wrapper}`}>
+        <div className={`flex items-center justify-between px-3 py-2 ${accent.header}`}>
+          <p className={`text-xs font-bold uppercase tracking-wide ${accent.chip}`}>{label}</p>
+          <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full bg-background/70 ${accent.chip}`}>
+            {liste.length} avvik
+          </span>
+        </div>
+        <div className="p-3">
+          <p className="text-[11px] text-muted-foreground mb-3">{helpText}</p>
 
-        {liste.length === 0 ? (
-          <p className="text-[11px] italic text-muted-foreground mb-2">Ingen avvik registrert i denne kategorien.</p>
-        ) : (
-          <div className="space-y-2 mb-2">
-            {liste.map((a, i) => renderAvvikKort(kind, a, i, accent.chip))}
-          </div>
-        )}
+          {liste.length === 0 ? (
+            <p className="text-[11px] italic text-muted-foreground mb-2">Ingen avvik registrert i denne kategorien.</p>
+          ) : (
+            <div className="space-y-2 mb-2">
+              {liste.map((a, i) => renderAvvikKort(kind, a, i, accent.chip))}
+            </div>
+          )}
 
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => addAvvik(kind)}
-          className="bg-background"
-        >
-          <Plus className="h-3 w-3 mr-1" /> Legg til avvik
-        </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => addAvvik(kind)}
+            className="bg-background"
+          >
+            <Plus className="h-3 w-3 mr-1" /> Legg til avvik
+          </Button>
+        </div>
       </div>
     );
   };
 
   return (
-    <div className="mt-3 p-4 rounded-lg border-2 border-dashed border-amber-300 bg-amber-50/50 dark:bg-amber-950/20 dark:border-amber-700 space-y-3">
-      <Label className="text-xs font-bold text-amber-800 dark:text-amber-300 uppercase tracking-wide">
-        Tilstandsvurdering – {sectionLabel}
-      </Label>
+    <div className="mt-4 rounded-xl border-2 border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/40 shadow-md overflow-hidden">
+      <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-amber-200/80 to-amber-100/40 dark:from-amber-900/60 dark:to-amber-950/30 border-b-2 border-amber-300 dark:border-amber-700">
+        <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-amber-500 text-white shadow-sm shrink-0">
+          <ClipboardCheck className="h-5 w-5" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <Label className="text-sm font-bold text-amber-900 dark:text-amber-200 uppercase tracking-wide block">
+            Tilstandsvurdering
+          </Label>
+          <p className="text-xs text-amber-800/80 dark:text-amber-300/80 truncate">{sectionLabel}</p>
+        </div>
+        {data.grad && (
+          <span className={`text-xs font-semibold px-3 py-1.5 rounded-full border ${gradLabels[data.grad]?.color || ""} shrink-0`}>
+            {gradLabels[data.grad]?.label}
+          </span>
+        )}
+      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="p-4 space-y-4">
         <div>
           <Label className="text-xs font-medium mb-1 block">Samlet tilstandsgrad for seksjonen</Label>
           <Select value={data.grad} onValueChange={(val) => onChange({ ...data, grad: val as TilstandGrad })}>
@@ -385,28 +405,29 @@ const TilstandsvurderingPanel = ({ sectionKey, sectionLabel, data, onChange }: T
             </SelectContent>
           </Select>
         </div>
-        {data.grad && (
-          <div className="flex items-end">
-            <span className={`text-xs font-semibold px-3 py-1.5 rounded-full border ${gradLabels[data.grad]?.color || ""}`}>
-              {gradLabels[data.grad]?.label}
-            </span>
-          </div>
+
+        {renderKategori(
+          "tiltak",
+          "Avvik som krever aktive tiltak",
+          "Avvik som må utbedres / settes tilbake til riktig stand. Legg til ett kort per avvik med egen tilstandsgrad.",
+          {
+            wrapper: "border-red-300 dark:border-red-800 bg-red-50/70 dark:bg-red-950/20",
+            chip: "text-red-800 dark:text-red-300",
+            header: "bg-red-100/80 dark:bg-red-950/40 border-b border-red-200 dark:border-red-900",
+          },
+        )}
+
+        {renderKategori(
+          "fravik",
+          "Avvik som kan fraviksbehandles",
+          "Avvik som vurderes akseptable og dokumenteres som fravik (kvalitativ analyse e.l.). Legg til ett kort per avvik med egen tilstandsgrad.",
+          {
+            wrapper: "border-amber-300 dark:border-amber-800 bg-amber-50/70 dark:bg-amber-950/20",
+            chip: "text-amber-800 dark:text-amber-300",
+            header: "bg-amber-100/80 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-900",
+          },
         )}
       </div>
-
-      {renderKategori(
-        "tiltak",
-        "Avvik som krever aktive tiltak",
-        "Avvik som må utbedres / settes tilbake til riktig stand. Legg til ett kort per avvik med egen tilstandsgrad.",
-        { wrapper: "border-red-300 bg-red-50/60 dark:bg-red-950/20 dark:border-red-800", chip: "text-red-800 dark:text-red-300" },
-      )}
-
-      {renderKategori(
-        "fravik",
-        "Avvik som kan fraviksbehandles",
-        "Avvik som vurderes akseptable og dokumenteres som fravik (kvalitativ analyse e.l.). Legg til ett kort per avvik med egen tilstandsgrad.",
-        { wrapper: "border-amber-300 bg-amber-50/60 dark:bg-amber-950/20 dark:border-amber-800", chip: "text-amber-800 dark:text-amber-300" },
-      )}
     </div>
   );
 };
