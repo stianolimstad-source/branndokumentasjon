@@ -1,34 +1,52 @@
-## Endring: Vis "mangler brannvegg/seksjonering"-avhukningen kun ved faktisk krav
+## Endring: Velg mellom å etablere brannvegg/seksjoneringsvegg likevel – eller dokumentere fravik i tilstandsvurderingen
 
-I dag dukker checkboxen «Brannvegg/seksjoneringsvegg er ikke etablert i bygget» opp øverst i kap. 3.4 så snart dokumenttype er tilstandsvurdering. Den skal i stedet kun vises når regelverket faktisk **krever** brannvegg/seksjonering for det aktuelle bygget – avhengig av areal, brannteknisk tiltak og brannbelastning.
+I dag, hvis bruker huker av at brannvegg/seksjoneringsvegg «mangler», vises et fast rødt avvik i kap. 3.4 og kravene under listes opp uansett. Vi bygger nå inn et reelt valg: enten **etableres veggen likevel** (som tiltak), eller så beskrives **fraviket i tilstandsvurderingen** på slutten av kapittelet.
 
-### Når skal feltet vises (krav-til-seksjonering)
+### Inputside (`src/pages/Konsept.tsx`, kap. 3.4 ca. linje 4604–4645)
 
-Feltet vises når **minst ett** av punktene under er sant (og dokumenttype = tilstandsvurdering):
+Beholder dagens ytre checkbox («Brannvegg/seksjoneringsvegg er ikke etablert i bygget»). Når den er avhuket, viser vi i tillegg en **ny underliggende checkbox**:
 
-**BF85 – Skole** (Tabell 32:12)
-- `getBF85BrannveggKravSkole(etasjer, areal, klasse)` returnerer `krevBrannvegg = true`.
+> «Brannvegg/seksjoneringsvegg etableres likevel som tiltak»  
+> *(Huk av dersom vi velger å etablere veggen til tross for at den mangler. Ellers dokumenteres dette som fravik i tilstandsvurderingen nederst i kapittelet.)*
 
-**BF85 – Industri / Kraftstasjon / Kontor / Garasje / Lager** (Tabell 34:23)
-- Bruker har valgt brannbelastning og tiltak, og `getBF85BrannveggKravKap34(areal, brannbelastning, tiltak)` returnerer `krevBrannvegg = true`.
+Ny formData-flagg:
+- `etablererSeksjoneringLikevel: false`
 
-**TEK17 (§ 11-7)**
-- `erSykehusPleieinstitusjon` er huket av (RK6 – krav om vertikal seksjonering), **eller**
-- areal > maks tillatt areal beregnet ut fra valgt `brannseksjonTiltak` + `brannseksjonBrannenergi` (samme logikk som «Brannseksjonering er påkrevd»-rød-boksen i dag, ca. linje 4811).
+Adferd basert på de to flaggene (kun i tilstandsvurdering):
 
-Hvis ingen av disse er oppfylt → feltet (og tilhørende kommentar/avviks-rød-boks) skjules helt. Da skal også `formData.manglerSeksjonering` resettes til `false` slik at vi ikke får et "spøkelses-avvik" i rapporten dersom forutsetningene endres.
+| `manglerSeksjonering` | `etablererSeksjoneringLikevel` | Resultat i kap. 3.4 |
+|---|---|---|
+| false | – | Som i dag, ingen avvik. |
+| true | **true** | Vises som **tiltak** i tabelltoppen («Brannvegg/seksjoneringsvegg etableres som nytt tiltak …»), og kravene under dokumenteres som normalt. Ingen rødt avvik. Ingen automatisk tekst i tilstandspanelet. |
+| true | false | Ingen rødt avviksrad øverst. Kravene under dokumenteres som normalt (slik at det er sporbart hva som skulle vært). Fraviket beskrives via det eksisterende **tilstandspanelet** for 3.4 nederst i kapittelet (forhåndsutfylt forslag i `beskrivelse`-feltet hvis tomt). |
 
-### Inputside (`src/pages/Konsept.tsx`, kap. 3.4 ca. linje 4520–4561)
+Kommentar/begrunnelse-feltet (`manglerSeksjoneringKommentar`) beholdes og brukes:
+- ved «etableres likevel» → tas inn som tilleggsbeskrivelse i tiltaks-raden.
+- ved fravik → tas inn i tilstandspanelets beskrivelse-felt (eller vises i tillegg).
 
-- Beregn `seksjoneringErPaakrevd` (boolean) like før blokken, basert på reglene over (gjenbruk eksisterende helpers og `seksjoneringsGrenser`-logikk).
-- Wrappe checkboxblokken slik at den kun rendres når `documentType === "tilstandsvurdering" && seksjoneringErPaakrevd`.
-- Legg til en `useEffect` som setter `manglerSeksjonering = false` og tømmer `manglerSeksjoneringKommentar` når `seksjoneringErPaakrevd` blir `false` (unngår at gammelt avhuket avvik henger igjen).
+`useEffect`-resetten utvides slik at `etablererSeksjoneringLikevel` også nullstilles når `manglerSeksjonering` blir `false` eller når kravet bortfaller.
 
-### Rapport / preview (`src/components/konsept/KonseptPreview.tsx`)
+### Tilstandspanel for 3.4
 
-Ingen logikkendring – avviksraden vises fortsatt kun når `formData.manglerSeksjonering === true`. Siden inputsiden nå nullstiller flagget når det ikke er krav, faller raden naturlig bort i rapporten i de tilfellene.
+Sikre at `renderTilstandPanel("3_4")` faktisk er rendret nederst i kap. 3.4 (slik som `renderTilstandPanel("3_3")` for kap. 3.3). Hvis det allerede er der: ingen endring. Hvis ikke: legg det inn rett før `</SectionCollapsible>` for 3.4.
+
+Når `manglerSeksjonering === true && etablererSeksjoneringLikevel === false` og `tilstandsvurderinger["3_4"].beskrivelse` er tom, prefyll automatisk en setning som:
+> «Bygget mangler påkrevd {brannvegg|seksjoneringsvegg} iht. {BF85 Kap. 30:6 | TEK17 § 11-7}. {evt. manglerSeksjoneringKommentar}»  
+…og foreslå `grad = "tg3"`. Bruker kan endre fritt.
+
+### Rapport / preview (`src/components/konsept/KonseptPreview.tsx`, ca. linje 1413–1433)
+
+Oppdater den eksisterende avviksraden:
+
+- Vises kun når `manglerSeksjonering && !etablererSeksjoneringLikevel` → **fjernes**, fordi fraviket nå håndteres av `TilstandTableRow` for 3_4 nederst i kapittelet (samme mønster som 3.3).
+- Når `manglerSeksjonering && etablererSeksjoneringLikevel` → vis i stedet en nøytral **tiltaksrad** (grønn/standard, ikke rød):
+  - Forhold: «Nytt tiltak – {brannvegg|seksjoneringsvegg}»
+  - Løsning: «{Brannvegg|Seksjoneringsvegg} er ikke etablert i dag, men etableres som nytt tiltak iht. {regelverkshenvisning}. {manglerSeksjoneringKommentar}»
+  - Ansvar: «RIBr»
+
+Sørg for at `TilstandTableRow` for 3_4 fortsatt kommer på slutten av kap. 3.4-blokken i previewet (legges til hvis den mangler, slik at fraviket faktisk kommer «i slutten av kapittelet» som ønsket).
 
 ### Hva endres ikke
-- Selve kravberegningene (Skole-tabell, Tabell 34:23, TEK17 areal/tiltak/brannenergi) er uendret.
-- Konseptmodus uendret (feltet vises bare i tilstandsvurdering, og kun ved krav).
+- Selve kravberegningene (Skole/Tabell 34:23/TEK17 areal+brannenergi) er uendret.
+- Konseptmodus uendret – nye flagg er kun synlig i tilstandsvurdering.
 - Word-eksport følger preview automatisk.
