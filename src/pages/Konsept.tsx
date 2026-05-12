@@ -4769,6 +4769,35 @@ const Konsept = () => {
                                 </Select>
                               </div>
                             </div>
+                            {(formData.bygningstype === "Industri" || formData.bygningstype === "Kraftstasjon") && (
+                              <div className="text-xs border rounded-md overflow-hidden">
+                                <div className="px-2 py-1 bg-muted/50 font-semibold">Tabell 34:23 – referanse (kun aktuell rad tas med i rapporten)</div>
+                                <table className="w-full">
+                                  <thead className="bg-muted/30">
+                                    <tr>
+                                      <th className="text-left p-2 font-medium">Brannbelastning (MJ/m²)</th>
+                                      <th className="text-left p-2 font-medium">Uten tiltak</th>
+                                      <th className="text-left p-2 font-medium">Med brannventilasjon</th>
+                                      <th className="text-left p-2 font-medium">Med sprinkleranlegg</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {bf85Tabell3423.map((row) => {
+                                      const bb = parseFloat(formData.bf85_34_brannbelastning) || 0;
+                                      const aktiv = bb > 0 && bb >= row.brannbelastningMin && bb < row.brannbelastningMax;
+                                      return (
+                                        <tr key={row.brannbelastningLabel} className={aktiv ? "bg-primary/15 font-semibold" : ""}>
+                                          <td className="p-2 border-t">{row.brannbelastningLabel}</td>
+                                          <td className="p-2 border-t">{row.utenTiltak ? `${row.utenTiltak} m²` : "—"}</td>
+                                          <td className="p-2 border-t">{row.medBrannventilasjon ? `${row.medBrannventilasjon} m²` : "—"}</td>
+                                          <td className="p-2 border-t">{row.medSprinkler ? `${row.medSprinkler} m²` : "—"}</td>
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+                                </table>
+                              </div>
+                            )}
                             {krav && (
                               <div className={`p-3 rounded-md border ${krav.krevBrannvegg ? "bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800" : "bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800"}`}>
                                 <p className={`text-sm font-medium ${krav.krevBrannvegg ? "text-red-800 dark:text-red-200" : "text-green-800 dark:text-green-200"}`}>
