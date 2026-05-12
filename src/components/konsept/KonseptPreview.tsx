@@ -93,51 +93,144 @@ const tilstandHasContent = (data: TilstandData): boolean => {
   return !!data.grad || getAvvikListe(tiltak).length > 0 || getAvvikListe(fravik).length > 0;
 };
 
-const KategoriBlokk = ({ tittel, kategori, color }: { tittel: string; kategori: TilstandKategori; color: string }) => {
+// Farge per tilstandsgrad (for badge)
+const gradBadgeColors: Record<string, { bg: string; fg: string }> = {
+  tg0: { bg: "#16A34A", fg: "#FFFFFF" },
+  tg1: { bg: "#FACC15", fg: "#1F2937" },
+  tg2: { bg: "#F97316", fg: "#FFFFFF" },
+  tg3: { bg: "#DC2626", fg: "#FFFFFF" },
+  tgiu: { bg: "#9CA3AF", fg: "#FFFFFF" },
+};
+
+const GradBadge = ({ grad, size = 10 }: { grad: string; size?: number }) => {
+  if (!grad) return null;
+  const c = gradBadgeColors[grad] || { bg: "#6B7280", fg: "#FFFFFF" };
+  const label = { tg0: "TG 0", tg1: "TG 1", tg2: "TG 2", tg3: "TG 3", tgiu: "TG IU" }[grad] || grad.toUpperCase();
+  return (
+    <span style={{
+      display: "inline-block",
+      background: c.bg,
+      color: c.fg,
+      fontSize: size,
+      fontWeight: 700,
+      padding: "2px 8px",
+      borderRadius: 999,
+      lineHeight: 1.3,
+      letterSpacing: 0.3,
+    }}>{label}</span>
+  );
+};
+
+const KategoriBlokk = ({ tittel, kategori, headerBg, headerFg, accent }: {
+  tittel: string;
+  kategori: TilstandKategori;
+  headerBg: string;
+  headerFg: string;
+  accent: string;
+}) => {
   const liste = getAvvikListe(kategori);
   if (liste.length === 0) return null;
   return (
-    <div style={{ marginTop: 8, paddingTop: 6, borderTop: "1px solid #e5e7eb" }}>
-      <p style={{ fontSize: 10, fontWeight: 700, color, marginBottom: 4 }}>{tittel}</p>
-      {liste.map((avvik, idx) => {
-        const gradTekst = avvik.grad ? gradLabelMap[avvik.grad] || "" : "";
-        const bilder = normalizeBilder(avvik.bilder);
-        return (
-          <div key={avvik.id || idx} style={{ marginBottom: 8, paddingLeft: 6, borderLeft: `2px solid ${color}` }}>
-            <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 2 }}>
-              Avvik {idx + 1}{gradTekst ? ` – ${gradTekst}` : ""}
-            </p>
-            {avvik.beskrivelse && <p style={{ fontSize: 10, whiteSpace: "pre-wrap", marginBottom: 6 }}>{avvik.beskrivelse}</p>}
-            {bilder.length > 0 && (
-              <div>
-                {bilder.map((bilde, i) => (
-                  <div key={i} style={{ marginBottom: 12 }}>
-                    <img src={bilde.url} alt={bilde.beskrivelse || `Bilde ${i + 1}`} style={{ width: 450, maxWidth: "100%", height: "auto", objectFit: "cover", borderRadius: 4, border: "1px solid #d1d5db" }} />
-                    {bilde.beskrivelse && <p style={{ fontSize: 9, fontStyle: "italic", margin: "4px 0 0 0" }}>Bilde {i + 1}: {bilde.beskrivelse}</p>}
-                  </div>
-                ))}
+    <div style={{
+      marginTop: 10,
+      background: "#FFFFFF",
+      border: `1px solid ${accent}`,
+      borderLeft: `4px solid ${accent}`,
+      borderRadius: 6,
+      overflow: "hidden",
+    }}>
+      <div style={{
+        background: headerBg,
+        color: headerFg,
+        padding: "5px 10px",
+        fontSize: 10,
+        fontWeight: 700,
+        textTransform: "uppercase",
+        letterSpacing: 0.4,
+      }}>{tittel} <span style={{ fontWeight: 500, opacity: 0.85 }}>({liste.length})</span></div>
+      <div style={{ padding: "8px 10px" }}>
+        {liste.map((avvik, idx) => {
+          const bilder = normalizeBilder(avvik.bilder);
+          return (
+            <div key={avvik.id || idx} style={{
+              marginBottom: idx === liste.length - 1 ? 0 : 10,
+              paddingBottom: idx === liste.length - 1 ? 0 : 10,
+              borderBottom: idx === liste.length - 1 ? "none" : "1px dashed #E5E7EB",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, flexWrap: "wrap" }}>
+                <span style={{
+                  display: "inline-block",
+                  background: accent,
+                  color: "#FFFFFF",
+                  fontSize: 10,
+                  fontWeight: 700,
+                  padding: "2px 8px",
+                  borderRadius: 999,
+                  lineHeight: 1.3,
+                }}>Avvik {idx + 1}</span>
+                {avvik.grad && <GradBadge grad={avvik.grad} />}
               </div>
-            )}
-          </div>
-        );
-      })}
+              {avvik.beskrivelse && <p style={{ fontSize: 11, whiteSpace: "pre-wrap", margin: "2px 0 6px 0", lineHeight: 1.45 }}>{avvik.beskrivelse}</p>}
+              {bilder.length > 0 && (
+                <div>
+                  {bilder.map((bilde, i) => (
+                    <div key={i} style={{ marginBottom: 10 }}>
+                      <img src={bilde.url} alt={bilde.beskrivelse || `Bilde ${i + 1}`} style={{ width: 450, maxWidth: "100%", height: "auto", objectFit: "cover", borderRadius: 4, border: "1px solid #d1d5db" }} />
+                      {bilde.beskrivelse && <p style={{ fontSize: 9, fontStyle: "italic", margin: "4px 0 0 0" }}>Bilde {i + 1}: {bilde.beskrivelse}</p>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
 
 const TilstandTableRow = ({ data, sectionLabel, colSpan = 3 }: { data: TilstandData; sectionLabel: string; colSpan?: number }) => {
   if (!tilstandHasContent(data)) return null;
-  const gradLabel = { tg0: "TG 0", tg1: "TG 1", tg2: "TG 2", tg3: "TG 3", tgiu: "TG IU" }[data.grad] || "";
   const { tiltak, fravik } = getKategorier(data);
   return (
     <tr>
-      <td className="border border-gray-400 p-2" colSpan={colSpan} style={{ background: "#FEF3C7" }}>
-        <p style={{ fontSize: 10, fontWeight: 700, color: "#92400E", textTransform: "uppercase", marginBottom: 4 }}>
-          TILSTANDSVURDERING – {sectionLabel}
-        </p>
-        {gradLabel && <p style={{ fontSize: 10, marginBottom: 2 }}>Tilstandsgrad: {gradLabel}</p>}
-        <KategoriBlokk tittel="Avvik som krever aktive tiltak" kategori={tiltak} color="#991B1B" />
-        <KategoriBlokk tittel="Avvik som kan fraviksbehandles" kategori={fravik} color="#92400E" />
+      <td className="border border-gray-400" colSpan={colSpan} style={{ padding: 0, background: "#FEF3C7" }}>
+        {/* Header-bånd */}
+        <div style={{
+          background: "#FCD34D",
+          color: "#78350F",
+          padding: "8px 12px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 10,
+          borderBottom: "2px solid #D97706",
+        }}>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+            <span style={{ fontSize: 12, fontWeight: 800, letterSpacing: 0.6, textTransform: "uppercase" }}>
+              Tilstandsvurdering
+            </span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: "#78350F" }}>{sectionLabel}</span>
+          </div>
+          <GradBadge grad={data.grad} size={10} />
+        </div>
+        {/* Innhold */}
+        <div style={{ padding: "10px 12px 12px 12px" }}>
+          <KategoriBlokk
+            tittel="Avvik som krever aktive tiltak"
+            kategori={tiltak}
+            headerBg="#FEE2E2"
+            headerFg="#991B1B"
+            accent="#991B1B"
+          />
+          <KategoriBlokk
+            tittel="Avvik som kan fraviksbehandles"
+            kategori={fravik}
+            headerBg="#FFEDD5"
+            headerFg="#9A3412"
+            accent="#C2410C"
+          />
+        </div>
       </td>
     </tr>
   );
