@@ -674,8 +674,6 @@ const Konsept = () => {
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
     isolasjonBrennbar: "ikke_relevant" as "relevant" | "ikke_relevant",
     ytterkledningDKrav: false, // D-krav på ytterkledning (tiltak for å hindre brannspredning i fasade)
-    bf85_511: false, // :511 Generelt
-    bf85_512: false, // :512 Ikke-bærende ytterveggers brannmotstand
     bf85_513: false, // :513 Yttervegger i B-konstruksjon
     bf85_514: false, // :514 Fasademateriale på vegg i A-konstruksjon
     bf85_515: false, // :515 Brennbar isolasjon
@@ -7188,8 +7186,6 @@ const Konsept = () => {
                           <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
                             <Label className="text-xs font-medium">Vegger, tak og nedforet himling (:5)</Label>
                             {[
-                              { key: "bf85_511", label: ":511 Generelt – Brannmotstand for bærende/branncellebegrensende vegger" },
-                              { key: "bf85_512", label: ":512 Ikke-bærende ytterveggers brannmotstand" },
                               { key: "bf85_513", label: ":513 Yttervegger i B-konstruksjon" },
                               { key: "bf85_514", label: ":514 Fasademateriale på vegg i A-konstruksjon" },
                               { key: "bf85_515", label: ":515 Brennbar isolasjon" },

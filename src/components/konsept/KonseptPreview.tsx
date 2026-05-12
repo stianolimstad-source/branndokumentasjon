@@ -3172,27 +3172,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   );
                 })()}
                 {/* BF85 :5 Vegger, tak og nedforet himling */}
-                {(formData.bf85_511 || formData.bf85_512 || formData.bf85_513 || formData.bf85_514 || formData.bf85_515) && (
+                {(formData.bf85_513 || formData.bf85_514 || formData.bf85_515) && (
                   <tr className="bg-gray-100">
                     <td className="border border-gray-400 p-2 align-top font-semibold" colSpan={3}>Vegger, tak og nedforet himling (:5)</td>
-                  </tr>
-                )}
-                {formData.bf85_511 && (
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">:511 Generelt</td>
-                    <td className="border border-gray-400 p-2">
-                      <p className="text-sm">Bærende eller branncellebegrensende vegg skal ha brannmotstand etter Tabell 30:41. For vegger med brennbar isolasjon gjelder dessuten 30:515. For yttervegger i brannceller som kan utsettes for strålevarme gjennom vindu, dør eller annen åpning i annen branncelle i samme bygning, gjelder bestemmelsene i 30:322 tilsvarende.</p>
-                    </td>
-                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
-                  </tr>
-                )}
-                {formData.bf85_512 && (
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">:512 Ikke-bærende ytterveggers brannmotstand</td>
-                    <td className="border border-gray-400 p-2">
-                      <p className="text-sm">Ikke-bærende yttervegger unntatt vindu og dør, skal ha brannmotstand som angitt i Tabell 30:512 nedenfor.</p>
-                    </td>
-                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
                   </tr>
                 )}
                 {formData.bf85_513 && (() => {
