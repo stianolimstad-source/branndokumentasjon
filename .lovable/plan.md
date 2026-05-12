@@ -1,17 +1,62 @@
-## Fjern «over 3 plan»-fravik fra rapport
+## Flere avvik per kategori i tilstandsvurdering
 
-Sjekkboksen og advarselen på innputsiden beholdes. Fravik-teksten skal kun fjernes fra forhåndsvisningen og Word-eksporten – brukeren beskriver dette selv i tilstandsvurderingen på slutten av kapittelet.
+I dag har hver §-seksjon én beskrivelse + bilder for "Avvik som krever aktive tiltak" og én for "Avvik som kan fraviksbehandles". Tilstandsgrad settes på hele seksjonen.
 
-### Endringer
+Endring: Hver kategori skal være en liste av avvik. Et avvik = `{ tilstandsgrad, beskrivelse, bilder[] }`. Bruker trykker "Legg til avvik" for å opprette nytt, og kan slette/redigere hver enkelt.
 
-**1. `src/components/konsept/KonseptPreview.tsx`** (rad «Brannceller over flere plan»)
-- Fjern blokken `{formData.branncellerFlerePlanOver3 && (...)}` som ble lagt til i forrige iterasjon.
+### Datamodell (`TilstandsvurderingPanel.tsx`)
 
-**2. `src/lib/word-export-chapter3.ts`** (samme rad)
-- Fjern `if (formData.branncellerFlerePlanOver3) { lines.push(...) }`-grenen.
-- Tilbakestill `if`-betingelsen til `formData.branncellerFlerePlanRelevant && branncellerFlerePlanKrav.length > 0` (slik den var før), siden raden ikke lenger trenger å rendres når det kun er over3 som er satt.
+Utvid `TilstandKategori`:
+
+```ts
+interface TilstandAvvik {
+  id: string;            // crypto.randomUUID()
+  grad: TilstandGrad;    // egen grad per avvik
+  beskrivelse: string;
+  bilder: TilstandBilde[];
+}
+
+interface TilstandKategori {
+  beskrivelse: string;          // beholdes (bakoverkompat / fri tekst)
+  bilder: TilstandBilde[];      // beholdes (bakoverkompat)
+  avvik?: TilstandAvvik[];      // NYTT
+}
+```
+
+Seksjonens `data.grad` beholdes (overordnet seksjons-TG), men oppleves nå som "samlet vurdering". Hvert avvik har sin egen TG som vises som farget chip.
+
+### Migrering
+
+`ensureKategorier` utvides: hvis legacy `beskrivelse`/`bilder` finnes uten `avvik`, opprett ett initialt avvik med seksjonens `data.grad` som start-grad. Eksisterende felter beholdes urørt for visning av eldre data.
+
+### UI (`TilstandsvurderingPanel.tsx`)
+
+I `renderKategori`:
+- Render liste av avvik-kort (kategori-farget border) med:
+  - Header: "Avvik N" + TG-chip + slett-knapp
+  - Select for tilstandsgrad (samme `gradLabels` som i dag)
+  - Textarea for beskrivelse
+  - Bildeopplasting (samme flyt, men koblet til avvik-id i path: `${user.id}/${sectionKey}/${kind}/${avvikId}/...`)
+- "Legg til avvik"-knapp under listen som appender nytt tomt avvik
+- Tom-tilstand viser kort hjelpetekst
+
+Den eksisterende seksjons-TG øverst beholdes som "Samlet tilstandsgrad for seksjonen".
+
+### Forhåndsvisning (`KonseptPreview.tsx`)
+
+`KategoriBlokk` itererer over `kategori.avvik` (etter samme migrering som panelet). Hvert avvik rendres som egen blokk:
+- "Avvik N – TG X (label)"
+- Beskrivelse
+- Bilder med bildetekst
+
+Hvis listen er tom faller den tilbake til legacy `beskrivelse`/`bilder` slik at gamle dokumenter ser likt ut.
+
+### Word-eksport (`word-export-chapter3.ts`)
+
+`getTilstandKategorier` + render-funksjonen utvides til å iterere over `avvik[]` på samme måte: én underblokk per avvik med "Avvik N – Tilstandsgrad: …", beskrivelse og bilder. Legacy felter beholdes som fallback.
 
 ### Det som ikke endres
 
-- Sjekkboksen «Branncellen strekker seg over flere enn 3 plan» og den røde varselboksen i `Konsept.tsx` beholdes som i dag.
-- `formData.branncellerFlerePlanOver3` beholdes i datamodellen (brukes fortsatt for UI-varselet).
+- Seksjonsstrukturen i kap. 3, navnene på de to kategoriene, og resten av rapportflyten.
+- Eksisterende lagrede tilstandsvurderinger fortsetter å rendre (via fallback).
+- Ingen DB-endringer (alt ligger i `fire_concepts.tilstandsvurderinger` JSON).
