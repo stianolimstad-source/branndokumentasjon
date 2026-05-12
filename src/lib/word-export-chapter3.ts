@@ -232,43 +232,48 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
 
   const gradLabel = tilstandGradLabels[tilstandData.grad] || "";
   const tilstandShading = { type: ShadingType.SOLID, color: "FEF3C7", fill: "FEF3C7" };
+  const headerShading = { type: ShadingType.SOLID, color: "FCD34D", fill: "FCD34D" };
 
   const children: Paragraph[] = [];
 
+  // Header-bånd
   children.push(new Paragraph({
-    spacing: { before: 40, after: 40 },
-    children: [new TextRun({ text: `TILSTANDSVURDERING – ${sectionLabel}`, bold: true, size: 18, color: "92400E" })],
+    spacing: { before: 0, after: 60 },
+    shading: headerShading,
+    children: [
+      new TextRun({ text: `TILSTANDSVURDERING `, bold: true, size: 22, color: "78350F" }),
+      new TextRun({ text: `– ${sectionLabel}`, bold: true, size: 20, color: "78350F" }),
+      ...(gradLabel ? [new TextRun({ text: `   [${gradLabel}]`, bold: true, size: 20, color: "78350F" })] : []),
+    ],
   }));
-
-  if (gradLabel) {
-    children.push(new Paragraph({
-      spacing: { before: 20, after: 20 },
-      children: [new TextRun({ text: `Samlet tilstandsgrad: ${gradLabel}`, size: 18 })],
-    }));
-  }
 
   const renderKategori = async (
     tittel: string,
-    farge: string,
+    headerColor: string,
+    headerBg: string,
+    accentColor: string,
     kat: TilstandKategoriExport,
   ) => {
     if (kat.avvik.length === 0) return;
     children.push(new Paragraph({
-      spacing: { before: 80, after: 20 },
-      children: [new TextRun({ text: tittel, bold: true, size: 18, color: farge })],
+      spacing: { before: 140, after: 40 },
+      shading: { type: ShadingType.SOLID, color: headerBg, fill: headerBg },
+      children: [new TextRun({ text: `${tittel.toUpperCase()} (${kat.avvik.length})`, bold: true, size: 20, color: headerColor })],
     }));
     for (let idx = 0; idx < kat.avvik.length; idx++) {
       const avvik = kat.avvik[idx];
       const gTekst = avvik.grad ? tilstandGradLabels[avvik.grad] || "" : "";
-      const overskrift = `Avvik ${idx + 1}${gTekst ? ` – ${gTekst}` : ""}`;
+      const overskrift = `Avvik ${idx + 1}${gTekst ? `  –  ${gTekst}` : ""}`;
       children.push(new Paragraph({
-        spacing: { before: 60, after: 20 },
-        children: [new TextRun({ text: overskrift, bold: true, size: 18, color: farge })],
+        spacing: { before: 80, after: 20 },
+        shading: { type: ShadingType.SOLID, color: "FFFFFF", fill: "FFFFFF" },
+        border: { left: { style: BorderStyle.SINGLE, size: 18, color: accentColor, space: 4 } },
+        children: [new TextRun({ text: overskrift, bold: true, size: 20, color: accentColor })],
       }));
       if (avvik.beskrivelse) {
         children.push(new Paragraph({
           spacing: { before: 20, after: 20 },
-          children: [new TextRun({ text: avvik.beskrivelse, size: 18 })],
+          children: [new TextRun({ text: avvik.beskrivelse, size: 20 })],
         }));
       }
       for (let i = 0; i < avvik.bilder.length; i++) {
@@ -300,8 +305,8 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
     }
   };
 
-  await renderKategori("Avvik som krever aktive tiltak", "991B1B", tiltak);
-  await renderKategori("Avvik som kan fraviksbehandles", "92400E", fravik);
+  await renderKategori("Avvik som krever aktive tiltak", "991B1B", "FEE2E2", "991B1B", tiltak);
+  await renderKategori("Avvik som kan fraviksbehandles", "9A3412", "FFEDD5", "C2410C", fravik);
 
   return [new TableRow({
     children: [
@@ -309,7 +314,7 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
         columnSpan: 3,
         borders: tableBorders,
         shading: tilstandShading,
-        margins: { top: 40, bottom: 40, left: 80, right: 80 },
+        margins: { top: 80, bottom: 80, left: 120, right: 120 },
         children,
       }),
     ],
