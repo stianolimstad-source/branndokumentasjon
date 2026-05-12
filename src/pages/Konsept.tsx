@@ -7186,8 +7186,6 @@ const Konsept = () => {
                           <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
                             <Label className="text-xs font-medium">Vegger, tak og nedforet himling (:5)</Label>
                             {[
-                              { key: "bf85_511", label: ":511 Generelt – Brannmotstand for bærende/branncellebegrensende vegger" },
-                              { key: "bf85_512", label: ":512 Ikke-bærende ytterveggers brannmotstand" },
                               { key: "bf85_513", label: ":513 Yttervegger i B-konstruksjon" },
                               { key: "bf85_514", label: ":514 Fasademateriale på vegg i A-konstruksjon" },
                               { key: "bf85_515", label: ":515 Brennbar isolasjon" },
