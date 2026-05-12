@@ -10,9 +10,17 @@ interface TilstandBilde {
   beskrivelse: string;
 }
 
+interface TilstandAvvik {
+  id?: string;
+  grad?: string;
+  beskrivelse: string;
+  bilder: (TilstandBilde | string)[];
+}
+
 interface TilstandKategori {
   beskrivelse: string;
   bilder: (TilstandBilde | string)[];
+  avvik?: TilstandAvvik[];
 }
 
 interface TilstandData {
@@ -25,6 +33,14 @@ interface TilstandData {
 
 const normalizeBilder = (bilder: any[]): TilstandBilde[] =>
   (bilder || []).map((b: any) => typeof b === "string" ? { url: b, beskrivelse: "" } : b);
+
+const gradLabelMap: Record<string, string> = {
+  tg0: "TG 0 – Ingen avvik",
+  tg1: "TG 1 – Mindre avvik",
+  tg2: "TG 2 – Vesentlige avvik",
+  tg3: "TG 3 – Store avvik",
+  tgiu: "TG IU – Ikke undersøkt",
+};
 
 // Felles seksjonsliste for tilstandsvurdering (samme som tilstandSectionsTEK17 i Konsept.tsx)
 export const tilstandSectionList: { key: string; label: string }[] = [
@@ -43,6 +59,17 @@ export const tilstandSectionList: { key: string; label: string }[] = [
   { key: "3_13", label: "3.13 Manuell slokking" },
   { key: "3_14", label: "3.14 Slokkemannskap" },
 ];
+
+// Bygger en effektiv liste av avvik for en kategori, med fallback til legacy-felter.
+const getAvvikListe = (kategori: TilstandKategori | undefined): TilstandAvvik[] => {
+  if (!kategori) return [];
+  if (Array.isArray(kategori.avvik) && kategori.avvik.length > 0) return kategori.avvik;
+  // Fallback: én avvik-blokk fra legacy beskrivelse/bilder
+  if (kategori.beskrivelse || (kategori.bilder && kategori.bilder.length > 0)) {
+    return [{ beskrivelse: kategori.beskrivelse || "", bilder: kategori.bilder || [] }];
+  }
+  return [];
+};
 
 // Henter tiltak/fravik – migrerer legacy beskrivelse/bilder til tiltak ved behov
 export const getKategorier = (data: TilstandData): { tiltak: TilstandKategori; fravik: TilstandKategori } => {
@@ -63,27 +90,37 @@ export const getKategorier = (data: TilstandData): { tiltak: TilstandKategori; f
 const tilstandHasContent = (data: TilstandData): boolean => {
   if (!data) return false;
   const { tiltak, fravik } = getKategorier(data);
-  const hasTiltak = !!tiltak.beskrivelse || (tiltak.bilder?.length ?? 0) > 0;
-  const hasFravik = !!fravik.beskrivelse || (fravik.bilder?.length ?? 0) > 0;
-  return !!data.grad || hasTiltak || hasFravik;
+  return !!data.grad || getAvvikListe(tiltak).length > 0 || getAvvikListe(fravik).length > 0;
 };
 
 const KategoriBlokk = ({ tittel, kategori, color }: { tittel: string; kategori: TilstandKategori; color: string }) => {
-  if (!kategori.beskrivelse && (!kategori.bilder || kategori.bilder.length === 0)) return null;
+  const liste = getAvvikListe(kategori);
+  if (liste.length === 0) return null;
   return (
     <div style={{ marginTop: 8, paddingTop: 6, borderTop: "1px solid #e5e7eb" }}>
       <p style={{ fontSize: 10, fontWeight: 700, color, marginBottom: 4 }}>{tittel}</p>
-      {kategori.beskrivelse && <p style={{ fontSize: 10, whiteSpace: "pre-wrap", marginBottom: 6 }}>{kategori.beskrivelse}</p>}
-      {kategori.bilder && kategori.bilder.length > 0 && (
-        <div>
-          {normalizeBilder(kategori.bilder).map((bilde, i) => (
-            <div key={i} style={{ marginBottom: 12 }}>
-              <img src={bilde.url} alt={bilde.beskrivelse || `Bilde ${i + 1}`} style={{ width: 450, maxWidth: "100%", height: "auto", objectFit: "cover", borderRadius: 4, border: "1px solid #d1d5db" }} />
-              {bilde.beskrivelse && <p style={{ fontSize: 9, fontStyle: "italic", margin: "4px 0 0 0" }}>Bilde {i + 1}: {bilde.beskrivelse}</p>}
-            </div>
-          ))}
-        </div>
-      )}
+      {liste.map((avvik, idx) => {
+        const gradTekst = avvik.grad ? gradLabelMap[avvik.grad] || "" : "";
+        const bilder = normalizeBilder(avvik.bilder);
+        return (
+          <div key={avvik.id || idx} style={{ marginBottom: 8, paddingLeft: 6, borderLeft: `2px solid ${color}` }}>
+            <p style={{ fontSize: 10, fontWeight: 600, marginBottom: 2 }}>
+              Avvik {idx + 1}{gradTekst ? ` – ${gradTekst}` : ""}
+            </p>
+            {avvik.beskrivelse && <p style={{ fontSize: 10, whiteSpace: "pre-wrap", marginBottom: 6 }}>{avvik.beskrivelse}</p>}
+            {bilder.length > 0 && (
+              <div>
+                {bilder.map((bilde, i) => (
+                  <div key={i} style={{ marginBottom: 12 }}>
+                    <img src={bilde.url} alt={bilde.beskrivelse || `Bilde ${i + 1}`} style={{ width: 450, maxWidth: "100%", height: "auto", objectFit: "cover", borderRadius: 4, border: "1px solid #d1d5db" }} />
+                    {bilde.beskrivelse && <p style={{ fontSize: 9, fontStyle: "italic", margin: "4px 0 0 0" }}>Bilde {i + 1}: {bilde.beskrivelse}</p>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };
@@ -5346,16 +5383,33 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       {/* Oppsummering av avvik – kun for tilstandsvurdering */}
       {isTilstand && (() => {
         const tv: Record<string, TilstandData> = formData.tilstandsvurderinger || {};
-        const tiltakRows = tilstandSectionList
-          .map(s => ({ s, k: getKategorier(tv[s.key] || ({} as TilstandData)) }))
-          .filter(({ k }) => !!(k.tiltak.beskrivelse && k.tiltak.beskrivelse.trim()));
-        const fravikRows = tilstandSectionList
-          .map(s => ({ s, k: getKategorier(tv[s.key] || ({} as TilstandData)) }))
-          .filter(({ k }) => !!(k.fravik.beskrivelse && k.fravik.beskrivelse.trim()));
+        type AvvikRad = { sectionLabel: string; sectionKey: string; idx: number; grad: string; beskrivelse: string };
+        const samleAvvik = (kind: "tiltak" | "fravik"): AvvikRad[] => {
+          const ut: AvvikRad[] = [];
+          tilstandSectionList.forEach(s => {
+            const data = tv[s.key] || ({} as TilstandData);
+            const k = getKategorier(data);
+            const liste = getAvvikListe(kind === "tiltak" ? k.tiltak : k.fravik);
+            liste.forEach((a, i) => {
+              if (a.beskrivelse && a.beskrivelse.trim()) {
+                ut.push({
+                  sectionLabel: s.label,
+                  sectionKey: s.key,
+                  idx: i,
+                  grad: a.grad || data.grad || "",
+                  beskrivelse: a.beskrivelse,
+                });
+              }
+            });
+          });
+          return ut;
+        };
+        const tiltakRows = samleAvvik("tiltak");
+        const fravikRows = samleAvvik("fravik");
 
         if (tiltakRows.length === 0 && fravikRows.length === 0) return null;
 
-        const renderTabell = (rader: typeof tiltakRows, kind: "tiltak" | "fravik", tomTekst: string) => {
+        const renderTabell = (rader: AvvikRad[], tomTekst: string) => {
           if (rader.length === 0) {
             return <p className="ml-4 text-xs italic text-gray-600">{tomTekst}</p>;
           }
@@ -5369,15 +5423,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </tr>
               </thead>
               <tbody>
-                {rader.map(({ s, k }) => {
-                  const beskrivelse = kind === "tiltak" ? k.tiltak.beskrivelse : k.fravik.beskrivelse;
-                  const grad = (tv[s.key]?.grad) || "";
-                  const gradLabel = { tg0: "TG 0", tg1: "TG 1", tg2: "TG 2", tg3: "TG 3", tgiu: "TG IU" }[grad] || "—";
+                {rader.map((r, n) => {
+                  const gradLabel = { tg0: "TG 0", tg1: "TG 1", tg2: "TG 2", tg3: "TG 3", tgiu: "TG IU" }[r.grad] || "—";
                   return (
-                    <tr key={s.key}>
-                      <td className="border border-gray-400 p-1.5 align-top font-medium">{s.label}</td>
+                    <tr key={`${r.sectionKey}-${r.idx}-${n}`}>
+                      <td className="border border-gray-400 p-1.5 align-top font-medium">{r.sectionLabel}</td>
                       <td className="border border-gray-400 p-1.5 align-top">{gradLabel}</td>
-                      <td className="border border-gray-400 p-1.5 align-top whitespace-pre-wrap">{beskrivelse}</td>
+                      <td className="border border-gray-400 p-1.5 align-top whitespace-pre-wrap">{r.beskrivelse}</td>
                     </tr>
                   );
                 })}
@@ -5397,12 +5449,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             <section className="mb-6">
               <h3 className="font-semibold mb-2" style={{ color: "#991B1B" }}>Avvik som krever aktive tiltak</h3>
-              {renderTabell(tiltakRows, "tiltak", "Ingen avvik registrert som krever aktive tiltak.")}
+              {renderTabell(tiltakRows, "Ingen avvik registrert som krever aktive tiltak.")}
             </section>
 
             <section className="mb-6">
               <h3 className="font-semibold mb-2" style={{ color: "#92400E" }}>Avvik som kan fraviksbehandles</h3>
-              {renderTabell(fravikRows, "fravik", "Ingen avvik registrert som kan fraviksbehandles.")}
+              {renderTabell(fravikRows, "Ingen avvik registrert som kan fraviksbehandles.")}
             </section>
           </div>
         );

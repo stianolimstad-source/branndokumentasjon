@@ -9726,27 +9726,61 @@ const Konsept = () => {
                     {documentType === "tilstandsvurdering" && (() => {
                       const tv = formData.tilstandsvurderinger || {};
                       const gradLabel: Record<string, string> = { tg0: "TG 0", tg1: "TG 1", tg2: "TG 2", tg3: "TG 3", tgiu: "TG IU" };
-                      const rows = tilstandSectionsTEK17.map(s => ({ s, data: tv[s.key] || emptyTilstand(), k: getKategorier(tv[s.key] || emptyTilstand()) }));
-                      const tiltakRows = rows.filter(r => (r.k.tiltak.beskrivelse || "").trim().length > 0);
-                      const fravikRows = rows.filter(r => (r.k.fravik.beskrivelse || "").trim().length > 0);
 
-                      const updateBeskrivelse = (sectionKey: string, kind: "tiltak" | "fravik", value: string) => {
-                        const current = tv[sectionKey] || emptyTilstand();
+                      type AvvikRad = { sectionKey: string; sectionLabel: string; idx: number; grad: string; beskrivelse: string };
+                      const samleAvvik = (kind: "tiltak" | "fravik"): AvvikRad[] => {
+                        const ut: AvvikRad[] = [];
+                        tilstandSectionsTEK17.forEach(s => {
+                          const data: TilstandData = tv[s.key] || emptyTilstand();
+                          const k = getKategorier(data);
+                          const kat: any = kind === "tiltak" ? k.tiltak : k.fravik;
+                          const liste: any[] = Array.isArray(kat?.avvik) && kat.avvik.length > 0
+                            ? kat.avvik
+                            : ((kat?.beskrivelse || (kat?.bilder && kat.bilder.length > 0))
+                                ? [{ grad: data.grad, beskrivelse: kat.beskrivelse || "", bilder: kat.bilder || [] }]
+                                : []);
+                          liste.forEach((a, i) => {
+                            ut.push({
+                              sectionKey: s.key,
+                              sectionLabel: s.label,
+                              idx: i,
+                              grad: a.grad || data.grad || "",
+                              beskrivelse: a.beskrivelse || "",
+                            });
+                          });
+                        });
+                        return ut;
+                      };
+
+                      const tiltakRows = samleAvvik("tiltak");
+                      const fravikRows = samleAvvik("fravik");
+
+                      const updateAvvikBeskrivelse = (sectionKey: string, kind: "tiltak" | "fravik", idx: number, value: string) => {
+                        const current: TilstandData = tv[sectionKey] || emptyTilstand();
                         const k = getKategorier(current);
+                        const kat: any = kind === "tiltak" ? k.tiltak : k.fravik;
+                        let avvikListe: any[] = Array.isArray(kat?.avvik) ? [...kat.avvik] : [];
+                        if (avvikListe.length === 0 && (kat?.beskrivelse || (kat?.bilder && kat.bilder.length > 0))) {
+                          avvikListe = [{ grad: current.grad, beskrivelse: kat.beskrivelse || "", bilder: kat.bilder || [] }];
+                        }
+                        if (avvikListe[idx]) {
+                          avvikListe[idx] = { ...avvikListe[idx], beskrivelse: value };
+                        }
+                        const oppdatertKat = { ...kat, beskrivelse: "", bilder: [], avvik: avvikListe };
                         const next: TilstandData = {
                           ...current,
                           beskrivelse: "",
                           bilder: [],
-                          tiltak: kind === "tiltak" ? { ...k.tiltak, beskrivelse: value } : (k.tiltak as any),
-                          fravik: kind === "fravik" ? { ...k.fravik, beskrivelse: value } : (k.fravik as any),
-                        };
+                          tiltak: kind === "tiltak" ? oppdatertKat : k.tiltak,
+                          fravik: kind === "fravik" ? oppdatertKat : k.fravik,
+                        } as TilstandData;
                         updateTilstand(sectionKey, next);
                       };
 
                       const renderGroup = (
                         title: string,
                         helper: string,
-                        items: typeof tiltakRows,
+                        items: AvvikRad[],
                         kind: "tiltak" | "fravik",
                         accent: { wrap: string; chip: string; title: string },
                       ) => (
@@ -9757,28 +9791,24 @@ const Konsept = () => {
                             <p className="text-xs italic text-muted-foreground">Ingen avvik registrert i denne kategorien. Avvik registreres under kapittel 3.x.</p>
                           ) : (
                             <div className="space-y-3">
-                              {items.map(({ s, data, k }) => {
-                                const value = kind === "tiltak" ? k.tiltak.beskrivelse : k.fravik.beskrivelse;
-                                const grad = data.grad || "";
-                                return (
-                                  <div key={s.key} className="rounded border bg-background p-2">
-                                    <div className="flex items-center justify-between gap-2 mb-1.5">
-                                      <span className="text-xs font-semibold">{s.label}</span>
-                                      {grad && (
-                                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${accent.chip}`}>
-                                          {gradLabel[grad] || ""}
-                                        </span>
-                                      )}
-                                    </div>
-                                    <Textarea
-                                      value={value}
-                                      onChange={(e) => updateBeskrivelse(s.key, kind, e.target.value)}
-                                      rows={3}
-                                      className="text-sm"
-                                    />
+                              {items.map((r) => (
+                                <div key={`${r.sectionKey}-${r.idx}`} className="rounded border bg-background p-2">
+                                  <div className="flex items-center justify-between gap-2 mb-1.5">
+                                    <span className="text-xs font-semibold">{r.sectionLabel} – Avvik {r.idx + 1}</span>
+                                    {r.grad && (
+                                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${accent.chip}`}>
+                                        {gradLabel[r.grad] || ""}
+                                      </span>
+                                    )}
                                   </div>
-                                );
-                              })}
+                                  <Textarea
+                                    value={r.beskrivelse}
+                                    onChange={(e) => updateAvvikBeskrivelse(r.sectionKey, kind, r.idx, e.target.value)}
+                                    rows={3}
+                                    className="text-sm"
+                                  />
+                                </div>
+                              ))}
                             </div>
                           )}
                         </div>
@@ -9789,7 +9819,7 @@ const Konsept = () => {
                       return (
                         <div className="space-y-4">
                           <p className="text-xs text-muted-foreground">
-                            Samlet oversikt over avvik registrert i tilstandsvurderingen. Endringer her oppdaterer samme felt som i kapittel 3.x og i rapportens oppsummering av avvik.
+                            Samlet oversikt over avvik registrert i tilstandsvurderingen. Endringer her oppdaterer samme avvik som i kapittel 3.x og i rapportens oppsummering.
                           </p>
                           {ingenAvvik && (
                             <p className="text-xs italic text-muted-foreground">Ingen avvik registrert ennå. Avvik registreres under kapittel 3.x.</p>
