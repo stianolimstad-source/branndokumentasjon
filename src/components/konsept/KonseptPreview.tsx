@@ -45,7 +45,7 @@ export const tilstandSectionList: { key: string; label: string }[] = [
 ];
 
 // Henter tiltak/fravik – migrerer legacy beskrivelse/bilder til tiltak ved behov
-const getKategorier = (data: TilstandData): { tiltak: TilstandKategori; fravik: TilstandKategori } => {
+export const getKategorier = (data: TilstandData): { tiltak: TilstandKategori; fravik: TilstandKategori } => {
   const harNye = !!(data?.tiltak || data?.fravik);
   const harLegacy = !!(data?.beskrivelse || (data?.bilder && data.bilder.length > 0));
   if (!harNye && harLegacy) {
