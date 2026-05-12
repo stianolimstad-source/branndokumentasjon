@@ -1223,22 +1223,8 @@ const Konsept = () => {
     }
   }, [formData.brannklasse, formData.risikoklasse, formData.etasjer, formData.regelverk, formData.bygningsbrannklasse, formData.trappeloepRelevant, formData.kjellerRelevant, formData.utvendigTrapperRelevant, formData.harFlereRisikoklasser, formData.bygningsdeler]);
 
-  // Automatisk BF85 røykventilasjonskrav basert på etasjer
-  useEffect(() => {
-    if (isViewMode || formData.regelverk !== "BF85") return;
-    const etasjer = parseInt(formData.etasjer, 10) || 0;
-    if (etasjer > 2) {
-      // Auto-add the requirement if not already present
-      if (!formData.roykKontrollKrav.includes("bf85_royk_brannventilasjon")) {
-        setFormData(prev => ({ ...prev, roykKontrollKrav: [...prev.roykKontrollKrav, "bf85_royk_brannventilasjon"] }));
-      }
-    } else {
-      // Auto-remove if floors <= 2
-      if (formData.roykKontrollKrav.includes("bf85_royk_brannventilasjon")) {
-        setFormData(prev => ({ ...prev, roykKontrollKrav: prev.roykKontrollKrav.filter((k: string) => k !== "bf85_royk_brannventilasjon") }));
-      }
-    }
-  }, [formData.etasjer, formData.regelverk]);
+  // BF85 brannventilasjon: ingen auto-haking. Brukeren bestemmer selv om bygget faktisk har dette.
+  // Når etasjer > 2 og kravet ikke er huket av, markeres det som avvik i preview/Word.
 
   // Beregn automatisk tiltaksklasse for visning – velg høyeste fra alle bygningsdeler
   const autoTiltaksklasse = (() => {
