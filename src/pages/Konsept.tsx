@@ -4936,6 +4936,26 @@ const Konsept = () => {
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.5 {formData.regelverk === "BF85" ? "Brannceller (Kap. 30:33, 30:63–65)" : "§ 11-8 Brannceller"}</Label>
                       </div>
+                      {formData.regelverk === "BF85" && (() => {
+                        const bf85KravMap: Record<string, { branncellebegrensende: string; dorKrav: string }> = {
+                          "1": { branncellebegrensende: "A 60", dorKrav: "A 30" },
+                          "2": { branncellebegrensende: "B 60", dorKrav: "B 30" },
+                          "3": { branncellebegrensende: "B 30", dorKrav: "B 15" },
+                          "4": { branncellebegrensende: "B 30", dorKrav: "B 15" },
+                        };
+                        const krav = bf85KravMap[formData.bygningsbrannklasse || ""] || { branncellebegrensende: "[velg BBK]", dorKrav: "[velg BBK]" };
+                        return (
+                          <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-2 mb-3">
+                            <p className="font-semibold text-foreground">Kap. 30:63 – Branncelleinndeling</p>
+                            <p className="text-foreground/80">Bygning skal inndeles på hensiktsmessig måte i brannceller med konstruksjon etter Tabell 30:41. Ikke-bærende branncellebegrensende bygningsdel: <span className="font-semibold">{krav.branncellebegrensende}</span>.</p>
+                            <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                              <li>Brannceller må ikke ha form eller innredning som gjør varsling og rømning ved brann vanskelig.</li>
+                              <li>Sjakter som ikke ligger i tilknytning til trapperom skal utføres som egne brannceller.</li>
+                              <li>Dører i branncellebegrensende vegger skal ha minst 1/2 av veggens brannmotstand – dvs. minst <span className="font-semibold">{krav.dorKrav}</span>.</li>
+                            </ul>
+                          </div>
+                        );
+                      })()}
                       <div>
                         <Label className="text-xs font-medium mb-2 block">Relevante branncelle-typer {formData.regelverk === "BF85" ? "(Kap. 30:33, 30:63–65)" : "(preaksepterte ytelser)"}</Label>
                         <div className="max-h-64 overflow-y-auto border rounded-md p-2 space-y-2 bg-muted/30">
