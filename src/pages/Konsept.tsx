@@ -6136,22 +6136,17 @@ const Konsept = () => {
                         <div className="border rounded-md p-2 space-y-2 bg-muted/30">
                           {formData.regelverk === "BF85" ? (() => {
                             const etasjer = parseInt(formData.etasjer, 10) || 0;
-                            const isAutoSet = etasjer > 2;
+                            const krevd = etasjer > 2;
                             const isOver8 = etasjer > 8;
+                            const checked = formData.roykKontrollKrav.includes("bf85_royk_brannventilasjon");
                             return (
                               <>
-                                {isAutoSet && (
-                                  <div className="text-xs text-muted-foreground italic border-l-2 border-primary pl-2 mb-1">
-                                    Automatisk satt basert på {etasjer} etasjer
-                                  </div>
-                                )}
                                 <div className="flex items-start space-x-2">
                                   <Checkbox
                                     id="royk-bf85_royk_brannventilasjon"
-                                    checked={formData.roykKontrollKrav.includes("bf85_royk_brannventilasjon")}
-                                    disabled={isAutoSet}
-                                    onCheckedChange={(checked) => {
-                                      if (checked) {
+                                    checked={checked}
+                                    onCheckedChange={(c) => {
+                                      if (c) {
                                         setFormData({...formData, roykKontrollKrav: [...formData.roykKontrollKrav, "bf85_royk_brannventilasjon"]});
                                       } else {
                                         setFormData({...formData, roykKontrollKrav: formData.roykKontrollKrav.filter((k: string) => k !== "bf85_royk_brannventilasjon")});
@@ -6165,8 +6160,10 @@ const Konsept = () => {
                                     }
                                   </label>
                                 </div>
-                                {!isAutoSet && (
-                                  <p className="text-xs text-muted-foreground">Kravet aktiveres automatisk når bygget har mer enn 2 etasjer.</p>
+                                {krevd && !checked && (
+                                  <div className="text-xs text-destructive border-l-2 border-destructive pl-2 mt-1">
+                                    Avvik: Bygg med flere enn 2 etasjer skal ha brannventilasjon i trapperom etter BF85 §78. Beskriv vurdering i tilstandsvurderingen nederst i kapittelet.
+                                  </div>
                                 )}
                               </>
                             );
