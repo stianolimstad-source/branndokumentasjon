@@ -5449,12 +5449,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             <section className="mb-6">
               <h3 className="font-semibold mb-2" style={{ color: "#991B1B" }}>Avvik som krever aktive tiltak</h3>
-              {renderTabell(tiltakRows, "tiltak", "Ingen avvik registrert som krever aktive tiltak.")}
+              {renderTabell(tiltakRows, "Ingen avvik registrert som krever aktive tiltak.")}
             </section>
 
             <section className="mb-6">
               <h3 className="font-semibold mb-2" style={{ color: "#92400E" }}>Avvik som kan fraviksbehandles</h3>
-              {renderTabell(fravikRows, "fravik", "Ingen avvik registrert som kan fraviksbehandles.")}
+              {renderTabell(fravikRows, "Ingen avvik registrert som kan fraviksbehandles.")}
             </section>
           </div>
         );
