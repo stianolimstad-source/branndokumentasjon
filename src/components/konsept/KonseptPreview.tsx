@@ -1683,30 +1683,21 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             </tr>
             {isBF85 ? (() => {
               const klasse = formData.bygningsbrannklasse || "";
-              const bf85KravMap: Record<string, { branncellebegrensende: string; dorKrav: string; tekniskeRom: string }> = {
-                "1": { branncellebegrensende: "A 60", dorKrav: "A 30", tekniskeRom: "A 60" },
-                "2": { branncellebegrensende: "B 60", dorKrav: "B 30", tekniskeRom: "A 60" },
-                "3": { branncellebegrensende: "B 30", dorKrav: "B 15", tekniskeRom: "A 60" },
-                "4": { branncellebegrensende: "B 30", dorKrav: "B 15", tekniskeRom: "A 60" },
+              const bf85KravMap: Record<string, { tekniskeRom: string }> = {
+                "1": { tekniskeRom: "A 60" },
+                "2": { tekniskeRom: "A 60" },
+                "3": { tekniskeRom: "A 60" },
+                "4": { tekniskeRom: "A 60" },
               };
               const krav = bf85KravMap[klasse];
               if (!krav) return null;
               return (
                 <>
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">Kap. 30:63 – Branncelleinndeling</td>
-                    <td className="border border-gray-400 p-2">
-                      <p className="text-sm">Bygning skal deles inn i brannceller. Områder med ulik bruk eller risiko skal utgjøre egne brannceller.</p>
-                      <p className="text-sm mt-1">Branncellebegrensende bygningsdel: <span className="font-semibold text-red-600">{krav.branncellebegrensende}</span></p>
-                      <p className="text-sm mt-1">Dør i branncellebegrensende vegg: <span className="font-semibold text-red-600">{krav.dorKrav}</span> (minst halvparten av veggens brannmotstand)</p>
-                    </td>
-                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
-                  </tr>
                   {formData.bf85TekniskeRomRelevant && (
                     <tr>
                       <td className="border border-gray-400 p-2 align-top">Kap. 30:33 – Tekniske rom</td>
                       <td className="border border-gray-400 p-2">
-                        <p className="text-sm">Heismaskinrom, ventilasjonsrom, søppelrom og fyrrom skal utgjøre egne brannceller med brannmotstand <span className="font-semibold text-red-600">{krav.tekniskeRom}</span>.</p>
+                        <p className="text-sm">Heismaskinrom, ventilasjonsrom, søppelrom og fyrrom skal utgjøre egne brannceller med brannmotstand <span className="font-semibold">{krav.tekniskeRom}</span>.</p>
                       </td>
                       <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
                     </tr>
