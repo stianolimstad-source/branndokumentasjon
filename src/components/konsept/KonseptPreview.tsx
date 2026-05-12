@@ -106,6 +106,15 @@ const TilstandTableRow = ({ data, sectionLabel, colSpan = 3 }: { data: TilstandD
   );
 };
 
+interface KonseptPreviewProps {
+  formData: Record<string, any>;
+  logoUrl?: string | null;
+  authorInfo?: { name: string; company: string } | null;
+  documentType?: "brannkonsept" | "tilstandsvurdering";
+  hideCover?: boolean;
+  theme?: { template?: "klassisk" | "moderne" | "minimalistisk"; primaryColor: string; accentColor: string; fontFamily: string; companyName?: string | null; extras?: { topbar_height?: "off" | "thin" | "thick" | "extra" } } | null;
+}
+
 const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannkonsept", hideCover = false, theme }: KonseptPreviewProps) => {
   // Ensure arrays have defaults
   const bygningsdeler = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
