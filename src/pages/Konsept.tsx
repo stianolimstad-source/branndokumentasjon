@@ -4589,7 +4589,8 @@ const Konsept = () => {
                             </>
                           )}
                         </div>
-                      )}
+                        );
+                      })()}
 
                       {/* BF85 Skole: Forenklet brannvegg-vurdering */}
                       {formData.regelverk === "BF85" && formData.bygningstype === "Skole" && (() => {
