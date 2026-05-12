@@ -1410,25 +1410,22 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
 
-            {formData.manglerSeksjonering && (
+            {formData.manglerSeksjonering && formData.etablererSeksjoneringLikevel && (
               <tr>
-                <td className="border border-gray-400 p-2 align-top font-semibold" style={{ background: '#fef2f2', color: '#991b1b' }}>
-                  Avvik – manglende {isBF85 ? "brannvegg" : "seksjoneringsvegg"}
+                <td className="border border-gray-400 p-2 align-top font-semibold">
+                  Nytt tiltak – {isBF85 ? "brannvegg" : "seksjoneringsvegg"}
                 </td>
-                <td className="border border-gray-400 p-2" style={{ background: '#fef2f2', color: '#991b1b' }}>
-                  <p className="font-semibold mb-1">
+                <td className="border border-gray-400 p-2">
+                  <p className="mb-1">
                     {isBF85
-                      ? "Brannvegg er ikke etablert i bygget. Iht. BF85 Kap. 30:6 kreves dette. Dette utgjør et avvik fra regelverket."
-                      : "Seksjoneringsvegg er ikke etablert i bygget. Iht. TEK17 § 11-7 kreves dette. Dette utgjør et avvik fra regelverket."}
+                      ? "Brannvegg er ikke etablert i bygget i dag, men etableres som nytt tiltak iht. BF85 Kap. 30:6."
+                      : "Seksjoneringsvegg er ikke etablert i bygget i dag, men etableres som nytt tiltak iht. TEK17 § 11-7."}
                   </p>
                   {formData.manglerSeksjoneringKommentar && (
                     <p className="italic">{formData.manglerSeksjoneringKommentar}</p>
                   )}
-                  <p className="text-xs mt-1" style={{ color: '#7f1d1d' }}>
-                    Krav iht. regelverket er beskrevet under for å dokumentere hva som skulle vært etablert.
-                  </p>
                 </td>
-                <td className="border border-gray-400 p-2 align-top" style={{ background: '#fef2f2', color: '#991b1b' }}>RIBr</td>
+                <td className="border border-gray-400 p-2 align-top">RIBr</td>
               </tr>
             )}
 

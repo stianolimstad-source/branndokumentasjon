@@ -617,6 +617,7 @@ const Konsept = () => {
     erSykehusPleieinstitusjon: false, // RKL6: krav til vertikal seksjonering for sykehus/sykehjem/pleieinstitusjoner
     manglerSeksjonering: false, // Tilstandsvurdering: brannvegg/seksjoneringsvegg ikke etablert i bygget
     manglerSeksjoneringKommentar: "",
+    etablererSeksjoneringLikevel: false, // Tilstandsvurdering: dersom mangler, etableres likevel som tiltak
     brannseksjoner: "",
     brannseksjonerKommentar: "",
     brannceller: "",
@@ -920,7 +921,7 @@ const Konsept = () => {
     }
 
     if (!kravFinnes) {
-      setFormData(prev => ({ ...prev, manglerSeksjonering: false, manglerSeksjoneringKommentar: "" }));
+      setFormData(prev => ({ ...prev, manglerSeksjonering: false, manglerSeksjoneringKommentar: "", etablererSeksjoneringLikevel: false }));
     }
   }, [
     documentType,
@@ -935,6 +936,41 @@ const Konsept = () => {
     formData.erSykehusPleieinstitusjon,
     formData.brannseksjonTiltak,
     formData.brannseksjonBrannenergi,
+  ]);
+
+  // Auto-prefyll tilstandspanel 3_4 når brannvegg/seksjonering mangler og IKKE etableres som tiltak
+  useEffect(() => {
+    if (isViewMode) return;
+    if (documentType !== "tilstandsvurdering") return;
+    if (!formData.manglerSeksjonering || formData.etablererSeksjoneringLikevel) return;
+
+    const eksisterende = formData.tilstandsvurderinger?.["3_4"];
+    if (eksisterende && (eksisterende.beskrivelse?.trim() || eksisterende.grad)) return;
+
+    const veggOrd = formData.regelverk === "BF85" ? "brannvegg" : "seksjoneringsvegg";
+    const ref = formData.regelverk === "BF85" ? "BF85 Kap. 30:6" : "TEK17 § 11-7";
+    const tillegg = formData.manglerSeksjoneringKommentar?.trim()
+      ? ` ${formData.manglerSeksjoneringKommentar.trim()}`
+      : "";
+    const beskrivelse = `Bygget mangler påkrevd ${veggOrd} iht. ${ref}. Dette utgjør et fravik fra regelverket.${tillegg}`;
+
+    setFormData(prev => ({
+      ...prev,
+      tilstandsvurderinger: {
+        ...prev.tilstandsvurderinger,
+        "3_4": {
+          ...(prev.tilstandsvurderinger?.["3_4"] || emptyTilstand()),
+          grad: prev.tilstandsvurderinger?.["3_4"]?.grad || "tg3",
+          beskrivelse,
+        },
+      },
+    }));
+  }, [
+    documentType,
+    formData.manglerSeksjonering,
+    formData.etablererSeksjoneringLikevel,
+    formData.regelverk,
+    formData.manglerSeksjoneringKommentar,
   ]);
 
   useEffect(() => {
@@ -4623,17 +4659,46 @@ const Konsept = () => {
                           </div>
                           {formData.manglerSeksjonering && (
                             <>
-                              <div className="p-2 rounded-md border border-red-300 bg-red-50 dark:bg-red-950/30 dark:border-red-700">
-                                <p className="text-xs font-semibold text-red-800 dark:text-red-200">
-                                  ⚠ Avvik: {formData.regelverk === "BF85" ? "Brannvegg" : "Seksjoneringsvegg"} mangler i bygget – krav iht. regelverk er ikke oppfylt.
-                                </p>
+                              <div className="flex items-start gap-2 pl-6 pt-1 border-l-2 border-amber-300 dark:border-amber-700 ml-1">
+                                <Checkbox
+                                  id="etablererSeksjoneringLikevel"
+                                  checked={formData.etablererSeksjoneringLikevel}
+                                  onCheckedChange={(checked) => setFormData({ ...formData, etablererSeksjoneringLikevel: !!checked })}
+                                />
+                                <label htmlFor="etablererSeksjoneringLikevel" className="text-xs cursor-pointer leading-snug">
+                                  <span className="font-medium">
+                                    {formData.regelverk === "BF85"
+                                      ? "Brannvegg etableres likevel som nytt tiltak"
+                                      : "Seksjoneringsvegg etableres likevel som nytt tiltak"}
+                                  </span>
+                                  <br />
+                                  <span className="text-muted-foreground">
+                                    Huk av dersom det velges å etablere veggen som tiltak. Hvis ikke, dokumenteres fraviket i tilstandsvurderingen nederst i kapittelet.
+                                  </span>
+                                </label>
                               </div>
+                              {!formData.etablererSeksjoneringLikevel && (
+                                <div className="p-2 rounded-md border border-red-300 bg-red-50 dark:bg-red-950/30 dark:border-red-700">
+                                  <p className="text-xs font-semibold text-red-800 dark:text-red-200">
+                                    ⚠ Fravik: {formData.regelverk === "BF85" ? "Brannvegg" : "Seksjoneringsvegg"} mangler – beskrives i tilstandsvurderingen nederst i kapittelet.
+                                  </p>
+                                </div>
+                              )}
+                              {formData.etablererSeksjoneringLikevel && (
+                                <div className="p-2 rounded-md border border-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 dark:border-emerald-700">
+                                  <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-200">
+                                    ✓ Tiltak: {formData.regelverk === "BF85" ? "Brannvegg" : "Seksjoneringsvegg"} etableres som nytt tiltak iht. {formData.regelverk === "BF85" ? "BF85 Kap. 30:6" : "TEK17 § 11-7"}.
+                                  </p>
+                                </div>
+                              )}
                               <div>
                                 <Label className="text-xs font-medium mb-1 block">Kommentar / begrunnelse</Label>
                                 <Textarea
                                   value={formData.manglerSeksjoneringKommentar}
                                   onChange={(e) => setFormData({ ...formData, manglerSeksjoneringKommentar: e.target.value })}
-                                  placeholder="Beskriv f.eks. hvor brannvegg burde vært, observasjoner, anbefalt tiltak..."
+                                  placeholder={formData.etablererSeksjoneringLikevel
+                                    ? "Beskriv hvor og hvordan veggen etableres, oppfyllelse av krav osv..."
+                                    : "Beskriv f.eks. hvor brannvegg burde vært, observasjoner, anbefalt tiltak..."}
                                   rows={3}
                                   className="bg-background text-xs"
                                 />
