@@ -1683,11 +1683,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             </tr>
             {isBF85 ? (() => {
               const klasse = formData.bygningsbrannklasse || "";
-              const bf85KravMap: Record<string, { branncellebegrensende: string; dorKrav: string; tekniskeRom: string }> = {
-                "1": { branncellebegrensende: "A 60", dorKrav: "A 30", tekniskeRom: "A 60" },
-                "2": { branncellebegrensende: "B 60", dorKrav: "B 30", tekniskeRom: "A 60" },
-                "3": { branncellebegrensende: "B 30", dorKrav: "B 15", tekniskeRom: "A 60" },
-                "4": { branncellebegrensende: "B 30", dorKrav: "B 15", tekniskeRom: "A 60" },
+              const bf85KravMap: Record<string, { tekniskeRom: string }> = {
+                "1": { tekniskeRom: "A 60" },
+                "2": { tekniskeRom: "A 60" },
+                "3": { tekniskeRom: "A 60" },
+                "4": { tekniskeRom: "A 60" },
               };
               const krav = bf85KravMap[klasse];
               if (!krav) return null;
