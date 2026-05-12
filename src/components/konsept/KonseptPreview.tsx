@@ -1431,14 +1431,43 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {isBF85 ? (
               <>
-                {/* BF85 Kap 30:61 Oppdeling med brannvegg */}
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Generelt (:61)</td>
-                  <td className="border border-gray-400 p-2">
-                    Største grunnflate etter kap. 31 til 39 kan økes dersom bygningen oppdeles med brannvegg i deler med høyst så store arealer som angitt.
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
-                </tr>
+                {/* BF85 Kap 30:61 Oppdeling med brannvegg – generelt */}
+                {(() => {
+                  const erIK = formData.bygningstype === "Industri" || formData.bygningstype === "Kraftstasjon";
+                  if (erIK) {
+                    const bb = parseFloat(formData.bf85_34_brannbelastning) || 0;
+                    const tiltak = formData.bf85_34_tiltak || "ingen";
+                    const row = bf85Tabell3423.find((r) => bb >= r.brannbelastningMin && bb < r.brannbelastningMax);
+                    let tekst: string;
+                    if (!row || bb <= 0) {
+                      tekst = "Største tillatt bruttoareal pr. etasje uten oppdeling med brannvegg fastsettes etter BF85 Tabell 34:23 ut fra spesifikk brannbelastning og evt. brannventilasjon/sprinkleranlegg. Velg brannbelastning på inputsiden for å hente relevant verdi.";
+                    } else {
+                      const maks = tiltak === "sprinkler" ? row.medSprinkler : tiltak === "brannventilasjon" ? row.medBrannventilasjon : row.utenTiltak;
+                      const tiltakTekst = tiltak === "sprinkler" ? "med sprinkleranlegg" : tiltak === "brannventilasjon" ? "med brannventilasjon" : "uten brannventilasjon og sprinkleranlegg";
+                      if (maks == null) {
+                        tekst = `Iht. BF85 Tabell 34:23 er det for ${formData.bygningstype.toLowerCase()} med spesifikk brannbelastning ${row.brannbelastningLabel} MJ/m² ${tiltakTekst} ingen krav til oppdeling med brannvegg.`;
+                      } else {
+                        tekst = `Iht. BF85 Tabell 34:23 tillates inntil ${maks} m² bruttoareal pr. etasje for ${formData.bygningstype.toLowerCase()} med spesifikk brannbelastning ${row.brannbelastningLabel} MJ/m² ${tiltakTekst}, før oppdeling med brannvegg er påkrevd.`;
+                      }
+                    }
+                    return (
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">Generelt (:61)</td>
+                        <td className="border border-gray-400 p-2">{tekst}</td>
+                        <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                      </tr>
+                    );
+                  }
+                  return (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Generelt (:61)</td>
+                      <td className="border border-gray-400 p-2">
+                        Største grunnflate etter kap. 31 til 39 kan økes dersom bygningen oppdeles med brannvegg i deler med høyst så store arealer som angitt.
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                    </tr>
+                  );
+                })()}
                 {formData.brannseksjoner && (
                   <tr>
                     <td className="border border-gray-400 p-2 align-top">Beskrivelse</td>
