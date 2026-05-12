@@ -1,15 +1,39 @@
-## Endring
+## Endring – BF85 heissjakt
 
-Fjern alle "– B 30 godtas i praksis" / "– B 30 S godtas i praksis"-merknader fra BF85 dørkrav-tabellen. Verdien skal kun vise selve dørklassen (f.eks. `A 30 (EI 30-A2s1,d0-Sa)`).
+### 1. Ny relevans-knapp i editoren
 
-### Filer
+`src/pages/Konsept.tsx` (~linje 5420, før heissjakt-blokken): Når `regelverk === "BF85"`, vis først en Ja/Nei-velger:
 
-1. **`src/components/konsept/KonseptPreview.tsx`** (`bf85DorKravMap`, ~linje 2049–2060): Fjern " – B 30 godtas i praksis" og " – B 30 S godtas i praksis" fra følgende strenger:
-   - `bf85_korridor_fri_luft` (bbk1, bbk2)
-   - `bf85_branncelle_korridor` (bbk1, bbk2)
-   - `bf85_branncelle_branncelle` (bbk1, bbk2)
-   - `bf85_kjeller_trapperom` (bbk3, bbk4)
+> "Er heissjakt relevant for bygget?"
 
-2. **`src/lib/word-export-chapter3.ts`** (samme map, ~linje 590–598): Speile samme endring.
+Lagres i nytt felt `heissjaktRelevantBF85: "ja" | "nei" | undefined` (initialiseres som `undefined` ~linje 627–632).
 
-Ingen andre endringer.
+Hvis `"nei"` (eller udefinert): Hele heissjakt-tekstboksen skjules. Ingenting rendres i kap. 3.5 i preview eller Word.
+
+Hvis `"ja"`: Tekstboksen vises som i dag, men auto-tekst for BF85 erstattes (se neste punkt).
+
+### 2. BF85-tekst forenkles
+
+`src/pages/Konsept.tsx` linje 5424–5430 (`getHeissjaktkravOriginalTekst` BF85-grenen): Erstatt dagens 3-punkts liste med:
+
+> "Heissjakt skal være egen branncelle med brannmotstand minst A 60. Heisen skal ha egen krets for strømtilkobling. Det var ikke flere branntekniske krav til heisen i Byggeforskrift 1985."
+
+Rebehandling for BF85: hvis `heissjaktkravTekst` er tom og `heissjaktRelevantBF85 === "ja"`, auto-fyll med ny tekst. Hvis brukeren slår av relevansen, ikke nullstill — bare skjul rendering.
+
+### 3. Render-gating i preview
+
+`src/components/konsept/KonseptPreview.tsx` linje 2200–2210 (Heissjakt-blokk): Legg til betingelse — for BF85 må `formData.heissjaktRelevantBF85 === "ja"` for at blokken skal rendres. TEK17-flyt uendret.
+
+### 4. Render-gating i Word
+
+`src/lib/word-export-chapter3.ts` linje 651–664: Speile samme BF85-betingelse.
+
+## Ikke endret
+
+- TEK17 heissjakt-logikk og -tekster.
+- `heissjaktkrav`-array (brukes kun i Word-eksportens checkbox-baserte fallback for TEK17).
+- Heismaskinrom-feltet (eget felt, beholdes).
+
+## Spørsmål
+
+Skal Ja/Nei-velgeren ha en spesifikk default (forslag: ingen valgt, med liten hjelpetekst om at eldre bygg ofte mangler heis), eller skal den default til "Nei"?
