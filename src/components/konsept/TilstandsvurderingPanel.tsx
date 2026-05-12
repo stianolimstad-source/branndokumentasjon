@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -123,6 +123,16 @@ const TilstandsvurderingPanel = ({ sectionKey, sectionLabel, data, onChange }: T
   const [uploading, setUploading] = useState<string | null>(null); // "tiltak:<id>" | "fravik:<id>"
 
   const { tiltak, fravik } = ensureKategorier(data);
+
+  // Auto-sync samlet tilstandsgrad: TG 0 når ingen avvik, ellers tøm (grad styres per avvik).
+  useEffect(() => {
+    const ingenAvvik = (tiltak.avvik || []).length === 0 && (fravik.avvik || []).length === 0;
+    const ønsket: TilstandGrad = ingenAvvik ? "tg0" : "";
+    if ((data.grad || "") !== ønsket) {
+      onChange({ ...data, grad: ønsket });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tiltak.avvik?.length, fravik.avvik?.length]);
 
   const writeKategorier = (next: { tiltak: TilstandKategori; fravik: TilstandKategori }) => {
     onChange({
@@ -373,24 +383,11 @@ const TilstandsvurderingPanel = ({ sectionKey, sectionLabel, data, onChange }: T
         </Label>
       </div>
 
-      <div>
-        <Label className="text-xs font-medium mb-1 block">Samlet tilstandsgrad for seksjonen</Label>
-        <Select value={data.grad} onValueChange={(val) => onChange({ ...data, grad: val as TilstandGrad })}>
-          <SelectTrigger className="bg-background">
-            <SelectValue placeholder="Velg samlet tilstandsgrad..." />
-          </SelectTrigger>
-          <SelectContent>
-            {Object.entries(gradLabels).map(([key, { label }]) => (
-              <SelectItem key={key} value={key}>{label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {data.grad === "tg0" && (
-          <p className="text-xs mt-2 text-green-800 dark:text-green-300 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-md px-3 py-2">
-            Det er ikke funnet noen avvik på dette området.
-          </p>
-        )}
-      </div>
+      {(tiltak.avvik || []).length === 0 && (fravik.avvik || []).length === 0 && (
+        <p className="text-xs text-green-800 dark:text-green-300 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-md px-3 py-2">
+          Det er ikke funnet noen avvik på dette området. Seksjonen settes automatisk til <strong>TG 0 – Ingen avvik</strong>.
+        </p>
+      )}
 
       {renderKategori(
         "tiltak",

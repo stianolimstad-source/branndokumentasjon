@@ -93,6 +93,13 @@ const tilstandHasContent = (data: TilstandData): boolean => {
   return !!data.grad || getAvvikListe(tiltak).length > 0 || getAvvikListe(fravik).length > 0;
 };
 
+const tilstandIsActive = (data: TilstandData): boolean => {
+  // Panelet regnes som aktivert når brukeren har lagt til avvik ELLER eksplisitt satt en grad.
+  if (!data) return false;
+  const { tiltak, fravik } = getKategorier(data);
+  return !!data.grad || getAvvikListe(tiltak).length > 0 || getAvvikListe(fravik).length > 0;
+};
+
 // Farge per tilstandsgrad (for badge)
 const gradBadgeColors: Record<string, { bg: string; fg: string }> = {
   tg0: { bg: "#16A34A", fg: "#FFFFFF" },
@@ -192,6 +199,9 @@ const KategoriBlokk = ({ tittel, kategori, headerBg, headerFg, accent }: {
 const TilstandTableRow = ({ data, sectionLabel, colSpan = 3 }: { data: TilstandData; sectionLabel: string; colSpan?: number }) => {
   if (!tilstandHasContent(data)) return null;
   const { tiltak, fravik } = getKategorier(data);
+  const tiltakListe = getAvvikListe(tiltak);
+  const fravikListe = getAvvikListe(fravik);
+  const ingenAvvik = tiltakListe.length === 0 && fravikListe.length === 0;
   return (
     <tr>
       <td className="border border-gray-400" colSpan={colSpan} style={{ padding: 0, background: "#FEF3C7" }}>
@@ -212,24 +222,41 @@ const TilstandTableRow = ({ data, sectionLabel, colSpan = 3 }: { data: TilstandD
             </span>
             <span style={{ fontSize: 11, fontWeight: 600, color: "#78350F" }}>{sectionLabel}</span>
           </div>
-          <GradBadge grad={data.grad} size={10} />
+          {ingenAvvik && <GradBadge grad="tg0" size={10} />}
         </div>
         {/* Innhold */}
         <div style={{ padding: "10px 12px 12px 12px" }}>
-          <KategoriBlokk
-            tittel="Avvik som krever aktive tiltak"
-            kategori={tiltak}
-            headerBg="#FEE2E2"
-            headerFg="#991B1B"
-            accent="#991B1B"
-          />
-          <KategoriBlokk
-            tittel="Avvik som kan fraviksbehandles"
-            kategori={fravik}
-            headerBg="#FFEDD5"
-            headerFg="#9A3412"
-            accent="#C2410C"
-          />
+          {ingenAvvik ? (
+            <div style={{
+              background: "#D1FAE5",
+              border: "1px solid #6EE7B7",
+              borderLeft: "4px solid #059669",
+              borderRadius: 6,
+              padding: "8px 12px",
+              color: "#065F46",
+              fontSize: 11,
+              fontWeight: 500,
+            }}>
+              Det er ikke funnet noen avvik på dette området.
+            </div>
+          ) : (
+            <>
+              <KategoriBlokk
+                tittel="Avvik som krever aktive tiltak"
+                kategori={tiltak}
+                headerBg="#FEE2E2"
+                headerFg="#991B1B"
+                accent="#991B1B"
+              />
+              <KategoriBlokk
+                tittel="Avvik som kan fraviksbehandles"
+                kategori={fravik}
+                headerBg="#FFEDD5"
+                headerFg="#9A3412"
+                accent="#C2410C"
+              />
+            </>
+          )}
         </div>
       </td>
     </tr>
