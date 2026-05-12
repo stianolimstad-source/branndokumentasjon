@@ -1683,16 +1683,28 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             </tr>
             {isBF85 ? (() => {
               const klasse = formData.bygningsbrannklasse || "";
-              const bf85KravMap: Record<string, { tekniskeRom: string }> = {
-                "1": { tekniskeRom: "A 60" },
-                "2": { tekniskeRom: "A 60" },
-                "3": { tekniskeRom: "A 60" },
-                "4": { tekniskeRom: "A 60" },
+              const bf85KravMap: Record<string, { branncellebegrensende: string; dorKrav: string; tekniskeRom: string }> = {
+                "1": { branncellebegrensende: "A 60", dorKrav: "A 30", tekniskeRom: "A 60" },
+                "2": { branncellebegrensende: "B 60", dorKrav: "B 30", tekniskeRom: "A 60" },
+                "3": { branncellebegrensende: "B 30", dorKrav: "B 15", tekniskeRom: "A 60" },
+                "4": { branncellebegrensende: "B 30", dorKrav: "B 15", tekniskeRom: "A 60" },
               };
               const krav = bf85KravMap[klasse];
               if (!krav) return null;
               return (
                 <>
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Kap. 30:63 – Branncelleinndeling</td>
+                    <td className="border border-gray-400 p-2">
+                      <p className="text-sm">Bygning skal inndeles på hensiktsmessig måte i brannceller med konstruksjon etter Tabell 30:41. Ikke-bærende branncellebegrensende bygningsdel: <span className="font-semibold">{krav.branncellebegrensende}</span>.</p>
+                      <ul className="text-sm mt-1 ml-4 list-disc space-y-0.5">
+                        <li>Brannceller må ikke ha form eller innredning som gjør varsling og rømning ved brann vanskelig.</li>
+                        <li>Sjakter som ikke ligger i tilknytning til trapperom skal utføres som egne brannceller.</li>
+                        <li>Dører i branncellebegrensende vegger skal ha minst 1/2 av veggens brannmotstand – dvs. minst <span className="font-semibold">{krav.dorKrav}</span>.</li>
+                      </ul>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIBr</td>
+                  </tr>
                   {formData.bf85TekniskeRomRelevant && (
                     <tr>
                       <td className="border border-gray-400 p-2 align-top">Kap. 30:33 – Tekniske rom</td>
