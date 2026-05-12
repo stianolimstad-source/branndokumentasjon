@@ -1431,6 +1431,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {isBF85 ? (
               <>
+                {(() => { return null; })()}
                 {/* BF85 Kap 30:61 Oppdeling med brannvegg – generelt */}
                 {(() => {
                   const erIK = formData.bygningstype === "Industri" || formData.bygningstype === "Kraftstasjon";
