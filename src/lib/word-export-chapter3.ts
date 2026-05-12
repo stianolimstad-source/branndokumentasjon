@@ -230,7 +230,7 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
   const harFravik = fravik.avvik.length > 0;
   if (!tilstandData.grad && !harTiltak && !harFravik) return [];
 
-  const gradLabel = tilstandGradLabels[tilstandData.grad] || "";
+  const ingenAvvik = !harTiltak && !harFravik;
   const tilstandShading = { type: ShadingType.SOLID, color: "FEF3C7", fill: "FEF3C7" };
   const headerShading = { type: ShadingType.SOLID, color: "FCD34D", fill: "FCD34D" };
 
@@ -243,9 +243,18 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
     children: [
       new TextRun({ text: `TILSTANDSVURDERING `, bold: true, size: 22, color: "78350F" }),
       new TextRun({ text: `– ${sectionLabel}`, bold: true, size: 20, color: "78350F" }),
-      ...(gradLabel ? [new TextRun({ text: `   [${gradLabel}]`, bold: true, size: 20, color: "78350F" })] : []),
+      ...(ingenAvvik ? [new TextRun({ text: `   [TG 0 – Ingen avvik]`, bold: true, size: 20, color: "78350F" })] : []),
     ],
   }));
+
+  if (ingenAvvik) {
+    children.push(new Paragraph({
+      spacing: { before: 80, after: 40 },
+      shading: { type: ShadingType.SOLID, color: "D1FAE5", fill: "D1FAE5" },
+      border: { left: { style: BorderStyle.SINGLE, size: 18, color: "059669", space: 4 } },
+      children: [new TextRun({ text: "Det er ikke funnet noen avvik på dette området.", size: 20, color: "065F46" })],
+    }));
+  }
 
   const renderKategori = async (
     tittel: string,
