@@ -2040,7 +2040,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
             )}
             {/* Dørkrav */}
-            {formData.dorPlasseringer && formData.dorPlasseringer.length > 0 && (formData.brannklasse || (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0)) && (() => {
+            {formData.dorPlasseringer && formData.dorPlasseringer.length > 0 && (formData.brannklasse || formData.bygningsbrannklasse || (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0)) && (() => {
               const isBF85 = formData.regelverk === "BF85";
               if (isBF85) {
                 const bbk = parseInt(formData.bygningsbrannklasse || '0', 10);
