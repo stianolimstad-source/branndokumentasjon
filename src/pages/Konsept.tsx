@@ -2411,6 +2411,83 @@ const Konsept = () => {
             }),
             ] : []),
 
+            // Oppsummering av avvik (kun tilstandsvurdering)
+            ...(documentType === "tilstandsvurdering" ? (() => {
+              const tv = formData.tilstandsvurderinger || {};
+              const norm = (b: any[]) => (b || []).map((x: any) => (typeof x === "string" ? { url: x, beskrivelse: "" } : x));
+              const getKat = (d: any) => {
+                if (!d) return { tiltak: { beskrivelse: "", bilder: [] }, fravik: { beskrivelse: "", bilder: [] } };
+                const harNye = !!(d.tiltak || d.fravik);
+                const harLegacy = !!(d.beskrivelse || (d.bilder && d.bilder.length > 0));
+                if (!harNye && harLegacy) {
+                  return { tiltak: { beskrivelse: d.beskrivelse || "", bilder: norm(d.bilder) }, fravik: { beskrivelse: "", bilder: [] } };
+                }
+                return {
+                  tiltak: { beskrivelse: d.tiltak?.beskrivelse || "", bilder: norm(d.tiltak?.bilder) },
+                  fravik: { beskrivelse: d.fravik?.beskrivelse || "", bilder: norm(d.fravik?.bilder) },
+                };
+              };
+              const gradLabel = (g: string) => ({ tg0: "TG 0", tg1: "TG 1", tg2: "TG 2", tg3: "TG 3", tgiu: "TG IU" } as Record<string, string>)[g] || "—";
+              const tiltakRader = tilstandSectionsTEK17
+                .map(s => ({ s, k: getKat(tv[s.key]), grad: tv[s.key]?.grad || "" }))
+                .filter(({ k }) => !!(k.tiltak.beskrivelse && k.tiltak.beskrivelse.trim()));
+              const fravikRader = tilstandSectionsTEK17
+                .map(s => ({ s, k: getKat(tv[s.key]), grad: tv[s.key]?.grad || "" }))
+                .filter(({ k }) => !!(k.fravik.beskrivelse && k.fravik.beskrivelse.trim()));
+
+              if (tiltakRader.length === 0 && fravikRader.length === 0) return [];
+
+              const buildTabell = (rader: typeof tiltakRader, kind: "tiltak" | "fravik") => new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
+                  new TableRow({
+                    children: [
+                      createTableCellShaded("Kapittel", true, 30),
+                      createTableCellShaded("TG", true, 12),
+                      createTableCellShaded("Beskrivelse av avvik", true, 58),
+                    ],
+                  }),
+                  ...rader.map(({ s, k, grad }) => new TableRow({
+                    children: [
+                      createTableCell(s.label, false, 30),
+                      createTableCell(gradLabel(grad), false, 12),
+                      createTableCell(kind === "tiltak" ? k.tiltak.beskrivelse : k.fravik.beskrivelse, false, 58),
+                    ],
+                  })),
+                ],
+              });
+
+              const out: any[] = [
+                new Paragraph({
+                  children: [new TextRun({ text: "Oppsummering av avvik", bold: true, size: 28 })],
+                  spacing: { before: 400, after: 100 },
+                }),
+                new Paragraph({
+                  text: "Samlet oversikt over avvik fra tilstandsvurderingen, fordelt på avvik som krever aktive tiltak og avvik som kan fraviksbehandles.",
+                  spacing: { after: 200 },
+                }),
+                new Paragraph({
+                  children: [new TextRun({ text: "Avvik som krever aktive tiltak", bold: true, size: 24, color: "991B1B" })],
+                  spacing: { before: 200, after: 100 },
+                }),
+              ];
+              if (tiltakRader.length > 0) {
+                out.push(buildTabell(tiltakRader, "tiltak"));
+              } else {
+                out.push(new Paragraph({ text: "Ingen avvik registrert som krever aktive tiltak.", spacing: { after: 100 } }));
+              }
+              out.push(new Paragraph({
+                children: [new TextRun({ text: "Avvik som kan fraviksbehandles", bold: true, size: 24, color: "92400E" })],
+                spacing: { before: 300, after: 100 },
+              }));
+              if (fravikRader.length > 0) {
+                out.push(buildTabell(fravikRader, "fravik"));
+              } else {
+                out.push(new Paragraph({ text: "Ingen avvik registrert som kan fraviksbehandles.", spacing: { after: 100 } }));
+              }
+              return out;
+            })() : []),
+
             // Revisjonshistorikk
             new Paragraph({
               children: [new TextRun({ text: `${documentType === "tilstandsvurdering" ? "3" : "5"}. Revisjonshistorikk`, bold: true, size: 28 })],
