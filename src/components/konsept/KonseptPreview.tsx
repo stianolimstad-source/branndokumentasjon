@@ -1429,6 +1429,25 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
             )}
 
+            {formData.manglerSeksjonering && !formData.etablererSeksjoneringLikevel && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top font-semibold">
+                  Fravik – {isBF85 ? "brannvegg" : "seksjoneringsvegg"} mangler
+                </td>
+                <td className="border border-gray-400 p-2">
+                  <p className="mb-1">
+                    {isBF85
+                      ? "Brannvegg er ikke etablert i bygget iht. BF85 Kap. 30:6. Forholdet dokumenteres som fravik i tilstandsvurderingen."
+                      : "Seksjoneringsvegg er ikke etablert i bygget iht. TEK17 § 11-7. Forholdet dokumenteres som fravik i tilstandsvurderingen."}
+                  </p>
+                  {formData.manglerSeksjoneringKommentar && (
+                    <p className="italic">{formData.manglerSeksjoneringKommentar}</p>
+                  )}
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIBr</td>
+              </tr>
+            )}
+
             {isBF85 ? (
               <>
                 {/* BF85 Kap 30:61 Oppdeling med brannvegg – generelt */}
