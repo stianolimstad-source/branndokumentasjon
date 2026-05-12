@@ -2198,7 +2198,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
             )}
             {/* Heissjakt */}
-            {formData.heissjaktkravTekst && formData.heissjaktkravTekst.trim() && (
+            {formData.heissjaktkravTekst && formData.heissjaktkravTekst.trim() && (formData.regelverk !== "BF85" || formData.heissjaktRelevantBF85 === "ja") && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">
                   {formData.regelverk === "BF85" ? "Krav til heissjakt (Kap. 30:33/30:65)" : "Krav til heissjakt"}
