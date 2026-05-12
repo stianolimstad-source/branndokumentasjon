@@ -615,6 +615,8 @@ const Konsept = () => {
     seksjonDorRelevant: false,
     seksjonVinduRelevant: false,
     erSykehusPleieinstitusjon: false, // RKL6: krav til vertikal seksjonering for sykehus/sykehjem/pleieinstitusjoner
+    manglerSeksjonering: false, // Tilstandsvurdering: brannvegg/seksjoneringsvegg ikke etablert i bygget
+    manglerSeksjoneringKommentar: "",
     brannseksjoner: "",
     brannseksjonerKommentar: "",
     brannceller: "",
@@ -4514,7 +4516,50 @@ const Konsept = () => {
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">{formData.regelverk === "BF85" ? "3.4 Brannteknisk oppdeling (Kap. 30:6)" : "3.4 § 11-7 Brannseksjoner"}</Label>
                       </div>
-                      
+
+                      {/* Tilstandsvurdering: registrer manglende brannvegg/seksjonering */}
+                      {documentType === "tilstandsvurdering" && (
+                        <div className="space-y-2 p-3 rounded-md border border-amber-300 bg-amber-50/60 dark:bg-amber-950/20 dark:border-amber-700">
+                          <div className="flex items-start gap-2">
+                            <Checkbox
+                              id="manglerSeksjonering"
+                              checked={formData.manglerSeksjonering}
+                              onCheckedChange={(checked) => setFormData({ ...formData, manglerSeksjonering: !!checked })}
+                            />
+                            <label htmlFor="manglerSeksjonering" className="text-xs cursor-pointer leading-snug">
+                              <span className="font-medium">
+                                {formData.regelverk === "BF85"
+                                  ? "Brannvegg er ikke etablert i bygget (avvik fra Kap. 30:6)"
+                                  : "Seksjoneringsvegg er ikke etablert i bygget (avvik fra § 11-7)"}
+                              </span>
+                              <br />
+                              <span className="text-muted-foreground">
+                                Huk av dersom bygget mangler påkrevd brannvegg/seksjoneringsvegg. Avviket vil vises tydelig i rapporten, men kravene under dokumenteres som normalt.
+                              </span>
+                            </label>
+                          </div>
+                          {formData.manglerSeksjonering && (
+                            <>
+                              <div className="p-2 rounded-md border border-red-300 bg-red-50 dark:bg-red-950/30 dark:border-red-700">
+                                <p className="text-xs font-semibold text-red-800 dark:text-red-200">
+                                  ⚠ Avvik: {formData.regelverk === "BF85" ? "Brannvegg" : "Seksjoneringsvegg"} mangler i bygget – krav iht. regelverk er ikke oppfylt.
+                                </p>
+                              </div>
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Kommentar / begrunnelse</Label>
+                                <Textarea
+                                  value={formData.manglerSeksjoneringKommentar}
+                                  onChange={(e) => setFormData({ ...formData, manglerSeksjoneringKommentar: e.target.value })}
+                                  placeholder="Beskriv f.eks. hvor brannvegg burde vært, observasjoner, anbefalt tiltak..."
+                                  rows={3}
+                                  className="bg-background text-xs"
+                                />
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      )}
+
                       {/* BF85 Skole: Forenklet brannvegg-vurdering */}
                       {formData.regelverk === "BF85" && formData.bygningstype === "Skole" && (() => {
                         const etasjer = parseInt(formData.etasjer, 10) || 0;
