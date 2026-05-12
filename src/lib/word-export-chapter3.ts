@@ -170,15 +170,41 @@ async function fetchImageAsBuffer(url: string): Promise<{ buffer: ArrayBuffer; w
   }
 }
 
+interface TilstandKategoriExport {
+  beskrivelse: string;
+  bilder: { url: string; beskrivelse: string }[];
+}
+
+export function getTilstandKategorier(tilstandData: any): { tiltak: TilstandKategoriExport; fravik: TilstandKategoriExport } {
+  if (!tilstandData) return { tiltak: { beskrivelse: "", bilder: [] }, fravik: { beskrivelse: "", bilder: [] } };
+  const norm = (b: any[]) => (b || []).map((x: any) => (typeof x === "string" ? { url: x, beskrivelse: "" } : x));
+  const harNye = !!(tilstandData.tiltak || tilstandData.fravik);
+  const harLegacy = !!(tilstandData.beskrivelse || (tilstandData.bilder && tilstandData.bilder.length > 0));
+  if (!harNye && harLegacy) {
+    return {
+      tiltak: { beskrivelse: tilstandData.beskrivelse || "", bilder: norm(tilstandData.bilder) },
+      fravik: { beskrivelse: "", bilder: [] },
+    };
+  }
+  return {
+    tiltak: { beskrivelse: tilstandData.tiltak?.beskrivelse || "", bilder: norm(tilstandData.tiltak?.bilder) },
+    fravik: { beskrivelse: tilstandData.fravik?.beskrivelse || "", bilder: norm(tilstandData.fravik?.bilder) },
+  };
+}
+
 async function tilstandRow(formData: Record<string, any>, sectionKey: string, sectionLabel: string): Promise<TableRow[]> {
   const tilstandData = formData.tilstandsvurderinger?.[sectionKey];
-  if (!tilstandData || (!tilstandData.grad && !tilstandData.beskrivelse)) return [];
-  
+  if (!tilstandData) return [];
+  const { tiltak, fravik } = getTilstandKategorier(tilstandData);
+  const harTiltak = !!tiltak.beskrivelse || tiltak.bilder.length > 0;
+  const harFravik = !!fravik.beskrivelse || fravik.bilder.length > 0;
+  if (!tilstandData.grad && !harTiltak && !harFravik) return [];
+
   const gradLabel = tilstandGradLabels[tilstandData.grad] || "";
   const tilstandShading = { type: ShadingType.SOLID, color: "FEF3C7", fill: "FEF3C7" };
 
   const children: Paragraph[] = [];
-  
+
   children.push(new Paragraph({
     spacing: { before: 40, after: 40 },
     children: [new TextRun({ text: `TILSTANDSVURDERING – ${sectionLabel}`, bold: true, size: 18, color: "92400E" })],
@@ -191,28 +217,30 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
     }));
   }
 
-  if (tilstandData.beskrivelse) {
+  const renderKategori = async (
+    tittel: string,
+    farge: string,
+    kat: TilstandKategoriExport,
+  ) => {
+    if (!kat.beskrivelse && kat.bilder.length === 0) return;
     children.push(new Paragraph({
-      spacing: { before: 20, after: 20 },
-      children: [new TextRun({ text: `Beskrivelse: ${tilstandData.beskrivelse}`, size: 18 })],
+      spacing: { before: 80, after: 20 },
+      children: [new TextRun({ text: tittel, bold: true, size: 18, color: farge })],
     }));
-  }
-
-  // Embed images
-  if (tilstandData.bilder?.length > 0) {
-    const bilder = tilstandData.bilder.map((b: any) => typeof b === "string" ? { url: b, beskrivelse: "" } : b);
-    
-    for (let i = 0; i < bilder.length; i++) {
-      const bilde = bilder[i];
+    if (kat.beskrivelse) {
+      children.push(new Paragraph({
+        spacing: { before: 20, after: 20 },
+        children: [new TextRun({ text: kat.beskrivelse, size: 18 })],
+      }));
+    }
+    for (let i = 0; i < kat.bilder.length; i++) {
+      const bilde = kat.bilder[i];
       const imageResult = await fetchImageAsBuffer(bilde.url);
-      
       if (imageResult) {
-        // Scale to max 450px wide, preserving aspect ratio
         const maxW = 450;
         const scale = Math.min(maxW / imageResult.width, 1);
         const w = Math.round(imageResult.width * scale);
         const h = Math.round(imageResult.height * scale);
-
         children.push(new Paragraph({
           spacing: { before: 80, after: 20 },
           children: [
@@ -224,7 +252,6 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
           ],
         }));
       }
-
       if (bilde.beskrivelse) {
         children.push(new Paragraph({
           spacing: { before: 10, after: 60 },
@@ -232,7 +259,10 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
         }));
       }
     }
-  }
+  };
+
+  await renderKategori("Avvik som krever aktive tiltak", "991B1B", tiltak);
+  await renderKategori("Avvik som kan fraviksbehandles", "92400E", fravik);
 
   return [new TableRow({
     children: [
