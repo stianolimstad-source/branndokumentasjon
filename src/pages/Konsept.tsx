@@ -26,7 +26,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import SendToKSDialog from "@/components/konsept/SendToKSDialog";
 import UpdateKSButton from "@/components/konsept/UpdateKSButton";
-import KonseptPreview from "@/components/konsept/KonseptPreview";
+import KonseptPreview, { getKategorier } from "@/components/konsept/KonseptPreview";
 import { UploadConceptDialog } from "@/components/konsept/UploadConceptDialog";
 import { buildChapter3Table, setChapter3Theme } from "@/lib/word-export-chapter3";
 import TilstandsvurderingPanel, { TilstandData, emptyTilstand } from "@/components/konsept/TilstandsvurderingPanel";
