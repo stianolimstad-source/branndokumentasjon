@@ -26,7 +26,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import SendToKSDialog from "@/components/konsept/SendToKSDialog";
 import UpdateKSButton from "@/components/konsept/UpdateKSButton";
-import KonseptPreview from "@/components/konsept/KonseptPreview";
+import KonseptPreview, { getKategorier } from "@/components/konsept/KonseptPreview";
 import { UploadConceptDialog } from "@/components/konsept/UploadConceptDialog";
 import { buildChapter3Table, setChapter3Theme } from "@/lib/word-export-chapter3";
 import TilstandsvurderingPanel, { TilstandData, emptyTilstand } from "@/components/konsept/TilstandsvurderingPanel";
@@ -9690,8 +9690,98 @@ const Konsept = () => {
                     </span>
                   </AccordionTrigger>
                   <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
+                    {documentType === "tilstandsvurdering" && (() => {
+                      const tv = formData.tilstandsvurderinger || {};
+                      const gradLabel: Record<string, string> = { tg0: "TG 0", tg1: "TG 1", tg2: "TG 2", tg3: "TG 3", tgiu: "TG IU" };
+                      const rows = tilstandSectionsTEK17.map(s => ({ s, data: tv[s.key] || emptyTilstand(), k: getKategorier(tv[s.key] || emptyTilstand()) }));
+                      const tiltakRows = rows.filter(r => (r.k.tiltak.beskrivelse || "").trim().length > 0);
+                      const fravikRows = rows.filter(r => (r.k.fravik.beskrivelse || "").trim().length > 0);
+
+                      const updateBeskrivelse = (sectionKey: string, kind: "tiltak" | "fravik", value: string) => {
+                        const current = tv[sectionKey] || emptyTilstand();
+                        const k = getKategorier(current);
+                        const next: TilstandData = {
+                          ...current,
+                          beskrivelse: "",
+                          bilder: [],
+                          tiltak: kind === "tiltak" ? { ...k.tiltak, beskrivelse: value } : (k.tiltak as any),
+                          fravik: kind === "fravik" ? { ...k.fravik, beskrivelse: value } : (k.fravik as any),
+                        };
+                        updateTilstand(sectionKey, next);
+                      };
+
+                      const renderGroup = (
+                        title: string,
+                        helper: string,
+                        items: typeof tiltakRows,
+                        kind: "tiltak" | "fravik",
+                        accent: { wrap: string; chip: string; title: string },
+                      ) => (
+                        <div className={`rounded-md border p-3 ${accent.wrap}`}>
+                          <h4 className={`text-sm font-bold uppercase tracking-wide mb-1 ${accent.title}`}>{title}</h4>
+                          <p className="text-[11px] text-muted-foreground mb-3">{helper}</p>
+                          {items.length === 0 ? (
+                            <p className="text-xs italic text-muted-foreground">Ingen avvik registrert i denne kategorien. Avvik registreres under kapittel 3.x.</p>
+                          ) : (
+                            <div className="space-y-3">
+                              {items.map(({ s, data, k }) => {
+                                const value = kind === "tiltak" ? k.tiltak.beskrivelse : k.fravik.beskrivelse;
+                                const grad = data.grad || "";
+                                return (
+                                  <div key={s.key} className="rounded border bg-background p-2">
+                                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                                      <span className="text-xs font-semibold">{s.label}</span>
+                                      {grad && (
+                                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${accent.chip}`}>
+                                          {gradLabel[grad] || ""}
+                                        </span>
+                                      )}
+                                    </div>
+                                    <Textarea
+                                      value={value}
+                                      onChange={(e) => updateBeskrivelse(s.key, kind, e.target.value)}
+                                      rows={3}
+                                      className="text-sm"
+                                    />
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+
+                      const ingenAvvik = tiltakRows.length === 0 && fravikRows.length === 0;
+
+                      return (
+                        <div className="space-y-4">
+                          <p className="text-xs text-muted-foreground">
+                            Samlet oversikt over avvik registrert i tilstandsvurderingen. Endringer her oppdaterer samme felt som i kapittel 3.x og i rapportens oppsummering av avvik.
+                          </p>
+                          {ingenAvvik && (
+                            <p className="text-xs italic text-muted-foreground">Ingen avvik registrert ennå. Avvik registreres under kapittel 3.x.</p>
+                          )}
+                          {renderGroup(
+                            "Avvik som krever aktive tiltak",
+                            "Avvik som må utbedres / settes tilbake til riktig stand.",
+                            tiltakRows,
+                            "tiltak",
+                            { wrap: "border-red-300 bg-red-50/60 dark:bg-red-950/20 dark:border-red-800", chip: "bg-red-100 text-red-800 border-red-300", title: "text-red-800 dark:text-red-300" },
+                          )}
+                          {renderGroup(
+                            "Avvik som kan fraviksbehandles",
+                            "Avvik som vurderes akseptable og dokumenteres som fravik.",
+                            fravikRows,
+                            "fravik",
+                            { wrap: "border-amber-300 bg-amber-50/60 dark:bg-amber-950/20 dark:border-amber-800", chip: "bg-amber-100 text-amber-800 border-amber-300", title: "text-amber-800 dark:text-amber-300" },
+                          )}
+                        </div>
+                      );
+                    })()}
                     <div>
-                      <Label className="text-xs font-medium mb-1 block">Beskriv eventuelle fravik og kompenserende tiltak (valgfritt)</Label>
+                      <Label className="text-xs font-medium mb-1 block">
+                        {documentType === "tilstandsvurdering" ? "Generelle merknader (valgfritt)" : "Beskriv eventuelle fravik og kompenserende tiltak (valgfritt)"}
+                      </Label>
                       <Textarea 
                         value={formData.fravik}
                         onChange={(e) => setFormData({...formData, fravik: e.target.value})}
