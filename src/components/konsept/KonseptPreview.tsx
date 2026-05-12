@@ -5343,6 +5343,71 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       <PageFooter pageNum={pageKap3g} />
       </div>
 
+      {/* Oppsummering av avvik – kun for tilstandsvurdering */}
+      {isTilstand && (() => {
+        const tv: Record<string, TilstandData> = formData.tilstandsvurderinger || {};
+        const tiltakRows = tilstandSectionList
+          .map(s => ({ s, k: getKategorier(tv[s.key] || ({} as TilstandData)) }))
+          .filter(({ k }) => !!(k.tiltak.beskrivelse && k.tiltak.beskrivelse.trim()));
+        const fravikRows = tilstandSectionList
+          .map(s => ({ s, k: getKategorier(tv[s.key] || ({} as TilstandData)) }))
+          .filter(({ k }) => !!(k.fravik.beskrivelse && k.fravik.beskrivelse.trim()));
+
+        if (tiltakRows.length === 0 && fravikRows.length === 0) return null;
+
+        const renderTabell = (rader: typeof tiltakRows, tomTekst: string) => {
+          if (rader.length === 0) {
+            return <p className="ml-4 text-xs italic text-gray-600">{tomTekst}</p>;
+          }
+          return (
+            <table className="w-full border-collapse border border-gray-400 text-xs">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-400 p-1.5 text-left font-semibold w-40">Kapittel</th>
+                  <th className="border border-gray-400 p-1.5 text-left font-semibold w-20">TG</th>
+                  <th className="border border-gray-400 p-1.5 text-left font-semibold">Beskrivelse av avvik</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rader.map(({ s, k }, i) => {
+                  const beskrivelse = i < tiltakRows.length && rader === tiltakRows ? k.tiltak.beskrivelse : k.fravik.beskrivelse;
+                  const grad = (tv[s.key]?.grad) || "";
+                  const gradLabel = { tg0: "TG 0", tg1: "TG 1", tg2: "TG 2", tg3: "TG 3", tgiu: "TG IU" }[grad] || "—";
+                  return (
+                    <tr key={s.key}>
+                      <td className="border border-gray-400 p-1.5 align-top font-medium">{s.label}</td>
+                      <td className="border border-gray-400 p-1.5 align-top">{gradLabel}</td>
+                      <td className="border border-gray-400 p-1.5 align-top whitespace-pre-wrap">{beskrivelse}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          );
+        };
+
+        return (
+          <div className={pageStyle} style={pageWidth}>
+            <h2 id="preview-oppsummering-avvik" className="font-bold mb-3" style={{ color: chapterHeadingColor }}>
+              Oppsummering av avvik
+            </h2>
+            <p className="text-xs text-gray-600 mb-4">
+              Samlet oversikt over avvik fra tilstandsvurderingen, fordelt på avvik som krever aktive tiltak og avvik som kan fraviksbehandles.
+            </p>
+
+            <section className="mb-6">
+              <h3 className="font-semibold mb-2" style={{ color: "#991B1B" }}>Avvik som krever aktive tiltak</h3>
+              {renderTabell(tiltakRows, "Ingen avvik registrert som krever aktive tiltak.")}
+            </section>
+
+            <section className="mb-6">
+              <h3 className="font-semibold mb-2" style={{ color: "#92400E" }}>Avvik som kan fraviksbehandles</h3>
+              {renderTabell(fravikRows, "Ingen avvik registrert som kan fraviksbehandles.")}
+            </section>
+          </div>
+        );
+      })()}
+
       {/* Kap 4+5 (brannkonsept) eller revisjon (tilstand) - egen side */}
       <div className={pageStyle} style={pageWidth}>
 
