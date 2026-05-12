@@ -2790,14 +2790,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                           ⚠ Fravik: Krav til brannceller over flere plan gjelder ikke for {ugyldigeRK.flatMap((rk: number) => rk === 3 ? ["skole", "barnehage"] : ["sykehjem", "sykehus", "omsorgshjem"]).join(", ")}. Dette er et fravik som må dokumenteres.
                         </div>
                       )}
-                      {formData.branncellerFlerePlanOver3 && (
-                        <div className="text-red-600 font-medium">
-                          {formData.regelverk === "BF85"
-                            ? "⚠ Fravik: Hovedregel etter BF85 er åpen forbindelse over inntil 3 plan. Branncellen strekker seg over flere enn 3 plan og må dokumenteres som fravik."
-                            : "⚠ Fravik: Preakseptert ytelse tillater åpen forbindelse over inntil 3 plan. Branncellen strekker seg over flere enn 3 plan og er ikke dekket av preakseptert ytelse. Dette må dokumenteres som fravik."
-                          }
-                        </div>
-                      )}
                     </div>
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIBr</td>
