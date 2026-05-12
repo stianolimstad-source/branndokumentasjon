@@ -938,6 +938,41 @@ const Konsept = () => {
     formData.brannseksjonBrannenergi,
   ]);
 
+  // Auto-prefyll tilstandspanel 3_4 når brannvegg/seksjonering mangler og IKKE etableres som tiltak
+  useEffect(() => {
+    if (isViewMode) return;
+    if (documentType !== "tilstandsvurdering") return;
+    if (!formData.manglerSeksjonering || formData.etablererSeksjoneringLikevel) return;
+
+    const eksisterende = formData.tilstandsvurderinger?.["3_4"];
+    if (eksisterende && (eksisterende.beskrivelse?.trim() || eksisterende.grad)) return;
+
+    const veggOrd = formData.regelverk === "BF85" ? "brannvegg" : "seksjoneringsvegg";
+    const ref = formData.regelverk === "BF85" ? "BF85 Kap. 30:6" : "TEK17 § 11-7";
+    const tillegg = formData.manglerSeksjoneringKommentar?.trim()
+      ? ` ${formData.manglerSeksjoneringKommentar.trim()}`
+      : "";
+    const beskrivelse = `Bygget mangler påkrevd ${veggOrd} iht. ${ref}. Dette utgjør et fravik fra regelverket.${tillegg}`;
+
+    setFormData(prev => ({
+      ...prev,
+      tilstandsvurderinger: {
+        ...prev.tilstandsvurderinger,
+        "3_4": {
+          ...(prev.tilstandsvurderinger?.["3_4"] || emptyTilstand()),
+          grad: prev.tilstandsvurderinger?.["3_4"]?.grad || "tg3",
+          beskrivelse,
+        },
+      },
+    }));
+  }, [
+    documentType,
+    formData.manglerSeksjonering,
+    formData.etablererSeksjoneringLikevel,
+    formData.regelverk,
+    formData.manglerSeksjoneringKommentar,
+  ]);
+
   useEffect(() => {
     if (!formData.garasjeRelevant || !garasjeOriginalTekst) return;
 
