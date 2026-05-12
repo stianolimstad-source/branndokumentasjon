@@ -1,52 +1,38 @@
-## Endring: Velg mellom å etablere brannvegg/seksjoneringsvegg likevel – eller dokumentere fravik i tilstandsvurderingen
+## Mål
 
-I dag, hvis bruker huker av at brannvegg/seksjoneringsvegg «mangler», vises et fast rødt avvik i kap. 3.4 og kravene under listes opp uansett. Vi bygger nå inn et reelt valg: enten **etableres veggen likevel** (som tiltak), eller så beskrives **fraviket i tilstandsvurderingen** på slutten av kapittelet.
+Når kap. 3.4 dokumenterer at brannvegg/seksjoneringsvegg ikke er etablert, og brukeren *ikke* huker av "etableres likevel som nytt tiltak", skal selve **kravene til veggen** ikke vises i forhåndsvisningen (de hører ikke hjemme der – fraviket beskrives i stedet i tilstandsvurderingen nederst i kapittelet).
 
-### Inputside (`src/pages/Konsept.tsx`, kap. 3.4 ca. linje 4604–4645)
+Vurderingen av om seksjonering/brannvegg i utgangspunktet er påkrevd (arealvurdering, "Generelt") beholdes, slik at leseren fortsatt ser regelgrunnlaget som leder til fraviket.
 
-Beholder dagens ytre checkbox («Brannvegg/seksjoneringsvegg er ikke etablert i bygget»). Når den er avhuket, viser vi i tillegg en **ny underliggende checkbox**:
+## Endring
 
-> «Brannvegg/seksjoneringsvegg etableres likevel som tiltak»  
-> *(Huk av dersom vi velger å etablere veggen til tross for at den mangler. Ellers dokumenteres dette som fravik i tilstandsvurderingen nederst i kapittelet.)*
+Kun frontend i `src/components/konsept/KonseptPreview.tsx`, kap. 3.4-blokken.
 
-Ny formData-flagg:
-- `etablererSeksjoneringLikevel: false`
+Innfør en hjelpe-flagg lokalt i 3.4-renderingen:
 
-Adferd basert på de to flaggene (kun i tilstandsvurdering):
+```
+const skjulVeggKrav =
+  formData.manglerSeksjonering && !formData.etablererSeksjoneringLikevel;
+```
 
-| `manglerSeksjonering` | `etablererSeksjoneringLikevel` | Resultat i kap. 3.4 |
-|---|---|---|
-| false | – | Som i dag, ingen avvik. |
-| true | **true** | Vises som **tiltak** i tabelltoppen («Brannvegg/seksjoneringsvegg etableres som nytt tiltak …»), og kravene under dokumenteres som normalt. Ingen rødt avvik. Ingen automatisk tekst i tilstandspanelet. |
-| true | false | Ingen rødt avviksrad øverst. Kravene under dokumenteres som normalt (slik at det er sporbart hva som skulle vært). Fraviket beskrives via det eksisterende **tilstandspanelet** for 3.4 nederst i kapittelet (forhåndsutfylt forslag i `beskrivelse`-feltet hvis tomt). |
+Skjul følgende rader når `skjulVeggKrav` er `true`:
 
-Kommentar/begrunnelse-feltet (`manglerSeksjoneringKommentar`) beholdes og brukes:
-- ved «etableres likevel» → tas inn som tilleggsbeskrivelse i tiltaks-raden.
-- ved fravik → tas inn i tilstandspanelets beskrivelse-felt (eller vises i tillegg).
+**BF85-grenen (Kap. 30:6):**
+- "Brannvegg (:62)" – preaksepterte ytelser til brannveggen
+- "Gjennomføringer (:621)"
+- "Åpninger i brannvegg" (dør/vindu-betinget)
 
-`useEffect`-resetten utvides slik at `etablererSeksjoneringLikevel` også nullstilles når `manglerSeksjonering` blir `false` eller når kravet bortfaller.
+**TEK17-grenen (§11-7):**
+- "Vertikal oppdeling" (RK6 sykehus/pleie)
+- "Seksjoneringsveggen" – blokken med preaksepterte ytelser (REI-klasser, takavslutning, hjørner osv.)
+- "Dører og vinduer i seksjoneringsvegg"
+- "Innvendig hjørne"-raden som vises i "ikke påkrevd"-grenen
 
-### Tilstandspanel for 3.4
+**Beholdes uansett:**
+- Tittelraden 3.4 og kolonneoverskrifter
+- "Generelt"-rad / "Tabell 34:23"-rad som forklarer om seksjonering er påkrevd
+- "Beskrivelse"-rad fra `formData.brannseksjoner` (brukerens egen tekst)
+- Den eksisterende grønne "Nytt tiltak"-raden når `etablererSeksjoneringLikevel` er huket av (allerede på plass)
+- `TilstandTableRow` for 3.4 nederst i kapittelet (fraviksbeskrivelsen)
 
-Sikre at `renderTilstandPanel("3_4")` faktisk er rendret nederst i kap. 3.4 (slik som `renderTilstandPanel("3_3")` for kap. 3.3). Hvis det allerede er der: ingen endring. Hvis ikke: legg det inn rett før `</SectionCollapsible>` for 3.4.
-
-Når `manglerSeksjonering === true && etablererSeksjoneringLikevel === false` og `tilstandsvurderinger["3_4"].beskrivelse` er tom, prefyll automatisk en setning som:
-> «Bygget mangler påkrevd {brannvegg|seksjoneringsvegg} iht. {BF85 Kap. 30:6 | TEK17 § 11-7}. {evt. manglerSeksjoneringKommentar}»  
-…og foreslå `grad = "tg3"`. Bruker kan endre fritt.
-
-### Rapport / preview (`src/components/konsept/KonseptPreview.tsx`, ca. linje 1413–1433)
-
-Oppdater den eksisterende avviksraden:
-
-- Vises kun når `manglerSeksjonering && !etablererSeksjoneringLikevel` → **fjernes**, fordi fraviket nå håndteres av `TilstandTableRow` for 3_4 nederst i kapittelet (samme mønster som 3.3).
-- Når `manglerSeksjonering && etablererSeksjoneringLikevel` → vis i stedet en nøytral **tiltaksrad** (grønn/standard, ikke rød):
-  - Forhold: «Nytt tiltak – {brannvegg|seksjoneringsvegg}»
-  - Løsning: «{Brannvegg|Seksjoneringsvegg} er ikke etablert i dag, men etableres som nytt tiltak iht. {regelverkshenvisning}. {manglerSeksjoneringKommentar}»
-  - Ansvar: «RIBr»
-
-Sørg for at `TilstandTableRow` for 3_4 fortsatt kommer på slutten av kap. 3.4-blokken i previewet (legges til hvis den mangler, slik at fraviket faktisk kommer «i slutten av kapittelet» som ønsket).
-
-### Hva endres ikke
-- Selve kravberegningene (Skole/Tabell 34:23/TEK17 areal+brannenergi) er uendret.
-- Konseptmodus uendret – nye flagg er kun synlig i tilstandsvurdering.
-- Word-eksport følger preview automatisk.
+Ingen endringer i `src/pages/Konsept.tsx`, beregningslogikk eller Word-eksport utover det som naturlig følger av samme preview-komponent.
