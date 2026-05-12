@@ -1567,7 +1567,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   );
                 })()}
                 {/* RKL6 vertikal seksjonering for sykehus/pleieinstitusjon */}
-                {formData.risikoklasse === "RK6" && formData.erSykehusPleieinstitusjon && (
+                {formData.risikoklasse === "RK6" && formData.erSykehusPleieinstitusjon && !(formData.manglerSeksjonering && !formData.etablererSeksjoneringLikevel) && (
                   <tr>
                     <td className="border border-gray-400 p-2 align-top">Vertikal oppdeling</td>
                     <td className="border border-gray-400 p-2">
