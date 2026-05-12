@@ -170,25 +170,55 @@ async function fetchImageAsBuffer(url: string): Promise<{ buffer: ArrayBuffer; w
   }
 }
 
-interface TilstandKategoriExport {
+interface TilstandAvvikExport {
+  id?: string;
+  grad?: string;
   beskrivelse: string;
   bilder: { url: string; beskrivelse: string }[];
 }
 
+interface TilstandKategoriExport {
+  beskrivelse: string;
+  bilder: { url: string; beskrivelse: string }[];
+  avvik: TilstandAvvikExport[];
+}
+
+const normBilder = (b: any[]) => (b || []).map((x: any) => (typeof x === "string" ? { url: x, beskrivelse: "" } : x));
+
+const buildKategoriExport = (k: any): TilstandKategoriExport => {
+  if (!k) return { beskrivelse: "", bilder: [], avvik: [] };
+  const avvik: TilstandAvvikExport[] = Array.isArray(k.avvik)
+    ? k.avvik.map((a: any) => ({
+        id: a.id,
+        grad: a.grad,
+        beskrivelse: a.beskrivelse || "",
+        bilder: normBilder(a.bilder),
+      }))
+    : [];
+  // Fallback: legacy beskrivelse/bilder på kategori-nivå
+  if (avvik.length === 0 && (k.beskrivelse || (k.bilder && k.bilder.length > 0))) {
+    avvik.push({ beskrivelse: k.beskrivelse || "", bilder: normBilder(k.bilder) });
+  }
+  return { beskrivelse: k.beskrivelse || "", bilder: normBilder(k.bilder), avvik };
+};
+
 export function getTilstandKategorier(tilstandData: any): { tiltak: TilstandKategoriExport; fravik: TilstandKategoriExport } {
-  if (!tilstandData) return { tiltak: { beskrivelse: "", bilder: [] }, fravik: { beskrivelse: "", bilder: [] } };
-  const norm = (b: any[]) => (b || []).map((x: any) => (typeof x === "string" ? { url: x, beskrivelse: "" } : x));
+  if (!tilstandData) return { tiltak: { beskrivelse: "", bilder: [], avvik: [] }, fravik: { beskrivelse: "", bilder: [], avvik: [] } };
   const harNye = !!(tilstandData.tiltak || tilstandData.fravik);
   const harLegacy = !!(tilstandData.beskrivelse || (tilstandData.bilder && tilstandData.bilder.length > 0));
   if (!harNye && harLegacy) {
     return {
-      tiltak: { beskrivelse: tilstandData.beskrivelse || "", bilder: norm(tilstandData.bilder) },
-      fravik: { beskrivelse: "", bilder: [] },
+      tiltak: {
+        beskrivelse: "",
+        bilder: [],
+        avvik: [{ grad: tilstandData.grad, beskrivelse: tilstandData.beskrivelse || "", bilder: normBilder(tilstandData.bilder) }],
+      },
+      fravik: { beskrivelse: "", bilder: [], avvik: [] },
     };
   }
   return {
-    tiltak: { beskrivelse: tilstandData.tiltak?.beskrivelse || "", bilder: norm(tilstandData.tiltak?.bilder) },
-    fravik: { beskrivelse: tilstandData.fravik?.beskrivelse || "", bilder: norm(tilstandData.fravik?.bilder) },
+    tiltak: buildKategoriExport(tilstandData.tiltak),
+    fravik: buildKategoriExport(tilstandData.fravik),
   };
 }
 
@@ -196,8 +226,8 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
   const tilstandData = formData.tilstandsvurderinger?.[sectionKey];
   if (!tilstandData) return [];
   const { tiltak, fravik } = getTilstandKategorier(tilstandData);
-  const harTiltak = !!tiltak.beskrivelse || tiltak.bilder.length > 0;
-  const harFravik = !!fravik.beskrivelse || fravik.bilder.length > 0;
+  const harTiltak = tiltak.avvik.length > 0;
+  const harFravik = fravik.avvik.length > 0;
   if (!tilstandData.grad && !harTiltak && !harFravik) return [];
 
   const gradLabel = tilstandGradLabels[tilstandData.grad] || "";
@@ -213,7 +243,7 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
   if (gradLabel) {
     children.push(new Paragraph({
       spacing: { before: 20, after: 20 },
-      children: [new TextRun({ text: `Tilstandsgrad: ${gradLabel}`, size: 18 })],
+      children: [new TextRun({ text: `Samlet tilstandsgrad: ${gradLabel}`, size: 18 })],
     }));
   }
 
@@ -222,41 +252,50 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
     farge: string,
     kat: TilstandKategoriExport,
   ) => {
-    if (!kat.beskrivelse && kat.bilder.length === 0) return;
+    if (kat.avvik.length === 0) return;
     children.push(new Paragraph({
       spacing: { before: 80, after: 20 },
       children: [new TextRun({ text: tittel, bold: true, size: 18, color: farge })],
     }));
-    if (kat.beskrivelse) {
+    for (let idx = 0; idx < kat.avvik.length; idx++) {
+      const avvik = kat.avvik[idx];
+      const gTekst = avvik.grad ? tilstandGradLabels[avvik.grad] || "" : "";
+      const overskrift = `Avvik ${idx + 1}${gTekst ? ` – ${gTekst}` : ""}`;
       children.push(new Paragraph({
-        spacing: { before: 20, after: 20 },
-        children: [new TextRun({ text: kat.beskrivelse, size: 18 })],
+        spacing: { before: 60, after: 20 },
+        children: [new TextRun({ text: overskrift, bold: true, size: 18, color: farge })],
       }));
-    }
-    for (let i = 0; i < kat.bilder.length; i++) {
-      const bilde = kat.bilder[i];
-      const imageResult = await fetchImageAsBuffer(bilde.url);
-      if (imageResult) {
-        const maxW = 450;
-        const scale = Math.min(maxW / imageResult.width, 1);
-        const w = Math.round(imageResult.width * scale);
-        const h = Math.round(imageResult.height * scale);
+      if (avvik.beskrivelse) {
         children.push(new Paragraph({
-          spacing: { before: 80, after: 20 },
-          children: [
-            new ImageRun({
-              data: imageResult.buffer,
-              transformation: { width: w, height: h },
-              type: "jpg",
-            }),
-          ],
+          spacing: { before: 20, after: 20 },
+          children: [new TextRun({ text: avvik.beskrivelse, size: 18 })],
         }));
       }
-      if (bilde.beskrivelse) {
-        children.push(new Paragraph({
-          spacing: { before: 10, after: 60 },
-          children: [new TextRun({ text: `Bilde ${i + 1}: ${bilde.beskrivelse}`, size: 18, italics: true })],
-        }));
+      for (let i = 0; i < avvik.bilder.length; i++) {
+        const bilde = avvik.bilder[i];
+        const imageResult = await fetchImageAsBuffer(bilde.url);
+        if (imageResult) {
+          const maxW = 450;
+          const scale = Math.min(maxW / imageResult.width, 1);
+          const w = Math.round(imageResult.width * scale);
+          const h = Math.round(imageResult.height * scale);
+          children.push(new Paragraph({
+            spacing: { before: 80, after: 20 },
+            children: [
+              new ImageRun({
+                data: imageResult.buffer,
+                transformation: { width: w, height: h },
+                type: "jpg",
+              }),
+            ],
+          }));
+        }
+        if (bilde.beskrivelse) {
+          children.push(new Paragraph({
+            spacing: { before: 10, after: 60 },
+            children: [new TextRun({ text: `Bilde ${i + 1}: ${bilde.beskrivelse}`, size: 18, italics: true })],
+          }));
+        }
       }
     }
   };
