@@ -124,6 +124,16 @@ const TilstandsvurderingPanel = ({ sectionKey, sectionLabel, data, onChange }: T
 
   const { tiltak, fravik } = ensureKategorier(data);
 
+  // Auto-sync samlet tilstandsgrad: TG 0 når ingen avvik, ellers tøm (grad styres per avvik).
+  useEffect(() => {
+    const ingenAvvik = (tiltak.avvik || []).length === 0 && (fravik.avvik || []).length === 0;
+    const ønsket: TilstandGrad = ingenAvvik ? "tg0" : "";
+    if ((data.grad || "") !== ønsket) {
+      onChange({ ...data, grad: ønsket });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tiltak.avvik?.length, fravik.avvik?.length]);
+
   const writeKategorier = (next: { tiltak: TilstandKategori; fravik: TilstandKategori }) => {
     onChange({
       ...data,
