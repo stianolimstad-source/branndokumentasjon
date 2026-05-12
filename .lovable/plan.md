@@ -1,27 +1,34 @@
-## Endring: Marker manglende brannvegg/seksjonering i eksisterende bygg
+## Endring: Vis "mangler brannvegg/seksjonering"-avhukningen kun ved faktisk krav
 
-I tilstandsvurderingen for både BF85 og TEK17 (kap. 3.4) trenger vi en mulighet til å registrere at brannvegg (BF85) eller seksjoneringsvegg (TEK17) **ikke er til stede** i bygget, selv om regelverket krever det. Mange eldre bygg mangler dette, og avviket må synliggjøres i rapporten.
+I dag dukker checkboxen «Brannvegg/seksjoneringsvegg er ikke etablert i bygget» opp øverst i kap. 3.4 så snart dokumenttype er tilstandsvurdering. Den skal i stedet kun vises når regelverket faktisk **krever** brannvegg/seksjonering for det aktuelle bygget – avhengig av areal, brannteknisk tiltak og brannbelastning.
 
-### Inputside (`src/pages/Konsept.tsx`, kap. 3.4 ca. linje 4512–4915)
+### Når skal feltet vises (krav-til-seksjonering)
 
-Legg til ett nytt felt øverst i kap. 3.4-seksjonen, kun synlig når dokumenttypen er **tilstandsvurdering**:
+Feltet vises når **minst ett** av punktene under er sant (og dokumenttype = tilstandsvurdering):
 
-- Checkbox med tekst (dynamisk):
-  - BF85: «Brannvegg er ikke etablert i bygget (avvik fra Kap. 30:6)»
-  - TEK17: «Seksjoneringsvegg er ikke etablert i bygget (avvik fra § 11-7)»
-- Når avhuket: vis et lite kommentarfelt («Kommentar / begrunnelse») og en valgfri tilstandsgrad-pille (TG2/TG3 anbefales).
+**BF85 – Skole** (Tabell 32:12)
+- `getBF85BrannveggKravSkole(etasjer, areal, klasse)` returnerer `krevBrannvegg = true`.
 
-State: nye felter `manglerSeksjonering: boolean` og `manglerSeksjoneringKommentar: string` i `formData`.
+**BF85 – Industri / Kraftstasjon / Kontor / Garasje / Lager** (Tabell 34:23)
+- Bruker har valgt brannbelastning og tiltak, og `getBF85BrannveggKravKap34(areal, brannbelastning, tiltak)` returnerer `krevBrannvegg = true`.
 
-Når avhuket skal de eksisterende beregnings-/krav-blokkene (Tabell 32:12, 34:23, TEK17-tiltak/brannenergi-velgere osv.) fortsatt vises slik at krav er dokumentert – men det legges en tydelig rød advarselsboks over dem: «⚠ Avvik: Brannvegg/seksjonering mangler i bygget – krav iht. regelverk er ikke oppfylt.»
+**TEK17 (§ 11-7)**
+- `erSykehusPleieinstitusjon` er huket av (RK6 – krav om vertikal seksjonering), **eller**
+- areal > maks tillatt areal beregnet ut fra valgt `brannseksjonTiltak` + `brannseksjonBrannenergi` (samme logikk som «Brannseksjonering er påkrevd»-rød-boksen i dag, ca. linje 4811).
 
-### Rapport / preview (`src/components/konsept/KonseptPreview.tsx`, kap. 3.4)
+Hvis ingen av disse er oppfylt → feltet (og tilhørende kommentar/avviks-rød-boks) skjules helt. Da skal også `formData.manglerSeksjonering` resettes til `false` slik at vi ikke får et "spøkelses-avvik" i rapporten dersom forutsetningene endres.
 
-I kap. 3.4 i rapporten:
-- Hvis `manglerSeksjonering` er sant: vis en avviksboks/rad øverst i kapitlet med teksten «Brannvegg/seksjonering er ikke etablert i bygget. Iht. [BF85 Kap. 30:6 / TEK17 § 11-7] kreves dette. Dette utgjør et avvik fra regelverket.» + brukerens kommentar dersom utfylt.
-- Krav-tabellen vises som før (slik at leser ser hva som *skulle* vært på plass).
+### Inputside (`src/pages/Konsept.tsx`, kap. 3.4 ca. linje 4520–4561)
+
+- Beregn `seksjoneringErPaakrevd` (boolean) like før blokken, basert på reglene over (gjenbruk eksisterende helpers og `seksjoneringsGrenser`-logikk).
+- Wrappe checkboxblokken slik at den kun rendres når `documentType === "tilstandsvurdering" && seksjoneringErPaakrevd`.
+- Legg til en `useEffect` som setter `manglerSeksjonering = false` og tømmer `manglerSeksjoneringKommentar` når `seksjoneringErPaakrevd` blir `false` (unngår at gammelt avhuket avvik henger igjen).
+
+### Rapport / preview (`src/components/konsept/KonseptPreview.tsx`)
+
+Ingen logikkendring – avviksraden vises fortsatt kun når `formData.manglerSeksjonering === true`. Siden inputsiden nå nullstiller flagget når det ikke er krav, faller raden naturlig bort i rapporten i de tilfellene.
 
 ### Hva endres ikke
-- Logikken som beregner krav (areal vs. tiltak vs. brannenergi) endres ikke.
-- Word-eksport følger preview-rendringen automatisk.
-- Konseptmodus (ikke tilstandsvurdering) er uendret – feltet vises kun i tilstandsvurdering.
+- Selve kravberegningene (Skole-tabell, Tabell 34:23, TEK17 areal/tiltak/brannenergi) er uendret.
+- Konseptmodus uendret (feltet vises bare i tilstandsvurdering, og kun ved krav).
+- Word-eksport følger preview automatisk.
