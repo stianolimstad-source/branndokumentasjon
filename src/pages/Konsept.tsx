@@ -5049,22 +5049,6 @@ const Konsept = () => {
                                 )}
                               </div>
 
-                              {/* :63 Branncelleinndeling – alltid synlig */}
-                              <div className="space-y-1">
-                                <p className="text-xs font-semibold">Kap. 30:63 – Branncelleinndeling</p>
-                                <p className="text-xs text-muted-foreground">
-                                  Bygning skal inndeles på hensiktsmessig måte i brannceller med konstruksjon etter Tabell 30:41.
-                                  {krav && (
-                                    <> Ikke-bærende branncellebegrensende bygningsdel: <span className="font-semibold text-foreground">{krav.branncellebegrensende}</span>.</>
-                                  )}
-                                </p>
-                                <ul className="text-xs text-muted-foreground list-disc pl-4 space-y-0.5">
-                                  <li>Brannceller må ikke ha form eller innredning som gjør varsling og rømning ved brann vanskelig.</li>
-                                  <li>Sjakter som ikke ligger i tilknytning til trapperom skal utføres som egne brannceller.</li>
-                                  <li>Dører i branncellebegrensende vegger skal ha minst 1/2 av veggens brannmotstand{krav && <> – dvs. minst <span className="font-semibold text-foreground">{krav.dorKrav}</span></>}.</li>
-                                </ul>
-                              </div>
-
                               {/* :64 Rom på loft og i kjeller – toggle */}
                               <div className="space-y-1">
                                 <div className="flex items-center gap-2">
