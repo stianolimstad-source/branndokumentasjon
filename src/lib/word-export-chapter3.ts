@@ -861,18 +861,29 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
 
   // Brannceller over flere plan
-  if (formData.branncellerFlerePlanRelevant && formData.branncellerFlerePlanKrav && formData.branncellerFlerePlanKrav.length > 0) {
+  if (formData.branncellerFlerePlanRelevant) {
     const fpKravMap: Record<string, string> = {
       fp_sprinkler: "Det må installeres automatisk sprinkleranlegg når samlet bruttoareal for plan som har åpen forbindelse er over 800 m², jf. også § 11-12 første ledd.",
       fp_romningsvei: "Det må være tilrettelagte rømningsveier fra hvert enkelt plan, jf. også § 11-13 fjerde ledd.",
     };
-    const lines = [
-      "Brannceller i risikoklasse 1, 2, 4 og 5 kan ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte, dersom følgende ytelser er oppfylt:",
-      ...formData.branncellerFlerePlanKrav
-        .map((id: string, idx: number) => fpKravMap[id] ? `${idx + 1}. ${fpKravMap[id]}` : null)
-        .filter(Boolean) as string[]
-    ];
-    rows.push(contentRowMultiLine("Brannceller over flere plan", lines, "RIBr"));
+    const kravLines = (formData.branncellerFlerePlanKrav || [])
+      .map((id: string, idx: number) => fpKravMap[id] ? `${idx + 1}. ${fpKravMap[id]}` : null)
+      .filter(Boolean) as string[];
+    const lines: string[] = [];
+    if (kravLines.length > 0) {
+      lines.push("Brannceller i risikoklasse 1, 2, 4 og 5 kan ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte, dersom følgende ytelser er oppfylt:");
+      lines.push(...kravLines);
+    }
+    if (formData.branncellerFlerePlanOver3) {
+      lines.push(
+        formData.regelverk === "BF85"
+          ? "⚠ Fravik: Hovedregel etter BF85 er åpen forbindelse over inntil 3 plan. Branncellen strekker seg over flere enn 3 plan og må dokumenteres som fravik."
+          : "⚠ Fravik: Preakseptert ytelse tillater åpen forbindelse over inntil 3 plan. Branncellen strekker seg over flere enn 3 plan og er ikke dekket av preakseptert ytelse. Dette må dokumenteres som fravik."
+      );
+    }
+    if (lines.length > 0) {
+      rows.push(contentRowMultiLine("Brannceller over flere plan", lines, "RIBr"));
+    }
   }
 
   // Garasje - automatisk genererte krav
