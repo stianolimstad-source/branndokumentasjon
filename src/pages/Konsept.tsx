@@ -921,7 +921,7 @@ const Konsept = () => {
     }
 
     if (!kravFinnes) {
-      setFormData(prev => ({ ...prev, manglerSeksjonering: false, manglerSeksjoneringKommentar: "" }));
+      setFormData(prev => ({ ...prev, manglerSeksjonering: false, manglerSeksjoneringKommentar: "", etablererSeksjoneringLikevel: false }));
     }
   }, [
     documentType,
