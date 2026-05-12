@@ -2517,12 +2517,29 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
             {/* Røykkontroll */}
             {(() => {
+              const isBF85 = formData.regelverk === "BF85";
+              const etasjer = parseInt(formData.etasjer, 10) || 0;
+              const bf85KravAktivt = formData.roykKontrollKrav?.includes("bf85_royk_brannventilasjon");
+              const harFritekst = !!formData.roykKontrollKravTekst;
+
               // New textarea-based approach
-              if (formData.roykKontrollKravTekst) {
+              if (harFritekst) {
                 return (
                   <tr>
-                    <td className="border border-gray-400 p-2 align-top">{formData.regelverk === "BF85" ? "Brannventilasjon (Røykventilasjon)" : "Røykkontroll"}</td>
+                    <td className="border border-gray-400 p-2 align-top">{isBF85 ? "Brannventilasjon (Røykventilasjon)" : "Røykkontroll"}</td>
                     <td className="border border-gray-400 p-2 whitespace-pre-wrap">{formData.roykKontrollKravTekst}</td>
+                    <td className="border border-gray-400 p-2 align-top">ARK/RIV</td>
+                  </tr>
+                );
+              }
+              // BF85: marker som avvik når kravet ikke er huket av men bygget har > 2 etasjer
+              if (isBF85 && etasjer > 2 && !bf85KravAktivt) {
+                return (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Brannventilasjon (Røykventilasjon)</td>
+                    <td className="border border-gray-400 p-2 text-destructive font-medium">
+                      Avvik: Bygget har flere enn 2 etasjer. Etter BF85 §78 skal trapperom ha brannventilasjon. Vurdering er beskrevet i tilstandsvurderingen i slutten av kapittelet.
+                    </td>
                     <td className="border border-gray-400 p-2 align-top">ARK/RIV</td>
                   </tr>
                 );
@@ -2537,7 +2554,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   royk_tr3_trykksetting: "I byggverk med mer enn 8 etasjer med trapperom Tr 3, jf. § 11-13 Tabell 2, må det mellomliggende rommet være åpent mot det fri, eller trapperommet må trykksettes og det mellomliggende rommet må ha trykkavlastning (røykventilasjon).",
                   royk_overbygde_garder: "Overbygde gårder og gater må ha røykventilasjon for å hindre røykspredning mellom ulike brannceller som ligger ut mot den overbygde gården.",
                   bf85_royk_brannventilasjon: (() => {
-                    const etasjer = parseInt(formData.etasjer, 10) || 0;
                     if (etasjer > 8) {
                       return "I bygning med flere enn 2 etasjer skal trapperom ha brannventilasjon. Bygningen har over 8 etasjer og skal ha en røyksjakt som er skilt fra loft i minst A 30 og som har et tverrsnitt på minst 1 m². Sjakten skal gå 20 cm over takflaten.";
                     }
@@ -2550,7 +2566,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 if (activeKrav.length === 0) return null;
                 return (
                   <tr>
-                    <td className="border border-gray-400 p-2 align-top">{formData.regelverk === "BF85" ? "Brannventilasjon (Røykventilasjon)" : "Røykkontroll"}</td>
+                    <td className="border border-gray-400 p-2 align-top">{isBF85 ? "Brannventilasjon (Røykventilasjon)" : "Røykkontroll"}</td>
                     <td className="border border-gray-400 p-2">
                       <div className="space-y-1">
                         {activeKrav.map((k: { id: string; text: string; num: number }) => (
