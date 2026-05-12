@@ -1471,6 +1471,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     </tr>
                   ) : null;
                 })()}
+                {!(formData.manglerSeksjonering && !formData.etablererSeksjoneringLikevel) && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Brannvegg (:62)</td>
                   <td className="border border-gray-400 p-2">
@@ -1486,7 +1487,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIBr / ARK</td>
                 </tr>
+                )}
                 {/* Gjennomføringer :621 */}
+                {!(formData.manglerSeksjonering && !formData.etablererSeksjoneringLikevel) && (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Gjennomføringer (:621)</td>
                   <td className="border border-gray-400 p-2">
@@ -1497,8 +1500,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIBr / RIV</td>
                 </tr>
+                )}
                 {/* Åpninger i brannvegg - kun når dør/vindu er huket av */}
-                {(formData.seksjonDorRelevant || formData.seksjonVinduRelevant) && (
+                {!(formData.manglerSeksjonering && !formData.etablererSeksjoneringLikevel) && (formData.seksjonDorRelevant || formData.seksjonVinduRelevant) && (
                   <tr>
                     <td className="border border-gray-400 p-2 align-top">Åpninger i brannvegg</td>
                     <td className="border border-gray-400 p-2">
