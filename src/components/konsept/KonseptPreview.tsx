@@ -1500,50 +1500,73 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     </tr>
                   ) : null;
                 })()}
-                {!(formData.manglerSeksjonering && !formData.etablererSeksjoneringLikevel) && (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Brannvegg (:62)</td>
-                  <td className="border border-gray-400 p-2">
-                    <ul className="list-disc list-inside space-y-1 text-sm">
-                      <li>Vegg minst A 120, uten åpninger, og på fundament med minst samme brannmotstand.</li>
-                      <li>Ved spesifikk brannbelastning over 400 MJ/m² kreves så høy brannmotstand at veggen bibeholder de egenskaper som kreves av den under brannen.</li>
-                      <li>Branndekke og brannvegg skal fra fundament bæres av bygningsdel i minst samme klasse.</li>
-                      <li>Konstruksjoner på eller inntil branndekke og brannvegg må gis bevegelsesfrihet slik at deformasjoner under brann ikke skader branndekket eller brannveggen.</li>
-                      <li>Der tak er utført i A 60, føres brannvegg opp under tak. Er det forskjell i takhøyden, føres brannveggen opp under høyeste tilstøtende del av tak.</li>
-                      <li>Er takene ikke utført i A 60, skal brannvegg føres minst 500 mm over høyeste tilstøtende tak.</li>
-                      <li>Brennbart materiale skal ikke føres forbi eller gjennom branndekke og brannvegg.</li>
-                    </ul>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">RIBr / ARK</td>
-                </tr>
-                )}
-                {/* Gjennomføringer :621 */}
-                {!(formData.manglerSeksjonering && !formData.etablererSeksjoneringLikevel) && (
-                <tr>
-                  <td className="border border-gray-400 p-2 align-top">Gjennomføringer (:621)</td>
-                  <td className="border border-gray-400 p-2">
-                    <ul className="list-disc list-inside space-y-1 text-sm">
-                      <li>Gjennomføringer av rør og kanaler (sjakter) skal utføres slik at bygningsdelens brannskillende funksjon opprettholdes. Se også kap. 47.</li>
-                      <li>I branndekke og brannvegg kan det være 150 mm brede slisser eller kanaler som har brannmotstand halvparten av bygningsdelens.</li>
-                    </ul>
-                  </td>
-                  <td className="border border-gray-400 p-2 align-top">RIBr / RIV</td>
-                </tr>
-                )}
-                {/* Åpninger i brannvegg - kun når dør/vindu er huket av */}
-                {!(formData.manglerSeksjonering && !formData.etablererSeksjoneringLikevel) && (formData.seksjonDorRelevant || formData.seksjonVinduRelevant) && (
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">Åpninger i brannvegg</td>
-                    <td className="border border-gray-400 p-2">
-                      <div className="space-y-1 text-sm">
-                        <p>Bygningsrådet kan i enkelte tilfeller tillate åpninger i branndekke og brannvegg. Åpningene skal kunne stenges automatisk ved brann. Lukkeanordningene skal minst ha halvparten av dekkets eller veggens brannmotstand.</p>
-                        {formData.seksjonDorRelevant && <p>Dører i brannvegg skal ha lukkeanordning med minst halvparten av veggens brannmotstand. Dører må stenges automatisk ved brann.</p>}
-                        {formData.seksjonVinduRelevant && <p>Vinduer i brannvegg skal ha tilsvarende brannmotstand som veggen.</p>}
-                      </div>
-                    </td>
-                    <td className="border border-gray-400 p-2 align-top">ARK</td>
-                  </tr>
-                )}
+                {(() => {
+                  // Avgjør om kravradene til brannvegg skal vises.
+                  // Hvis Tabell 34:23-vurdering tilsier "ingen krav" eller areal innenfor maks → ikke krav.
+                  // Brukerens eksplisitte valg om å etablere brannvegg som nytt tiltak overstyrer.
+                  let kreverBrannvegg = true;
+                  const harTabellVurdering =
+                    ["Industri", "Kraftstasjon", "Kontor", "Garasje", "Lager"].includes(formData.bygningstype) &&
+                    formData.bf85_34_brannbelastning;
+                  if (harTabellVurdering) {
+                    const arealLocal = parseFloat(formData.areal) || 0;
+                    const bbLocal = parseFloat(formData.bf85_34_brannbelastning) || 0;
+                    const tiltakLocal = formData.bf85_34_tiltak || "ingen";
+                    const kravLocal = bbLocal > 0 ? getBF85BrannveggKravKap34(arealLocal, bbLocal, tiltakLocal) : null;
+                    if (kravLocal && (kravLocal.ingenKrav || !kravLocal.krevBrannvegg)) {
+                      kreverBrannvegg = false;
+                    }
+                  }
+                  if (formData.manglerSeksjonering && formData.etablererSeksjoneringLikevel) {
+                    kreverBrannvegg = true;
+                  }
+                  if (formData.manglerSeksjonering && !formData.etablererSeksjoneringLikevel) {
+                    kreverBrannvegg = false;
+                  }
+                  if (!kreverBrannvegg) return null;
+                  return (
+                    <>
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">Brannvegg (:62)</td>
+                        <td className="border border-gray-400 p-2">
+                          <ul className="list-disc list-inside space-y-1 text-sm">
+                            <li>Vegg minst A 120, uten åpninger, og på fundament med minst samme brannmotstand.</li>
+                            <li>Ved spesifikk brannbelastning over 400 MJ/m² kreves så høy brannmotstand at veggen bibeholder de egenskaper som kreves av den under brannen.</li>
+                            <li>Branndekke og brannvegg skal fra fundament bæres av bygningsdel i minst samme klasse.</li>
+                            <li>Konstruksjoner på eller inntil branndekke og brannvegg må gis bevegelsesfrihet slik at deformasjoner under brann ikke skader branndekket eller brannveggen.</li>
+                            <li>Der tak er utført i A 60, føres brannvegg opp under tak. Er det forskjell i takhøyden, føres brannveggen opp under høyeste tilstøtende del av tak.</li>
+                            <li>Er takene ikke utført i A 60, skal brannvegg føres minst 500 mm over høyeste tilstøtende tak.</li>
+                            <li>Brennbart materiale skal ikke føres forbi eller gjennom branndekke og brannvegg.</li>
+                          </ul>
+                        </td>
+                        <td className="border border-gray-400 p-2 align-top">RIBr / ARK</td>
+                      </tr>
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">Gjennomføringer (:621)</td>
+                        <td className="border border-gray-400 p-2">
+                          <ul className="list-disc list-inside space-y-1 text-sm">
+                            <li>Gjennomføringer av rør og kanaler (sjakter) skal utføres slik at bygningsdelens brannskillende funksjon opprettholdes. Se også kap. 47.</li>
+                            <li>I branndekke og brannvegg kan det være 150 mm brede slisser eller kanaler som har brannmotstand halvparten av bygningsdelens.</li>
+                          </ul>
+                        </td>
+                        <td className="border border-gray-400 p-2 align-top">RIBr / RIV</td>
+                      </tr>
+                      {(formData.seksjonDorRelevant || formData.seksjonVinduRelevant) && (
+                        <tr>
+                          <td className="border border-gray-400 p-2 align-top">Åpninger i brannvegg</td>
+                          <td className="border border-gray-400 p-2">
+                            <div className="space-y-1 text-sm">
+                              <p>Bygningsrådet kan i enkelte tilfeller tillate åpninger i branndekke og brannvegg. Åpningene skal kunne stenges automatisk ved brann. Lukkeanordningene skal minst ha halvparten av dekkets eller veggens brannmotstand.</p>
+                              {formData.seksjonDorRelevant && <p>Dører i brannvegg skal ha lukkeanordning med minst halvparten av veggens brannmotstand. Dører må stenges automatisk ved brann.</p>}
+                              {formData.seksjonVinduRelevant && <p>Vinduer i brannvegg skal ha tilsvarende brannmotstand som veggen.</p>}
+                            </div>
+                          </td>
+                          <td className="border border-gray-400 p-2 align-top">ARK</td>
+                        </tr>
+                      )}
+                    </>
+                  );
+                })()}
               </>
             ) : (
               <>
