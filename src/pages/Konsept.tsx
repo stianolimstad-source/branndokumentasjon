@@ -9683,12 +9683,26 @@ const Konsept = () => {
 
                 {/* Fravik */}
                 <AccordionItem value="fravik" className="border-2 border-amber-500/30 rounded-lg mb-4 overflow-hidden">
-                  <AccordionTrigger className="text-lg font-bold bg-amber-500/10 hover:bg-amber-500/15 px-4 py-3 text-amber-700">
-                    <span className="flex items-center gap-3">
-                      <span className="bg-amber-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">!</span>
-                      Fravik og kompenserende tiltak
-                    </span>
-                  </AccordionTrigger>
+                  <div className="flex items-center bg-amber-500/10">
+                    <AccordionTrigger className="text-lg font-bold hover:bg-amber-500/15 px-4 py-3 text-amber-700 flex-1">
+                      <span className="flex items-center gap-3">
+                        <span className="bg-amber-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">!</span>
+                        Fravik og kompenserende tiltak
+                      </span>
+                    </AccordionTrigger>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const targetId = documentType === "tilstandsvurdering" ? "preview-oppsummering-avvik" : "preview-fravik";
+                        document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }}
+                      className="p-1.5 mr-2 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                      title="Gå til i forhåndsvisning"
+                    >
+                      <Eye className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                   <AccordionContent className="space-y-4 pt-4 px-4 pb-4">
                     {documentType === "tilstandsvurdering" && (() => {
                       const tv = formData.tilstandsvurderinger || {};
