@@ -2052,6 +2052,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   bf85_roykfritt_fri_luft: { label: "Røykfritt trapperom (Tr3) – fri luft", bbk12: "A 60 S (EI 60-A2s1,d0-CSa)", bbk34: "A 60 S (EI 60-A2s1,d0-CSa)" },
                   bf85_korridor_fri_luft: { label: "Korridor – fri luft (i kombinasjon med røykfritt trapperom (Tr3))", bbk12: "B 30 (EI 30-Sa)", bbk34: "B 30 (EI 30-Sa)" },
                   bf85_branncelle_korridor: { label: "Branncelle – korridor", bbk12: "B 30 (EI 30-Sa)", bbk34: "B 15 (EI 15-Sa)" },
+                  bf85_branncelle_branncelle: { label: "Branncelle – branncelle", bbk12: "B 30 (EI 30-Sa)", bbk34: "B 15 (EI 15-Sa)" },
                   bf85_loft_trapperom: { label: "Loft – trapperom", bbk12: "B 30 S (EI 30-CSa)", bbk34: "B 15 S (EI 15-CSa)" },
                   bf85_kjeller_trapperom: { label: "Kjeller – trapperom", bbk12: "B 60 S (EI 60-CSa)", bbk34: "B 30 S (EI 30-CSa)" },
                   bf85_kjeller_under_overste: { label: "Kjeller under øverste kjelleretasje – egen trapp eller annen atkomst", bbk12: "A 60 S (EI 60-A2s1,d0-CSa)", bbk34: "A 60 S (EI 60-A2s1,d0-CSa)" },
