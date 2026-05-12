@@ -617,6 +617,7 @@ const Konsept = () => {
     erSykehusPleieinstitusjon: false, // RKL6: krav til vertikal seksjonering for sykehus/sykehjem/pleieinstitusjoner
     manglerSeksjonering: false, // Tilstandsvurdering: brannvegg/seksjoneringsvegg ikke etablert i bygget
     manglerSeksjoneringKommentar: "",
+    etablererSeksjoneringLikevel: false, // Tilstandsvurdering: dersom mangler, etableres likevel som tiltak
     brannseksjoner: "",
     brannseksjonerKommentar: "",
     brannceller: "",
