@@ -1543,7 +1543,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                           </td>
                           <td className="border border-gray-400 p-2 align-top">RIBr</td>
                         </tr>
-                        {formData.innvendigHjorne === "ja" && (
+                        {formData.innvendigHjorne === "ja" && !(formData.manglerSeksjonering && !formData.etablererSeksjoneringLikevel) && (
                           <tr>
                             <td className="border border-gray-400 p-2 align-top">Innvendig hjørne</td>
                             <td className="border border-gray-400 p-2">
