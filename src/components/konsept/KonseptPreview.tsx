@@ -1648,7 +1648,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   );
                 })()}
                 {/* Dører og vinduer i seksjoneringsvegg */}
-                {(formData.seksjonDorRelevant || formData.seksjonVinduRelevant) && (() => {
+                {(formData.seksjonDorRelevant || formData.seksjonVinduRelevant) && !(formData.manglerSeksjonering && !formData.etablererSeksjoneringLikevel) && (() => {
                   const lines: string[] = [];
                   const dorOgVindu = formData.seksjonDorRelevant && formData.seksjonVinduRelevant;
                   const kunDor = formData.seksjonDorRelevant && !formData.seksjonVinduRelevant;
