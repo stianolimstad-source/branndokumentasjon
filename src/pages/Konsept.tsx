@@ -649,6 +649,7 @@ const Konsept = () => {
     horisontaltHjorneVinduer: [] as { avstand: string }[],
     branncellerFlerePlanRelevant: false,
     branncellerFlerePlanKrav: [] as string[],
+    branncellerFlerePlanOver3: false,
     garasjeRelevant: false,
     garasjePlassering: "" as "" | "i_tiltaket" | "utenfor_tiltaket",
     garasjeAreal: "" as "" | "under_50" | "50_400" | "over_400",
