@@ -4945,7 +4945,7 @@ const Konsept = () => {
                         };
                         const krav = bf85KravMap[formData.bygningsbrannklasse || ""] || { branncellebegrensende: "[velg BBK]", dorKrav: "[velg BBK]" };
                         return (
-                          <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-2 mb-3">
+                          <div className="text-xs space-y-2 mb-3">
                             <p className="font-semibold text-foreground">Kap. 30:63 – Branncelleinndeling</p>
                             <p className="text-foreground/80">Bygning skal inndeles på hensiktsmessig måte i brannceller med konstruksjon etter Tabell 30:41. Ikke-bærende branncellebegrensende bygningsdel: <span className="font-semibold">{krav.branncellebegrensende}</span>.</p>
                             <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
