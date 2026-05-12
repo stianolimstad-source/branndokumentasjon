@@ -1,36 +1,63 @@
 ## Problem
 
-Når brukeren huker av "Brannvegg/seksjoneringsvegg er ikke etablert i bygget" (`manglerSeksjonering = true`) og **ikke** velger å etablere veggen som nytt tiltak (`etablererSeksjoneringLikevel = false`), vises kommentarfeltet i input — men teksten kommer ikke med i rapporten (kap. 3.4).
+I kap. 3.5 ("Brannceller") for BF85-konsepter vises ikke radene "Dørkrav (Tabell 30:75)" i rapporten, selv når brukeren har huket av dører under "Dører i branncellebegrensende konstruksjoner".
 
-I dag rendres kommentaren (`formData.manglerSeksjoneringKommentar`) i `KonseptPreview.tsx` kun inne i "Nytt tiltak"-raden, som krever `etablererSeksjoneringLikevel = true` (linje 1413–1430). I "mangler-uten-tiltak"-grenen autoprefylles kommentaren riktignok inn i tilstandsvurdering 3.4 (`Konsept.tsx` linje 941–974), men kun hvis feltet er tomt fra før — så senere endringer i kommentaren forsvinner, og brukeren ser den uansett ikke direkte i selve kap. 3.4-tabellen.
+Årsaken er i `src/components/konsept/KonseptPreview.tsx` linje 2043:
+
+```ts
+formData.dorPlasseringer.length > 0 && (formData.brannklasse || (harFlereRisikoklasser && bygningsdeler.length > 0))
+```
+
+`formData.brannklasse` er et TEK17-felt. BF85 bruker `formData.bygningsbrannklasse`, som ikke inngår i betingelsen — derfor faller hele dørkrav-blokken bort for BF85.
+
+I tillegg ønsker brukeren et nytt valg "Branncelle – branncelle" i listen over dørplasseringer for BF85.
 
 ## Endring
 
-### `src/components/konsept/KonseptPreview.tsx` (kap. 3.4)
+### 1. `src/components/konsept/KonseptPreview.tsx` (linje 2043)
 
-Legg til en ny rad rett etter den eksisterende "Nytt tiltak"-raden (~linje 1430), som rendres når:
+Utvid render-betingelsen slik at BF85 også kvalifiserer:
 
+```ts
+formData.dorPlasseringer?.length > 0 && (
+  formData.brannklasse ||
+  formData.bygningsbrannklasse ||
+  (formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0)
+)
 ```
-formData.manglerSeksjonering && !formData.etablererSeksjoneringLikevel
+
+Resten av BF85-grenen (linje 2045–2076) er allerede korrekt — den leser `bygningsbrannklasse` direkte. Ingen videre endringer der.
+
+### 2. Nytt dørvalg "Branncelle – branncelle"
+
+**`src/pages/Konsept.tsx`** (BF85-listen ~linje 5369–5378): Legg til som nytt valg, plassert logisk i listen (foreslår mellom `bf85_branncelle_korridor` og `bf85_loft_trapperom`):
+
+```ts
+{ id: "bf85_branncelle_branncelle", label: "Branncelle – branncelle" },
 ```
 
-Raden viser:
+**`src/components/konsept/KonseptPreview.tsx`** (BF85 `bf85DorKravMap` ~linje 2048–2058): Legg til tilsvarende oppslag. Iht. BF85 Kap. 30:33/Tabell 30:41 har dør mellom to brannceller samme krav som branncelle–korridor (halvparten av veggens motstand):
 
-- **Forhold:** "Fravik – {brannvegg|seksjoneringsvegg} mangler"
-- **Løsning:** Standardtekst om at vegg ikke er etablert iht. BF85 Kap. 30:6 / TEK17 § 11-7 og dokumenteres som fravik i tilstandsvurderingen. Hvis `formData.manglerSeksjoneringKommentar` er fylt ut, vises kommentaren som et eget avsnitt under (italic), slik som i den eksisterende "Nytt tiltak"-raden.
-- **Ansvar:** "RIBr"
+```ts
+bf85_branncelle_branncelle: {
+  label: "Branncelle – branncelle",
+  bbk12: "B 30 (EI 30-Sa)",
+  bbk34: "B 15 (EI 15-Sa)"
+},
+```
 
-Bruk `isBF85` for ordvalg ("brannvegg" vs. "seksjoneringsvegg") og regelverkshenvisning, på samme måte som linje 1416/1420–1422.
+Brukeren bør verifisere brannmotstandsverdiene før produksjonsbruk — disse er foreslått basert på samme logikk som "Branncelle – korridor"-raden i eksisterende kart.
 
-Den nye raden gjelder både BF85- og TEK17-grenen, så den plasseres utenfor `isBF85 ? (...) : (...)`-blokken, like under den eksisterende "Nytt tiltak"-raden.
+### 3. Word-eksport
 
-### Word-eksport
-
-Sjekk `src/lib/word-export-chapter3.ts` for tilsvarende rad. Hvis fravik-status og kommentar ikke allerede er med ved `manglerSeksjonering && !etablererSeksjoneringLikevel`, speil samme tillegg der så Word-rapporten matcher preview.
+`src/lib/word-export-chapter3.ts` linje 584 har samme guard. Speil samme utvidelse av betingelsen (`|| formData.bygningsbrannklasse`) og legg `bf85_branncelle_branncelle` inn i tilsvarende kart i den filen, så Word-rapporten matcher preview.
 
 ## Ikke endret
 
-- Inputfeltet i `Konsept.tsx` (kommentarfeltet vises allerede korrekt).
-- Auto-prefyllingen av tilstandsvurdering 3.4.
-- Tabell 34:23-logikk og `kreverBrannvegg`-flagget for de andre brannvegg-radene.
-- TEK17-spesifikk beregningslogikk.
+- BF85-tabellverdier for eksisterende dørtyper.
+- TEK17-grenen (linje 2079+).
+- Inputlisten for TEK17 (kun BF85-listen utvides).
+
+## Spørsmål
+
+Stemmer det at "Branncelle – branncelle" skal følge samme dørkrav som "Branncelle – korridor" (B 30 i BBK 1–2, B 15 i BBK 3–4)? Bekreft før implementasjon, eller oppgi ønskede verdier.

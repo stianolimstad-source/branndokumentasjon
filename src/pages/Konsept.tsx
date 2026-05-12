@@ -5373,6 +5373,7 @@ const Konsept = () => {
                             { id: "bf85_roykfritt_fri_luft", label: "Røykfritt trapperom (Tr3) – fri luft" },
                             { id: "bf85_korridor_fri_luft", label: "Korridor – fri luft (i kombinasjon med røykfritt trapperom (Tr3))" },
                             { id: "bf85_branncelle_korridor", label: "Branncelle – korridor" },
+                            { id: "bf85_branncelle_branncelle", label: "Branncelle – branncelle" },
                             { id: "bf85_loft_trapperom", label: "Loft – trapperom" },
                             { id: "bf85_kjeller_trapperom", label: "Kjeller – trapperom" },
                             { id: "bf85_kjeller_under_overste", label: "Kjeller under øverste kjelleretasje – egen trapp eller annen atkomst" },
