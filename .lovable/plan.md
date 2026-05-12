@@ -1,38 +1,41 @@
 ## Mål
 
-Når kap. 3.4 dokumenterer at brannvegg/seksjoneringsvegg ikke er etablert, og brukeren *ikke* huker av "etableres likevel som nytt tiltak", skal selve **kravene til veggen** ikke vises i forhåndsvisningen (de hører ikke hjemme der – fraviket beskrives i stedet i tilstandsvurderingen nederst i kapittelet).
+For tilstandsanalyser etter BF85 hvor bygningstype er **Industri** eller **Kraftstasjon**, skal kap. 3.4 "Generelt" i rapporten erstattes med relevant informasjon fra Tabell 34:23 (basert på valgt brannbelastning og evt. brannventilasjon/sprinkler), i stedet for den generiske teksten. Hele tabellen vises på inputsiden som referanse, men kun den relevante linjen tas med i rapporten.
 
-Vurderingen av om seksjonering/brannvegg i utgangspunktet er påkrevd (arealvurdering, "Generelt") beholdes, slik at leseren fortsatt ser regelgrunnlaget som leder til fraviket.
+## Endringer
 
-## Endring
+### 1. `src/pages/Konsept.tsx` (inputside, kap. 3.4)
 
-Kun frontend i `src/components/konsept/KonseptPreview.tsx`, kap. 3.4-blokken.
+Når `regelverk === "BF85"` og `bygningstype` er "Industri" eller "Kraftstasjon":
 
-Innfør en hjelpe-flagg lokalt i 3.4-renderingen:
+- Vis en kompakt referansetabell (Tabell 34:23) med kolonner:
+  - Brannbelastning (MJ/m²)
+  - Største grunnflate uten brannventilasjon/sprinkler
+  - Med brannventilasjon
+  - Med sprinkleranlegg
+- Tabellen vises kun på inputsiden, plassert i kap. 3.4-blokken nær feltene for brannbelastning/brannventilasjon/sprinkler, slik at brukeren enkelt kan kontrollere hvilken rad som blir aktiv.
+- Marker den raden som matcher valgt brannbelastning visuelt (f.eks. uthevet bakgrunn).
 
-```
-const skjulVeggKrav =
-  formData.manglerSeksjonering && !formData.etablererSeksjoneringLikevel;
-```
+### 2. `src/components/konsept/KonseptPreview.tsx` (rapport, kap. 3.4)
 
-Skjul følgende rader når `skjulVeggKrav` er `true`:
+Når `regelverk === "BF85"` og `bygningstype` er "Industri" eller "Kraftstasjon":
 
-**BF85-grenen (Kap. 30:6):**
-- "Brannvegg (:62)" – preaksepterte ytelser til brannveggen
-- "Gjennomføringer (:621)"
-- "Åpninger i brannvegg" (dør/vindu-betinget)
+- Erstatt den eksisterende generiske "Generelt (:61)"-raden ("Største grunnflate etter kap. 31 til 39 kan økes dersom bygningen oppdeles med brannvegg…") med én rad som henter relevant tall fra Tabell 34:23 basert på `formData.brannbelastning` og evt. `formData.brannventilasjon` / `formData.sprinkler`.
+- Eksempeltekst:  
+  *"Iht. BF85 Tabell 34:23 tillates inntil {maksAreal} m² bruttoareal pr. etasje for {bygningstype} med brannbelastning {brannbelastning} MJ/m²{ , med brannventilasjon | , med sprinkleranlegg | uten brannventilasjon/sprinkler}."*
+- Hvis brannbelastning ikke er valgt: vis en fallback-tekst som ber bruker fylle inn feltet på inputsiden.
+- Den eksisterende "Tabell 34:23"-vurderingsraden (faktisk areal vs. tillatt areal) beholdes uendret.
+- Andre BF85-bygningstyper (Kontor, Garasje, Lager, Skole) og TEK17-grenen er **uendret**.
 
-**TEK17-grenen (§11-7):**
-- "Vertikal oppdeling" (RK6 sykehus/pleie)
-- "Seksjoneringsveggen" – blokken med preaksepterte ytelser (REI-klasser, takavslutning, hjørner osv.)
-- "Dører og vinduer i seksjoneringsvegg"
-- "Innvendig hjørne"-raden som vises i "ikke påkrevd"-grenen
+### 3. Datakilde
 
-**Beholdes uansett:**
-- Tittelraden 3.4 og kolonneoverskrifter
-- "Generelt"-rad / "Tabell 34:23"-rad som forklarer om seksjonering er påkrevd
-- "Beskrivelse"-rad fra `formData.brannseksjoner` (brukerens egen tekst)
-- Den eksisterende grønne "Nytt tiltak"-raden når `etablererSeksjoneringLikevel` er huket av (allerede på plass)
-- `TilstandTableRow` for 3.4 nederst i kapittelet (fraviksbeskrivelsen)
+- Bruk eksisterende konstanter i `src/lib/bf85-constants.ts` hvis Tabell 34:23-data allerede finnes der. Hvis ikke, legg til en ny konstant `TABELL_34_23` med radene fra forskriften (kun for Industri/Kraftstasjon).
 
-Ingen endringer i `src/pages/Konsept.tsx`, beregningslogikk eller Word-eksport utover det som naturlig følger av samme preview-komponent.
+## Ikke endret
+
+- `src/lib/word-export-chapter3.ts` (Word-eksport følger samme logikk via preview-data hvis den allerede speiler preview; ellers speiles endringen der).
+- Beregningslogikk, RLS, andre kapitler.
+
+## Avklaring nødvendig
+
+Jeg trenger de eksakte tallene fra Tabell 34:23 (BF85, kap. 34) for Industri og Kraftstasjon — radene for ulike brannbelastninger og kolonner for hhv. uten tiltak / med brannventilasjon / med sprinkleranlegg. Hvis disse allerede ligger i `bf85-constants.ts` bruker jeg dem; ellers ber jeg deg lime inn tabellen før implementering.
