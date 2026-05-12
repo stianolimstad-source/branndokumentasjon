@@ -9704,8 +9704,8 @@ const Konsept = () => {
                           ...current,
                           beskrivelse: "",
                           bilder: [],
-                          tiltak: kind === "tiltak" ? { ...k.tiltak, beskrivelse: value } : k.tiltak,
-                          fravik: kind === "fravik" ? { ...k.fravik, beskrivelse: value } : k.fravik,
+                          tiltak: kind === "tiltak" ? { ...k.tiltak, beskrivelse: value } : (k.tiltak as any),
+                          fravik: kind === "fravik" ? { ...k.fravik, beskrivelse: value } : (k.fravik as any),
                         };
                         updateTilstand(sectionKey, next);
                       };
