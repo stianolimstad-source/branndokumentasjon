@@ -6655,6 +6655,24 @@ const Konsept = () => {
                                   </div>
                                 ) : null;
                               })()}
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    id="branncellerFlerePlanOver3"
+                                    checked={formData.branncellerFlerePlanOver3}
+                                    onCheckedChange={(checked) => setFormData({...formData, branncellerFlerePlanOver3: !!checked})}
+                                  />
+                                  <label htmlFor="branncellerFlerePlanOver3" className="text-xs cursor-pointer font-medium">Branncellen strekker seg over flere enn 3 plan</label>
+                                </div>
+                                {formData.branncellerFlerePlanOver3 && (
+                                  <div className="bg-destructive/10 border border-destructive/30 rounded p-2 text-xs text-destructive font-medium">
+                                    {formData.regelverk === "BF85"
+                                      ? "⚠ Obs: Hovedregel etter BF85 er åpen forbindelse over inntil 3 plan. Flere plan i samme branncelle må dokumenteres som fravik."
+                                      : "⚠ Obs: Preakseptert ytelse tillater åpen forbindelse over inntil 3 plan. Branncelle over flere enn 3 plan er ikke dekket av preakseptert ytelse og må dokumenteres som fravik."
+                                    }
+                                  </div>
+                                )}
+                              </div>
                               <p className="text-xs text-muted-foreground italic">
                                 {formData.regelverk === "BF85"
                                   ? "Brannceller kan ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte."
