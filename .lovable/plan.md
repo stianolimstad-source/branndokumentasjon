@@ -1,38 +1,71 @@
-## Endring – BF85 brannventilasjon (røykventilasjon)
+## Endring – Tilstandsvurdering: skille mellom tiltak og fravik + samlet oppsummering
 
 ### Bakgrunn
 
-I dag huker systemet automatisk av kravet "Brannventilasjon (Røykventilasjon)" når BF85-bygget har flere enn 2 etasjer, og checkboxen låses (`disabled`). Mange eldre bygg mangler dette, så den automatiske avhukingen må fjernes. Når brukeren ikke huker av (men kravet egentlig gjelder), skal det markeres som avvik. Selve vurderingen av avviket skrives i tilstandsvurderingen sist i kapittelet (eksisterende felt – ingen ny logikk der).
+I dag har hvert kapittel (3.1–3.14) i tilstandsvurderingen ett `TilstandsvurderingPanel` med én tekstboks, én tilstandsgrad og bilder. Brukeren ønsker å skille avvikene i to kategorier per kapittel:
 
-### 1. Fjern auto-checking i `src/pages/Konsept.tsx`
+1. **Avvik som krever aktive tiltak** – må settes tilbake til riktig stand.
+2. **Avvik som kan fraviksbehandles** – aksepteres med fravik.
 
-- Linjer 1226–1241 (`useEffect` som auto-legger/fjerner `bf85_royk_brannventilasjon`): Slettes helt. Brukeren bestemmer selv.
-- Linje 6151–6186 (BF85-grenen i editoren):
-  - Fjern `disabled={isAutoSet}` på checkboxen.
-  - Fjern den blå "Automatisk satt basert på X etasjer"-meldingen.
-  - Når `etasjer > 2` og checkbox **ikke** er huket av: vis et tydelig advarsels-/avvikspanel (f.eks. `border-l-2 border-destructive`, tekst i `text-destructive`):  
-    > "Avvik: Bygg med flere enn 2 etasjer skal ha brannventilasjon i trapperom etter BF85 §78. Beskriv vurdering i tilstandsvurderingen nederst i kapittelet."
-  - Behold hjelpeteksten/regelteksten ved siden av selve checkboxen.
+Hver kategori skal ha egen tekstboks (og bilder), og alle avvik skal samles i en oppsummering bakerst i dokumentet, gruppert etter de to kategoriene.
 
-### 2. Marker avvik i preview – `src/components/konsept/KonseptPreview.tsx`
+### 1. Datamodell – `TilstandsvurderingPanel.tsx`
 
-Linje 2518–2566 (Røykkontroll-rad): Legg til ekstra rendering for BF85 når `etasjer > 2` og kravet **ikke** er aktivt (verken via `roykKontrollKravTekst` eller `roykKontrollKrav.includes("bf85_royk_brannventilasjon")`):
+Utvid `TilstandData` (bakoverkompatibelt):
 
-- Vis en egen rad i tabellen med samme venstrekolonne ("Brannventilasjon (Røykventilasjon)") og høyre "ARK/RIV", men midtcellen markert som avvik. Forslag til tekst:  
-  > "Avvik: Bygget har flere enn 2 etasjer. Etter BF85 §78 skal trapperom ha brannventilasjon. Vurdering er beskrevet i tilstandsvurderingen i slutten av kapittelet."
-- Cellen kan ha `text-destructive font-medium` for å skille seg ut.
+```ts
+interface TilstandData {
+  grad: TilstandGrad;
+  beskrivelse: string;          // beholdes for bakoverkompat (legacy)
+  bilder: TilstandBilde[];      // beholdes for bakoverkompat (legacy)
+  tiltak?: {                    // NY: avvik som krever aktive tiltak
+    beskrivelse: string;
+    bilder: TilstandBilde[];
+  };
+  fravik?: {                    // NY: avvik som kan fraviksbehandles
+    beskrivelse: string;
+    bilder: TilstandBilde[];
+  };
+}
+```
 
-Hvis kravet er huket av (eller fritekst er fylt ut), beholdes nåværende rendering uendret.
+`emptyTilstand()` initialiserer `tiltak` og `fravik` med tomme felter. Ved første render: hvis kun gammel `beskrivelse`/`bilder` finnes (legacy data), vis dem som «Avvik som krever tiltak» – konverter ved første endring.
 
-### 3. Word-eksport
+I selve panelet erstattes dagens enkle tekstboks + bildeliste med to klart adskilte underseksjoner med overskrifter:
+- "Avvik som krever aktive tiltak" (rød/destructive aksent)
+- "Avvik som kan fraviksbehandles" (gul/amber aksent som i dag)
 
-`src/lib/word-export-chapter3.ts` har i dag ikke `bf85_royk_brannventilasjon` i `roykKravMap` (linje 717–727). Legg til:
+Hver underseksjon har egen `Textarea` og egen bildeopplaster (gjenbruk eksisterende `handleImageUpload`-mønster, men med `tiltak`/`fravik`-suffix i storage-pathen). Tilstandsgrad-velgeren beholdes på toppnivå.
 
-- Map-oppføring `bf85_royk_brannventilasjon` med samme to varianter (over 8 / inntil 8 etasjer) som preview/editor bruker.
-- Ny gate: når `formData.regelverk === "BF85"`, `etasjer > 2`, og kravet ikke er aktivt → render avvikslinjen i samme rad/format som preview.
+### 2. Preview-rendering – `KonseptPreview.tsx`
 
-### Det som ikke endres
+Oppdater `TilstandTableRow` (linje 67) til å vise begge kategorier i samme rad: to underblokker under tilstandsgraden, med tydelige overskrifter «Tiltak» og «Fravik», kun de som har innhold rendres. Faller tilbake til legacy `beskrivelse`/`bilder` dersom de nye feltene mangler.
 
-- TEK17-røykkontroll-logikk.
-- Tilstandsvurderingsfeltet sist i kapittelet (brukeren skriver vurderingen der manuelt – allerede støttet).
-- Andre BF85-auto-krav.
+Ingen endringer trengs i de 14 kallstedene (3_1–3_14) – komponenten håndterer det internt.
+
+### 3. Ny oppsummering bakerst – `KonseptPreview.tsx`
+
+Legg til en ny seksjon "Oppsummering av avvik" rett før (eller etter) eksisterende `Sammendrag`/revisjonshistorikk (kun når `documentType === "tilstandsvurdering"`):
+
+- **Del 1 – "Avvik som krever aktive tiltak"**: tabell/liste som itererer gjennom alle `tilstandsvurderinger`-nøkler i rekkefølge, og for hver der `tiltak.beskrivelse` finnes vises: kapittelnummer + label, tilstandsgrad, beskrivelse.
+- **Del 2 – "Avvik som kan fraviksbehandles"**: tilsvarende, men for `fravik.beskrivelse`.
+
+Bruker eksisterende `tilstandSectionsTEK17`-rekkefølgen (eksporteres fra `Konsept.tsx` eller dupliseres som konstant). Egen sidebryter (page-break) og `PageFooter` slik andre kapitler gjør.
+
+### 4. Word-eksport – `word-export-chapter3.ts`
+
+Oppdater `tilstandRow()` (linje 173) til å rendre `tiltak` og `fravik` som to underseksjoner i samme tabellcelle, med fete overskrifter og bilder under hver. Faller tilbake til legacy `beskrivelse`/`bilder` ellers.
+
+I hovedeksport-filen (sannsynligvis `Konsept.tsx` `exportToWord` eller en egen kapittel-eksport): legg til en ny seksjon "Oppsummering av avvik" på slutten, med samme to-delte struktur som preview. Itererer over `tilstandsvurderinger` i kapittelrekkefølge.
+
+### 5. Det som ikke endres
+
+- Tilstandsgrad-systemet (NS 3424).
+- Bildelagring (samme bucket/struktur).
+- Eksisterende lagrede tilstandsvurderinger – legacy felter leses fortsatt og vises som "tiltak" som standard inntil bruker redigerer.
+- TEK17/BF85-logikk eller andre kapitler.
+
+### Tekniske detaljer
+
+- Migrering av eksisterende data skjer "lazy" i UI – ingen DB-migrasjon nødvendig fordi `tilstandsvurderinger` lagres som JSON i `fire_concepts`-raden.
+- Felles seksjons-konstant (`tilstandSectionsTEK17`) bør eksporteres fra `Konsept.tsx` slik at både `KonseptPreview.tsx` og word-eksporten kan iterere likt.
