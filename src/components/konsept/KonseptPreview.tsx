@@ -5369,7 +5369,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </tr>
               </thead>
               <tbody>
-                {rader.map(({ s, k }, i) => {
+                {rader.map(({ s, k }) => {
                   const beskrivelse = kind === "tiltak" ? k.tiltak.beskrivelse : k.fravik.beskrivelse;
                   const grad = (tv[s.key]?.grad) || "";
                   const gradLabel = { tg0: "TG 0", tg1: "TG 1", tg2: "TG 2", tg3: "TG 3", tgiu: "TG IU" }[grad] || "—";
