@@ -1585,6 +1585,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 )}
                 {/* Preaksepterte ytelser for seksjoneringsveggen når seksjonering er påkrevd */}
                 {(() => {
+                  if (formData.manglerSeksjonering && !formData.etablererSeksjoneringLikevel) return null;
                   const arealNum = parseFloat(formData.areal) || 0;
                   const brannenergi = formData.brannseksjonBrannenergi;
                   const tiltak = formData.brannseksjonTiltak || "normalt";
