@@ -630,6 +630,7 @@ const Konsept = () => {
     vinduskravRelevant: false,
     heissjaktkrav: [] as string[],
     heissjaktkravTekst: "",
+    heissjaktRelevantBF85: undefined as "ja" | "nei" | undefined,
     trapperomKrav: [] as string[],
     trapperomKravTekst: "",
     trapperomIkkeDirekteTilFri: false,
@@ -5419,14 +5420,28 @@ const Konsept = () => {
                       </div>
                       <div>
                         <Label className="text-xs font-medium mb-2 block">Krav til heissjakt</Label>
-                        {(() => {
+                        {formData.regelverk === "BF85" && (
+                          <div className="mb-2">
+                            <Label className="text-xs font-medium mb-1 block">Er heissjakt relevant for bygget?</Label>
+                            <Select
+                              value={formData.heissjaktRelevantBF85 || ""}
+                              onValueChange={(value: "ja" | "nei") => setFormData({...formData, heissjaktRelevantBF85: value})}
+                            >
+                              <SelectTrigger className="h-8 text-xs">
+                                <SelectValue placeholder="Velg..." />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="ja">Ja – bygget har heissjakt</SelectItem>
+                                <SelectItem value="nei">Nei – bygget har ikke heis</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <p className="text-[10px] text-muted-foreground mt-1">Mange eldre bygg har ikke heis. Velg "Nei" for å utelate heissjakt-kravene fra rapporten.</p>
+                          </div>
+                        )}
+                        {(formData.regelverk !== "BF85" || formData.heissjaktRelevantBF85 === "ja") && (() => {
                           const getHeissjaktkravOriginalTekst = () => {
                             if (formData.regelverk === "BF85") {
-                              return [
-                                "1. Heissjakt skal være ventilert med naturlig avtrekk, mekanisk avtrekk eller frisklufttilførsel:\n   - Naturlig avtrekk: Kanaltverrsnitt 50 cm² pr. m² sjaktareal\n   - Mekanisk avtrekk: 30 m³/h pr. m² sjaktareal\n   - Frisklufttilførsel: 50 cm² pr. m² sjaktareal",
-                                "2. Dør til heis må ha samme brannmotstand som veggen den står i, eller F 90 (E 90).",
-                                "3. Brannmotstand for dør fra tilstøtende rom til luftsluse må minst være B 30 (EI 30 Sₐ).",
-                              ].join("\n\n");
+                              return "Heissjakt skal være egen branncelle med brannmotstand minst A 60. Heisen skal ha egen krets for strømtilkobling. Det var ikke flere branntekniske krav til heisen i Byggeforskrift 1985.";
                             }
                             const etasjerNum = parseInt(formData.etasjer || '0', 10);
                             const kravListe = [
