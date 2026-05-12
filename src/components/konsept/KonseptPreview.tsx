@@ -10,52 +10,76 @@ interface TilstandBilde {
   beskrivelse: string;
 }
 
+interface TilstandKategori {
+  beskrivelse: string;
+  bilder: (TilstandBilde | string)[];
+}
+
 interface TilstandData {
   grad: string;
   beskrivelse: string;
   bilder: (TilstandBilde | string)[];
+  tiltak?: TilstandKategori;
+  fravik?: TilstandKategori;
 }
 
 const normalizeBilder = (bilder: any[]): TilstandBilde[] =>
   (bilder || []).map((b: any) => typeof b === "string" ? { url: b, beskrivelse: "" } : b);
 
-interface KonseptPreviewProps {
-  formData: Record<string, any>;
-  logoUrl?: string | null;
-  authorInfo?: { name: string; company: string } | null;
-  documentType?: "brannkonsept" | "tilstandsvurdering";
-  hideCover?: boolean;
-  theme?: { template?: "klassisk" | "moderne" | "minimalistisk"; primaryColor: string; accentColor: string; fontFamily: string; companyName?: string | null; extras?: { topbar_height?: "off" | "thin" | "thick" | "extra" } } | null;
-}
+// Felles seksjonsliste for tilstandsvurdering (samme som tilstandSectionsTEK17 i Konsept.tsx)
+export const tilstandSectionList: { key: string; label: string }[] = [
+  { key: "3_1", label: "3.1 Bæreevne og stabilitet" },
+  { key: "3_2", label: "3.2 Sikkerhet ved eksplosjon" },
+  { key: "3_3", label: "3.3 Brannspredning mellom byggverk" },
+  { key: "3_4", label: "3.4 Brannseksjoner" },
+  { key: "3_5", label: "3.5 Brannceller" },
+  { key: "3_6", label: "3.6 Materialer" },
+  { key: "3_7", label: "3.7 Tekniske installasjoner" },
+  { key: "3_8", label: "3.8 Rømning og redning" },
+  { key: "3_9", label: "3.9 Tilrettelegging for rømning" },
+  { key: "3_10", label: "3.10 Utgang fra branncelle" },
+  { key: "3_11", label: "3.11 Rømningsvei" },
+  { key: "3_12", label: "3.12 Redning av husdyr" },
+  { key: "3_13", label: "3.13 Manuell slokking" },
+  { key: "3_14", label: "3.14 Slokkemannskap" },
+];
 
-const gradColors: Record<string, { bg: string; text: string; label: string }> = {
-  tg0: { bg: "#dcfce7", text: "#166534", label: "TG 0 – Ingen avvik" },
-  tg1: { bg: "#fef9c3", text: "#854d0e", label: "TG 1 – Mindre avvik" },
-  tg2: { bg: "#ffedd5", text: "#9a3412", label: "TG 2 – Vesentlige avvik" },
-  tg3: { bg: "#fecaca", text: "#991b1b", label: "TG 3 – Store avvik" },
-  tgiu: { bg: "#f3f4f6", text: "#374151", label: "TG IU – Ikke undersøkt" },
+// Henter tiltak/fravik – migrerer legacy beskrivelse/bilder til tiltak ved behov
+const getKategorier = (data: TilstandData): { tiltak: TilstandKategori; fravik: TilstandKategori } => {
+  const harNye = !!(data?.tiltak || data?.fravik);
+  const harLegacy = !!(data?.beskrivelse || (data?.bilder && data.bilder.length > 0));
+  if (!harNye && harLegacy) {
+    return {
+      tiltak: { beskrivelse: data.beskrivelse || "", bilder: data.bilder || [] },
+      fravik: { beskrivelse: "", bilder: [] },
+    };
+  }
+  return {
+    tiltak: data?.tiltak || { beskrivelse: "", bilder: [] },
+    fravik: data?.fravik || { beskrivelse: "", bilder: [] },
+  };
 };
 
-const TilstandBlock = ({ data, sectionLabel }: { data: TilstandData; sectionLabel: string }) => {
-  if (!data || (!data.grad && !data.beskrivelse && (!data.bilder || data.bilder.length === 0))) return null;
-  const gradInfo = gradColors[data.grad];
+const tilstandHasContent = (data: TilstandData): boolean => {
+  if (!data) return false;
+  const { tiltak, fravik } = getKategorier(data);
+  const hasTiltak = !!tiltak.beskrivelse || (tiltak.bilder?.length ?? 0) > 0;
+  const hasFravik = !!fravik.beskrivelse || (fravik.bilder?.length ?? 0) > 0;
+  return !!data.grad || hasTiltak || hasFravik;
+};
+
+const KategoriBlokk = ({ tittel, kategori, color }: { tittel: string; kategori: TilstandKategori; color: string }) => {
+  if (!kategori.beskrivelse && (!kategori.bilder || kategori.bilder.length === 0)) return null;
   return (
-    <div style={{ border: "2px dashed #f59e0b", borderRadius: 8, padding: 12, marginTop: 8, background: "#fffbeb" }}>
-      <p style={{ fontSize: 10, fontWeight: 700, color: "#92400e", textTransform: "uppercase", marginBottom: 6 }}>
-        Tilstandsvurdering – {sectionLabel}
-      </p>
-      {gradInfo && (
-        <span style={{ fontSize: 10, fontWeight: 600, background: gradInfo.bg, color: gradInfo.text, padding: "2px 8px", borderRadius: 12, display: "inline-block", marginBottom: 6 }}>
-          {gradInfo.label}
-        </span>
-      )}
-      {data.beskrivelse && <p style={{ fontSize: 10, whiteSpace: "pre-wrap", marginTop: 4 }}>{data.beskrivelse}</p>}
-      {data.bilder && data.bilder.length > 0 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
-          {normalizeBilder(data.bilder).map((bilde, i) => (
-            <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-              <img src={bilde.url} alt={bilde.beskrivelse || `Tilstand ${i + 1}`} style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 4, border: "1px solid #e5e7eb" }} />
-              {bilde.beskrivelse && <p style={{ fontSize: 9, fontStyle: "italic", margin: 0 }}>{bilde.beskrivelse}</p>}
+    <div style={{ marginTop: 8, paddingTop: 6, borderTop: "1px solid #e5e7eb" }}>
+      <p style={{ fontSize: 10, fontWeight: 700, color, marginBottom: 4 }}>{tittel}</p>
+      {kategori.beskrivelse && <p style={{ fontSize: 10, whiteSpace: "pre-wrap", marginBottom: 6 }}>{kategori.beskrivelse}</p>}
+      {kategori.bilder && kategori.bilder.length > 0 && (
+        <div>
+          {normalizeBilder(kategori.bilder).map((bilde, i) => (
+            <div key={i} style={{ marginBottom: 12 }}>
+              <img src={bilde.url} alt={bilde.beskrivelse || `Bilde ${i + 1}`} style={{ width: 450, maxWidth: "100%", height: "auto", objectFit: "cover", borderRadius: 4, border: "1px solid #d1d5db" }} />
+              {bilde.beskrivelse && <p style={{ fontSize: 9, fontStyle: "italic", margin: "4px 0 0 0" }}>Bilde {i + 1}: {bilde.beskrivelse}</p>}
             </div>
           ))}
         </div>
@@ -65,8 +89,9 @@ const TilstandBlock = ({ data, sectionLabel }: { data: TilstandData; sectionLabe
 };
 
 const TilstandTableRow = ({ data, sectionLabel, colSpan = 3 }: { data: TilstandData; sectionLabel: string; colSpan?: number }) => {
-  if (!data || (!data.grad && !data.beskrivelse && (!data.bilder || data.bilder.length === 0))) return null;
+  if (!tilstandHasContent(data)) return null;
   const gradLabel = { tg0: "TG 0", tg1: "TG 1", tg2: "TG 2", tg3: "TG 3", tgiu: "TG IU" }[data.grad] || "";
+  const { tiltak, fravik } = getKategorier(data);
   return (
     <tr>
       <td className="border border-gray-400 p-2" colSpan={colSpan} style={{ background: "#FEF3C7" }}>
@@ -74,17 +99,8 @@ const TilstandTableRow = ({ data, sectionLabel, colSpan = 3 }: { data: TilstandD
           TILSTANDSVURDERING – {sectionLabel}
         </p>
         {gradLabel && <p style={{ fontSize: 10, marginBottom: 2 }}>Tilstandsgrad: {gradLabel}</p>}
-        {data.beskrivelse && <p style={{ fontSize: 10, whiteSpace: "pre-wrap" }}>Beskrivelse: {data.beskrivelse}</p>}
-        {data.bilder && data.bilder.length > 0 && (
-          <div style={{ marginTop: 8 }}>
-            {normalizeBilder(data.bilder).map((bilde, i) => (
-              <div key={i} style={{ marginBottom: 12 }}>
-                <img src={bilde.url} alt={bilde.beskrivelse || `Tilstand ${i + 1}`} style={{ width: 450, maxWidth: "100%", height: "auto", objectFit: "cover", borderRadius: 4, border: "1px solid #d1d5db" }} />
-                {bilde.beskrivelse && <p style={{ fontSize: 9, fontStyle: "italic", margin: "4px 0 0 0" }}>Bilde {i + 1}: {bilde.beskrivelse}</p>}
-              </div>
-            ))}
-          </div>
-        )}
+        <KategoriBlokk tittel="Avvik som krever aktive tiltak" kategori={tiltak} color="#991B1B" />
+        <KategoriBlokk tittel="Avvik som kan fraviksbehandles" kategori={fravik} color="#92400E" />
       </td>
     </tr>
   );
