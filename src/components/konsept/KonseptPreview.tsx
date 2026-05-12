@@ -5383,16 +5383,33 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       {/* Oppsummering av avvik – kun for tilstandsvurdering */}
       {isTilstand && (() => {
         const tv: Record<string, TilstandData> = formData.tilstandsvurderinger || {};
-        const tiltakRows = tilstandSectionList
-          .map(s => ({ s, k: getKategorier(tv[s.key] || ({} as TilstandData)) }))
-          .filter(({ k }) => !!(k.tiltak.beskrivelse && k.tiltak.beskrivelse.trim()));
-        const fravikRows = tilstandSectionList
-          .map(s => ({ s, k: getKategorier(tv[s.key] || ({} as TilstandData)) }))
-          .filter(({ k }) => !!(k.fravik.beskrivelse && k.fravik.beskrivelse.trim()));
+        type AvvikRad = { sectionLabel: string; sectionKey: string; idx: number; grad: string; beskrivelse: string };
+        const samleAvvik = (kind: "tiltak" | "fravik"): AvvikRad[] => {
+          const ut: AvvikRad[] = [];
+          tilstandSectionList.forEach(s => {
+            const data = tv[s.key] || ({} as TilstandData);
+            const k = getKategorier(data);
+            const liste = getAvvikListe(kind === "tiltak" ? k.tiltak : k.fravik);
+            liste.forEach((a, i) => {
+              if (a.beskrivelse && a.beskrivelse.trim()) {
+                ut.push({
+                  sectionLabel: s.label,
+                  sectionKey: s.key,
+                  idx: i,
+                  grad: a.grad || data.grad || "",
+                  beskrivelse: a.beskrivelse,
+                });
+              }
+            });
+          });
+          return ut;
+        };
+        const tiltakRows = samleAvvik("tiltak");
+        const fravikRows = samleAvvik("fravik");
 
         if (tiltakRows.length === 0 && fravikRows.length === 0) return null;
 
-        const renderTabell = (rader: typeof tiltakRows, kind: "tiltak" | "fravik", tomTekst: string) => {
+        const renderTabell = (rader: AvvikRad[], tomTekst: string) => {
           if (rader.length === 0) {
             return <p className="ml-4 text-xs italic text-gray-600">{tomTekst}</p>;
           }
@@ -5406,15 +5423,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </tr>
               </thead>
               <tbody>
-                {rader.map(({ s, k }) => {
-                  const beskrivelse = kind === "tiltak" ? k.tiltak.beskrivelse : k.fravik.beskrivelse;
-                  const grad = (tv[s.key]?.grad) || "";
-                  const gradLabel = { tg0: "TG 0", tg1: "TG 1", tg2: "TG 2", tg3: "TG 3", tgiu: "TG IU" }[grad] || "—";
+                {rader.map((r, n) => {
+                  const gradLabel = { tg0: "TG 0", tg1: "TG 1", tg2: "TG 2", tg3: "TG 3", tgiu: "TG IU" }[r.grad] || "—";
                   return (
-                    <tr key={s.key}>
-                      <td className="border border-gray-400 p-1.5 align-top font-medium">{s.label}</td>
+                    <tr key={`${r.sectionKey}-${r.idx}-${n}`}>
+                      <td className="border border-gray-400 p-1.5 align-top font-medium">{r.sectionLabel}</td>
                       <td className="border border-gray-400 p-1.5 align-top">{gradLabel}</td>
-                      <td className="border border-gray-400 p-1.5 align-top whitespace-pre-wrap">{beskrivelse}</td>
+                      <td className="border border-gray-400 p-1.5 align-top whitespace-pre-wrap">{r.beskrivelse}</td>
                     </tr>
                   );
                 })}
