@@ -385,6 +385,11 @@ const TilstandsvurderingPanel = ({ sectionKey, sectionLabel, data, onChange }: T
             ))}
           </SelectContent>
         </Select>
+        {data.grad === "tg0" && (
+          <p className="text-xs mt-2 text-green-800 dark:text-green-300 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-md px-3 py-2">
+            Det er ikke funnet noen avvik på dette området.
+          </p>
+        )}
       </div>
 
       {renderKategori(
