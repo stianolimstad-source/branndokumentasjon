@@ -5500,7 +5500,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
       )}
 
       {formData.fravik && (
-        <section className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
+        <section id="preview-fravik" className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
           <h2 className="font-bold mb-3">Fravik og kompenserende tiltak</h2>
           <p className="ml-4">{formData.fravik}</p>
         </section>
