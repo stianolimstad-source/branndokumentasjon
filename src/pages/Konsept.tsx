@@ -885,6 +885,58 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.erRKL6Boligbygning]);
 
+  // Nullstill "manglerSeksjonering" hvis regelverket ikke lenger krever brannvegg/seksjonering
+  useEffect(() => {
+    if (isViewMode) return;
+    if (documentType !== "tilstandsvurdering") return;
+    if (!formData.manglerSeksjonering) return;
+
+    const arealNum = parseFloat(formData.areal) || 0;
+    let kravFinnes = false;
+
+    if (formData.regelverk === "BF85") {
+      if (formData.bygningstype === "Skole") {
+        const etasjer = parseInt(formData.etasjer, 10) || 0;
+        const krav = getBF85BrannveggKravSkole(etasjer, arealNum, formData.bygningsbrannklasse);
+        if (krav?.krevBrannvegg) kravFinnes = true;
+      }
+      if (["Industri", "Kraftstasjon", "Kontor", "Garasje", "Lager"].includes(formData.bygningstype)) {
+        const brannbelastning = parseFloat(formData.bf85_34_brannbelastning) || 0;
+        const tiltak = formData.bf85_34_tiltak || "ingen";
+        if (brannbelastning > 0) {
+          const krav = getBF85BrannveggKravKap34(arealNum, brannbelastning, tiltak);
+          if (krav?.krevBrannvegg) kravFinnes = true;
+        }
+      }
+    } else {
+      if (formData.erSykehusPleieinstitusjon) kravFinnes = true;
+      if (formData.brannseksjonTiltak && formData.brannseksjonBrannenergi) {
+        const g = seksjoneringsGrenser[formData.brannseksjonBrannenergi];
+        const maksAreal = g?.[formData.brannseksjonTiltak as keyof typeof g];
+        if (maksAreal !== undefined && maksAreal !== Infinity && arealNum > maksAreal) {
+          kravFinnes = true;
+        }
+      }
+    }
+
+    if (!kravFinnes) {
+      setFormData(prev => ({ ...prev, manglerSeksjonering: false, manglerSeksjoneringKommentar: "" }));
+    }
+  }, [
+    documentType,
+    formData.manglerSeksjonering,
+    formData.regelverk,
+    formData.bygningstype,
+    formData.bygningsbrannklasse,
+    formData.etasjer,
+    formData.areal,
+    formData.bf85_34_brannbelastning,
+    formData.bf85_34_tiltak,
+    formData.erSykehusPleieinstitusjon,
+    formData.brannseksjonTiltak,
+    formData.brannseksjonBrannenergi,
+  ]);
+
   useEffect(() => {
     if (!formData.garasjeRelevant || !garasjeOriginalTekst) return;
 
