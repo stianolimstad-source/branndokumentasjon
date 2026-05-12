@@ -5355,7 +5355,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
         if (tiltakRows.length === 0 && fravikRows.length === 0) return null;
 
-        const renderTabell = (rader: typeof tiltakRows, tomTekst: string) => {
+        const renderTabell = (rader: typeof tiltakRows, kind: "tiltak" | "fravik", tomTekst: string) => {
           if (rader.length === 0) {
             return <p className="ml-4 text-xs italic text-gray-600">{tomTekst}</p>;
           }
