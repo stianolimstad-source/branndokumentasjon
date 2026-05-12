@@ -581,28 +581,56 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
 
   // Dørkrav
-  if (formData.dorPlasseringer && formData.dorPlasseringer.length > 0 && formData.brannklasse) {
-    const isBKL1 = formData.brannklasse === "BKL1";
-    const dorKravMap: Record<string, { label: string; bkl1: string; bkl23: string }> = {
-      branncelle_trapperom_tr1: { label: "Branncelle – trapperom Tr 1", bkl1: "EI₂ 30-CSₐ [B 30 S]", bkl23: "EI₂ 30-CSₐ [B 30 S]" },
-      korridor_trapperom_tr2: { label: "Korridor – trapperom Tr 2", bkl1: "E 30-CSₐ [F 30 S]", bkl23: "E 30-CSₐ [F 30 S]" },
-      mellomliggende_trapperom_tr3: { label: "Mellomliggende rom – trapperom Tr 3", bkl1: "", bkl23: "EI₂ 60-CSₐ [B 60 S]" },
-      garasje_brannsluse: { label: "Garasje – brannsluse", bkl1: "EI₂ 60-CSₐ [B 60 S]", bkl23: "EI₂ 60-CSₐ [B 60 S]" },
-      branncelle_korridor: { label: "Branncelle – korridor", bkl1: "EI₂ 30-Sₐ [B 30]", bkl23: "EI₂ 30-Sₐ [B 30]" },
-      korridor_det_fri_tr3: { label: "Korridor – det fri (i kombinasjon med trapperom Tr 3)", bkl1: "", bkl23: "EI₂ 30-Sₐ [B 30]" },
-    };
-    const activeDoors = formData.dorPlasseringer
-      .map((id: string) => dorKravMap[id])
-      .filter(Boolean)
-      .filter((d: { bkl1: string; bkl23: string }) => isBKL1 ? d.bkl1 : d.bkl23);
-    if (activeDoors.length > 0) {
-      const lines = activeDoors
-        .map((d: { label: string; bkl1: string; bkl23: string }) => {
-          const krav = isBKL1 ? d.bkl1 : d.bkl23;
-          return krav ? `${d.label}: ${krav}` : null;
-        })
-        .filter(Boolean) as string[];
-      rows.push(contentRowMultiLine("Dørkrav", lines, "ARK"));
+  if (formData.dorPlasseringer && formData.dorPlasseringer.length > 0 && (formData.brannklasse || formData.bygningsbrannklasse)) {
+    const isBF85 = formData.regelverk === "BF85";
+    if (isBF85) {
+      const bbk = parseInt(formData.bygningsbrannklasse || '0', 10);
+      const isBBK12 = bbk > 0 && bbk <= 2;
+      const bf85DorKravMap: Record<string, { label: string; bbk12: string; bbk34: string }> = {
+        bf85_branncelle_aapent: { label: "Branncelle – åpent trapperom (Tr1)", bbk12: "B 30 S (EI 30-CSa)", bbk34: "B 30 S (EI 30-CSa)" },
+        bf85_korridor_lukket: { label: "Korridor – lukket trapperom (Tr2)", bbk12: "B 30 S eller F 30 S (EI 30-CSa eller E 30-CSa)", bbk34: "B 30 S eller F 30 S (EI 30-CSa eller E 30-CSa)" },
+        bf85_korridor_sluse_branntrygt: { label: "Korridor/sluse – branntrygt trapperom (Tr2)", bbk12: "A 60 S (EI 60-A2s1,d0-CSa)", bbk34: "A 60 S (EI 60-A2s1,d0-CSa)" },
+        bf85_roykfritt_fri_luft: { label: "Røykfritt trapperom (Tr3) – fri luft", bbk12: "A 60 S (EI 60-A2s1,d0-CSa)", bbk34: "A 60 S (EI 60-A2s1,d0-CSa)" },
+        bf85_korridor_fri_luft: { label: "Korridor – fri luft (i kombinasjon med røykfritt trapperom (Tr3))", bbk12: "B 30 (EI 30-Sa)", bbk34: "B 30 (EI 30-Sa)" },
+        bf85_branncelle_korridor: { label: "Branncelle – korridor", bbk12: "B 30 (EI 30-Sa)", bbk34: "B 15 (EI 15-Sa)" },
+        bf85_branncelle_branncelle: { label: "Branncelle – branncelle", bbk12: "B 30 (EI 30-Sa)", bbk34: "B 15 (EI 15-Sa)" },
+        bf85_loft_trapperom: { label: "Loft – trapperom", bbk12: "B 30 S (EI 30-CSa)", bbk34: "B 15 S (EI 15-CSa)" },
+        bf85_kjeller_trapperom: { label: "Kjeller – trapperom", bbk12: "B 60 S (EI 60-CSa)", bbk34: "B 30 S (EI 30-CSa)" },
+        bf85_kjeller_under_overste: { label: "Kjeller under øverste kjelleretasje – egen trapp eller annen atkomst", bbk12: "A 60 S (EI 60-A2s1,d0-CSa)", bbk34: "A 60 S (EI 60-A2s1,d0-CSa)" },
+      };
+      const activeDoors = formData.dorPlasseringer
+        .map((id: string) => bf85DorKravMap[id])
+        .filter(Boolean);
+      if (activeDoors.length > 0) {
+        const lines = activeDoors.map((d: { label: string; bbk12: string; bbk34: string }) => {
+          const krav = isBBK12 ? d.bbk12 : d.bbk34;
+          return `${d.label}: ${krav}`;
+        });
+        rows.push(contentRowMultiLine("Dørkrav (Tabell 30:75)", lines, "ARK"));
+      }
+    } else if (formData.brannklasse) {
+      const isBKL1 = formData.brannklasse === "BKL1";
+      const dorKravMap: Record<string, { label: string; bkl1: string; bkl23: string }> = {
+        branncelle_trapperom_tr1: { label: "Branncelle – trapperom Tr 1", bkl1: "EI₂ 30-CSₐ [B 30 S]", bkl23: "EI₂ 30-CSₐ [B 30 S]" },
+        korridor_trapperom_tr2: { label: "Korridor – trapperom Tr 2", bkl1: "E 30-CSₐ [F 30 S]", bkl23: "E 30-CSₐ [F 30 S]" },
+        mellomliggende_trapperom_tr3: { label: "Mellomliggende rom – trapperom Tr 3", bkl1: "", bkl23: "EI₂ 60-CSₐ [B 60 S]" },
+        garasje_brannsluse: { label: "Garasje – brannsluse", bkl1: "EI₂ 60-CSₐ [B 60 S]", bkl23: "EI₂ 60-CSₐ [B 60 S]" },
+        branncelle_korridor: { label: "Branncelle – korridor", bkl1: "EI₂ 30-Sₐ [B 30]", bkl23: "EI₂ 30-Sₐ [B 30]" },
+        korridor_det_fri_tr3: { label: "Korridor – det fri (i kombinasjon med trapperom Tr 3)", bkl1: "", bkl23: "EI₂ 30-Sₐ [B 30]" },
+      };
+      const activeDoors = formData.dorPlasseringer
+        .map((id: string) => dorKravMap[id])
+        .filter(Boolean)
+        .filter((d: { bkl1: string; bkl23: string }) => isBKL1 ? d.bkl1 : d.bkl23);
+      if (activeDoors.length > 0) {
+        const lines = activeDoors
+          .map((d: { label: string; bkl1: string; bkl23: string }) => {
+            const krav = isBKL1 ? d.bkl1 : d.bkl23;
+            return krav ? `${d.label}: ${krav}` : null;
+          })
+          .filter(Boolean) as string[];
+        rows.push(contentRowMultiLine("Dørkrav", lines, "ARK"));
+      }
     }
   }
 
