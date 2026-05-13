@@ -1729,6 +1729,13 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
         "ARK"
       ));
     }
+    if (erKraftstasjonRV) {
+      rows.push(contentRow(
+        "Dører i rømningsvei – kraftstasjon",
+        "Dører til og i rømningsvei skal alltid slå ut i rømningsretning. Dette gjelder uavhengig av persontallet som skal evakuere via denne utgangen.",
+        "ARK"
+      ));
+    }
   }
   if (formData.romningsvei) {
     rows.push(contentRow("Beskrivelse", formData.romningsvei, "ARK"));
