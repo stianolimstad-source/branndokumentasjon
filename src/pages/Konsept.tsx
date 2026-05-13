@@ -9570,6 +9570,7 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_11")}
                     </SectionCollapsible>
+                    )}
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-12" label={`3.12 ${formData.regelverk === "BF85" ? "Tilrettelegging for redning av husdyr (§ 11-15)" : "§ 11-15 Redning av husdyr"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
