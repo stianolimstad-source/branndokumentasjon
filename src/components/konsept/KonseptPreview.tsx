@@ -227,6 +227,23 @@ const TilstandTableRow = ({ data, sectionLabel, colSpan = 3 }: { data: TilstandD
         </div>
         {/* Innhold */}
         <div style={{ padding: "10px 12px 12px 12px" }}>
+          {data.kommentar && (
+            <div style={{
+              background: "#FFFBEB",
+              border: "1px solid #FCD34D",
+              borderLeft: "4px solid #D97706",
+              borderRadius: 6,
+              padding: "8px 12px",
+              color: "#78350F",
+              fontSize: 11,
+              lineHeight: 1.45,
+              whiteSpace: "pre-wrap",
+              marginBottom: 10,
+            }}>
+              <div style={{ fontWeight: 700, fontSize: 10, textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 3 }}>Kommentar</div>
+              {data.kommentar}
+            </div>
+          )}
           {ingenAvvik ? (
             <div style={{
               background: "#D1FAE5",
