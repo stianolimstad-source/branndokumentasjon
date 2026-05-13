@@ -1993,11 +1993,20 @@ const Konsept = () => {
               new Paragraph({ text: "    3.7 § 11-10 Tekniske installasjoner", spacing: { after: 30 } }),
               new Paragraph({ text: "    3.8 § 11-11 Generelle krav om rømning og redning", spacing: { after: 30 } }),
               new Paragraph({ text: "    3.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider", spacing: { after: 30 } }),
-              new Paragraph({ text: "    3.10 § 11-13 Utgang fra branncelle", spacing: { after: 30 } }),
-              new Paragraph({ text: "    3.11 § 11-14 Rømningsvei", spacing: { after: 30 } }),
-              new Paragraph({ text: "    3.12 § 11-15 Tilrettelegging for redning av husdyr", spacing: { after: 30 } }),
-              new Paragraph({ text: "    3.13 § 11-16 Tilrettelegging for manuell slokking", spacing: { after: 30 } }),
-              new Paragraph({ text: "    3.14 § 11-17 Tilrettelegging for rednings- og slokkemannskap", spacing: { after: 50 } }),
+              ...(isBF85Tilstand
+                ? [
+                    new Paragraph({ text: "    3.10 Rømningsveg (BF85 §7)", spacing: { after: 30 } }),
+                    new Paragraph({ text: "    3.11 Tilrettelegging for redning av husdyr", spacing: { after: 30 } }),
+                    new Paragraph({ text: "    3.12 Tilrettelegging for manuell slokking", spacing: { after: 30 } }),
+                    new Paragraph({ text: "    3.13 Tilrettelegging for rednings- og slokkemannskap", spacing: { after: 50 } }),
+                  ]
+                : [
+                    new Paragraph({ text: "    3.10 § 11-13 Utgang fra branncelle", spacing: { after: 30 } }),
+                    new Paragraph({ text: "    3.11 § 11-14 Rømningsvei", spacing: { after: 30 } }),
+                    new Paragraph({ text: "    3.12 § 11-15 Tilrettelegging for redning av husdyr", spacing: { after: 30 } }),
+                    new Paragraph({ text: "    3.13 § 11-16 Tilrettelegging for manuell slokking", spacing: { after: 30 } }),
+                    new Paragraph({ text: "    3.14 § 11-17 Tilrettelegging for rednings- og slokkemannskap", spacing: { after: 50 } }),
+                  ]),
               new Paragraph({ children: [new TextRun({ text: "4. Utførelses- og driftsfasen", bold: true, size: 22 })], spacing: { after: 50 } }),
               new Paragraph({ text: "    4.1 Utførelsesfasen", spacing: { after: 30 } }),
               new Paragraph({ text: "    4.2 Driftsfasen", spacing: { after: 50 } }),
