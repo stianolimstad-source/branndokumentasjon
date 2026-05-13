@@ -9365,6 +9365,7 @@ const Konsept = () => {
                       );
                     })()}
 
+                    {!(documentType === "tilstandsvurdering" && formData.regelverk === "BF85") && (
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-11" label={`3.11 ${formData.regelverk === "BF85" ? "Trapperom og heissjakt (§ 11-14 Rømningsvei)" : "§ 11-14 Rømningsvei"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
