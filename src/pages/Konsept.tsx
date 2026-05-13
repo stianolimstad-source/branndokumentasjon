@@ -7111,16 +7111,27 @@ const Konsept = () => {
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                          <li>Branncellekrav basert på valgte branncelle-typer</li>
-                          <li>Brannmotstand for branncellebegrensende konstruksjoner</li>
-                          <li>Dørkrav i branncellebegrensende vegger</li>
-                          <li>Krav til gjennomføringer og branntetting</li>
-                          {formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0 && (() => {
-                            const uniqueBkls = new Set(formData.bygningsdeler.map((d: any) => d.brannklasse).filter(Boolean));
-                            return uniqueBkls.size > 1 ? (
-                              <li className="font-medium text-foreground">Krav vises separat for hver brannklasse ({[...uniqueBkls].join(', ')})</li>
-                            ) : null;
-                          })()}
+                          {formData.regelverk === "BF85" ? (
+                            <>
+                              <li>Krav til branncelleinndeling iht. BF85 Kap. 30:63–64 (avhengig av bruk i Kap. 31–39)</li>
+                              <li>Brannmotstand for branncellebegrensende konstruksjoner iht. Tabell 30:41 (bygningsbrannklasse {formData.bygningsbrannklasse || "(ikke angitt)"})</li>
+                              <li>Krav til dører i branncellebegrensende vegger iht. BF85</li>
+                              <li>Krav til loft og kjeller (Kap. 30:64) og branntetting av gjennomføringer</li>
+                            </>
+                          ) : (
+                            <>
+                              <li>Branncellekrav basert på valgte branncelle-typer</li>
+                              <li>Brannmotstand for branncellebegrensende konstruksjoner</li>
+                              <li>Dørkrav i branncellebegrensende vegger</li>
+                              <li>Krav til gjennomføringer og branntetting</li>
+                              {formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0 && (() => {
+                                const uniqueBkls = new Set(formData.bygningsdeler.map((d: any) => d.brannklasse).filter(Boolean));
+                                return uniqueBkls.size > 1 ? (
+                                  <li className="font-medium text-foreground">Krav vises separat for hver brannklasse ({[...uniqueBkls].join(', ')})</li>
+                                ) : null;
+                              })()}
+                            </>
+                          )}
                         </ul>
                       </div>
                       <div>
