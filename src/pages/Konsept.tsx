@@ -9667,10 +9667,10 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_12")}
                     </SectionCollapsible>
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-13" label={`3.13 ${formData.regelverk === "BF85" ? "Slokkingsredskap og slokkingsvann (§ 11-16 Tilrettelegging for manuell slokking)" : "§ 11-16 Manuell slokking"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-13" label={`${isBF85Tilstand ? "3.12" : "3.13"} ${formData.regelverk === "BF85" ? "Slokkingsredskap og slokkingsvann (§ 11-16 Tilrettelegging for manuell slokking)" : "§ 11-16 Manuell slokking"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.13 {formData.regelverk === "BF85" ? "Slokkingsredskap og slokkingsvann (§ 11-16 Tilrettelegging for manuell slokking)" : "§ 11-16 Manuell slokking"}</Label>
+                        <Label className="text-base font-extrabold text-foreground">{isBF85Tilstand ? "3.12" : "3.13"} {formData.regelverk === "BF85" ? "Slokkingsredskap og slokkingsvann (§ 11-16 Tilrettelegging for manuell slokking)" : "§ 11-16 Manuell slokking"}</Label>
                       </div>
                       {(() => {
                         const alleRK = formData.bygningsdeler?.length
