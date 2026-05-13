@@ -7395,6 +7395,60 @@ const Konsept = () => {
                               </label>
                             </div>
                           </div>
+
+                          {/* BF85 Ventilasjonsanlegg */}
+                          <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id="ventilasjonRelevant_bf85"
+                                checked={!!formData.ventilasjonRelevant}
+                                onCheckedChange={(checked) => setFormData({...formData, ventilasjonRelevant: !!checked})}
+                              />
+                              <label htmlFor="ventilasjonRelevant_bf85" className="text-xs font-medium cursor-pointer">
+                                Ventilasjonsanlegg er installert / relevant
+                              </label>
+                            </div>
+                            {!formData.ventilasjonRelevant && (
+                              <p className="text-[11px] italic text-muted-foreground ml-6">
+                                Rapporten vil angi at ventilasjonsanlegg ikke er installert.
+                              </p>
+                            )}
+                            {formData.ventilasjonRelevant && (
+                              <div className="ml-6 space-y-2 pt-2 border-t">
+                                <Label className="text-xs text-muted-foreground">Tilleggskrav (TEK17 §11-10 brukes som vurderingsgrunnlag):</Label>
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    id="ventKrav5_bf85"
+                                    checked={formData.ventKrav5}
+                                    onCheckedChange={(checked) => setFormData({...formData, ventKrav5: !!checked})}
+                                  />
+                                  <label htmlFor="ventKrav5_bf85" className="text-xs cursor-pointer">
+                                    Storkjøkken/frityr - EI 30 A2-s1,d0
+                                  </label>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    id="ventKrav6_bf85"
+                                    checked={formData.ventKrav6}
+                                    onCheckedChange={(checked) => setFormData({...formData, ventKrav6: !!checked})}
+                                  />
+                                  <label htmlFor="ventKrav6_bf85" className="text-xs cursor-pointer">
+                                    Kjøkken boenheter - EI 15 A2-s1,d0
+                                  </label>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Checkbox
+                                    id="ventKrav9_bf85"
+                                    checked={formData.ventKrav9}
+                                    onCheckedChange={(checked) => setFormData({...formData, ventKrav9: !!checked})}
+                                  />
+                                  <label htmlFor="ventKrav9_bf85" className="text-xs cursor-pointer">
+                                    Brannspjeld i seksjoneringsvegg
+                                  </label>
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </>
                       ) : (
                         <>
