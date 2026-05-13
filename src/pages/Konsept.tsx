@@ -5233,9 +5233,19 @@ const Konsept = () => {
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                          <li>Brannseksjoneringskrav basert på bygningstype og brannbelastning</li>
-                          <li>Krav til seksjoneringsvegger (brannvegg) med riktig brannmotstand</li>
-                          <li>Areal- og brannbelastningsgrenser for oppdeling</li>
+                          {formData.regelverk === "BF85" ? (
+                            <>
+                              <li>Krav til brannteknisk oppdeling med brannvegg og branndekke iht. BF85 Kap. 30:6</li>
+                              <li>Krav til utførelse av brannvegg og branndekke, samt gjennomføringer (Kap. 30:61–62)</li>
+                              <li>Maks bruttoareal pr. etasje uten oppdeling iht. tabeller for aktuell bygningstype (Kap. 31–39)</li>
+                            </>
+                          ) : (
+                            <>
+                              <li>Brannseksjoneringskrav basert på bygningstype og brannbelastning</li>
+                              <li>Krav til seksjoneringsvegger (brannvegg) med riktig brannmotstand</li>
+                              <li>Areal- og brannbelastningsgrenser for oppdeling</li>
+                            </>
+                          )}
                         </ul>
                       </div>
                       <div>
