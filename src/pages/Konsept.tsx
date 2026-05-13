@@ -827,6 +827,10 @@ const Konsept = () => {
     bf85_sprinkler_installert: false, // Sprinkleranlegg installert (BF85)
     bf85_39_kontor_brannalarm: false, // BF85 3.9: Risikobasert brannalarm i kontorbygg
     bf85_39_industri_slokkeanlegg: false, // BF85 3.9: Auto. slokkeanlegg i industribygg, åpne flere plan, > 800 m²
+    // Tilstandsvurdering 3.9: faktisk installerte anlegg som kan benyttes som kompenserende tiltak
+    tilstand_39_brannalarm_installert: false,
+    tilstand_39_slokkeanlegg_installert: false,
+    tilstand_39_roykventilasjon_installert: false,
     kraftstasjonUnderFjell: false, // Kraftstasjon under fjell eller under dagen
   });
 
