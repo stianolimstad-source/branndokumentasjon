@@ -1329,7 +1329,15 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
       rows.push(contentRow("Brannalarm – kontor (risikobasert)", "Det er ikke generelt krav til brannalarmanlegg etter BF85. For kontorbygg der brannalarm kreves ut fra risikovurdering, skal alarmen varsle alle personer i bygget.", "RIE"));
     }
     if (formData.bf85_39_industri_slokkeanlegg) {
-      rows.push(contentRow("Automatisk slokkeanlegg – industri", "Industribygg som er åpne over flere plan med samlet areal > 800 m² skal ha automatisk slokkeanlegg.", "RIV"));
+      const erIndustri = (formData.bygningstype || "").toLowerCase().includes("industri")
+        || (Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("industri"));
+      const flerePlanOver800 = !!formData.branncellerFlerePlanRelevant && formData.branncellerFlerePlanAreal === "over800";
+      const tekst = erIndustri && flerePlanOver800
+        ? "Industribygg som er åpne over flere plan med samlet areal > 800 m² skal ha automatisk slokkeanlegg. Bekreftet i kap. 3.5: branncelle over flere plan har samlet areal > 800 m²."
+        : flerePlanOver800
+          ? "Branncelle over flere plan har samlet areal > 800 m² (jf. kap. 3.5) – det kreves automatisk slokkeanlegg."
+          : "Industribygg som er åpne over flere plan med samlet areal > 800 m² skal ha automatisk slokkeanlegg.";
+      rows.push(contentRow("Automatisk slokkeanlegg", tekst, "RIV"));
     }
   }
 
