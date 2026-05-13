@@ -5347,6 +5347,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
               );
+            })()}
             {(() => {
               const erKraftstasjonRV = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
                 || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
