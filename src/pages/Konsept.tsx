@@ -830,7 +830,6 @@ const Konsept = () => {
     kraftstasjonUnderFjell: false, // Kraftstasjon under fjell eller under dagen
   });
 
-  // Load existing concept if conceptId is provided
   // Auto-foreslå automatisk slokkeanlegg (BF85 3.9) når branncelle over flere plan > 800 m² er valgt
   useEffect(() => {
     if (formData.regelverk === "BF85"
