@@ -1,45 +1,49 @@
 ## Mål
-For tilstandsvurderinger etter BF85 skal kapitlet om "Tilrettelegging for redning av husdyr" (BF85 3.11) tydelig informere om at Byggeforskrift 1985 ikke hadde egne krav til redning av husdyr, og at TEK17 § 11-15 brukes som referanse dersom temaet er relevant for tiltaket.
+For tilstandsvurderinger etter BF85 skal det vises at tilrettelegging for redning av husdyr er "ikke relevant" når brukeren ikke huker av for at bygget er beregnet for husdyrhold (`husdyrRedningRelevant = false`).
 
-## Detektering
-```ts
-const isBF85Tilstand =
-  documentType === "tilstandsvurdering" && formData.regelverk === "BF85";
-```
-(Allerede definert i Konsept.tsx; samme logikk gjenbrukes i preview/word.)
+## Dagens oppførsel (problem)
+I både forhåndsvisning og Word-eksport vises meldingen "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket." kun for TEK17. For BF85 skjules denne meldingen eksplisitt (`!isBF85` i preview, `!isBF85Tilstand310` i Word).
 
 ## Endringer
 
-### 1) Skjema – `src/pages/Konsept.tsx` (3.12-blokken, ca. linje 9602–9678)
-Når `isBF85Tilstand` er sann:
-- Vis et tydelig informasjonsfelt øverst i seksjonen:
-  > "Byggeforskrift 1985 hadde ingen egne krav til tilrettelegging for redning av husdyr. Dersom dette er relevant for tiltaket, brukes TEK17 § 11-15 med tilhørende preaksepterte ytelser i VTEK17 som referanse."
-- Behold dagens checkbox "Bygget er beregnet for husdyrhold (driftsbygning med husdyrrom)". Hvis avhuket vises automatisk-kravlisten med en ekstra tekst som tydeliggjør at de listede kravene er TEK17 §11-15 brukt som referanse (ikke BF85-krav).
-- Hvis ikke avhuket: vis kun info-feltet (ingen krav-liste). Tilstandspanelet vises uansett (uendret).
+### 1) Forhåndsvisning – `src/components/konsept/KonseptPreview.tsx`
+Fjern `!isBF85`-betingelsen rundt fallback-raden (~linje 5475) slik at meldingen vises for både TEK17 og BF85 når `!formData.husdyrRedningRelevant`.
 
-For TEK17 (`!isBF85Tilstand`) er dagens visning uendret.
+**Fra:**
+```tsx
+!isBF85 && (
+  <tr>
+    <td colSpan={3} style={{fontStyle: 'italic'}}>
+      Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.
+    </td>
+  </tr>
+)
+```
 
-### 2) Forhåndsvisning – `src/components/konsept/KonseptPreview.tsx` (3.12-blokk, ca. linje 5384–5474)
-Når `isBF85` (eksisterende variabel i preview) er sann:
-- Endre seksjonsoverskriften til "3.11 Tilrettelegging for redning av husdyr (TEK17 § 11-15 brukt som referanse)".
-- Først ny rad: `Forhold = "Byggeforskrift 1985"`, `Løsning = "Byggeforskrift 1985 hadde ingen egne krav til tilrettelegging for redning av husdyr. TEK17 § 11-15 brukes derfor som referanse dersom dette er relevant for tiltaket."`, `Ansvar = "-"`.
-- Hvis `husdyrRedningRelevant` er sann: vis dagens TEK17-rader (Generelt/Utganger/Fri bredde/Rømningsvei/Dør i yttervegg) under en kolonne-header som tydelig angir "Referanse: TEK17 § 11-15 / VTEK17". Hvis ikke relevant: kun info-raden over + eksisterende fallback-tekst fjernes til fordel for info-raden.
+**Til:** Vis raden uavhengig av `isBF85`.
 
-For TEK17 er visningen uendret.
+### 2) Word-eksport – `src/lib/word-export-chapter3.ts`
+Endre `else if (!isBF85Tilstand310)` til `else` (~linje 1786) slik at "ikke relevant"-raden pushes også for BF85.
 
-### 3) Word-eksport – `src/lib/word-export-chapter3.ts`
-3.12 husdyr-blokken finnes i dag ikke som egen seksjon i Word-eksporten. Endring her er minimal:
-- Legg til `sectionHeaderRow(isBF85Tilstand310 ? "3.11   Tilrettelegging for redning av husdyr" : "3.12   §11-15 Tilrettelegging for redning av husdyr")` mellom dagens 3.11 og 3.13.
-- Hvis BF85-tilstand: én `contentRow("Byggeforskrift 1985", "Byggeforskrift 1985 hadde ingen egne krav til tilrettelegging for redning av husdyr. TEK17 § 11-15 brukes som referanse dersom dette er relevant.", "-")`. Når `husdyrRedningRelevant`: følg opp med samme rader som preview viser, prefiks-merket "Referanse TEK17 § 11-15".
-- For TEK17 (uendret oppførsel utover at seksjonen nå eksplisitt eksporteres): vis dagens rader når `husdyrRedningRelevant`. Avslutt med `tilstandRow(formData, "3_12", ...)`.
+**Fra:**
+```ts
+} else if (!isBF85Tilstand310) {
+  rows.push(contentRow("", "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.", "-"));
+}
+```
 
-(Hvis det er ønskelig å holde Word-eksporten 1:1 med dagens funksjon og kun løse BF85-teksten, kan punkt 3 begrenses til å pushe selve BF85-info-raden + tilstand. Bekreft i implementasjon.)
+**Til:**
+```ts
+} else {
+  rows.push(contentRow("", "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.", "-"));
+}
+```
 
 ## Avgrensning
+- Ingen endringer i skjema (`Konsept.tsx`) – dagens checkbox + info-boks beholdes.
 - Ingen nye datafelt; ingen migrering.
-- Endringer påvirker kun BF85-tilstand. TEK17-tilstand og brannkonsept beholder dagens innhold.
+- Kun to linjeendringer (fjerne / endre en betingelse).
 
 ## Akseptkriterier
-- I BF85-tilstand viser kapittel 3.11 tydelig at BF85 ikke hadde krav til husdyrredning, og at TEK17 § 11-15 brukes som referanse.
-- TEK17-kravene vises kun når brukeren markerer at husdyrhold er relevant, og er merket som referanse.
-- Tilstandspanel-funksjonaliteten (kommentar/avvik) er uendret.
+- I BF85-tilstand viser forhåndsvisning og Word-eksport "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket." når checkboxen for husdyrhold ikke er huket av.
+- TEK17-tilstand beholder dagens oppførsel (samme melding vises som før).
