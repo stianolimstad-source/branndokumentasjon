@@ -1751,7 +1751,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     ? "3.11   Tilrettelegging for redning av husdyr (TEK17 § 11-15 brukt som referanse)"
     : "3.12   §11-15 Tilrettelegging for redning av husdyr"));
   rows.push(columnHeaderRow());
-  if (isBF85Tilstand310) {
+  if (isBF85Tilstand310 && formData.husdyrRedningRelevant) {
     rows.push(contentRow(
       "Byggeforskrift 1985",
       "Byggeforskrift 1985 hadde ingen egne krav til tilrettelegging for redning av husdyr. TEK17 § 11-15 med tilhørende preaksepterte ytelser i VTEK17 brukes derfor som referanse dersom dette er relevant for tiltaket.",
