@@ -4109,6 +4109,33 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <th className="border border-gray-400 p-2 text-left">Løsning</th>
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
+            {documentType === "tilstandsvurdering" && formData.tilstand_39_brannalarm_installert && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Brannalarmanlegg (installert)</td>
+                <td className="border border-gray-400 p-2">
+                  Bygget har installert brannalarmanlegg. Anlegget kan benyttes som kompenserende tiltak for andre avvik fra regelverket der forholdene tilsier det.
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIE</td>
+              </tr>
+            )}
+            {documentType === "tilstandsvurdering" && formData.tilstand_39_slokkeanlegg_installert && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Automatisk slokkeanlegg (installert)</td>
+                <td className="border border-gray-400 p-2">
+                  Bygget har installert automatisk slokkeanlegg (sprinkler). Anlegget kan benyttes som kompenserende tiltak for andre avvik fra regelverket der forholdene tilsier det.
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIV</td>
+              </tr>
+            )}
+            {documentType === "tilstandsvurdering" && formData.tilstand_39_roykventilasjon_installert && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Røykventilasjon (installert)</td>
+                <td className="border border-gray-400 p-2">
+                  Bygget har installert røykventilasjon. Anlegget kan benyttes som kompenserende tiltak for andre avvik fra regelverket der forholdene tilsier det.
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIV</td>
+              </tr>
+            )}
             {isBF85 && formData.bf85_16_brannalarmanlegg && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">:16 Brannalarmanlegg</td>
