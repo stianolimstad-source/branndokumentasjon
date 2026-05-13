@@ -9278,23 +9278,36 @@ const Konsept = () => {
                         const erBredRK = harRK3 || harRK5 || harRK6;
                         const bredde = erBredRK ? "1,16 m" : "0,86 m";
                         const bk = formData.brannklasse || "";
+                        const bbk = formData.bygningsbrannklasse || "(ikke angitt)";
                         return (
                           <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                             <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                             <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                              <li>Generelle krav til rømningsvei</li>
-                              <li>Fri bredde i rømningsvei: min. {bredde} ({erBredRK ? `RK${[harRK3 && "3", harRK5 && "5", harRK6 && "6"].filter(Boolean).join("/")}` : rk || "RK1/2/4"})</li>
-                              <li>Hovedatkomst tilrettelagt for sikker rømning</li>
-                              <li>Dørkrav i rømningsvei: fri bredde min. {bredde}, høyde min. 2,0 m, åpningskraft maks {formData.universellUtforming ? "30 N" : "67 N"}</li>
-                              {(bk === "BKL2" || bk === "BKL3") && <li>Avbruddsfri strømforsyning (UPS) for {bk === "BKL2" ? "60 min (BKL2)" : "60 min (BKL3)"}</li>}
-                              {bk === "BKL1" && <li>Avbruddsfri strømforsyning (UPS) for 30 min (BKL1)</li>}
-                              {formData.romningsveiRomMaks20 && <li>Krav til rom i rømningsvei inntil 20 m²</li>}
-                              {formData.romningsveiRom50E30 && <li>Krav til oppholdsrom inntil 50 m² i rømningsvei</li>}
-                              {formData.romningsveiSvalgang && <li>Krav til svalgang/altangang som rømningsvei</li>}
-                              {formData.romningsveiKorridorOver30m && <li>Krav til seksjonering av korridor over 30 m (E 30-CSa)</li>}
-                              {formData.romningsveiPanikkbeslag && <li>Krav til panikkbeslag</li>}
-                              <li>Fri bredde i trapp: min. {bredde}</li>
-                              <li>Krav om ingen innsnevring i rømningsvei</li>
+                              {formData.regelverk === "BF85" ? (
+                                <>
+                                  <li>Krav til trapperom og heissjakt iht. BF85 Kap. 30:7 (åpne, lukkede, branntrygge og røykfrie trapperom)</li>
+                                  <li>Bygningsdeler som omgir trapperom og heissjakt iht. Tabell 30:41 (bygningsbrannklasse {bbk})</li>
+                                  <li>Krav til antall, bredde og dører i rømningsvei iht. Tabell 30:75</li>
+                                  {formData.romningsveiKorridorOver30m && <li>Krav til seksjonering av lange korridorer</li>}
+                                  {formData.romningsveiSvalgang && <li>Krav til svalgang/altangang som rømningsvei</li>}
+                                </>
+                              ) : (
+                                <>
+                                  <li>Generelle krav til rømningsvei</li>
+                                  <li>Fri bredde i rømningsvei: min. {bredde} ({erBredRK ? `RK${[harRK3 && "3", harRK5 && "5", harRK6 && "6"].filter(Boolean).join("/")}` : rk || "RK1/2/4"})</li>
+                                  <li>Hovedatkomst tilrettelagt for sikker rømning</li>
+                                  <li>Dørkrav i rømningsvei: fri bredde min. {bredde}, høyde min. 2,0 m, åpningskraft maks {formData.universellUtforming ? "30 N" : "67 N"}</li>
+                                  {(bk === "BKL2" || bk === "BKL3") && <li>Avbruddsfri strømforsyning (UPS) for {bk === "BKL2" ? "60 min (BKL2)" : "60 min (BKL3)"}</li>}
+                                  {bk === "BKL1" && <li>Avbruddsfri strømforsyning (UPS) for 30 min (BKL1)</li>}
+                                  {formData.romningsveiRomMaks20 && <li>Krav til rom i rømningsvei inntil 20 m²</li>}
+                                  {formData.romningsveiRom50E30 && <li>Krav til oppholdsrom inntil 50 m² i rømningsvei</li>}
+                                  {formData.romningsveiSvalgang && <li>Krav til svalgang/altangang som rømningsvei</li>}
+                                  {formData.romningsveiKorridorOver30m && <li>Krav til seksjonering av korridor over 30 m (E 30-CSa)</li>}
+                                  {formData.romningsveiPanikkbeslag && <li>Krav til panikkbeslag</li>}
+                                  <li>Fri bredde i trapp: min. {bredde}</li>
+                                  <li>Krav om ingen innsnevring i rømningsvei</li>
+                                </>
+                              )}
                             </ul>
                           </div>
                         );
