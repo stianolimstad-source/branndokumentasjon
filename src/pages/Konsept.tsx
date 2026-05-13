@@ -7633,6 +7633,9 @@ const Konsept = () => {
                       {/* Info om automatiske krav */}
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        {formData.regelverk === "BF85" && (
+                          <p className="italic text-foreground/70">BF85 Kap. 47 stiller kun generelle krav om at anlegg ikke skal medføre økt risiko for brann. TEK17 § 11-10 og preaksepterte ytelser legges derfor til grunn som vurderingsgrunnlag.</p>
+                        )}
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
                           {formData.ventilasjonRelevant && (
                             <>
