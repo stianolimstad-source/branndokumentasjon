@@ -1314,7 +1314,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
 
   // ===== 3.9 Tilrettelegging for rømning og redning =====
-  rows.push(sectionHeaderRow("3.9   §11-12 Tilrettelegging for rømning og redning"));
+  rows.push(sectionHeaderRow(formData.regelverk === "BF85" ? "3.9   Tiltak for å påvirke rømnings- og redningstider" : "3.9   §11-12 Tilrettelegging for rømning og redning"));
   rows.push(columnHeaderRow());
 
   // Sprinklet/usprinklet areal ved flere bygningsdeler
@@ -1459,7 +1459,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.tilretteleggingKommentar) {
     rows.push(contentRow("Kommentar", formData.tilretteleggingKommentar, "-"));
   }
-  rows.push(...await tilstandRow(formData, "3_9", "3.9 Tilrettelegging for rømning"));
+  rows.push(...await tilstandRow(formData, "3_9", formData.regelverk === "BF85" ? "3.9 Tiltak for å påvirke rømnings- og redningstider" : "3.9 Tilrettelegging for rømning"));
 
   // ===== 3.10 Utgang fra branncelle =====
   rows.push(sectionHeaderRow("3.10   §11-13 Utgang fra branncelle"));

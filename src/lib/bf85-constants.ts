@@ -85,7 +85,7 @@ export const bf85MappedSections: BF85MappedSection[] = [
     tek17Key: "3_9",
     tek17Label: "3.9 Tilrettelegging for rømning",
     bf85Ref: "Kap. 31–39",
-    bf85Title: "Brannalarmanlegg og røykvarsler",
+    bf85Title: "Tiltak for å påvirke rømnings- og redningstider",
     bf85Description: "Krav til brannalarmanlegg og røykvarsler avhengig av bygningens bruk og størrelse (Kap. 31–39).",
   },
   {
