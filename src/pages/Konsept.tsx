@@ -1587,8 +1587,18 @@ const Konsept = () => {
     { key: "3_14", label: "3.14 Slokkemannskap" },
   ];
 
-  // BF85 uses the same section keys and labels as TEK17
-  const tilstandSections = tilstandSectionsTEK17;
+  const isBF85Tilstand = documentType === "tilstandsvurdering" && formData.regelverk === "BF85";
+
+  // BF85-tilstand merges 3.10+3.11 into "3.10 Rømningsveg (BF85 §7)" and renumbers 3.12→3.11, 3.13→3.12, 3.14→3.13
+  const tilstandSectionsBF85 = [
+    ...tilstandSectionsTEK17.slice(0, 9), // 3.1–3.9
+    { key: "3_10", label: "3.10 Rømningsveg (BF85 §7)" },
+    { key: "3_12", label: "3.11 Redning av husdyr" },
+    { key: "3_13", label: "3.12 Manuell slokking" },
+    { key: "3_14", label: "3.13 Slokkemannskap" },
+  ];
+
+  const tilstandSections = isBF85Tilstand ? tilstandSectionsBF85 : tilstandSectionsTEK17;
 
   const updateTilstand = (sectionKey: string, data: TilstandData) => {
     setFormData(prev => ({
