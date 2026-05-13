@@ -1,30 +1,32 @@
 ## Mål
 
-Når regelverk = BF85, skal kap. 3.14 (Atkomst for brannvesenet / Slokkemannskap) inkludere et automatisk avsnitt om Tabell 30:512 "Ikke-bærende ytterveggers brannmotstand", med tekst tilpasset valgt bygningsbrannklasse (1–4). Hele tabellen skal ikke vises.
+I BF85-modus skal den kursiverte parentesen i kapitteloverskriftene i kap. 3 kun inneholde TEK17-kapittelnavnet når det avviker fra BF85-tittelen. Når navnene er like, skal kun paragrafnummeret stå i parentesen.
 
-## Innhold som skal genereres
+## Regler per kapittel
 
-Avsnittet vises kun ved BF85, og baseres på `formData.bygningsbrannklasse`:
-
-- BBK 1: «Ikke-bærende yttervegger som kan rekkes for slokking fra utsiden skal utføres minst i klasse B 30. Vegger som ikke kan rekkes for slokking fra utsiden skal utføres minst i klasse A 30.»
-- BBK 2: «… B 30 / A 30.» (samme som BBK 1)
-- BBK 3: «… B 30 / A 30. For bygninger i inntil 2 etasjer kan vegger utføres helt i ubrennbare materialer uten hensyn til deres brannmotstand.»
-- BBK 4: «… B 15 / B 15. For bygninger i inntil 2 etasjer kan vegger utføres helt i ubrennbare materialer uten hensyn til deres brannmotstand.»
-
-Overskrift på avsnittet: «Ikke-bærende ytterveggers brannmotstand (Tabell 30:512)».
+| Kap. | BF85-tittel | TEK17-tittel (§) | Endring |
+|------|-------------|------------------|---------|
+| 3.1  | Bæreevne og stabilitet | §11-4 Bæreevne og stabilitet | SAMME → endre til `(§ 11-4)` |
+| 3.2  | Sikkerhet ved eksplosjon | §11-5 Sikkerhet ved eksplosjon | SAMME → endre til `(§ 11-5)` |
+| 3.3  | Avstand mellom bygninger | §11-6 Tiltak mot brannspredning mellom byggverk | ULIK → behold som i dag |
+| 3.4  | Brannteknisk oppdeling | §11-7 Brannseksjoner | ULIK → behold |
+| 3.5  | Branncelleinndeling | §11-8 Brannceller | ULIK → behold |
+| 3.6  | Kledninger og overflater for vegger og tak | §11-9 Materialer og produkters egenskaper ved brann | ULIK → behold |
+| 3.7  | Ventilasjon og installasjoner | §11-10 Tekniske installasjoner | ULIK → behold |
+| 3.8  | Rømningsvei – generelle krav | §11-11 Generelle krav om rømning og redning | ULIK → behold |
+| 3.9  | Brannalarmanlegg og røykvarsler | §11-12 Tilrettelegging for rømning og redning | ULIK → behold |
+| 3.10 | Utganger og rømningsveier fra branncelle | §11-13 Utgang fra branncelle | ULIK → behold |
+| 3.11 | Trapperom og heissjakt | §11-14 Rømningsvei | ULIK → behold |
+| 3.12 | Tilrettelegging for redning av husdyr | §11-15 (samme) | SAMME → allerede `(§11-15)`, ingen endring |
+| 3.13 | Slokkingsredskap og slokkingsvann | §11-16 Tilrettelegging for manuell slokking | ULIK → behold |
+| 3.14 | Atkomst for brannvesenet | §11-17 Tilrettelegging for slokkemannskap | ULIK → behold |
 
 ## Endringer
 
-1. `src/lib/bf85-constants.ts`
-   - Ny hjelper `getYtterveggBrannmotstandBF85(bygningsbrannklasse: string): { tekst: string } | null` som returnerer ferdig formatert tekst per klasse (null hvis ugyldig).
+`src/components/konsept/KonseptPreview.tsx`
+- Linje 1112 (kap. 3.1, BF85-grein): `(§11-4 Bæreevne og stabilitet)` → `(§ 11-4)`
+- Linje 1333 (kap. 3.2): `(§11-5 Sikkerhet ved eksplosjon)` → `(§ 11-5)`
 
-2. `src/pages/Konsept.tsx` (3.14-blokken, ~9391–9495)
-   - Når `formData.regelverk === "BF85"` og `bygningsbrannklasse` er satt: vis et lite info-avsnitt nederst i 3.14 med overskriften og generert tekst (read-only, samme stil som «automatisk inkludert»-boksen).
+Ingen endringer i Konsept.tsx, word-export, TOC eller andre kapitteloverskrifter — disse er allerede korrekte (enten ulike titler med navn, eller like titler uten navn).
 
-3. `src/components/konsept/KonseptPreview.tsx` (3.14-renderingen, ~5347)
-   - Samme betingelse: legg inn en rad/avsnitt i 3.14-tabellen med overskrift «Ikke-bærende ytterveggers brannmotstand (Tabell 30:512)» og den genererte teksten.
-
-4. `src/pages/Konsept.tsx` Word-eksport for 3.14 (~1951 og rundt)
-   - Speil samme tekst i Word-output når BF85.
-
-Ingen endringer på datamodellen, ingen nye checkboxes — kravet trigges kun av valgt bygningsbrannklasse og regelverk.
+Endringen gjelder begge dokumenttyper (konsept og tilstandsvurdering), siden overskriften er felles. Dette gir konsistent visning.
