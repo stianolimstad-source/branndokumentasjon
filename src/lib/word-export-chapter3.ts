@@ -1179,6 +1179,13 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
         : "Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.");
     }
     rows.push(contentRowMultiLine("Ventilasjonsanlegg", ventLines, "RIV"));
+    {
+      const erKraftstasjonVentRow = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+        || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+      if (erKraftstasjonVentRow) {
+        rows.push(contentRow("Ventilasjonsanlegg – kraftstasjon", "I ventilasjonsanlegget skal det ikke benyttes brannspjeld med smeltesikring. Det skal brukes automatiske spjeld som sikrer rask avstengning og hindrer røykspredning før temperaturen er blitt høy. Dersom det benyttes steng-inne-prinsipp for ventilasjonsanlegget, må det benyttes automatiske brannspjeld. Brannspjeld med smeltesikring er ikke tillatt. Jf. DSB sin veiledning om brannvern i kraftstasjoner.", "RIV"));
+      }
+    }
   } else if (formData.regelverk === "BF85") {
     rows.push(contentRow("Ventilasjonsanlegg", "Ventilasjonsanlegg er ikke installert.", "RIV"));
   }
@@ -1267,7 +1274,6 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
         "• Lange kabelkulverter bør deles opp ved hjelp av brannsikre vegger og brannklassifiserte gjennomføringer. Dersom ventilasjon av rom eller forhold gjør det nødvendig, kan branndører settes i åpen stilling på holdemagnet tilkoblet brannalarmanlegg",
         "• Kablers brannmotstand kan økes ved å påføre kabler brannhemmende maling",
       ], "RIE"));
-      rows.push(contentRow("Ventilasjonsanlegg – kraftstasjon", "I ventilasjonsanlegget skal det ikke benyttes brannspjeld med smeltesikring. Det skal brukes automatiske spjeld som sikrer rask avstengning og hindrer røykspredning før temperaturen er blitt høy. Dersom det benyttes steng-inne-prinsipp for ventilasjonsanlegget, må det benyttes automatiske brannspjeld. Brannspjeld med smeltesikring er ikke tillatt. Jf. DSB sin veiledning om brannvern i kraftstasjoner.", "RIV"));
     }
   }
 
