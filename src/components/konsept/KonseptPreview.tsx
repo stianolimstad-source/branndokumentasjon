@@ -29,6 +29,7 @@ interface TilstandData {
   bilder: (TilstandBilde | string)[];
   tiltak?: TilstandKategori;
   fravik?: TilstandKategori;
+  kommentar?: string;
 }
 
 const normalizeBilder = (bilder: any[]): TilstandBilde[] =>
@@ -90,14 +91,14 @@ export const getKategorier = (data: TilstandData): { tiltak: TilstandKategori; f
 const tilstandHasContent = (data: TilstandData): boolean => {
   if (!data) return false;
   const { tiltak, fravik } = getKategorier(data);
-  return !!data.grad || getAvvikListe(tiltak).length > 0 || getAvvikListe(fravik).length > 0;
+  return !!data.grad || !!data.kommentar || getAvvikListe(tiltak).length > 0 || getAvvikListe(fravik).length > 0;
 };
 
 const tilstandIsActive = (data: TilstandData): boolean => {
-  // Panelet regnes som aktivert når brukeren har lagt til avvik ELLER eksplisitt satt en grad.
+  // Panelet regnes som aktivert når brukeren har lagt til avvik, kommentar ELLER eksplisitt satt en grad.
   if (!data) return false;
   const { tiltak, fravik } = getKategorier(data);
-  return !!data.grad || getAvvikListe(tiltak).length > 0 || getAvvikListe(fravik).length > 0;
+  return !!data.grad || !!data.kommentar || getAvvikListe(tiltak).length > 0 || getAvvikListe(fravik).length > 0;
 };
 
 // Farge per tilstandsgrad (for badge)
@@ -226,6 +227,23 @@ const TilstandTableRow = ({ data, sectionLabel, colSpan = 3 }: { data: TilstandD
         </div>
         {/* Innhold */}
         <div style={{ padding: "10px 12px 12px 12px" }}>
+          {data.kommentar && (
+            <div style={{
+              background: "#FFFBEB",
+              border: "1px solid #FCD34D",
+              borderLeft: "4px solid #D97706",
+              borderRadius: 6,
+              padding: "8px 12px",
+              color: "#78350F",
+              fontSize: 11,
+              lineHeight: 1.45,
+              whiteSpace: "pre-wrap",
+              marginBottom: 10,
+            }}>
+              <div style={{ fontWeight: 700, fontSize: 10, textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 3 }}>Kommentar</div>
+              {data.kommentar}
+            </div>
+          )}
           {ingenAvvik ? (
             <div style={{
               background: "#D1FAE5",

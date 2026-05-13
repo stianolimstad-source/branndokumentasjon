@@ -36,6 +36,8 @@ export interface TilstandData {
   // Kategorier
   tiltak?: TilstandKategori;
   fravik?: TilstandKategori;
+  // Generell kommentar til tilstanden (vises også når ingen avvik)
+  kommentar?: string;
 }
 
 export const emptyKategori = (): TilstandKategori => ({ beskrivelse: "", bilder: [], avvik: [] });
@@ -46,6 +48,7 @@ export const emptyTilstand = (): TilstandData => ({
   bilder: [],
   tiltak: emptyKategori(),
   fravik: emptyKategori(),
+  kommentar: "",
 });
 
 const newAvvik = (grad: TilstandGrad = ""): TilstandAvvik => ({
@@ -388,6 +391,22 @@ const TilstandsvurderingPanel = ({ sectionKey, sectionLabel, data, onChange }: T
           Det er ikke funnet noen avvik på dette området. Seksjonen settes automatisk til <strong>TG 0 – Ingen avvik</strong>.
         </p>
       )}
+
+      <div>
+        <Label className="text-xs font-semibold uppercase tracking-wide mb-1 block text-amber-900 dark:text-amber-200">
+          Kommentar til tilstanden (valgfritt)
+        </Label>
+        <p className="text-[11px] text-muted-foreground mb-2">
+          Generell vurdering av området. Vises i rapporten også når det ikke er funnet avvik.
+        </p>
+        <Textarea
+          value={data.kommentar || ""}
+          onChange={(e) => onChange({ ...data, kommentar: e.target.value })}
+          placeholder="F.eks. observasjoner, forutsetninger eller anbefalinger..."
+          rows={3}
+          className="bg-background"
+        />
+      </div>
 
       {renderKategori(
         "tiltak",

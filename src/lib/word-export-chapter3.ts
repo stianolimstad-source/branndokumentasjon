@@ -229,7 +229,8 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
   const { tiltak, fravik } = getTilstandKategorier(tilstandData);
   const harTiltak = tiltak.avvik.length > 0;
   const harFravik = fravik.avvik.length > 0;
-  if (!tilstandData.grad && !harTiltak && !harFravik) return [];
+  const harKommentar = !!(tilstandData.kommentar && String(tilstandData.kommentar).trim());
+  if (!tilstandData.grad && !harTiltak && !harFravik && !harKommentar) return [];
 
   const ingenAvvik = !harTiltak && !harFravik;
   const tilstandShading = { type: ShadingType.SOLID, color: "FEF3C7", fill: "FEF3C7" };
@@ -255,6 +256,24 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
       border: { left: { style: BorderStyle.SINGLE, size: 18, color: "059669", space: 4 } },
       children: [new TextRun({ text: "Det er ikke funnet noen avvik på dette området.", size: 20, color: "065F46" })],
     }));
+  }
+
+  if (harKommentar) {
+    children.push(new Paragraph({
+      spacing: { before: 100, after: 20 },
+      shading: { type: ShadingType.SOLID, color: "FFFBEB", fill: "FFFBEB" },
+      border: { left: { style: BorderStyle.SINGLE, size: 18, color: "D97706", space: 4 } },
+      children: [new TextRun({ text: "KOMMENTAR", bold: true, size: 18, color: "78350F" })],
+    }));
+    const linjer = String(tilstandData.kommentar).split(/\r?\n/);
+    linjer.forEach((linje, i) => {
+      children.push(new Paragraph({
+        spacing: { before: i === 0 ? 20 : 0, after: i === linjer.length - 1 ? 40 : 0 },
+        shading: { type: ShadingType.SOLID, color: "FFFBEB", fill: "FFFBEB" },
+        border: { left: { style: BorderStyle.SINGLE, size: 18, color: "D97706", space: 4 } },
+        children: [new TextRun({ text: linje, size: 20, color: "78350F" })],
+      }));
+    });
   }
 
   const renderKategori = async (
