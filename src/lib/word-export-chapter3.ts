@@ -1673,6 +1673,12 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.redningsmannskapKommentar) {
     rows.push(contentRow("Kommentar", formData.redningsmannskapKommentar, "-"));
   }
+  if (formData.regelverk === "BF85") {
+    const ytter = getYtterveggBrannmotstandBF85(formData.bygningsbrannklasse || "");
+    if (ytter) {
+      rows.push(contentRow("Ikke-bærende ytterveggers brannmotstand (Tabell 30:512)", ytter.tekst, "ARK"));
+    }
+  }
   rows.push(...await tilstandRow(formData, "3_14", "3.14 Slokkemannskap"));
 
   return new Table({
