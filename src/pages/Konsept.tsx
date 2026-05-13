@@ -8851,11 +8851,44 @@ const Konsept = () => {
                      })()}
                      {renderTilstandPanel("3_9")}
                     </SectionCollapsible>
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-10" label={`3.10 ${formData.regelverk === "BF85" ? "Utganger og rømningsveier fra branncelle (§ 11-13 Utgang fra branncelle)" : "§ 11-13 Utgang fra branncelle"}`}>
+                    {(() => {
+                      const isBF85Tilstand = documentType === "tilstandsvurdering" && formData.regelverk === "BF85";
+                      const label310 = isBF85Tilstand
+                        ? "3.10 Rømningsveg (BF85 §7)"
+                        : `3.10 ${formData.regelverk === "BF85" ? "Utganger og rømningsveier fra branncelle (§ 11-13 Utgang fra branncelle)" : "§ 11-13 Utgang fra branncelle"}`;
+                      return (
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-10" label={label310}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.10 {formData.regelverk === "BF85" ? "Utganger og rømningsveier fra branncelle (§ 11-13 Utgang fra branncelle)" : "§ 11-13 Utgang fra branncelle"}</Label>
+                        <Label className="text-base font-extrabold text-foreground">{label310}</Label>
                       </div>
+                      {isBF85Tilstand ? (
+                        <div className="space-y-4">
+                          <p className="text-xs text-muted-foreground italic">
+                            Vurdering av rømningsveg etter Byggeforskrift 1985, §7. Skriv inn observasjoner / vurdering for hvert punkt.
+                          </p>
+                          {[
+                            { id: "71", title: "§:71 Generelt", field: "bf85_romning_71_generelt", text: "Rømningsveg skal på en oversiktlig måte føre til det fri uten lommer, retningsforandringer e.l. som kan hindre personer fra å komme ut under brann. Rømningsveg skal være egen branncelle. Heis og rulletrapp skal ikke regnes som rømningsveg. Rullebånd for personbefordring kan inngå i rømningsveg dersom det beveger seg i rømningsretningen eller stoppes automatisk ved brannalarm." },
+                            { id: "72", title: "§:72 Antall rømningsveger", field: "bf85_romning_72_antall", text: "Antall rømningsveger er avhengig av bygningens bruk, antall etasjer og antall mennesker." },
+                            { id: "73", title: "§:73 Bredde i rømningsveg", field: "bf85_romning_73_bredde", text: "Fri bredde i rømningsveg skal minst være 10 mm pr. person og ikke mindre enn 900 mm." },
+                            { id: "74", title: "§:74 Golvbelegg", field: "bf85_romning_74_golvbelegg", text: "Golvbelegg skal være klasse G." },
+                            { id: "75", title: "§:75 Dør i rømningsveg", field: "bf85_romning_75_dor", text: "Dør i rømningsveg i bygning skal slå ut i rømningsretningen. Dette krav gjelder ikke dør til boenhet. Dør skal utføres som angitt i Tabell 30:75. Kravene gjelder ikke for utgangsdør til det fri." },
+                          ].map((p) => (
+                            <div key={p.id} className="border rounded p-3 space-y-2 bg-muted/20">
+                              <Label className="text-sm font-semibold text-foreground">{p.title}</Label>
+                              <p className="text-xs text-foreground/80 leading-relaxed">{p.text}</p>
+                              <Textarea
+                                value={(formData as any)[p.field] || ""}
+                                onChange={(e) => setFormData({ ...formData, [p.field]: e.target.value } as any)}
+                                placeholder="Vurdering / observasjoner …"
+                                className="min-h-[70px]"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <>
+
                       {((formData.risikoklasse === "RK4" && parseInt(formData.etasjer) >= 2 && parseInt(formData.etasjer) <= 8) || 
                         formData.bygningsdeler.some(b => b.risikoklasse === "RK4" && parseInt(b.etasjer) >= 2 && parseInt(b.etasjer) <= 8)) && (
                         <div className="flex items-center space-x-2 p-2 bg-muted rounded">
