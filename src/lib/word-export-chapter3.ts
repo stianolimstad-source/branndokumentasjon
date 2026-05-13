@@ -1683,8 +1683,10 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     rows.push(contentRow("Kommentar", formData.utgangBranncelleKommentar, "-"));
   }
   rows.push(...await tilstandRow(formData, "3_10", "3.10 Utgang fra branncelle"));
+  }
 
-  // ===== 3.11 Rømningsvei =====
+  // ===== 3.11 Rømningsvei (skjules for BF85-tilstand) =====
+  if (!isBF85Tilstand310) {
   rows.push(sectionHeaderRow("3.11   §11-14 Rømningsvei"));
   rows.push(columnHeaderRow());
   rows.push(contentRow(
