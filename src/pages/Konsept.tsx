@@ -7678,7 +7678,9 @@ const Konsept = () => {
                                 {formData.ventKrav6 && <li>Kjøkken i boenheter: avtrekkskanal med brannmotstand minst EI 15 A2-s1,d0</li>}
                                 {formData.ventKrav7 && <li>Småhus: avtrekkskanaler i stål eller aluminium</li>}
                                 {formData.ventKrav8 && <li>Småhus: kanaler i klasse E gjennom branncellebegrensende konstruksjoner</li>}
-                                {formData.ventKrav9 && <li>Brannspjeld i seksjoneringsvegg</li>}
+                                {formData.ventKrav9 && (((formData.bygningstype || "").toLowerCase().includes("kraftstasjon") || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon")))
+                                  ? <li>Brannspjeld i seksjoneringsvegg – automatisk lukkende, smeltesikring ikke tillatt (kraftstasjon)</li>
+                                  : <li>Brannspjeld i seksjoneringsvegg</li>)}
                                 {(formData.erSykehusPleieinstitusjon || isSeksjoneringRequired(formData.areal, formData.brannseksjonBrannenergi, formData.brannseksjonTiltak)) && (
                                   <li>Varsel: Ventilasjonskanaler gjennom seksjonering må kontrolleres</li>
                                 )}
