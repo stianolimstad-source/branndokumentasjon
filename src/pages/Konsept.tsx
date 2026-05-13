@@ -831,6 +831,17 @@ const Konsept = () => {
   });
 
   // Load existing concept if conceptId is provided
+  // Auto-foreslå automatisk slokkeanlegg (BF85 3.9) når branncelle over flere plan > 800 m² er valgt
+  useEffect(() => {
+    if (formData.regelverk === "BF85"
+        && formData.branncellerFlerePlanRelevant
+        && formData.branncellerFlerePlanAreal === "over800"
+        && !formData.bf85_39_industri_slokkeanlegg) {
+      setFormData(prev => ({ ...prev, bf85_39_industri_slokkeanlegg: true }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.regelverk, formData.branncellerFlerePlanRelevant, formData.branncellerFlerePlanAreal]);
+
   useEffect(() => {
     if (conceptId && user) {
       loadConcept(conceptId);
