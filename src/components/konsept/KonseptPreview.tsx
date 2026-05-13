@@ -2976,6 +2976,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                           ⚠ Fravik: Branncellen strekker seg over flere enn 3 plan. Etter {isBF85 ? "BF85" : "preaksepterte ytelser i VTEK17 §11-8"} kan brannceller ha åpen forbindelse over inntil tre plan. Avvik fra dette må dokumenteres som fravik i tilstandsvurderingen.
                         </div>
                       )}
+                      {formData.branncellerFlerePlanAreal === "under800" && (
+                        <div>Samlet areal av branncellen over flere plan: under 800 m².</div>
+                      )}
+                      {formData.branncellerFlerePlanAreal === "over800" && (
+                        <div>Samlet areal av branncellen over flere plan: over 800 m². {isBF85 ? "Det kreves automatisk slokkeanlegg, jf. kap. 3.9." : "Krav om automatisk sprinkleranlegg, jf. § 11-12 første ledd."}</div>
+                      )}
                     </div>
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIBr</td>
@@ -4130,15 +4136,23 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">RIE</td>
               </tr>
             )}
-            {isBF85 && formData.bf85_39_industri_slokkeanlegg && (
-              <tr>
-                <td className="border border-gray-400 p-2 align-top">Automatisk slokkeanlegg – industri</td>
-                <td className="border border-gray-400 p-2">
-                  Industribygg som er åpne over flere plan med samlet areal &gt; 800 m² skal ha automatisk slokkeanlegg.
-                </td>
-                <td className="border border-gray-400 p-2 align-top">RIV</td>
-              </tr>
-            )}
+            {isBF85 && formData.bf85_39_industri_slokkeanlegg && (() => {
+              const erIndustri = (formData.bygningstype || "").toLowerCase().includes("industri")
+                || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("industri"));
+              const flerePlanOver800 = !!formData.branncellerFlerePlanRelevant && formData.branncellerFlerePlanAreal === "over800";
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Automatisk slokkeanlegg</td>
+                  <td className="border border-gray-400 p-2">
+                    {erIndustri && "Industribygg som er åpne over flere plan med samlet areal > 800 m² skal ha automatisk slokkeanlegg."}
+                    {erIndustri && flerePlanOver800 && " "}
+                    {flerePlanOver800 && !erIndustri && "Branncelle over flere plan har samlet areal > 800 m² (jf. kap. 3.5) – det kreves automatisk slokkeanlegg."}
+                    {flerePlanOver800 && erIndustri && "Bekreftet i kap. 3.5: branncelle over flere plan har samlet areal > 800 m²."}
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIV</td>
+                </tr>
+              );
+            })()}
             {!isBF85 && formData.tilretteleggingLedd1a && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Automatisk brannslokkeanlegg (RK4)</td>

@@ -1,84 +1,60 @@
 ## Mål
 
-Utvide BF85 kapittel 3.9 «Tiltak for å påvirke rømnings- og redningstider» med to nye regler i tillegg til dagens skole-spesifikke `:16 Brannalarmanlegg`:
-
-1. **Kontorbygg – risikobasert brannalarm:** «Det er ikke krav til brannalarmanlegg, men for kontor der hvor det kreves (risikobasert) skal brannalarmen varsle alle.»
-2. **Industribygg – automatisk slokkeanlegg:** «Det kreves automatisk slokkeanlegg i industribygg som er åpen i flere plan med et samlet areal over 800 m².»
-
-Reglene skal kun vises for BF85-prosjekter, og kun når bygningstypen er relevant (kontor / industri).
+I kap. 3.5 «Brannceller over flere plan» (BF85): når «Brannceller over flere plan er relevant» er huket av, skal brukeren velge **under** eller **over 800 m²** for samlet areal av branncellen(e) over flere plan. Ved valg «over 800 m²» skal det automatisk komme et krav om **automatisk slokkeanlegg** i kap. 3.9 – uavhengig av om bygningstypen er industri.
 
 ## Endringer
 
-### 1. `src/pages/Konsept.tsx` – BF85-skjema (kap. 3.9, ca. linje 8001–8026)
+### 1. Datamodell (`src/pages/Konsept.tsx`, init av `formData`)
 
-Etter dagens skole-blokk (`:16 Brannalarmanlegg` + sprinkler) legges det til to nye betingede blokker:
+Nytt felt:
+- `branncellerFlerePlanAreal: "" | "under800" | "over800"` (default `""`)
 
-**A. Kontor – risikobasert brannalarm**
-- Vises når `formData.regelverk === "BF85"` og bygningstype (på prosjekt eller minst én bygningsdel) inneholder «kontor».
-- Ny checkbox `bf85_39_kontor_brannalarm` (boolean, default `false`):
-  - Label: *«Risikobasert krav til brannalarm (kontor): Det er ikke generelt krav til brannalarmanlegg i kontorbygg etter BF85, men der det kreves ut fra risikovurdering skal brannalarmen varsle alle i bygget.»*
-- Ingen fri tekst – ren toggle.
+Initialiseres samme sted som `branncellerFlerePlanRelevant` / `branncellerFlerePlanOver3`.
 
-**B. Industri – automatisk slokkeanlegg**
-- Vises når `formData.regelverk === "BF85"` og bygningstype inneholder «industri».
-- Hjelpetekst (italic, muted) over checkbox: *«BF85 krever automatisk slokkeanlegg i industribygg som er åpne over flere plan med samlet areal > 800 m².»*
-- Ny checkbox `bf85_39_industri_slokkeanlegg` (boolean):
-  - Label: *«Automatisk slokkeanlegg (industribygg, åpen flere plan, samlet areal > 800 m²)»*
-- Auto-forslag: Når bygningsdata oppfyller (etasjer > 1 OG bra > 800), vises et varsel («ℹ︎ Bygget oppfyller kriteriene – kravet bør avhukes») – men endelig valg ligger hos bruker (BF85 har ikke automatisk åpen/lukket-detektor). Ingen tvunget toggle, ingen fravik-blokk.
+### 2. UI i kap. 3.5 (`src/pages/Konsept.tsx`, ca. linje 6686–6720)
 
-Begge plasseres inne i den eksisterende BF85-`<div className="p-3 bg-muted/50 ...">`-boksen (eller i en parallell boks rett under, slik at skole-spesifikke felter forblir gated på «skole»).
+Inne i `{formData.branncellerFlerePlanRelevant && (...)}`-blokken, like ved `branncellerFlerePlanOver3`, legges en ny under-blokk (vises kun for BF85, dvs. tilstandsvurdering, siden TEK17-flyten ikke har dette behovet i dag):
 
-### 2. `src/components/konsept/KonseptPreview.tsx` – BF85-tabellen i 3.9 (ca. linje 4106–4123)
+- Tittel: «Samlet areal av branncellen over flere plan»
+- To radio-knapper (Radio Group): `under800` («Under 800 m²») og `over800` («Over 800 m²»)
+- Når `over800` velges:
+  - Info-boks (amber): «ℹ︎ BF85 krever automatisk slokkeanlegg når branncelle over flere plan har samlet areal > 800 m². Kravet legges automatisk inn i kap. 3.9.»
 
-Etter dagens to BF85-rader (`bf85_16_brannalarmanlegg`, `bf85_sprinkler_installert`) legges to nye betingede rader:
+Når brukeren tar bort hake på `branncellerFlerePlanRelevant` skal `branncellerFlerePlanAreal` nullstilles (samme mønster som dagens reset av `branncellerFlerePlanKrav` / `branncellerFlerePlanOver3`).
 
-```
-{isBF85 && formData.bf85_39_kontor_brannalarm && (
-  <tr>
-    <td>Brannalarm – kontor (risikobasert)</td>
-    <td>Det er ikke generelt krav til brannalarmanlegg etter BF85. For kontorbygg
-        der brannalarm kreves ut fra risikovurdering skal alarmen varsle alle
-        personer i bygget.</td>
-    <td>RIE</td>
-  </tr>
-)}
-{isBF85 && formData.bf85_39_industri_slokkeanlegg && (
-  <tr>
-    <td>Automatisk slokkeanlegg – industri</td>
-    <td>Industribygg som er åpne over flere plan med samlet areal > 800 m²
-        skal ha automatisk slokkeanlegg.</td>
-    <td>RIV</td>
-  </tr>
-)}
-```
+### 3. Kobling til kap. 3.9 (`src/pages/Konsept.tsx`, ca. linje 8050–8081)
 
-### 3. `src/lib/word-export-chapter3.ts` – Word-eksport (rundt linje 1357 / BF85-grenen i 3.9)
+Industri-blokken refaktoreres lett slik at trigger for «automatisk slokkeanlegg»-kravet utvides:
 
-Speile preview-radene i Word-eksporten. I den eksisterende BF85-blokken for 3.9 (etter `bf85_16_brannalarmanlegg` og sprinkler) legges:
+Trigger vises (BF85) hvis **enten**:
+- bygningstype inneholder «industri» (dagens regel), **eller**
+- `branncellerFlerePlanRelevant && branncellerFlerePlanAreal === "over800"` (ny regel).
 
-- `if (formData.bf85_39_kontor_brannalarm) rows.push(contentRow("Brannalarm – kontor (risikobasert)", "...", "RIE"));`
-- `if (formData.bf85_39_industri_slokkeanlegg) rows.push(contentRow("Automatisk slokkeanlegg – industri", "...", "RIV"));`
+Når den nye triggeren slår inn:
+- Forhåndsavhukes ikke tvunget, men `bf85_39_industri_slokkeanlegg` settes automatisk til `true` første gang `over800` velges (samme mønster som andre auto-suggest), og en info-boks viser hvorfor: «Kravet er foreslått fordi branncelle over flere plan > 800 m² er valgt i kap. 3.5.» Brukeren kan fortsatt skru av.
+- Etiketten justeres til generisk tekst: «Automatisk slokkeanlegg: Branncelle over flere plan med samlet areal > 800 m² skal ha automatisk slokkeanlegg.» (industri-spesifikk hjelpetekst beholdes når industri-trigger gjelder).
 
-Samme tekst som i preview, ingen tilleggsformatering.
+Ingen nye flagg utover gjenbruk av `bf85_39_industri_slokkeanlegg` – dette holder preview/Word-eksport (allerede implementert) uendret.
 
-### 4. Datamodell
+### 4. Preview (`src/components/konsept/KonseptPreview.tsx`)
 
-To nye boolske felter i `formData`-typen som brukes i Konsept-skjemaet:
+- Kap. 3.5-tabellraden for «Brannceller over flere plan» får en ekstra linje når `branncellerFlerePlanAreal` er satt: «Samlet areal: under 800 m²» / «Samlet areal: over 800 m² – krever automatisk slokkeanlegg».
+- Kap. 3.9-raden for «Automatisk slokkeanlegg – industri» (linje 4133) får etikett endret til «Automatisk slokkeanlegg» og beskrivelsen blir kontekstavhengig (industri vs. branncelle > 800 m²).
 
-- `bf85_39_kontor_brannalarm: boolean` (default `false`)
-- `bf85_39_industri_slokkeanlegg: boolean` (default `false`)
+### 5. Word-eksport (`src/lib/word-export-chapter3.ts`)
 
-Initialiseres som `false` der `formData` settes opp / persist‐lastes (samme sted som dagens `bf85_16_brannalarmanlegg`).
+- I 3.5 BF85-grenen (linje ~917–929): Legg til en ekstra linje i «Brannceller over flere plan»-raden når `branncellerFlerePlanAreal` er satt, med samme tekst som preview.
+- I 3.9 BF85-grenen (linje ~1331): Etikett/tekst justeres på samme måte som preview – ingen ny rad, samme `bf85_39_industri_slokkeanlegg`-flagg.
 
 ## Akseptansekriterier
 
-- BF85 + bygningstype «kontor»: Ny checkbox vises i 3.9. Avhuket → ny rad i preview og Word-rapport.
-- BF85 + bygningstype «industri»: Ny checkbox vises i 3.9 (med 800 m²/flere plan-hjelpetekst). Avhuket → ny rad i preview og Word-rapport. Når bygget faktisk har > 1 etasje og bra > 800 m² vises en informativ påminnelse om at kravet bør være på.
-- TEK17-prosjekter: Ingen UI- eller rapport-endring.
-- BF85-skole-blokken (`:16 Brannalarmanlegg`, sprinkler) er uendret.
-- Ingen endring i andre kapitler eller eksisterende felter.
+- BF85 + `branncellerFlerePlanRelevant`: Ny under/over 800 m²-radio vises i kap. 3.5.
+- Velges «over 800 m²»: Info-boks i 3.5, og kravet «Automatisk slokkeanlegg» dukker opp i kap. 3.9 uavhengig av bygningstype, med begrunnelse.
+- Velges «under 800 m²» (eller ingen): Ingen automatisk effekt på 3.9 fra denne triggeren (industri-triggeren virker fortsatt selvstendig).
+- TEK17-prosjekter: Uendret oppførsel.
+- Preview og Word-rapport speiler endringene.
 
-## Spørsmål til avklaring
+## Spørsmål
 
-1. Skal industri-kravet auto-aktiveres (forhåndsavhuket) når etasjer > 1 og bra > 800, eller alltid kreve manuell avhuking med info-varsel? Planen over bruker «manuell + info-varsel». Ok?
-2. Skal kontor-checkboxen også vises for bygninger med kombinert bruk (f.eks. «kontor/lager») – dvs. matche delstreng «kontor» hvor som helst i bygningstypen? Planen forutsetter ja.
+1. Skal valget «over 800 m²» **forhåndsavhuke** `bf85_39_industri_slokkeanlegg` automatisk (som planen foreslår), eller bare vise et varsel og la brukeren huke av selv?
+2. Skal under/over-valget også vises for **TEK17**-prosjekter (i dag har ikke TEK17 noe BF85-spesifikt 3.9-krav å koble på)? Planen forutsetter «kun BF85».

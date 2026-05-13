@@ -650,6 +650,7 @@ const Konsept = () => {
     branncellerFlerePlanRelevant: false,
     branncellerFlerePlanKrav: [] as string[],
     branncellerFlerePlanOver3: false,
+    branncellerFlerePlanAreal: "" as "" | "under800" | "over800",
     garasjeRelevant: false,
     garasjePlassering: "" as "" | "i_tiltaket" | "utenfor_tiltaket",
     garasjeAreal: "" as "" | "under_50" | "50_400" | "over_400",
@@ -828,6 +829,17 @@ const Konsept = () => {
     bf85_39_industri_slokkeanlegg: false, // BF85 3.9: Auto. slokkeanlegg i industribygg, åpne flere plan, > 800 m²
     kraftstasjonUnderFjell: false, // Kraftstasjon under fjell eller under dagen
   });
+
+  // Auto-foreslå automatisk slokkeanlegg (BF85 3.9) når branncelle over flere plan > 800 m² er valgt
+  useEffect(() => {
+    if (formData.regelverk === "BF85"
+        && formData.branncellerFlerePlanRelevant
+        && formData.branncellerFlerePlanAreal === "over800"
+        && !formData.bf85_39_industri_slokkeanlegg) {
+      setFormData(prev => ({ ...prev, bf85_39_industri_slokkeanlegg: true }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.regelverk, formData.branncellerFlerePlanRelevant, formData.branncellerFlerePlanAreal]);
 
   // Load existing concept if conceptId is provided
   useEffect(() => {
@@ -6678,7 +6690,7 @@ const Konsept = () => {
                               id="branncellerFlerePlanRelevant"
                               checked={formData.branncellerFlerePlanRelevant}
                               onCheckedChange={(checked) => 
-                                setFormData({...formData, branncellerFlerePlanRelevant: !!checked, branncellerFlerePlanKrav: !!checked ? formData.branncellerFlerePlanKrav : [], branncellerFlerePlanOver3: !!checked ? formData.branncellerFlerePlanOver3 : false})
+                                setFormData({...formData, branncellerFlerePlanRelevant: !!checked, branncellerFlerePlanKrav: !!checked ? formData.branncellerFlerePlanKrav : [], branncellerFlerePlanOver3: !!checked ? formData.branncellerFlerePlanOver3 : false, branncellerFlerePlanAreal: !!checked ? formData.branncellerFlerePlanAreal : ""})
                               }
                             />
                             <label htmlFor="branncellerFlerePlanRelevant" className="text-xs cursor-pointer font-medium">Brannceller over flere plan er relevant</label>
@@ -6714,6 +6726,28 @@ const Konsept = () => {
                                       ? "⚠ Obs: Hovedregel etter BF85 er åpen forbindelse over inntil 3 plan. Flere plan i samme branncelle må dokumenteres som fravik."
                                       : "⚠ Obs: Preakseptert ytelse tillater åpen forbindelse over inntil 3 plan. Branncelle over flere enn 3 plan er ikke dekket av preakseptert ytelse og må dokumenteres som fravik."
                                     }
+                                  </div>
+                                )}
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-xs font-medium block">Samlet areal av branncellen over flere plan</Label>
+                                <RadioGroup
+                                  value={formData.branncellerFlerePlanAreal || ""}
+                                  onValueChange={(val) => setFormData({...formData, branncellerFlerePlanAreal: val as "under800" | "over800"})}
+                                  className="flex flex-col gap-1"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <RadioGroupItem value="under800" id="bcfp_areal_under800" />
+                                    <label htmlFor="bcfp_areal_under800" className="text-xs cursor-pointer">Under 800 m²</label>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <RadioGroupItem value="over800" id="bcfp_areal_over800" />
+                                    <label htmlFor="bcfp_areal_over800" className="text-xs cursor-pointer">Over 800 m²</label>
+                                  </div>
+                                </RadioGroup>
+                                {formData.branncellerFlerePlanAreal === "over800" && formData.regelverk === "BF85" && (
+                                  <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded p-2 text-xs text-amber-800 dark:text-amber-300">
+                                    ℹ︎ BF85 krever automatisk slokkeanlegg når branncelle over flere plan har samlet areal &gt; 800 m². Kravet legges automatisk inn i kap. 3.9.
                                   </div>
                                 )}
                               </div>
@@ -8047,21 +8081,29 @@ const Konsept = () => {
                         </div>
                       )}
 
-                      {/* BF85-spesifikt: Automatisk slokkeanlegg i industribygg */}
-                      {formData.regelverk === "BF85" && (
-                        (formData.bygningstype || "").toLowerCase().includes("industri")
-                        || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("industri"))
-                      ) && (() => {
+                      {/* BF85-spesifikt: Automatisk slokkeanlegg (industribygg eller branncelle over flere plan > 800 m²) */}
+                      {formData.regelverk === "BF85" && (() => {
+                        const erIndustri = (formData.bygningstype || "").toLowerCase().includes("industri")
+                          || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("industri"));
+                        const flerePlanOver800 = !!formData.branncellerFlerePlanRelevant && formData.branncellerFlerePlanAreal === "over800";
+                        if (!erIndustri && !flerePlanOver800) return null;
                         const etasjer = parseInt(formData.etasjer || "0", 10);
                         const areal = parseFloat(String(formData.areal || "0").replace(",", ".")) || 0;
                         const oppfyllerKriterier = etasjer > 1 && areal > 800;
                         return (
                           <div className="p-3 bg-muted/50 border border-border rounded space-y-2">
-                            <Label className="text-xs font-medium block">BF85-krav for industribygg:</Label>
-                            <p className="text-[11px] italic text-muted-foreground">
-                              BF85 krever automatisk slokkeanlegg i industribygg som er åpne over flere plan med samlet areal &gt; 800 m².
-                            </p>
-                            {oppfyllerKriterier && !formData.bf85_39_industri_slokkeanlegg && (
+                            <Label className="text-xs font-medium block">BF85-krav: Automatisk slokkeanlegg</Label>
+                            {erIndustri && (
+                              <p className="text-[11px] italic text-muted-foreground">
+                                BF85 krever automatisk slokkeanlegg i industribygg som er åpne over flere plan med samlet areal &gt; 800 m².
+                              </p>
+                            )}
+                            {flerePlanOver800 && (
+                              <p className="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded px-2 py-1">
+                                ℹ︎ Foreslått fordi branncelle over flere plan med samlet areal &gt; 800 m² er valgt i kap. 3.5.
+                              </p>
+                            )}
+                            {erIndustri && oppfyllerKriterier && !formData.bf85_39_industri_slokkeanlegg && (
                               <p className="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded px-2 py-1">
                                 ℹ︎ Bygget har {etasjer} etasjer og samlet areal {areal} m² – kravet bør avhukes dersom bygget er åpent over flere plan.
                               </p>
@@ -8073,7 +8115,9 @@ const Konsept = () => {
                                 onCheckedChange={(checked) => setFormData({...formData, bf85_39_industri_slokkeanlegg: !!checked})}
                               />
                               <Label htmlFor="bf85_39_industri_slokkeanlegg" className="text-xs cursor-pointer leading-relaxed">
-                                <strong>Automatisk slokkeanlegg (industribygg):</strong> Industribygg som er åpne over flere plan med samlet areal &gt; 800 m² skal ha automatisk slokkeanlegg.
+                                <strong>Automatisk slokkeanlegg:</strong> {flerePlanOver800 && !erIndustri
+                                  ? "Branncelle over flere plan med samlet areal > 800 m² skal ha automatisk slokkeanlegg."
+                                  : "Industribygg som er åpne over flere plan med samlet areal > 800 m² skal ha automatisk slokkeanlegg."}
                               </Label>
                             </div>
                           </div>
