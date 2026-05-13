@@ -7633,66 +7633,96 @@ const Konsept = () => {
                       {/* Info om automatiske krav */}
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
-                        {formData.regelverk === "BF85" && (
-                          <p className="italic text-foreground/70">BF85 Kap. 47 stiller kun generelle krav om at anlegg ikke skal medføre økt risiko for brann. TEK17 § 11-10 og preaksepterte ytelser legges derfor til grunn som vurderingsgrunnlag.</p>
-                        )}
-                        <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                          {formData.ventilasjonRelevant && (
-                            <>
-                              <li>Ventilasjonskanaler gjennom brannskillende konstruksjoner må ha brannmotstand</li>
-                              <li>Ventilasjonskanaler gjennom branncellebegrensende konstruksjoner må ha brannmotstand tilsvarende konstruksjonen</li>
-                              <li>Brannspjeld i kanaler som går gjennom brannskillende konstruksjoner</li>
-                              <li>Avtrekkskanal fra rom med brannfarlig virksomhet med brannmotstand EI 30 A2-s1,d0</li>
-                              {formData.ventKrav5 && <li>Storkjøkken/frityr: avtrekkskanal med brannmotstand minst EI 30 A2-s1,d0</li>}
-                              {formData.ventKrav6 && <li>Kjøkken i boenheter: avtrekkskanal med brannmotstand minst EI 15 A2-s1,d0</li>}
-                              {formData.ventKrav7 && <li>Småhus: avtrekkskanaler i stål eller aluminium</li>}
-                              {formData.ventKrav8 && <li>Småhus: kanaler i klasse E gjennom branncellebegrensende konstruksjoner</li>}
-                              {formData.ventKrav9 && <li>Brannspjeld i seksjoneringsvegg</li>}
-                              {(formData.erSykehusPleieinstitusjon || isSeksjoneringRequired(formData.areal, formData.brannseksjonBrannenergi, formData.brannseksjonTiltak)) && (
-                                <li>Varsel: Ventilasjonskanaler gjennom seksjonering må kontrolleres</li>
+                        {formData.regelverk === "BF85" ? (
+                          <>
+                            <p className="italic text-foreground/70">BF85 Kap. 47 stiller kun generelle krav om at anlegg ikke skal medføre økt risiko for brann. TEK17 § 11-10 og preaksepterte ytelser legges derfor til grunn som vurderingsgrunnlag.</p>
+                            <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                              {formData.bf85_1332_avtrekk && (
+                                <>
+                                  <li>:1332 Avtrekk – avtrekk fra kjøkken og WC føres i egne kanaler</li>
+                                  <li>:1332 Avtrekk – avtrekk fra forskjellige leiligheter føres i egne kanaler minst en full etasjehøyde opp</li>
+                                  <li>:1332 Avtrekk – oppholdsrom, soverom og arbeidsrom med naturlig avtrekk skal ha vindu/ytterdør for rask utlufting</li>
+                                </>
                               )}
-                            </>
-                          )}
-                          {formData.vannAvlopRelevant && (
-                            <>
-                              <li>Rørgjennomføringer i brannskillende konstruksjoner må ha dokumentert brannmotstand</li>
-                              <li>Plastrør med ytre diameter ≤ 32 mm gjennom murte/støpte konstruksjoner</li>
-                              <li>Støpejernrør med ytre diameter ≤ 110 mm gjennom murte/støpte konstruksjoner</li>
-                            </>
-                          )}
-                          {formData.rorIsolasjonRelevant && (
-                            <>
-                              <li>Isolasjon på rør og kanaler i rømningsveier og sjakter: klasse BL-s1,d0 [PI]</li>
-                              {(() => {
-                                const allParts: { label: string; rk: string; bkl: string }[] = [];
-                                if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length) {
-                                  formData.bygningsdeler.forEach((d: any, i: number) => {
-                                    if (d.risikoklasse) allParts.push({ label: `Bygningsdel ${i + 1}`, rk: d.risikoklasse, bkl: d.brannklasse || '' });
+                              {formData.ventilasjonRelevant ? (
+                                <>
+                                  <li>Ventilasjonskanal gjennom brannskillende bygningsdel må opprettholde brannmotstand</li>
+                                  <li>Innfesting og oppheng for kanaler og ventilasjonsutstyr må opprettholde funksjonstid og brannmotstand</li>
+                                  <li>Avtrekk fra komfyr må føres i egen kanal</li>
+                                  <li>Ventilasjonsanlegg utføres i materialer i klasse A2-s1,d0</li>
+                                  {formData.ventKrav5 && <li>Storkjøkken/frityr: avtrekkskanal med brannmotstand minst EI 30 A2-s1,d0</li>}
+                                  {formData.ventKrav6 && <li>Kjøkken i boenheter: avtrekkskanal med brannmotstand minst EI 15 A2-s1,d0</li>}
+                                  {formData.ventKrav7 && <li>Småhus: avtrekkskanaler i stål eller aluminium</li>}
+                                  {formData.ventKrav8 && <li>Småhus: kanaler i klasse E gjennom branncellebegrensende konstruksjoner</li>}
+                                  {formData.ventKrav9 && <li>Brannspjeld i seksjoneringsvegg</li>}
+                                </>
+                              ) : (
+                                <li>Ventilasjonsanlegg er ikke installert</li>
+                              )}
+                              {!formData.bf85_1332_avtrekk && !formData.ventilasjonRelevant && (
+                                <li>Velg relevante tekniske installasjoner ovenfor</li>
+                              )}
+                            </ul>
+                          </>
+                        ) : (
+                          <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                            {formData.ventilasjonRelevant && (
+                              <>
+                                <li>Ventilasjonskanaler gjennom brannskillende konstruksjoner må ha brannmotstand</li>
+                                <li>Ventilasjonskanaler gjennom branncellebegrensende konstruksjoner må ha brannmotstand tilsvarende konstruksjonen</li>
+                                <li>Brannspjeld i kanaler som går gjennom brannskillende konstruksjoner</li>
+                                <li>Avtrekkskanal fra rom med brannfarlig virksomhet med brannmotstand EI 30 A2-s1,d0</li>
+                                {formData.ventKrav5 && <li>Storkjøkken/frityr: avtrekkskanal med brannmotstand minst EI 30 A2-s1,d0</li>}
+                                {formData.ventKrav6 && <li>Kjøkken i boenheter: avtrekkskanal med brannmotstand minst EI 15 A2-s1,d0</li>}
+                                {formData.ventKrav7 && <li>Småhus: avtrekkskanaler i stål eller aluminium</li>}
+                                {formData.ventKrav8 && <li>Småhus: kanaler i klasse E gjennom branncellebegrensende konstruksjoner</li>}
+                                {formData.ventKrav9 && <li>Brannspjeld i seksjoneringsvegg</li>}
+                                {(formData.erSykehusPleieinstitusjon || isSeksjoneringRequired(formData.areal, formData.brannseksjonBrannenergi, formData.brannseksjonTiltak)) && (
+                                  <li>Varsel: Ventilasjonskanaler gjennom seksjonering må kontrolleres</li>
+                                )}
+                              </>
+                            )}
+                            {formData.vannAvlopRelevant && (
+                              <>
+                                <li>Rørgjennomføringer i brannskillende konstruksjoner må ha dokumentert brannmotstand</li>
+                                <li>Plastrør med ytre diameter ≤ 32 mm gjennom murte/støpte konstruksjoner</li>
+                                <li>Støpejernrør med ytre diameter ≤ 110 mm gjennom murte/støpte konstruksjoner</li>
+                              </>
+                            )}
+                            {formData.rorIsolasjonRelevant && (
+                              <>
+                                <li>Isolasjon på rør og kanaler i rømningsveier og sjakter: klasse BL-s1,d0 [PI]</li>
+                                {(() => {
+                                  const allParts: { label: string; rk: string; bkl: string }[] = [];
+                                  if (formData.harFlereRisikoklasser && formData.bygningsdeler?.length) {
+                                    formData.bygningsdeler.forEach((d: any, i: number) => {
+                                      if (d.risikoklasse) allParts.push({ label: `Bygningsdel ${i + 1}`, rk: d.risikoklasse, bkl: d.brannklasse || '' });
+                                    });
+                                  } else {
+                                    allParts.push({ label: '', rk: formData.risikoklasse, bkl: formData.brannklasse });
+                                  }
+                                  const isMulti = allParts.length > 1;
+                                  if (!isMulti) {
+                                    const isPII = ["RK3","RK5","RK6"].includes(allParts[0].rk) || ["BKL2","BKL3"].includes(allParts[0].bkl);
+                                    return <li>Øvrig isolasjon: {isPII ? 'CL-s3,d0 [PII]' : 'DL-s3,d0 [PIII]'}</li>;
+                                  }
+                                  return allParts.map((p, idx) => {
+                                    const isPII = ["RK3","RK5","RK6"].includes(p.rk) || ["BKL2","BKL3"].includes(p.bkl);
+                                    return <li key={idx}>{p.label}: Øvrig isolasjon {isPII ? 'CL-s3,d0 [PII]' : 'DL-s3,d0 [PIII]'}</li>;
                                   });
-                                } else {
-                                  allParts.push({ label: '', rk: formData.risikoklasse, bkl: formData.brannklasse });
-                                }
-                                const isMulti = allParts.length > 1;
-                                if (!isMulti) {
-                                  const isPII = ["RK3","RK5","RK6"].includes(allParts[0].rk) || ["BKL2","BKL3"].includes(allParts[0].bkl);
-                                  return <li>Øvrig isolasjon: {isPII ? 'CL-s3,d0 [PII]' : 'DL-s3,d0 [PIII]'}</li>;
-                                }
-                                return allParts.map((p, idx) => {
-                                  const isPII = ["RK3","RK5","RK6"].includes(p.rk) || ["BKL2","BKL3"].includes(p.bkl);
-                                  return <li key={idx}>{p.label}: Øvrig isolasjon {isPII ? 'CL-s3,d0 [PII]' : 'DL-s3,d0 [PIII]'}</li>;
-                                });
-                              })()}
-                            </>
-                          )}
-                          {formData.elektriskRelevant && (
-                            <>
-                              <li>Kabler i sjakter og hulrom over nedforet himling med brannmotstand</li>
-                              <li>Elektriske kabler i rømningsveier med dokumentert brannmotstand</li>
-                              <li>Gjennomføringer i brannskillende konstruksjoner må tettes</li>
-                            </>
-                          )}
-                          {!formData.ventilasjonRelevant && !formData.vannAvlopRelevant && !formData.rorIsolasjonRelevant && !formData.elektriskRelevant && <li>Velg relevante tekniske installasjoner ovenfor</li>}
-                        </ul>
+                                })()}
+                              </>
+                            )}
+                            {formData.elektriskRelevant && (
+                              <>
+                                <li>Kabler i sjakter og hulrom over nedforet himling med brannmotstand</li>
+                                <li>Elektriske kabler i rømningsveier med dokumentert brannmotstand</li>
+                                <li>Gjennomføringer i brannskillende konstruksjoner må tettes</li>
+                              </>
+                            )}
+                            {!formData.ventilasjonRelevant && !formData.vannAvlopRelevant && !formData.rorIsolasjonRelevant && !formData.elektriskRelevant && <li>Velg relevante tekniske installasjoner ovenfor</li>}
+                          </ul>
+                        )}
                       </div>
                       
                       <div>
