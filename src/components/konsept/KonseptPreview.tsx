@@ -5348,7 +5348,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {/* 3.12 §11-15 Tilrettelegging for redning av husdyr */}
             <tr id="preview-3-12" style={sectionRowStyle}>
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.12 &nbsp;&nbsp; {isBF85 ? <>Tilrettelegging for redning av husdyr <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-15)</span></> : "§11-15 Tilrettelegging for redning av husdyr"}</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.{isBF85 ? "11" : "12"} &nbsp;&nbsp; {isBF85 ? <>Tilrettelegging for redning av husdyr <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-15)</span></> : "§11-15 Tilrettelegging for redning av husdyr"}</td>
             </tr>
             {formData.husdyrRedningRelevant ? (
               <>
@@ -5435,12 +5435,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
             )}
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_12"] && (
-              <TilstandTableRow data={formData.tilstandsvurderinger["3_12"]} sectionLabel="3.12 Redning av husdyr" />
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_12"]} sectionLabel={isBF85 ? "3.11 Redning av husdyr" : "3.12 Redning av husdyr"} />
             )}
 
             {/* 3.13 §11-16 Manuell slokking */}
             <tr id="preview-3-13" style={sectionRowStyle}>
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.13 &nbsp;&nbsp; {isBF85 ? <>Slokkingsredskap og slokkingsvann (Kap. 30:93/31–39) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-16 Tilrettelegging for manuell slokking)</span></> : "§11-16 Tilrettelegging for manuell slokking"}</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.{isBF85 ? "12" : "13"} &nbsp;&nbsp; {isBF85 ? <>Slokkingsredskap og slokkingsvann (Kap. 30:93/31–39) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-16 Tilrettelegging for manuell slokking)</span></> : "§11-16 Tilrettelegging for manuell slokking"}</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
@@ -5556,12 +5556,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </tr>
             )}
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_13"] && (
-              <TilstandTableRow data={formData.tilstandsvurderinger["3_13"]} sectionLabel="3.13 Manuell slokking" />
+              <TilstandTableRow data={formData.tilstandsvurderinger["3_13"]} sectionLabel={isBF85 ? "3.12 Manuell slokking" : "3.13 Manuell slokking"} />
             )}
 
             {/* 3.14 §11-17 Tilrettelegging for slokkemannskap */}
             <tr id="preview-3-14" style={sectionRowStyle}>
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.14 &nbsp;&nbsp; {isBF85 ? <>Atkomst for brannvesenet (Kap. 30:92/94/95) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-17 Tilrettelegging for slokkemannskap)</span></> : "§11-17 Tilrettelegging for slokkemannskap"}</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.{isBF85 ? "13" : "14"} &nbsp;&nbsp; {isBF85 ? <>Atkomst for brannvesenet (Kap. 30:92/94/95) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-17 Tilrettelegging for slokkemannskap)</span></> : "§11-17 Tilrettelegging for slokkemannskap"}</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
