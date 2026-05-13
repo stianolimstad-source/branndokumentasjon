@@ -677,6 +677,7 @@ const Konsept = () => {
     bf85_513: false, // :513 Yttervegger i B-konstruksjon
     bf85_514: false, // :514 Fasademateriale på vegg i A-konstruksjon
     bf85_515: false, // :515 Brennbar isolasjon
+    bf85_53: false,  // :53 Nedforet himling
     installasjoner: "",
     installasjonerKommentar: "",
     // Ventilasjonsanlegg
