@@ -7183,27 +7183,42 @@ const Konsept = () => {
                           </div>
 
                           {/* BF85 :5 Vegger, tak og nedforet himling */}
-                          <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
-                            <Label className="text-xs font-medium">Vegger, tak og nedforet himling (:5)</Label>
-                            {[
-                              { key: "bf85_513", label: ":513 Yttervegger i B-konstruksjon" },
-                              { key: "bf85_514", label: ":514 Fasademateriale på vegg i A-konstruksjon" },
-                              { key: "bf85_515", label: ":515 Brennbar isolasjon" },
-                            ].map((item) => (
-                              <div key={item.key} className="flex items-center gap-2">
-                                <Checkbox
-                                  id={item.key}
-                                  checked={!!formData[item.key]}
-                                  onCheckedChange={(checked) =>
-                                    setFormData({ ...formData, [item.key]: !!checked })
-                                  }
-                                />
-                                <label htmlFor={item.key} className="text-xs cursor-pointer">
-                                  {item.label}
-                                </label>
+                          {(() => {
+                            const rel = getRelevantBF85_5xx(formData.bygningsbrannklasse, formData.etasjer);
+                            const items = [
+                              { key: "bf85_513", label: ":513 Yttervegger i B-konstruksjon", show: rel.vis513 },
+                              { key: "bf85_514", label: ":514 Fasademateriale på vegg i A-konstruksjon", show: rel.vis514 },
+                              { key: "bf85_515", label: ":515 Brennbar isolasjon", show: rel.vis515 },
+                            ].filter(i => i.show);
+                            if (items.length === 0) {
+                              return (
+                                <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                                  <Label className="text-xs font-medium">Vegger, tak og nedforet himling (:5)</Label>
+                                  <p className="text-xs text-muted-foreground">Ingen relevante krav for valgt bygningsbrannklasse og etasjer.</p>
+                                </div>
+                              );
+                            }
+                            return (
+                              <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                                <Label className="text-xs font-medium">Vegger, tak og nedforet himling (:5)</Label>
+                                <p className="text-[10px] text-muted-foreground">Filtrert etter bygningsbrannklasse {rel.bklNum || "?"} og {rel.etasjerNum || "?"} etasjer.</p>
+                                {items.map((item) => (
+                                  <div key={item.key} className="flex items-center gap-2">
+                                    <Checkbox
+                                      id={item.key}
+                                      checked={!!formData[item.key]}
+                                      onCheckedChange={(checked) =>
+                                        setFormData({ ...formData, [item.key]: !!checked })
+                                      }
+                                    />
+                                    <label htmlFor={item.key} className="text-xs cursor-pointer">
+                                      {item.label}
+                                    </label>
+                                  </div>
+                                ))}
                               </div>
-                            ))}
-                          </div>
+                            );
+                          })()}
                         </>
                       ) : (
                         <>
