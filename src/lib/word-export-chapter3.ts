@@ -1317,6 +1317,22 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   rows.push(sectionHeaderRow(formData.regelverk === "BF85" ? "3.9   Tiltak for å påvirke rømnings- og redningstider" : "3.9   §11-12 Tilrettelegging for rømning og redning"));
   rows.push(columnHeaderRow());
 
+  // BF85-spesifikke rader for 3.9
+  if (formData.regelverk === "BF85") {
+    if (formData.bf85_16_brannalarmanlegg) {
+      rows.push(contentRow(":16 Brannalarmanlegg", "Bygningsrådet kan kreve Brannalarmanlegg.", "RIE"));
+    }
+    if (formData.bf85_sprinkler_installert) {
+      rows.push(contentRow("Sprinkleranlegg", "Det er installert sprinkleranlegg i bygget. Sprinkleranlegget kan benyttes som kompenserende tiltak for å fravike andre krav i BF85 der forholdene tilsier det.", "RIV"));
+    }
+    if (formData.bf85_39_kontor_brannalarm) {
+      rows.push(contentRow("Brannalarm – kontor (risikobasert)", "Det er ikke generelt krav til brannalarmanlegg etter BF85. For kontorbygg der brannalarm kreves ut fra risikovurdering, skal alarmen varsle alle personer i bygget.", "RIE"));
+    }
+    if (formData.bf85_39_industri_slokkeanlegg) {
+      rows.push(contentRow("Automatisk slokkeanlegg – industri", "Industribygg som er åpne over flere plan med samlet areal > 800 m² skal ha automatisk slokkeanlegg.", "RIV"));
+    }
+  }
+
   // Sprinklet/usprinklet areal ved flere bygningsdeler
   if ((formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) && formData.harFlereRisikoklasser) {
     const bygningsdeler39s = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
