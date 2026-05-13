@@ -91,14 +91,14 @@ export const getKategorier = (data: TilstandData): { tiltak: TilstandKategori; f
 const tilstandHasContent = (data: TilstandData): boolean => {
   if (!data) return false;
   const { tiltak, fravik } = getKategorier(data);
-  return !!data.grad || getAvvikListe(tiltak).length > 0 || getAvvikListe(fravik).length > 0;
+  return !!data.grad || !!data.kommentar || getAvvikListe(tiltak).length > 0 || getAvvikListe(fravik).length > 0;
 };
 
 const tilstandIsActive = (data: TilstandData): boolean => {
-  // Panelet regnes som aktivert når brukeren har lagt til avvik ELLER eksplisitt satt en grad.
+  // Panelet regnes som aktivert når brukeren har lagt til avvik, kommentar ELLER eksplisitt satt en grad.
   if (!data) return false;
   const { tiltak, fravik } = getKategorier(data);
-  return !!data.grad || getAvvikListe(tiltak).length > 0 || getAvvikListe(fravik).length > 0;
+  return !!data.grad || !!data.kommentar || getAvvikListe(tiltak).length > 0 || getAvvikListe(fravik).length > 0;
 };
 
 // Farge per tilstandsgrad (for badge)
