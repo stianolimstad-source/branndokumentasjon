@@ -1,22 +1,23 @@
-## Problem
-I BF85-modus i kap. 3.5 viser rapporten kun den gamle TEK17-teksten ("1. Trapperom som er rømningsvei…") selv etter at BF85 §78-sjekkboksen er huket av.
+## Mål
+I BF85-tilstandsvurdering, kap. 3.5: Når «Brannceller over flere plan er relevant» IKKE er huket av, men bygget har 2+ etasjer, skal rapporten vise en beskrivende avviksrad — analogt med løsningen for brannventilasjon.
 
-## Årsak
-I `src/components/konsept/KonseptPreview.tsx` (linjene 2700–2728) sjekkes `formData.roykKontrollKravTekst` (fritekst) først. Hvis den har innhold rendres den teksten — uavhengig av regelverk eller om BF85-sjekkboksen er på. Dokumenter som tidligere har vært i TEK17-modus har auto-utfylt fritekst med TEK17-rømningsveitekst (se Konsept.tsx linje 6300–6302), så ved bytte til BF85 blir den gamle teksten "låst" inn.
+## Endring
 
-## Løsning
-I `src/components/konsept/KonseptPreview.tsx`, i kap. 3.5 røykkontroll-blokken (rundt linje 2700–2759):
+Fil: `src/components/konsept/KonseptPreview.tsx` (rundt linje 2944–2977)
 
-1. Når `isBF85` er `true`, ignorer `roykKontrollKravTekst`-grenen helt.
-2. I stedet:
-   - Hvis `bf85_royk_brannventilasjon` er huket av → vis dedikert rad med Forhold = "Brannventilasjon (Røykventilasjon)", Løsning = den fulle BF85-teksten ("For bygninger med inntil 8 etasjer …"), Ansvar = "ARK/RIV".
-   - Hvis ikke huket av og `etasjer > 2` → vis avviks-raden (eksisterer allerede).
-   - Hvis ikke huket av og `etasjer ≤ 2` → ingen rad.
-3. La fritekst-grenen være som før for ikke-BF85.
+Erstatt dagens betingelse `{formData.branncellerFlerePlanRelevant && (() => { ... })()}` med en blokk som dekker tre tilfeller når `regelverk === "BF85"`:
 
-Ingen endringer i input-siden (`Konsept.tsx`) eller Word-eksport. Sjekkboks og avvik-melding der virker allerede.
+1. **Relevant huket av** → vis dagens standardrad (uendret innhold).
+2. **Relevant ikke huket + etasjer ≥ 2** → vis avviksrad:
+   - Forhold: «Brannceller over flere plan»
+   - Løsning (rød/uthevet): «⚠ Bygget har {etasjer} etasjer, men det er ikke dokumentert om brannceller strekker seg over flere plan. Etter BF85 kan brannceller ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte. Manglende vurdering må dokumenteres som fravik.»
+   - Ansvar: RIBr
+3. **Relevant ikke huket + etasjer < 2** → ingen rad (returner `null`).
+
+For ikke-BF85 (TEK17) beholdes dagens oppførsel uendret (vis kun når `branncellerFlerePlanRelevant` er huket).
 
 ## Tekniske detaljer
-- Endring isolert til én preview-blokk; ingen state-mutasjon eller migrering.
-- Bruker eksisterende `bf85_royk_brannventilasjon`-flagg i `roykKontrollKrav`-arrayen.
+- Etasjeantall hentes fra `formData.etasjer` (samme felt som brukes i brannventilasjons-løsningen).
+- Endringen er isolert til én preview-blokk; ingen state-mutasjon eller migrering.
+- Ingen endringer i input-siden (`Konsept.tsx`) eller Word-eksport — Word-rapport følger preview-strukturen via eksisterende eksportlogikk.
 - Påvirker kun `/tilstandsvurdering` med BF85; TEK17-konsept uendret.
