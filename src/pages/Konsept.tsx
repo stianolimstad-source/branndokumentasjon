@@ -4289,7 +4289,11 @@ const Konsept = () => {
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
                           <li>Brannmotstandskrav for bærende konstruksjoner basert på {formData.regelverk === "BF85" ? `bygningsbrannklasse ${formData.bygningsbrannklasse || "(ikke angitt)"}` : `brannklasse ${formData.brannklasse || "(ikke angitt)"}`}</li>
-                          <li>Krav til bærende hovedsystem, sekundære bærende deler, trapperom og heissjakt</li>
+                          {formData.regelverk === "BF85" ? (
+                            <li>Krav til bygningsdelers brannmotstand iht. BF85 Tabell 30:41 (bærende hovedsystem, sekundære deler, etasjeskiller, branncellebegrensende deler, kjeller, trapperom og heissjakt, trappeløp)</li>
+                          ) : (
+                            <li>Krav til bærende hovedsystem, sekundære bærende deler, trapperom og heissjakt</li>
+                          )}
                           {formData.regelverk !== "BF85" && formData.baereevneUnntak?.length > 0 && <li>Unntak iht. VTEK § 11-4 (automatisk beregnet)</li>}
                         </ul>
                       </div>
