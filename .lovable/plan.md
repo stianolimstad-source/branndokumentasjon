@@ -1,68 +1,44 @@
 ## Mål
-Oppdatere alle info-bokser med teksten «✓ Følgende krav er automatisk inkludert i rapporten» i tilstandsvurderingsskjemaet (`Konsept.tsx`) slik at BF85-tilstandsvurderinger viser korrekte BF85-referanser og terminologi i stedet for TEK17/VTEK-termer.
+Den røde info-boksen «✓ Følgende krav er automatisk inkludert i rapporten» under kap 3.7 viser i dag samme punktliste uavhengig av regelverk. For et BF85-tilstandsvurderingsprosjekt (f.eks. Bøylefoss kraftstasjon) listes punkter som faktisk ikke skrives ut i rapporten, og enkelte BF85-punkter mangler. Boksen skal speile rapporten 1:1.
 
-## Seksjoner som skal oppdateres
+## Hva rapporten faktisk inneholder for BF85 (kap 3.7)
+Fra `KonseptPreview.tsx` (linjene 3807–3848) genereres kun disse radene for BF85:
 
-### 3.1 Bæreevne og stabilitet (~linje 4289)
-- Eksisterer allerede `regelverk === "BF85"`-tilpasning for bygningsbrannklasse.
-- **Endring:** Fjerne TEK17-spesifikk tekst «Krav til bærende hovedsystem, sekundære bærende deler, trapperom og heissjakt» → erstatt med generisk «Krav til bærende konstruksjoners brannmotstand iht. BF85 Tabell 30:41».
-- **Endring:** Fjerne VTEK-referansen i unntakspunktet for BF85.
+1. **«:1332 Avtrekk»** – kun når `formData.bf85_1332_avtrekk` er på (kjøkken/WC i egne kanaler m.m.).
+2. **«Ventilasjonsanlegg»** – kun når `formData.ventilasjonRelevant`. Punktliste:
+   - Ventilasjonskanal gjennom brannskillende bygningsdel.
+   - Innfesting og oppheng for kanaler/utstyr.
+   - Avtrekk fra komfyr i egen kanal.
+   - Materialer i klasse A2-s1,d0.
+   - `ventKrav5`: avtrekk storkjøkken/frityr EI 30 A2-s1,d0.
+   - `ventKrav6`: avtrekk kjøkken i boenhet EI 15 A2-s1,d0.
+   - `ventKrav7` (RK4 / boligbygg RK6): småhus, stål-/aluminium-kanal.
+   - `ventKrav8` (samme): småhus, klasse E-kanal.
+   - `ventKrav9`: brannspjeld i seksjoneringsvegg.
+3. **«Ventilasjonsanlegg er ikke installert»** – når `ventilasjonRelevant` er av.
 
-### 3.2 Sikkerhet ved eksplosjon (~linje 4411)
-- **Endring:** Erstatte «Preaksepterte ytelser iht. VTEK § 11-5» med «Krav til tekniske rom, fyrrom og ildsted iht. BF85 Kap. 30:33 og Kap. 49».
-- **Endring:** Når eksplosjon ikke er relevant: standardtekst om at krav til tekniske rom likevel må vurderes.
+Vann/avløp, rør- og kanalisolasjon og elektriske installasjoner skrives **ikke** ut i BF85-rapporten – de finnes kun i TEK17-grenen.
 
-### 3.3 Avstand mellom bygninger (~linje 4657)
-- **Endring:** Erstatte «brannvegg/branncellevegg» med «brannvegg» for BF85.
-- **Endring:** Tekst tilpasset BF85 Kap. 30:32.
+## Endring i `src/pages/Konsept.tsx` (info-boks ~linje 7634–7696)
+Splitt innholdet i en BF85-gren og en TEK17-gren:
 
-### 3.4 Brannteknisk oppdeling (~linje 5212)
-- **Endring:** Erstatte «seksjoneringsvegger (brannvegg)» med «brannvegg/branndekke» for BF85.
-- **Endring:** Fjerne «brannbelastningsgrenser» som TEK17-spesifikt begrep.
+### BF85-gren
+- Behold den innledende italic-noten om at TEK17 §11-10 legges til grunn som vurderingsgrunnlag.
+- List kun:
+  - Hvis `bf85_1332_avtrekk`: tre punkter for «:1332 Avtrekk» (kjøkken/WC i egne kanaler; egne kanaler en etasje opp; vindu/ytterdør for utlufting i bygninger med naturlig avtrekk).
+  - Hvis `ventilasjonRelevant`: fire faste punkter (kanal gjennom brannskillende bygningsdel, innfesting/oppheng, avtrekk fra komfyr i egen kanal, materialer A2-s1,d0) + de betingede `ventKrav5/6/7/8/9` med samme tekst som i preview.
+  - Hvis `!ventilasjonRelevant`: ett punkt «Ventilasjonsanlegg er ikke installert».
+- Ikke vis vann/avløp-, rør-/kanalisolasjon- eller elektrisk-punkter (selv om checkboksene står på, siden de ikke kommer ut i rapporten under BF85). Ev. kan disse seksjonene også skjules som UI-valg, men det er utenfor scope her.
+- Fallback når verken `bf85_1332_avtrekk` eller `ventilasjonRelevant` er valgt: «Velg relevante tekniske installasjoner ovenfor».
 
-### 3.5 Brannceller (~linje 7080)
-- **Endring:** Erstatte generisk «branncelle-typer» med BF85-spesifikke branncellekrav (Kap. 30:63–64).
-- **Endring:** Dørkrav tilpasset BF85s terminologi.
+### TEK17-gren
+- Behold dagens liste uendret (ventilasjon, vann/avløp, rør-/kanalisolasjon, elektrisk inkl. PII/PIII-logikken).
 
-### 3.6 Materialer og produkter (~linje 7349)
-- **Endring:** Erstatte alle forekomster av «brannklasse» med «bygningsbrannklasse» for BF85.
-- **Endring:** Erstatte «risikoklasse» med «bygningsbrannklasse» eller «bygningstype» for BF85.
-- **Endring:** Fjerne RK6-referanser som TEK17-spesifikt.
+## Andre filer
+- `src/components/konsept/KonseptPreview.tsx`: ingen endring – brukes som fasit.
+- `src/lib/word-export-chapter3.ts`: ingen endring (Word-eksporten følger allerede preview-logikken for BF85).
 
-### 3.7 Tekniske installasjoner (~linje 7580)
-- **Endring:** Erstatte TEK17 § 11-10-referanser med BF85 Kap. 47 for ventilasjonskrav.
-- **Endring:** Beholde TEK17-kravene som utgangspunkt (som nylig avtalt), men justere overskriften.
-
-### 3.8 Rømning og redning (~linje 7847)
-- Generelt OK, men kan justeres til «Krav til rømningsvei iht. BF85 Kap. 30:7».
-
-### 3.9 Alarm og slokking (~linje 8535)
-- **Endring:** Erstatte «risikoklasse» med «bygningsbrannklasse/bygningstype» for BF85.
-- **Endring:** Alarmkrav tilpasset BF85 Kap. 31–39 (bygningstype-spesifikt).
-
-### 3.10 Utgang fra branncelle (~linje 9032)
-- **Endring:** Erstatte «risikoklasse og brannklasse» med «bygningsbrannklasse og bygningstype».
-
-### 3.11 Trapperom og heissjakt (~linje 9203)
-- **Endring:** Erstatte RK3/RK5/RK6-referanser med BF85-bygningsbrannklasse (1–4).
-- **Endring:** Erstatte BKL1/BKL2/BKL3 med bygningsbrannklasse 1–4.
-- **Endring:** Erstatte UPS-krav med BF85-spesifikke krav til avbruddsfri strøm.
-
-### 3.12 Husdyr (~linje 9293)
-- OK som den er, evt. justere overskrift til BF85 Kap. 39.
-
-### 3.13 Manuell slokking (~linje 9410)
-- **Endring:** Erstatte «NS-EN»-referanser med BF85-relevante referanser (Kap. 30:91).
-- **Endring:** Fjerne RK1-referanse.
-
-### 3.14 Slokkemannskap (~linje 9555)
-- **Endring:** Tekst tilpasset BF85 Kap. 30:92/94/95.
-
-### 3.15 Branninstruks
-- **Endring:** Tekst tilpasset BF85s krav til brannvernleder og brannøvelser.
-
-## Tekniske detaljer
-- Alle endringer gjøres i `src/pages/Konsept.tsx` ved å legge til betingede `formData.regelverk === "BF85"`-ternary der hvor TEK17-tekst nå dominerer.
-- Der BF85-gren allerede finnes (f.eks. 3.1), suppleres med fjerning av gjenværende TEK17-referanser.
-- Ingen databaseendringer nødvendig.
-- Tilsvarende oppdateringer gjøres i `src/lib/word-export-chapter3.ts` for Word-eksport.
+## Akseptansekriterier
+- I et BF85-prosjekt med `ventilasjonRelevant=true` viser den røde boksen nøyaktig de fire faste ventilasjonspunktene + aktive `ventKrav5–9`, og ev. `:1332 Avtrekk`-punkter når den haken er på.
+- I et BF85-prosjekt med `ventilasjonRelevant=false` viser boksen kun «Ventilasjonsanlegg er ikke installert» (samme rad som rapporten).
+- TEK17-prosjekter ser samme boks som i dag.
