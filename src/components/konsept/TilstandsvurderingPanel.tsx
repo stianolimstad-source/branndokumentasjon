@@ -392,6 +392,22 @@ const TilstandsvurderingPanel = ({ sectionKey, sectionLabel, data, onChange }: T
         </p>
       )}
 
+      <div>
+        <Label className="text-xs font-semibold uppercase tracking-wide mb-1 block text-amber-900 dark:text-amber-200">
+          Kommentar til tilstanden (valgfritt)
+        </Label>
+        <p className="text-[11px] text-muted-foreground mb-2">
+          Generell vurdering av området. Vises i rapporten også når det ikke er funnet avvik.
+        </p>
+        <Textarea
+          value={data.kommentar || ""}
+          onChange={(e) => onChange({ ...data, kommentar: e.target.value })}
+          placeholder="F.eks. observasjoner, forutsetninger eller anbefalinger..."
+          rows={3}
+          className="bg-background"
+        />
+      </div>
+
       {renderKategori(
         "tiltak",
         "Avvik som krever aktive tiltak",
