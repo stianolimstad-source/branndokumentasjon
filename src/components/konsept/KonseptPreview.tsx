@@ -3177,7 +3177,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   const vis513 = formData.bf85_513 && rel.vis513;
                   const vis514 = formData.bf85_514 && rel.vis514;
                   const vis515 = formData.bf85_515 && rel.vis515;
-                  if (!vis513 && !vis514 && !vis515) return null;
+                  const vis53 = !!formData.bf85_53;
+                  if (!vis513 && !vis514 && !vis515 && !vis53) return null;
                   const etg = rel.etasjerNum;
                   return (
                     <>
@@ -3223,6 +3224,15 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                           <td className="border border-gray-400 p-2 align-top">:515 Brennbar isolasjon</td>
                           <td className="border border-gray-400 p-2">
                             <p className="text-sm">Brennbar isolasjon i vegger og dekker i bygning inntil 2 etasjer i bygningsbrannklasse 3 og 4 skal ha kledning på begge sider, med mindre isolasjonen pga sine egenskaper eller sin bruk ikke bidrar til spredning av brann.</p>
+                          </td>
+                          <td className="border border-gray-400 p-2 align-top">ARK</td>
+                        </tr>
+                      )}
+                      {vis53 && (
+                        <tr>
+                          <td className="border border-gray-400 p-2 align-top">:53 Nedforet himling</td>
+                          <td className="border border-gray-400 p-2">
+                            <p className="text-sm">Nedforet himling som danner et ledd i brannbegrensende bygningsdel skal utføres slik at de kan utføre sin funksjon som del av brannskillet.</p>
                           </td>
                           <td className="border border-gray-400 p-2 align-top">ARK</td>
                         </tr>
