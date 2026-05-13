@@ -1,23 +1,24 @@
 ## Mål
-I BF85-tilstandsvurdering, kap. 3.5: Når «Brannceller over flere plan er relevant» IKKE er huket av, men bygget har 2+ etasjer, skal rapporten vise en beskrivende avviksrad — analogt med løsningen for brannventilasjon.
+Korriger logikken for «Brannceller over flere plan» i rapporten:
+
+1. Når «Brannceller over flere plan er relevant» IKKE er huket av → ingen rad i rapporten (uavhengig av etasjeantall og regelverk).
+2. Når «relevant» ER huket og «Branncellen strekker seg over flere enn 3 plan» er huket → vis tydelig avviks-tekst i rapporten.
 
 ## Endring
 
-Fil: `src/components/konsept/KonseptPreview.tsx` (rundt linje 2944–2977)
+Fil: `src/components/konsept/KonseptPreview.tsx` (linje ~2944–2998)
 
-Erstatt dagens betingelse `{formData.branncellerFlerePlanRelevant && (() => { ... })()}` med en blokk som dekker tre tilfeller når `regelverk === "BF85"`:
+a) Fjern BF85-blokken som viser avviksrad når «relevant» ikke er huket (linje 2950–2963). Erstatt hele IIFE-en slik at:
+   - Hvis `!formData.branncellerFlerePlanRelevant` → returnér `null`.
+   - Ellers vis dagens standardrad med RK 3/6-fravikstekstene (uendret).
 
-1. **Relevant huket av** → vis dagens standardrad (uendret innhold).
-2. **Relevant ikke huket + etasjer ≥ 2** → vis avviksrad:
-   - Forhold: «Brannceller over flere plan»
-   - Løsning (rød/uthevet): «⚠ Bygget har {etasjer} etasjer, men det er ikke dokumentert om brannceller strekker seg over flere plan. Etter BF85 kan brannceller ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte. Manglende vurdering må dokumenteres som fravik.»
-   - Ansvar: RIBr
-3. **Relevant ikke huket + etasjer < 2** → ingen rad (returner `null`).
+b) Inne i den eksisterende standardraden (når «relevant» er huket): legg til en ny rød/uthevet linje når `formData.branncellerFlerePlanOver3 === true`:
 
-For ikke-BF85 (TEK17) beholdes dagens oppførsel uendret (vis kun når `branncellerFlerePlanRelevant` er huket).
+> ⚠ Fravik: Branncellen strekker seg over flere enn 3 plan. Etter {BF85: «BF85» / TEK17: «preaksepterte ytelser i VTEK17 §11-8»} kan brannceller ha åpen forbindelse over inntil tre plan. Avvik fra dette må dokumenteres som fravik i tilstandsvurderingen.
+
+Linjen vises i samme `<td>` som den eksisterende beskrivelsen, under eventuell RK 3/6-advarsel. Gjelder både TEK17 og BF85, siden inputfeltet finnes for begge.
 
 ## Tekniske detaljer
-- Etasjeantall hentes fra `formData.etasjer` (samme felt som brukes i brannventilasjons-løsningen).
-- Endringen er isolert til én preview-blokk; ingen state-mutasjon eller migrering.
-- Ingen endringer i input-siden (`Konsept.tsx`) eller Word-eksport — Word-rapport følger preview-strukturen via eksisterende eksportlogikk.
-- Påvirker kun `/tilstandsvurdering` med BF85; TEK17-konsept uendret.
+- Bruker eksisterende state-felt `branncellerFlerePlanRelevant` og `branncellerFlerePlanOver3` fra `Konsept.tsx`.
+- Ingen endringer i input-siden eller i Word-eksport (Word følger preview-strukturen).
+- Påvirker både `/konsept` og `/tilstandsvurdering`.

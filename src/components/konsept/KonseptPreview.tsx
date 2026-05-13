@@ -2942,33 +2942,14 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               );
             })()}
             {/* Brannceller over flere plan */}
-            {(() => {
+            {formData.branncellerFlerePlanRelevant && (() => {
               const isBF85 = formData.regelverk === "BF85";
-              const etasjerNum = parseInt(formData.etasjer, 10);
-              const harFlereEtasjer = !isNaN(etasjerNum) && etasjerNum >= 2;
-
-              // BF85 + ikke huket av + 2+ etasjer → vis avviksrad
-              if (isBF85 && !formData.branncellerFlerePlanRelevant && harFlereEtasjer) {
-                return (
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">Brannceller over flere plan</td>
-                    <td className="border border-gray-400 p-2">
-                      <div className="text-red-600 font-medium">
-                        ⚠ Bygget har {etasjerNum} etasjer, men det er ikke dokumentert om brannceller strekker seg over flere plan. Etter BF85 kan brannceller ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte. Manglende vurdering må dokumenteres som fravik.
-                      </div>
-                    </td>
-                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
-                  </tr>
-                );
-              }
-
-              if (!formData.branncellerFlerePlanRelevant) return null;
-
               const rkList = formData.harFlereRisikoklasser
                 ? (formData.bygningsdeler || []).map((d: any) => parseInt((d.risikoklasse || "").replace(/\D/g, ''), 10)).filter((n: number) => !isNaN(n))
                 : [parseInt((formData.risikoklasse || "").replace(/\D/g, ''), 10)].filter((n) => !isNaN(n));
               const harUgyldigRK = rkList.some((rk: number) => rk === 3 || rk === 6);
               const ugyldigeRK = rkList.filter((rk: number) => rk === 3 || rk === 6);
+              const over3 = !!formData.branncellerFlerePlanOver3;
               return (
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Brannceller over flere plan</td>
@@ -2988,6 +2969,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       {harUgyldigRK && isBF85 && (
                         <div className="text-red-600 font-medium">
                           ⚠ Fravik: Krav til brannceller over flere plan gjelder ikke for {ugyldigeRK.flatMap((rk: number) => rk === 3 ? ["skole", "barnehage"] : ["sykehjem", "sykehus", "omsorgshjem"]).join(", ")}. Dette er et fravik som må dokumenteres.
+                        </div>
+                      )}
+                      {over3 && (
+                        <div className="text-red-600 font-medium">
+                          ⚠ Fravik: Branncellen strekker seg over flere enn 3 plan. Etter {isBF85 ? "BF85" : "preaksepterte ytelser i VTEK17 §11-8"} kan brannceller ha åpen forbindelse over inntil tre plan. Avvik fra dette må dokumenteres som fravik i tilstandsvurderingen.
                         </div>
                       )}
                     </div>
