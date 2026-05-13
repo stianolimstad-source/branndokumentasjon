@@ -3819,6 +3819,26 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <td className="border border-gray-400 p-2 align-top">RIV</td>
                   </tr>
                 )}
+                {formData.ventilasjonRelevant && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Ventilasjonsanlegg</td>
+                    <td className="border border-gray-400 p-2">
+                      <p className="italic mb-2">BF85 stiller kun det generelle kravet om at anlegget ikke skal medføre økt risiko for brann. Som vurderingsgrunnlag legges preaksepterte ytelser fra TEK17 §11-10 til grunn:</p>
+                      <ul className="list-disc ml-4 space-y-2">
+                        <li>Ventilasjonskanal som føres gjennom en brannskillende bygningsdel, må utføres slik at bygningsdelens brannmotstand blir opprettholdt.</li>
+                        <li>Innfesting og oppheng for kanaler og ventilasjonsutstyr må utføres slik at forutsatt funksjonstid og brannmotstand blir opprettholdt.</li>
+                        <li>Avtrekk fra komfyr må føres i egen kanal.</li>
+                        <li>Ventilasjonsanlegg må utføres i materialer som tilfredsstiller klasse <span className="text-red-600 font-medium">A2-s1,d0</span>.</li>
+                        {formData.ventKrav5 && <li>Avtrekkskanal fra storkjøkken og frityrkoker må ha brannmotstand minst <span className="text-red-600 font-medium">EI 30 A2-s1,d0</span>.</li>}
+                        {formData.ventKrav6 && <li>Avtrekkskanal fra kjøkken i boenhet må ha brannmotstand minst <span className="text-red-600 font-medium">EI 15 A2-s1,d0</span>.</li>}
+                        {formData.ventKrav7 && (formData.risikoklasse === "RK4" || (formData.risikoklasse === "RK6" && (formData.bygningstype || "").toLowerCase().includes("bolig"))) && <li>I småhus kan avtrekk fra komfyr føres i kanal av stål eller aluminium.</li>}
+                        {formData.ventKrav8 && (formData.risikoklasse === "RK4" || (formData.risikoklasse === "RK6" && (formData.bygningstype || "").toLowerCase().includes("bolig"))) && <li>I småhus kan kanal som tilfredsstiller klasse <span className="text-red-600 font-medium">E</span> benyttes.</li>}
+                        {formData.ventKrav9 && <li>Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.</li>}
+                      </ul>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIV</td>
+                  </tr>
+                )}
               </>
             ) : (
               <>
