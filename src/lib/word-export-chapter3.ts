@@ -258,6 +258,24 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
     }));
   }
 
+  if (harKommentar) {
+    children.push(new Paragraph({
+      spacing: { before: 100, after: 20 },
+      shading: { type: ShadingType.SOLID, color: "FFFBEB", fill: "FFFBEB" },
+      border: { left: { style: BorderStyle.SINGLE, size: 18, color: "D97706", space: 4 } },
+      children: [new TextRun({ text: "KOMMENTAR", bold: true, size: 18, color: "78350F" })],
+    }));
+    const linjer = String(tilstandData.kommentar).split(/\r?\n/);
+    linjer.forEach((linje, i) => {
+      children.push(new Paragraph({
+        spacing: { before: i === 0 ? 20 : 0, after: i === linjer.length - 1 ? 40 : 0 },
+        shading: { type: ShadingType.SOLID, color: "FFFBEB", fill: "FFFBEB" },
+        border: { left: { style: BorderStyle.SINGLE, size: 18, color: "D97706", space: 4 } },
+        children: [new TextRun({ text: linje, size: 20, color: "78350F" })],
+      }));
+    });
+  }
+
   const renderKategori = async (
     tittel: string,
     headerColor: string,
