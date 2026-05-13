@@ -9650,10 +9650,23 @@ const Konsept = () => {
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                          <li>Generelle krav til plassering, utforming og merking</li>
-                          <li>Kjørbar atkomst til hovedinngang og angrepsvei</li>
-                          {formData.romningsvinduRelevant && (
-                            <li>Vindu/balkong som rømningsvei – tilgjengelighet for høyderedskap (basert på valg i kap. 3.10)</li>
+                          {formData.regelverk === "BF85" ? (
+                            <>
+                              <li>Krav til kjøreatkomst for brannvesenet iht. BF85 Kap. 30:92</li>
+                              <li>Krav til atkomst til loft og yttertak iht. Kap. 30:94</li>
+                              <li>Krav til atkomst til kjeller iht. Kap. 30:95</li>
+                              {formData.romningsvinduRelevant && (
+                                <li>Vindu/balkong som rømningsvei – tilgjengelighet for høyderedskap (basert på valg i kap. 3.10)</li>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <li>Generelle krav til plassering, utforming og merking</li>
+                              <li>Kjørbar atkomst til hovedinngang og angrepsvei</li>
+                              {formData.romningsvinduRelevant && (
+                                <li>Vindu/balkong som rømningsvei – tilgjengelighet for høyderedskap (basert på valg i kap. 3.10)</li>
+                              )}
+                            </>
                           )}
                         </ul>
                       </div>
