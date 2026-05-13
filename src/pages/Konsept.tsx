@@ -4415,8 +4415,16 @@ const Konsept = () => {
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
                           <li>Vurdering av eksplosjonsfare basert på valgt relevans</li>
-                          {formData.eksplosjonRelevant === "relevant" && <li>Preaksepterte ytelser iht. VTEK § 11-5 (egen branncelle, trykkavlastningsflate, mm.)</li>}
-                          {formData.eksplosjonRelevant === "ikke_relevant" && <li>Standardtekst om at eksplosjonsfare ikke er relevant for tiltaket</li>}
+                          {formData.eksplosjonRelevant === "relevant" && (
+                            formData.regelverk === "BF85"
+                              ? <li>Krav til tekniske rom, fyrrom, ildsteder, røykpiper og fyringsanlegg iht. BF85 Kap. 30:33 og Kap. 49 (heismaskinrom, ventilasjonsrom, søppelrom og fyrrom som branncelle A 60)</li>
+                              : <li>Preaksepterte ytelser iht. VTEK § 11-5 (egen branncelle, trykkavlastningsflate, mm.)</li>
+                          )}
+                          {formData.eksplosjonRelevant === "ikke_relevant" && (
+                            formData.regelverk === "BF85"
+                              ? <li>Standardtekst om at eksplosjonsfare ikke er relevant. Krav til tekniske rom, fyrrom og ildsted iht. BF85 Kap. 30:33 og Kap. 49 må likevel vurderes der relevant.</li>
+                              : <li>Standardtekst om at eksplosjonsfare ikke er relevant for tiltaket</li>
+                          )}
                         </ul>
                       </div>
                       <div>
