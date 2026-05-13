@@ -4121,6 +4121,24 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">RIV</td>
               </tr>
             )}
+            {isBF85 && formData.bf85_39_kontor_brannalarm && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Brannalarm – kontor (risikobasert)</td>
+                <td className="border border-gray-400 p-2">
+                  Det er ikke generelt krav til brannalarmanlegg etter BF85. For kontorbygg der brannalarm kreves ut fra risikovurdering, skal alarmen varsle alle personer i bygget.
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIE</td>
+              </tr>
+            )}
+            {isBF85 && formData.bf85_39_industri_slokkeanlegg && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Automatisk slokkeanlegg – industri</td>
+                <td className="border border-gray-400 p-2">
+                  Industribygg som er åpne over flere plan med samlet areal &gt; 800 m² skal ha automatisk slokkeanlegg.
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIV</td>
+              </tr>
+            )}
             {!isBF85 && formData.tilretteleggingLedd1a && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Automatisk brannslokkeanlegg (RK4)</td>
