@@ -8026,7 +8026,60 @@ const Konsept = () => {
                           </div>
                         </div>
                       )}
-                      
+
+                      {/* BF85-spesifikt: Risikobasert brannalarm i kontorbygg */}
+                      {formData.regelverk === "BF85" && (
+                        (formData.bygningstype || "").toLowerCase().includes("kontor")
+                        || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kontor"))
+                      ) && (
+                        <div className="p-3 bg-muted/50 border border-border rounded space-y-2">
+                          <Label className="text-xs font-medium block">BF85-krav for kontorbygg:</Label>
+                          <div className="flex items-start space-x-2">
+                            <Checkbox
+                              id="bf85_39_kontor_brannalarm"
+                              checked={formData.bf85_39_kontor_brannalarm}
+                              onCheckedChange={(checked) => setFormData({...formData, bf85_39_kontor_brannalarm: !!checked})}
+                            />
+                            <Label htmlFor="bf85_39_kontor_brannalarm" className="text-xs cursor-pointer leading-relaxed">
+                              <strong>Risikobasert brannalarm (kontor):</strong> Det er ikke generelt krav til brannalarmanlegg i kontorbygg etter BF85, men der det kreves ut fra risikovurdering skal brannalarmen varsle alle i bygget.
+                            </Label>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* BF85-spesifikt: Automatisk slokkeanlegg i industribygg */}
+                      {formData.regelverk === "BF85" && (
+                        (formData.bygningstype || "").toLowerCase().includes("industri")
+                        || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("industri"))
+                      ) && (() => {
+                        const etasjer = parseInt(formData.etasjer || "0", 10);
+                        const areal = parseFloat(String(formData.areal || "0").replace(",", ".")) || 0;
+                        const oppfyllerKriterier = etasjer > 1 && areal > 800;
+                        return (
+                          <div className="p-3 bg-muted/50 border border-border rounded space-y-2">
+                            <Label className="text-xs font-medium block">BF85-krav for industribygg:</Label>
+                            <p className="text-[11px] italic text-muted-foreground">
+                              BF85 krever automatisk slokkeanlegg i industribygg som er åpne over flere plan med samlet areal &gt; 800 m².
+                            </p>
+                            {oppfyllerKriterier && !formData.bf85_39_industri_slokkeanlegg && (
+                              <p className="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded px-2 py-1">
+                                ℹ︎ Bygget har {etasjer} etasjer og samlet areal {areal} m² – kravet bør avhukes dersom bygget er åpent over flere plan.
+                              </p>
+                            )}
+                            <div className="flex items-start space-x-2">
+                              <Checkbox
+                                id="bf85_39_industri_slokkeanlegg"
+                                checked={formData.bf85_39_industri_slokkeanlegg}
+                                onCheckedChange={(checked) => setFormData({...formData, bf85_39_industri_slokkeanlegg: !!checked})}
+                              />
+                              <Label htmlFor="bf85_39_industri_slokkeanlegg" className="text-xs cursor-pointer leading-relaxed">
+                                <strong>Automatisk slokkeanlegg (industribygg):</strong> Industribygg som er åpne over flere plan med samlet areal &gt; 800 m² skal ha automatisk slokkeanlegg.
+                              </Label>
+                            </div>
+                          </div>
+                        );
+                      })()}
+
                       {formData.regelverk !== "BF85" && (<>
                       {/* Automatiske krav basert på RK */}
                       {(formData.risikoklasse === "RK4" || formData.bygningsdeler.some(b => b.risikoklasse === "RK4")) && (
