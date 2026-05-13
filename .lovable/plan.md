@@ -1,45 +1,31 @@
 ## Mål
-Når husdyrhold-checkboxen ikke er huket av i BF85-tilstandsvurdering, skal "ikke relevant"-raden vises med `Forhold = "Generelt"` og `Løsning = "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket."` (i stedet for dagens fullbredde italic-rad). Når checkboxen er huket av, beholdes dagens visning.
+Når husdyrhold-checkboxen ikke er huket av i BF85-tilstand, skal kun "Generelt"-raden vises i tabellen 3.11 husdyr. BF85-info-raden ("Byggeforskrift 1985 hadde ingen egne krav…") er da overflødig og skal skjules. Når checkboxen er huket av: vis BF85-info-raden + TEK17-radene som i dag.
 
 ## Endringer
 
-### 1) Forhåndsvisning – `src/components/konsept/KonseptPreview.tsx` (~linje 5474–5480)
-For BF85: Vis raden med tre kolonner — `Generelt` / fritekst / `-`. For TEK17: behold dagens fullbredde italic-rad.
+### 1) Forhåndsvisning – `src/components/konsept/KonseptPreview.tsx` (~linje 5392–5400)
+Endre BF85-info-raden slik at den kun rendres når `formData.husdyrRedningRelevant` er true:
 
 ```tsx
-) : (
-  isBF85 ? (
-    <tr>
-      <td className="border border-gray-400 p-2 align-top">Generelt</td>
-      <td className="border border-gray-400 p-2">Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.</td>
-      <td className="border border-gray-400 p-2 align-top">-</td>
-    </tr>
-  ) : (
-    <tr>
-      <td className="border border-gray-400 p-2" colSpan={3} style={{fontStyle: 'italic'}}>
-        Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.
-      </td>
-    </tr>
-  )
-)
+{isBF85 && formData.husdyrRedningRelevant && (
+  <tr>
+    <td>Byggeforskrift 1985</td>
+    <td>Byggeforskrift 1985 hadde ingen egne krav … brukes derfor som referanse …</td>
+    <td>-</td>
+  </tr>
+)}
 ```
 
-### 2) Word-eksport – `src/lib/word-export-chapter3.ts` (~linje 1786–1788)
-For BF85: bruk `contentRow("Generelt", "...", "-")`. For TEK17: behold tom Forhold som i dag.
+(Resten av seksjonen — TEK17-rader når relevant, ny "Generelt"-rad når ikke relevant — er uendret.)
 
-```ts
-} else if (isBF85Tilstand310) {
-  rows.push(contentRow("Generelt", "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.", "-"));
-} else {
-  rows.push(contentRow("", "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.", "-"));
-}
-```
+### 2) Word-eksport – `src/lib/word-export-chapter3.ts` (~linje 1755–1760)
+Endre `if (isBF85Tilstand310)` til `if (isBF85Tilstand310 && formData.husdyrRedningRelevant)` slik at info-raden kun pushes når brukeren har huket av husdyrhold.
 
 ## Avgrensning
-- Påvirker kun BF85 når `husdyrRedningRelevant = false`.
-- Ingen endringer i skjema eller datafelt.
-- Når checkboxen er huket av: uendret.
+- Kun BF85 påvirkes.
+- Ingen endringer i skjema/datafelt.
 
 ## Akseptkriterier
-- I BF85-tilstand uten husdyrhold: tabellen viser én rad med "Generelt" | "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket." | "-" — både i forhåndsvisning og Word.
+- BF85 + husdyr ikke avhuket: tabellen viser kun "Generelt | Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket. | -".
+- BF85 + husdyr avhuket: viser BF85-info-rad + TEK17-rader som i dag.
 - TEK17 uendret.
