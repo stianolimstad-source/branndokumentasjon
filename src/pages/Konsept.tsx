@@ -9650,7 +9650,7 @@ const Konsept = () => {
                       {/* Info om automatiske krav */}
                       {formData.husdyrRedningRelevant && (
                         <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
-                          <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                          <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten{isBF85Tilstand ? " (TEK17 § 11-15 brukes som referanse)" : ""}:</p>
                           <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
                             <li>Krav til rømningsveier for husdyr</li>
                             <li>Branncelleinndeling for husdyrrom</li>
