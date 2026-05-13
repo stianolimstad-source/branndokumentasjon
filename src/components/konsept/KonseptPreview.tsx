@@ -5331,6 +5331,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_11"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_11"]} sectionLabel="3.11 Rømningsvei" />
             )}
+              </>
+            )}
 
 
             {/* 3.12 §11-15 Tilrettelegging for redning av husdyr */}
