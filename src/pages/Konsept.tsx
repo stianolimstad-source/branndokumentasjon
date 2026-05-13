@@ -8908,9 +8908,10 @@ const Konsept = () => {
                                 className="min-h-[70px]"
                               />
                             </div>
-                          ))}
-                        </div>
-                      ) : (
+                           ))}
+                         </div>
+                         );
+                       })() : (
                         <>
 
                       {((formData.risikoklasse === "RK4" && parseInt(formData.etasjer) >= 2 && parseInt(formData.etasjer) <= 8) || 
