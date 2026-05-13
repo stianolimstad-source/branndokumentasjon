@@ -9819,10 +9819,10 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_13")}
                     </SectionCollapsible>
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-14" label={`3.14 ${formData.regelverk === "BF85" ? "Atkomst for brannvesenet (§ 11-17 Tilrettelegging for rednings- og slokkemannskap)" : "§ 11-17 Tilrettelegging for slokkemannskap"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-14" label={`${isBF85Tilstand ? "3.13" : "3.14"} ${formData.regelverk === "BF85" ? "Atkomst for brannvesenet (§ 11-17 Tilrettelegging for rednings- og slokkemannskap)" : "§ 11-17 Tilrettelegging for slokkemannskap"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.14 {formData.regelverk === "BF85" ? "Atkomst for brannvesenet (§ 11-17 Tilrettelegging for rednings- og slokkemannskap)" : "§ 11-17 Tilrettelegging for slokkemannskap"}</Label>
+                        <Label className="text-base font-extrabold text-foreground">{isBF85Tilstand ? "3.13" : "3.14"} {formData.regelverk === "BF85" ? "Atkomst for brannvesenet (§ 11-17 Tilrettelegging for rednings- og slokkemannskap)" : "§ 11-17 Tilrettelegging for slokkemannskap"}</Label>
                       </div>
                       <div className="space-y-2 mb-3">
                         <div className="flex items-center space-x-2">
