@@ -1746,6 +1746,48 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   rows.push(...await tilstandRow(formData, "3_11", "3.11 Rømningsvei"));
   }
 
+  // ===== 3.12 / BF85 3.11 Tilrettelegging for redning av husdyr =====
+  rows.push(sectionHeaderRow(isBF85Tilstand310
+    ? "3.11   Tilrettelegging for redning av husdyr (TEK17 § 11-15 brukt som referanse)"
+    : "3.12   §11-15 Tilrettelegging for redning av husdyr"));
+  rows.push(columnHeaderRow());
+  if (isBF85Tilstand310) {
+    rows.push(contentRow(
+      "Byggeforskrift 1985",
+      "Byggeforskrift 1985 hadde ingen egne krav til tilrettelegging for redning av husdyr. TEK17 § 11-15 med tilhørende preaksepterte ytelser i VTEK17 brukes derfor som referanse dersom dette er relevant for tiltaket.",
+      "-"
+    ));
+  }
+  if (formData.husdyrRedningRelevant) {
+    rows.push(contentRow(
+      isBF85Tilstand310 ? "Generelt (ref. TEK17 § 11-15)" : "Generelt",
+      "Byggverk beregnet for husdyrhold skal ha tilfredsstillende rømningsforhold og tilrettelegging for redning av husdyr ved brann.",
+      "ARK"
+    ));
+    rows.push(contentRow(
+      "Utganger",
+      "Husdyrrom må ha minst to utganger uavhengig av størrelsen på rommet. Én av utgangene kan gå via annen branncelle eller annet rom.",
+      "ARK"
+    ));
+    const typer: string[] = Array.isArray((formData as any).husdyrTyper) ? (formData as any).husdyrTyper : [];
+    const harStore = typer.includes("storfe_hest");
+    const harSmaa = typer.includes("gris_sau_geit");
+    if (!harStore && !harSmaa) {
+      rows.push(contentRow("Fri bredde", "Utganger eller rømningsveier må ha fri bredde på minimum 1,6 meter fra rom for okse, ku og hest, og minimum 1,0 meter fra rom for gris, sau og geit.", "ARK"));
+    } else {
+      if (harStore) rows.push(contentRow("Fri bredde", "Utganger eller rømningsveier må ha fri bredde på minimum 1,6 meter fra rom for okse, ku og hest.", "ARK"));
+      if (harSmaa) rows.push(contentRow("Fri bredde", "Utganger eller rømningsveier må ha fri bredde på minimum 1,0 meter fra rom for gris, sau og geit.", "ARK"));
+    }
+    rows.push(contentRow("Rømningsvei", "Avstand fra et hvert oppholdssted til nærmeste utgang i husdyrrom må ikke være mer enn 30 meter.", "ARK"));
+    rows.push(contentRow("Dør i yttervegg", "Utadslående dør i yttervegg som er utgang eller rømningsvei må ikke kunne blokkeres av snø eller is. Takoverbygg, snøfangere på tak og lignende vil kunne forhindre dette.", "ARK"));
+    if ((formData as any).husdyrRedningKommentar) {
+      rows.push(contentRow("Kommentar", (formData as any).husdyrRedningKommentar, "-"));
+    }
+  } else if (!isBF85Tilstand310) {
+    rows.push(contentRow("", "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.", "-"));
+  }
+  rows.push(...await tilstandRow(formData, "3_12", isBF85Tilstand310 ? "3.11 Redning av husdyr" : "3.12 Redning av husdyr"));
+
   // ===== 3.13 / BF85 3.12 Manuell slokking =====
   rows.push(sectionHeaderRow(isBF85Tilstand310 ? "3.12   Tilrettelegging for manuell slokking" : "3.13   §11-16 Tilrettelegging for manuell slokking"));
   rows.push(columnHeaderRow());
