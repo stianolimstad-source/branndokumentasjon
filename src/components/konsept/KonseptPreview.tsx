@@ -2704,11 +2704,38 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               const bf85KravAktivt = formData.roykKontrollKrav?.includes("bf85_royk_brannventilasjon");
               const harFritekst = !!formData.roykKontrollKravTekst;
 
-              // New textarea-based approach
+              // BF85: dedikert håndtering — ignorer eventuell legacy fritekst (kan stamme fra TEK17)
+              if (isBF85) {
+                if (bf85KravAktivt) {
+                  return (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Brannventilasjon (Røykventilasjon)</td>
+                      <td className="border border-gray-400 p-2">
+                        For bygninger med inntil 8 etasjer kan brannventilasjonen skje gjennom vindu i trapperom. Alle andre bygninger skal ha røyksjakt som er skilt fra loft i minst A 30 og som har et tverrsnitt på minst 1 m². Sjakten skal gå 20 cm over takflaten.
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">ARK/RIV</td>
+                    </tr>
+                  );
+                }
+                if (etasjer > 2) {
+                  return (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Brannventilasjon (Røykventilasjon)</td>
+                      <td className="border border-gray-400 p-2 text-destructive font-medium">
+                        Avvik: Bygget har flere enn 2 etasjer. Etter BF85 §78 skal trapperom ha brannventilasjon. Vurdering er beskrevet i tilstandsvurderingen i slutten av kapittelet.
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">ARK/RIV</td>
+                    </tr>
+                  );
+                }
+                return null;
+              }
+
+              // New textarea-based approach (TEK17)
               if (harFritekst) {
                 return (
                   <tr>
-                    <td className="border border-gray-400 p-2 align-top">{isBF85 ? "Brannventilasjon (Røykventilasjon)" : "Røykkontroll"}</td>
+                    <td className="border border-gray-400 p-2 align-top">Røykkontroll</td>
                     <td className="border border-gray-400 p-2 whitespace-pre-wrap">{formData.roykKontrollKravTekst}</td>
                     <td className="border border-gray-400 p-2 align-top">ARK/RIV</td>
                   </tr>
