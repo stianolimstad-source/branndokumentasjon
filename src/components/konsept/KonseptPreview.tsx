@@ -5058,8 +5058,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </tr>
               );
             })()}
+              </>
+            )}
 
             {/* 3.11 §11-14 Rømningsvei */}
+            {!isBF85 && (
+              <>
             <tr id="preview-3-11" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.11 &nbsp;&nbsp; {isBF85 ? <>Trapperom og heissjakt (Kap. 30:7/30:41) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-14 Rømningsvei)</span></> : "§11-14 Rømningsvei"}</td>
             </tr>
