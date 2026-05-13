@@ -5390,7 +5390,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <th className="border border-gray-400 p-2 text-left">Løsning</th>
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
-            {isBF85 && (
+            {isBF85 && formData.husdyrRedningRelevant && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top">Byggeforskrift 1985</td>
                 <td className="border border-gray-400 p-2">
