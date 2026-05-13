@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
-import { bf85BygningstyperListe, getBygningsbrannklasse, BF85Bygningstype, getBaereevneTekstBF85, bf85BrannveggTabellSkole, getBF85BrannveggKravSkole, getBF85BrannveggKravKap34, BF85Tabell3423Tiltak, bf85Tabell3423, getYtterveggBrannmotstandBF85 } from "@/lib/bf85-constants";
+import { bf85BygningstyperListe, getBygningsbrannklasse, BF85Bygningstype, getBaereevneTekstBF85, bf85BrannveggTabellSkole, getBF85BrannveggKravSkole, getBF85BrannveggKravKap34, BF85Tabell3423Tiltak, bf85Tabell3423, getYtterveggBrannmotstandBF85, getRelevantBF85_5xx } from "@/lib/bf85-constants";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -885,6 +885,20 @@ const Konsept = () => {
       }));
     }
   }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.erRKL6Boligbygning]);
+
+  // Auto-uncheck BF85 :513/:514/:515 hvis de blir irrelevante for valgt BBK/etasjer
+  useEffect(() => {
+    if (isViewMode) return;
+    if (formData.regelverk !== "BF85") return;
+    const rel = getRelevantBF85_5xx(formData.bygningsbrannklasse, formData.etasjer);
+    const updates: Record<string, boolean> = {};
+    if (!rel.vis513 && formData.bf85_513) updates.bf85_513 = false;
+    if (!rel.vis514 && formData.bf85_514) updates.bf85_514 = false;
+    if (!rel.vis515 && formData.bf85_515) updates.bf85_515 = false;
+    if (Object.keys(updates).length > 0) {
+      setFormData(prev => ({ ...prev, ...updates }));
+    }
+  }, [formData.regelverk, formData.bygningsbrannklasse, formData.etasjer]);
 
   // Nullstill "manglerSeksjonering" hvis regelverket ikke lenger krever brannvegg/seksjonering
   useEffect(() => {
@@ -7183,27 +7197,42 @@ const Konsept = () => {
                           </div>
 
                           {/* BF85 :5 Vegger, tak og nedforet himling */}
-                          <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
-                            <Label className="text-xs font-medium">Vegger, tak og nedforet himling (:5)</Label>
-                            {[
-                              { key: "bf85_513", label: ":513 Yttervegger i B-konstruksjon" },
-                              { key: "bf85_514", label: ":514 Fasademateriale på vegg i A-konstruksjon" },
-                              { key: "bf85_515", label: ":515 Brennbar isolasjon" },
-                            ].map((item) => (
-                              <div key={item.key} className="flex items-center gap-2">
-                                <Checkbox
-                                  id={item.key}
-                                  checked={!!formData[item.key]}
-                                  onCheckedChange={(checked) =>
-                                    setFormData({ ...formData, [item.key]: !!checked })
-                                  }
-                                />
-                                <label htmlFor={item.key} className="text-xs cursor-pointer">
-                                  {item.label}
-                                </label>
+                          {(() => {
+                            const rel = getRelevantBF85_5xx(formData.bygningsbrannklasse, formData.etasjer);
+                            const items = [
+                              { key: "bf85_513", label: ":513 Yttervegger i B-konstruksjon", show: rel.vis513 },
+                              { key: "bf85_514", label: ":514 Fasademateriale på vegg i A-konstruksjon", show: rel.vis514 },
+                              { key: "bf85_515", label: ":515 Brennbar isolasjon", show: rel.vis515 },
+                            ].filter(i => i.show);
+                            if (items.length === 0) {
+                              return (
+                                <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                                  <Label className="text-xs font-medium">Vegger, tak og nedforet himling (:5)</Label>
+                                  <p className="text-xs text-muted-foreground">Ingen relevante krav for valgt bygningsbrannklasse og etasjer.</p>
+                                </div>
+                              );
+                            }
+                            return (
+                              <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                                <Label className="text-xs font-medium">Vegger, tak og nedforet himling (:5)</Label>
+                                <p className="text-[10px] text-muted-foreground">Filtrert etter bygningsbrannklasse {rel.bklNum || "?"} og {rel.etasjerNum || "?"} etasjer.</p>
+                                {items.map((item) => (
+                                  <div key={item.key} className="flex items-center gap-2">
+                                    <Checkbox
+                                      id={item.key}
+                                      checked={!!formData[item.key]}
+                                      onCheckedChange={(checked) =>
+                                        setFormData({ ...formData, [item.key]: !!checked })
+                                      }
+                                    />
+                                    <label htmlFor={item.key} className="text-xs cursor-pointer">
+                                      {item.label}
+                                    </label>
+                                  </div>
+                                ))}
                               </div>
-                            ))}
-                          </div>
+                            );
+                          })()}
                         </>
                       ) : (
                         <>

@@ -157,6 +157,35 @@ export const getYtterveggBrannmotstandBF85 = (bygningsbrannklasse: string): { te
 };
 
 /**
+ * BF85 :513–:515 relevans basert på bygningsbrannklasse og antall etasjer.
+ * - :513 Yttervegger i B-konstruksjon: kun BBK 1 og 2
+ * - :514 Fasademateriale på vegg i A-konstruksjon: alltid relevant
+ * - :515 Brennbar isolasjon: kun BBK 3 og 4 og inntil 2 etasjer
+ */
+export const getRelevantBF85_5xx = (
+  bygningsbrannklasse: string,
+  etasjer: string | number,
+): {
+  vis513: boolean;
+  vis514: boolean;
+  vis515: boolean;
+  etasjerNum: number;
+  bklNum: number;
+} => {
+  const bklNum = parseInt(String(bygningsbrannklasse || ""), 10);
+  const etasjerNum = parseInt(String(etasjer || ""), 10);
+  const etg = isNaN(etasjerNum) ? 0 : etasjerNum;
+  const harBkl = !isNaN(bklNum);
+  return {
+    vis513: harBkl && (bklNum === 1 || bklNum === 2),
+    vis514: true,
+    vis515: harBkl && (bklNum === 3 || bklNum === 4) && etg > 0 && etg <= 2,
+    etasjerNum: etg,
+    bklNum: harBkl ? bklNum : 0,
+  };
+};
+
+/**
  * BF85 Tabell 30:41 – Bygningsdelers brannmotstand per bygningsbrannklasse.
  * Returns auto-generated bæreevne text for section 2.1 based on bygningsbrannklasse (1–4).
  */
