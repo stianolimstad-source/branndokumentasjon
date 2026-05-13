@@ -3845,7 +3845,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <td className="border border-gray-400 p-2 align-top">RIV</td>
                   </tr>
                 )}
-                {!formData.ventilasjonRelevant && (
+                {formData.ventilasjonRelevant && ((formData.bygningstype || "").toLowerCase().includes("kraftstasjon") || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"))) && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top font-medium">Ventilasjonsanlegg – kraftstasjon</td>
+                    <td className="border border-gray-400 p-2">I ventilasjonsanlegget skal det ikke benyttes brannspjeld med smeltesikring. Det skal brukes automatiske spjeld som sikrer rask avstengning og hindrer røykspredning før temperaturen er blitt høy. Dersom det benyttes steng-inne-prinsipp for ventilasjonsanlegget, må det benyttes automatiske brannspjeld. Brannspjeld med smeltesikring er ikke tillatt. Jf. DSB sin veiledning om brannvern i kraftstasjoner.</td>
+                    <td className="border border-gray-400 p-2 align-top">RIV</td>
+                  </tr>
+                )}
                   <tr>
                     <td className="border border-gray-400 p-2 align-top">Ventilasjonsanlegg</td>
                     <td className="border border-gray-400 p-2">Ventilasjonsanlegg er ikke installert.</td>
@@ -3880,7 +3886,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       <td className="border border-gray-400 p-2 align-top">RIV</td>
                     </tr>
                 )}
-                {formData.vannAvlopRelevant && (
+                {formData.ventilasjonRelevant && ((formData.bygningstype || "").toLowerCase().includes("kraftstasjon") || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"))) && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top font-medium">Ventilasjonsanlegg – kraftstasjon</td>
+                    <td className="border border-gray-400 p-2">I ventilasjonsanlegget skal det ikke benyttes brannspjeld med smeltesikring. Det skal brukes automatiske spjeld som sikrer rask avstengning og hindrer røykspredning før temperaturen er blitt høy. Dersom det benyttes steng-inne-prinsipp for ventilasjonsanlegget, må det benyttes automatiske brannspjeld. Brannspjeld med smeltesikring er ikke tillatt. Jf. DSB sin veiledning om brannvern i kraftstasjoner.</td>
+                    <td className="border border-gray-400 p-2 align-top">RIV</td>
+                  </tr>
+                )}
                     <tr>
                       <td className="border border-gray-400 p-2 align-top">Vann- og avløpsrør</td>
                       <td className="border border-gray-400 p-2">
@@ -3998,11 +4010,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       </ul>
                     </td>
                     <td className="border border-gray-400 p-2 align-top">RIE</td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top font-medium">Ventilasjonsanlegg – kraftstasjon</td>
-                    <td className="border border-gray-400 p-2">I ventilasjonsanlegget skal det ikke benyttes brannspjeld med smeltesikring. Det skal brukes automatiske spjeld som sikrer rask avstengning og hindrer røykspredning før temperaturen er blitt høy. Dersom det benyttes steng-inne-prinsipp for ventilasjonsanlegget, må det benyttes automatiske brannspjeld. Brannspjeld med smeltesikring er ikke tillatt. Jf. DSB sin veiledning om brannvern i kraftstasjoner.</td>
-                    <td className="border border-gray-400 p-2 align-top">RIV</td>
                   </tr>
                 </>
               );
