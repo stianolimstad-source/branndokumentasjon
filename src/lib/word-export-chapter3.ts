@@ -2,6 +2,7 @@ import { Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle,
 import { branncelleTyperListe, getBrannklasse } from "./fire-concept-constants";
 import { getGarasjeKrav } from "./garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "./brensellagring-krav";
+import { getYtterveggBrannmotstandBF85 } from "./bf85-constants";
 
 const tableBorders = {
   top: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
