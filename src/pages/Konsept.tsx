@@ -9563,8 +9563,11 @@ const Konsept = () => {
                                   {formData.romningsveiKorridorOver30m && <li>Krav til seksjonering av korridor over 30 m (E 30-CSa)</li>}
                                   {formData.romningsveiPanikkbeslag && <li>Krav til panikkbeslag</li>}
                                   <li>Fri bredde i trapp: min. {bredde}</li>
-                                  <li>Krav om ingen innsnevring i rømningsvei</li>
-                                </>
+                                   <li>Krav om ingen innsnevring i rømningsvei</li>
+                                   {((formData.bygningstype || "").toLowerCase().includes("kraftstasjon") || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"))) && (
+                                     <li>Dører til og i rømningsvei skal alltid slå ut i rømningsretning – kraftstasjon (uavhengig av persontall)</li>
+                                   )}
+                                 </>
                               )}
                             </ul>
                           </div>
