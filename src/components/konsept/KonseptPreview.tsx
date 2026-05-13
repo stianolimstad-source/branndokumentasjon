@@ -4564,10 +4564,41 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
 
-            {/* 3.10 §11-13 Utgang fra branncelle */}
+            {/* 3.10 §11-13 Utgang fra branncelle / BF85 §7 Rømningsveg */}
             <tr id="preview-3-10" style={sectionRowStyle}>
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.10 &nbsp;&nbsp; {isBF85 ? <>Utganger og rømningsveier fra branncelle (Kap. 30:71–73) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-13 Utgang fra branncelle)</span></> : "§11-13 Utgang fra branncelle"}</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.10 &nbsp;&nbsp; {isBF85 ? "Rømningsveg (BF85 §7)" : "§11-13 Utgang fra branncelle"}</td>
             </tr>
+            {isBF85 ? (
+              <>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+                  <th className="border border-gray-400 p-2 text-left">Beskrivelse / vurdering</th>
+                  <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
+                </tr>
+                {[
+                  { id: "71", title: "§:71 Generelt", field: "bf85_romning_71_generelt", text: "Rømningsveg skal på en oversiktlig måte føre til det fri uten lommer, retningsforandringer e.l. som kan hindre personer fra å komme ut under brann. Rømningsveg skal være egen branncelle. Heis og rulletrapp skal ikke regnes som rømningsveg. Rullebånd for personbefordring kan inngå i rømningsveg dersom det beveger seg i rømningsretningen eller stoppes automatisk ved brannalarm." },
+                  { id: "72", title: "§:72 Antall rømningsveger", field: "bf85_romning_72_antall", text: "Antall rømningsveger er avhengig av bygningens bruk, antall etasjer og antall mennesker." },
+                  { id: "73", title: "§:73 Bredde i rømningsveg", field: "bf85_romning_73_bredde", text: "Fri bredde i rømningsveg skal minst være 10 mm pr. person og ikke mindre enn 900 mm." },
+                  { id: "74", title: "§:74 Golvbelegg", field: "bf85_romning_74_golvbelegg", text: "Golvbelegg skal være klasse G." },
+                  { id: "75", title: "§:75 Dør i rømningsveg", field: "bf85_romning_75_dor", text: "Dør i rømningsveg i bygning skal slå ut i rømningsretningen. Dette krav gjelder ikke dør til boenhet. Dør skal utføres som angitt i Tabell 30:75. Kravene gjelder ikke for utgangsdør til det fri." },
+                ].map((p) => (
+                  <tr key={p.id}>
+                    <td className="border border-gray-400 p-2 align-top font-medium">{p.title}</td>
+                    <td className="border border-gray-400 p-2">
+                      <p>{p.text}</p>
+                      {(formData as any)[p.field] && (
+                        <p className="mt-2 italic whitespace-pre-wrap">Vurdering: {(formData as any)[p.field]}</p>
+                      )}
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                  </tr>
+                ))}
+                {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_10"] && (
+                  <TilstandTableRow data={formData.tilstandsvurderinger["3_10"]} sectionLabel="3.10 Rømningsveg (BF85 §7)" />
+                )}
+              </>
+            ) : (
+              <>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
               <th className="border border-gray-400 p-2 text-left">Løsning</th>
@@ -5027,8 +5058,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </tr>
               );
             })()}
+              </>
+            )}
 
             {/* 3.11 §11-14 Rømningsvei */}
+            {!isBF85 && (
+              <>
             <tr id="preview-3-11" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.11 &nbsp;&nbsp; {isBF85 ? <>Trapperom og heissjakt (Kap. 30:7/30:41) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-14 Rømningsvei)</span></> : "§11-14 Rømningsvei"}</td>
             </tr>
@@ -5295,6 +5330,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_11"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_11"]} sectionLabel="3.11 Rømningsvei" />
+            )}
+              </>
             )}
 
 
