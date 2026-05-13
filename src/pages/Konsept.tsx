@@ -4668,9 +4668,19 @@ const Konsept = () => {
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                          <li>Avstandskrav mellom byggverk basert på bygningshøyde og avstand til nabobygg</li>
-                          <li>Automatisk beregning av minsteavstand og krav til brannvegg/branncellevegg</li>
-                          <li>Krav til yttervegger og vinduer/åpninger mot nabobygg</li>
+                          {formData.regelverk === "BF85" ? (
+                            <>
+                              <li>Avstandskrav mellom bygninger iht. BF85 Kap. 30:32 (minste avstand og krav om brannvegg)</li>
+                              <li>Krav til avstand mellom grupper av bygninger og vurdering av strålevarme</li>
+                              <li>Krav til yttervegger og vinduer/åpninger mot nabobygg</li>
+                            </>
+                          ) : (
+                            <>
+                              <li>Avstandskrav mellom byggverk basert på bygningshøyde og avstand til nabobygg</li>
+                              <li>Automatisk beregning av minsteavstand og krav til brannvegg/branncellevegg</li>
+                              <li>Krav til yttervegger og vinduer/åpninger mot nabobygg</li>
+                            </>
+                          )}
                         </ul>
                       </div>
                       <div>
