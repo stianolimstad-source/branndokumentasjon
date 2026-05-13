@@ -1,20 +1,26 @@
 ## Mål
-I rapporten kap. 3.7 for BF85 angir BF85 kun «Anlegget skal være slik utført at det ikke medfører økt risiko for brann» – som er åpent for tolkning. Legg til TEK17 §11-10 sine preaksepterte krav til ventilasjonsanlegg som vurderingsgrunnlag i BF85-rapporten.
+For BF85-tilstandsvurderinger i kapittel 3.7: gi brukeren en checkbox for om ventilasjonsanlegg er relevant. Dersom denne ikke hukes av, skal rapporten/preview vise at ventilasjonsanlegg ikke er installert.
 
-## Endring
+## Endringer
 
-Fil: `src/components/konsept/KonseptPreview.tsx` (BF85-blokken i 3.7, linje ~3807–3822)
+### 1. `src/pages/Konsept.tsx` – inputskjema, BF85-grenen i 3.7 (~linje 7383–7398)
+- Legg til en `ventilasjonRelevant`-checkbox i BF85-grenen (i dag finnes denne kun i TEK17-grenen).
+- Når `ventilasjonRelevant` er true, vis toggle-alternativene `ventKrav5`–`ventKrav9` (samme som TEK17-grenen allerede har).
+- `:1332 Avtrekk`-checkbox beholdes uendret.
 
-Inne i `isBF85` ? -grenen, etter den eksisterende `:1332 Avtrekk`-raden, legg til en ny rad «Ventilasjonsanlegg» som vises når `formData.ventilasjonRelevant` er huket. Innhold:
+### 2. `src/components/konsept/KonseptPreview.tsx` – preview, BF85-grenen i 3.7 (~linje 3807–3841)
+- Når `formData.ventilasjonRelevant` er false og regelverk er BF85: legg til en tabellrad:
+  - Forhold: «Ventilasjonsanlegg»
+  - Løsning: «Ventilasjonsanlegg er ikke installert.»
+  - Ansvar: «RIV»
+- Når `ventilasjonRelevant` er true: behold eksisterende TEK17-baserte kravliste (allerede implementert).
+- `:1332 Avtrekk`-rad beholdes uendret.
 
-- Innledende kursiv merknad:
-  > BF85 stiller kun det generelle kravet om at anlegget ikke skal medføre økt risiko for brann. Som vurderingsgrunnlag legges preaksepterte ytelser fra TEK17 §11-10 til grunn:
-- Deretter samme `<ul>`-liste som TEK17-grenen viser (linje 3829–3839), inkludert toggles for `ventKrav5`, `ventKrav6`, `ventKrav7`, `ventKrav8`, `ventKrav9`.
-- Ansvar: «RIV».
-
-Dagens `:1332 Avtrekk`-rad beholdes uendret.
+### 3. `src/lib/word-export-chapter3.ts` – Word-eksport, seksjon 3.7 (~linje 1158–1178)
+- Etter dagens `if (formData.ventilasjonRelevant)`-blokk, legg til en `else if`-gren:
+  - Hvis `!formData.ventilasjonRelevant && formData.regelverk === "BF85"`: legg til en rad med «Ventilasjonsanlegg» / «Ventilasjonsanlegg er ikke installert.» / «RIV».
 
 ## Tekniske detaljer
-- Gjenbruker eksisterende state-felt og toggles fra TEK17-grenen – ingen endringer i input-skjema eller datamodell.
+- Ingen nye state-felt nødvendig – `ventilasjonRelevant` eksisterer allerede.
 - Påvirker både `/konsept` og `/tilstandsvurdering` (samme komponent).
-- Word-eksport følger preview-strukturen, så ingen separat eksport-endring.
+- Word-eksport følger preview-strukturen.
