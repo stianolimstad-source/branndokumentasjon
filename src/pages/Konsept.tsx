@@ -7904,9 +7904,19 @@ const Konsept = () => {
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                          <li>Generelle krav til rømning og evakuering</li>
-                          <li>Krav til tidlig varsling og tilstrekkelig rømningstid</li>
-                          <li>Krav til rømningsveier med tilstrekkelig kapasitet</li>
+                          {formData.regelverk === "BF85" ? (
+                            <>
+                              <li>Generelle krav til rømningsvei iht. BF85 Kap. 30:7 (30:71–78)</li>
+                              <li>Krav til antall, bredde og dører i rømningsvei (Tabell 30:75)</li>
+                              <li>Krav til vindu som rømningsvei, markering, brannventilasjon og ledelys</li>
+                            </>
+                          ) : (
+                            <>
+                              <li>Generelle krav til rømning og evakuering</li>
+                              <li>Krav til tidlig varsling og tilstrekkelig rømningstid</li>
+                              <li>Krav til rømningsveier med tilstrekkelig kapasitet</li>
+                            </>
+                          )}
                         </ul>
                       </div>
                       <div>
