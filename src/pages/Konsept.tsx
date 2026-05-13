@@ -9479,6 +9479,15 @@ const Konsept = () => {
                           )}
                         </ul>
                       </div>
+                      {formData.regelverk === "BF85" && (() => {
+                        const ytter = getYtterveggBrannmotstandBF85(formData.bygningsbrannklasse || "");
+                        return ytter ? (
+                          <div className="p-3 bg-muted/50 border border-border rounded text-xs space-y-1 mt-2">
+                            <p className="font-semibold text-foreground">Ikke-bærende ytterveggers brannmotstand (Tabell 30:512)</p>
+                            <p className="text-foreground/80">{ytter.tekst}</p>
+                          </div>
+                        ) : null;
+                      })()}
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('redningsmannskap-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="redningsmannskap-kommentar" className={formData.redningsmannskapKommentar ? "" : "hidden"}>
