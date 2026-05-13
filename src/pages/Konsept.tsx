@@ -4289,7 +4289,11 @@ const Konsept = () => {
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
                           <li>Brannmotstandskrav for bærende konstruksjoner basert på {formData.regelverk === "BF85" ? `bygningsbrannklasse ${formData.bygningsbrannklasse || "(ikke angitt)"}` : `brannklasse ${formData.brannklasse || "(ikke angitt)"}`}</li>
-                          <li>Krav til bærende hovedsystem, sekundære bærende deler, trapperom og heissjakt</li>
+                          {formData.regelverk === "BF85" ? (
+                            <li>Krav til bygningsdelers brannmotstand iht. BF85 Tabell 30:41 (bærende hovedsystem, sekundære deler, etasjeskiller, branncellebegrensende deler, kjeller, trapperom og heissjakt, trappeløp)</li>
+                          ) : (
+                            <li>Krav til bærende hovedsystem, sekundære bærende deler, trapperom og heissjakt</li>
+                          )}
                           {formData.regelverk !== "BF85" && formData.baereevneUnntak?.length > 0 && <li>Unntak iht. VTEK § 11-4 (automatisk beregnet)</li>}
                         </ul>
                       </div>
@@ -4411,8 +4415,16 @@ const Konsept = () => {
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
                           <li>Vurdering av eksplosjonsfare basert på valgt relevans</li>
-                          {formData.eksplosjonRelevant === "relevant" && <li>Preaksepterte ytelser iht. VTEK § 11-5 (egen branncelle, trykkavlastningsflate, mm.)</li>}
-                          {formData.eksplosjonRelevant === "ikke_relevant" && <li>Standardtekst om at eksplosjonsfare ikke er relevant for tiltaket</li>}
+                          {formData.eksplosjonRelevant === "relevant" && (
+                            formData.regelverk === "BF85"
+                              ? <li>Krav til tekniske rom, fyrrom, ildsteder, røykpiper og fyringsanlegg iht. BF85 Kap. 30:33 og Kap. 49 (heismaskinrom, ventilasjonsrom, søppelrom og fyrrom som branncelle A 60)</li>
+                              : <li>Preaksepterte ytelser iht. VTEK § 11-5 (egen branncelle, trykkavlastningsflate, mm.)</li>
+                          )}
+                          {formData.eksplosjonRelevant === "ikke_relevant" && (
+                            formData.regelverk === "BF85"
+                              ? <li>Standardtekst om at eksplosjonsfare ikke er relevant. Krav til tekniske rom, fyrrom og ildsted iht. BF85 Kap. 30:33 og Kap. 49 må likevel vurderes der relevant.</li>
+                              : <li>Standardtekst om at eksplosjonsfare ikke er relevant for tiltaket</li>
+                          )}
                         </ul>
                       </div>
                       <div>
@@ -4656,9 +4668,19 @@ const Konsept = () => {
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                          <li>Avstandskrav mellom byggverk basert på bygningshøyde og avstand til nabobygg</li>
-                          <li>Automatisk beregning av minsteavstand og krav til brannvegg/branncellevegg</li>
-                          <li>Krav til yttervegger og vinduer/åpninger mot nabobygg</li>
+                          {formData.regelverk === "BF85" ? (
+                            <>
+                              <li>Avstandskrav mellom bygninger iht. BF85 Kap. 30:32 (minste avstand og krav om brannvegg)</li>
+                              <li>Krav til avstand mellom grupper av bygninger og vurdering av strålevarme</li>
+                              <li>Krav til yttervegger og vinduer/åpninger mot nabobygg</li>
+                            </>
+                          ) : (
+                            <>
+                              <li>Avstandskrav mellom byggverk basert på bygningshøyde og avstand til nabobygg</li>
+                              <li>Automatisk beregning av minsteavstand og krav til brannvegg/branncellevegg</li>
+                              <li>Krav til yttervegger og vinduer/åpninger mot nabobygg</li>
+                            </>
+                          )}
                         </ul>
                       </div>
                       <div>
@@ -5211,9 +5233,19 @@ const Konsept = () => {
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                          <li>Brannseksjoneringskrav basert på bygningstype og brannbelastning</li>
-                          <li>Krav til seksjoneringsvegger (brannvegg) med riktig brannmotstand</li>
-                          <li>Areal- og brannbelastningsgrenser for oppdeling</li>
+                          {formData.regelverk === "BF85" ? (
+                            <>
+                              <li>Krav til brannteknisk oppdeling med brannvegg og branndekke iht. BF85 Kap. 30:6</li>
+                              <li>Krav til utførelse av brannvegg og branndekke, samt gjennomføringer (Kap. 30:61–62)</li>
+                              <li>Maks bruttoareal pr. etasje uten oppdeling iht. tabeller for aktuell bygningstype (Kap. 31–39)</li>
+                            </>
+                          ) : (
+                            <>
+                              <li>Brannseksjoneringskrav basert på bygningstype og brannbelastning</li>
+                              <li>Krav til seksjoneringsvegger (brannvegg) med riktig brannmotstand</li>
+                              <li>Areal- og brannbelastningsgrenser for oppdeling</li>
+                            </>
+                          )}
                         </ul>
                       </div>
                       <div>
@@ -7079,16 +7111,27 @@ const Konsept = () => {
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                          <li>Branncellekrav basert på valgte branncelle-typer</li>
-                          <li>Brannmotstand for branncellebegrensende konstruksjoner</li>
-                          <li>Dørkrav i branncellebegrensende vegger</li>
-                          <li>Krav til gjennomføringer og branntetting</li>
-                          {formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0 && (() => {
-                            const uniqueBkls = new Set(formData.bygningsdeler.map((d: any) => d.brannklasse).filter(Boolean));
-                            return uniqueBkls.size > 1 ? (
-                              <li className="font-medium text-foreground">Krav vises separat for hver brannklasse ({[...uniqueBkls].join(', ')})</li>
-                            ) : null;
-                          })()}
+                          {formData.regelverk === "BF85" ? (
+                            <>
+                              <li>Krav til branncelleinndeling iht. BF85 Kap. 30:63–64 (avhengig av bruk i Kap. 31–39)</li>
+                              <li>Brannmotstand for branncellebegrensende konstruksjoner iht. Tabell 30:41 (bygningsbrannklasse {formData.bygningsbrannklasse || "(ikke angitt)"})</li>
+                              <li>Krav til dører i branncellebegrensende vegger iht. BF85</li>
+                              <li>Krav til loft og kjeller (Kap. 30:64) og branntetting av gjennomføringer</li>
+                            </>
+                          ) : (
+                            <>
+                              <li>Branncellekrav basert på valgte branncelle-typer</li>
+                              <li>Brannmotstand for branncellebegrensende konstruksjoner</li>
+                              <li>Dørkrav i branncellebegrensende vegger</li>
+                              <li>Krav til gjennomføringer og branntetting</li>
+                              {formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0 && (() => {
+                                const uniqueBkls = new Set(formData.bygningsdeler.map((d: any) => d.brannklasse).filter(Boolean));
+                                return uniqueBkls.size > 1 ? (
+                                  <li className="font-medium text-foreground">Krav vises separat for hver brannklasse ({[...uniqueBkls].join(', ')})</li>
+                                ) : null;
+                              })()}
+                            </>
+                          )}
                         </ul>
                       </div>
                       <div>
@@ -7348,13 +7391,25 @@ const Konsept = () => {
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                          <li>Generelle krav til materialer og produkters egenskaper ved brann</li>
-                          <li>Krav til innvendige overflater og kledninger basert på {formData.risikoklasse === "RK6" ? "risikoklasse 6 (strengeste nivå)" : `brannklasse ${formData.brannklasse || "(ikke angitt)"}`}</li>
-                          <li>Særkrav for overflater og kledninger i rømningsveier</li>
-                          <li>Utvendige overflater tilpasset brannklasse og risikoklasse</li>
-                          <li>Kledningskrav basert på {formData.risikoklasse === "RK6" ? "risikoklasse 6" : `brannklasse ${formData.brannklasse || "(ikke angitt)"}`}</li>
-                          <li>Taktekning{(formData.risikoklasse === "RK4" || (formData.risikoklasse === "RK6" && (formData.bygningstype || "").toLowerCase().includes("bolig"))) ? " inkl. småhus-unntak" : ""}</li>
-                          <li>Krav til isolasjon og sandwichelementer</li>
+                          {formData.regelverk === "BF85" ? (
+                            <>
+                              <li>Krav til innvendige og utvendige overflater og kledninger iht. BF85 Tabell 30:42 (bygningsbrannklasse {formData.bygningsbrannklasse || "(ikke angitt)"})</li>
+                              <li>Ytterveggers brannmotstand iht. Tabell 30:512</li>
+                              <li>B-konstruksjoner iht. Kap. 30:513 og krav til fasademateriale (Kap. 30:514)</li>
+                              <li>Brennbar isolasjon iht. Kap. 30:515 (kun bygningsbrannklasse 3 og 4, inntil 2 etasjer)</li>
+                              <li>Krav til taktekning og nedforet himling</li>
+                            </>
+                          ) : (
+                            <>
+                              <li>Generelle krav til materialer og produkters egenskaper ved brann</li>
+                              <li>Krav til innvendige overflater og kledninger basert på {formData.risikoklasse === "RK6" ? "risikoklasse 6 (strengeste nivå)" : `brannklasse ${formData.brannklasse || "(ikke angitt)"}`}</li>
+                              <li>Særkrav for overflater og kledninger i rømningsveier</li>
+                              <li>Utvendige overflater tilpasset brannklasse og risikoklasse</li>
+                              <li>Kledningskrav basert på {formData.risikoklasse === "RK6" ? "risikoklasse 6" : `brannklasse ${formData.brannklasse || "(ikke angitt)"}`}</li>
+                              <li>Taktekning{(formData.risikoklasse === "RK4" || (formData.risikoklasse === "RK6" && (formData.bygningstype || "").toLowerCase().includes("bolig"))) ? " inkl. småhus-unntak" : ""}</li>
+                              <li>Krav til isolasjon og sandwichelementer</li>
+                            </>
+                          )}
                         </ul>
                       </div>
                       
@@ -7578,6 +7633,9 @@ const Konsept = () => {
                       {/* Info om automatiske krav */}
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                        {formData.regelverk === "BF85" && (
+                          <p className="italic text-foreground/70">BF85 Kap. 47 stiller kun generelle krav om at anlegg ikke skal medføre økt risiko for brann. TEK17 § 11-10 og preaksepterte ytelser legges derfor til grunn som vurderingsgrunnlag.</p>
+                        )}
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
                           {formData.ventilasjonRelevant && (
                             <>
@@ -7846,9 +7904,19 @@ const Konsept = () => {
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                          <li>Generelle krav til rømning og evakuering</li>
-                          <li>Krav til tidlig varsling og tilstrekkelig rømningstid</li>
-                          <li>Krav til rømningsveier med tilstrekkelig kapasitet</li>
+                          {formData.regelverk === "BF85" ? (
+                            <>
+                              <li>Generelle krav til rømningsvei iht. BF85 Kap. 30:7 (30:71–78)</li>
+                              <li>Krav til antall, bredde og dører i rømningsvei (Tabell 30:75)</li>
+                              <li>Krav til vindu som rømningsvei, markering, brannventilasjon og ledelys</li>
+                            </>
+                          ) : (
+                            <>
+                              <li>Generelle krav til rømning og evakuering</li>
+                              <li>Krav til tidlig varsling og tilstrekkelig rømningstid</li>
+                              <li>Krav til rømningsveier med tilstrekkelig kapasitet</li>
+                            </>
+                          )}
                         </ul>
                       </div>
                       <div>
@@ -8534,11 +8602,23 @@ const Konsept = () => {
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                          {(formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) && <li>Krav til automatisk slokkeanlegg basert på risikoklasse</li>}
-                          {formData.tilretteleggingLedd2a && <li>Brannalarmanlegg med automatisk beregnet kategori</li>}
-                          {formData.alarmValg === "roykvarsler" && <li>Seriekoblede røykvarslere med batteribackup</li>}
-                          <li>Alarmkrav tilpasset bygningstype og risikoklasse</li>
-                          <li>Ledesystem og nødlys basert på risikoklasse</li>
+                          {formData.regelverk === "BF85" ? (
+                            <>
+                              {(formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) && <li>Krav til sprinkleranlegg der dette er krevet iht. BF85 Kap. 31–39 (avhengig av bygningstype)</li>}
+                              {formData.tilretteleggingLedd2a && <li>Krav til brannalarmanlegg iht. BF85 Kap. 31–39 (avhengig av bygningstype og størrelse)</li>}
+                              {formData.alarmValg === "roykvarsler" && <li>Krav til røykvarslere i boliger iht. BF85 Kap. 31</li>}
+                              <li>Alarmkrav tilpasset bygningstype og bygningsbrannklasse iht. BF85 Kap. 31–39</li>
+                              <li>Krav til ledelys/nødlys der dette er krevet for bygningstype</li>
+                            </>
+                          ) : (
+                            <>
+                              {(formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) && <li>Krav til automatisk slokkeanlegg basert på risikoklasse</li>}
+                              {formData.tilretteleggingLedd2a && <li>Brannalarmanlegg med automatisk beregnet kategori</li>}
+                              {formData.alarmValg === "roykvarsler" && <li>Seriekoblede røykvarslere med batteribackup</li>}
+                              <li>Alarmkrav tilpasset bygningstype og risikoklasse</li>
+                              <li>Ledesystem og nødlys basert på risikoklasse</li>
+                            </>
+                          )}
                         </ul>
                       </div>
                       <div>
@@ -9031,7 +9111,7 @@ const Konsept = () => {
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                          <li>Krav til utgang fra branncelle basert på risikoklasse og brannklasse</li>
+                          <li>Krav til utgang fra branncelle {formData.regelverk === "BF85" ? "iht. BF85 Kap. 30:71–73 (avhengig av bygningstype og bygningsbrannklasse)" : "basert på risikoklasse og brannklasse"}</li>
                           <li>Antall utganger og avstand til utgang</li>
                           <li>Krav til dører i branncellebegrensende vegger</li>
                           <li>Vinduer som rømningsvei (der relevant)</li>
@@ -9198,23 +9278,36 @@ const Konsept = () => {
                         const erBredRK = harRK3 || harRK5 || harRK6;
                         const bredde = erBredRK ? "1,16 m" : "0,86 m";
                         const bk = formData.brannklasse || "";
+                        const bbk = formData.bygningsbrannklasse || "(ikke angitt)";
                         return (
                           <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                             <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                             <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                              <li>Generelle krav til rømningsvei</li>
-                              <li>Fri bredde i rømningsvei: min. {bredde} ({erBredRK ? `RK${[harRK3 && "3", harRK5 && "5", harRK6 && "6"].filter(Boolean).join("/")}` : rk || "RK1/2/4"})</li>
-                              <li>Hovedatkomst tilrettelagt for sikker rømning</li>
-                              <li>Dørkrav i rømningsvei: fri bredde min. {bredde}, høyde min. 2,0 m, åpningskraft maks {formData.universellUtforming ? "30 N" : "67 N"}</li>
-                              {(bk === "BKL2" || bk === "BKL3") && <li>Avbruddsfri strømforsyning (UPS) for {bk === "BKL2" ? "60 min (BKL2)" : "60 min (BKL3)"}</li>}
-                              {bk === "BKL1" && <li>Avbruddsfri strømforsyning (UPS) for 30 min (BKL1)</li>}
-                              {formData.romningsveiRomMaks20 && <li>Krav til rom i rømningsvei inntil 20 m²</li>}
-                              {formData.romningsveiRom50E30 && <li>Krav til oppholdsrom inntil 50 m² i rømningsvei</li>}
-                              {formData.romningsveiSvalgang && <li>Krav til svalgang/altangang som rømningsvei</li>}
-                              {formData.romningsveiKorridorOver30m && <li>Krav til seksjonering av korridor over 30 m (E 30-CSa)</li>}
-                              {formData.romningsveiPanikkbeslag && <li>Krav til panikkbeslag</li>}
-                              <li>Fri bredde i trapp: min. {bredde}</li>
-                              <li>Krav om ingen innsnevring i rømningsvei</li>
+                              {formData.regelverk === "BF85" ? (
+                                <>
+                                  <li>Krav til trapperom og heissjakt iht. BF85 Kap. 30:7 (åpne, lukkede, branntrygge og røykfrie trapperom)</li>
+                                  <li>Bygningsdeler som omgir trapperom og heissjakt iht. Tabell 30:41 (bygningsbrannklasse {bbk})</li>
+                                  <li>Krav til antall, bredde og dører i rømningsvei iht. Tabell 30:75</li>
+                                  {formData.romningsveiKorridorOver30m && <li>Krav til seksjonering av lange korridorer</li>}
+                                  {formData.romningsveiSvalgang && <li>Krav til svalgang/altangang som rømningsvei</li>}
+                                </>
+                              ) : (
+                                <>
+                                  <li>Generelle krav til rømningsvei</li>
+                                  <li>Fri bredde i rømningsvei: min. {bredde} ({erBredRK ? `RK${[harRK3 && "3", harRK5 && "5", harRK6 && "6"].filter(Boolean).join("/")}` : rk || "RK1/2/4"})</li>
+                                  <li>Hovedatkomst tilrettelagt for sikker rømning</li>
+                                  <li>Dørkrav i rømningsvei: fri bredde min. {bredde}, høyde min. 2,0 m, åpningskraft maks {formData.universellUtforming ? "30 N" : "67 N"}</li>
+                                  {(bk === "BKL2" || bk === "BKL3") && <li>Avbruddsfri strømforsyning (UPS) for {bk === "BKL2" ? "60 min (BKL2)" : "60 min (BKL3)"}</li>}
+                                  {bk === "BKL1" && <li>Avbruddsfri strømforsyning (UPS) for 30 min (BKL1)</li>}
+                                  {formData.romningsveiRomMaks20 && <li>Krav til rom i rømningsvei inntil 20 m²</li>}
+                                  {formData.romningsveiRom50E30 && <li>Krav til oppholdsrom inntil 50 m² i rømningsvei</li>}
+                                  {formData.romningsveiSvalgang && <li>Krav til svalgang/altangang som rømningsvei</li>}
+                                  {formData.romningsveiKorridorOver30m && <li>Krav til seksjonering av korridor over 30 m (E 30-CSa)</li>}
+                                  {formData.romningsveiPanikkbeslag && <li>Krav til panikkbeslag</li>}
+                                  <li>Fri bredde i trapp: min. {bredde}</li>
+                                  <li>Krav om ingen innsnevring i rømningsvei</li>
+                                </>
+                              )}
                             </ul>
                           </div>
                         );
@@ -9408,6 +9501,9 @@ const Konsept = () => {
                         return (
                           <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-2">
                             <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                            {formData.regelverk === "BF85" && (
+                              <p className="italic text-foreground/70">Vurderingen baseres på BF85 Kap. 30:91/93 (slokkingsredskap, brannslanger, håndslokkingsapparater og stigeledning) samt bygningstype-spesifikke krav i Kap. 31–39.</p>
+                            )}
                             
                             {kravListe.length > 0 && (
                               <div>
@@ -9554,10 +9650,23 @@ const Konsept = () => {
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                          <li>Generelle krav til plassering, utforming og merking</li>
-                          <li>Kjørbar atkomst til hovedinngang og angrepsvei</li>
-                          {formData.romningsvinduRelevant && (
-                            <li>Vindu/balkong som rømningsvei – tilgjengelighet for høyderedskap (basert på valg i kap. 3.10)</li>
+                          {formData.regelverk === "BF85" ? (
+                            <>
+                              <li>Krav til kjøreatkomst for brannvesenet iht. BF85 Kap. 30:92</li>
+                              <li>Krav til atkomst til loft og yttertak iht. Kap. 30:94</li>
+                              <li>Krav til atkomst til kjeller iht. Kap. 30:95</li>
+                              {formData.romningsvinduRelevant && (
+                                <li>Vindu/balkong som rømningsvei – tilgjengelighet for høyderedskap (basert på valg i kap. 3.10)</li>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <li>Generelle krav til plassering, utforming og merking</li>
+                              <li>Kjørbar atkomst til hovedinngang og angrepsvei</li>
+                              {formData.romningsvinduRelevant && (
+                                <li>Vindu/balkong som rømningsvei – tilgjengelighet for høyderedskap (basert på valg i kap. 3.10)</li>
+                              )}
+                            </>
                           )}
                         </ul>
                       </div>
