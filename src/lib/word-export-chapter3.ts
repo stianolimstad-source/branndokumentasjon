@@ -1233,14 +1233,17 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
 
   if (formData.elektriskRelevant) {
-    rows.push(contentRowMultiLine("Elektriske installasjoner", [
-      "Kabler må ikke legges over nedforet himling eller i hulrom i rømningsvei med mindre ett av følgende punkter er oppfylt:",
+    const elektriskLines: string[] = [];
+    if (formData.regelverk === "BF85") {
+      elektriskLines.push("BF85 viser kun til gjeldende forskrifter for elektriske anlegg. Som vurderingsgrunnlag legges preaksepterte ytelser fra TEK17 §11-10 til grunn:");
+    }
+    elektriskLines.push("Kabler må ikke legges over nedforet himling eller i hulrom i rømningsvei med mindre ett av følgende punkter er oppfylt:",
       "   kablene representerer liten brannenergi, det vil si mindre enn ca. 50 MJ/løpemeter hulrom",
       "   kablene er ført i egen sjakt med sjaktvegger som har brannmotstand tilsvarende branncellebegrensende bygningsdel",
       "   himlingen har brannmotstand tilsvarende branncellebegrensende bygningsdel",
       "   hulrommet er sprinklet.",
-      "Kabler som utgjør liten brannenergi, det vil si mindre enn ca. 50 MJ/løpemeter korridor eller hulrom, kan føres ubeskyttet gjennom rømningsvei. Dette er et spesifikt unntak som gjelder kabler, og kan ikke brukes som begrunnelse for andre fravik fra preaksepterte ytelser.",
-    ], "RIE"));
+      "Kabler som utgjør liten brannenergi, det vil si mindre enn ca. 50 MJ/løpemeter korridor eller hulrom, kan føres ubeskyttet gjennom rømningsvei. Dette er et spesifikt unntak som gjelder kabler, og kan ikke brukes som begrunnelse for andre fravik fra preaksepterte ytelser.");
+    rows.push(contentRowMultiLine("Elektriske installasjoner", elektriskLines, "RIE"));
   }
 
   if (!formData.ventilasjonRelevant && !formData.vannAvlopRelevant && !formData.elektriskRelevant) {
