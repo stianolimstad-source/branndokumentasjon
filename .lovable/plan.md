@@ -1,24 +1,20 @@
 ## Mål
-Korriger logikken for «Brannceller over flere plan» i rapporten:
-
-1. Når «Brannceller over flere plan er relevant» IKKE er huket av → ingen rad i rapporten (uavhengig av etasjeantall og regelverk).
-2. Når «relevant» ER huket og «Branncellen strekker seg over flere enn 3 plan» er huket → vis tydelig avviks-tekst i rapporten.
+I rapporten kap. 3.7 for BF85 angir BF85 kun «Anlegget skal være slik utført at det ikke medfører økt risiko for brann» – som er åpent for tolkning. Legg til TEK17 §11-10 sine preaksepterte krav til ventilasjonsanlegg som vurderingsgrunnlag i BF85-rapporten.
 
 ## Endring
 
-Fil: `src/components/konsept/KonseptPreview.tsx` (linje ~2944–2998)
+Fil: `src/components/konsept/KonseptPreview.tsx` (BF85-blokken i 3.7, linje ~3807–3822)
 
-a) Fjern BF85-blokken som viser avviksrad når «relevant» ikke er huket (linje 2950–2963). Erstatt hele IIFE-en slik at:
-   - Hvis `!formData.branncellerFlerePlanRelevant` → returnér `null`.
-   - Ellers vis dagens standardrad med RK 3/6-fravikstekstene (uendret).
+Inne i `isBF85` ? -grenen, etter den eksisterende `:1332 Avtrekk`-raden, legg til en ny rad «Ventilasjonsanlegg» som vises når `formData.ventilasjonRelevant` er huket. Innhold:
 
-b) Inne i den eksisterende standardraden (når «relevant» er huket): legg til en ny rød/uthevet linje når `formData.branncellerFlerePlanOver3 === true`:
+- Innledende kursiv merknad:
+  > BF85 stiller kun det generelle kravet om at anlegget ikke skal medføre økt risiko for brann. Som vurderingsgrunnlag legges preaksepterte ytelser fra TEK17 §11-10 til grunn:
+- Deretter samme `<ul>`-liste som TEK17-grenen viser (linje 3829–3839), inkludert toggles for `ventKrav5`, `ventKrav6`, `ventKrav7`, `ventKrav8`, `ventKrav9`.
+- Ansvar: «RIV».
 
-> ⚠ Fravik: Branncellen strekker seg over flere enn 3 plan. Etter {BF85: «BF85» / TEK17: «preaksepterte ytelser i VTEK17 §11-8»} kan brannceller ha åpen forbindelse over inntil tre plan. Avvik fra dette må dokumenteres som fravik i tilstandsvurderingen.
-
-Linjen vises i samme `<td>` som den eksisterende beskrivelsen, under eventuell RK 3/6-advarsel. Gjelder både TEK17 og BF85, siden inputfeltet finnes for begge.
+Dagens `:1332 Avtrekk`-rad beholdes uendret.
 
 ## Tekniske detaljer
-- Bruker eksisterende state-felt `branncellerFlerePlanRelevant` og `branncellerFlerePlanOver3` fra `Konsept.tsx`.
-- Ingen endringer i input-siden eller i Word-eksport (Word følger preview-strukturen).
-- Påvirker både `/konsept` og `/tilstandsvurdering`.
+- Gjenbruker eksisterende state-felt og toggles fra TEK17-grenen – ingen endringer i input-skjema eller datamodell.
+- Påvirker både `/konsept` og `/tilstandsvurdering` (samme komponent).
+- Word-eksport følger preview-strukturen, så ingen separat eksport-endring.
