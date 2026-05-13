@@ -4096,7 +4096,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {/* 3.9 §11-12 Tilrettelegging for rømning */}
             <tr id="preview-3-9" style={sectionRowStyle}>
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.9 &nbsp;&nbsp; {isBF85 ? <>Brannalarmanlegg og røykvarsler (Kap. 31–39) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-12 Tiltak for å påvirke rømnings- og redningstider)</span></> : "§11-12 Tilrettelegging for rømning og redning"}</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.9 &nbsp;&nbsp; {isBF85 ? <>Tiltak for å påvirke rømnings- og redningstider <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(Brannalarmanlegg og røykvarsler, Kap. 31–39)</span></> : "§11-12 Tilrettelegging for rømning og redning"}</td>
             </tr>
             <tr className="bg-gray-100">
               <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>

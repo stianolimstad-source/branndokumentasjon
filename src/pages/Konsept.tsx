@@ -7992,10 +7992,10 @@ const Konsept = () => {
                      })()}
                      {renderTilstandPanel("3_8")}
                     </SectionCollapsible>
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-9" label={`3.9 ${formData.regelverk === "BF85" ? "Brannalarmanlegg og røykvarsler (§ 11-12 Tiltak for å påvirke rømnings- og redningstider)" : "§ 11-12 Tilrettelegging for rømning"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-9" label={`3.9 ${formData.regelverk === "BF85" ? "Tiltak for å påvirke rømnings- og redningstider (Brannalarmanlegg og røykvarsler)" : "§ 11-12 Tilrettelegging for rømning"}`}>
                     <div className="space-y-4">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.9 {formData.regelverk === "BF85" ? "Brannalarmanlegg og røykvarsler (§ 11-12 Tiltak for å påvirke rømnings- og redningstider)" : "§ 11-12 Tilrettelegging for rømning og redning"}</Label>
+                        <Label className="text-base font-extrabold text-foreground">3.9 {formData.regelverk === "BF85" ? "Tiltak for å påvirke rømnings- og redningstider (Brannalarmanlegg og røykvarsler)" : "§ 11-12 Tilrettelegging for rømning og redning"}</Label>
                       </div>
 
                       {/* BF85-spesifikt: :16 Brannalarmanlegg for skoler */}
