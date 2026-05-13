@@ -9590,10 +9590,10 @@ const Konsept = () => {
                     {renderTilstandPanel("3_11")}
                     </SectionCollapsible>
                     )}
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-12" label={`3.12 ${formData.regelverk === "BF85" ? "Tilrettelegging for redning av husdyr (§ 11-15)" : "§ 11-15 Redning av husdyr"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-12" label={`${isBF85Tilstand ? "3.11" : "3.12"} ${formData.regelverk === "BF85" ? "Tilrettelegging for redning av husdyr (§ 11-15)" : "§ 11-15 Redning av husdyr"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.12 {formData.regelverk === "BF85" ? "Tilrettelegging for redning av husdyr (§ 11-15)" : "§ 11-15 Tilrettelegging for redning av husdyr"}</Label>
+                        <Label className="text-base font-extrabold text-foreground">{isBF85Tilstand ? "3.11" : "3.12"} {formData.regelverk === "BF85" ? "Tilrettelegging for redning av husdyr (§ 11-15)" : "§ 11-15 Tilrettelegging for redning av husdyr"}</Label>
                       </div>
                       <div className="flex items-center gap-2 p-2 bg-muted/50 rounded mb-2">
                         <Checkbox 
