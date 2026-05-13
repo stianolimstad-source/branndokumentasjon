@@ -3806,19 +3806,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             </tr>
             {isBF85 ? (
               <>
-                {formData.bf85_1332_avtrekk && (
-                  <tr>
-                    <td className="border border-gray-400 p-2 align-top">:1332 Avtrekk</td>
-                    <td className="border border-gray-400 p-2">
-                      <ul className="list-disc ml-4 space-y-2">
-                        <li>Avtrekk fra kjøkken og WC skal føres i egne kanaler.</li>
-                        <li>Avtrekk fra forskjellige leiligheter skal føres i egne kanaler minst en full etasjehøyde opp, før de eventuelt føres sammen i felles kanal. Alle rom som knyttes til felles kanal, skal ha friskluftstilførsel i samme fasade.</li>
-                        <li>Oppholdsrom, soverom og arbeidsrom i bygninger med naturlig avtrekk skal ha vindu eller ytterdør som gir mulighet for rask utlufting.</li>
-                      </ul>
-                    </td>
-                    <td className="border border-gray-400 p-2 align-top">RIV</td>
-                  </tr>
-                )}
                 {formData.ventilasjonRelevant && (
                   <tr>
                     <td className="border border-gray-400 p-2 align-top">Ventilasjonsanlegg</td>
