@@ -7623,13 +7623,6 @@ const Konsept = () => {
                           <>
                             <p className="italic text-foreground/70">BF85 Kap. 47 stiller kun generelle krav om at anlegg ikke skal medføre økt risiko for brann. TEK17 § 11-10 og preaksepterte ytelser legges derfor til grunn som vurderingsgrunnlag.</p>
                             <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                              {formData.bf85_1332_avtrekk && (
-                                <>
-                                  <li>:1332 Avtrekk – avtrekk fra kjøkken og WC føres i egne kanaler</li>
-                                  <li>:1332 Avtrekk – avtrekk fra forskjellige leiligheter føres i egne kanaler minst en full etasjehøyde opp</li>
-                                  <li>:1332 Avtrekk – oppholdsrom, soverom og arbeidsrom med naturlig avtrekk skal ha vindu/ytterdør for rask utlufting</li>
-                                </>
-                              )}
                               {formData.ventilasjonRelevant ? (
                                 <>
                                   <li>Ventilasjonskanal gjennom brannskillende bygningsdel må opprettholde brannmotstand</li>
@@ -7649,9 +7642,6 @@ const Konsept = () => {
                                 </>
                               ) : (
                                 <li>Ventilasjonsanlegg er ikke installert</li>
-                              )}
-                              {!formData.ventilasjonRelevant && (
-                                <li>Velg relevante tekniske installasjoner ovenfor</li>
                               )}
                             </ul>
                           </>
