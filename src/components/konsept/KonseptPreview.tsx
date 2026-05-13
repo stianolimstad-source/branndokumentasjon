@@ -5347,6 +5347,17 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
               );
+            {(() => {
+              const erKraftstasjonRV = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+              if (!erKraftstasjonRV) return null;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Dører i rømningsvei – kraftstasjon</td>
+                  <td className="border border-gray-400 p-2">Dører til og i rømningsvei skal alltid slå ut i rømningsretning. Dette gjelder uavhengig av persontallet som skal evakuere via denne utgangen.</td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              );
             })()}
             {formData.romningsvei && (
               <tr>
