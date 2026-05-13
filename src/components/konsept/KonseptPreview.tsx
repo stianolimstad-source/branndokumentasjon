@@ -3846,6 +3846,26 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <td className="border border-gray-400 p-2 align-top">RIV</td>
                   </tr>
                 )}
+                {formData.elektriskRelevant && (
+                  <tr>
+                    <td className="border border-gray-400 p-2 align-top">Elektriske installasjoner</td>
+                    <td className="border border-gray-400 p-2">
+                      <p className="italic mb-2">BF85 viser kun til gjeldende forskrifter for elektriske anlegg. Som vurderingsgrunnlag legges preaksepterte ytelser fra TEK17 §11-10 til grunn:</p>
+                      <ul className="list-disc ml-4 space-y-2">
+                        <li>Kabler må ikke legges over nedforet himling eller i hulrom i rømningsvei med mindre ett av følgende punkter er oppfylt:
+                          <ul className="list-disc ml-4 mt-1 space-y-1">
+                            <li>kablene representerer liten brannenergi, det vil si mindre enn ca. <span className="text-red-600 font-medium">50 MJ/løpemeter</span> hulrom</li>
+                            <li>kablene er ført i egen sjakt med sjaktvegger som har brannmotstand tilsvarende branncellebegrensende bygningsdel</li>
+                            <li>himlingen har brannmotstand tilsvarende branncellebegrensende bygningsdel</li>
+                            <li>hulrommet er sprinklet.</li>
+                          </ul>
+                        </li>
+                        <li>Kabler som utgjør liten brannenergi, det vil si mindre enn ca. <span className="text-red-600 font-medium">50 MJ/løpemeter</span> korridor eller hulrom, kan føres ubeskyttet gjennom rømningsvei. Dette er et spesifikt unntak som gjelder kabler, og kan ikke brukes som begrunnelse for andre fravik fra preaksepterte ytelser.</li>
+                      </ul>
+                    </td>
+                    <td className="border border-gray-400 p-2 align-top">RIE</td>
+                  </tr>
+                )}
               </>
             ) : (
               <>

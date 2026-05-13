@@ -7490,6 +7490,25 @@ const Konsept = () => {
                               </div>
                             )}
                           </div>
+
+                          {/* BF85 Elektriske installasjoner */}
+                          <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
+                            <div className="flex items-center gap-2">
+                              <Checkbox
+                                id="elektriskRelevant_bf85"
+                                checked={!!formData.elektriskRelevant}
+                                onCheckedChange={(checked) => setFormData({...formData, elektriskRelevant: !!checked})}
+                              />
+                              <label htmlFor="elektriskRelevant_bf85" className="text-xs font-medium cursor-pointer">
+                                Elektriske installasjoner er relevant
+                              </label>
+                            </div>
+                            {formData.elektriskRelevant && (
+                              <p className="text-[11px] italic text-muted-foreground ml-6">
+                                BF85 viser kun til gjeldende forskrifter for elektriske anlegg. TEK17 §11-10 og preaksepterte ytelser legges til grunn som vurderingsgrunnlag.
+                              </p>
+                            )}
+                          </div>
                         </>
                       ) : (
                         <>
@@ -7642,6 +7661,13 @@ const Konsept = () => {
                                 </>
                               ) : (
                                 <li>Ventilasjonsanlegg er ikke installert</li>
+                              )}
+                              {formData.elektriskRelevant && (
+                                <>
+                                  <li>Elektriske installasjoner – TEK17 §11-10 brukes som vurderingsgrunnlag</li>
+                                  <li>Kabler over nedforet himling/hulrom i rømningsvei – krav til brannenergi, sjakt, brannmotstand eller sprinkling</li>
+                                  <li>Kabler med liten brannenergi (&lt; 50 MJ/lm) kan føres ubeskyttet gjennom rømningsvei</li>
+                                </>
                               )}
                             </ul>
                           </>
