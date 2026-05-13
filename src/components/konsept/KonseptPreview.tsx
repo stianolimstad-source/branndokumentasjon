@@ -5472,11 +5472,19 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 )}
               </>
             ) : (
-              <tr>
-                <td className="border border-gray-400 p-2" colSpan={3} style={{fontStyle: 'italic'}}>
-                  Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.
-                </td>
-              </tr>
+              isBF85 ? (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Generelt</td>
+                  <td className="border border-gray-400 p-2">Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.</td>
+                  <td className="border border-gray-400 p-2 align-top">-</td>
+                </tr>
+              ) : (
+                <tr>
+                  <td className="border border-gray-400 p-2" colSpan={3} style={{fontStyle: 'italic'}}>
+                    Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.
+                  </td>
+                </tr>
+              )
             )}
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_12"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_12"]} sectionLabel={isBF85 ? "3.11 Redning av husdyr" : "3.12 Redning av husdyr"} />
