@@ -7391,13 +7391,25 @@ const Konsept = () => {
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                          <li>Generelle krav til materialer og produkters egenskaper ved brann</li>
-                          <li>Krav til innvendige overflater og kledninger basert på {formData.risikoklasse === "RK6" ? "risikoklasse 6 (strengeste nivå)" : `brannklasse ${formData.brannklasse || "(ikke angitt)"}`}</li>
-                          <li>Særkrav for overflater og kledninger i rømningsveier</li>
-                          <li>Utvendige overflater tilpasset brannklasse og risikoklasse</li>
-                          <li>Kledningskrav basert på {formData.risikoklasse === "RK6" ? "risikoklasse 6" : `brannklasse ${formData.brannklasse || "(ikke angitt)"}`}</li>
-                          <li>Taktekning{(formData.risikoklasse === "RK4" || (formData.risikoklasse === "RK6" && (formData.bygningstype || "").toLowerCase().includes("bolig"))) ? " inkl. småhus-unntak" : ""}</li>
-                          <li>Krav til isolasjon og sandwichelementer</li>
+                          {formData.regelverk === "BF85" ? (
+                            <>
+                              <li>Krav til innvendige og utvendige overflater og kledninger iht. BF85 Tabell 30:42 (bygningsbrannklasse {formData.bygningsbrannklasse || "(ikke angitt)"})</li>
+                              <li>Ytterveggers brannmotstand iht. Tabell 30:512</li>
+                              <li>B-konstruksjoner iht. Kap. 30:513 og krav til fasademateriale (Kap. 30:514)</li>
+                              <li>Brennbar isolasjon iht. Kap. 30:515 (kun bygningsbrannklasse 3 og 4, inntil 2 etasjer)</li>
+                              <li>Krav til taktekning og nedforet himling</li>
+                            </>
+                          ) : (
+                            <>
+                              <li>Generelle krav til materialer og produkters egenskaper ved brann</li>
+                              <li>Krav til innvendige overflater og kledninger basert på {formData.risikoklasse === "RK6" ? "risikoklasse 6 (strengeste nivå)" : `brannklasse ${formData.brannklasse || "(ikke angitt)"}`}</li>
+                              <li>Særkrav for overflater og kledninger i rømningsveier</li>
+                              <li>Utvendige overflater tilpasset brannklasse og risikoklasse</li>
+                              <li>Kledningskrav basert på {formData.risikoklasse === "RK6" ? "risikoklasse 6" : `brannklasse ${formData.brannklasse || "(ikke angitt)"}`}</li>
+                              <li>Taktekning{(formData.risikoklasse === "RK4" || (formData.risikoklasse === "RK6" && (formData.bygningstype || "").toLowerCase().includes("bolig"))) ? " inkl. småhus-unntak" : ""}</li>
+                              <li>Krav til isolasjon og sandwichelementer</li>
+                            </>
+                          )}
                         </ul>
                       </div>
                       
