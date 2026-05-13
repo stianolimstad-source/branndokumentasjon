@@ -841,6 +841,7 @@ const Konsept = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.regelverk, formData.branncellerFlerePlanRelevant, formData.branncellerFlerePlanAreal]);
 
+  // Load existing concept if conceptId is provided
   useEffect(() => {
     if (conceptId && user) {
       loadConcept(conceptId);
