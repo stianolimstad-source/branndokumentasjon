@@ -1,60 +1,54 @@
 ## Mål
 
-I kap. 3.5 «Brannceller over flere plan» (BF85): når «Brannceller over flere plan er relevant» er huket av, skal brukeren velge **under** eller **over 800 m²** for samlet areal av branncellen(e) over flere plan. Ved valg «over 800 m²» skal det automatisk komme et krav om **automatisk slokkeanlegg** i kap. 3.9 – uavhengig av om bygningstypen er industri.
+I kap. 3.9 for **tilstandsvurderinger** (både BF85 og TEK17) skal brukeren alltid kunne hake av for at bygget faktisk har:
+
+- Brannalarmanlegg
+- Automatisk slokkeanlegg (sprinkler)
+- Røykventilasjon
+
+— uavhengig av om regelverket krever det. Begrunnelse: disse anleggene benyttes ofte som **kompenserende tiltak** for andre mangler. Dette gjelder kun i tilstandsvurderingsmodus (`documentType === "tilstandsvurdering"`), ikke i ordinære brannkonsept.
 
 ## Endringer
 
-### 1. Datamodell (`src/pages/Konsept.tsx`, init av `formData`)
+### 1. Datamodell (`src/pages/Konsept.tsx`, init av `formData` ca. linje 815–830)
 
-Nytt felt:
-- `branncellerFlerePlanAreal: "" | "under800" | "over800"` (default `""`)
+Tre nye felter (boolske, default `false`):
 
-Initialiseres samme sted som `branncellerFlerePlanRelevant` / `branncellerFlerePlanOver3`.
+- `tilstand_39_brannalarm_installert: boolean`
+- `tilstand_39_slokkeanlegg_installert: boolean`
+- `tilstand_39_roykventilasjon_installert: boolean`
 
-### 2. UI i kap. 3.5 (`src/pages/Konsept.tsx`, ca. linje 6686–6720)
+(Feltene gjenbrukes for både BF85 og TEK17 tilstandsvurdering — det finnes ingen TEK17-konseptlogikk som kolliderer.)
 
-Inne i `{formData.branncellerFlerePlanRelevant && (...)}`-blokken, like ved `branncellerFlerePlanOver3`, legges en ny under-blokk (vises kun for BF85, dvs. tilstandsvurdering, siden TEK17-flyten ikke har dette behovet i dag):
+### 2. UI i kap. 3.9 (`src/pages/Konsept.tsx`, ca. linje 8031–8127)
 
-- Tittel: «Samlet areal av branncellen over flere plan»
-- To radio-knapper (Radio Group): `under800` («Under 800 m²») og `over800` («Over 800 m²»)
-- Når `over800` velges:
-  - Info-boks (amber): «ℹ︎ BF85 krever automatisk slokkeanlegg når branncelle over flere plan har samlet areal > 800 m². Kravet legges automatisk inn i kap. 3.9.»
+Helt øverst i 3.9-blokken, direkte under headeren, legges en ny boks som **kun vises når `documentType === "tilstandsvurdering"`** (uavhengig av regelverk):
 
-Når brukeren tar bort hake på `branncellerFlerePlanRelevant` skal `branncellerFlerePlanAreal` nullstilles (samme mønster som dagens reset av `branncellerFlerePlanKrav` / `branncellerFlerePlanOver3`).
+- Tittel: «Installerte anlegg (kan benyttes som kompenserende tiltak)»
+- Hjelpetekst: kort forklaring om at avhukingen registrerer at anlegget faktisk er installert i bygget – også der regelverket ikke krever det – slik at det kan inngå i vurderingen som kompenserende tiltak.
+- Tre Checkbox-rader:
+  1. **Brannalarmanlegg installert** → `tilstand_39_brannalarm_installert`
+  2. **Automatisk slokkeanlegg (sprinkler) installert** → `tilstand_39_slokkeanlegg_installert`
+  3. **Røykventilasjon installert** → `tilstand_39_roykventilasjon_installert`
 
-### 3. Kobling til kap. 3.9 (`src/pages/Konsept.tsx`, ca. linje 8050–8081)
+Eksisterende BF85-blokker (`bf85_16_brannalarmanlegg`, `bf85_39_kontor_brannalarm`, `bf85_39_industri_slokkeanlegg`) og TEK17-logikken beholdes uendret under den nye boksen — disse representerer fortsatt forskriftens *krav*, mens den nye boksen registrerer faktiske installasjoner.
 
-Industri-blokken refaktoreres lett slik at trigger for «automatisk slokkeanlegg»-kravet utvides:
+### 3. Preview (`src/components/konsept/KonseptPreview.tsx`)
 
-Trigger vises (BF85) hvis **enten**:
-- bygningstype inneholder «industri» (dagens regel), **eller**
-- `branncellerFlerePlanRelevant && branncellerFlerePlanAreal === "over800"` (ny regel).
+I 3.9-tabellen, kun når `documentType === "tilstandsvurdering"`, legges det til en ekstra rad/avsnitt «Installerte anlegg (kompenserende tiltak)» som lister opp de avhukede anleggene. Hvis ingen er huket av, vises raden ikke. Beholdes etter eventuelle krav-rader for å gjøre det tydelig at dette er en faktisk-tilstand-observasjon.
 
-Når den nye triggeren slår inn:
-- Forhåndsavhukes ikke tvunget, men `bf85_39_industri_slokkeanlegg` settes automatisk til `true` første gang `over800` velges (samme mønster som andre auto-suggest), og en info-boks viser hvorfor: «Kravet er foreslått fordi branncelle over flere plan > 800 m² er valgt i kap. 3.5.» Brukeren kan fortsatt skru av.
-- Etiketten justeres til generisk tekst: «Automatisk slokkeanlegg: Branncelle over flere plan med samlet areal > 800 m² skal ha automatisk slokkeanlegg.» (industri-spesifikk hjelpetekst beholdes når industri-trigger gjelder).
+### 4. Word-eksport (`src/lib/word-export-chapter3.ts`)
 
-Ingen nye flagg utover gjenbruk av `bf85_39_industri_slokkeanlegg` – dette holder preview/Word-eksport (allerede implementert) uendret.
-
-### 4. Preview (`src/components/konsept/KonseptPreview.tsx`)
-
-- Kap. 3.5-tabellraden for «Brannceller over flere plan» får en ekstra linje når `branncellerFlerePlanAreal` er satt: «Samlet areal: under 800 m²» / «Samlet areal: over 800 m² – krever automatisk slokkeanlegg».
-- Kap. 3.9-raden for «Automatisk slokkeanlegg – industri» (linje 4133) får etikett endret til «Automatisk slokkeanlegg» og beskrivelsen blir kontekstavhengig (industri vs. branncelle > 800 m²).
-
-### 5. Word-eksport (`src/lib/word-export-chapter3.ts`)
-
-- I 3.5 BF85-grenen (linje ~917–929): Legg til en ekstra linje i «Brannceller over flere plan»-raden når `branncellerFlerePlanAreal` er satt, med samme tekst som preview.
-- I 3.9 BF85-grenen (linje ~1331): Etikett/tekst justeres på samme måte som preview – ingen ny rad, samme `bf85_39_industri_slokkeanlegg`-flagg.
+Tilsvarende avsnitt/rad i 3.9 når `documentType === "tilstandsvurdering"` og minst ett felt er avhuket. Bruker samme fraser som preview for konsistens.
 
 ## Akseptansekriterier
 
-- BF85 + `branncellerFlerePlanRelevant`: Ny under/over 800 m²-radio vises i kap. 3.5.
-- Velges «over 800 m²»: Info-boks i 3.5, og kravet «Automatisk slokkeanlegg» dukker opp i kap. 3.9 uavhengig av bygningstype, med begrunnelse.
-- Velges «under 800 m²» (eller ingen): Ingen automatisk effekt på 3.9 fra denne triggeren (industri-triggeren virker fortsatt selvstendig).
-- TEK17-prosjekter: Uendret oppførsel.
-- Preview og Word-rapport speiler endringene.
+- I tilstandsvurdering (både BF85 og TEK17) vises en ny boks i 3.9 med tre avhukinger — alltid, uavhengig av bygningstype/regelverkskrav.
+- Avhukingene speiles i preview og Word-eksport.
+- Ordinære brannkonsept (`documentType === "brannkonsept"`) er uendret.
+- Eksisterende BF85-krav-bokser i 3.9 påvirkes ikke.
 
 ## Spørsmål
 
-1. Skal valget «over 800 m²» **forhåndsavhuke** `bf85_39_industri_slokkeanlegg` automatisk (som planen foreslår), eller bare vise et varsel og la brukeren huke av selv?
-2. Skal under/over-valget også vises for **TEK17**-prosjekter (i dag har ikke TEK17 noe BF85-spesifikt 3.9-krav å koble på)? Planen forutsetter «kun BF85».
+1. Skal de tre avhukingene også eksponeres i 3.5/3.4-vurdering (eller andre seksjoner) som "tilgjengelige kompenserende tiltak", eller holder det at de bare bor i 3.9 og kan refereres manuelt? Planen forutsetter sistnevnte.
+2. Ønsker du et fritekstfelt per anlegg (f.eks. type/dekning/standard som NS-EN 12845, alder, kontrollstatus) i tillegg til selve avhukingen?
