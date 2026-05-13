@@ -8602,11 +8602,23 @@ const Konsept = () => {
                       <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-1">
                         <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
                         <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
-                          {(formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) && <li>Krav til automatisk slokkeanlegg basert på risikoklasse</li>}
-                          {formData.tilretteleggingLedd2a && <li>Brannalarmanlegg med automatisk beregnet kategori</li>}
-                          {formData.alarmValg === "roykvarsler" && <li>Seriekoblede røykvarslere med batteribackup</li>}
-                          <li>Alarmkrav tilpasset bygningstype og risikoklasse</li>
-                          <li>Ledesystem og nødlys basert på risikoklasse</li>
+                          {formData.regelverk === "BF85" ? (
+                            <>
+                              {(formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) && <li>Krav til sprinkleranlegg der dette er krevet iht. BF85 Kap. 31–39 (avhengig av bygningstype)</li>}
+                              {formData.tilretteleggingLedd2a && <li>Krav til brannalarmanlegg iht. BF85 Kap. 31–39 (avhengig av bygningstype og størrelse)</li>}
+                              {formData.alarmValg === "roykvarsler" && <li>Krav til røykvarslere i boliger iht. BF85 Kap. 31</li>}
+                              <li>Alarmkrav tilpasset bygningstype og bygningsbrannklasse iht. BF85 Kap. 31–39</li>
+                              <li>Krav til ledelys/nødlys der dette er krevet for bygningstype</li>
+                            </>
+                          ) : (
+                            <>
+                              {(formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b) && <li>Krav til automatisk slokkeanlegg basert på risikoklasse</li>}
+                              {formData.tilretteleggingLedd2a && <li>Brannalarmanlegg med automatisk beregnet kategori</li>}
+                              {formData.alarmValg === "roykvarsler" && <li>Seriekoblede røykvarslere med batteribackup</li>}
+                              <li>Alarmkrav tilpasset bygningstype og risikoklasse</li>
+                              <li>Ledesystem og nødlys basert på risikoklasse</li>
+                            </>
+                          )}
                         </ul>
                       </div>
                       <div>
