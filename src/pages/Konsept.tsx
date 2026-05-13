@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
-import { bf85BygningstyperListe, getBygningsbrannklasse, BF85Bygningstype, getBaereevneTekstBF85, bf85BrannveggTabellSkole, getBF85BrannveggKravSkole, getBF85BrannveggKravKap34, BF85Tabell3423Tiltak, bf85Tabell3423 } from "@/lib/bf85-constants";
+import { bf85BygningstyperListe, getBygningsbrannklasse, BF85Bygningstype, getBaereevneTekstBF85, bf85BrannveggTabellSkole, getBF85BrannveggKravSkole, getBF85BrannveggKravKap34, BF85Tabell3423Tiltak, bf85Tabell3423, getYtterveggBrannmotstandBF85 } from "@/lib/bf85-constants";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -9479,6 +9479,15 @@ const Konsept = () => {
                           )}
                         </ul>
                       </div>
+                      {formData.regelverk === "BF85" && (() => {
+                        const ytter = getYtterveggBrannmotstandBF85(formData.bygningsbrannklasse || "");
+                        return ytter ? (
+                          <div className="p-3 bg-muted/50 border border-border rounded text-xs space-y-1 mt-2">
+                            <p className="font-semibold text-foreground">Ikke-bærende ytterveggers brannmotstand (Tabell 30:512)</p>
+                            <p className="text-foreground/80">{ytter.tekst}</p>
+                          </div>
+                        ) : null;
+                      })()}
                       <div>
                         <Button type="button" variant="outline" size="sm" onClick={() => { const el = document.getElementById('redningsmannskap-kommentar'); if (el) el.classList.toggle('hidden'); }}>+ Kommentar</Button>
                         <div id="redningsmannskap-kommentar" className={formData.redningsmannskapKommentar ? "" : "hidden"}>

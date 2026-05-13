@@ -2,7 +2,7 @@ import React from "react";
 import { branncelleTyperListe, getBrannklasse } from "@/lib/fire-concept-constants";
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
-import { getBaereevneTekstBF85, getBF85BrannveggKravKap34, bf85Tabell3423 } from "@/lib/bf85-constants";
+import { getBaereevneTekstBF85, getBF85BrannveggKravKap34, bf85Tabell3423, getYtterveggBrannmotstandBF85 } from "@/lib/bf85-constants";
 
 
 interface TilstandBilde {
@@ -5473,6 +5473,16 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
             )}
+            {isBF85 && (() => {
+              const ytter = getYtterveggBrannmotstandBF85(formData.bygningsbrannklasse || "");
+              return ytter ? (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Ikke-bærende ytterveggers brannmotstand (Tabell 30:512)</td>
+                  <td className="border border-gray-400 p-2">{ytter.tekst}</td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              ) : null;
+            })()}
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_14"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_14"]} sectionLabel="3.14 Slokkemannskap" />
             )}

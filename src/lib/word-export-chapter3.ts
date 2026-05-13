@@ -2,6 +2,7 @@ import { Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle,
 import { branncelleTyperListe, getBrannklasse } from "./fire-concept-constants";
 import { getGarasjeKrav } from "./garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "./brensellagring-krav";
+import { getYtterveggBrannmotstandBF85 } from "./bf85-constants";
 
 const tableBorders = {
   top: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
@@ -1671,6 +1672,12 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
   if (formData.redningsmannskapKommentar) {
     rows.push(contentRow("Kommentar", formData.redningsmannskapKommentar, "-"));
+  }
+  if (formData.regelverk === "BF85") {
+    const ytter = getYtterveggBrannmotstandBF85(formData.bygningsbrannklasse || "");
+    if (ytter) {
+      rows.push(contentRow("Ikke-bærende ytterveggers brannmotstand (Tabell 30:512)", ytter.tekst, "ARK"));
+    }
   }
   rows.push(...await tilstandRow(formData, "3_14", "3.14 Slokkemannskap"));
 

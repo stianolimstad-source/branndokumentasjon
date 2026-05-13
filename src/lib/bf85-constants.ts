@@ -132,6 +132,31 @@ export const getBF85Requirement = (tek17Key: string): BF85MappedSection | undefi
   bf85MappedSections.find((s) => s.tek17Key === tek17Key);
 
 /**
+ * BF85 Tabell 30:512 – Ikke-bærende ytterveggers brannmotstand per bygningsbrannklasse.
+ * Returnerer ferdig formatert tekst basert på bygningsbrannklasse (1–4).
+ */
+export const getYtterveggBrannmotstandBF85 = (bygningsbrannklasse: string): { tekst: string } | null => {
+  const klasse = parseInt(bygningsbrannklasse, 10);
+  if (isNaN(klasse) || klasse < 1 || klasse > 4) return null;
+
+  const krav: Record<number, { rekkes: string; ikkeRekkes: string; toEtasjerUnntak: boolean }> = {
+    1: { rekkes: "B 30", ikkeRekkes: "A 30", toEtasjerUnntak: false },
+    2: { rekkes: "B 30", ikkeRekkes: "A 30", toEtasjerUnntak: false },
+    3: { rekkes: "B 30", ikkeRekkes: "A 30", toEtasjerUnntak: true },
+    4: { rekkes: "B 15", ikkeRekkes: "B 15", toEtasjerUnntak: true },
+  };
+
+  const k = krav[klasse];
+  let tekst =
+    `For bygninger i bygningsbrannklasse ${klasse} skal ikke-bærende yttervegger som kan rekkes for slokking fra utsiden utføres minst i klasse ${k.rekkes}. ` +
+    `Vegger som ikke kan rekkes for slokking fra utsiden skal utføres minst i klasse ${k.ikkeRekkes}.`;
+  if (k.toEtasjerUnntak) {
+    tekst += " For bygninger i inntil 2 etasjer kan vegger utføres helt i ubrennbare materialer uten hensyn til deres brannmotstand.";
+  }
+  return { tekst };
+};
+
+/**
  * BF85 Tabell 30:41 – Bygningsdelers brannmotstand per bygningsbrannklasse.
  * Returns auto-generated bæreevne text for section 2.1 based on bygningsbrannklasse (1–4).
  */
