@@ -886,6 +886,20 @@ const Konsept = () => {
     }
   }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.erRKL6Boligbygning]);
 
+  // Auto-uncheck BF85 :513/:514/:515 hvis de blir irrelevante for valgt BBK/etasjer
+  useEffect(() => {
+    if (isViewMode) return;
+    if (formData.regelverk !== "BF85") return;
+    const rel = getRelevantBF85_5xx(formData.bygningsbrannklasse, formData.etasjer);
+    const updates: Record<string, boolean> = {};
+    if (!rel.vis513 && formData.bf85_513) updates.bf85_513 = false;
+    if (!rel.vis514 && formData.bf85_514) updates.bf85_514 = false;
+    if (!rel.vis515 && formData.bf85_515) updates.bf85_515 = false;
+    if (Object.keys(updates).length > 0) {
+      setFormData(prev => ({ ...prev, ...updates }));
+    }
+  }, [formData.regelverk, formData.bygningsbrannklasse, formData.etasjer]);
+
   // Nullstill "manglerSeksjonering" hvis regelverket ikke lenger krever brannvegg/seksjonering
   useEffect(() => {
     if (isViewMode) return;
