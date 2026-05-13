@@ -7657,6 +7657,9 @@ const Konsept = () => {
                                   {formData.ventKrav9 && (((formData.bygningstype || "").toLowerCase().includes("kraftstasjon") || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon")))
                                     ? <li>Brannspjeld i seksjoneringsvegg – automatisk lukkende, smeltesikring ikke tillatt (kraftstasjon)</li>
                                     : <li>Brannspjeld i seksjoneringsvegg</li>)}
+                                  {((formData.bygningstype || "").toLowerCase().includes("kraftstasjon") || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"))) && (
+                                    <li>Steng-inne-prinsipp ventilasjon – automatiske brannspjeld kreves (kraftstasjon)</li>
+                                  )}
                                 </>
                               ) : (
                                 <li>Ventilasjonsanlegg er ikke installert</li>
@@ -7681,6 +7684,9 @@ const Konsept = () => {
                                 {formData.ventKrav9 && (((formData.bygningstype || "").toLowerCase().includes("kraftstasjon") || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon")))
                                   ? <li>Brannspjeld i seksjoneringsvegg – automatisk lukkende, smeltesikring ikke tillatt (kraftstasjon)</li>
                                   : <li>Brannspjeld i seksjoneringsvegg</li>)}
+                                {((formData.bygningstype || "").toLowerCase().includes("kraftstasjon") || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"))) && (
+                                  <li>Steng-inne-prinsipp ventilasjon – automatiske brannspjeld kreves (kraftstasjon)</li>
+                                )}
                                 {(formData.erSykehusPleieinstitusjon || isSeksjoneringRequired(formData.areal, formData.brannseksjonBrannenergi, formData.brannseksjonTiltak)) && (
                                   <li>Varsel: Ventilasjonskanaler gjennom seksjonering må kontrolleres</li>
                                 )}
