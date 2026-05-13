@@ -677,6 +677,7 @@ const Konsept = () => {
     bf85_513: false, // :513 Yttervegger i B-konstruksjon
     bf85_514: false, // :514 Fasademateriale på vegg i A-konstruksjon
     bf85_515: false, // :515 Brennbar isolasjon
+    bf85_53: false,  // :53 Nedforet himling
     installasjoner: "",
     installasjonerKommentar: "",
     // Ventilasjonsanlegg
@@ -7203,6 +7204,7 @@ const Konsept = () => {
                               { key: "bf85_513", label: ":513 Yttervegger i B-konstruksjon", show: rel.vis513 },
                               { key: "bf85_514", label: ":514 Fasademateriale på vegg i A-konstruksjon", show: rel.vis514 },
                               { key: "bf85_515", label: ":515 Brennbar isolasjon", show: rel.vis515 },
+                              { key: "bf85_53",  label: ":53 Nedforet himling", show: true },
                             ].filter(i => i.show);
                             if (items.length === 0) {
                               return (
