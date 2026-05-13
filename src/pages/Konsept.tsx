@@ -6679,7 +6679,7 @@ const Konsept = () => {
                               id="branncellerFlerePlanRelevant"
                               checked={formData.branncellerFlerePlanRelevant}
                               onCheckedChange={(checked) => 
-                                setFormData({...formData, branncellerFlerePlanRelevant: !!checked, branncellerFlerePlanKrav: !!checked ? formData.branncellerFlerePlanKrav : [], branncellerFlerePlanOver3: !!checked ? formData.branncellerFlerePlanOver3 : false})
+                                setFormData({...formData, branncellerFlerePlanRelevant: !!checked, branncellerFlerePlanKrav: !!checked ? formData.branncellerFlerePlanKrav : [], branncellerFlerePlanOver3: !!checked ? formData.branncellerFlerePlanOver3 : false, branncellerFlerePlanAreal: !!checked ? formData.branncellerFlerePlanAreal : ""})
                               }
                             />
                             <label htmlFor="branncellerFlerePlanRelevant" className="text-xs cursor-pointer font-medium">Brannceller over flere plan er relevant</label>
