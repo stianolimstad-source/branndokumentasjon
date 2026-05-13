@@ -1172,7 +1172,11 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     if (formData.ventKrav7 && isBoligVent) ventLines.push("I småhus kan avtrekk fra komfyr føres i kanal av stål eller aluminium.");
     if (formData.ventKrav8 && isBoligVent) ventLines.push("I småhus kan kanal som tilfredsstiller klasse E benyttes.");
     if (formData.ventKrav9) {
-      ventLines.push("Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.");
+      const erKraftstasjonVent = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+        || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+      ventLines.push(erKraftstasjonVent
+        ? "Kanal som føres gjennom seksjoneringsvegg/brannvegg, må ha automatisk lukkende brannspjeld med minimum samme brannmotstand som seksjoneringsveggen. Spjeld med smeltesikring er ikke tillatt i kraftstasjoner – det skal benyttes automatiske spjeld som sikrer rask avstengning og hindrer røykspredning før temperaturen er blitt høy."
+        : "Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.");
     }
     rows.push(contentRowMultiLine("Ventilasjonsanlegg", ventLines, "RIV"));
   } else if (formData.regelverk === "BF85") {
