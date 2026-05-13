@@ -1,39 +1,45 @@
 ## Mål
-Legg til kraftstasjon-spesifikt krav om at dører til og i rømningsvei alltid skal slå ut i rømningsretning, i kapitlet om rømningsvei i tilstandsvurderinger (både TEK17 og BF85). For BF85 erstatter dette teksten i §:75 når valgt bygningstype/bygningsdel er Kraftstasjon.
+For tilstandsvurderinger etter BF85 skal kapitlet om "Tilrettelegging for redning av husdyr" (BF85 3.11) tydelig informere om at Byggeforskrift 1985 ikke hadde egne krav til redning av husdyr, og at TEK17 § 11-15 brukes som referanse dersom temaet er relevant for tiltaket.
 
 ## Detektering
-Bruk samme mønster som ellers i koden:
 ```ts
-const erKraftstasjon =
-  (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
-  || (formData.bygningsdeler || []).some((d: any) =>
-       (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+const isBF85Tilstand =
+  documentType === "tilstandsvurdering" && formData.regelverk === "BF85";
 ```
-
-## Ny tekst (kraftstasjon)
-> "Dører til og i rømningsvei skal alltid slå ut i rømningsretning. Dette gjelder uavhengig av persontallet som skal evakuere via denne utgangen."
+(Allerede definert i Konsept.tsx; samme logikk gjenbrukes i preview/word.)
 
 ## Endringer
 
-### 1) BF85 tilstand 3.10 – §:75 erstattes for kraftstasjon
-Filer: `src/pages/Konsept.tsx`, `src/components/konsept/KonseptPreview.tsx`, `src/lib/word-export-chapter3.ts`
+### 1) Skjema – `src/pages/Konsept.tsx` (3.12-blokken, ca. linje 9602–9678)
+Når `isBF85Tilstand` er sann:
+- Vis et tydelig informasjonsfelt øverst i seksjonen:
+  > "Byggeforskrift 1985 hadde ingen egne krav til tilrettelegging for redning av husdyr. Dersom dette er relevant for tiltaket, brukes TEK17 § 11-15 med tilhørende preaksepterte ytelser i VTEK17 som referanse."
+- Behold dagens checkbox "Bygget er beregnet for husdyrhold (driftsbygning med husdyrrom)". Hvis avhuket vises automatisk-kravlisten med en ekstra tekst som tydeliggjør at de listede kravene er TEK17 §11-15 brukt som referanse (ikke BF85-krav).
+- Hvis ikke avhuket: vis kun info-feltet (ingen krav-liste). Tilstandspanelet vises uansett (uendret).
 
-Alle tre stedene definerer i dag samme `{ id: "75", title: "§:75 Dør i rømningsveg", field: "bf85_romning_75_dor", text: "..." }` rad. Endre `text` (og evt. `title` til "§:75 Dør i rømningsveg – kraftstasjon") dynamisk når `erKraftstasjon` er true, slik at den nye teksten over vises som §:75-grunnlaget. Felt-id (`bf85_romning_75_dor`) beholdes så lagrede vurderinger ikke mistes.
+For TEK17 (`!isBF85Tilstand`) er dagens visning uendret.
 
-### 2) TEK17 tilstand 3.11 (§ 11-14 Rømningsvei) – tilleggskrav for kraftstasjon
-Filer: `src/pages/Konsept.tsx` (skjema rundt linje 9388–9591), `src/components/konsept/KonseptPreview.tsx` (3.11-blokken), `src/lib/word-export-chapter3.ts` (3.11-eksporten).
+### 2) Forhåndsvisning – `src/components/konsept/KonseptPreview.tsx` (3.12-blokk, ca. linje 5384–5474)
+Når `isBF85` (eksisterende variabel i preview) er sann:
+- Endre seksjonsoverskriften til "3.11 Tilrettelegging for redning av husdyr (TEK17 § 11-15 brukt som referanse)".
+- Først ny rad: `Forhold = "Byggeforskrift 1985"`, `Løsning = "Byggeforskrift 1985 hadde ingen egne krav til tilrettelegging for redning av husdyr. TEK17 § 11-15 brukes derfor som referanse dersom dette er relevant for tiltaket."`, `Ansvar = "-"`.
+- Hvis `husdyrRedningRelevant` er sann: vis dagens TEK17-rader (Generelt/Utganger/Fri bredde/Rømningsvei/Dør i yttervegg) under en kolonne-header som tydelig angir "Referanse: TEK17 § 11-15 / VTEK17". Hvis ikke relevant: kun info-raden over + eksisterende fallback-tekst fjernes til fordel for info-raden.
 
-- Skjema: Vis et `KraftstasjonTilleggskravCard` (samme komponent brukt i 3.5/3.7) under listen over automatisk-inkluderte krav i 3.11 når `erKraftstasjon` er true, med kapittel "3.11" og en `<li>` som lister den nye dør-regelen. Dette gjør den synlig for både TEK17-tilstand og brannkonsept (3.11-blokken er felles), uten å endre BF85-grenen som har sin egen behandling i 3.10.
-- Listen "Følgende krav er automatisk inkludert i rapporten" (TEK17-grenen, ca. linje 9547–9561): legg til `<li>` "Dører til og i rømningsvei slår alltid ut i rømningsretning (kraftstasjon, uavhengig av persontall)" når `erKraftstasjon`.
-- KonseptPreview.tsx: i tilsvarende 3.11-rendringsblokk, legg til samme punkt i den automatiske kravslisten når `erKraftstasjon`.
-- word-export-chapter3.ts: i 3.11-seksjonen, push en ny `contentRow("Dører i rømningsvei – kraftstasjon", "Dører til og i rømningsvei skal alltid slå ut i rømningsretning. Dette gjelder uavhengig av persontallet som skal evakuere via denne utgangen.", "ARK")` når `erKraftstasjon`.
+For TEK17 er visningen uendret.
 
-### 3) Avgrensning
-- Ingen nye datafelt; ingen migrering nødvendig.
-- BF85 brannkonsept (ikke tilstand) bruker §:75-listen samme sted, så endringen slår automatisk inn også der når kraftstasjon er valgt – konsistent med ønsket regel.
-- Eksisterende underliggende kraftstasjon-krav (panikkbeslag, dør med vindu, dør til høyspenningsrom, utadslående dør til teknisk rom) berøres ikke.
+### 3) Word-eksport – `src/lib/word-export-chapter3.ts`
+3.12 husdyr-blokken finnes i dag ikke som egen seksjon i Word-eksporten. Endring her er minimal:
+- Legg til `sectionHeaderRow(isBF85Tilstand310 ? "3.11   Tilrettelegging for redning av husdyr" : "3.12   §11-15 Tilrettelegging for redning av husdyr")` mellom dagens 3.11 og 3.13.
+- Hvis BF85-tilstand: én `contentRow("Byggeforskrift 1985", "Byggeforskrift 1985 hadde ingen egne krav til tilrettelegging for redning av husdyr. TEK17 § 11-15 brukes som referanse dersom dette er relevant.", "-")`. Når `husdyrRedningRelevant`: følg opp med samme rader som preview viser, prefiks-merket "Referanse TEK17 § 11-15".
+- For TEK17 (uendret oppførsel utover at seksjonen nå eksplisitt eksporteres): vis dagens rader når `husdyrRedningRelevant`. Avslutt med `tilstandRow(formData, "3_12", ...)`.
+
+(Hvis det er ønskelig å holde Word-eksporten 1:1 med dagens funksjon og kun løse BF85-teksten, kan punkt 3 begrenses til å pushe selve BF85-info-raden + tilstand. Bekreft i implementasjon.)
+
+## Avgrensning
+- Ingen nye datafelt; ingen migrering.
+- Endringer påvirker kun BF85-tilstand. TEK17-tilstand og brannkonsept beholder dagens innhold.
 
 ## Akseptkriterier
-- BF85-tilstand 3.10 viser ny tekst i §:75-raden når kraftstasjon er valgt; ellers uendret.
-- TEK17-tilstand 3.11 viser et tydelig kraftstasjon-tilleggskravkort med dør-regelen, og samme regel kommer med i forhåndsvisning og Word-eksport.
-- Ingen endring for andre bygningstyper.
+- I BF85-tilstand viser kapittel 3.11 tydelig at BF85 ikke hadde krav til husdyrredning, og at TEK17 § 11-15 brukes som referanse.
+- TEK17-kravene vises kun når brukeren markerer at husdyrhold er relevant, og er merket som referanse.
+- Tilstandspanel-funksjonaliteten (kommentar/avvik) er uendret.

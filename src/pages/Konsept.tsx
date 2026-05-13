@@ -9604,6 +9604,11 @@ const Konsept = () => {
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">{isBF85Tilstand ? "3.11" : "3.12"} {formData.regelverk === "BF85" ? "Tilrettelegging for redning av husdyr (§ 11-15)" : "§ 11-15 Tilrettelegging for redning av husdyr"}</Label>
                       </div>
+                      {isBF85Tilstand && (
+                        <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded text-xs text-foreground/90 mb-2">
+                          Byggeforskrift 1985 hadde ingen egne krav til tilrettelegging for redning av husdyr. Dersom dette er relevant for tiltaket, brukes TEK17 § 11-15 med tilhørende preaksepterte ytelser i VTEK17 som referanse.
+                        </div>
+                      )}
                       <div className="flex items-center gap-2 p-2 bg-muted/50 rounded mb-2">
                         <Checkbox 
                           id="husdyrRedningRelevant"
