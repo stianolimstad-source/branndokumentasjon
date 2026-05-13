@@ -1,62 +1,41 @@
 ## Mål
 
-I tilstandsvurderinger med BF85: erstatt det TEK17-baserte innholdet i kap. **3.10 og 3.11** med ett samlet BF85-kapittel basert på BF85 **§:7 Rømningsveg** (punktene :71–:75), uten henvisninger til andre BF85-kapitler. Hver paragraf får et fritekstfelt for vurdering.
+Når `documentType === "tilstandsvurdering"` OG `regelverk === "BF85"`: siden 3.10 og 3.11 er slått sammen til ett kapittel (3.10 Rømningsveg BF85 §7), skal de etterfølgende kapitlene i kap. 3 forskyves med ett nummer:
 
-## Omfang
+| TEK17-nr | BF85-tilstand-nr | Tema |
+|---|---|---|
+| 3.12 | 3.11 | Tilrettelegging for redning av husdyr |
+| 3.13 | 3.12 | Tilrettelegging for manuell slokking |
+| 3.14 | 3.13 | Tilrettelegging for rednings- og slokkemannskap |
 
-Gjelder kun når `documentType === "tilstandsvurdering"` OG `regelverk === "BF85"`. TEK17-tilstandsvurderinger og ordinære brannkonsept er uendret.
+TEK17-tilstand og brannkonsept beholder dagens nummerering.
 
 ## Endringer
 
-### 1. Datamodell (`src/pages/Konsept.tsx`, init av `formData` ca. linje 815–830)
+### 1. `src/components/konsept/KonseptPreview.tsx`
 
-Fem nye fritekstfelt (default `""`):
+- **Innholdsfortegnelse for BF85-tilstand** (linje ~533–538 / ~564–569): vis kun ett rømnings-kapittel («3.10 Rømningsveg (BF85 §7)») og renumrer husdyr→3.11, manuell slokking→3.12, slokkemannskap→3.13. TEK17-listen er uendret.
+- **Tabell-headere i preview** (kap. 3.12/3.13/3.14, linjene rundt 5340 og videre): når BF85-tilstand, vis `{sp}.11`, `{sp}.12`, `{sp}.13` i stedet for `.12/.13/.14` i overskriftsraden. Selve innholdsradene er uendret.
+- **Tilstandsrad-etiketter** (`TilstandTableRow sectionLabel=...`): oppdater visningstekst for husdyr/manuell/slokkemannskap til «3.11 …», «3.12 …», «3.13 …» når BF85-tilstand. Datalageret (`tilstandsvurderinger["3_12"]` osv.) beholdes uendret — kun visningsetiketten endres.
 
-- `bf85_romning_71_generelt: string`
-- `bf85_romning_72_antall: string`
-- `bf85_romning_73_bredde: string`
-- `bf85_romning_74_golvbelegg: string`
-- `bf85_romning_75_dor: string`
+### 2. `src/lib/word-export-chapter3.ts`
 
-### 2. UI-struktur (`src/pages/Konsept.tsx`)
+- `sectionHeaderRow(...)` for kap. 3.12, 3.13, 3.14 (linjene ~1719, 1735, og husdyr-headeren over): legg til BF85-tilstand-gren som skriver «3.11 …», «3.12 …», «3.13 …» (henholdsvis husdyr / manuell slokking / rednings- og slokkemannskap, uten §-referanser slik vi allerede gjør for BF85).
+- Tilsvarende for `tilstandRow(...)`-etikettene (linje ~1733, ~1755 og husdyr): bruk de nye numrene i BF85-tilstand-modus.
 
-**Kap. 3.10 (linje 8848–9323):** Når BF85-tilstand, skjul hele dagens innhold (alle TEK17-baserte avhukinger som `boenhetKunEttTrapperom`, `lavtByggverkEnRomningsretning`, `romningsvinduRelevant`, `branncelleStortAntallPersoner`, `sporadiskOpphold`, `takterrasseRelevant`, trapperomslogikk osv.) og vis i stedet det nye BF85 §7-innholdet (se under). Eksisterende state-felter beholdes i datamodellen, de blir bare ikke renderet for BF85.
+### 3. `src/pages/Konsept.tsx`
 
-**Kap. 3.11 (fra linje 9324):** Når BF85-tilstand, skjul hele blokken (kollapser/header vises ikke) — alt rømnings-innhold ligger nå i 3.10.
+- `previewSections`/sidebar (linje ~1577–1578 og ~1980–1981 området, og kap. 3.12–3.14 oppføringer): når BF85-tilstand, renumrer sidebar-etiketter for husdyr/manuell/slokkemannskap til 3.11/3.12/3.13. Anchor-IDer (f.eks. `#kap-3-12`) beholdes — kun visningstekst endres for å unngå brutte interne lenker.
+- Editor-overskriftene for de tre kapitlene: vis `3.11`/`3.12`/`3.13` når BF85-tilstand, ellers uendret.
 
-**Headertittel for 3.10 i BF85-modus** endres til:
-> «3.10 Rømningsveg (BF85 §7)»
+## Tekniske detaljer
 
-**Innhold for 3.10 i BF85-modus** (kun fritekstfelt + faste regelavsnitt):
-
-For hver av :71–:75 vises:
-- Underoverskrift (f.eks. «§:71 Generelt»)
-- Fast regelavsnitt (sitat fra BF85, omskrevet uten henvisninger til andre kapitler — særlig fjern «Se kap, 31 til 39» fra :72)
-- `<Textarea>` koblet til tilhørende `bf85_romning_*`-felt med placeholder «Vurdering / observasjoner …»
-
-Regelavsnitt (eksakt tekst i UI og rapport):
-
-- **:71 Generelt** — «Rømningsveg skal på en oversiktlig måte føre til det fri uten lommer, retningsforandringer e.l. som kan hindre personer fra å komme ut under brann. Rømningsveg skal være egen branncelle. Heis og rulletrapp skal ikke regnes som rømningsveg. Rullebånd for personbefordring kan inngå i rømningsveg dersom det beveger seg i rømningsretningen eller stoppes automatisk ved brannalarm.»
-- **:72 Antall rømningsveger** — «Antall rømningsveger er avhengig av bygningens bruk, antall etasjer og antall mennesker.» (henvisning til kap. 31–39 fjernes)
-- **:73 Bredde i rømningsveg** — «Fri bredde i rømningsveg skal minst være 10 mm pr. person og ikke mindre enn 900 mm.»
-- **:74 Golvbelegg** — «Golvbelegg skal være klasse G.»
-- **:75 Dør i rømningsveg** — «Dør i rømningsveg i bygning skal slå ut i rømningsretningen. Dette krav gjelder ikke dør til boenhet. Dør skal utføres som angitt i Tabell 30:75. Kravene gjelder ikke for utgangsdør til det fri.»
-
-### 3. Preview (`src/components/konsept/KonseptPreview.tsx`)
-
-I 3.10-tabellen for BF85-tilstand: erstatt dagens TEK17-rader med fem rader (én per :71–:75) som viser regelavsnitt + brukerens fritekstvurdering (hvis utfylt). 3.11-blokken renderes ikke i BF85-tilstand.
-
-### 4. Word-eksport (`src/lib/word-export-chapter3.ts`)
-
-Tilsvarende: 3.10 i BF85-tilstand eksporterer fem avsnitt (overskrift + regeltekst + vurdering). 3.11 hoppes over for BF85.
-
-### 5. Innholdsfortegnelse / sidebar
-
-I `previewSections`/innholdsfortegnelsen (linje 1577–1578 og 1980–1981): når BF85-tilstand, fjern «3.11 Rømningsvei» og endre etiketten for «3.10» til «3.10 Rømningsveg (BF85 §7)».
+- Ingen endringer i datamodellen eller nøklene (`3_12`, `3_13`, `3_14` beholdes som interne nøkler/anker — bare label-strenger oppdateres).
+- All renumrering skjer kun bak `documentType === "tilstandsvurdering" && regelverk === "BF85"`-vakt. TEK17 og brannkonsept er uendret.
+- Ingen endringer i RLS, datalagring, ruter eller backend.
 
 ## Akseptansekriterier
 
-- BF85-tilstandsvurdering viser kun BF85 §:71–:75 i kap. 3.10, med fritekstfelt per punkt.
-- Kap. 3.11 vises ikke for BF85-tilstand (verken i editor, preview, sidebar eller Word).
-- Ingen henvisninger til «kap. 31–39» eller andre BF85-kapitler i regeltekstene.
-- TEK17-tilstand og brannkonsept er uendret — alle eksisterende TEK17-felter og logikk i 3.10/3.11 beholdes for de modusene.
+- BF85-tilstand viser i editor, sidebar, innholdsfortegnelse, preview-tabell og Word-eksport: 3.10 Rømningsveg (BF85 §7) → 3.11 Husdyr → 3.12 Manuell slokking → 3.13 Slokkemannskap. Ingen «3.14» og ingen separat «3.11 Rømningsvei».
+- TEK17-tilstand og brannkonsept beholder dagens nummerering 3.10–3.14 uendret.
+- Eksisterende tilstandsvurderingsdata under nøklene `3_12`/`3_13`/`3_14` vises fortsatt korrekt under sine nye numre.

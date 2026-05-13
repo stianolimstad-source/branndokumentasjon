@@ -1716,8 +1716,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   rows.push(...await tilstandRow(formData, "3_11", "3.11 Rømningsvei"));
   }
 
-  // ===== 3.13 Manuell slokking =====
-  rows.push(sectionHeaderRow("3.13   §11-16 Tilrettelegging for manuell slokking"));
+  // ===== 3.13 / BF85 3.12 Manuell slokking =====
+  rows.push(sectionHeaderRow(isBF85Tilstand310 ? "3.12   Tilrettelegging for manuell slokking" : "3.13   §11-16 Tilrettelegging for manuell slokking"));
   rows.push(columnHeaderRow());
   rows.push(contentRow(
     "Generelt",
@@ -1730,10 +1730,10 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.manuellSlokkingKommentar) {
     rows.push(contentRow("Kommentar", formData.manuellSlokkingKommentar, "-"));
   }
-  rows.push(...await tilstandRow(formData, "3_13", "3.13 Manuell slokking"));
+  rows.push(...await tilstandRow(formData, "3_13", isBF85Tilstand310 ? "3.12 Manuell slokking" : "3.13 Manuell slokking"));
 
-  // ===== 3.14 Tilrettelegging for slokkemannskap =====
-  rows.push(sectionHeaderRow("3.14   §11-17 Tilrettelegging for slokkemannskap"));
+  // ===== 3.14 / BF85 3.13 Tilrettelegging for slokkemannskap =====
+  rows.push(sectionHeaderRow(isBF85Tilstand310 ? "3.13   Tilrettelegging for slokkemannskap" : "3.14   §11-17 Tilrettelegging for slokkemannskap"));
   rows.push(columnHeaderRow());
   rows.push(contentRowMultiLine("Generelt", [
     "• Byggverk skal plasseres og utformes slik at rednings- og slokkemannskap har brukbar tilgjengelighet.",
@@ -1752,7 +1752,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
       rows.push(contentRow("Ikke-bærende ytterveggers brannmotstand (Tabell 30:512)", ytter.tekst, "ARK"));
     }
   }
-  rows.push(...await tilstandRow(formData, "3_14", "3.14 Slokkemannskap"));
+  rows.push(...await tilstandRow(formData, "3_14", isBF85Tilstand310 ? "3.13 Slokkemannskap" : "3.14 Slokkemannskap"));
 
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },

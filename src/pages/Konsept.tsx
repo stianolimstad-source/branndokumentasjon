@@ -1587,8 +1587,18 @@ const Konsept = () => {
     { key: "3_14", label: "3.14 Slokkemannskap" },
   ];
 
-  // BF85 uses the same section keys and labels as TEK17
-  const tilstandSections = tilstandSectionsTEK17;
+  const isBF85Tilstand = documentType === "tilstandsvurdering" && formData.regelverk === "BF85";
+
+  // BF85-tilstand merges 3.10+3.11 into "3.10 Rømningsveg (BF85 §7)" and renumbers 3.12→3.11, 3.13→3.12, 3.14→3.13
+  const tilstandSectionsBF85 = [
+    ...tilstandSectionsTEK17.slice(0, 9), // 3.1–3.9
+    { key: "3_10", label: "3.10 Rømningsveg (BF85 §7)" },
+    { key: "3_12", label: "3.11 Redning av husdyr" },
+    { key: "3_13", label: "3.12 Manuell slokking" },
+    { key: "3_14", label: "3.13 Slokkemannskap" },
+  ];
+
+  const tilstandSections = isBF85Tilstand ? tilstandSectionsBF85 : tilstandSectionsTEK17;
 
   const updateTilstand = (sectionKey: string, data: TilstandData) => {
     setFormData(prev => ({
@@ -1983,11 +1993,20 @@ const Konsept = () => {
               new Paragraph({ text: "    3.7 § 11-10 Tekniske installasjoner", spacing: { after: 30 } }),
               new Paragraph({ text: "    3.8 § 11-11 Generelle krav om rømning og redning", spacing: { after: 30 } }),
               new Paragraph({ text: "    3.9 § 11-12 Tiltak for å påvirke rømnings- og redningstider", spacing: { after: 30 } }),
-              new Paragraph({ text: "    3.10 § 11-13 Utgang fra branncelle", spacing: { after: 30 } }),
-              new Paragraph({ text: "    3.11 § 11-14 Rømningsvei", spacing: { after: 30 } }),
-              new Paragraph({ text: "    3.12 § 11-15 Tilrettelegging for redning av husdyr", spacing: { after: 30 } }),
-              new Paragraph({ text: "    3.13 § 11-16 Tilrettelegging for manuell slokking", spacing: { after: 30 } }),
-              new Paragraph({ text: "    3.14 § 11-17 Tilrettelegging for rednings- og slokkemannskap", spacing: { after: 50 } }),
+              ...(isBF85Tilstand
+                ? [
+                    new Paragraph({ text: "    3.10 Rømningsveg (BF85 §7)", spacing: { after: 30 } }),
+                    new Paragraph({ text: "    3.11 Tilrettelegging for redning av husdyr", spacing: { after: 30 } }),
+                    new Paragraph({ text: "    3.12 Tilrettelegging for manuell slokking", spacing: { after: 30 } }),
+                    new Paragraph({ text: "    3.13 Tilrettelegging for rednings- og slokkemannskap", spacing: { after: 50 } }),
+                  ]
+                : [
+                    new Paragraph({ text: "    3.10 § 11-13 Utgang fra branncelle", spacing: { after: 30 } }),
+                    new Paragraph({ text: "    3.11 § 11-14 Rømningsvei", spacing: { after: 30 } }),
+                    new Paragraph({ text: "    3.12 § 11-15 Tilrettelegging for redning av husdyr", spacing: { after: 30 } }),
+                    new Paragraph({ text: "    3.13 § 11-16 Tilrettelegging for manuell slokking", spacing: { after: 30 } }),
+                    new Paragraph({ text: "    3.14 § 11-17 Tilrettelegging for rednings- og slokkemannskap", spacing: { after: 50 } }),
+                  ]),
               new Paragraph({ children: [new TextRun({ text: "4. Utførelses- og driftsfasen", bold: true, size: 22 })], spacing: { after: 50 } }),
               new Paragraph({ text: "    4.1 Utførelsesfasen", spacing: { after: 30 } }),
               new Paragraph({ text: "    4.2 Driftsfasen", spacing: { after: 50 } }),
@@ -9571,10 +9590,10 @@ const Konsept = () => {
                     {renderTilstandPanel("3_11")}
                     </SectionCollapsible>
                     )}
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-12" label={`3.12 ${formData.regelverk === "BF85" ? "Tilrettelegging for redning av husdyr (§ 11-15)" : "§ 11-15 Redning av husdyr"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-12" label={`${isBF85Tilstand ? "3.11" : "3.12"} ${formData.regelverk === "BF85" ? "Tilrettelegging for redning av husdyr (§ 11-15)" : "§ 11-15 Redning av husdyr"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.12 {formData.regelverk === "BF85" ? "Tilrettelegging for redning av husdyr (§ 11-15)" : "§ 11-15 Tilrettelegging for redning av husdyr"}</Label>
+                        <Label className="text-base font-extrabold text-foreground">{isBF85Tilstand ? "3.11" : "3.12"} {formData.regelverk === "BF85" ? "Tilrettelegging for redning av husdyr (§ 11-15)" : "§ 11-15 Tilrettelegging for redning av husdyr"}</Label>
                       </div>
                       <div className="flex items-center gap-2 p-2 bg-muted/50 rounded mb-2">
                         <Checkbox 
@@ -9648,10 +9667,10 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_12")}
                     </SectionCollapsible>
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-13" label={`3.13 ${formData.regelverk === "BF85" ? "Slokkingsredskap og slokkingsvann (§ 11-16 Tilrettelegging for manuell slokking)" : "§ 11-16 Manuell slokking"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-13" label={`${isBF85Tilstand ? "3.12" : "3.13"} ${formData.regelverk === "BF85" ? "Slokkingsredskap og slokkingsvann (§ 11-16 Tilrettelegging for manuell slokking)" : "§ 11-16 Manuell slokking"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.13 {formData.regelverk === "BF85" ? "Slokkingsredskap og slokkingsvann (§ 11-16 Tilrettelegging for manuell slokking)" : "§ 11-16 Manuell slokking"}</Label>
+                        <Label className="text-base font-extrabold text-foreground">{isBF85Tilstand ? "3.12" : "3.13"} {formData.regelverk === "BF85" ? "Slokkingsredskap og slokkingsvann (§ 11-16 Tilrettelegging for manuell slokking)" : "§ 11-16 Manuell slokking"}</Label>
                       </div>
                       {(() => {
                         const alleRK = formData.bygningsdeler?.length
@@ -9800,10 +9819,10 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_13")}
                     </SectionCollapsible>
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-14" label={`3.14 ${formData.regelverk === "BF85" ? "Atkomst for brannvesenet (§ 11-17 Tilrettelegging for rednings- og slokkemannskap)" : "§ 11-17 Tilrettelegging for slokkemannskap"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-14" label={`${isBF85Tilstand ? "3.13" : "3.14"} ${formData.regelverk === "BF85" ? "Atkomst for brannvesenet (§ 11-17 Tilrettelegging for rednings- og slokkemannskap)" : "§ 11-17 Tilrettelegging for slokkemannskap"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.14 {formData.regelverk === "BF85" ? "Atkomst for brannvesenet (§ 11-17 Tilrettelegging for rednings- og slokkemannskap)" : "§ 11-17 Tilrettelegging for slokkemannskap"}</Label>
+                        <Label className="text-base font-extrabold text-foreground">{isBF85Tilstand ? "3.13" : "3.14"} {formData.regelverk === "BF85" ? "Atkomst for brannvesenet (§ 11-17 Tilrettelegging for rednings- og slokkemannskap)" : "§ 11-17 Tilrettelegging for slokkemannskap"}</Label>
                       </div>
                       <div className="space-y-2 mb-3">
                         <div className="flex items-center space-x-2">
