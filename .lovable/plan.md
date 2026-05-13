@@ -1,49 +1,45 @@
 ## Mål
-For tilstandsvurderinger etter BF85 skal det vises at tilrettelegging for redning av husdyr er "ikke relevant" når brukeren ikke huker av for at bygget er beregnet for husdyrhold (`husdyrRedningRelevant = false`).
-
-## Dagens oppførsel (problem)
-I både forhåndsvisning og Word-eksport vises meldingen "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket." kun for TEK17. For BF85 skjules denne meldingen eksplisitt (`!isBF85` i preview, `!isBF85Tilstand310` i Word).
+Når husdyrhold-checkboxen ikke er huket av i BF85-tilstandsvurdering, skal "ikke relevant"-raden vises med `Forhold = "Generelt"` og `Løsning = "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket."` (i stedet for dagens fullbredde italic-rad). Når checkboxen er huket av, beholdes dagens visning.
 
 ## Endringer
 
-### 1) Forhåndsvisning – `src/components/konsept/KonseptPreview.tsx`
-Fjern `!isBF85`-betingelsen rundt fallback-raden (~linje 5475) slik at meldingen vises for både TEK17 og BF85 når `!formData.husdyrRedningRelevant`.
+### 1) Forhåndsvisning – `src/components/konsept/KonseptPreview.tsx` (~linje 5474–5480)
+For BF85: Vis raden med tre kolonner — `Generelt` / fritekst / `-`. For TEK17: behold dagens fullbredde italic-rad.
 
-**Fra:**
 ```tsx
-!isBF85 && (
-  <tr>
-    <td colSpan={3} style={{fontStyle: 'italic'}}>
-      Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.
-    </td>
-  </tr>
+) : (
+  isBF85 ? (
+    <tr>
+      <td className="border border-gray-400 p-2 align-top">Generelt</td>
+      <td className="border border-gray-400 p-2">Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.</td>
+      <td className="border border-gray-400 p-2 align-top">-</td>
+    </tr>
+  ) : (
+    <tr>
+      <td className="border border-gray-400 p-2" colSpan={3} style={{fontStyle: 'italic'}}>
+        Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.
+      </td>
+    </tr>
+  )
 )
 ```
 
-**Til:** Vis raden uavhengig av `isBF85`.
+### 2) Word-eksport – `src/lib/word-export-chapter3.ts` (~linje 1786–1788)
+For BF85: bruk `contentRow("Generelt", "...", "-")`. For TEK17: behold tom Forhold som i dag.
 
-### 2) Word-eksport – `src/lib/word-export-chapter3.ts`
-Endre `else if (!isBF85Tilstand310)` til `else` (~linje 1786) slik at "ikke relevant"-raden pushes også for BF85.
-
-**Fra:**
 ```ts
-} else if (!isBF85Tilstand310) {
-  rows.push(contentRow("", "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.", "-"));
-}
-```
-
-**Til:**
-```ts
+} else if (isBF85Tilstand310) {
+  rows.push(contentRow("Generelt", "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.", "-"));
 } else {
   rows.push(contentRow("", "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.", "-"));
 }
 ```
 
 ## Avgrensning
-- Ingen endringer i skjema (`Konsept.tsx`) – dagens checkbox + info-boks beholdes.
-- Ingen nye datafelt; ingen migrering.
-- Kun to linjeendringer (fjerne / endre en betingelse).
+- Påvirker kun BF85 når `husdyrRedningRelevant = false`.
+- Ingen endringer i skjema eller datafelt.
+- Når checkboxen er huket av: uendret.
 
 ## Akseptkriterier
-- I BF85-tilstand viser forhåndsvisning og Word-eksport "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket." når checkboxen for husdyrhold ikke er huket av.
-- TEK17-tilstand beholder dagens oppførsel (samme melding vises som før).
+- I BF85-tilstand uten husdyrhold: tabellen viser én rad med "Generelt" | "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket." | "-" — både i forhåndsvisning og Word.
+- TEK17 uendret.

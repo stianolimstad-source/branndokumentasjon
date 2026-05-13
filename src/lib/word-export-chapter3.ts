@@ -1783,6 +1783,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     if ((formData as any).husdyrRedningKommentar) {
       rows.push(contentRow("Kommentar", (formData as any).husdyrRedningKommentar, "-"));
     }
+  } else if (isBF85Tilstand310) {
+    rows.push(contentRow("Generelt", "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.", "-"));
   } else {
     rows.push(contentRow("", "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.", "-"));
   }
