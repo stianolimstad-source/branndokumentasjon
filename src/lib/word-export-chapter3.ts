@@ -1498,7 +1498,25 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
   rows.push(...await tilstandRow(formData, "3_9", formData.regelverk === "BF85" ? "3.9 Tiltak for å påvirke rømnings- og redningstider" : "3.9 Tilrettelegging for rømning"));
 
-  // ===== 3.10 Utgang fra branncelle =====
+  // ===== 3.10 Utgang fra branncelle / BF85 §7 Rømningsveg =====
+  const isBF85Tilstand310 = formData.documentType === "tilstandsvurdering" && formData.regelverk === "BF85";
+  if (isBF85Tilstand310) {
+    rows.push(sectionHeaderRow("3.10   Rømningsveg (BF85 §7)"));
+    rows.push(columnHeaderRow());
+    const bf85RomningPunkter: { title: string; field: string; text: string }[] = [
+      { title: "§:71 Generelt", field: "bf85_romning_71_generelt", text: "Rømningsveg skal på en oversiktlig måte føre til det fri uten lommer, retningsforandringer e.l. som kan hindre personer fra å komme ut under brann. Rømningsveg skal være egen branncelle. Heis og rulletrapp skal ikke regnes som rømningsveg. Rullebånd for personbefordring kan inngå i rømningsveg dersom det beveger seg i rømningsretningen eller stoppes automatisk ved brannalarm." },
+      { title: "§:72 Antall rømningsveger", field: "bf85_romning_72_antall", text: "Antall rømningsveger er avhengig av bygningens bruk, antall etasjer og antall mennesker." },
+      { title: "§:73 Bredde i rømningsveg", field: "bf85_romning_73_bredde", text: "Fri bredde i rømningsveg skal minst være 10 mm pr. person og ikke mindre enn 900 mm." },
+      { title: "§:74 Golvbelegg", field: "bf85_romning_74_golvbelegg", text: "Golvbelegg skal være klasse G." },
+      { title: "§:75 Dør i rømningsveg", field: "bf85_romning_75_dor", text: "Dør i rømningsveg i bygning skal slå ut i rømningsretningen. Dette krav gjelder ikke dør til boenhet. Dør skal utføres som angitt i Tabell 30:75. Kravene gjelder ikke for utgangsdør til det fri." },
+    ];
+    for (const p of bf85RomningPunkter) {
+      const vurdering = ((formData as any)[p.field] || "").toString().trim();
+      const body = vurdering ? `${p.text}\n\nVurdering: ${vurdering}` : p.text;
+      rows.push(contentRow(p.title, body, "RIBr"));
+    }
+    rows.push(...await tilstandRow(formData, "3_10", "3.10 Rømningsveg (BF85 §7)"));
+  } else {
   rows.push(sectionHeaderRow("3.10   §11-13 Utgang fra branncelle"));
   rows.push(columnHeaderRow());
   rows.push(contentRow(
