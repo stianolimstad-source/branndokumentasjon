@@ -3852,6 +3852,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <td className="border border-gray-400 p-2 align-top">RIV</td>
                   </tr>
                 )}
+                {!formData.ventilasjonRelevant && (
                   <tr>
                     <td className="border border-gray-400 p-2 align-top">Ventilasjonsanlegg</td>
                     <td className="border border-gray-400 p-2">Ventilasjonsanlegg er ikke installert.</td>
@@ -3893,6 +3894,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     <td className="border border-gray-400 p-2 align-top">RIV</td>
                   </tr>
                 )}
+                {formData.vannAvlopRelevant && (
                     <tr>
                       <td className="border border-gray-400 p-2 align-top">Vann- og avløpsrør</td>
                       <td className="border border-gray-400 p-2">
