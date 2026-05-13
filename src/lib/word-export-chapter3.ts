@@ -1522,12 +1522,16 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (isBF85Tilstand310) {
     rows.push(sectionHeaderRow("3.10   Rømningsveg (BF85 §7)"));
     rows.push(columnHeaderRow());
+    const erKraftstasjonBF75 = ((formData.bygningstype || "") as string).toLowerCase().includes("kraftstasjon")
+      || ((formData.bygningsdeler || []) as any[]).some((d: any) => ((d.bygningstype || "") as string).toLowerCase().includes("kraftstasjon"));
     const bf85RomningPunkter: { title: string; field: string; text: string }[] = [
       { title: "§:71 Generelt", field: "bf85_romning_71_generelt", text: "Rømningsveg skal på en oversiktlig måte føre til det fri uten lommer, retningsforandringer e.l. som kan hindre personer fra å komme ut under brann. Rømningsveg skal være egen branncelle. Heis og rulletrapp skal ikke regnes som rømningsveg. Rullebånd for personbefordring kan inngå i rømningsveg dersom det beveger seg i rømningsretningen eller stoppes automatisk ved brannalarm." },
       { title: "§:72 Antall rømningsveger", field: "bf85_romning_72_antall", text: "Antall rømningsveger er avhengig av bygningens bruk, antall etasjer og antall mennesker." },
       { title: "§:73 Bredde i rømningsveg", field: "bf85_romning_73_bredde", text: "Fri bredde i rømningsveg skal minst være 10 mm pr. person og ikke mindre enn 900 mm." },
       { title: "§:74 Golvbelegg", field: "bf85_romning_74_golvbelegg", text: "Golvbelegg skal være klasse G." },
-      { title: "§:75 Dør i rømningsveg", field: "bf85_romning_75_dor", text: "Dør i rømningsveg i bygning skal slå ut i rømningsretningen. Dette krav gjelder ikke dør til boenhet. Dør skal utføres som angitt i Tabell 30:75. Kravene gjelder ikke for utgangsdør til det fri." },
+      erKraftstasjonBF75
+        ? { title: "§:75 Dør i rømningsveg – kraftstasjon", field: "bf85_romning_75_dor", text: "Dører til og i rømningsvei skal alltid slå ut i rømningsretning. Dette gjelder uavhengig av persontallet som skal evakuere via denne utgangen." }
+        : { title: "§:75 Dør i rømningsveg", field: "bf85_romning_75_dor", text: "Dør i rømningsveg i bygning skal slå ut i rømningsretningen. Dette krav gjelder ikke dør til boenhet. Dør skal utføres som angitt i Tabell 30:75. Kravene gjelder ikke for utgangsdør til det fri." },
     ];
     for (const p of bf85RomningPunkter) {
       const vurdering = ((formData as any)[p.field] || "").toString().trim();
