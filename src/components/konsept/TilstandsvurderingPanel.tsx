@@ -48,6 +48,7 @@ export const emptyTilstand = (): TilstandData => ({
   bilder: [],
   tiltak: emptyKategori(),
   fravik: emptyKategori(),
+  kommentar: "",
 });
 
 const newAvvik = (grad: TilstandGrad = ""): TilstandAvvik => ({
