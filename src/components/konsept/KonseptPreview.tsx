@@ -2976,6 +2976,12 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                           ⚠ Fravik: Branncellen strekker seg over flere enn 3 plan. Etter {isBF85 ? "BF85" : "preaksepterte ytelser i VTEK17 §11-8"} kan brannceller ha åpen forbindelse over inntil tre plan. Avvik fra dette må dokumenteres som fravik i tilstandsvurderingen.
                         </div>
                       )}
+                      {formData.branncellerFlerePlanAreal === "under800" && (
+                        <div>Samlet areal av branncellen over flere plan: under 800 m².</div>
+                      )}
+                      {formData.branncellerFlerePlanAreal === "over800" && (
+                        <div>Samlet areal av branncellen over flere plan: over 800 m². {isBF85 ? "Det kreves automatisk slokkeanlegg, jf. kap. 3.9." : "Krav om automatisk sprinkleranlegg, jf. § 11-12 første ledd."}</div>
+                      )}
                     </div>
                   </td>
                   <td className="border border-gray-400 p-2 align-top">RIBr</td>
