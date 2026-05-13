@@ -7437,20 +7437,6 @@ const Konsept = () => {
                       
                       {formData.regelverk === "BF85" ? (
                         <>
-                          {/* BF85 :1332 Avtrekk */}
-                          <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
-                            <div className="flex items-center gap-2">
-                              <Checkbox
-                                id="bf85_1332_avtrekk"
-                                checked={!!formData.bf85_1332_avtrekk}
-                                onCheckedChange={(checked) => setFormData({...formData, bf85_1332_avtrekk: !!checked})}
-                              />
-                              <label htmlFor="bf85_1332_avtrekk" className="text-xs font-medium cursor-pointer">
-                                :1332 Avtrekk
-                              </label>
-                            </div>
-                          </div>
-
                           {/* BF85 Ventilasjonsanlegg */}
                           <div className="space-y-2 p-3 bg-muted/30 rounded-md border">
                             <div className="flex items-center gap-2">
@@ -7664,7 +7650,7 @@ const Konsept = () => {
                               ) : (
                                 <li>Ventilasjonsanlegg er ikke installert</li>
                               )}
-                              {!formData.bf85_1332_avtrekk && !formData.ventilasjonRelevant && (
+                              {!formData.ventilasjonRelevant && (
                                 <li>Velg relevante tekniske installasjoner ovenfor</li>
                               )}
                             </ul>
