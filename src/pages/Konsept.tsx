@@ -8070,21 +8070,29 @@ const Konsept = () => {
                         </div>
                       )}
 
-                      {/* BF85-spesifikt: Automatisk slokkeanlegg i industribygg */}
-                      {formData.regelverk === "BF85" && (
-                        (formData.bygningstype || "").toLowerCase().includes("industri")
-                        || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("industri"))
-                      ) && (() => {
+                      {/* BF85-spesifikt: Automatisk slokkeanlegg (industribygg eller branncelle over flere plan > 800 m²) */}
+                      {formData.regelverk === "BF85" && (() => {
+                        const erIndustri = (formData.bygningstype || "").toLowerCase().includes("industri")
+                          || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("industri"));
+                        const flerePlanOver800 = !!formData.branncellerFlerePlanRelevant && formData.branncellerFlerePlanAreal === "over800";
+                        if (!erIndustri && !flerePlanOver800) return null;
                         const etasjer = parseInt(formData.etasjer || "0", 10);
                         const areal = parseFloat(String(formData.areal || "0").replace(",", ".")) || 0;
                         const oppfyllerKriterier = etasjer > 1 && areal > 800;
                         return (
                           <div className="p-3 bg-muted/50 border border-border rounded space-y-2">
-                            <Label className="text-xs font-medium block">BF85-krav for industribygg:</Label>
-                            <p className="text-[11px] italic text-muted-foreground">
-                              BF85 krever automatisk slokkeanlegg i industribygg som er åpne over flere plan med samlet areal &gt; 800 m².
-                            </p>
-                            {oppfyllerKriterier && !formData.bf85_39_industri_slokkeanlegg && (
+                            <Label className="text-xs font-medium block">BF85-krav: Automatisk slokkeanlegg</Label>
+                            {erIndustri && (
+                              <p className="text-[11px] italic text-muted-foreground">
+                                BF85 krever automatisk slokkeanlegg i industribygg som er åpne over flere plan med samlet areal &gt; 800 m².
+                              </p>
+                            )}
+                            {flerePlanOver800 && (
+                              <p className="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded px-2 py-1">
+                                ℹ︎ Foreslått fordi branncelle over flere plan med samlet areal &gt; 800 m² er valgt i kap. 3.5.
+                              </p>
+                            )}
+                            {erIndustri && oppfyllerKriterier && !formData.bf85_39_industri_slokkeanlegg && (
                               <p className="text-[11px] text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded px-2 py-1">
                                 ℹ︎ Bygget har {etasjer} etasjer og samlet areal {areal} m² – kravet bør avhukes dersom bygget er åpent over flere plan.
                               </p>
@@ -8096,7 +8104,9 @@ const Konsept = () => {
                                 onCheckedChange={(checked) => setFormData({...formData, bf85_39_industri_slokkeanlegg: !!checked})}
                               />
                               <Label htmlFor="bf85_39_industri_slokkeanlegg" className="text-xs cursor-pointer leading-relaxed">
-                                <strong>Automatisk slokkeanlegg (industribygg):</strong> Industribygg som er åpne over flere plan med samlet areal &gt; 800 m² skal ha automatisk slokkeanlegg.
+                                <strong>Automatisk slokkeanlegg:</strong> {flerePlanOver800 && !erIndustri
+                                  ? "Branncelle over flere plan med samlet areal > 800 m² skal ha automatisk slokkeanlegg."
+                                  : "Industribygg som er åpne over flere plan med samlet areal > 800 m² skal ha automatisk slokkeanlegg."}
                               </Label>
                             </div>
                           </div>
