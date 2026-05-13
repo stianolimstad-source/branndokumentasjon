@@ -6718,6 +6718,28 @@ const Konsept = () => {
                                   </div>
                                 )}
                               </div>
+                              <div className="space-y-2">
+                                <Label className="text-xs font-medium block">Samlet areal av branncellen over flere plan</Label>
+                                <RadioGroup
+                                  value={formData.branncellerFlerePlanAreal || ""}
+                                  onValueChange={(val) => setFormData({...formData, branncellerFlerePlanAreal: val as "under800" | "over800"})}
+                                  className="flex flex-col gap-1"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <RadioGroupItem value="under800" id="bcfp_areal_under800" />
+                                    <label htmlFor="bcfp_areal_under800" className="text-xs cursor-pointer">Under 800 m²</label>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <RadioGroupItem value="over800" id="bcfp_areal_over800" />
+                                    <label htmlFor="bcfp_areal_over800" className="text-xs cursor-pointer">Over 800 m²</label>
+                                  </div>
+                                </RadioGroup>
+                                {formData.branncellerFlerePlanAreal === "over800" && formData.regelverk === "BF85" && (
+                                  <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded p-2 text-xs text-amber-800 dark:text-amber-300">
+                                    ℹ︎ BF85 krever automatisk slokkeanlegg når branncelle over flere plan har samlet areal &gt; 800 m². Kravet legges automatisk inn i kap. 3.9.
+                                  </div>
+                                )}
+                              </div>
                               <p className="text-xs text-muted-foreground italic">
                                 {formData.regelverk === "BF85"
                                   ? "Brannceller kan ha åpen forbindelse over inntil tre plan, forutsatt at branncellen er tilrettelagt for at rømning og slokking av brann kan skje på en rask og effektiv måte."
