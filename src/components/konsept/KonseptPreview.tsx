@@ -29,6 +29,7 @@ interface TilstandData {
   bilder: (TilstandBilde | string)[];
   tiltak?: TilstandKategori;
   fravik?: TilstandKategori;
+  kommentar?: string;
 }
 
 const normalizeBilder = (bilder: any[]): TilstandBilde[] =>
