@@ -36,6 +36,8 @@ export interface TilstandData {
   // Kategorier
   tiltak?: TilstandKategori;
   fravik?: TilstandKategori;
+  // Generell kommentar til tilstanden (vises også når ingen avvik)
+  kommentar?: string;
 }
 
 export const emptyKategori = (): TilstandKategori => ({ beskrivelse: "", bilder: [], avvik: [] });
