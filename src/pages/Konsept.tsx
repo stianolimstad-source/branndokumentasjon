@@ -9501,6 +9501,9 @@ const Konsept = () => {
                         return (
                           <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-2">
                             <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                            {formData.regelverk === "BF85" && (
+                              <p className="italic text-foreground/70">Vurderingen baseres på BF85 Kap. 30:91/93 (slokkingsredskap, brannslanger, håndslokkingsapparater og stigeledning) samt bygningstype-spesifikke krav i Kap. 31–39.</p>
+                            )}
                             
                             {kravListe.length > 0 && (
                               <div>
