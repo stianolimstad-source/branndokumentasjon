@@ -650,6 +650,7 @@ const Konsept = () => {
     branncellerFlerePlanRelevant: false,
     branncellerFlerePlanKrav: [] as string[],
     branncellerFlerePlanOver3: false,
+    branncellerFlerePlanAreal: "" as "" | "under800" | "over800",
     garasjeRelevant: false,
     garasjePlassering: "" as "" | "i_tiltaket" | "utenfor_tiltaket",
     garasjeAreal: "" as "" | "under_50" | "50_400" | "over_400",
