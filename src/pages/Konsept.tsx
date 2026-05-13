@@ -824,6 +824,8 @@ const Konsept = () => {
     bf85_1332_avtrekk: false, // :1332 Avtrekk
     bf85_16_brannalarmanlegg: false, // :16 Brannalarmanlegg (skoler)
     bf85_sprinkler_installert: false, // Sprinkleranlegg installert (BF85)
+    bf85_39_kontor_brannalarm: false, // BF85 3.9: Risikobasert brannalarm i kontorbygg
+    bf85_39_industri_slokkeanlegg: false, // BF85 3.9: Auto. slokkeanlegg i industribygg, åpne flere plan, > 800 m²
     kraftstasjonUnderFjell: false, // Kraftstasjon under fjell eller under dagen
   });
 
