@@ -1,13 +1,13 @@
 ## Mål
-Når bygningstype (eller en bygningsdel) er **Kraftstasjon**, skal teksten for «Brannspjeld i seksjoneringsvegg» (`ventKrav9`) erstattes med en kraftstasjon-spesifikk formulering som krever automatisk lukkende spjeld og forbyr smeltesikring. Gjelder både BF85- og TEK17-prosjekter, både i nettleser-preview, info-boksene under skjemaet og Word-eksport.
+Under ventilasjonsanlegg, både i BF85- og TEK17-flyten, skal det – kun når bygningstype/-del er **Kraftstasjon** – legges til en note om at det ved bruk av **steng-inne-prinsipp** må benyttes **automatiske brannspjeld** (smeltesikring ikke tillatt). Hjemmel: DSB sin veiledning om brannvern i kraftstasjoner.
 
-## Ny tekst for `ventKrav9` ved kraftstasjon
-> «Kanal som føres gjennom seksjoneringsvegg/brannvegg, må ha automatisk lukkende brannspjeld med minimum samme brannmotstand som seksjoneringsveggen. Spjeld med smeltesikring er ikke tillatt i kraftstasjoner – det skal benyttes automatiske spjeld som sikrer rask avstengning og hindrer røykspredning før temperaturen er blitt høy.»
+## Tekst som legges til
+> «Dersom det benyttes steng-inne-prinsipp for ventilasjonsanlegget, må det benyttes automatiske brannspjeld. Brannspjeld med smeltesikring er ikke tillatt. Jf. DSB sin veiledning om brannvern i kraftstasjoner.»
 
-For ikke-kraftstasjon beholdes dagens tekst uendret.
+Teksten formuleres som en betinget setning – ingen ny UI-bryter for "steng inne" innføres (bruker har ikke bedt om det).
 
 ## Detektering av kraftstasjon
-Samme mønster som ellers i koden:
+Samme mønster som ellers:
 ```ts
 const erKraftstasjon =
   (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
@@ -17,18 +17,16 @@ const erKraftstasjon =
 
 ## Filer som endres
 
-### 1. `src/components/konsept/KonseptPreview.tsx`
-- Linje ~3836 (BF85-gren) og ~3865 (TEK17-gren): bytt ut `ventKrav9`-`<li>` med en kraftstasjon-conditional tekst (ny tekst over hvis `erKraftstasjon`, ellers eksisterende tekst).
+### 1. `src/lib/word-export-chapter3.ts`
+- Linje ~1270, eksisterende rad **«Ventilasjonsanlegg – kraftstasjon»**: utvid teksten med ny setning om steng-inne-prinsipp + automatiske brannspjeld. Raden vises allerede kun når `erKraftstasjon37` er true, så ingen ny gating trengs. Gjelder både BF85 og TEK17 siden raden legges til i kapittel 3.7-blokken som kjøres for begge regelverk.
 
-### 2. `src/lib/word-export-chapter3.ts`
-- Linje ~1174–1175: samme conditional på `formData.ventKrav9`-grenen i ventilasjonsraden, slik at Word-rapporten matcher preview.
-- Den eksisterende «Ventilasjonsanlegg – kraftstasjon»-raden (linje 1266) beholdes uendret – den utfyller, men skal ikke duplisere brannspjeld-teksten.
+### 2. `src/components/konsept/KonseptPreview.tsx`
+- Linje ~4003, tabellraden **«Ventilasjonsanlegg – kraftstasjon»** i 3.7-seksjonen: legg til samme tilleggssetning i innholds-cellen, slik at preview matcher Word-eksport.
 
-### 3. `src/pages/Konsept.tsx` (info-bokser «Følgende krav er automatisk inkludert i rapporten»)
-- Linje ~7657 (BF85-gren) og ~7679 (TEK17-gren): når `formData.ventKrav9` og kraftstasjon, vis kort variant: «Brannspjeld i seksjoneringsvegg – automatisk lukkende, smeltesikring ikke tillatt (kraftstasjon).» Ellers dagens «Brannspjeld i seksjoneringsvegg».
-- Linje ~7751 (oppsummeringspunkt om Ventilasjonsanlegg) berøres ikke – det er allerede korrekt formulert.
+### 3. `src/pages/Konsept.tsx` (info-boks "Følgende krav er automatisk inkludert i rapporten")
+- I både BF85- og TEK17-grenen (rundt linje 7657 / 7679): når `erKraftstasjon` er sann, legg til et kort punkt: **«Steng-inne-prinsipp ventilasjon – automatiske brannspjeld kreves (kraftstasjon).»**
 
 ## Akseptansekriterier
-- Med bygningstype/-del som inneholder «kraftstasjon» og `ventKrav9` aktiv: preview, info-boks og Word-eksport viser den nye teksten om automatisk lukkende brannspjeld og forbud mot smeltesikring – både for BF85 og TEK17.
-- For alle andre bygningstyper er teksten uendret.
-- Ingen endringer i logikk for andre `ventKrav*` eller andre kapitler.
+- Med kraftstasjon valgt: preview, info-boks og Word-eksport viser den nye setningen om steng-inne-prinsipp og automatiske brannspjeld – både for BF85 og TEK17.
+- For andre bygningstyper er ventilasjonsteksten uendret.
+- Ingen ny UI-bryter, ingen endring i annen ventilasjonslogikk.
