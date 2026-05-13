@@ -1317,6 +1317,19 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   rows.push(sectionHeaderRow(formData.regelverk === "BF85" ? "3.9   Tiltak for å påvirke rømnings- og redningstider" : "3.9   §11-12 Tilrettelegging for rømning og redning"));
   rows.push(columnHeaderRow());
 
+  // Tilstandsvurdering: faktisk installerte anlegg (kompenserende tiltak)
+  if (formData.documentType === "tilstandsvurdering") {
+    if (formData.tilstand_39_brannalarm_installert) {
+      rows.push(contentRow("Brannalarmanlegg (installert)", "Bygget har installert brannalarmanlegg. Anlegget kan benyttes som kompenserende tiltak for andre avvik fra regelverket der forholdene tilsier det.", "RIE"));
+    }
+    if (formData.tilstand_39_slokkeanlegg_installert) {
+      rows.push(contentRow("Automatisk slokkeanlegg (installert)", "Bygget har installert automatisk slokkeanlegg (sprinkler). Anlegget kan benyttes som kompenserende tiltak for andre avvik fra regelverket der forholdene tilsier det.", "RIV"));
+    }
+    if (formData.tilstand_39_roykventilasjon_installert) {
+      rows.push(contentRow("Røykventilasjon (installert)", "Bygget har installert røykventilasjon. Anlegget kan benyttes som kompenserende tiltak for andre avvik fra regelverket der forholdene tilsier det.", "RIV"));
+    }
+  }
+
   // BF85-spesifikke rader for 3.9
   if (formData.regelverk === "BF85") {
     if (formData.bf85_16_brannalarmanlegg) {

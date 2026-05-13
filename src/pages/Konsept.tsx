@@ -827,6 +827,10 @@ const Konsept = () => {
     bf85_sprinkler_installert: false, // Sprinkleranlegg installert (BF85)
     bf85_39_kontor_brannalarm: false, // BF85 3.9: Risikobasert brannalarm i kontorbygg
     bf85_39_industri_slokkeanlegg: false, // BF85 3.9: Auto. slokkeanlegg i industribygg, åpne flere plan, > 800 m²
+    // Tilstandsvurdering 3.9: faktisk installerte anlegg som kan benyttes som kompenserende tiltak
+    tilstand_39_brannalarm_installert: false,
+    tilstand_39_slokkeanlegg_installert: false,
+    tilstand_39_roykventilasjon_installert: false,
     kraftstasjonUnderFjell: false, // Kraftstasjon under fjell eller under dagen
   });
 
@@ -8034,7 +8038,50 @@ const Konsept = () => {
                         <Label className="text-base font-extrabold text-foreground">3.9 {formData.regelverk === "BF85" ? "Tiltak for å påvirke rømnings- og redningstider (Brannalarmanlegg og røykvarsler)" : "§ 11-12 Tilrettelegging for rømning og redning"}</Label>
                       </div>
 
+                      {/* Tilstandsvurdering: faktisk installerte anlegg (kompenserende tiltak) */}
+                      {documentType === "tilstandsvurdering" && (
+                        <div className="p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded space-y-2">
+                          <Label className="text-xs font-semibold block text-blue-900 dark:text-blue-200">
+                            Installerte anlegg (kan benyttes som kompenserende tiltak)
+                          </Label>
+                          <p className="text-[11px] text-muted-foreground">
+                            Hak av for anlegg som faktisk er installert i bygget – også der regelverket ikke krever det. Disse kan benyttes som kompenserende tiltak for andre mangler.
+                          </p>
+                          <div className="flex items-start space-x-2">
+                            <Checkbox
+                              id="tilstand_39_brannalarm_installert"
+                              checked={formData.tilstand_39_brannalarm_installert}
+                              onCheckedChange={(checked) => setFormData({ ...formData, tilstand_39_brannalarm_installert: !!checked })}
+                            />
+                            <Label htmlFor="tilstand_39_brannalarm_installert" className="text-xs cursor-pointer leading-relaxed">
+                              <strong>Brannalarmanlegg installert</strong> i bygget.
+                            </Label>
+                          </div>
+                          <div className="flex items-start space-x-2">
+                            <Checkbox
+                              id="tilstand_39_slokkeanlegg_installert"
+                              checked={formData.tilstand_39_slokkeanlegg_installert}
+                              onCheckedChange={(checked) => setFormData({ ...formData, tilstand_39_slokkeanlegg_installert: !!checked })}
+                            />
+                            <Label htmlFor="tilstand_39_slokkeanlegg_installert" className="text-xs cursor-pointer leading-relaxed">
+                              <strong>Automatisk slokkeanlegg (sprinkler) installert</strong> i bygget.
+                            </Label>
+                          </div>
+                          <div className="flex items-start space-x-2">
+                            <Checkbox
+                              id="tilstand_39_roykventilasjon_installert"
+                              checked={formData.tilstand_39_roykventilasjon_installert}
+                              onCheckedChange={(checked) => setFormData({ ...formData, tilstand_39_roykventilasjon_installert: !!checked })}
+                            />
+                            <Label htmlFor="tilstand_39_roykventilasjon_installert" className="text-xs cursor-pointer leading-relaxed">
+                              <strong>Røykventilasjon installert</strong> i bygget.
+                            </Label>
+                          </div>
+                        </div>
+                      )}
+
                       {/* BF85-spesifikt: :16 Brannalarmanlegg for skoler */}
+
                       {formData.regelverk === "BF85" && formData.bygningstype.toLowerCase().includes("skole") && (
                         <div className="p-3 bg-muted/50 border border-border rounded space-y-2">
                           <Label className="text-xs font-medium block">BF85-krav for skoler:</Label>
