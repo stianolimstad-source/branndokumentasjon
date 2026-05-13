@@ -4416,7 +4416,7 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_2")}
                     </SectionCollapsible>
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-3" label={`3.3 ${formData.regelverk === "BF85" ? "Avstand mellom bygninger (§ 11-6)" : "§ 11-6 Tiltak mot brannspredning"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-3" label={`3.3 ${formData.regelverk === "BF85" ? "Avstand mellom bygninger (§ 11-6 Tiltak mot brannspredning mellom byggverk)" : "§ 11-6 Tiltak mot brannspredning"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">
@@ -4662,7 +4662,7 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_3")}
                     </SectionCollapsible>
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-4" label={`3.4 ${formData.regelverk === "BF85" ? "Brannteknisk oppdeling (§ 11-7)" : "§ 11-7 Brannseksjoner"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-4" label={`3.4 ${formData.regelverk === "BF85" ? "Brannteknisk oppdeling (§ 11-7 Brannseksjoner)" : "§ 11-7 Brannseksjoner"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">{formData.regelverk === "BF85" ? "3.4 Brannteknisk oppdeling (Kap. 30:6)" : "3.4 § 11-7 Brannseksjoner"}</Label>
@@ -7109,7 +7109,7 @@ const Konsept = () => {
                      })()}
                      {renderTilstandPanel("3_5")}
                     </SectionCollapsible>
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-6" label={`3.6 ${formData.regelverk === "BF85" ? "Kledninger og overflater (:42)" : "§ 11-9 Materialer og produkter"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-6" label={`3.6 ${formData.regelverk === "BF85" ? "Kledninger og overflater (§ 11-9 Materialer og produkters egenskaper ved brann)" : "§ 11-9 Materialer og produkter"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">3.6 {formData.regelverk === "BF85" ? "Kledninger og overflater for vegger og tak (:42)" : "§ 11-9 Materialer og produkters egenskaper ved brann"}</Label>
@@ -7349,7 +7349,7 @@ const Konsept = () => {
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-7" label={`3.7 ${formData.regelverk === "BF85" ? "Tekniske installasjoner (§ 11-10)" : "§ 11-10 Tekniske installasjoner"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.7 § 11-10 Tekniske installasjoner</Label>
+                        <Label className="text-base font-extrabold text-foreground">3.7 {formData.regelverk === "BF85" ? "Ventilasjon og installasjoner (§ 11-10 Tekniske installasjoner)" : "§ 11-10 Tekniske installasjoner"}</Label>
                       </div>
                       
                       {formData.regelverk === "BF85" ? (
@@ -7586,10 +7586,10 @@ const Konsept = () => {
                      })()}
                      {renderTilstandPanel("3_7")}
                     </SectionCollapsible>
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-8" label={`3.8 ${formData.regelverk === "BF85" ? "Rømning og redning (§ 11-11)" : "§ 11-11 Rømning og redning"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-8" label={`3.8 ${formData.regelverk === "BF85" ? "Rømningsvei – generelle krav (§ 11-11 Generelle krav om rømning og redning)" : "§ 11-11 Rømning og redning"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.8 § 11-11 Rømning og redning</Label>
+                        <Label className="text-base font-extrabold text-foreground">3.8 {formData.regelverk === "BF85" ? "Rømningsvei – generelle krav (§ 11-11 Generelle krav om rømning og redning)" : "§ 11-11 Rømning og redning"}</Label>
                       </div>
                       <div>
                         <div className="flex items-center justify-between mb-1">
@@ -7800,10 +7800,10 @@ const Konsept = () => {
                      })()}
                      {renderTilstandPanel("3_8")}
                     </SectionCollapsible>
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-9" label={`3.9 ${formData.regelverk === "BF85" ? "Tilrettelegging for rømning (§ 11-12)" : "§ 11-12 Tilrettelegging for rømning"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-9" label={`3.9 ${formData.regelverk === "BF85" ? "Brannalarmanlegg og røykvarsler (§ 11-12 Tiltak for å påvirke rømnings- og redningstider)" : "§ 11-12 Tilrettelegging for rømning"}`}>
                     <div className="space-y-4">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.9 § 11-12 Tilrettelegging for rømning og redning</Label>
+                        <Label className="text-base font-extrabold text-foreground">3.9 {formData.regelverk === "BF85" ? "Brannalarmanlegg og røykvarsler (§ 11-12 Tiltak for å påvirke rømnings- og redningstider)" : "§ 11-12 Tilrettelegging for rømning og redning"}</Label>
                       </div>
 
                       {/* BF85-spesifikt: :16 Brannalarmanlegg for skoler */}
@@ -8495,10 +8495,10 @@ const Konsept = () => {
                      })()}
                      {renderTilstandPanel("3_9")}
                     </SectionCollapsible>
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-10" label={`3.10 ${formData.regelverk === "BF85" ? "Utgang fra branncelle (§ 11-13)" : "§ 11-13 Utgang fra branncelle"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-10" label={`3.10 ${formData.regelverk === "BF85" ? "Utganger og rømningsveier fra branncelle (§ 11-13 Utgang fra branncelle)" : "§ 11-13 Utgang fra branncelle"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.10 § 11-13 Utgang fra branncelle</Label>
+                        <Label className="text-base font-extrabold text-foreground">3.10 {formData.regelverk === "BF85" ? "Utganger og rømningsveier fra branncelle (§ 11-13 Utgang fra branncelle)" : "§ 11-13 Utgang fra branncelle"}</Label>
                       </div>
                       {((formData.risikoklasse === "RK4" && parseInt(formData.etasjer) >= 2 && parseInt(formData.etasjer) <= 8) || 
                         formData.bygningsdeler.some(b => b.risikoklasse === "RK4" && parseInt(b.etasjer) >= 2 && parseInt(b.etasjer) <= 8)) && (
@@ -8971,10 +8971,10 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_10")}
                     </SectionCollapsible>
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-11" label={`3.11 ${formData.regelverk === "BF85" ? "Rømningsvei (§ 11-14)" : "§ 11-14 Rømningsvei"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-11" label={`3.11 ${formData.regelverk === "BF85" ? "Trapperom og heissjakt (§ 11-14 Rømningsvei)" : "§ 11-14 Rømningsvei"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.11 § 11-14 Rømningsvei</Label>
+                        <Label className="text-base font-extrabold text-foreground">3.11 {formData.regelverk === "BF85" ? "Trapperom og heissjakt (§ 11-14 Rømningsvei)" : "§ 11-14 Rømningsvei"}</Label>
                       </div>
 
                       {/* Rom i rømningsvei inntil 20 m² */}
@@ -9162,10 +9162,10 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_11")}
                     </SectionCollapsible>
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-12" label={`3.12 ${formData.regelverk === "BF85" ? "Redning av husdyr (§ 11-15)" : "§ 11-15 Redning av husdyr"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-12" label={`3.12 ${formData.regelverk === "BF85" ? "Tilrettelegging for redning av husdyr (§ 11-15)" : "§ 11-15 Redning av husdyr"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.12 § 11-15 Tilrettelegging for redning av husdyr</Label>
+                        <Label className="text-base font-extrabold text-foreground">3.12 {formData.regelverk === "BF85" ? "Tilrettelegging for redning av husdyr (§ 11-15)" : "§ 11-15 Tilrettelegging for redning av husdyr"}</Label>
                       </div>
                       <div className="flex items-center gap-2 p-2 bg-muted/50 rounded mb-2">
                         <Checkbox 
@@ -9239,10 +9239,10 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_12")}
                     </SectionCollapsible>
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-13" label={`3.13 ${formData.regelverk === "BF85" ? "Manuell slokking (§ 11-16)" : "§ 11-16 Manuell slokking"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-13" label={`3.13 ${formData.regelverk === "BF85" ? "Slokkingsredskap og slokkingsvann (§ 11-16 Tilrettelegging for manuell slokking)" : "§ 11-16 Manuell slokking"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.13 § 11-16 Manuell slokking</Label>
+                        <Label className="text-base font-extrabold text-foreground">3.13 {formData.regelverk === "BF85" ? "Slokkingsredskap og slokkingsvann (§ 11-16 Tilrettelegging for manuell slokking)" : "§ 11-16 Manuell slokking"}</Label>
                       </div>
                       {(() => {
                         const alleRK = formData.bygningsdeler?.length
@@ -9388,10 +9388,10 @@ const Konsept = () => {
                     </div>
                     {renderTilstandPanel("3_13")}
                     </SectionCollapsible>
-                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-14" label={`3.14 ${formData.regelverk === "BF85" ? "Tilrettelegging for slokkemannskap (§ 11-17)" : "§ 11-17 Tilrettelegging for slokkemannskap"}`}>
+                    <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-14" label={`3.14 ${formData.regelverk === "BF85" ? "Atkomst for brannvesenet (§ 11-17 Tilrettelegging for rednings- og slokkemannskap)" : "§ 11-17 Tilrettelegging for slokkemannskap"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
-                        <Label className="text-base font-extrabold text-foreground">3.14 § 11-17 Tilrettelegging for slokkemannskap</Label>
+                        <Label className="text-base font-extrabold text-foreground">3.14 {formData.regelverk === "BF85" ? "Atkomst for brannvesenet (§ 11-17 Tilrettelegging for rednings- og slokkemannskap)" : "§ 11-17 Tilrettelegging for slokkemannskap"}</Label>
                       </div>
                       <div className="space-y-2 mb-3">
                         <div className="flex items-center space-x-2">
