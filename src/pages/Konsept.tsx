@@ -6245,10 +6245,7 @@ const Konsept = () => {
                                     }}
                                   />
                                   <label htmlFor="royk-bf85_royk_brannventilasjon" className="text-xs leading-tight cursor-pointer">
-                                    {isOver8
-                                      ? "I bygning med flere enn 2 etasjer skal trapperom ha brannventilasjon. Bygningen har over 8 etasjer og skal ha en røyksjakt som er skilt fra loft i minst A 30 og som har et tverrsnitt på minst 1 m². Sjakten skal gå 20 cm over takflaten."
-                                      : "I bygning med flere enn 2 etasjer skal trapperom ha brannventilasjon. For bygninger med inntil 8 etasjer kan brannventilasjonen skje gjennom vindu i trapperom."
-                                    }
+                                    For bygninger med inntil 8 etasjer kan brannventilasjonen skje gjennom vindu i trapperom. Alle andre bygninger skal ha røyksjakt som er skilt fra loft i minst A 30 og som har et tverrsnitt på minst 1 m². Sjakten skal gå 20 cm over takflaten.
                                   </label>
                                 </div>
                                 {krevd && !checked && (
