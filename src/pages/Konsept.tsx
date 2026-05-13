@@ -831,6 +831,12 @@ const Konsept = () => {
     tilstand_39_brannalarm_installert: false,
     tilstand_39_slokkeanlegg_installert: false,
     tilstand_39_roykventilasjon_installert: false,
+    // BF85 §7 Rømningsveg (kap. 3.10 i BF85-tilstandsvurdering)
+    bf85_romning_71_generelt: "",
+    bf85_romning_72_antall: "",
+    bf85_romning_73_bredde: "",
+    bf85_romning_74_golvbelegg: "",
+    bf85_romning_75_dor: "",
     kraftstasjonUnderFjell: false, // Kraftstasjon under fjell eller under dagen
   });
 
