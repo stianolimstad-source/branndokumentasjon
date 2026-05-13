@@ -5383,17 +5383,26 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
             {/* 3.12 §11-15 Tilrettelegging for redning av husdyr */}
             <tr id="preview-3-12" style={sectionRowStyle}>
-              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.{isBF85 ? "11" : "12"} &nbsp;&nbsp; {isBF85 ? <>Tilrettelegging for redning av husdyr <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-15)</span></> : "§11-15 Tilrettelegging for redning av husdyr"}</td>
+              <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.{isBF85 ? "11" : "12"} &nbsp;&nbsp; {isBF85 ? <>Tilrettelegging for redning av husdyr <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(TEK17 § 11-15 brukt som referanse)</span></> : "§11-15 Tilrettelegging for redning av husdyr"}</td>
             </tr>
+            <tr className="bg-gray-100">
+              <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
+              <th className="border border-gray-400 p-2 text-left">Løsning</th>
+              <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
+            </tr>
+            {isBF85 && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">Byggeforskrift 1985</td>
+                <td className="border border-gray-400 p-2">
+                  Byggeforskrift 1985 hadde ingen egne krav til tilrettelegging for redning av husdyr. TEK17 § 11-15 med tilhørende preaksepterte ytelser i VTEK17 brukes derfor som referanse dersom dette er relevant for tiltaket.
+                </td>
+                <td className="border border-gray-400 p-2 align-top">-</td>
+              </tr>
+            )}
             {formData.husdyrRedningRelevant ? (
               <>
-                <tr className="bg-gray-100">
-                  <th className="border border-gray-400 p-2 text-left" style={{width: '25%'}}>Forhold</th>
-                  <th className="border border-gray-400 p-2 text-left">Løsning</th>
-                  <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
-                </tr>
                 <tr>
-                  <td className="border border-gray-400 p-2 align-top">Generelt</td>
+                  <td className="border border-gray-400 p-2 align-top">Generelt{isBF85 ? <span className="block text-[10px] italic text-gray-600">Referanse: TEK17 § 11-15</span> : null}</td>
                   <td className="border border-gray-400 p-2">
                     Byggverk beregnet for husdyrhold skal ha tilfredsstillende rømningsforhold og tilrettelegging for redning av husdyr ved brann.
                   </td>
@@ -5463,11 +5472,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 )}
               </>
             ) : (
-              <tr>
-                <td className="border border-gray-400 p-2" colSpan={3} style={{fontStyle: 'italic'}}>
-                  Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.
-                </td>
-              </tr>
+              !isBF85 && (
+                <tr>
+                  <td className="border border-gray-400 p-2" colSpan={3} style={{fontStyle: 'italic'}}>
+                    Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.
+                  </td>
+                </tr>
+              )
             )}
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_12"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_12"]} sectionLabel={isBF85 ? "3.11 Redning av husdyr" : "3.12 Redning av husdyr"} />
