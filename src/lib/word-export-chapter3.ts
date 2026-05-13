@@ -1175,6 +1175,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
       ventLines.push("Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.");
     }
     rows.push(contentRowMultiLine("Ventilasjonsanlegg", ventLines, "RIV"));
+  } else if (formData.regelverk === "BF85") {
+    rows.push(contentRow("Ventilasjonsanlegg", "Ventilasjonsanlegg er ikke installert.", "RIV"));
   }
 
   if (formData.vannAvlopRelevant) {
