@@ -229,7 +229,8 @@ async function tilstandRow(formData: Record<string, any>, sectionKey: string, se
   const { tiltak, fravik } = getTilstandKategorier(tilstandData);
   const harTiltak = tiltak.avvik.length > 0;
   const harFravik = fravik.avvik.length > 0;
-  if (!tilstandData.grad && !harTiltak && !harFravik) return [];
+  const harKommentar = !!(tilstandData.kommentar && String(tilstandData.kommentar).trim());
+  if (!tilstandData.grad && !harTiltak && !harFravik && !harKommentar) return [];
 
   const ingenAvvik = !harTiltak && !harFravik;
   const tilstandShading = { type: ShadingType.SOLID, color: "FEF3C7", fill: "FEF3C7" };
