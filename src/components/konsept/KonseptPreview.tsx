@@ -3868,7 +3868,13 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                           {formData.ventKrav6 && <li>Avtrekkskanal fra kjøkken i boenhet må ha brannmotstand minst <span className="text-red-600 font-medium">EI 15 A2-s1,d0</span>.</li>}
                           {formData.ventKrav7 && (formData.risikoklasse === "RK4" || (formData.risikoklasse === "RK6" && (formData.bygningstype || "").toLowerCase().includes("bolig"))) && <li>I småhus kan avtrekk fra komfyr føres i kanal av stål eller aluminium.</li>}
                           {formData.ventKrav8 && (formData.risikoklasse === "RK4" || (formData.risikoklasse === "RK6" && (formData.bygningstype || "").toLowerCase().includes("bolig"))) && <li>I småhus kan kanal som tilfredsstiller klasse <span className="text-red-600 font-medium">E</span> benyttes.</li>}
-                          {formData.ventKrav9 && <li>Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.</li>}
+                          {formData.ventKrav9 && (() => {
+                            const erKraftstasjon = (formData.bygningstype || "").toLowerCase().includes("kraftstasjon")
+                              || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon"));
+                            return erKraftstasjon
+                              ? <li>Kanal som føres gjennom seksjoneringsvegg/brannvegg, må ha automatisk lukkende brannspjeld med minimum samme brannmotstand som seksjoneringsveggen. Spjeld med smeltesikring er ikke tillatt i kraftstasjoner – det skal benyttes automatiske spjeld som sikrer rask avstengning og hindrer røykspredning før temperaturen er blitt høy.</li>
+                              : <li>Kanal som føres gjennom seksjoneringsvægg, må ha lukkeanordning (brannspjeld) med minimum samme brannmotstand som seksjoneringsvegg.</li>;
+                          })()}
                         </ul>
                       </td>
                       <td className="border border-gray-400 p-2 align-top">RIV</td>
