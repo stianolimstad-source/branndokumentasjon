@@ -1,13 +1,30 @@
-## Endringer i `src/pages/RosAnalyse.tsx`
+## Endring i `src/pages/RosAnalyse.tsx`
 
-**1. Flytt "Last opp eksisterende ROS"-knappen til toppen**
-- Fjern `<UploadRosDialog onApply={importHendelser} />` fra Hendelser-seksjonen (rundt linje 396).
-- Legg den inn i den sticky topplinjen (rundt linje 314), til venstre for Word/Lagre-knappene, slik at den er tilgjengelig uansett hvor på siden man er.
-- "Ny hendelse"-knappen blir værende i Hendelser-seksjonen.
+**Mål:** "Lagre"-knappen skal være synlig hele tiden mens man scroller, og den skal ligge på inputsiden (venstre kolonne) — ikke under forhåndsvisningen.
 
-**2. Gjør lagreknappen alltid synlig i bunnen**
-- Legg til en ny sticky bunnlinje (`sticky bottom-0 z-30 border-t bg-background/95 backdrop-blur`) nederst i editor-visningen, etter forhåndsvisning/grid-en.
-- Plasser "Lagre"-knappen der (kan også speile Word-knappen for konsistens).
-- Beholder lagreknappen i toppen også, eller fjerner den derfra — anbefaler å fjerne fra toppen for å unngå duplikat. Word-knapp og slett-knapp blir værende i toppen.
+### Konkrete endringer
 
-Ingen endringer i logikk, data eller andre filer.
+1. **Fjern dagens sticky bunn-linje** (linjene 528–534) som ligger utenfor grid-en og strekker seg på tvers av begge kolonner.
+
+2. **Legg "Lagre"-knappen inn som en sticky bunn-bar inne i venstre (input-)kolonne** (linje 349). 
+   - Endre input-kolonnen fra `border-r p-6 space-y-8 overflow-y-auto` til en flex-container slik at innholdet scroller inni, og en bunn-bar sitter sticky:
+     ```tsx
+     <div className="border-r flex flex-col max-h-[calc(100vh-65px-49px)]">
+       <div className="p-6 space-y-8 overflow-y-auto flex-1">
+         {/* alle eksisterende seksjoner */}
+       </div>
+       <div className="border-t bg-background/95 backdrop-blur px-6 py-2 flex items-center justify-end">
+         <Button size="sm" onClick={handleSave} disabled={saving}>
+           <Save className="h-4 w-4 mr-1" /> {saving ? "Lagrer…" : "Lagre"}
+         </Button>
+       </div>
+     </div>
+     ```
+   - Maks-høyden tar høyde for global header (top-[65px]) og den eksisterende sticky topp-baren slik at bunn-baren alltid er synlig i viewportet uansett scroll-posisjon i input-kolonnen.
+
+3. **Forhåndsvisningskolonnen** (linje 523) forblir uendret bortsett fra at den også får tilsvarende max-høyde, slik at høyrekolonnen scroller selvstendig som før.
+
+### Resultat
+- Lagre-knappen vises permanent nederst i venstre kolonne (input), uansett hvor langt man scroller.
+- Den er ikke lenger plassert under forhåndsvisningen.
+- Word-, slett- og opplastingsknappene blir værende i den eksisterende sticky topp-baren.

@@ -346,7 +346,8 @@ export default function RosAnalyse() {
 
       <div className="grid lg:grid-cols-2 gap-0">
         {/* INPUT */}
-        <div className="border-r p-6 space-y-8 overflow-y-auto">
+        <div className="border-r flex flex-col h-[calc(100vh-117px)]">
+          <div className="p-6 space-y-8 overflow-y-auto flex-1">
           <section className="space-y-3">
             <h2 className="text-lg font-semibold">Metadata</h2>
             <div className="grid grid-cols-2 gap-3">
