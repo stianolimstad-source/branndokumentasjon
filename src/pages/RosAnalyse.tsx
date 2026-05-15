@@ -546,7 +546,7 @@ export default function RosAnalyse() {
 
         {/* PREVIEW */}
         <div className="bg-muted/20 overflow-y-auto">
-          <RosPreview content={content} />
+          <RosPreview content={content} logoUrl={logoUrl} firmaNavn={firmaNavn} utarbeidetAv={content.metadata.utfortAv || fullName || ""} />
         </div>
       </div>
     </div>
