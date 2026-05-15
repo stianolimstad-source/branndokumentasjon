@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search } from "lucide-react";
 import RosPreview, { type RosContent, type RosHendelse } from "@/components/ros/RosPreview";
+import UploadRosDialog, { type ExtractedRosData } from "@/components/ros/UploadRosDialog";
 import RosMatriks, { risikoFarge } from "@/components/ros/RosMatriks";
 import { exportRosToWord } from "@/lib/ros-word-export";
 import { useCanDownload } from "@/hooks/useCanDownload";
@@ -227,6 +228,20 @@ export default function RosAnalyse() {
     setContent((c) => ({ ...c, hendelser: c.hendelser.filter((h) => h.id !== id) }));
     setOpenHendelser((o) => o.filter((x) => x !== id));
   };
+  const importHendelser = (data: ExtractedRosData, mode: "append" | "replace") => {
+    const nye: RosHendelse[] = data.hendelser.map((h) => ({ ...h, id: makeId() }));
+    setContent((c) => ({
+      ...c,
+      metadata: {
+        ...c.metadata,
+        prosjektnavn: c.metadata.prosjektnavn || data.metadata.prosjektnavn || "",
+        adresse: c.metadata.adresse || data.metadata.adresse || "",
+        oppdragsgiver: c.metadata.oppdragsgiver || data.metadata.oppdragsgiver || "",
+      },
+      hendelser: mode === "replace" ? nye : [...c.hendelser, ...nye],
+    }));
+    setOpenHendelser([]);
+  };
 
   // ----- Revisjon -----
   const addRevisjon = () => {
@@ -413,11 +428,14 @@ export default function RosAnalyse() {
           </section>
 
           <section className="space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <h2 className="text-lg font-semibold">3. Hendelser</h2>
-              <Button size="sm" variant="outline" onClick={addHendelse}>
-                <Plus className="h-4 w-4 mr-1" /> Ny hendelse
-              </Button>
+              <div className="flex items-center gap-2">
+                <UploadRosDialog onApply={importHendelser} />
+                <Button size="sm" variant="outline" onClick={addHendelse}>
+                  <Plus className="h-4 w-4 mr-1" /> Ny hendelse
+                </Button>
+              </div>
             </div>
             {content.hendelser.length === 0 ? (
               <p className="text-sm text-muted-foreground italic">Ingen hendelser ennå.</p>
