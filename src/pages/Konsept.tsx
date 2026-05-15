@@ -2886,12 +2886,8 @@ const Konsept = () => {
                           const prosjekt = formData.prosjektnavn || "[prosjektnavn]";
                           const bygningstype = formData.bygningstype || "[bygningstype]";
                           const etasjer = formData.etasjer || "[antall]";
-                          const rk = formData.harFlereRisikoklasser
-                            ? formData.bygningsdeler.map(d => d.risikoklasse).filter(Boolean).join(", ")
-                            : formData.risikoklasse || "[risikoklasse]";
-                          const bkl = formData.harFlereRisikoklasser
-                            ? formData.bygningsdeler.map(d => d.brannklasse || getBrannklasse(d.risikoklasse, d.etasjer, d.harTerrengTilgang, d.areal).brannklasse).filter(Boolean).join(", ")
-                            : formData.brannklasse || "[brannklasse]";
+                          const adresse = formData.adresse ? ` (${formData.adresse})` : "";
+                          const areal = formData.areal ? ` og et samlet bruksareal på ca. ${formData.areal} m²` : "";
 
                           const aktiveTiltak: string[] = [];
                           if (formData.tilretteleggingLedd1a || formData.tilretteleggingLedd1b || formData.tilretteleggingLedd1c) aktiveTiltak.push("automatisk slokkeanlegg");
@@ -2900,26 +2896,69 @@ const Konsept = () => {
                           if (formData.brannalarmTalevarsling) aktiveTiltak.push("talevarsling");
                           if (formData.tilretteleggingLedd3) aktiveTiltak.push("ledesystem");
 
-                          const metode = formData.prosjekteringsmetode === "preakseptert"
-                            ? "Prosjekteringen er basert på preaksepterte ytelser i henhold til VTEK17."
-                            : formData.prosjekteringsmetode === "analyse"
-                              ? "Prosjekteringen er basert på analyse (fraviksprosjektering)."
-                              : "Prosjekteringen er basert på en kombinasjon av preaksepterte ytelser og analyse.";
+                          let tekst = "";
 
-                          let tekst = `${firma} er engasjert av ${oppdragsgiver} for brannteknisk prosjektering av ${prosjekt}. `;
-                          tekst += `Bygget er et ${bygningstype.toLowerCase()} med ${etasjer} tellende etasje${etasjer === "1" ? "" : "r"}. `;
-                          tekst += `Bygget er plassert i risikoklasse ${rk} og brannklasse ${bkl}. `;
-                          tekst += metode;
+                          if (documentType === "tilstandsvurdering") {
+                            // Tilstandsvurdering – innledning
+                            tekst = `${firma} er engasjert av ${oppdragsgiver} for å utføre brannteknisk tilstandsvurdering av ${prosjekt}${adresse}. `;
+                            tekst += `Bygget er et ${bygningstype.toLowerCase()} med ${etasjer} tellende etasje${etasjer === "1" ? "" : "r"}${areal}. `;
 
-                          if (aktiveTiltak.length > 0) {
-                            const punkter = aktiveTiltak
-                              .map(t => `- ${t.charAt(0).toUpperCase()}${t.slice(1)}`)
-                              .join("\n");
-                            tekst += `\n\nFølgende aktive branntekniske tiltak er forutsatt:\n${punkter}`;
-                          }
+                            if (formData.regelverk === "BF85") {
+                              const bbk = formData.bygningsbrannklasse
+                                ? `bygningsbrannklasse ${formData.bygningsbrannklasse}`
+                                : "[bygningsbrannklasse ikke fastsatt]";
+                              tekst += `Bygget er oppført etter Byggeforskrift 1985 (BF85) og er klassifisert som ${bbk}. `;
+                              tekst += `Vurderingen er gjort opp mot kravene i BF85, da dette var gjeldende regelverk på oppføringstidspunktet.`;
+                            } else {
+                              const rk = formData.harFlereRisikoklasser
+                                ? formData.bygningsdeler.map(d => d.risikoklasse).filter(Boolean).join(", ")
+                                : formData.risikoklasse || "[risikoklasse]";
+                              const bkl = formData.harFlereRisikoklasser
+                                ? formData.bygningsdeler.map(d => d.brannklasse || getBrannklasse(d.risikoklasse, d.etasjer, d.harTerrengTilgang, d.areal).brannklasse).filter(Boolean).join(", ")
+                                : formData.brannklasse || "[brannklasse]";
+                              tekst += `Bygget er klassifisert i risikoklasse ${rk} og brannklasse ${bkl}, vurdert opp mot kravene i TEK17/VTEK.`;
+                            }
 
-                          if (formData.prosjekteringsmetode === "analyse" || formData.prosjekteringsmetode === "blanding") {
-                            tekst += `\n\nDet er gjort fravik fra preaksepterte ytelser. Se egen fraviksdokumentasjon for nærmere beskrivelse.`;
+                            tekst += `\n\nVurderingen er basert på befaring av bygget og gjennomgang av tilgjengelig dokumentasjon. Avvik fra gjeldende regelverk er beskrevet og tilstandsgradert i kapittel 3, og oppsummert i tabell over registrerte tiltak og fravik.`;
+
+                            if (aktiveTiltak.length > 0) {
+                              const punkter = aktiveTiltak
+                                .map(t => `- ${t.charAt(0).toUpperCase()}${t.slice(1)}`)
+                                .join("\n");
+                              tekst += `\n\nFølgende aktive branntekniske tiltak er registrert i bygget:\n${punkter}`;
+                            }
+
+                            tekst += `\n\nRapporten gir et øyeblikksbilde av byggets branntekniske tilstand på befaringstidspunktet, og er ment som beslutningsgrunnlag for eier ved planlegging av utbedringstiltak og videre drift.`;
+                          } else {
+                            // Brannkonsept – uendret tekst
+                            const rk = formData.harFlereRisikoklasser
+                              ? formData.bygningsdeler.map(d => d.risikoklasse).filter(Boolean).join(", ")
+                              : formData.risikoklasse || "[risikoklasse]";
+                            const bkl = formData.harFlereRisikoklasser
+                              ? formData.bygningsdeler.map(d => d.brannklasse || getBrannklasse(d.risikoklasse, d.etasjer, d.harTerrengTilgang, d.areal).brannklasse).filter(Boolean).join(", ")
+                              : formData.brannklasse || "[brannklasse]";
+
+                            const metode = formData.prosjekteringsmetode === "preakseptert"
+                              ? "Prosjekteringen er basert på preaksepterte ytelser i henhold til VTEK17."
+                              : formData.prosjekteringsmetode === "analyse"
+                                ? "Prosjekteringen er basert på analyse (fraviksprosjektering)."
+                                : "Prosjekteringen er basert på en kombinasjon av preaksepterte ytelser og analyse.";
+
+                            tekst = `${firma} er engasjert av ${oppdragsgiver} for brannteknisk prosjektering av ${prosjekt}. `;
+                            tekst += `Bygget er et ${bygningstype.toLowerCase()} med ${etasjer} tellende etasje${etasjer === "1" ? "" : "r"}. `;
+                            tekst += `Bygget er plassert i risikoklasse ${rk} og brannklasse ${bkl}. `;
+                            tekst += metode;
+
+                            if (aktiveTiltak.length > 0) {
+                              const punkter = aktiveTiltak
+                                .map(t => `- ${t.charAt(0).toUpperCase()}${t.slice(1)}`)
+                                .join("\n");
+                              tekst += `\n\nFølgende aktive branntekniske tiltak er forutsatt:\n${punkter}`;
+                            }
+
+                            if (formData.prosjekteringsmetode === "analyse" || formData.prosjekteringsmetode === "blanding") {
+                              tekst += `\n\nDet er gjort fravik fra preaksepterte ytelser. Se egen fraviksdokumentasjon for nærmere beskrivelse.`;
+                            }
                           }
 
                           setFormData({ ...formData, sammendrag: tekst });
