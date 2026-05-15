@@ -116,7 +116,7 @@ Mapping-regler:
     const clean = hendelser.map((h: any) => {
       const sarbarhet = String(h?.sarbarhet || "");
       const hendelse = String(h?.hendelse || h?.beskrivelse || "");
-      const tittelFromParts = [sarbarhet, hendelse].filter(Boolean).join(" – ");
+      const tittelFromParts = sarbarhet || hendelse;
       const sannsynlighet = clamp(h?.sannsynlighet);
       const konsekvens = clamp(h?.konsekvens);
       return {
