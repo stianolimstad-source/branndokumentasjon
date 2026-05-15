@@ -111,15 +111,31 @@ Mapping-regler:
 
     // Sanitize
     const hendelser = Array.isArray(parsed?.hendelser) ? parsed.hendelser : [];
-    const clean = hendelser.map((h: any) => ({
-      tittel: String(h?.tittel || "").slice(0, 300),
-      beskrivelse: String(h?.beskrivelse || ""),
-      arsak: String(h?.arsak || ""),
-      sannsynlighet: Math.max(1, Math.min(5, parseInt(h?.sannsynlighet) || 1)),
-      konsekvens: Math.max(1, Math.min(5, parseInt(h?.konsekvens) || 1)),
-      tiltak: String(h?.tiltak || ""),
-      restrisiko: String(h?.restrisiko || ""),
-    }));
+    const clamp = (v: any, fallback = 1) =>
+      Math.max(1, Math.min(5, parseInt(v) || fallback));
+    const clean = hendelser.map((h: any) => {
+      const sarbarhet = String(h?.sarbarhet || "");
+      const hendelse = String(h?.hendelse || h?.beskrivelse || "");
+      const tittelFromParts = [sarbarhet, hendelse].filter(Boolean).join(" – ");
+      const sannsynlighet = clamp(h?.sannsynlighet);
+      const konsekvens = clamp(h?.konsekvens);
+      return {
+        tittel: String(h?.tittel || tittelFromParts || "").slice(0, 300),
+        sarbarhet,
+        hendelse,
+        beskrivelse: hendelse,
+        arsak: String(h?.arsak || ""),
+        beskrivelseSannsynlighetFor: String(h?.beskrivelseSannsynlighetFor || ""),
+        beskrivelseRisikoFor: String(h?.beskrivelseRisikoFor || ""),
+        sannsynlighet,
+        konsekvens,
+        tiltak: String(h?.tiltak || ""),
+        beskrivelseEtter: String(h?.beskrivelseEtter || ""),
+        sannsynlighetEtter: clamp(h?.sannsynlighetEtter, sannsynlighet),
+        konsekvensEtter: clamp(h?.konsekvensEtter, konsekvens),
+        restrisiko: String(h?.restrisiko || ""),
+      };
+    });
 
     const metadata = {
       prosjektnavn: String(parsed?.metadata?.prosjektnavn || ""),
