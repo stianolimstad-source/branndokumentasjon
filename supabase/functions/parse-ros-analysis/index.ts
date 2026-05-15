@@ -37,27 +37,39 @@ Returner BARE et rent JSON-objekt (ingen markdown, ingen forklaring), med denne 
   "hendelser": [
     {
       "tittel": "",
-      "beskrivelse": "",
+      "sarbarhet": "",
+      "hendelse": "",
       "arsak": "",
+      "beskrivelseSannsynlighetFor": "",
+      "beskrivelseRisikoFor": "",
       "sannsynlighet": 1,
       "konsekvens": 1,
       "tiltak": "",
+      "beskrivelseEtter": "",
+      "sannsynlighetEtter": 1,
+      "konsekvensEtter": 1,
       "restrisiko": ""
     }
   ]
 }
 
 Mapping-regler:
-- "Sårbarhet" eller "Hendelse/Scenario" → tittel (kombiner hvis begge finnes: "Sårbarhet – Hendelse")
-- "Beskrivelse av sannsynlighet" + "Beskrivelse av konsekvens" (før tiltak) → beskrivelse (slå sammen)
-- "Årsak" → arsak (hvis ikke finnes, la stå tom)
-- "Sannsynlighet" (tall 1-5) → sannsynlighet. Hvis tekst: Svært lite sannsynlig=1, Lite sannsynlig/Liten=2, Sannsynlig/Moderat=3, Meget sannsynlig=4, Svært sannsynlig=5.
-- "Konsekvens" (tall 1-5) → konsekvens. Hvis tekst: Ufarlig=1, En viss fare/Liten=2, Farlig/Moderat=3, Kritisk/Alvorlig=4, Katastrofal=5.
-- "Forebyggende og avhjelpende tiltak" → tiltak
-- "Beskrivelse av sannsynlighet og konsekvens etter tiltak" eller "Restrisiko" → restrisiko (kort tekst)
+- "Sårbarhet" → sarbarhet
+- "Hendelse/Scenario" → hendelse
+- tittel = kombiner "sarbarhet – hendelse" hvis begge finnes; ellers det som finnes.
+- "Årsak" → arsak (la stå tom hvis mangler).
+- "Beskrivelse av sannsynlighet" (før tiltak) → beskrivelseSannsynlighetFor
+- "Beskrivelse av konsekvens" eller "Beskrivelse av risiko" (før tiltak) → beskrivelseRisikoFor
+- "Sannsynlighet" (1-5) → sannsynlighet. Tekst-mapping: Svært lite sannsynlig=1, Lite sannsynlig/Liten=2, Sannsynlig/Moderat=3, Meget sannsynlig=4, Svært sannsynlig=5.
+- "Konsekvens" (1-5) → konsekvens. Tekst: Ufarlig=1, En viss fare/Liten=2, Farlig/Moderat=3, Kritisk/Alvorlig=4, Katastrofal=5.
+- "Forebyggende og avhjelpende tiltak" / "Tiltak" → tiltak
+- "Beskrivelse av sannsynlighet og konsekvens etter tiltak" → beskrivelseEtter
+- "S etter" / "Sannsynlighet etter tiltak" → sannsynlighetEtter (samme tekst-mapping). Hvis ikke oppgitt: bruk samme verdi som sannsynlighet.
+- "K etter" / "Konsekvens etter tiltak" → konsekvensEtter (samme regel).
+- "Restrisiko" → restrisiko
 - Hvis S/K mangler: bruk 1.
-- Klamper alltid sannsynlighet/konsekvens til heltall 1-5.
-- Ignorer rader uten meningsfullt innhold (overskrifter, kategori-rader uten data).
+- Klamp alltid alle S/K-verdier til heltall 1-5.
+- Ignorer rader uten meningsfullt innhold.
 - Inkluder ALLE hendelser, også 40+ hvis de finnes.`;
 
     const truncated = documentText.slice(0, 80000);
