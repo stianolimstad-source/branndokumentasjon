@@ -5676,6 +5676,43 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <th className="border border-gray-400 p-2 text-left">Løsning</th>
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
+            {isBF85 ? (
+              <>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Stigeledning (Kap. 30:91)</td>
+                  <td className="border border-gray-400 p-2">
+                    <p>I bygning med øverste golv mer enn 22 m over terreng skal det i trapperommet være stigeledning for tilkopling av vann for brannslukking.</p>
+                    <p className="mt-2">Ledningen skal ha innvendig diameter av minst 65 mm, og skal i nedre ende kunne koples til brannvesenets pumper. I etasjene skal det være dobbelt uttak for brannvesenets slanger i minst hver annen etasje. Alle koplinger skal være lett tilgjengelige og plasseres hensiktsmessig i nisje med låsbar dør.</p>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Kjøreatkomst for brannvesenet (Kap. 30:92)</td>
+                  <td className="border border-gray-400 p-2">
+                    <p>Der fasade skal være tilgjengelig for slokking, eller rømning skal kunne foregå over brannvesenets materiell, kan bygningsrådet kreve kjøreatkomst for brannvesenet, hvis forholdene gjør dette nødvendig.</p>
+                    <p className="mt-2">Hvor bærbar stige skal brukes i redningsinnsats skal gangavstand fra bil til aktuelle rømningssteder ikke være over 50 m.</p>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Atkomst til loft og yttertak (Kap. 30:94)</td>
+                  <td className="border border-gray-400 p-2">
+                    <p>I bygning med flere enn to etasjer skal det være atkomst utenfra gjennom takluke til loft. Hvis loftet er inndelt i flere brannceller, skal det være atkomst til hver celle.</p>
+                    <p className="mt-2">Hvis det ikke er atkomst til yttertak over brannvesenets stiger, skal det være atkomst til yttertak fra minst ett trapperom.</p>
+                    <p className="mt-2">Atkomst fra trapperom til yttertak skal være skilt fra loftet. Skillet skal ha brannmotstand som branncellebegrensende bygningsdel.</p>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Atkomst til kjeller (Kap. 30:95)</td>
+                  <td className="border border-gray-400 p-2">
+                    <p>Kjeller som ligger under øverste kjelleretasje skal ha forbindelse med det fri med egen trapp eller annen atkomst, og være skilt fra denne i A 60. Fra denne trapp eller atkomst skal det være mulig å utføre brannslokking uten at eneste rømningsveg fra annet lokale eller fra leilighet settes i åpen forbindelse med kjeller.</p>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              </>
+            ) : (
+              <>
             <tr>
               <td className="border border-gray-400 p-2 align-top">Generelt</td>
               <td className="border border-gray-400 p-2">
@@ -5761,6 +5798,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">ARK</td>
             </tr>
+            )}
+              </>
             )}
             {(() => {
               const kjoreveiTekst = formData.kjoreveiKrav ?? "Følgende legges til grunn ved utforming av kjørevei for kjøretøy:\n- Kjørebredde, minst: 4,0 meter\n- Stigningsforhold, maksimalt: 1:8 (12,5 %)\n- Fri kjørehøyde, minst: 4 meter\n- Svingradius, ytterkant vei, minst: 12 meter\n- Akseltrykk, minst: 10 tonn\n- Boggitrykk, minst: 16 tonn";
