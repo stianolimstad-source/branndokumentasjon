@@ -14,7 +14,8 @@ import {
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search } from "lucide-react";
 import RosPreview, { type RosContent, type RosHendelse } from "@/components/ros/RosPreview";
 import RosMatriks, { risikoFarge } from "@/components/ros/RosMatriks";
 import { exportRosToWord } from "@/lib/ros-word-export";
@@ -57,6 +58,8 @@ export default function RosAnalyse() {
   const [loadingDoc, setLoadingDoc] = useState(false);
   const [exporting, setExporting] = useState(false);
   const canDownload = useCanDownload();
+  const [openHendelser, setOpenHendelser] = useState<string[]>([]);
+  const [hendelseSok, setHendelseSok] = useState("");
 
   // Load project list + ROS list for landing
   useEffect(() => {
@@ -191,16 +194,19 @@ export default function RosAnalyse() {
     }));
   };
   const addHendelse = () => {
+    const id = makeId();
     setContent((c) => ({
       ...c,
       hendelser: [...c.hendelser, {
-        id: makeId(), tittel: "", beskrivelse: "", arsak: "",
+        id, tittel: "", beskrivelse: "", arsak: "",
         sannsynlighet: 1, konsekvens: 1, tiltak: "", restrisiko: "",
       }],
     }));
+    setOpenHendelser((o) => [...o, id]);
   };
   const removeHendelse = (id: string) => {
     setContent((c) => ({ ...c, hendelser: c.hendelser.filter((h) => h.id !== id) }));
+    setOpenHendelser((o) => o.filter((x) => x !== id));
   };
 
   // ----- Revisjon -----
@@ -394,57 +400,93 @@ export default function RosAnalyse() {
                 <Plus className="h-4 w-4 mr-1" /> Ny hendelse
               </Button>
             </div>
-            {content.hendelser.length === 0 && (
+            {content.hendelser.length === 0 ? (
               <p className="text-sm text-muted-foreground italic">Ingen hendelser ennå.</p>
-            )}
-            <div className="space-y-3">
-              {content.hendelser.map((h, idx) => {
-                const farge = risikoFarge(h.sannsynlighet, h.konsekvens);
-                const cls = farge === "rod" ? "bg-red-500/85 text-white"
-                  : farge === "gul" ? "bg-amber-400/90 text-foreground"
-                  : "bg-emerald-500/80 text-white";
-                return (
-                  <div key={h.id} className="border rounded-lg p-3 space-y-2">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs font-medium text-muted-foreground">Hendelse {idx + 1}</span>
-                      <div className="flex items-center gap-2">
-                        <span className={`rounded px-2 py-0.5 text-xs font-semibold ${cls}`}>
-                          R = {h.sannsynlighet * h.konsekvens}
-                        </span>
-                        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => removeHendelse(h.id)}>
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    </div>
-                    <Field label="Tittel" value={h.tittel} onChange={(v) => updateHendelse(h.id, { tittel: v })} />
-                    <Area label="Beskrivelse" value={h.beskrivelse} onChange={(v) => updateHendelse(h.id, { beskrivelse: v })} rows={2} />
-                    <Area label="Årsak" value={h.arsak} onChange={(v) => updateHendelse(h.id, { arsak: v })} rows={2} />
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <Label className="text-xs">Sannsynlighet (1–5)</Label>
-                        <Select value={String(h.sannsynlighet)} onValueChange={(v) => updateHendelse(h.id, { sannsynlighet: Number(v) })}>
-                          <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            {[1,2,3,4,5].map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label className="text-xs">Konsekvens (1–5)</Label>
-                        <Select value={String(h.konsekvens)} onValueChange={(v) => updateHendelse(h.id, { konsekvens: Number(v) })}>
-                          <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            {[1,2,3,4,5].map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    <Area label="Tiltak" value={h.tiltak} onChange={(v) => updateHendelse(h.id, { tiltak: v })} rows={2} />
-                    <Area label="Restrisiko" value={h.restrisiko} onChange={(v) => updateHendelse(h.id, { restrisiko: v })} rows={2} />
+            ) : (
+              <>
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="relative flex-1 min-w-[180px]">
+                    <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                    <Input
+                      value={hendelseSok}
+                      onChange={(e) => setHendelseSok(e.target.value)}
+                      placeholder="Søk i hendelser…"
+                      className="h-8 pl-7 text-xs"
+                    />
                   </div>
-                );
-              })}
-            </div>
+                  <Button size="sm" variant="ghost" className="h-8 text-xs"
+                    onClick={() => setOpenHendelser(content.hendelser.map((h) => h.id))}>
+                    Utvid alle
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-8 text-xs"
+                    onClick={() => setOpenHendelser([])}>
+                    Lukk alle
+                  </Button>
+                  <span className="text-xs text-muted-foreground ml-auto">{content.hendelser.length} hendelser</span>
+                </div>
+                <Accordion type="multiple" value={openHendelser} onValueChange={setOpenHendelser} className="space-y-2">
+                  {content.hendelser.map((h, idx) => {
+                    const farge = risikoFarge(h.sannsynlighet, h.konsekvens);
+                    const cls = farge === "rod" ? "bg-red-500/85 text-white"
+                      : farge === "gul" ? "bg-amber-400/90 text-foreground"
+                      : "bg-emerald-500/80 text-white";
+                    const sok = hendelseSok.trim().toLowerCase();
+                    if (sok && !`${h.tittel} ${h.beskrivelse} ${h.arsak}`.toLowerCase().includes(sok)) return null;
+                    return (
+                      <AccordionItem key={h.id} value={h.id} className="border rounded-lg px-3 border-b">
+                        <div className="flex items-center gap-2">
+                          <AccordionTrigger className="flex-1 py-2 hover:no-underline">
+                            <div className="flex items-center gap-2 flex-1 min-w-0 text-left">
+                              <span className="text-xs font-medium text-muted-foreground shrink-0">#{idx + 1}</span>
+                              <span className="truncate text-sm font-medium">
+                                {h.tittel || <span className="italic text-muted-foreground">Uten tittel</span>}
+                              </span>
+                              <span className={`ml-auto rounded px-2 py-0.5 text-xs font-semibold shrink-0 ${cls}`}>
+                                {h.sannsynlighet}×{h.konsekvens} = {h.sannsynlighet * h.konsekvens}
+                              </span>
+                            </div>
+                          </AccordionTrigger>
+                          <Button
+                            variant="ghost" size="icon"
+                            className="h-7 w-7 text-destructive shrink-0"
+                            onClick={(e) => { e.stopPropagation(); removeHendelse(h.id); }}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                        <AccordionContent className="pt-2 space-y-2">
+                          <Field label="Tittel" value={h.tittel} onChange={(v) => updateHendelse(h.id, { tittel: v })} />
+                          <Area label="Beskrivelse" value={h.beskrivelse} onChange={(v) => updateHendelse(h.id, { beskrivelse: v })} rows={2} />
+                          <Area label="Årsak" value={h.arsak} onChange={(v) => updateHendelse(h.id, { arsak: v })} rows={2} />
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <Label className="text-xs">Sannsynlighet (1–5)</Label>
+                              <Select value={String(h.sannsynlighet)} onValueChange={(v) => updateHendelse(h.id, { sannsynlighet: Number(v) })}>
+                                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                  {[1,2,3,4,5].map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label className="text-xs">Konsekvens (1–5)</Label>
+                              <Select value={String(h.konsekvens)} onValueChange={(v) => updateHendelse(h.id, { konsekvens: Number(v) })}>
+                                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                  {[1,2,3,4,5].map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                          <Area label="Tiltak" value={h.tiltak} onChange={(v) => updateHendelse(h.id, { tiltak: v })} rows={2} />
+                          <Area label="Restrisiko" value={h.restrisiko} onChange={(v) => updateHendelse(h.id, { restrisiko: v })} rows={2} />
+                        </AccordionContent>
+                      </AccordionItem>
+                    );
+                  })}
+                </Accordion>
+              </>
+            )}
           </section>
 
           <section className="space-y-2">
