@@ -32,6 +32,13 @@ interface FireConcept {
   contentType?: string;
 }
 
+interface RosAnalysis {
+  id: string;
+  name: string;
+  status: string;
+  created_at: string;
+}
+
 interface ShareInfo {
   id: string;
   group_id: string | null;
@@ -56,6 +63,7 @@ const ProsjektDetalj = () => {
 
   const [project, setProject] = useState<Project | null>(null);
   const [concepts, setConcepts] = useState<FireConcept[]>([]);
+  const [rosAnalyses, setRosAnalyses] = useState<RosAnalysis[]>([]);
   const [shares, setShares] = useState<ShareInfo[]>([]);
   const [ksStatus, setKsStatus] = useState<Record<string, KSStatus>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -86,10 +94,17 @@ const ProsjektDetalj = () => {
     }
     setProject(proj as Project);
 
-    const [conceptsRes, sharesRes] = await Promise.all([
+    const [conceptsRes, sharesRes, rosRes] = await Promise.all([
       supabase.from('fire_concepts').select('id, name, status, created_at, project_id, content').eq('project_id', id!).order('created_at', { ascending: false }),
       supabase.from('project_shares').select('id, project_id, group_id, contact_id').eq('project_id', id!),
+      supabase.from('ros_analyses').select('id, name, status, created_at').eq('project_id', id!).order('created_at', { ascending: false }),
     ]);
+
+    if (!rosRes.error && rosRes.data) {
+      setRosAnalyses(rosRes.data as RosAnalysis[]);
+    } else {
+      setRosAnalyses([]);
+    }
 
     if (!conceptsRes.error && conceptsRes.data) {
       const mapped: FireConcept[] = conceptsRes.data.map((c: any) => ({
@@ -176,6 +191,16 @@ const ProsjektDetalj = () => {
       toast({ title: "Feil", description: "Kunne ikke slette", variant: "destructive" });
     } else {
       toast({ title: "Slettet", description: `"${conceptName}" er slettet` });
+      fetchProject();
+    }
+  };
+
+  const handleDeleteRos = async (rosId: string, rosName: string) => {
+    const { error } = await supabase.from('ros_analyses').delete().eq('id', rosId);
+    if (error) {
+      toast({ title: "Feil", description: "Kunne ikke slette", variant: "destructive" });
+    } else {
+      toast({ title: "Slettet", description: `"${rosName}" er slettet` });
       fetchProject();
     }
   };
@@ -353,6 +378,54 @@ const ProsjektDetalj = () => {
               <CardContent className="space-y-2 px-3 sm:px-6 pb-3 sm:pb-6 pt-0">
                 {brensellagringDocs.map(c => (
                   <ConceptRow key={c.id} concept={c} icon={Shield} iconColor="text-red-500" linkTo={`/brensellagring?project=${project.id}&concept=${c.id}`} />
+                ))}
+              </CardContent>
+            )}
+          </Card>
+
+          {/* ROS-analyser */}
+          <Card className="shadow-soft mb-3 sm:mb-4">
+            <CardHeader className="p-3 sm:p-6">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                  <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 flex-shrink-0" />
+                  <CardTitle className="text-sm sm:text-lg truncate">ROS-analyser ({rosAnalyses.length})</CardTitle>
+                </div>
+                <Link to={`/ros-analyse?project=${project.id}&new=true`}>
+                  <Button size="sm" variant="outline" className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 whitespace-nowrap"><Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />Ny</Button>
+                </Link>
+              </div>
+            </CardHeader>
+            {rosAnalyses.length > 0 && (
+              <CardContent className="space-y-2 px-3 sm:px-6 pb-3 sm:pb-6 pt-0">
+                {rosAnalyses.map(r => (
+                  <div key={r.id} className="flex items-center justify-between gap-2 p-2 sm:p-3 bg-muted/50 rounded-lg">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap min-w-0 flex-1">
+                      <BarChart3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0 text-purple-600" />
+                      <span className="text-xs sm:text-sm font-medium truncate">{r.name}</span>
+                      <span className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded whitespace-nowrap ${r.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
+                        {r.status === 'draft' ? 'Utkast' : 'Ferdig'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-0.5 flex-shrink-0">
+                      <Link to={`/ros-analyse?id=${r.id}`}><Button variant="ghost" size="sm" className="h-7 px-2 text-xs sm:h-8 sm:px-3 sm:text-sm">Åpne</Button></Link>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" /></Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="mx-4 max-w-[calc(100vw-2rem)]">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Slette "{r.name}"?</AlertDialogTitle>
+                            <AlertDialogDescription>Denne handlingen kan ikke angres.</AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDeleteRos(r.id, r.name)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Slett</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
                 ))}
               </CardContent>
             )}
