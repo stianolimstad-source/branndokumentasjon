@@ -312,6 +312,7 @@ export default function RosAnalyse() {
             {projectName && <span className="text-sm font-medium truncate">{projectName}</span>}
           </div>
           <div className="flex items-center gap-2">
+            <UploadRosDialog onApply={importHendelser} />
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="ghost" size="sm" className="text-destructive">
@@ -338,9 +339,6 @@ export default function RosAnalyse() {
             >
               {canDownload ? <Download className="h-4 w-4 mr-1" /> : <Lock className="h-4 w-4 mr-1" />}
               {exporting ? "Eksporterer…" : "Word"}
-            </Button>
-            <Button size="sm" onClick={handleSave} disabled={saving}>
-              <Save className="h-4 w-4 mr-1" /> {saving ? "Lagrer…" : "Lagre"}
             </Button>
           </div>
         </div>
