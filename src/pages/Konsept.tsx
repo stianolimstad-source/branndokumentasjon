@@ -9972,6 +9972,7 @@ const Konsept = () => {
                           onChange={(e) => setFormData({...formData, redningsmannskap: e.target.value})}
                          />
                       </div>
+                      {!isBF85Tilstand && (
                       <div className="mb-3">
                         <Label className="text-xs font-medium mb-1 block">Krav til utforming av kjørevei for kjøretøy</Label>
                         <Textarea
@@ -9980,6 +9981,7 @@ const Konsept = () => {
                           rows={8}
                         />
                       </div>
+                      )}
                       {!isBF85Tilstand && (formData.hoyderedskapRelevant || formData.byggOver23m) && (
                       <div className="mb-3">
                         <Label className="text-xs font-medium mb-1 block">Krav til utforming av oppstillingsplasser for høyderedskaper</Label>
