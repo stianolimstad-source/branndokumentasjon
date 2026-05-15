@@ -1840,11 +1840,28 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   // ===== 3.14 / BF85 3.13 Tilrettelegging for slokkemannskap =====
   rows.push(sectionHeaderRow(isBF85Tilstand310 ? "3.13   Tilrettelegging for slokkemannskap" : "3.14   §11-17 Tilrettelegging for slokkemannskap"));
   rows.push(columnHeaderRow());
-  rows.push(contentRowMultiLine("Generelt", [
-    "• Byggverk skal plasseres og utformes slik at rednings- og slokkemannskap har brukbar tilgjengelighet.",
-    "• Byggverk skal tilrettelegges slik at en brann lett kan lokaliseres og bekjempes.",
-    "• Branntekniske installasjoner som har betydning for rednings- og slokkeinnsatsen skal være tydelig merket.",
-  ], "RIBr"));
+  if (isBF85Tilstand310) {
+    rows.push(contentRowMultiLine("Stigeledning (Kap. 30:91)", [
+      "I bygning med øverste golv mer enn 22 m over terreng skal det i trapperommet være stigeledning for tilkopling av vann for brannslukking.",
+      "Ledningen skal ha innvendig diameter av minst 65 mm, og skal i nedre ende kunne koples til brannvesenets pumper. I etasjene skal det være dobbelt uttak for brannvesenets slanger i minst hver annen etasje. Alle koplinger skal være lett tilgjengelige og plasseres hensiktsmessig i nisje med låsbar dør.",
+    ], "RIBr"));
+    rows.push(contentRowMultiLine("Kjøreatkomst for brannvesenet (Kap. 30:92)", [
+      "Der fasade skal være tilgjengelig for slokking, eller rømning skal kunne foregå over brannvesenets materiell, kan bygningsrådet kreve kjøreatkomst for brannvesenet, hvis forholdene gjør dette nødvendig.",
+      "Hvor bærbar stige skal brukes i redningsinnsats skal gangavstand fra bil til aktuelle rømningssteder ikke være over 50 m.",
+    ], "ARK"));
+    rows.push(contentRowMultiLine("Atkomst til loft og yttertak (Kap. 30:94)", [
+      "I bygning med flere enn to etasjer skal det være atkomst utenfra gjennom takluke til loft. Hvis loftet er inndelt i flere brannceller, skal det være atkomst til hver celle.",
+      "Hvis det ikke er atkomst til yttertak over brannvesenets stiger, skal det være atkomst til yttertak fra minst ett trapperom.",
+      "Atkomst fra trapperom til yttertak skal være skilt fra loftet. Skillet skal ha brannmotstand som branncellebegrensende bygningsdel.",
+    ], "ARK"));
+    rows.push(contentRow("Atkomst til kjeller (Kap. 30:95)", "Kjeller som ligger under øverste kjelleretasje skal ha forbindelse med det fri med egen trapp eller annen atkomst, og være skilt fra denne i A 60. Fra denne trapp eller atkomst skal det være mulig å utføre brannslokking uten at eneste rømningsveg fra annet lokale eller fra leilighet settes i åpen forbindelse med kjeller.", "ARK"));
+  } else {
+    rows.push(contentRowMultiLine("Generelt", [
+      "• Byggverk skal plasseres og utformes slik at rednings- og slokkemannskap har brukbar tilgjengelighet.",
+      "• Byggverk skal tilrettelegges slik at en brann lett kan lokaliseres og bekjempes.",
+      "• Branntekniske installasjoner som har betydning for rednings- og slokkeinnsatsen skal være tydelig merket.",
+    ], "RIBr"));
+  }
   if (formData.redningsmannskap) {
     rows.push(contentRow("Beskrivelse", formData.redningsmannskap, "RIBr"));
   }
