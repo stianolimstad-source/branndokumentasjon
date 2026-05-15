@@ -1,12 +1,13 @@
-import RosMatriks, { risikoFarge } from "./RosMatriks";
+import React from "react";
+import { risikoFarge } from "./RosMatriks";
 
 export interface RosHendelse {
   id: string;
   tittel: string;
   beskrivelse: string;
   arsak: string;
-  sannsynlighet: number; // 1–5
-  konsekvens: number;    // 1–5
+  sannsynlighet: number;
+  konsekvens: number;
   tiltak: string;
   restrisiko: string;
 }
@@ -40,151 +41,382 @@ export interface RosContent {
 
 interface Props {
   content: RosContent;
+  logoUrl?: string | null;
+  firmaNavn?: string | null;
+  utarbeidetAv?: string | null;
 }
 
-const SKALA_S = [
-  "1 – Svært lite sannsynlig (sjeldnere enn hvert 50. år)",
-  "2 – Lite sannsynlig (hvert 10.–50. år)",
-  "3 – Sannsynlig (hvert 1.–10. år)",
-  "4 – Meget sannsynlig (årlig)",
-  "5 – Svært sannsynlig (flere ganger per år)",
+const SKALA_S: { trinn: number; tekst: string }[] = [
+  { trinn: 1, tekst: "Svært lite sannsynlig (sjeldnere enn hvert 50. år)" },
+  { trinn: 2, tekst: "Lite sannsynlig (hvert 10.–50. år)" },
+  { trinn: 3, tekst: "Sannsynlig (hvert 1.–10. år)" },
+  { trinn: 4, tekst: "Meget sannsynlig (årlig)" },
+  { trinn: 5, tekst: "Svært sannsynlig (flere ganger per år)" },
 ];
-const SKALA_K = [
-  "1 – Ufarlig (ingen personskade, ubetydelig materiell skade)",
-  "2 – En viss fare (mindre personskade, begrenset materiell skade)",
-  "3 – Farlig (alvorlig personskade, betydelig materiell skade)",
-  "4 – Kritisk (livstruende skade, store materielle tap)",
-  "5 – Katastrofal (død, totalskade)",
+const SKALA_K: { trinn: number; tekst: string }[] = [
+  { trinn: 1, tekst: "Ufarlig (ingen personskade, ubetydelig materiell skade)" },
+  { trinn: 2, tekst: "En viss fare (mindre personskade, begrenset materiell skade)" },
+  { trinn: 3, tekst: "Farlig (alvorlig personskade, betydelig materiell skade)" },
+  { trinn: 4, tekst: "Kritisk (livstruende skade, store materielle tap)" },
+  { trinn: 5, tekst: "Katastrofal (død, totalskade)" },
 ];
 
-export default function RosPreview({ content }: Props) {
+const pageStyle: React.CSSProperties = {
+  width: "100%",
+  maxWidth: "210mm",
+  minHeight: "297mm",
+  background: "#fff",
+  color: "#1a1a1a",
+  fontFamily: "'Segoe UI', Arial, sans-serif",
+  fontSize: 11,
+  lineHeight: 1.6,
+  padding: "20mm 18mm 24mm 18mm",
+  boxSizing: "border-box",
+  boxShadow: "0 2px 16px rgba(0,0,0,0.12)",
+  marginInline: "auto",
+};
+
+const h2: React.CSSProperties = {
+  fontSize: 15,
+  fontWeight: 700,
+  marginTop: 28,
+  marginBottom: 10,
+  color: "#1e3a5f",
+  borderBottom: "2px solid #1e3a5f",
+  paddingBottom: 5,
+};
+const h3: React.CSSProperties = {
+  fontSize: 12,
+  fontWeight: 600,
+  marginTop: 16,
+  marginBottom: 6,
+  color: "#2d4a6f",
+};
+const pStyle: React.CSSProperties = {
+  fontSize: 11,
+  margin: "0 0 8px 0",
+  whiteSpace: "pre-line",
+};
+const thStyle: React.CSSProperties = {
+  textAlign: "left",
+  padding: "8px 10px",
+  fontSize: 10,
+  fontWeight: 600,
+  background: "#e8eef5",
+  borderBottom: "2px solid #bbc8d9",
+  color: "#1e3a5f",
+};
+const tdStyle: React.CSSProperties = {
+  padding: "7px 10px",
+  fontSize: 10,
+  borderBottom: "1px solid #e2e8f0",
+  verticalAlign: "top",
+};
+const tableStyle: React.CSSProperties = {
+  width: "100%",
+  borderCollapse: "collapse",
+  marginBottom: 10,
+  border: "1px solid #e2e8f0",
+};
+
+const FARGE = {
+  gronn: { bg: "#22A06B", fg: "#ffffff" },
+  gul: { bg: "#F5B82E", fg: "#1F2937" },
+  rod: { bg: "#DC3545", fg: "#ffffff" },
+} as const;
+
+function riskCellStyle(s: number, k: number): React.CSSProperties {
+  const f = FARGE[risikoFarge(s, k)];
+  return {
+    ...tdStyle,
+    background: f.bg,
+    color: f.fg,
+    fontWeight: 700,
+    textAlign: "center",
+  };
+}
+
+export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }: Props) {
   const m = content.metadata;
-  return (
-    <div className="bg-background text-foreground">
-      <div className="max-w-4xl mx-auto p-8 space-y-10">
-        <header className="border-b pb-6">
-          <p className="text-sm text-muted-foreground">ROS-analyse (brann)</p>
-          <h1 className="text-3xl font-bold mt-1">{m.prosjektnavn || "Uten navn"}</h1>
-          {m.adresse && <p className="text-muted-foreground">{m.adresse}</p>}
-          <dl className="grid grid-cols-2 gap-x-6 gap-y-1 mt-4 text-sm">
-            {m.oppdragsgiver && (<><dt className="text-muted-foreground">Oppdragsgiver</dt><dd>{m.oppdragsgiver}</dd></>)}
-            {m.utfortAv && (<><dt className="text-muted-foreground">Utført av</dt><dd>{m.utfortAv}</dd></>)}
-            {m.dato && (<><dt className="text-muted-foreground">Dato</dt><dd>{m.dato}</dd></>)}
-            {m.versjon && (<><dt className="text-muted-foreground">Versjon</dt><dd>{m.versjon}</dd></>)}
-          </dl>
-        </header>
+  const dato = m.dato || new Date().toISOString().slice(0, 10);
+  const utfort = m.utfortAv || utarbeidetAv || "";
 
-        <section id="kap-1" className="space-y-3">
-          <h2 className="text-2xl font-semibold">1. Innledning</h2>
-          <Field label="1.1 Bakgrunn" value={content.innledning.bakgrunn} />
-          <Field label="1.2 Formål" value={content.innledning.formal} />
-          <Field label="1.3 Omfang" value={content.innledning.omfang} />
-          <Field label="1.4 Avgrensninger" value={content.innledning.avgrensninger} />
+  return (
+    <div className="bg-muted/20 p-4 md:p-8 flex justify-center">
+      <div style={pageStyle}>
+        {/* Logo */}
+        {logoUrl && (
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "-10mm", marginBottom: 8 }}>
+            <div
+              style={{
+                width: 220,
+                height: 96,
+                background: "#fff",
+                borderRadius: 4,
+                padding: 6,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <img src={logoUrl} alt="Firmalogo" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
+            </div>
+          </div>
+        )}
+
+        {/* Header bar */}
+        <div style={{ background: "#1e3a5f", color: "#fff", padding: "16px 20px", borderRadius: 6, marginBottom: 20 }}>
+          <p style={{ fontSize: 10, opacity: 0.8, margin: 0, letterSpacing: 1 }}>RISIKO- OG SÅRBARHETSANALYSE</p>
+          <p style={{ fontSize: 20, fontWeight: 700, margin: "2px 0 0 0" }}>{m.prosjektnavn || "Uten navn"}</p>
+          {m.adresse && <p style={{ fontSize: 12, opacity: 0.85, margin: "4px 0 0 0" }}>{m.adresse}</p>}
+        </div>
+
+        {/* Project info */}
+        <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: 20, border: "1px solid #e2e8f0" }}>
+          <tbody>
+            {firmaNavn && (
+              <tr>
+                <td style={{ ...tdStyle, fontWeight: 600, width: 160, background: "#f7f9fc" }}>Firma</td>
+                <td style={tdStyle}>{firmaNavn}</td>
+              </tr>
+            )}
+            {m.oppdragsgiver && (
+              <tr>
+                <td style={{ ...tdStyle, fontWeight: 600, width: 160, background: "#f7f9fc" }}>Oppdragsgiver</td>
+                <td style={tdStyle}>{m.oppdragsgiver}</td>
+              </tr>
+            )}
+            {m.prosjektnavn && (
+              <tr>
+                <td style={{ ...tdStyle, fontWeight: 600, width: 160, background: "#f7f9fc" }}>Prosjekt</td>
+                <td style={tdStyle}>{m.prosjektnavn}</td>
+              </tr>
+            )}
+            {m.adresse && (
+              <tr>
+                <td style={{ ...tdStyle, fontWeight: 600, background: "#f7f9fc" }}>Adresse</td>
+                <td style={tdStyle}>{m.adresse}</td>
+              </tr>
+            )}
+            {utfort && (
+              <tr>
+                <td style={{ ...tdStyle, fontWeight: 600, background: "#f7f9fc" }}>Utført av</td>
+                <td style={tdStyle}>{utfort}</td>
+              </tr>
+            )}
+            <tr>
+              <td style={{ ...tdStyle, fontWeight: 600, background: "#f7f9fc" }}>Dato</td>
+              <td style={tdStyle}>{dato}</td>
+            </tr>
+            <tr>
+              <td style={{ ...tdStyle, fontWeight: 600, background: "#f7f9fc" }}>Versjon</td>
+              <td style={tdStyle}>{m.versjon || "1.0"}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        {/* Kap. 1 Innledning */}
+        <section id="kap-1">
+          <h2 style={h2}>1. Innledning</h2>
+          <SubField nummer="1.1" tittel="Bakgrunn" value={content.innledning.bakgrunn} />
+          <SubField nummer="1.2" tittel="Formål" value={content.innledning.formal} />
+          <SubField nummer="1.3" tittel="Omfang" value={content.innledning.omfang} />
+          <SubField nummer="1.4" tittel="Avgrensninger" value={content.innledning.avgrensninger} />
         </section>
 
-        <section id="kap-2" className="space-y-4">
-          <h2 className="text-2xl font-semibold">2. Metode</h2>
-          <p className="text-sm leading-relaxed">
+        {/* Kap. 2 Metode */}
+        <section id="kap-2">
+          <h2 style={h2}>2. Metode</h2>
+          <p style={pStyle}>
             Analysen er utført som en kvalitativ risiko- og sårbarhetsanalyse med en 5×5-matrise der
             sannsynlighet (S) og konsekvens (K) vurderes på en skala fra 1 til 5. Risikoverdien
             (R = S × K) plasseres i fargekodede områder for akseptabel, ALARP/vurderes og ikke
             akseptabel risiko. Brannrelaterte hendelser er identifisert med utgangspunkt i bygningens
             bruk, brannenergi, evakueringsforhold og aktive/passive brannsikringstiltak.
           </p>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="font-semibold mb-2 text-sm">Sannsynlighet</h3>
-              <ul className="text-sm space-y-1 text-muted-foreground">
-                {SKALA_S.map((s) => <li key={s}>{s}</li>)}
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2 text-sm">Konsekvens</h3>
-              <ul className="text-sm space-y-1 text-muted-foreground">
-                {SKALA_K.map((s) => <li key={s}>{s}</li>)}
-              </ul>
-            </div>
-          </div>
-          <div className="pt-2"><RosMatriks /></div>
-        </section>
 
-        <section id="kap-3" className="space-y-4">
-          <h2 className="text-2xl font-semibold">3. Hendelsesregister</h2>
-          {content.hendelser.length === 0 ? (
-            <p className="text-sm text-muted-foreground italic">Ingen hendelser registrert ennå.</p>
-          ) : (
-            <div className="space-y-4">
-              {content.hendelser.map((h, i) => {
-                const r = h.sannsynlighet * h.konsekvens;
-                const farge = risikoFarge(h.sannsynlighet, h.konsekvens);
-                const fargeKlasse = farge === "rod"
-                  ? "bg-red-500/85 text-white"
-                  : farge === "gul"
-                    ? "bg-amber-400/90 text-foreground"
-                    : "bg-emerald-500/80 text-white";
-                return (
-                  <div key={h.id} className="border rounded-lg p-4 space-y-2">
-                    <div className="flex items-start justify-between gap-3">
-                      <h3 className="font-semibold">3.{i + 1} {h.tittel || "Uten tittel"}</h3>
-                      <span className={`shrink-0 rounded px-2 py-0.5 text-xs font-semibold ${fargeKlasse}`}>
-                        S{h.sannsynlighet} × K{h.konsekvens} = {r}
-                      </span>
-                    </div>
-                    {h.beskrivelse && <p className="text-sm"><span className="text-muted-foreground">Beskrivelse: </span>{h.beskrivelse}</p>}
-                    {h.arsak && <p className="text-sm"><span className="text-muted-foreground">Årsak: </span>{h.arsak}</p>}
-                    {h.tiltak && <p className="text-sm"><span className="text-muted-foreground">Tiltak: </span>{h.tiltak}</p>}
-                    {h.restrisiko && <p className="text-sm"><span className="text-muted-foreground">Restrisiko: </span>{h.restrisiko}</p>}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </section>
-
-        <section id="kap-4" className="space-y-3">
-          <h2 className="text-2xl font-semibold">4. Oppsummering</h2>
-          {content.oppsummering ? (
-            <p className="text-sm whitespace-pre-line">{content.oppsummering}</p>
-          ) : (
-            <p className="text-sm text-muted-foreground italic">Ingen oppsummering registrert.</p>
-          )}
-        </section>
-
-        <section id="kap-5" className="space-y-3">
-          <h2 className="text-2xl font-semibold">5. Revisjonshistorikk</h2>
-          <table className="w-full text-sm border">
-            <thead className="bg-muted">
+          <h3 style={h3}>2.1 Sannsynlighetsskala</h3>
+          <table style={tableStyle}>
+            <thead>
               <tr>
-                <th className="text-left p-2 border">Versjon</th>
-                <th className="text-left p-2 border">Dato</th>
-                <th className="text-left p-2 border">Utførende</th>
-                <th className="text-left p-2 border">Endring</th>
+                <th style={{ ...thStyle, width: 70 }}>Trinn</th>
+                <th style={thStyle}>Beskrivelse</th>
               </tr>
             </thead>
             <tbody>
-              {content.revisjonshistorikk.length === 0 ? (
-                <tr><td colSpan={4} className="p-2 border text-muted-foreground italic">Ingen revisjoner registrert.</td></tr>
-              ) : content.revisjonshistorikk.map((r, i) => (
-                <tr key={i}>
-                  <td className="p-2 border">{r.versjon}</td>
-                  <td className="p-2 border">{r.dato}</td>
-                  <td className="p-2 border">{r.utfortAv}</td>
-                  <td className="p-2 border">{r.endring}</td>
+              {SKALA_S.map((s) => (
+                <tr key={s.trinn}>
+                  <td style={{ ...tdStyle, fontWeight: 600, textAlign: "center" }}>{s.trinn}</td>
+                  <td style={tdStyle}>{s.tekst}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+
+          <h3 style={h3}>2.2 Konsekvensskala</h3>
+          <table style={tableStyle}>
+            <thead>
+              <tr>
+                <th style={{ ...thStyle, width: 70 }}>Trinn</th>
+                <th style={thStyle}>Beskrivelse</th>
+              </tr>
+            </thead>
+            <tbody>
+              {SKALA_K.map((s) => (
+                <tr key={s.trinn}>
+                  <td style={{ ...tdStyle, fontWeight: 600, textAlign: "center" }}>{s.trinn}</td>
+                  <td style={tdStyle}>{s.tekst}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <h3 style={h3}>2.3 Risikomatrise (5×5)</h3>
+          <table style={{ ...tableStyle, width: "auto", marginInline: "auto" }}>
+            <thead>
+              <tr>
+                <th style={{ ...thStyle, textAlign: "center", width: 60 }}>S \ K</th>
+                {[1, 2, 3, 4, 5].map((k) => (
+                  <th key={k} style={{ ...thStyle, textAlign: "center", width: 56 }}>
+                    K={k}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[5, 4, 3, 2, 1].map((s) => (
+                <tr key={s}>
+                  <td style={{ ...tdStyle, background: "#e8eef5", fontWeight: 700, textAlign: "center", color: "#1e3a5f" }}>
+                    S={s}
+                  </td>
+                  {[1, 2, 3, 4, 5].map((k) => (
+                    <td key={k} style={riskCellStyle(s, k)}>
+                      {s * k}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p style={{ ...pStyle, fontSize: 10, color: "#475569", marginTop: 6 }}>
+            Fargekoding: grønn = akseptabel (R 1–4), gul = vurderes / ALARP (R 5–9), rød = ikke akseptabel (R 10–25).
+          </p>
         </section>
+
+        {/* Kap. 3 Hendelsesregister */}
+        <section id="kap-3">
+          <h2 style={h2}>3. Hendelsesregister</h2>
+          {content.hendelser.length === 0 ? (
+            <p style={{ ...pStyle, fontStyle: "italic", color: "#64748b" }}>Ingen hendelser registrert ennå.</p>
+          ) : (
+            <table style={tableStyle}>
+              <thead>
+                <tr>
+                  <th style={{ ...thStyle, width: 32, textAlign: "center" }}>Nr</th>
+                  <th style={{ ...thStyle, width: "14%" }}>Tittel</th>
+                  <th style={{ ...thStyle, width: "18%" }}>Beskrivelse</th>
+                  <th style={{ ...thStyle, width: "14%" }}>Årsak</th>
+                  <th style={{ ...thStyle, width: 32, textAlign: "center" }}>S</th>
+                  <th style={{ ...thStyle, width: 32, textAlign: "center" }}>K</th>
+                  <th style={{ ...thStyle, width: 38, textAlign: "center" }}>R</th>
+                  <th style={{ ...thStyle, width: "18%" }}>Tiltak</th>
+                  <th style={{ ...thStyle, width: "18%" }}>Restrisiko</th>
+                </tr>
+              </thead>
+              <tbody>
+                {content.hendelser.map((h, i) => (
+                  <tr key={h.id}>
+                    <td style={{ ...tdStyle, textAlign: "center", fontWeight: 600 }}>{i + 1}</td>
+                    <td style={{ ...tdStyle, fontWeight: 600 }}>{h.tittel || "—"}</td>
+                    <td style={tdStyle}>{h.beskrivelse}</td>
+                    <td style={tdStyle}>{h.arsak}</td>
+                    <td style={{ ...tdStyle, textAlign: "center" }}>{h.sannsynlighet}</td>
+                    <td style={{ ...tdStyle, textAlign: "center" }}>{h.konsekvens}</td>
+                    <td style={riskCellStyle(h.sannsynlighet, h.konsekvens)}>{h.sannsynlighet * h.konsekvens}</td>
+                    <td style={tdStyle}>{h.tiltak}</td>
+                    <td style={tdStyle}>{h.restrisiko}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </section>
+
+        {/* Kap. 4 Oppsummering */}
+        <section id="kap-4">
+          <h2 style={h2}>4. Oppsummering</h2>
+          {content.oppsummering ? (
+            <p style={pStyle}>{content.oppsummering}</p>
+          ) : (
+            <p style={{ ...pStyle, fontStyle: "italic", color: "#64748b" }}>Ingen oppsummering registrert.</p>
+          )}
+        </section>
+
+        {/* Kap. 5 Revisjonshistorikk */}
+        <section id="kap-5">
+          <h2 style={h2}>5. Revisjonshistorikk</h2>
+          <table style={tableStyle}>
+            <thead>
+              <tr>
+                <th style={{ ...thStyle, width: "15%" }}>Versjon</th>
+                <th style={{ ...thStyle, width: "20%" }}>Dato</th>
+                <th style={{ ...thStyle, width: "25%" }}>Utførende</th>
+                <th style={thStyle}>Endring</th>
+              </tr>
+            </thead>
+            <tbody>
+              {content.revisjonshistorikk.length === 0 ? (
+                <tr>
+                  <td colSpan={4} style={{ ...tdStyle, fontStyle: "italic", color: "#64748b" }}>
+                    Ingen revisjoner registrert.
+                  </td>
+                </tr>
+              ) : (
+                content.revisjonshistorikk.map((r, i) => (
+                  <tr key={i}>
+                    <td style={tdStyle}>{r.versjon}</td>
+                    <td style={tdStyle}>{r.dato}</td>
+                    <td style={tdStyle}>{r.utfortAv}</td>
+                    <td style={tdStyle}>{r.endring}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </section>
+
+        {/* Footer */}
+        <div
+          style={{
+            marginTop: 32,
+            paddingTop: 10,
+            borderTop: "1px solid #e2e8f0",
+            display: "flex",
+            justifyContent: "space-between",
+            fontSize: 9,
+            color: "#64748b",
+          }}
+        >
+          <span>{firmaNavn || ""}</span>
+          <span>ROS-analyse · {m.prosjektnavn || ""}</span>
+          <span>{dato}</span>
+        </div>
       </div>
     </div>
   );
 }
 
-function Field({ label, value }: { label: string; value: string }) {
+function SubField({ nummer, tittel, value }: { nummer: string; tittel: string; value: string }) {
   return (
-    <div>
-      <h3 className="font-semibold text-sm mb-1">{label}</h3>
-      {value ? <p className="text-sm whitespace-pre-line">{value}</p> : <p className="text-sm text-muted-foreground italic">Ikke utfylt.</p>}
+    <div style={{ marginBottom: 10 }}>
+      <h3 style={h3}>
+        {nummer} {tittel}
+      </h3>
+      {value ? (
+        <p style={pStyle}>{value}</p>
+      ) : (
+        <p style={{ ...pStyle, fontStyle: "italic", color: "#64748b" }}>Ikke utfylt.</p>
+      )}
     </div>
   );
 }
