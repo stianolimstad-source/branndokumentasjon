@@ -3,10 +3,18 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
-import { Upload, FileSpreadsheet, Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import { Upload, FileSpreadsheet, Loader2, CheckCircle, AlertCircle, ChevronDown, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
+import { risikoFarge } from "@/components/ros/RosMatriks";
 import type { RosHendelse } from "@/components/ros/RosPreview";
+
+const RISK_BG: Record<"gronn" | "gul" | "rod", string> = {
+  gronn: "bg-emerald-500/80 text-white",
+  gul: "bg-amber-400/90 text-foreground",
+  rod: "bg-red-500/85 text-white",
+};
 
 export type ExtractedHendelse = Omit<RosHendelse, "id">;
 
