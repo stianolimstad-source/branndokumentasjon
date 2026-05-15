@@ -1793,11 +1793,28 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   // ===== 3.13 / BF85 3.12 Manuell slokking =====
   rows.push(sectionHeaderRow(isBF85Tilstand310 ? "3.12   Tilrettelegging for manuell slokking" : "3.13   §11-16 Tilrettelegging for manuell slokking"));
   rows.push(columnHeaderRow());
-  rows.push(contentRow(
-    "Generelt",
-    "Byggverk skal være tilrettelagt for effektiv manuell slokking av brann.",
-    "RIV"
-  ));
+  {
+    const lcBT = (formData.bygningstype || "").toLowerCase();
+    const delerBT = (formData.bygningsdeler || []).map((d: any) => (d.bygningstype || "").toLowerCase());
+    const erKraftstasjonSlok = lcBT.includes("kraftstasjon") || delerBT.some((b: string) => b.includes("kraftstasjon"));
+    const erIndustriSlok = lcBT.includes("industri") || delerBT.some((b: string) => b.includes("industri")) || erKraftstasjonSlok;
+    if (isBF85Tilstand310 && erIndustriSlok) {
+      rows.push(contentRow("Generelt", "Bygningsrådet kan kreve brannslanger og manuelt slokkeutstyr.", "RIBr"));
+      if (erKraftstasjonSlok) {
+        rows.push(contentRow(
+          "Manuelt slokkeutstyr – kraftstasjon",
+          "Det skal utplasseres hensiktsmessig og tilstrekkelig manuelt slokkeutstyr som skal kunne brukes i alle rom i anlegget. Med manuelt slokkeutstyr menes alt slokkeutstyr som betjenes av personell, dvs. brannslanger og transportable slokkeapparater av ulik utforming og for ulike bruksområder. Utstyret må være avpasset etter den brann som ventes å oppstå. (Kilde: DSB sin veiledning om brannvern i kraftstasjoner.)",
+          "RIBr"
+        ));
+      }
+    } else {
+      rows.push(contentRow(
+        "Generelt",
+        "Byggverk skal være tilrettelagt for effektiv manuell slokking av brann.",
+        "RIV"
+      ));
+    }
+  }
   if (formData.manuellSlokking) {
     rows.push(contentRow("Beskrivelse", formData.manuellSlokking, "RIBr"));
   }

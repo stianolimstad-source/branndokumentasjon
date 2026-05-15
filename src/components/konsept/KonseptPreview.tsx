@@ -5499,14 +5499,45 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <th className="border border-gray-400 p-2 text-left">Løsning</th>
               <th className="border border-gray-400 p-2 text-left" style={{width: '10%'}}>Ansvar</th>
             </tr>
-            <tr>
-              <td className="border border-gray-400 p-2 align-top">Generelt</td>
-              <td className="border border-gray-400 p-2">
-                <p>Byggverk skal være tilrettelagt for effektiv manuell slokking av brann.</p>
-                <p className="mt-2">I eller på alle byggverk der brann kan oppstå, skal det være manuelt brannslokkeutstyr for effektiv slokkeinnsats i startfasen av brannen. Dette kommer i tillegg til et eventuelt automatisk brannslokkeanlegg.</p>
-              </td>
-              <td className="border border-gray-400 p-2 align-top">RIV</td>
-            </tr>
+            {(() => {
+              const lcBT = (formData.bygningstype || "").toLowerCase();
+              const delerBT = (formData.bygningsdeler || []).map((d: any) => (d.bygningstype || "").toLowerCase());
+              const erKraftstasjon = lcBT.includes("kraftstasjon") || delerBT.some((b: string) => b.includes("kraftstasjon"));
+              const erIndustri = lcBT.includes("industri") || delerBT.some((b: string) => b.includes("industri")) || erKraftstasjon;
+              if (isBF85 && erIndustri) {
+                return (
+                  <>
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Generelt</td>
+                      <td className="border border-gray-400 p-2">
+                        <p>Bygningsrådet kan kreve brannslanger og manuelt slokkeutstyr.</p>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                    </tr>
+                    {erKraftstasjon && (
+                      <tr>
+                        <td className="border border-gray-400 p-2 align-top">Manuelt slokkeutstyr – kraftstasjon</td>
+                        <td className="border border-gray-400 p-2">
+                          <p>Det skal utplasseres hensiktsmessig og tilstrekkelig manuelt slokkeutstyr som skal kunne brukes i alle rom i anlegget. Med manuelt slokkeutstyr menes alt slokkeutstyr som betjenes av personell, dvs. brannslanger og transportable slokkeapparater av ulik utforming og for ulike bruksområder. Utstyret må være avpasset etter den brann som ventes å oppstå.</p>
+                          <p className="mt-1 text-xs italic">Kilde: DSB sin veiledning om brannvern i kraftstasjoner.</p>
+                        </td>
+                        <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                      </tr>
+                    )}
+                  </>
+                );
+              }
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top">Generelt</td>
+                  <td className="border border-gray-400 p-2">
+                    <p>Byggverk skal være tilrettelagt for effektiv manuell slokking av brann.</p>
+                    <p className="mt-2">I eller på alle byggverk der brann kan oppstå, skal det være manuelt brannslokkeutstyr for effektiv slokkeinnsats i startfasen av brannen. Dette kommer i tillegg til et eventuelt automatisk brannslokkeanlegg.</p>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">RIV</td>
+                </tr>
+              );
+            })()}
             {(() => {
               const alleRK = formData.bygningsdeler?.length
                 ? [...new Set(formData.bygningsdeler.map((d: any) => d.risikoklasse).filter(Boolean))]
