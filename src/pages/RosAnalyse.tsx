@@ -117,6 +117,7 @@ export default function RosAnalyse() {
         }
         setCurrentName(data.name);
         setProjectId((data as any).project_id ?? null);
+        const c = (data.content && typeof data.content === "object" && !Array.isArray(data.content))
           ? { ...EMPTY_CONTENT, ...(data.content as Partial<RosContent>) }
           : EMPTY_CONTENT;
         // Ensure nested defaults
