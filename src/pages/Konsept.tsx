@@ -9722,7 +9722,7 @@ const Konsept = () => {
                                   onCheckedChange={(checked) => setFormData({...formData, slokkeHandslukker: checked === true})}
                                 />
                                 <Label htmlFor="slokkeHandslukker" className="text-xs cursor-pointer">
-                                  Håndslokkeapparat {isRK124 && "(krav for RK 1, 2, 4)"}
+                                  Håndslokkeapparat {formData.regelverk !== "BF85" && isRK124 && "(krav for RK 1, 2, 4)"}
                                 </Label>
                               </div>
                             </div>
