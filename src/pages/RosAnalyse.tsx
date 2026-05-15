@@ -224,8 +224,14 @@ export default function RosAnalyse() {
     setContent((c) => ({
       ...c,
       hendelser: [...c.hendelser, {
-        id, tittel: "", beskrivelse: "", arsak: "",
-        sannsynlighet: 1, konsekvens: 1, tiltak: "", restrisiko: "",
+        id, tittel: "",
+        sarbarhet: "", hendelse: "", arsak: "",
+        beskrivelseSannsynlighetFor: "", beskrivelseRisikoFor: "",
+        sannsynlighet: 1, konsekvens: 1,
+        tiltak: "",
+        beskrivelseEtter: "",
+        sannsynlighetEtter: 1, konsekvensEtter: 1,
+        restrisiko: "",
       }],
     }));
     setOpenHendelser((o) => [...o, id]);
