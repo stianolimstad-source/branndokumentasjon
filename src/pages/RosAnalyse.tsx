@@ -153,6 +153,36 @@ export default function RosAnalyse() {
     navigate("/ros-analyse");
   };
 
+  const handleExportWord = async () => {
+    if (!user) return;
+    setExporting(true);
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, email, company, logo_url")
+        .eq("id", user.id)
+        .maybeSingle();
+      const projectId = analyses.find((a) => a.id === rosId)?.project_id ?? null;
+      const logoUrl = (profile as any)?.logo_url || null;
+      const theme = await resolveDocumentTheme(projectId, logoUrl, user.id);
+      await exportRosToWord({
+        analyseName: currentName || "ROS-analyse",
+        content,
+        sender: {
+          full_name: profile?.full_name || null,
+          email: profile?.email || null,
+          company: (profile as any)?.company || null,
+        },
+        logoUrl,
+        theme,
+      });
+      toast({ title: "Lastet ned", description: "ROS-analysen er lastet ned som Word-fil" });
+    } catch (e: any) {
+      toast({ title: "Eksport feilet", description: e?.message, variant: "destructive" });
+    } finally {
+      setExporting(false);
+    }
+  };
   // ----- Hendelser -----
   const updateHendelse = (id: string, patch: Partial<RosHendelse>) => {
     setContent((c) => ({
