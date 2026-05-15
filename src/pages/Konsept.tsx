@@ -9712,7 +9712,7 @@ const Konsept = () => {
                                   onCheckedChange={(checked) => setFormData({...formData, slokkeBrannslange: checked === true})}
                                 />
                                 <Label htmlFor="slokkeBrannslange" className="text-xs cursor-pointer">
-                                  Brannslange {isRK356 && "(krav for RK 3, 5, 6)"}
+                                  Brannslange {formData.regelverk !== "BF85" && isRK356 && "(krav for RK 3, 5, 6)"}
                                 </Label>
                               </div>
                               <div className="flex items-center gap-2">
