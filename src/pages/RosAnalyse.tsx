@@ -154,6 +154,7 @@ export default function RosAnalyse() {
     setShowCreate(false);
     setNewName("");
     setNewProjectId("");
+    setProjectId(newProjectId);
     setParams({ id: data.id });
   };
 
