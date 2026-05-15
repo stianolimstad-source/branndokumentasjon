@@ -3,10 +3,18 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
-import { Upload, FileSpreadsheet, Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import { Upload, FileSpreadsheet, Loader2, CheckCircle, AlertCircle, ChevronDown, ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
+import { risikoFarge } from "@/components/ros/RosMatriks";
 import type { RosHendelse } from "@/components/ros/RosPreview";
+
+const RISK_BG: Record<"gronn" | "gul" | "rod", string> = {
+  gronn: "bg-emerald-500/80 text-white",
+  gul: "bg-amber-400/90 text-foreground",
+  rod: "bg-red-500/85 text-white",
+};
 
 export type ExtractedHendelse = Omit<RosHendelse, "id">;
 
@@ -71,12 +79,16 @@ export const UploadRosDialog = ({ onApply }: Props) => {
   const [status, setStatus] = useState<"idle" | "reading" | "analyzing" | "review" | "error">("idle");
   const [fileName, setFileName] = useState("");
   const [data, setData] = useState<ExtractedRosData | null>(null);
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [expanded, setExpanded] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const reset = () => {
     setStatus("idle");
     setFileName("");
     setData(null);
+    setSelected(new Set());
+    setExpanded(null);
     if (inputRef.current) inputRef.current.value = "";
   };
 
@@ -108,6 +120,8 @@ export const UploadRosDialog = ({ onApply }: Props) => {
       if (!result || !Array.isArray(result.hendelser)) throw new Error("Ingen hendelser funnet.");
 
       setData(result);
+      setSelected(new Set(result.hendelser.map((_, i) => i)));
+      setExpanded(null);
       setStatus("review");
     } catch (err: any) {
       console.error(err);
@@ -120,16 +134,35 @@ export const UploadRosDialog = ({ onApply }: Props) => {
     }
   };
 
+  const toggleAll = () => {
+    if (!data) return;
+    if (selected.size === data.hendelser.length) setSelected(new Set());
+    else setSelected(new Set(data.hendelser.map((_, i) => i)));
+  };
+
+  const toggleOne = (i: number) => {
+    setSelected((prev) => {
+      const n = new Set(prev);
+      if (n.has(i)) n.delete(i);
+      else n.add(i);
+      return n;
+    });
+  };
+
   const apply = (mode: "append" | "replace") => {
     if (!data) return;
-    onApply(data, mode);
+    const valgte = data.hendelser.filter((_, i) => selected.has(i));
+    if (valgte.length === 0) return;
+    onApply({ ...data, hendelser: valgte }, mode);
     toast({
       title: mode === "append" ? "Hendelser lagt til" : "Hendelser erstattet",
-      description: `${data.hendelser.length} hendelser ble importert.`,
+      description: `${valgte.length} hendelser ble importert.`,
     });
     setOpen(false);
     reset();
   };
+
+  const allSelected = data ? selected.size === data.hendelser.length && data.hendelser.length > 0 : false;
 
   return (
     <Dialog
@@ -146,7 +179,7 @@ export const UploadRosDialog = ({ onApply }: Props) => {
           Last opp eksisterende ROS
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>Last opp eksisterende ROS-analyse</DialogTitle>
           <DialogDescription>
@@ -180,26 +213,90 @@ export const UploadRosDialog = ({ onApply }: Props) => {
 
           {status === "review" && data && (
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-green-700">
-                <CheckCircle className="h-5 w-5" />
-                <p className="text-sm font-medium">
-                  Fant {data.hendelser.length} hendelser i {fileName}
-                </p>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+                  <CheckCircle className="h-5 w-5" />
+                  <p className="text-sm font-medium">
+                    Fant {data.hendelser.length} hendelser i {fileName}
+                  </p>
+                </div>
+                <p className="text-xs text-muted-foreground">{selected.size} av {data.hendelser.length} valgt</p>
               </div>
-              <div className="max-h-64 overflow-y-auto border rounded-md divide-y">
-                {data.hendelser.slice(0, 50).map((h, i) => (
-                  <div key={i} className="p-2 text-xs">
-                    <div className="font-medium truncate">{i + 1}. {h.tittel || "(uten tittel)"}</div>
-                    <div className="text-muted-foreground">
-                      S={h.sannsynlighet} · K={h.konsekvens} · R={h.sannsynlighet * h.konsekvens}
-                    </div>
-                  </div>
-                ))}
-                {data.hendelser.length > 50 && (
-                  <div className="p-2 text-xs text-muted-foreground italic">
-                    + {data.hendelser.length - 50} flere…
-                  </div>
-                )}
+
+              <div className="border rounded-md overflow-hidden">
+                <div className="max-h-[60vh] overflow-y-auto">
+                  <table className="w-full text-sm">
+                    <thead className="sticky top-0 bg-muted/80 backdrop-blur z-10 text-xs uppercase tracking-wide">
+                      <tr>
+                        <th className="px-2 py-2 w-10 text-left">
+                          <Checkbox checked={allSelected} onCheckedChange={toggleAll} aria-label="Velg alle" />
+                        </th>
+                        <th className="px-2 py-2 w-10 text-left">#</th>
+                        <th className="px-2 py-2 text-left">Tittel</th>
+                        <th className="px-2 py-2 w-12 text-center">S</th>
+                        <th className="px-2 py-2 w-12 text-center">K</th>
+                        <th className="px-2 py-2 w-14 text-center">R</th>
+                        <th className="px-2 py-2 w-8"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.hendelser.map((h, i) => {
+                        const farge = risikoFarge(h.sannsynlighet, h.konsekvens);
+                        const isOpen = expanded === i;
+                        const isSelected = selected.has(i);
+                        return (
+                          <>
+                            <tr
+                              key={`row-${i}`}
+                              className={`border-t hover:bg-accent/40 cursor-pointer ${isSelected ? "" : "opacity-60"}`}
+                              onClick={() => setExpanded(isOpen ? null : i)}
+                            >
+                              <td className="px-2 py-2" onClick={(e) => e.stopPropagation()}>
+                                <Checkbox checked={isSelected} onCheckedChange={() => toggleOne(i)} aria-label={`Velg hendelse ${i + 1}`} />
+                              </td>
+                              <td className="px-2 py-2 text-muted-foreground">{i + 1}</td>
+                              <td className="px-2 py-2 font-medium">
+                                <div className="line-clamp-2">{h.tittel || "(uten tittel)"}</div>
+                              </td>
+                              <td className="px-2 py-2 text-center">{h.sannsynlighet}</td>
+                              <td className="px-2 py-2 text-center">{h.konsekvens}</td>
+                              <td className="px-2 py-2 text-center">
+                                <span className={`inline-flex items-center justify-center min-w-7 px-1.5 py-0.5 rounded text-xs font-semibold ${RISK_BG[farge]}`}>
+                                  {h.sannsynlighet * h.konsekvens}
+                                </span>
+                              </td>
+                              <td className="px-2 py-2 text-muted-foreground">
+                                {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                              </td>
+                            </tr>
+                            {isOpen && (
+                              <tr key={`exp-${i}`} className="bg-muted/30 border-t">
+                                <td></td>
+                                <td colSpan={6} className="px-3 py-3 text-xs space-y-2">
+                                  {h.beskrivelse && (
+                                    <div><span className="font-semibold">Beskrivelse: </span><span className="text-muted-foreground whitespace-pre-wrap">{h.beskrivelse}</span></div>
+                                  )}
+                                  {h.arsak && (
+                                    <div><span className="font-semibold">Årsak: </span><span className="text-muted-foreground whitespace-pre-wrap">{h.arsak}</span></div>
+                                  )}
+                                  {h.tiltak && (
+                                    <div><span className="font-semibold">Tiltak: </span><span className="text-muted-foreground whitespace-pre-wrap">{h.tiltak}</span></div>
+                                  )}
+                                  {h.restrisiko && (
+                                    <div><span className="font-semibold">Restrisiko: </span><span className="text-muted-foreground whitespace-pre-wrap">{h.restrisiko}</span></div>
+                                  )}
+                                  {!h.beskrivelse && !h.arsak && !h.tiltak && !h.restrisiko && (
+                                    <p className="italic text-muted-foreground">Ingen utfyllende informasjon.</p>
+                                  )}
+                                </td>
+                              </tr>
+                            )}
+                          </>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
@@ -224,8 +321,12 @@ export const UploadRosDialog = ({ onApply }: Props) => {
         {status === "review" && (
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => { setOpen(false); reset(); }}>Avbryt</Button>
-            <Button variant="secondary" onClick={() => apply("replace")}>Erstatt eksisterende</Button>
-            <Button onClick={() => apply("append")}>Legg til</Button>
+            <Button variant="secondary" onClick={() => apply("replace")} disabled={selected.size === 0}>
+              Erstatt med valgte ({selected.size})
+            </Button>
+            <Button onClick={() => apply("append")} disabled={selected.size === 0}>
+              Legg til valgte ({selected.size})
+            </Button>
           </DialogFooter>
         )}
       </DialogContent>
