@@ -63,6 +63,7 @@ const ProsjektDetalj = () => {
 
   const [project, setProject] = useState<Project | null>(null);
   const [concepts, setConcepts] = useState<FireConcept[]>([]);
+  const [rosAnalyses, setRosAnalyses] = useState<RosAnalysis[]>([]);
   const [shares, setShares] = useState<ShareInfo[]>([]);
   const [ksStatus, setKsStatus] = useState<Record<string, KSStatus>>({});
   const [isLoading, setIsLoading] = useState(true);
