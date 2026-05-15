@@ -32,6 +32,13 @@ interface FireConcept {
   contentType?: string;
 }
 
+interface RosAnalysis {
+  id: string;
+  name: string;
+  status: string;
+  created_at: string;
+}
+
 interface ShareInfo {
   id: string;
   group_id: string | null;
