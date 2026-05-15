@@ -1,76 +1,53 @@
 ## Mål
 
-Etablere et nytt verktøy "ROS-analyse" (brannrelatert) med samme arbeidsflyt som brannkonsept og tilstandsvurdering: forsideknapp → opprett/velg → todelt side med input til venstre og forhåndsvisning til høyre, lagret per prosjekt. Innholdet bygges ut i senere runder.
+Legge til Word-nedlasting (.docx) for ROS-analysen, i samme stil og struktur som forhåndsvisningen og som matcher mønsteret fra brannkonsept/tilstandsvurdering.
 
-## Omfang i denne runden
+## Omfang
 
-Kun rammeverket settes opp. 5×5-matrisen synliggjøres som metodevalg, men hendelsesregisteret fylles med enkle felt (tittel, beskrivelse, sannsynlighet 1–5, konsekvens 1–5, tiltak) slik at strukturen kan utvides senere uten datatap.
+- Knapp "Last ned Word" på ROS-editorsiden, låst bak `useCanDownload` (samme regel som øvrige eksporter).
+- Genererer .docx som speiler `RosPreview` 1:1: header med metadata, kap. 1 Innledning, kap. 2 Metode (inkl. skalaer + 5×5-matrise), kap. 3 Hendelsesregister, kap. 4 Oppsummering, kap. 5 Revisjonshistorikk.
+- Bruker brukerens profil (navn, firma, e-post, telefon) og evt. opplastet logo i toppfelt — samme mønster som `ks-word-export` / `kvalitativ-word-export`.
 
-## Funksjonalitet
+## Innhold i Word-fil
 
-1. **Forside (`src/pages/Index.tsx`)**: Ny knapp/kort "ROS-analyse" ved siden av Brannkonsept og Tilstandsvurdering, samme stil og ikon-språk (f.eks. `ShieldAlert`).
-2. **Rute**: Ny `/ros-analyse` registrert i `src/App.tsx`, beskyttet med `RequireSubscription feature="ROS-analyse"` (følger eksisterende mønster; lås håndteres senere når abonnement defineres).
-3. **Opprettelse/valg**: Samme flyt som konsept — velg prosjekt → opprett ny eller åpne eksisterende ROS-analyse. Liste presenteres som kortgrid.
-4. **Side-layout**: Todelt (venstre input, høyre `RosPreview`) som speiler `Konsept`/`Tilstandsvurdering`. Header bruker global `AppHeader`, kontekstuell tilbake-knapp til prosjektet.
-5. **Innhold (skall)**:
-   - Kap. 1 Innledning: prosjektmetadata (auto-prefill fra prosjekt: navn, adresse, oppdragsgiver), bakgrunn, formål, omfang, avgrensninger.
-   - Kap. 2 Metode: 5×5 sannsynlighet × konsekvens beskrevet, med farge-matrise (grønn/gul/rød) og forklarende skalaer.
-   - Kap. 3 Hendelsesregister: tabell/liste med felt per hendelse: tittel, beskrivelse, årsak, sannsynlighet (1–5), konsekvens (1–5), risikoverdi (auto = S×K), foreslåtte tiltak, restrisiko.
-   - Kap. 4 Oppsummering: auto-generert basert på registrerte hendelser.
-   - Kap. 5 Revisjonshistorikk: samme tabellformat som brannkonsept (uten "prosjekterende" — kun "utførende" jf. tidligere preferanse for tilstandsvurdering, vurderes likt her).
-6. **Forhåndsvisning**: HTML-render som matcher senere Word-eksport (eksport ikke i denne runden). Sticky toppmeny med ankerlenker som i konsept.
-7. **Lagring**: Ny tabell `ros_analyses` med samme struktur som `fire_concepts` (`id`, `project_id`, `user_id`, `name`, `content jsonb`, `status`, timestamps). RLS speiler `fire_concepts` (eier + delte via `project_shares`/grupper).
+1. **Forside/header**: Logo (hvis lastet opp), tittel "ROS-analyse (brann)", prosjektnavn, adresse, oppdragsgiver, utført av, dato, versjon.
+2. **Kap. 1 Innledning**: 1.1 Bakgrunn, 1.2 Formål, 1.3 Omfang, 1.4 Avgrensninger.
+3. **Kap. 2 Metode**: Innledende avsnitt om 5×5-metodikk, to lister (sannsynlighets- og konsekvensskala) og en 5×5-tabell hvor hver celle viser `S×K = R` med fargekoding (grønn 1–4, gul 5–9, rød 10–25). Tabellen rendres som ekte Word-tabell med `shading` per celle.
+4. **Kap. 3 Hendelsesregister**: Word-tabell med kolonner `Nr | Tittel | Beskrivelse | Årsak | S | K | R | Tiltak | Restrisiko`. R-cellen får fargekoding tilsvarende matrisen.
+5. **Kap. 4 Oppsummering**: Fritekst.
+6. **Kap. 5 Revisjonshistorikk**: Tabell `Versjon | Dato | Utførende | Endring`.
 
 ## Teknisk
 
+- Nytt fil: `src/lib/ros-word-export.ts` med `exportRosToWord(content, sender, logoDataUrl?)`.
+- Bruker `docx`-biblioteket (allerede i prosjektet, jf. eksisterende eksportlibs).
+- Hjelpefunksjon `risikoFarge(s,k)` deles med `RosMatriks` (flyttes til `src/lib/ros-utils.ts` eller eksporteres fra eksisterende komponent) for konsistent fargelogikk mellom preview og Word.
+- Knapp legges i `RosAnalyse.tsx`-editor (header-rad ved siden av Lagre):
+  - Skjules/disables når `useCanDownload()` er false (med tooltip "Krever aktivt abonnement").
+  - Kaller `exportRosToWord(content, profile, logoUrl)`.
+- Profil og logo hentes som i `Oppdragsbekreftelse.tsx` / `Konsept`-eksport: `profiles`-tabell + brukerens (eller gruppens) logo-felt.
+
+## Filer
+
 ```text
 src/
+  lib/
+    ros-word-export.ts        # ny — bygger .docx
+    ros-utils.ts              # ny (eller utvid eksisterende) — risikoFarge delt
+  components/ros/
+    RosMatriks.tsx            # importer risikoFarge fra ros-utils
+    RosPreview.tsx            # importer risikoFarge fra ros-utils
   pages/
-    RosAnalyse.tsx              # ny side, todelt layout
-  components/
-    ros/
-      RosPreview.tsx            # høyre forhåndsvisning
-      RosMatriks.tsx            # 5x5 farget matrise
-      RosHendelseForm.tsx       # input per hendelse
-  App.tsx                       # legg til <Route path="/ros-analyse" ...>
-  pages/Index.tsx               # ny kortknapp ROS-analyse
+    RosAnalyse.tsx            # ny "Last ned Word"-knapp + lastlogikk for profil/logo
 ```
 
-DB:
-```sql
-create table public.ros_analyses (
-  id uuid primary key default gen_random_uuid(),
-  project_id uuid not null,
-  user_id uuid not null,
-  name text not null,
-  content jsonb not null default '{}',
-  status text not null default 'draft',
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-alter table public.ros_analyses enable row level security;
--- policies: eier full CRUD; gruppemedlemmer SELECT via project_shares (samme mønster som fire_concepts)
-```
+## Utenfor scope
 
-`content`-skjema (jsonb), første versjon:
-```ts
-{
-  metadata: { prosjektnavn, adresse, oppdragsgiver, utfortAv, dato, versjon },
-  innledning: { bakgrunn, formal, omfang, avgrensninger },
-  metode: { matriseStorrelse: "5x5", sannsynlighetsskala: [...], konsekvensskala: [...] },
-  hendelser: [{ id, tittel, beskrivelse, arsak, sannsynlighet, konsekvens, tiltak, restrisiko }],
-  oppsummering: string,
-  revisjonshistorikk: [{ versjon, dato, utfortAv, endring }]
-}
-```
+- Excel-eksport.
+- PDF-eksport (kan løses via "Skriv ut" i nettleseren ved behov).
+- Endringer i datamodell eller `ros_analyses`-tabellen.
+- AI-utfylling av innhold.
 
-## Utenfor scope nå
+## Leveranse
 
-- Word/PDF-eksport (legges til senere, i tråd med `useCanDownload`).
-- AI-utfylling, predefinerte hendelseskataloger, kobling til konsept/tilstandsvurdering.
-- Egen Stripe-feature og låsing — `RequireSubscription` legges på, men feature-navnet kan justeres når monetisering bestemmes.
-- Dypere integrasjon mot fraviksdokumentasjon.
-
-## Leveranse etter godkjenning
-
-Skall som er trygt å bygge videre på: ny knapp på forsiden, ny rute, todelt side, 5×5-matrise på plass, lagring per prosjekt med RLS, forhåndsvisning som speiler input. Klar for iterativ påfylling av innhold/automatikk i neste runder.
+Etter godkjenning: brukeren kan åpne en ROS-analyse, klikke "Last ned Word" og få en .docx som er identisk i innhold og rekkefølge med forhåndsvisningen, inkludert fargekodet 5×5-matrise og fargekodet risikoverdi per hendelse. Låses bak abonnement på samme måte som øvrige eksporter.
