@@ -1,30 +1,25 @@
 ## Mål
-Få ROS-analyser til å dukke opp inne på prosjektsiden (`/prosjekt/:id`) ved siden av brannkonsepter, tilstandsvurderinger, fraviksdokumenter og brensellagring — i stedet for kun på den frittstående `/ros-analyse`-siden.
-
-## Status på den eksisterende analysen
-Den ROS-analysen som ligger på kontoen `stian.olimstad@…olimstadbrannrdgivning.no` er **allerede** koblet til Bøylefoss-prosjektet (project_id matcher Bøylefoss). Den vil derfor automatisk dukke opp i den nye "ROS-analyser"-seksjonen så snart UI-en er på plass — ingen flytting i databasen er nødvendig.
+ROS-analyser skal kun nås via prosjektsiden. Den frittstående landing-siden ("Mine ROS-analyser") fjernes, og tilbakeknappen i ROS-editoren skal gå til prosjektet analysen tilhører.
 
 ## Endringer
 
-### `src/pages/ProsjektDetalj.tsx`
-1. Nytt interface `RosAnalysis { id, name, status, created_at }`.
-2. Ny state `rosAnalyses` + hent fra `ros_analyses` i `fetchProject` (parallelt med eksisterende `Promise.all`):
-   `supabase.from('ros_analyses').select('id, name, status, created_at').eq('project_id', id!).order('created_at', { ascending: false })`.
-3. Nytt `handleDeleteRos(id, name)` som speiler `handleDeleteConcept` men mot `ros_analyses`.
-4. Nytt kort "ROS-analyser ({antall})" plassert etter "Brensellagring":
-   - Ikon: `BarChart3` (lucide), farge `text-purple-600` (eller `text-blue-600` for å passe paletten).
-   - "Nytt"-knapp lenker til `/ros-analyse?project={project.id}&new=true`.
-   - Hver rad bruker samme stil som `ConceptRow`, men en lettere variant uten KS-badge (ROS har ikke sidemannskontroll-flyt enda). Lenke "Åpne" → `/ros-analyse?id={ros.id}`.
-   - Slett-knapp med `AlertDialog`-bekreftelse (samme pattern som konsepter).
-5. Importer `BarChart3` fra `lucide-react` (allerede importert på siden).
+### `src/pages/RosAnalyse.tsx`
+1. Fjern hele LANDING-blokken (linjene som rendrer "Mine ROS-analyser"-grid, "Ny ROS-analyse"-knapp og kort-lista).
+2. Hvis siden åpnes uten `?id=` og uten `?new=true&project=...`: redirect via `useEffect` → `navigate("/mine-prosjekter", { replace: true })`. Dropper også fetch av `analyses`-lista (brukes ikke lenger; behold kun `projects` om nødvendig for create-flow, eller hent kun det aktuelle prosjektet ved behov).
+3. Lagre `projectId` fra ROS-raden i state når en analyse lastes (og fra `?project=` ved opprettelse).
+4. Oppdater tilbake-knappen i editoren:
+   - Tekst: "Tilbake til prosjekt"
+   - `onClick`: `navigate(`/prosjekt/${projectId}`)` (fallback `/mine-prosjekter` hvis projectId mangler).
+5. Oppdater `handleDelete` til å navigere til `/prosjekt/${projectId}` etter sletting (i stedet for `/ros-analyse`).
+6. Behold create-dialog-flyten for `?new=true&project=...` slik at "Ny"-knappen på prosjektsiden fortsatt fungerer; etter opprettelse brukes `setParams({ id })` som i dag.
 
-Ingen endringer på `RosAnalyse.tsx` — den støtter allerede `?project=…&new=true` og `?id=…`.
+### `src/pages/Index.tsx`
+- Endre "ROS-analyse"-kortets `href` fra `/ros-analyse` til `/mine-prosjekter` (slik at brukeren går via prosjekt for å opprette/åpne ROS), eller fjern kortet hvis ønskelig. Standard: bytt href.
 
-### Ingen databaseendringer
-- Ingen migrering, ingen RLS-endring, ingen flytting av rader.
-- ROS-tabellen har allerede `project_id` og riktige RLS-policyer.
+### `src/App.tsx`
+- Behold `/ros-analyse`-ruten (den brukes fortsatt med query-params `?id=` og `?project=&new=true`). Ingen ruteendring nødvendig.
 
 ## Utenfor scope
-- Ingen endring i `/ros-analyse`-landingssiden (den fortsetter å fungere som global oversikt).
-- Ingen endring i navigasjon/header.
-- Ingen KS-/sidemannskontroll-integrasjon for ROS.
+- Ingen DB-endringer.
+- Ingen endringer i ROS-seksjonen på prosjektsiden (`ProsjektDetalj.tsx`) — den fungerer allerede.
+- Ingen endring i Word-eksport, AI-import eller forhåndsvisning.
