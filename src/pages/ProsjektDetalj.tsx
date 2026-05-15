@@ -94,10 +94,17 @@ const ProsjektDetalj = () => {
     }
     setProject(proj as Project);
 
-    const [conceptsRes, sharesRes] = await Promise.all([
+    const [conceptsRes, sharesRes, rosRes] = await Promise.all([
       supabase.from('fire_concepts').select('id, name, status, created_at, project_id, content').eq('project_id', id!).order('created_at', { ascending: false }),
       supabase.from('project_shares').select('id, project_id, group_id, contact_id').eq('project_id', id!),
+      supabase.from('ros_analyses').select('id, name, status, created_at').eq('project_id', id!).order('created_at', { ascending: false }),
     ]);
+
+    if (!rosRes.error && rosRes.data) {
+      setRosAnalyses(rosRes.data as RosAnalysis[]);
+    } else {
+      setRosAnalyses([]);
+    }
 
     if (!conceptsRes.error && conceptsRes.data) {
       const mapped: FireConcept[] = conceptsRes.data.map((c: any) => ({
