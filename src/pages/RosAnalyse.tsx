@@ -390,12 +390,9 @@ export default function RosAnalyse() {
           <section className="space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <h2 className="text-lg font-semibold">3. Hendelser</h2>
-              <div className="flex items-center gap-2">
-                <UploadRosDialog onApply={importHendelser} />
-                <Button size="sm" variant="outline" onClick={addHendelse}>
-                  <Plus className="h-4 w-4 mr-1" /> Ny hendelse
-                </Button>
-              </div>
+              <Button size="sm" variant="outline" onClick={addHendelse}>
+                <Plus className="h-4 w-4 mr-1" /> Ny hendelse
+              </Button>
             </div>
             {content.hendelser.length === 0 ? (
               <p className="text-sm text-muted-foreground italic">Ingen hendelser ennå.</p>
