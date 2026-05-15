@@ -4,11 +4,19 @@ import { risikoFarge } from "./RosMatriks";
 export interface RosHendelse {
   id: string;
   tittel: string;
-  beskrivelse: string;
+  /** @deprecated bruk `hendelse` i stedet – beholdt for bakoverkompatibilitet */
+  beskrivelse?: string;
+  sarbarhet?: string;
+  hendelse?: string;
   arsak: string;
+  beskrivelseSannsynlighetFor?: string;
+  beskrivelseRisikoFor?: string;
   sannsynlighet: number;
   konsekvens: number;
   tiltak: string;
+  beskrivelseEtter?: string;
+  sannsynlighetEtter?: number;
+  konsekvensEtter?: number;
   restrisiko: string;
 }
 
