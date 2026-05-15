@@ -124,7 +124,18 @@ export default function RosAnalyse() {
         setContent({
           metadata: { ...EMPTY_CONTENT.metadata, ...(c as any).metadata },
           innledning: { ...EMPTY_CONTENT.innledning, ...(c as any).innledning },
-          hendelser: Array.isArray((c as any).hendelser) ? (c as any).hendelser : [],
+          hendelser: Array.isArray((c as any).hendelser)
+            ? (c as any).hendelser.map((h: any) => ({
+                ...h,
+                hendelse: h.hendelse || h.beskrivelse || "",
+                sarbarhet: h.sarbarhet || "",
+                beskrivelseSannsynlighetFor: h.beskrivelseSannsynlighetFor || "",
+                beskrivelseRisikoFor: h.beskrivelseRisikoFor || "",
+                beskrivelseEtter: h.beskrivelseEtter || "",
+                sannsynlighetEtter: h.sannsynlighetEtter ?? h.sannsynlighet ?? 1,
+                konsekvensEtter: h.konsekvensEtter ?? h.konsekvens ?? 1,
+              }))
+            : [],
           oppsummering: (c as any).oppsummering ?? "",
           revisjonshistorikk: Array.isArray((c as any).revisjonshistorikk) ? (c as any).revisjonshistorikk : [],
         });
