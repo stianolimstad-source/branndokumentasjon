@@ -233,15 +233,17 @@ export const UploadRosDialog = ({ onApply }: Props) => {
                         </th>
                         <th className="px-2 py-2 w-10 text-left">#</th>
                         <th className="px-2 py-2 text-left">Tittel</th>
-                        <th className="px-2 py-2 w-12 text-center">S</th>
-                        <th className="px-2 py-2 w-12 text-center">K</th>
-                        <th className="px-2 py-2 w-14 text-center">R</th>
+                        <th className="px-2 py-2 w-14 text-center">R før</th>
+                        <th className="px-2 py-2 w-14 text-center">R etter</th>
                         <th className="px-2 py-2 w-8"></th>
                       </tr>
                     </thead>
                     <tbody>
                       {data.hendelser.map((h, i) => {
                         const farge = risikoFarge(h.sannsynlighet, h.konsekvens);
+                        const sE = h.sannsynlighetEtter ?? h.sannsynlighet;
+                        const kE = h.konsekvensEtter ?? h.konsekvens;
+                        const fargeE = risikoFarge(sE, kE);
                         const isOpen = expanded === i;
                         const isSelected = selected.has(i);
                         return (
@@ -256,13 +258,16 @@ export const UploadRosDialog = ({ onApply }: Props) => {
                               </td>
                               <td className="px-2 py-2 text-muted-foreground">{i + 1}</td>
                               <td className="px-2 py-2 font-medium">
-                                <div className="line-clamp-2">{h.tittel || "(uten tittel)"}</div>
+                                <div className="line-clamp-2">{h.tittel || h.sarbarhet || h.hendelse || "(uten tittel)"}</div>
                               </td>
-                              <td className="px-2 py-2 text-center">{h.sannsynlighet}</td>
-                              <td className="px-2 py-2 text-center">{h.konsekvens}</td>
                               <td className="px-2 py-2 text-center">
                                 <span className={`inline-flex items-center justify-center min-w-7 px-1.5 py-0.5 rounded text-xs font-semibold ${RISK_BG[farge]}`}>
                                   {h.sannsynlighet * h.konsekvens}
+                                </span>
+                              </td>
+                              <td className="px-2 py-2 text-center">
+                                <span className={`inline-flex items-center justify-center min-w-7 px-1.5 py-0.5 rounded text-xs font-semibold ${RISK_BG[fargeE]}`}>
+                                  {sE * kE}
                                 </span>
                               </td>
                               <td className="px-2 py-2 text-muted-foreground">
@@ -272,21 +277,30 @@ export const UploadRosDialog = ({ onApply }: Props) => {
                             {isOpen && (
                               <tr key={`exp-${i}`} className="bg-muted/30 border-t">
                                 <td></td>
-                                <td colSpan={6} className="px-3 py-3 text-xs space-y-2">
-                                  {h.beskrivelse && (
-                                    <div><span className="font-semibold">Beskrivelse: </span><span className="text-muted-foreground whitespace-pre-wrap">{h.beskrivelse}</span></div>
+                                <td colSpan={5} className="px-3 py-3 text-xs space-y-2">
+                                  {h.sarbarhet && (
+                                    <div><span className="font-semibold">Sårbarhet: </span><span className="text-muted-foreground whitespace-pre-wrap">{h.sarbarhet}</span></div>
+                                  )}
+                                  {(h.hendelse || h.beskrivelse) && (
+                                    <div><span className="font-semibold">Hendelse: </span><span className="text-muted-foreground whitespace-pre-wrap">{h.hendelse || h.beskrivelse}</span></div>
                                   )}
                                   {h.arsak && (
                                     <div><span className="font-semibold">Årsak: </span><span className="text-muted-foreground whitespace-pre-wrap">{h.arsak}</span></div>
                                   )}
+                                  {h.beskrivelseSannsynlighetFor && (
+                                    <div><span className="font-semibold">Beskr. sannsynlighet (før): </span><span className="text-muted-foreground whitespace-pre-wrap">{h.beskrivelseSannsynlighetFor}</span></div>
+                                  )}
+                                  {h.beskrivelseRisikoFor && (
+                                    <div><span className="font-semibold">Beskr. risiko (før): </span><span className="text-muted-foreground whitespace-pre-wrap">{h.beskrivelseRisikoFor}</span></div>
+                                  )}
                                   {h.tiltak && (
-                                    <div><span className="font-semibold">Tiltak: </span><span className="text-muted-foreground whitespace-pre-wrap">{h.tiltak}</span></div>
+                                    <div><span className="font-semibold">Forebyggende tiltak: </span><span className="text-muted-foreground whitespace-pre-wrap">{h.tiltak}</span></div>
+                                  )}
+                                  {h.beskrivelseEtter && (
+                                    <div><span className="font-semibold">Beskr. etter tiltak: </span><span className="text-muted-foreground whitespace-pre-wrap">{h.beskrivelseEtter}</span></div>
                                   )}
                                   {h.restrisiko && (
                                     <div><span className="font-semibold">Restrisiko: </span><span className="text-muted-foreground whitespace-pre-wrap">{h.restrisiko}</span></div>
-                                  )}
-                                  {!h.beskrivelse && !h.arsak && !h.tiltak && !h.restrisiko && (
-                                    <p className="italic text-muted-foreground">Ingen utfyllende informasjon.</p>
                                   )}
                                 </td>
                               </tr>
