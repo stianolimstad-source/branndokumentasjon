@@ -383,6 +383,54 @@ const ProsjektDetalj = () => {
             )}
           </Card>
 
+          {/* ROS-analyser */}
+          <Card className="shadow-soft mb-3 sm:mb-4">
+            <CardHeader className="p-3 sm:p-6">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                  <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600 flex-shrink-0" />
+                  <CardTitle className="text-sm sm:text-lg truncate">ROS-analyser ({rosAnalyses.length})</CardTitle>
+                </div>
+                <Link to={`/ros-analyse?project=${project.id}&new=true`}>
+                  <Button size="sm" variant="outline" className="text-xs sm:text-sm h-7 sm:h-8 px-2 sm:px-3 whitespace-nowrap"><Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />Ny</Button>
+                </Link>
+              </div>
+            </CardHeader>
+            {rosAnalyses.length > 0 && (
+              <CardContent className="space-y-2 px-3 sm:px-6 pb-3 sm:pb-6 pt-0">
+                {rosAnalyses.map(r => (
+                  <div key={r.id} className="flex items-center justify-between gap-2 p-2 sm:p-3 bg-muted/50 rounded-lg">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap min-w-0 flex-1">
+                      <BarChart3 className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0 text-purple-600" />
+                      <span className="text-xs sm:text-sm font-medium truncate">{r.name}</span>
+                      <span className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded whitespace-nowrap ${r.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
+                        {r.status === 'draft' ? 'Utkast' : 'Ferdig'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-0.5 flex-shrink-0">
+                      <Link to={`/ros-analyse?id=${r.id}`}><Button variant="ghost" size="sm" className="h-7 px-2 text-xs sm:h-8 sm:px-3 sm:text-sm">Åpne</Button></Link>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8 text-muted-foreground hover:text-destructive"><Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" /></Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="mx-4 max-w-[calc(100vw-2rem)]">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Slette "{r.name}"?</AlertDialogTitle>
+                            <AlertDialogDescription>Denne handlingen kan ikke angres.</AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDeleteRos(r.id, r.name)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Slett</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            )}
+          </Card>
+
           {shares.length > 0 && (
             <Card className="shadow-soft">
               <CardHeader className="p-3 sm:p-6">
