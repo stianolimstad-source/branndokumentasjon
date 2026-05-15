@@ -195,6 +195,16 @@ const ProsjektDetalj = () => {
     }
   };
 
+  const handleDeleteRos = async (rosId: string, rosName: string) => {
+    const { error } = await supabase.from('ros_analyses').delete().eq('id', rosId);
+    if (error) {
+      toast({ title: "Feil", description: "Kunne ikke slette", variant: "destructive" });
+    } else {
+      toast({ title: "Slettet", description: `"${rosName}" er slettet` });
+      fetchProject();
+    }
+  };
+
   if (loading || isLoading) {
     return <div className="min-h-screen bg-gradient-subtle flex items-center justify-center"><p className="text-muted-foreground">Laster...</p></div>;
   }
