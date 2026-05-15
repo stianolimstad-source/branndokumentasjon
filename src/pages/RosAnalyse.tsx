@@ -524,6 +524,14 @@ export default function RosAnalyse() {
           <RosPreview content={content} logoUrl={logoUrl} firmaNavn={firmaNavn} utarbeidetAv={content.metadata.utfortAv || fullName || ""} />
         </div>
       </div>
+
+      <div className="sticky bottom-0 z-30 border-t bg-background/95 backdrop-blur">
+        <div className="container mx-auto px-4 py-2 flex items-center justify-end">
+          <Button size="sm" onClick={handleSave} disabled={saving}>
+            <Save className="h-4 w-4 mr-1" /> {saving ? "Lagrer…" : "Lagre"}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
