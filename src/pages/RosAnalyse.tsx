@@ -327,6 +327,16 @@ export default function RosAnalyse() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleExportWord}
+              disabled={exporting || !canDownload}
+              title={canDownload ? "Last ned som Word" : "Krever aktivt abonnement"}
+            >
+              {canDownload ? <Download className="h-4 w-4 mr-1" /> : <Lock className="h-4 w-4 mr-1" />}
+              {exporting ? "Eksporterer…" : "Word"}
+            </Button>
             <Button size="sm" onClick={handleSave} disabled={saving}>
               <Save className="h-4 w-4 mr-1" /> {saving ? "Lagrer…" : "Lagre"}
             </Button>
