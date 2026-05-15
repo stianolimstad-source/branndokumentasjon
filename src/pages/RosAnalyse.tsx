@@ -309,12 +309,7 @@ export default function RosAnalyse() {
             <Button variant="ghost" size="sm" onClick={() => navigate(projectId ? `/prosjekt/${projectId}` : "/mine-prosjekter")}>
               <ArrowLeft className="h-4 w-4 mr-1" /> Tilbake til prosjekt
             </Button>
-            <Input
-              value={currentName}
-              onChange={(e) => setCurrentName(e.target.value)}
-              className="h-8 max-w-xs"
-            />
-            {projectName && <span className="text-xs text-muted-foreground hidden md:inline">· {projectName}</span>}
+            {projectName && <span className="text-sm font-medium truncate">{projectName}</span>}
           </div>
           <div className="flex items-center gap-2">
             <AlertDialog>
