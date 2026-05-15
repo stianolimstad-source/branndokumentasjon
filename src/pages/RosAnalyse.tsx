@@ -49,7 +49,7 @@ export default function RosAnalyse() {
   const isNew = params.get("new") === "true";
 
   const [projects, setProjects] = useState<ProjectOption[]>([]);
-  const [analyses, setAnalyses] = useState<RosRow[]>([]);
+  const [projectId, setProjectId] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState("");
   const [newProjectId, setNewProjectId] = useState<string>("");
@@ -81,15 +81,20 @@ export default function RosAnalyse() {
       });
   }, [user]);
 
-  // Load project list + ROS list for landing
+  // Load project list (for create dialog)
   useEffect(() => {
     if (!user) return;
     supabase.from("projects").select("id, name, address").order("created_at", { ascending: false })
       .then(({ data }) => { if (data) setProjects(data as ProjectOption[]); });
-    supabase.from("ros_analyses").select("id, name, project_id, updated_at")
-      .order("updated_at", { ascending: false })
-      .then(({ data }) => { if (data) setAnalyses(data as RosRow[]); });
   }, [user]);
+
+  // Redirect when no analysis is selected and we're not in create mode
+  useEffect(() => {
+    if (!user) return;
+    if (!rosId && !isNew) {
+      navigate("/mine-prosjekter", { replace: true });
+    }
+  }, [user, rosId, isNew, navigate]);
 
   // Open "create new" dialog automatically when ?new=true
   useEffect(() => {
@@ -111,6 +116,7 @@ export default function RosAnalyse() {
           return;
         }
         setCurrentName(data.name);
+        setProjectId((data as any).project_id ?? null);
         const c = (data.content && typeof data.content === "object" && !Array.isArray(data.content))
           ? { ...EMPTY_CONTENT, ...(data.content as Partial<RosContent>) }
           : EMPTY_CONTENT;
@@ -148,6 +154,7 @@ export default function RosAnalyse() {
     setShowCreate(false);
     setNewName("");
     setNewProjectId("");
+    setProjectId(newProjectId);
     setParams({ id: data.id });
   };
 
@@ -173,7 +180,7 @@ export default function RosAnalyse() {
       return;
     }
     toast({ title: "Slettet" });
-    navigate("/ros-analyse");
+    navigate(projectId ? `/prosjekt/${projectId}` : "/mine-prosjekter");
   };
 
   const handleExportWord = async () => {
@@ -185,7 +192,6 @@ export default function RosAnalyse() {
         .select("full_name, email, company, logo_url")
         .eq("id", user.id)
         .maybeSingle();
-      const projectId = analyses.find((a) => a.id === rosId)?.project_id ?? null;
       const logoUrl = (profile as any)?.logo_url || null;
       const theme = await resolveDocumentTheme(projectId, logoUrl, user.id);
       await exportRosToWord({
@@ -264,60 +270,21 @@ export default function RosAnalyse() {
   };
 
   const projectName = useMemo(() => {
-    const pid = analyses.find((a) => a.id === rosId)?.project_id;
-    return projects.find((p) => p.id === pid)?.name;
-  }, [analyses, projects, rosId]);
+    return projects.find((p) => p.id === projectId)?.name;
+  }, [projects, projectId]);
 
-  // ============ LANDING ============
+  // ============ CREATE-ONLY VIEW (no rosId, dialog open) ============
   if (!rosId) {
     return (
       <div className="min-h-screen bg-gradient-subtle">
-        <div className="container mx-auto px-4 py-8 max-w-5xl space-y-6">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <Link to="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
-                <ArrowLeft className="h-4 w-4 mr-1" /> Tilbake
-              </Link>
-              <h1 className="text-2xl font-bold mt-2 flex items-center gap-2">
-                <ShieldAlert className="h-6 w-6 text-primary" /> ROS-analyse
-              </h1>
-              <p className="text-sm text-muted-foreground">Brannrelatert risiko- og sårbarhetsanalyse (5×5).</p>
-            </div>
-            <Button onClick={() => setShowCreate(true)}>
-              <Plus className="h-4 w-4 mr-2" /> Ny ROS-analyse
-            </Button>
-          </div>
-
-          <div>
-            <h2 className="text-lg font-semibold mb-3">Mine ROS-analyser</h2>
-            {analyses.length === 0 ? (
-              <Card><CardContent className="py-10 text-center text-sm text-muted-foreground">
-                Ingen ROS-analyser ennå. Klikk «Ny ROS-analyse» for å starte.
-              </CardContent></Card>
-            ) : (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {analyses.map((a) => {
-                  const proj = projects.find((p) => p.id === a.project_id);
-                  return (
-                    <Card key={a.id} className="hover:shadow-medium transition-shadow cursor-pointer"
-                      onClick={() => setParams({ id: a.id })}>
-                      <CardHeader>
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 mb-2">
-                          <FileText className="h-5 w-5 text-primary" />
-                        </div>
-                        <CardTitle className="text-base">{a.name}</CardTitle>
-                        <p className="text-xs text-muted-foreground">{proj?.name ?? "Ukjent prosjekt"}</p>
-                      </CardHeader>
-                    </Card>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
+        <div className="container mx-auto px-4 py-8 max-w-5xl">
+          <p className="text-sm text-muted-foreground">Åpner…</p>
           <CreateDialog
             open={showCreate}
-            onOpenChange={setShowCreate}
+            onOpenChange={(o) => {
+              setShowCreate(o);
+              if (!o) navigate(projectFromUrl ? `/prosjekt/${projectFromUrl}` : "/mine-prosjekter");
+            }}
             projects={projects}
             newName={newName}
             setNewName={setNewName}
@@ -339,8 +306,8 @@ export default function RosAnalyse() {
       <div className="border-b sticky top-[65px] z-30 bg-background/95 backdrop-blur">
         <div className="container mx-auto px-4 py-2 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
-            <Button variant="ghost" size="sm" onClick={() => navigate("/ros-analyse")}>
-              <ArrowLeft className="h-4 w-4 mr-1" /> Mine ROS-analyser
+            <Button variant="ghost" size="sm" onClick={() => navigate(projectId ? `/prosjekt/${projectId}` : "/mine-prosjekter")}>
+              <ArrowLeft className="h-4 w-4 mr-1" /> Tilbake til prosjekt
             </Button>
             <Input
               value={currentName}
