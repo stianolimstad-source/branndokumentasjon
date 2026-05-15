@@ -4425,9 +4425,16 @@ const Konsept = () => {
                           3.2 {formData.regelverk === "BF85" ? "Sikkerhet ved eksplosjon" : "§ 11-5 Sikkerhet ved eksplosjon"}
                         </Label>
                         {formData.regelverk === "BF85" && (
-                          <p className="text-xs text-muted-foreground mt-1">
-                            Sikkerhet ved eksplosjon er ikke spesifikt kravsatt i BF85, men må likevel vurderes i en tilstandsvurdering.
-                          </p>
+                          <>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Sikkerhet ved eksplosjon er ikke spesifikt kravsatt i BF85, men må likevel vurderes i en tilstandsvurdering.
+                            </p>
+                            {documentType === "tilstandsvurdering" && (
+                              <p className="text-xs text-muted-foreground mt-1">
+                                BF 85 beskriver kun at bygninger skal være tilstrekkelig sikret mot eksplosjoner, her refereres det derfor videre til TEK17 sine krav for å kunne ivareta dette forholdet.
+                              </p>
+                            )}
+                          </>
                         )}
                       </div>
                       <div>
