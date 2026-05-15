@@ -2558,7 +2558,7 @@ const Konsept = () => {
                     children: [
                       createTableCellShaded("Rev.", true, 8),
                       createTableCellShaded("Dato", true, 15),
-                      createTableCellShaded("Prosjekterende", true, 25),
+                      createTableCellShaded(documentType === "tilstandsvurdering" ? "Utførende" : "Prosjekterende", true, 25),
                       createTableCellShaded("KS", true, 25),
                       createTableCellShaded("Kommentar", true, 27),
                     ],
@@ -10136,7 +10136,7 @@ const Konsept = () => {
                              <tr className="bg-muted/50">
                                <th className="px-2 py-1.5 text-left font-medium w-16">Rev.</th>
                                <th className="px-2 py-1.5 text-left font-medium w-28">Dato</th>
-                               <th className="px-2 py-1.5 text-left font-medium">Prosjekterende</th>
+                               <th className="px-2 py-1.5 text-left font-medium">{documentType === "tilstandsvurdering" ? "Utførende" : "Prosjekterende"}</th>
                                <th className="px-2 py-1.5 text-left font-medium">KS</th>
                                <th className="px-2 py-1.5 text-left font-medium">Kommentar</th>
                                <th className="px-2 py-1.5 w-10"></th>

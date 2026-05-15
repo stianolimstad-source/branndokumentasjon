@@ -6001,7 +6001,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <tr className="bg-gray-100">
                 <th className="border border-gray-400 p-1.5 text-left font-semibold w-12">Rev.</th>
                 <th className="border border-gray-400 p-1.5 text-left font-semibold w-24">Dato</th>
-                <th className="border border-gray-400 p-1.5 text-left font-semibold">Prosjekterende</th>
+                <th className="border border-gray-400 p-1.5 text-left font-semibold">Utførende</th>
                 <th className="border border-gray-400 p-1.5 text-left font-semibold">KS</th>
                 <th className="border border-gray-400 p-1.5 text-left font-semibold">Kommentar</th>
               </tr>
