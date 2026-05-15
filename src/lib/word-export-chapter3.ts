@@ -1806,6 +1806,13 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
           "Det skal utplasseres hensiktsmessig og tilstrekkelig manuelt slokkeutstyr som skal kunne brukes i alle rom i anlegget. Med manuelt slokkeutstyr menes alt slokkeutstyr som betjenes av personell, dvs. brannslanger og transportable slokkeapparater av ulik utforming og for ulike bruksområder. Utstyret må være avpasset etter den brann som ventes å oppstå. (Kilde: DSB sin veiledning om brannvern i kraftstasjoner.)",
           "RIBr"
         ));
+        if (formData.slokkeBrannslange) {
+          rows.push(contentRow(
+            "Brannslange (kraftstasjon)",
+            "Der det er mulighet for tilgang på slokkevann, bør det installeres anlegg for montering av brannslanger. Brannslangen bør fortrinnsvis være på trommel med senterinnføring av vannet, slik at bare nødvendig del av slangelengden rulles ut i det enkelte brukstilfellet. Innvendig diameter må være minst 19 mm, og slangene må ikke være lenger enn 30 meter. Det bør brukes kuleventil, og kranene bør prøves jevnlig for å sikre at de ikke har satt seg fast. (Kilde: DSB sin veiledning om brannvern i kraftstasjoner.)",
+            "RIBr"
+          ));
+        }
       }
     } else {
       rows.push(contentRow(
