@@ -1,53 +1,61 @@
 ## Mål
-For tilstandsvurderinger etter BF 85 av **industribygg** skal "Generelt"-raden i kap. 3.12 (Slokkingsredskap og slokkingsvann / Manuell slokking) bytte ut TEK17-teksten med BF85-teksten:
+"Følgende krav er automatisk inkludert i rapporten"-boksen (`bg-accent/30 border border-accent`) i kap. 3.12 Manuell slokking i tilstandsvurdering etter BF 85 viser i dag TEK17-krav (RK 3/5/6 brannslange, RK 1/2/4 håndslokker, NS-EN 671/3-7, dekningsradius 15/25 m, BF85 Kap. 30:91/93). Dette stemmer ikke med rapporten som faktisk genereres for BF 85, og må synkroniseres med samme logikk som ble lagt inn i `KonseptPreview.tsx` og `word-export-chapter3.ts`.
 
-> "Bygningsrådet kan kreve brannslanger og manuelt slokkeutstyr."
+## Endring – `src/pages/Konsept.tsx` (~linje 9730–9812)
 
-For **kraftstasjon** (egen bygningstype, BF85) skal det i tillegg legges inn DSB-veiledningens krav:
+Splitt rendering av kravbekreftelses-boksen i to grener basert på `formData.regelverk === "BF85"` og `isBF85Tilstand`.
 
-> "Det skal utplasseres hensiktsmessig og tilstrekkelig manuelt slokkeutstyr som skal kunne brukes i alle rom i anlegget. Med manuelt slokkeutstyr menes alt slokkeutstyr som betjenes av personell, dvs. brannslanger og transportable slokkeapparater av ulik utforming og for ulike bruksområder. Utstyret må være avpasset etter den brann som ventes å oppstå."
+### A) BF 85-grenen (kun når `regelverk === "BF85"`)
 
-For andre bygningstyper enn industri/kraftstasjon (BF85), og for TEK17, beholdes dagens generelt-tekst uendret.
-
-## Endringer
-
-### 1) Forhåndsvisning – `src/components/konsept/KonseptPreview.tsx` (~linje 5502–5509)
-Erstatt den faste "Generelt"-raden med en betinget rendering basert på `isBF85`, `bygningstype` (også fra `bygningsdeler`):
-
-- Regn ut `erBF85Industri` (= BF85 og bygningstype/bygningsdeler inneholder "industri" eller "kraftstasjon").
-- Regn ut `erKraftstasjon` (BF85 og bygningstype/bygningsdeler inneholder "kraftstasjon").
-- Hvis `erBF85Industri` (men ikke kraftstasjon): vis BF85-teksten ("Bygningsrådet kan kreve brannslanger og manuelt slokkeutstyr.") med ansvar `RIBr`.
-- Hvis `erKraftstasjon`: vis BF85-teksten + ekstra rad "Manuelt slokkeutstyr – kraftstasjon" med DSB-teksten over (ansvar `RIBr`, kilde DSB-veiledningen i italic kommentar slik som ellers i kraftstasjon-rader).
-- Ellers: behold dagens TEK17-baserte generelt-tekst.
-
-### 2) Word-eksport – `src/lib/word-export-chapter3.ts` (~linje 1796–1800)
-Speiler logikken fra forhåndsvisningen:
-
+Beregn:
 ```ts
 const lcBT = (formData.bygningstype || "").toLowerCase();
-const delerBT = (formData.bygningsdeler || []).map((d:any)=> (d.bygningstype||"").toLowerCase());
-const erKraftstasjonSlok = lcBT.includes("kraftstasjon") || delerBT.some(b => b.includes("kraftstasjon"));
-const erIndustriSlok = lcBT.includes("industri") || delerBT.some(b => b.includes("industri")) || erKraftstasjonSlok;
-
-if (isBF85Tilstand310 && erIndustriSlok) {
-  rows.push(contentRow("Generelt", "Bygningsrådet kan kreve brannslanger og manuelt slokkeutstyr.", "RIBr"));
-  if (erKraftstasjonSlok) {
-    rows.push(contentRow(
-      "Manuelt slokkeutstyr – kraftstasjon",
-      "Det skal utplasseres hensiktsmessig og tilstrekkelig manuelt slokkeutstyr ... Utstyret må være avpasset etter den brann som ventes å oppstå.",
-      "RIBr"
-    ));
-  }
-} else {
-  rows.push(contentRow("Generelt", "Byggverk skal være tilrettelagt for effektiv manuell slokking av brann.", "RIV"));
-}
+const delerBT = (formData.bygningsdeler || []).map((d:any) => (d.bygningstype||"").toLowerCase());
+const erKraftstasjon = lcBT.includes("kraftstasjon") || delerBT.some(b => b.includes("kraftstasjon"));
+const erIndustri = lcBT.includes("industri") || delerBT.some(b => b.includes("industri")) || erKraftstasjon;
 ```
 
+Vis følgende i boksen:
+
+- Header: "✓ Følgende krav er automatisk inkludert i rapporten:"
+- Kursiv kilde-note (erstatter dagens "Kap. 30:91/93"-tekst):
+  - Hvis `erKraftstasjon`: "Vurderingen baseres på BF 85 og DSBs veiledning til kraftstasjoner."
+  - Ellers hvis `erIndustri`: "Vurderingen baseres på BF 85 (industri – bygningsrådets skjønn)."
+  - Ellers: "BF 85 stiller ikke spesifikke krav til manuelt slokkeutstyr for denne bygningstypen. Bygningsrådet kan likevel kreve dette."
+
+- Underseksjon "Generelt" (alltid):
+  - Hvis `erIndustri` (inkl. kraftstasjon): én bullet "Bygningsrådet kan kreve brannslanger og manuelt slokkeutstyr."
+  - Ellers: ingen "Generelt"-bullet (eller samme tekst i kursiv hvis vi ønsker konsistens).
+
+- Underseksjon "Manuelt slokkeutstyr – kraftstasjon" (kun hvis `erKraftstasjon`):
+  - Bullet med DSB-teksten: "Det skal utplasseres hensiktsmessig og tilstrekkelig manuelt slokkeutstyr som skal kunne brukes i alle rom i anlegget. Med manuelt slokkeutstyr menes alt slokkeutstyr som betjenes av personell, dvs. brannslanger og transportable slokkeapparater av ulik utforming og for ulike bruksområder. Utstyret må være avpasset etter den brann som ventes å oppstå."
+
+- Brukerens egne valg (uendret logikk, men uten RK-tekst):
+  - Hvis `formData.slokkeBrannslange` huket: bullet "Brannslange – plasseres slik at den dekker alle rom; maks 30 m ved fullt uttrekk; skal ikke plasseres i trapperom."
+  - Hvis `formData.slokkeHandslukker` huket: bullet "Håndslokker – min. 6 kg ABC-pulver eller 9 liter skum/vann; plasseres tilgjengelig og merket."
+  - (Fjern RK-referanser, NS-EN 671/3-7 og dekningsradius 15/25 m for BF 85 – disse er TEK17-spesifikke.)
+
+- Generelle krav (alltid, BF 85-versjon, kort):
+  - "Slokkeutstyr skal være lett tilgjengelig og dekke alle rom"
+  - "Plassering skal være tydelig markert med skilt"
+  - "Tilvisningsskilt skal stå på tvers av ferdselsretningen"
+
+- Footer: "Du kan endre valgene med knappene ovenfor."
+
+### B) TEK17-grenen (uendret)
+
+Behold dagens innhold (RK-spesifikke krav, NS-EN 671/3-7 osv.) når `regelverk !== "BF85"`. Fjern også dagens BF85-italic-blokk (linje 9771–9773), siden den nå håndteres i grein A.
+
+Tilsvarende skal ledeteksten over checkboxene (`kravTekst`, ~linje 9696–9700) tilpasses BF 85: vis i stedet "BF 85 spesifiserer ikke type slokkeutstyr – velg hva som skal benyttes." når `regelverk === "BF85"`.
+
 ## Avgrensning
-- Kun `Generelt`-raden i kap. 3.12 (BF85 / 3.13 TEK17) endres. Eksisterende rader for brannslange, håndslokker, plassering, merking osv. styres fortsatt av brukerens valg og er uendret.
-- TEK17 og BF85 for ikke-industri (bolig, kontor, skole osv.) er uendret.
+- Endrer kun innholdet i kravbekreftelses-boksen (input-siden) for kap. 3.12 BF 85 / 3.13 TEK17 Manuell slokking.
+- Forhåndsvisning, Word-eksport og andre bygningstyper er ikke berørt – de matcher allerede denne logikken.
+- Bestående checkbox-state (`slokkeBrannslange`, `slokkeHandslukker`) og fritekstfeltene endres ikke.
 
 ## Akseptkriterier
-- BF85 + bygningstype Industri (og ikke kraftstasjon): "Generelt"-raden viser "Bygningsrådet kan kreve brannslanger og manuelt slokkeutstyr." Både i forhåndsvisning og Word.
-- BF85 + bygningstype Kraftstasjon: "Generelt"-raden viser BF85-teksten, og det legges til en egen rad med DSB-teksten for kraftstasjon. Både i forhåndsvisning og Word.
-- BF85 + andre bygningstyper, og TEK17: uendret.
+- BF 85 + Industri: boksen viser BF85-noten + "Bygningsrådet kan kreve brannslanger og manuelt slokkeutstyr." Ingen RK-referanser eller NS-EN-numre.
+- BF 85 + Kraftstasjon: i tillegg vises DSB-bulleten med kraftstasjons-teksten.
+- BF 85 + andre bygningstyper: boksen viser kort note om at BF 85 ikke stiller spesifikke krav.
+- TEK17: boksen er uendret.
+- Brukerens egne valg av brannslange/håndslokker vises fortsatt som bullets, men uten TEK17-spesifikke RK-/standardreferanser når BF 85 er valgt.

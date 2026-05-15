@@ -9693,11 +9693,13 @@ const Konsept = () => {
                         const isRK356 = alleRK.some((rk: string) => ["RK3","RK5","RK6"].includes(rk));
                         const isRK124 = alleRK.some((rk: string) => ["RK1","RK2","RK4"].includes(rk));
                         
-                        const kravTekst = isRK356 
-                          ? "Krav: Brannslange (RK 3, 5, 6). Håndslokkeapparater kan benyttes i tillegg."
-                          : isRK124
-                            ? "Krav: Håndslokkeapparat eller brannslange (RK 1, 2, 4). Du kan også velge brannslange."
-                            : "Velg slokkeutstyr for bygget.";
+                        const kravTekst = formData.regelverk === "BF85"
+                          ? "BF 85 spesifiserer ikke type slokkeutstyr – velg hva som skal benyttes."
+                          : isRK356 
+                            ? "Krav: Brannslange (RK 3, 5, 6). Håndslokkeapparater kan benyttes i tillegg."
+                            : isRK124
+                              ? "Krav: Håndslokkeapparat eller brannslange (RK 1, 2, 4). Du kan også velge brannslange."
+                              : "Velg slokkeutstyr for bygget.";
                         
                         return (
                           <>
