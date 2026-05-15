@@ -346,7 +346,8 @@ export default function RosAnalyse() {
 
       <div className="grid lg:grid-cols-2 gap-0">
         {/* INPUT */}
-        <div className="border-r p-6 space-y-8 overflow-y-auto">
+        <div className="border-r flex flex-col h-[calc(100vh-117px)]">
+          <div className="p-6 space-y-8 overflow-y-auto flex-1">
           <section className="space-y-3">
             <h2 className="text-lg font-semibold">Metadata</h2>
             <div className="grid grid-cols-2 gap-3">
@@ -517,19 +518,17 @@ export default function RosAnalyse() {
               ))}
             </div>
           </section>
+          </div>
+          <div className="border-t bg-background/95 backdrop-blur px-6 py-2 flex items-center justify-end">
+            <Button size="sm" onClick={handleSave} disabled={saving}>
+              <Save className="h-4 w-4 mr-1" /> {saving ? "Lagrer…" : "Lagre"}
+            </Button>
+          </div>
         </div>
 
         {/* PREVIEW */}
-        <div className="bg-muted/20 overflow-y-auto">
+        <div className="bg-muted/20 overflow-y-auto h-[calc(100vh-117px)]">
           <RosPreview content={content} logoUrl={logoUrl} firmaNavn={firmaNavn} utarbeidetAv={content.metadata.utfortAv || fullName || ""} />
-        </div>
-      </div>
-
-      <div className="sticky bottom-0 z-30 border-t bg-background/95 backdrop-blur">
-        <div className="container mx-auto px-4 py-2 flex items-center justify-end">
-          <Button size="sm" onClick={handleSave} disabled={saving}>
-            <Save className="h-4 w-4 mr-1" /> {saving ? "Lagrer…" : "Lagre"}
-          </Button>
         </div>
       </div>
     </div>
