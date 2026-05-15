@@ -194,16 +194,19 @@ export default function RosAnalyse() {
     }));
   };
   const addHendelse = () => {
+    const id = makeId();
     setContent((c) => ({
       ...c,
       hendelser: [...c.hendelser, {
-        id: makeId(), tittel: "", beskrivelse: "", arsak: "",
+        id, tittel: "", beskrivelse: "", arsak: "",
         sannsynlighet: 1, konsekvens: 1, tiltak: "", restrisiko: "",
       }],
     }));
+    setOpenHendelser((o) => [...o, id]);
   };
   const removeHendelse = (id: string) => {
     setContent((c) => ({ ...c, hendelser: c.hendelser.filter((h) => h.id !== id) }));
+    setOpenHendelser((o) => o.filter((x) => x !== id));
   };
 
   // ----- Revisjon -----
