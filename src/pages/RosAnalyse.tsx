@@ -192,7 +192,6 @@ export default function RosAnalyse() {
         .select("full_name, email, company, logo_url")
         .eq("id", user.id)
         .maybeSingle();
-      const projectId = analyses.find((a) => a.id === rosId)?.project_id ?? null;
       const logoUrl = (profile as any)?.logo_url || null;
       const theme = await resolveDocumentTheme(projectId, logoUrl, user.id);
       await exportRosToWord({
