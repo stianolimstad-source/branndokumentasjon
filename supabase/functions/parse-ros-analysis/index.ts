@@ -37,27 +37,39 @@ Returner BARE et rent JSON-objekt (ingen markdown, ingen forklaring), med denne 
   "hendelser": [
     {
       "tittel": "",
-      "beskrivelse": "",
+      "sarbarhet": "",
+      "hendelse": "",
       "arsak": "",
+      "beskrivelseSannsynlighetFor": "",
+      "beskrivelseRisikoFor": "",
       "sannsynlighet": 1,
       "konsekvens": 1,
       "tiltak": "",
+      "beskrivelseEtter": "",
+      "sannsynlighetEtter": 1,
+      "konsekvensEtter": 1,
       "restrisiko": ""
     }
   ]
 }
 
 Mapping-regler:
-- "Sårbarhet" eller "Hendelse/Scenario" → tittel (kombiner hvis begge finnes: "Sårbarhet – Hendelse")
-- "Beskrivelse av sannsynlighet" + "Beskrivelse av konsekvens" (før tiltak) → beskrivelse (slå sammen)
-- "Årsak" → arsak (hvis ikke finnes, la stå tom)
-- "Sannsynlighet" (tall 1-5) → sannsynlighet. Hvis tekst: Svært lite sannsynlig=1, Lite sannsynlig/Liten=2, Sannsynlig/Moderat=3, Meget sannsynlig=4, Svært sannsynlig=5.
-- "Konsekvens" (tall 1-5) → konsekvens. Hvis tekst: Ufarlig=1, En viss fare/Liten=2, Farlig/Moderat=3, Kritisk/Alvorlig=4, Katastrofal=5.
-- "Forebyggende og avhjelpende tiltak" → tiltak
-- "Beskrivelse av sannsynlighet og konsekvens etter tiltak" eller "Restrisiko" → restrisiko (kort tekst)
+- "Sårbarhet" → sarbarhet
+- "Hendelse/Scenario" → hendelse
+- tittel = kombiner "sarbarhet – hendelse" hvis begge finnes; ellers det som finnes.
+- "Årsak" → arsak (la stå tom hvis mangler).
+- "Beskrivelse av sannsynlighet" (før tiltak) → beskrivelseSannsynlighetFor
+- "Beskrivelse av konsekvens" eller "Beskrivelse av risiko" (før tiltak) → beskrivelseRisikoFor
+- "Sannsynlighet" (1-5) → sannsynlighet. Tekst-mapping: Svært lite sannsynlig=1, Lite sannsynlig/Liten=2, Sannsynlig/Moderat=3, Meget sannsynlig=4, Svært sannsynlig=5.
+- "Konsekvens" (1-5) → konsekvens. Tekst: Ufarlig=1, En viss fare/Liten=2, Farlig/Moderat=3, Kritisk/Alvorlig=4, Katastrofal=5.
+- "Forebyggende og avhjelpende tiltak" / "Tiltak" → tiltak
+- "Beskrivelse av sannsynlighet og konsekvens etter tiltak" → beskrivelseEtter
+- "S etter" / "Sannsynlighet etter tiltak" → sannsynlighetEtter (samme tekst-mapping). Hvis ikke oppgitt: bruk samme verdi som sannsynlighet.
+- "K etter" / "Konsekvens etter tiltak" → konsekvensEtter (samme regel).
+- "Restrisiko" → restrisiko
 - Hvis S/K mangler: bruk 1.
-- Klamper alltid sannsynlighet/konsekvens til heltall 1-5.
-- Ignorer rader uten meningsfullt innhold (overskrifter, kategori-rader uten data).
+- Klamp alltid alle S/K-verdier til heltall 1-5.
+- Ignorer rader uten meningsfullt innhold.
 - Inkluder ALLE hendelser, også 40+ hvis de finnes.`;
 
     const truncated = documentText.slice(0, 80000);
@@ -99,15 +111,31 @@ Mapping-regler:
 
     // Sanitize
     const hendelser = Array.isArray(parsed?.hendelser) ? parsed.hendelser : [];
-    const clean = hendelser.map((h: any) => ({
-      tittel: String(h?.tittel || "").slice(0, 300),
-      beskrivelse: String(h?.beskrivelse || ""),
-      arsak: String(h?.arsak || ""),
-      sannsynlighet: Math.max(1, Math.min(5, parseInt(h?.sannsynlighet) || 1)),
-      konsekvens: Math.max(1, Math.min(5, parseInt(h?.konsekvens) || 1)),
-      tiltak: String(h?.tiltak || ""),
-      restrisiko: String(h?.restrisiko || ""),
-    }));
+    const clamp = (v: any, fallback = 1) =>
+      Math.max(1, Math.min(5, parseInt(v) || fallback));
+    const clean = hendelser.map((h: any) => {
+      const sarbarhet = String(h?.sarbarhet || "");
+      const hendelse = String(h?.hendelse || h?.beskrivelse || "");
+      const tittelFromParts = [sarbarhet, hendelse].filter(Boolean).join(" – ");
+      const sannsynlighet = clamp(h?.sannsynlighet);
+      const konsekvens = clamp(h?.konsekvens);
+      return {
+        tittel: String(h?.tittel || tittelFromParts || "").slice(0, 300),
+        sarbarhet,
+        hendelse,
+        beskrivelse: hendelse,
+        arsak: String(h?.arsak || ""),
+        beskrivelseSannsynlighetFor: String(h?.beskrivelseSannsynlighetFor || ""),
+        beskrivelseRisikoFor: String(h?.beskrivelseRisikoFor || ""),
+        sannsynlighet,
+        konsekvens,
+        tiltak: String(h?.tiltak || ""),
+        beskrivelseEtter: String(h?.beskrivelseEtter || ""),
+        sannsynlighetEtter: clamp(h?.sannsynlighetEtter, sannsynlighet),
+        konsekvensEtter: clamp(h?.konsekvensEtter, konsekvens),
+        restrisiko: String(h?.restrisiko || ""),
+      };
+    });
 
     const metadata = {
       prosjektnavn: String(parsed?.metadata?.prosjektnavn || ""),

@@ -236,43 +236,78 @@ export const exportRosToWord = async (options: ExportOptions) => {
   ];
 
   // Kap. 3 Hendelsesregister
+  const smallHeader = (t: string, widthPct?: number): TableCell =>
+    new TableCell({
+      children: [new Paragraph({ children: [text(t, { bold: true, size: 16, color: "FFFFFF" })] })],
+      shading: tableHeaderShading(theme),
+      width: widthPct ? { size: widthPct, type: WidthType.PERCENTAGE } : undefined,
+    });
+  const smallCell = (t: string, widthPct?: number, bold = false): TableCell =>
+    new TableCell({
+      children: [new Paragraph({ children: [text(t, { bold, size: 14 })] })],
+      width: widthPct ? { size: widthPct, type: WidthType.PERCENTAGE } : undefined,
+    });
   const hendelseHeader = new TableRow({
     children: [
-      headerCell("Nr", 4),
-      headerCell("Tittel", 14),
-      headerCell("Beskrivelse", 18),
-      headerCell("Årsak", 14),
-      headerCell("S", 4),
-      headerCell("K", 4),
-      headerCell("R", 6),
-      headerCell("Tiltak", 18),
-      headerCell("Restrisiko", 18),
+      smallHeader("Nr", 3),
+      smallHeader("Sårbarhet", 8),
+      smallHeader("Hendelse / scenario", 9),
+      smallHeader("Årsak", 7),
+      smallHeader("Beskr. sanns. (før)", 8),
+      smallHeader("Beskr. risiko (før)", 8),
+      smallHeader("S", 3),
+      smallHeader("K", 3),
+      smallHeader("R", 4),
+      smallHeader("Forebyggende tiltak", 9),
+      smallHeader("Beskr. etter tiltak", 9),
+      smallHeader("S e.", 3),
+      smallHeader("K e.", 3),
+      smallHeader("R e.", 4),
+      smallHeader("Restrisiko", 9),
     ],
   });
   const hendelseRows: TableRow[] = [hendelseHeader];
   content.hendelser.forEach((h, i) => {
     const r = h.sannsynlighet * h.konsekvens;
+    const sE = h.sannsynlighetEtter ?? h.sannsynlighet;
+    const kE = h.konsekvensEtter ?? h.konsekvens;
+    const rE = sE * kE;
     hendelseRows.push(
       new TableRow({
         children: [
-          cell(String(i + 1), 4),
-          cell(h.tittel || "—", 14, true),
-          cell(h.beskrivelse || "", 18),
-          cell(h.arsak || "", 14),
-          cell(String(h.sannsynlighet), 4),
-          cell(String(h.konsekvens), 4),
+          smallCell(String(i + 1), 3),
+          smallCell(h.sarbarhet || "", 8),
+          smallCell(h.hendelse || h.beskrivelse || h.tittel || "—", 9, true),
+          smallCell(h.arsak || "", 7),
+          smallCell(h.beskrivelseSannsynlighetFor || "", 8),
+          smallCell(h.beskrivelseRisikoFor || "", 8),
+          smallCell(String(h.sannsynlighet), 3),
+          smallCell(String(h.konsekvens), 3),
           new TableCell({
-            width: { size: 6, type: WidthType.PERCENTAGE },
+            width: { size: 4, type: WidthType.PERCENTAGE },
             shading: risikoShading(h.sannsynlighet, h.konsekvens),
             children: [
               new Paragraph({
                 alignment: AlignmentType.CENTER,
-                children: [text(String(r), { bold: true, size: 20, color: risikoTekstFarge(h.sannsynlighet, h.konsekvens) })],
+                children: [text(String(r), { bold: true, size: 16, color: risikoTekstFarge(h.sannsynlighet, h.konsekvens) })],
               }),
             ],
           }),
-          cell(h.tiltak || "", 18),
-          cell(h.restrisiko || "", 18),
+          smallCell(h.tiltak || "", 9),
+          smallCell(h.beskrivelseEtter || "", 9),
+          smallCell(String(sE), 3),
+          smallCell(String(kE), 3),
+          new TableCell({
+            width: { size: 4, type: WidthType.PERCENTAGE },
+            shading: risikoShading(sE, kE),
+            children: [
+              new Paragraph({
+                alignment: AlignmentType.CENTER,
+                children: [text(String(rE), { bold: true, size: 16, color: risikoTekstFarge(sE, kE) })],
+              }),
+            ],
+          }),
+          smallCell(h.restrisiko || "", 9),
         ],
       }),
     );

@@ -4,11 +4,19 @@ import { risikoFarge } from "./RosMatriks";
 export interface RosHendelse {
   id: string;
   tittel: string;
-  beskrivelse: string;
+  /** @deprecated bruk `hendelse` i stedet – beholdt for bakoverkompatibilitet */
+  beskrivelse?: string;
+  sarbarhet?: string;
+  hendelse?: string;
   arsak: string;
+  beskrivelseSannsynlighetFor?: string;
+  beskrivelseRisikoFor?: string;
   sannsynlighet: number;
   konsekvens: number;
   tiltak: string;
+  beskrivelseEtter?: string;
+  sannsynlighetEtter?: number;
+  konsekvensEtter?: number;
   restrisiko: string;
 }
 
@@ -309,40 +317,58 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
           {content.hendelser.length === 0 ? (
             <p style={{ ...pStyle, fontStyle: "italic", color: "#64748b" }}>Ingen hendelser registrert ennå.</p>
           ) : (
-            <table style={tableStyle}>
-              <thead>
-                <tr>
-                  <th style={{ ...thStyle, width: 32, textAlign: "center" }}>Nr</th>
-                  <th style={{ ...thStyle, width: "14%" }}>Tittel</th>
-                  <th style={{ ...thStyle, width: "18%" }}>Beskrivelse</th>
-                  <th style={{ ...thStyle, width: "14%" }}>Årsak</th>
-                  <th style={{ ...thStyle, width: 32, textAlign: "center" }}>S</th>
-                  <th style={{ ...thStyle, width: 32, textAlign: "center" }}>K</th>
-                  <th style={{ ...thStyle, width: 38, textAlign: "center" }}>R</th>
-                  <th style={{ ...thStyle, width: "18%" }}>Tiltak</th>
-                  <th style={{ ...thStyle, width: "18%" }}>Restrisiko</th>
-                </tr>
-              </thead>
-              <tbody>
-                {content.hendelser.map((h, i) => (
-                  <tr key={h.id}>
-                    <td style={{ ...tdStyle, textAlign: "center", fontWeight: 600 }}>{i + 1}</td>
-                    <td style={{ ...tdStyle, fontWeight: 600 }}>{h.tittel || "—"}</td>
-                    <td style={tdStyle}>{h.beskrivelse}</td>
-                    <td style={tdStyle}>{h.arsak}</td>
-                    <td style={{ ...tdStyle, textAlign: "center" }}>{h.sannsynlighet}</td>
-                    <td style={{ ...tdStyle, textAlign: "center" }}>{h.konsekvens}</td>
-                    <td style={riskCellStyle(h.sannsynlighet, h.konsekvens)}>{h.sannsynlighet * h.konsekvens}</td>
-                    <td style={tdStyle}>{h.tiltak}</td>
-                    <td style={tdStyle}>{h.restrisiko}</td>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ ...tableStyle, fontSize: 9, minWidth: 1100 }}>
+                <thead>
+                  <tr>
+                    <th style={{ ...thStyle, width: 26, textAlign: "center", fontSize: 9 }}>Nr</th>
+                    <th style={{ ...thStyle, fontSize: 9 }}>Sårbarhet</th>
+                    <th style={{ ...thStyle, fontSize: 9 }}>Hendelse / scenario</th>
+                    <th style={{ ...thStyle, fontSize: 9 }}>Årsak</th>
+                    <th style={{ ...thStyle, fontSize: 9 }}>Beskr. sanns. (før)</th>
+                    <th style={{ ...thStyle, fontSize: 9 }}>Beskr. risiko (før)</th>
+                    <th style={{ ...thStyle, width: 24, textAlign: "center", fontSize: 9 }}>S</th>
+                    <th style={{ ...thStyle, width: 24, textAlign: "center", fontSize: 9 }}>K</th>
+                    <th style={{ ...thStyle, width: 30, textAlign: "center", fontSize: 9 }}>R</th>
+                    <th style={{ ...thStyle, fontSize: 9 }}>Forebyggende tiltak</th>
+                    <th style={{ ...thStyle, fontSize: 9 }}>Beskr. etter tiltak</th>
+                    <th style={{ ...thStyle, width: 24, textAlign: "center", fontSize: 9 }}>S etter</th>
+                    <th style={{ ...thStyle, width: 24, textAlign: "center", fontSize: 9 }}>K etter</th>
+                    <th style={{ ...thStyle, width: 30, textAlign: "center", fontSize: 9 }}>R etter</th>
+                    <th style={{ ...thStyle, fontSize: 9 }}>Restrisiko</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {content.hendelser.map((h, i) => {
+                    const sE = h.sannsynlighetEtter ?? h.sannsynlighet;
+                    const kE = h.konsekvensEtter ?? h.konsekvens;
+                    const td = { ...tdStyle, fontSize: 9 };
+                    return (
+                      <tr key={h.id}>
+                        <td style={{ ...td, textAlign: "center", fontWeight: 600 }}>{i + 1}</td>
+                        <td style={td}>{h.sarbarhet || ""}</td>
+                        <td style={{ ...td, fontWeight: 600 }}>{h.hendelse || h.beskrivelse || h.tittel || "—"}</td>
+                        <td style={td}>{h.arsak}</td>
+                        <td style={td}>{h.beskrivelseSannsynlighetFor || ""}</td>
+                        <td style={td}>{h.beskrivelseRisikoFor || ""}</td>
+                        <td style={{ ...td, textAlign: "center" }}>{h.sannsynlighet}</td>
+                        <td style={{ ...td, textAlign: "center" }}>{h.konsekvens}</td>
+                        <td style={{ ...riskCellStyle(h.sannsynlighet, h.konsekvens), fontSize: 9 }}>{h.sannsynlighet * h.konsekvens}</td>
+                        <td style={td}>{h.tiltak}</td>
+                        <td style={td}>{h.beskrivelseEtter || ""}</td>
+                        <td style={{ ...td, textAlign: "center" }}>{sE}</td>
+                        <td style={{ ...td, textAlign: "center" }}>{kE}</td>
+                        <td style={{ ...riskCellStyle(sE, kE), fontSize: 9 }}>{sE * kE}</td>
+                        <td style={td}>{h.restrisiko}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           )}
         </section>
 
-        {/* Kap. 4 Oppsummering */}
         <section id="kap-4">
           <h2 style={h2}>4. Oppsummering</h2>
           {content.oppsummering ? (

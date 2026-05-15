@@ -124,7 +124,18 @@ export default function RosAnalyse() {
         setContent({
           metadata: { ...EMPTY_CONTENT.metadata, ...(c as any).metadata },
           innledning: { ...EMPTY_CONTENT.innledning, ...(c as any).innledning },
-          hendelser: Array.isArray((c as any).hendelser) ? (c as any).hendelser : [],
+          hendelser: Array.isArray((c as any).hendelser)
+            ? (c as any).hendelser.map((h: any) => ({
+                ...h,
+                hendelse: h.hendelse || h.beskrivelse || "",
+                sarbarhet: h.sarbarhet || "",
+                beskrivelseSannsynlighetFor: h.beskrivelseSannsynlighetFor || "",
+                beskrivelseRisikoFor: h.beskrivelseRisikoFor || "",
+                beskrivelseEtter: h.beskrivelseEtter || "",
+                sannsynlighetEtter: h.sannsynlighetEtter ?? h.sannsynlighet ?? 1,
+                konsekvensEtter: h.konsekvensEtter ?? h.konsekvens ?? 1,
+              }))
+            : [],
           oppsummering: (c as any).oppsummering ?? "",
           revisjonshistorikk: Array.isArray((c as any).revisjonshistorikk) ? (c as any).revisjonshistorikk : [],
         });
@@ -224,8 +235,14 @@ export default function RosAnalyse() {
     setContent((c) => ({
       ...c,
       hendelser: [...c.hendelser, {
-        id, tittel: "", beskrivelse: "", arsak: "",
-        sannsynlighet: 1, konsekvens: 1, tiltak: "", restrisiko: "",
+        id, tittel: "",
+        sarbarhet: "", hendelse: "", arsak: "",
+        beskrivelseSannsynlighetFor: "", beskrivelseRisikoFor: "",
+        sannsynlighet: 1, konsekvens: 1,
+        tiltak: "",
+        beskrivelseEtter: "",
+        sannsynlighetEtter: 1, konsekvensEtter: 1,
+        restrisiko: "",
       }],
     }));
     setOpenHendelser((o) => [...o, id]);
@@ -425,8 +442,15 @@ export default function RosAnalyse() {
                     const cls = farge === "rod" ? "bg-red-500/85 text-white"
                       : farge === "gul" ? "bg-amber-400/90 text-foreground"
                       : "bg-emerald-500/80 text-white";
+                    const sE = h.sannsynlighetEtter ?? h.sannsynlighet;
+                    const kE = h.konsekvensEtter ?? h.konsekvens;
+                    const fargeEtter = risikoFarge(sE, kE);
+                    const clsEtter = fargeEtter === "rod" ? "bg-red-500/85 text-white"
+                      : fargeEtter === "gul" ? "bg-amber-400/90 text-foreground"
+                      : "bg-emerald-500/80 text-white";
                     const sok = hendelseSok.trim().toLowerCase();
-                    if (sok && !`${h.tittel} ${h.beskrivelse} ${h.arsak}`.toLowerCase().includes(sok)) return null;
+                    const sokTekst = `${h.tittel} ${h.sarbarhet || ""} ${h.hendelse || h.beskrivelse || ""} ${h.arsak}`.toLowerCase();
+                    if (sok && !sokTekst.includes(sok)) return null;
                     return (
                       <AccordionItem key={h.id} value={h.id} className="border rounded-lg px-3 border-b">
                         <div className="flex items-center gap-2">
@@ -434,10 +458,14 @@ export default function RosAnalyse() {
                             <div className="flex items-center gap-2 flex-1 min-w-0 text-left">
                               <span className="text-xs font-medium text-muted-foreground shrink-0">#{idx + 1}</span>
                               <span className="truncate text-sm font-medium">
-                                {h.tittel || <span className="italic text-muted-foreground">Uten tittel</span>}
+                                {h.tittel || h.sarbarhet || h.hendelse || <span className="italic text-muted-foreground">Uten tittel</span>}
                               </span>
                               <span className={`ml-auto rounded px-2 py-0.5 text-xs font-semibold shrink-0 ${cls}`}>
-                                {h.sannsynlighet}×{h.konsekvens} = {h.sannsynlighet * h.konsekvens}
+                                R {h.sannsynlighet * h.konsekvens}
+                              </span>
+                              <span className="text-xs text-muted-foreground shrink-0">→</span>
+                              <span className={`rounded px-2 py-0.5 text-xs font-semibold shrink-0 ${clsEtter}`}>
+                                R {sE * kE}
                               </span>
                             </div>
                           </AccordionTrigger>
@@ -449,32 +477,86 @@ export default function RosAnalyse() {
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
                         </div>
-                        <AccordionContent className="pt-2 space-y-2">
-                          <Field label="Tittel" value={h.tittel} onChange={(v) => updateHendelse(h.id, { tittel: v })} />
-                          <Area label="Beskrivelse" value={h.beskrivelse} onChange={(v) => updateHendelse(h.id, { beskrivelse: v })} rows={2} />
-                          <Area label="Årsak" value={h.arsak} onChange={(v) => updateHendelse(h.id, { arsak: v })} rows={2} />
-                          <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <Label className="text-xs">Sannsynlighet (1–5)</Label>
-                              <Select value={String(h.sannsynlighet)} onValueChange={(v) => updateHendelse(h.id, { sannsynlighet: Number(v) })}>
-                                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                  {[1,2,3,4,5].map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                            <div>
-                              <Label className="text-xs">Konsekvens (1–5)</Label>
-                              <Select value={String(h.konsekvens)} onValueChange={(v) => updateHendelse(h.id, { konsekvens: Number(v) })}>
-                                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                                <SelectContent>
-                                  {[1,2,3,4,5].map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
-                                </SelectContent>
-                              </Select>
+                        <AccordionContent className="pt-2 space-y-3">
+                          <div className="space-y-2">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Identifikasjon</p>
+                            <Field label="Tittel" value={h.tittel} onChange={(v) => updateHendelse(h.id, { tittel: v })} />
+                            <Area label="Sårbarhet" value={h.sarbarhet || ""} onChange={(v) => updateHendelse(h.id, { sarbarhet: v })} rows={2} />
+                            <Area label="Hendelse / scenario" value={h.hendelse || h.beskrivelse || ""} onChange={(v) => updateHendelse(h.id, { hendelse: v, beskrivelse: v })} rows={2} />
+                            <Area label="Årsak" value={h.arsak} onChange={(v) => updateHendelse(h.id, { arsak: v })} rows={2} />
+                          </div>
+
+                          <div className="space-y-2 border-t pt-3">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Før tiltak</p>
+                            <Area label="Beskrivelse av sannsynlighet" value={h.beskrivelseSannsynlighetFor || ""} onChange={(v) => updateHendelse(h.id, { beskrivelseSannsynlighetFor: v })} rows={2} />
+                            <Area label="Beskrivelse av risiko / konsekvens" value={h.beskrivelseRisikoFor || ""} onChange={(v) => updateHendelse(h.id, { beskrivelseRisikoFor: v })} rows={2} />
+                            <div className="grid grid-cols-3 gap-2 items-end">
+                              <div>
+                                <Label className="text-xs">Sannsynlighet (1–5)</Label>
+                                <Select value={String(h.sannsynlighet)} onValueChange={(v) => updateHendelse(h.id, { sannsynlighet: Number(v) })}>
+                                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                                  <SelectContent>
+                                    {[1,2,3,4,5].map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div>
+                                <Label className="text-xs">Konsekvens (1–5)</Label>
+                                <Select value={String(h.konsekvens)} onValueChange={(v) => updateHendelse(h.id, { konsekvens: Number(v) })}>
+                                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                                  <SelectContent>
+                                    {[1,2,3,4,5].map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div>
+                                <Label className="text-xs">Risiko (S × K)</Label>
+                                <div className={`h-9 rounded-md border flex items-center justify-center text-sm font-semibold ${cls}`}>
+                                  {h.sannsynlighet * h.konsekvens}
+                                </div>
+                              </div>
                             </div>
                           </div>
-                          <Area label="Tiltak" value={h.tiltak} onChange={(v) => updateHendelse(h.id, { tiltak: v })} rows={2} />
-                          <Area label="Restrisiko" value={h.restrisiko} onChange={(v) => updateHendelse(h.id, { restrisiko: v })} rows={2} />
+
+                          <div className="space-y-2 border-t pt-3">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Forebyggende tiltak</p>
+                            <Area label="Tiltak" value={h.tiltak} onChange={(v) => updateHendelse(h.id, { tiltak: v })} rows={3} />
+                          </div>
+
+                          <div className="space-y-2 border-t pt-3">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Etter tiltak</p>
+                            <Area label="Beskrivelse av risiko og konsekvens etter tiltak" value={h.beskrivelseEtter || ""} onChange={(v) => updateHendelse(h.id, { beskrivelseEtter: v })} rows={2} />
+                            <div className="grid grid-cols-3 gap-2 items-end">
+                              <div>
+                                <Label className="text-xs">Sannsynlighet etter (1–5)</Label>
+                                <Select value={String(sE)} onValueChange={(v) => updateHendelse(h.id, { sannsynlighetEtter: Number(v) })}>
+                                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                                  <SelectContent>
+                                    {[1,2,3,4,5].map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div>
+                                <Label className="text-xs">Konsekvens etter (1–5)</Label>
+                                <Select value={String(kE)} onValueChange={(v) => updateHendelse(h.id, { konsekvensEtter: Number(v) })}>
+                                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                                  <SelectContent>
+                                    {[1,2,3,4,5].map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              <div>
+                                <Label className="text-xs">Risiko etter (S × K)</Label>
+                                <div className={`h-9 rounded-md border flex items-center justify-center text-sm font-semibold ${clsEtter}`}>
+                                  {sE * kE}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2 border-t pt-3">
+                            <Area label="Restrisiko" value={h.restrisiko} onChange={(v) => updateHendelse(h.id, { restrisiko: v })} rows={2} />
+                          </div>
                         </AccordionContent>
                       </AccordionItem>
                     );
