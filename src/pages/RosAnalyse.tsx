@@ -81,15 +81,20 @@ export default function RosAnalyse() {
       });
   }, [user]);
 
-  // Load project list + ROS list for landing
+  // Load project list (for create dialog)
   useEffect(() => {
     if (!user) return;
     supabase.from("projects").select("id, name, address").order("created_at", { ascending: false })
       .then(({ data }) => { if (data) setProjects(data as ProjectOption[]); });
-    supabase.from("ros_analyses").select("id, name, project_id, updated_at")
-      .order("updated_at", { ascending: false })
-      .then(({ data }) => { if (data) setAnalyses(data as RosRow[]); });
   }, [user]);
+
+  // Redirect when no analysis is selected and we're not in create mode
+  useEffect(() => {
+    if (!user) return;
+    if (!rosId && !isNew) {
+      navigate("/mine-prosjekter", { replace: true });
+    }
+  }, [user, rosId, isNew, navigate]);
 
   // Open "create new" dialog automatically when ?new=true
   useEffect(() => {
