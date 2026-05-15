@@ -14,9 +14,12 @@ import {
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText } from "lucide-react";
+import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock } from "lucide-react";
 import RosPreview, { type RosContent, type RosHendelse } from "@/components/ros/RosPreview";
 import RosMatriks, { risikoFarge } from "@/components/ros/RosMatriks";
+import { exportRosToWord } from "@/lib/ros-word-export";
+import { useCanDownload } from "@/hooks/useCanDownload";
+import { resolveDocumentTheme } from "@/lib/document-templates";
 
 interface ProjectOption { id: string; name: string; address: string | null; }
 interface RosRow { id: string; name: string; project_id: string; updated_at: string; }
