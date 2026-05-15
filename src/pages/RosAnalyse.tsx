@@ -49,7 +49,7 @@ export default function RosAnalyse() {
   const isNew = params.get("new") === "true";
 
   const [projects, setProjects] = useState<ProjectOption[]>([]);
-  const [analyses, setAnalyses] = useState<RosRow[]>([]);
+  const [projectId, setProjectId] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
   const [newName, setNewName] = useState("");
   const [newProjectId, setNewProjectId] = useState<string>("");
