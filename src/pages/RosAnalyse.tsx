@@ -55,6 +55,8 @@ export default function RosAnalyse() {
   const [currentName, setCurrentName] = useState("");
   const [saving, setSaving] = useState(false);
   const [loadingDoc, setLoadingDoc] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const canDownload = useCanDownload();
 
   // Load project list + ROS list for landing
   useEffect(() => {
