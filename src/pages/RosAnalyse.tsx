@@ -180,7 +180,7 @@ export default function RosAnalyse() {
       return;
     }
     toast({ title: "Slettet" });
-    navigate("/ros-analyse");
+    navigate(projectId ? `/prosjekt/${projectId}` : "/mine-prosjekter");
   };
 
   const handleExportWord = async () => {
