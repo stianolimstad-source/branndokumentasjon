@@ -100,7 +100,7 @@ const Index = () => {
       icon: ShieldAlert,
       title: "ROS-analyse",
       description: "Brannrelatert risiko- og sårbarhetsanalyse (5×5)",
-      href: "/ros-analyse",
+      href: "/mine-prosjekter",
     },
     {
       icon: Warehouse,
