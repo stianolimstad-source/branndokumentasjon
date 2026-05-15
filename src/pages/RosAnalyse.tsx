@@ -60,6 +60,25 @@ export default function RosAnalyse() {
   const canDownload = useCanDownload();
   const [openHendelser, setOpenHendelser] = useState<string[]>([]);
   const [hendelseSok, setHendelseSok] = useState("");
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const [firmaNavn, setFirmaNavn] = useState<string | null>(null);
+  const [fullName, setFullName] = useState<string | null>(null);
+
+  // Load profile (logo, company, name) for live preview + export
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("profiles")
+      .select("full_name, company, logo_url")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!data) return;
+        setLogoUrl((data as any).logo_url || null);
+        setFirmaNavn((data as any).company || null);
+        setFullName(data.full_name || null);
+      });
+  }, [user]);
 
   // Load project list + ROS list for landing
   useEffect(() => {
