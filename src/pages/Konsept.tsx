@@ -9736,13 +9736,83 @@ const Konsept = () => {
                           : formData.risikoklasse ? [formData.risikoklasse] : [];
                         const harRK356 = alleRK.some((rk: string) => ["RK3","RK5","RK6"].includes(rk));
                         const harRK124 = alleRK.some((rk: string) => ["RK1","RK2","RK4"].includes(rk));
+
+                        // ===== BF 85-grenen =====
+                        if (formData.regelverk === "BF85") {
+                          const lcBT = (formData.bygningstype || "").toLowerCase();
+                          const delerBT = (formData.bygningsdeler || []).map((d: any) => (d.bygningstype || "").toLowerCase());
+                          const erKraftstasjon = lcBT.includes("kraftstasjon") || delerBT.some((b: string) => b.includes("kraftstasjon"));
+                          const erIndustri = lcBT.includes("industri") || delerBT.some((b: string) => b.includes("industri")) || erKraftstasjon;
+
+                          const kildeNote = erKraftstasjon
+                            ? "Vurderingen baseres på BF 85 og DSBs veiledning til kraftstasjoner."
+                            : erIndustri
+                              ? "Vurderingen baseres på BF 85 (industri – bygningsrådets skjønn)."
+                              : "BF 85 stiller ikke spesifikke krav til manuelt slokkeutstyr for denne bygningstypen. Bygningsrådet kan likevel kreve dette.";
+
+                          const brukerKrav: string[] = [];
+                          if (formData.slokkeBrannslange) {
+                            brukerKrav.push("Brannslange – plasseres slik at den dekker alle rom; maks 30 m ved fullt uttrekk; skal ikke plasseres i trapperom.");
+                          }
+                          if (formData.slokkeHandslukker) {
+                            brukerKrav.push("Håndslokker – min. 6 kg ABC-pulver eller 9 liter skum/vann; plasseres tilgjengelig og merket.");
+                          }
+
+                          const generelleKravBF85: string[] = [
+                            "Slokkeutstyr skal være lett tilgjengelig og dekke alle rom",
+                            "Plassering skal være tydelig markert med skilt",
+                            "Tilvisningsskilt skal stå på tvers av ferdselsretningen",
+                          ];
+
+                          return (
+                            <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-2">
+                              <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
+                              <p className="italic text-foreground/70">{kildeNote}</p>
+
+                              {erIndustri && (
+                                <div>
+                                  <p className="font-medium text-foreground/90 mb-0.5">Generelt:</p>
+                                  <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                                    <li>Bygningsrådet kan kreve brannslanger og manuelt slokkeutstyr.</li>
+                                  </ul>
+                                </div>
+                              )}
+
+                              {erKraftstasjon && (
+                                <div>
+                                  <p className="font-medium text-foreground/90 mb-0.5">Manuelt slokkeutstyr – kraftstasjon:</p>
+                                  <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                                    <li>Det skal utplasseres hensiktsmessig og tilstrekkelig manuelt slokkeutstyr som skal kunne brukes i alle rom i anlegget. Med manuelt slokkeutstyr menes alt slokkeutstyr som betjenes av personell, dvs. brannslanger og transportable slokkeapparater av ulik utforming og for ulike bruksområder. Utstyret må være avpasset etter den brann som ventes å oppstå.</li>
+                                  </ul>
+                                </div>
+                              )}
+
+                              {brukerKrav.length > 0 && (
+                                <div>
+                                  <p className="font-medium text-foreground/90 mb-0.5">Valgt slokkeutstyr:</p>
+                                  <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                                    {brukerKrav.map((k, i) => <li key={`u${i}`}>{k}</li>)}
+                                  </ul>
+                                </div>
+                              )}
+
+                              <div>
+                                <p className="font-medium text-foreground/90 mb-0.5">Generelle krav:</p>
+                                <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
+                                  {generelleKravBF85.map((k, i) => <li key={`g${i}`}>{k}</li>)}
+                                </ul>
+                              </div>
+
+                              <p className="text-foreground/60 mt-1">Du kan endre valgene med knappene ovenfor.</p>
+                            </div>
+                          );
+                        }
+
+                        // ===== TEK17-grenen (uendret) =====
                         const kravListe: string[] = [];
-                        
-                        // Type utstyr
                         if (harRK356) kravListe.push(`Brannslange (krav for RK ${["RK3","RK5","RK6"].filter(rk => alleRK.includes(rk)).map(rk => rk.replace("RK","")).join(", ")})`);
                         if (harRK124) kravListe.push(`Håndslokkeapparat (krav for RK ${["RK1","RK2","RK4"].filter(rk => alleRK.includes(rk)).map(rk => rk.replace("RK","")).join(", ")})`);
-                        
-                        // Generelle krav som alltid gjelder
+
                         const generelleKrav: string[] = [
                           "Manuelt slokkeutstyr skal dekke alle rom i bygget",
                           "Slokkeutstyret skal være lett tilgjengelig for bruk i en tidlig fase av brannen",
@@ -9751,16 +9821,14 @@ const Konsept = () => {
                           "Tilvisningsskilt for slokkeutstyr skal stå på tvers av ferdselsretningen",
                           "For materiell som krever bruksanvisning, skal denne finnes på eller ved materiellet"
                         ];
-                        
-                        // Brannslange-spesifikke krav
+
                         const brannslangekrav: string[] = [];
                         if (formData.slokkeBrannslange) {
                           brannslangekrav.push("Brannslange maks 30 meter ved fullt uttrekk");
                           brannslangekrav.push("Brannslangeskap skal ikke plasseres i trapperom");
                           brannslangekrav.push("Ref. NS-EN 671-1:2012 – Slangetromler med formstabil slange");
                         }
-                        
-                        // Håndslokker-spesifikke krav
+
                         const handslokkerkrav: string[] = [];
                         if (formData.slokkeHandslukker) {
                           handslokkerkrav.push("Håndslokker min. 6 kg ABC-pulver eller 9 liter skum/vann (NS-EN 3-7)");
@@ -9770,10 +9838,7 @@ const Konsept = () => {
                         return (
                           <div className="p-3 bg-accent/30 border border-accent rounded text-xs space-y-2">
                             <p className="font-semibold text-foreground">✓ Følgende krav er automatisk inkludert i rapporten:</p>
-                            {formData.regelverk === "BF85" && (
-                              <p className="italic text-foreground/70">Vurderingen baseres på BF85 Kap. 30:91/93 (slokkingsredskap, brannslanger, håndslokkingsapparater og stigeledning) samt bygningstype-spesifikke krav i Kap. 31–39.</p>
-                            )}
-                            
+
                             {kravListe.length > 0 && (
                               <div>
                                 <p className="font-medium text-foreground/90 mb-0.5">Type slokkeutstyr:</p>
@@ -9782,14 +9847,14 @@ const Konsept = () => {
                                 </ul>
                               </div>
                             )}
-                            
+
                             <div>
                               <p className="font-medium text-foreground/90 mb-0.5">Generelle krav:</p>
                               <ul className="ml-4 list-disc text-foreground/80 space-y-0.5">
                                 {generelleKrav.map((k, i) => <li key={`g${i}`}>{k}</li>)}
                               </ul>
                             </div>
-                            
+
                             {brannslangekrav.length > 0 && (
                               <div>
                                 <p className="font-medium text-foreground/90 mb-0.5">Brannslange-krav:</p>
@@ -9798,7 +9863,7 @@ const Konsept = () => {
                                 </ul>
                               </div>
                             )}
-                            
+
                             {handslokkerkrav.length > 0 && (
                               <div>
                                 <p className="font-medium text-foreground/90 mb-0.5">Håndslokker-krav:</p>
@@ -9807,7 +9872,7 @@ const Konsept = () => {
                                 </ul>
                               </div>
                             )}
-                            
+
                             <p className="text-foreground/60 mt-1">Du kan endre valgene med knappene ovenfor.</p>
                           </div>
                         );
