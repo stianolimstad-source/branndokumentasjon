@@ -9913,6 +9913,7 @@ const Konsept = () => {
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
                         <Label className="text-base font-extrabold text-foreground">{isBF85Tilstand ? "3.13" : "3.14"} {formData.regelverk === "BF85" ? "Atkomst for brannvesenet (§ 11-17 Tilrettelegging for rednings- og slokkemannskap)" : "§ 11-17 Tilrettelegging for slokkemannskap"}</Label>
                       </div>
+                      {!isBF85Tilstand && (
                       <div className="space-y-2 mb-3">
                         <div className="flex items-center space-x-2">
                           <Checkbox
@@ -9963,6 +9964,7 @@ const Konsept = () => {
                           <Label htmlFor="stortAntallPersonerSlokke" className="text-sm font-medium">Stort antall personer – tilgjengelig atkomst for brannvesenet</Label>
                         </div>
                       </div>
+                      )}
                       <div className="mb-3">
                         <Label className="text-xs font-medium mb-1 block">Tilrettelegging for rednings- og slokkemannskap</Label>
                         <Textarea 
@@ -9978,7 +9980,7 @@ const Konsept = () => {
                           rows={8}
                         />
                       </div>
-                      {(formData.hoyderedskapRelevant || formData.byggOver23m) && (
+                      {!isBF85Tilstand && (formData.hoyderedskapRelevant || formData.byggOver23m) && (
                       <div className="mb-3">
                         <Label className="text-xs font-medium mb-1 block">Krav til utforming av oppstillingsplasser for høyderedskaper</Label>
                         <Textarea
