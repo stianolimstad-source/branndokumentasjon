@@ -14,7 +14,8 @@ import {
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search } from "lucide-react";
 import RosPreview, { type RosContent, type RosHendelse } from "@/components/ros/RosPreview";
 import RosMatriks, { risikoFarge } from "@/components/ros/RosMatriks";
 import { exportRosToWord } from "@/lib/ros-word-export";
