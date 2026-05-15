@@ -14,9 +14,12 @@ import {
   AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText } from "lucide-react";
+import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock } from "lucide-react";
 import RosPreview, { type RosContent, type RosHendelse } from "@/components/ros/RosPreview";
 import RosMatriks, { risikoFarge } from "@/components/ros/RosMatriks";
+import { exportRosToWord } from "@/lib/ros-word-export";
+import { useCanDownload } from "@/hooks/useCanDownload";
+import { resolveDocumentTheme } from "@/lib/document-templates";
 
 interface ProjectOption { id: string; name: string; address: string | null; }
 interface RosRow { id: string; name: string; project_id: string; updated_at: string; }
@@ -52,6 +55,8 @@ export default function RosAnalyse() {
   const [currentName, setCurrentName] = useState("");
   const [saving, setSaving] = useState(false);
   const [loadingDoc, setLoadingDoc] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const canDownload = useCanDownload();
 
   // Load project list + ROS list for landing
   useEffect(() => {
@@ -148,6 +153,36 @@ export default function RosAnalyse() {
     navigate("/ros-analyse");
   };
 
+  const handleExportWord = async () => {
+    if (!user) return;
+    setExporting(true);
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, email, company, logo_url")
+        .eq("id", user.id)
+        .maybeSingle();
+      const projectId = analyses.find((a) => a.id === rosId)?.project_id ?? null;
+      const logoUrl = (profile as any)?.logo_url || null;
+      const theme = await resolveDocumentTheme(projectId, logoUrl, user.id);
+      await exportRosToWord({
+        analyseName: currentName || "ROS-analyse",
+        content,
+        sender: {
+          full_name: profile?.full_name || null,
+          email: profile?.email || null,
+          company: (profile as any)?.company || null,
+        },
+        logoUrl,
+        theme,
+      });
+      toast({ title: "Lastet ned", description: "ROS-analysen er lastet ned som Word-fil" });
+    } catch (e: any) {
+      toast({ title: "Eksport feilet", description: e?.message, variant: "destructive" });
+    } finally {
+      setExporting(false);
+    }
+  };
   // ----- Hendelser -----
   const updateHendelse = (id: string, patch: Partial<RosHendelse>) => {
     setContent((c) => ({
@@ -292,6 +327,16 @@ export default function RosAnalyse() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleExportWord}
+              disabled={exporting || !canDownload}
+              title={canDownload ? "Last ned som Word" : "Krever aktivt abonnement"}
+            >
+              {canDownload ? <Download className="h-4 w-4 mr-1" /> : <Lock className="h-4 w-4 mr-1" />}
+              {exporting ? "Eksporterer…" : "Word"}
+            </Button>
             <Button size="sm" onClick={handleSave} disabled={saving}>
               <Save className="h-4 w-4 mr-1" /> {saving ? "Lagrer…" : "Lagre"}
             </Button>
