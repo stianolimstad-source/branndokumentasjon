@@ -5545,9 +5545,24 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               const harRK356 = alleRK.some((rk: string) => ["RK3","RK5","RK6"].includes(rk));
               const harRK124 = alleRK.some((rk: string) => ["RK1","RK2","RK4"].includes(rk));
               const harRK4 = alleRK.includes("RK4");
+              const lcBT = (formData.bygningstype || "").toLowerCase();
+              const delerBT = (formData.bygningsdeler || []).map((d: any) => (d.bygningstype || "").toLowerCase());
+              const erKraftstasjon = lcBT.includes("kraftstasjon") || delerBT.some((b: string) => b.includes("kraftstasjon"));
+              const bf85Kraftstasjon = isBF85 && erKraftstasjon;
               return (
                 <>
-                  {formData.slokkeBrannslange && (
+                  {formData.slokkeBrannslange && bf85Kraftstasjon && (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Brannslange (kraftstasjon)</td>
+                      <td className="border border-gray-400 p-2">
+                        <p>Der det er mulighet for tilgang på slokkevann, bør det installeres anlegg for montering av brannslanger. Brannslangen bør fortrinnsvis være på trommel med senterinnføring av vannet, slik at bare nødvendig del av slangelengden rulles ut i det enkelte brukstilfellet. Innvendig diameter må være minst 19 mm, og slangene må ikke være lenger enn 30 meter.</p>
+                        <p className="mt-2">Det bør brukes kuleventil, og kranene bør prøves jevnlig for å sikre at de ikke har satt seg fast.</p>
+                        <p className="mt-1 text-xs italic">Kilde: DSB sin veiledning om brannvern i kraftstasjoner.</p>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                    </tr>
+                  )}
+                  {formData.slokkeBrannslange && !bf85Kraftstasjon && (
                     <tr>
                       <td className="border border-gray-400 p-2 align-top">Brannslange</td>
                       <td className="border border-gray-400 p-2">
@@ -5577,7 +5592,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 </>
               );
             })()}
-            {(formData.slokkeBrannslange || formData.slokkeHandslukker) && (
+            {(formData.slokkeBrannslange || formData.slokkeHandslukker) && !(isBF85 && ((formData.bygningstype || "").toLowerCase().includes("kraftstasjon") || (formData.bygningsdeler || []).some((d: any) => (d.bygningstype || "").toLowerCase().includes("kraftstasjon")))) && (
               <>
                 <tr>
                   <td className="border border-gray-400 p-2 align-top">Antall og dekningsområde</td>
