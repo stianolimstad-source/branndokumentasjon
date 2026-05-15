@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Plus, FolderOpen, ShieldCheck, BarChart3, GitCompare, Shield, LayoutDashboard, Warehouse, Receipt, Handshake, Building, Search, Check, ArrowLeft, Lock, Info } from "lucide-react";
+import { Flame, Calculator, FileText, BookOpen, ClipboardCheck, FileWarning, Plus, FolderOpen, ShieldCheck, ShieldAlert, BarChart3, GitCompare, Shield, LayoutDashboard, Warehouse, Receipt, Handshake, Building, Search, Check, ArrowLeft, Lock, Info } from "lucide-react";
 import { useIsFullAccess } from "@/hooks/useIsFullAccess";
 import { BYGNINGSTYPER } from "@/lib/brensellagring-krav";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -95,6 +95,12 @@ const Index = () => {
       title: "Fraviksdokumentasjon",
       description: "Generer formelle fraviksanalyser og tiltak",
       href: "fravik-dialog",
+    },
+    {
+      icon: ShieldAlert,
+      title: "ROS-analyse",
+      description: "Brannrelatert risiko- og sårbarhetsanalyse (5×5)",
+      href: "/ros-analyse",
     },
     {
       icon: Warehouse,

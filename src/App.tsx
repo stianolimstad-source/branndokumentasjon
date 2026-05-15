@@ -8,6 +8,7 @@ import AppHeader from "@/components/AppHeader";
 import Index from "./pages/Index";
 import Konsept from "./pages/Konsept";
 import Tilstandsvurdering from "./pages/Tilstandsvurdering";
+import RosAnalyse from "./pages/RosAnalyse";
 import Verktoy from "./pages/Verktoy";
 import Romningsvei from "./pages/verktoy/Romningsvei";
 import Straling from "./pages/verktoy/Straling";
@@ -74,6 +75,7 @@ const App = () => (
             <Route path="/om" element={<Om />} />
             <Route path="/konsept" element={<RequireSubscription feature="Brannkonsept"><Konsept /></RequireSubscription>} />
             <Route path="/tilstandsvurdering" element={<RequireSubscription feature="Tilstandsvurdering"><Tilstandsvurdering /></RequireSubscription>} />
+            <Route path="/ros-analyse" element={<RequireSubscription feature="ROS-analyse"><RosAnalyse /></RequireSubscription>} />
             <Route path="/brensellagring" element={<RequireSubscription feature="Brensellagring"><Brensellagring /></RequireSubscription>} />
             <Route path="/fraviksdokumentasjon/kvalitativ" element={<RequireSubscription feature="Fraviksdokumentasjon"><KvalitativAnalyse /></RequireSubscription>} />
             <Route path="/mine-prosjekter" element={<RequireSubscription feature="Prosjekter"><MineProsjekter /></RequireSubscription>} />
