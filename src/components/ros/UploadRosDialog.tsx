@@ -40,15 +40,28 @@ async function readPdfText(file: File): Promise<string> {
 }
 
 async function readExcelText(file: File): Promise<string> {
-  const XLSX = await import("xlsx");
+  const ExcelJS = (await import("exceljs")).default;
   const buf = await file.arrayBuffer();
-  const wb = XLSX.read(buf, { type: "array" });
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(buf);
   let out = "";
-  for (const name of wb.SheetNames) {
-    out += `# Ark: ${name}\n`;
-    const ws = wb.Sheets[name];
-    out += XLSX.utils.sheet_to_csv(ws, { FS: "|", blankrows: false }) + "\n\n";
-  }
+  wb.eachSheet((ws) => {
+    out += `# Ark: ${ws.name}\n`;
+    ws.eachRow({ includeEmpty: false }, (row) => {
+      const vals = (row.values as any[]).slice(1).map((v) => {
+        if (v == null) return "";
+        if (typeof v === "object") {
+          if ("text" in v) return String(v.text);
+          if ("result" in v) return String(v.result);
+          if ("richText" in v) return v.richText.map((r: any) => r.text).join("");
+          if (v instanceof Date) return v.toISOString().slice(0, 10);
+        }
+        return String(v);
+      });
+      out += vals.join("|") + "\n";
+    });
+    out += "\n";
+  });
   return out.substring(0, 120000);
 }
 
