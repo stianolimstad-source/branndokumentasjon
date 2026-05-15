@@ -9752,7 +9752,15 @@ const Konsept = () => {
 
                           const brukerKrav: string[] = [];
                           if (formData.slokkeBrannslange) {
-                            brukerKrav.push("Brannslange – plasseres slik at den dekker alle rom; maks 30 m ved fullt uttrekk; skal ikke plasseres i trapperom.");
+                            if (erKraftstasjon) {
+                              brukerKrav.push("Brannslange bør være på trommel med senterinnføring av vann.");
+                              brukerKrav.push("Innvendig diameter minst 19 mm.");
+                              brukerKrav.push("Slangelengde maks 30 m.");
+                              brukerKrav.push("Bruk kuleventil; kranene prøves jevnlig.");
+                              brukerKrav.push("Kilde: DSB-veiledning om brannvern i kraftstasjoner.");
+                            } else {
+                              brukerKrav.push("Brannslange – plasseres slik at den dekker alle rom; maks 30 m ved fullt uttrekk; skal ikke plasseres i trapperom.");
+                            }
                           }
                           if (formData.slokkeHandslukker) {
                             brukerKrav.push("Håndslokker – min. 6 kg ABC-pulver eller 9 liter skum/vann; plasseres tilgjengelig og merket.");
