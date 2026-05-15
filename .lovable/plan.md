@@ -1,20 +1,17 @@
-## Endring: Tittel = kun Sårbarhet ved import
+## Plan
 
-Per nå settes `tittel` ved import til `"{sarbarhet} – {hendelse}"`, som blir veldig langt. Vi forenkler slik at tittelen kun blir sårbarheten, men den forblir et fritt redigerbart felt i editoren.
+1. Oppdater importfunksjonen for ROS slik at `tittel` ikke lenger tas fra AI-responsens lange tekstfelt, men settes konsekvent fra `sarbarhet` ved import.
+2. Juster AI-instruksen i samme importflyt så modellen blir bedt om å bruke kort tittel basert på sårbarhet, ikke `sårbarhet – hendelse`.
+3. Behold fallback når `sarbarhet` mangler, men prioriter kortest meningsfulle verdi slik at tittelen fortsatt blir kort og redigerbar i editoren.
+4. Verifiser at importoversikten og ROS-editoren viser den korte tittelen uten at hendelsesbeskrivelsen går tapt i `hendelse`-feltet.
 
-### Endringer
+## Teknisk
 
-**1. `supabase/functions/parse-ros-analysis/index.ts`**
-- I `clean`-mappingen: endre `tittelFromParts` fra `[sarbarhet, hendelse].join(" – ")` til kun `sarbarhet`.
-- Fallback-rekkefølge: `h.tittel || sarbarhet || hendelse` (beholder eksisterende eksplisitt tittel hvis dokumentet hadde en, ellers sårbarhet, ellers hendelse).
-- Fjerner `.slice(0, 300)` ikke nødvendig, men beholdes som sikring.
-
-**2. `src/components/ros/UploadRosDialog.tsx`**
-- Visningen i import-tabellen viser allerede `h.tittel || h.sarbarhet || h.hendelse` — ingen endring nødvendig, men resultatet blir nå konsist.
-
-**3. Ingen endringer** i `RosPreview.tsx`, `RosAnalyse.tsx` eller `ros-word-export.ts`. Tittelfeltet i editoren er allerede redigerbart, så brukeren kan justere fritt etter import.
-
-### Effekt
-- Nye importer får korte titler (f.eks. "Trafo 1 havarerer" i stedet for "Trafo 1 havarerer – Oljebrann ved intern feil…").
-- Eksisterende lagrede analyser påvirkes ikke (kan redigeres manuelt ved behov).
-- Hele hendelse-/scenariobeskrivelsen ligger fortsatt i `hendelse`-feltet og vises i editoren under «Før tiltak».
+- Fil: `supabase/functions/parse-ros-analysis/index.ts`
+- Endringer:
+  - Endre promptregelen for `tittel` til å bruke kun sårbarhet som kort importtittel.
+  - Endre sanitizingen slik at vi ikke stoler på `h.tittel` fra modellen hvis den er lang/komponert, men bygger tittelen selv med prioritet `sarbarhet -> hendelse`.
+  - La full tekst fortsatt ligge i `hendelse`/`beskrivelse`.
+- Forventet effekt:
+  - Eksempel: importert rad får `tittel = "Trafo 1"` i stedet for en lang sammenslått streng.
+  - Tittelen er fortsatt redigerbar etter import i ROS-analysen.

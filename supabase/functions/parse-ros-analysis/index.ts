@@ -56,7 +56,7 @@ Returner BARE et rent JSON-objekt (ingen markdown, ingen forklaring), med denne 
 Mapping-regler:
 - "Sårbarhet" → sarbarhet
 - "Hendelse/Scenario" → hendelse
-- tittel = kombiner "sarbarhet – hendelse" hvis begge finnes; ellers det som finnes.
+- tittel = KORT navn (maks 60 tegn, helst 1-4 ord) som beskriver sårbarheten/objektet, f.eks. "Trafo 1", "Generator 2", "Bryterrom". IKKE kopier hele sårbarhets- eller hendelsesteksten. Hvis sårbarhet er kort (≤60 tegn), bruk den som tittel.
 - "Årsak" → arsak (la stå tom hvis mangler).
 - "Beskrivelse av sannsynlighet" (før tiltak) → beskrivelseSannsynlighetFor
 - "Beskrivelse av konsekvens" eller "Beskrivelse av risiko" (før tiltak) → beskrivelseRisikoFor
@@ -116,11 +116,20 @@ Mapping-regler:
     const clean = hendelser.map((h: any) => {
       const sarbarhet = String(h?.sarbarhet || "");
       const hendelse = String(h?.hendelse || h?.beskrivelse || "");
-      const tittelFromParts = sarbarhet || hendelse;
       const sannsynlighet = clamp(h?.sannsynlighet);
       const konsekvens = clamp(h?.konsekvens);
+      // Bygg en kort tittel: prioriter sårbarhet, fall tilbake til hendelse.
+      // Ta første linje, kapp ved tegnsetting (: – , .), maks 60 tegn.
+      const shortTitle = (s: string): string => {
+        const firstLine = s.split(/\r?\n/)[0] || "";
+        const cut = firstLine.split(/[:\u2013\u2014\-,.;]/)[0] || firstLine;
+        return cut.trim().slice(0, 60);
+      };
+      const aiTittel = String(h?.tittel || "");
+      const useAi = aiTittel && aiTittel.length <= 60 && !aiTittel.includes("\n");
+      const tittel = (useAi ? aiTittel : shortTitle(sarbarhet) || shortTitle(hendelse)).trim();
       return {
-        tittel: String(h?.tittel || tittelFromParts || "").slice(0, 300),
+        tittel,
         sarbarhet,
         hendelse,
         beskrivelse: hendelse,
