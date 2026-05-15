@@ -9980,7 +9980,7 @@ const Konsept = () => {
                           rows={8}
                         />
                       </div>
-                      {(formData.hoyderedskapRelevant || formData.byggOver23m) && (
+                      {!isBF85Tilstand && (formData.hoyderedskapRelevant || formData.byggOver23m) && (
                       <div className="mb-3">
                         <Label className="text-xs font-medium mb-1 block">Krav til utforming av oppstillingsplasser for høyderedskaper</Label>
                         <Textarea
