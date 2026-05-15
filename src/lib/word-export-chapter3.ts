@@ -1813,6 +1813,13 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
             "RIBr"
           ));
         }
+        if ((formData as any).slokkeHandslukker) {
+          rows.push(contentRow(
+            "Håndslokker (kraftstasjon)",
+            "Der det er plassert ut håndslukkere skal det benyttes følgende. Brannslokkeren må være egnet for brannen den er antatt at skal kunne slokke. Håndslokkeapparater kan være pulverapparater på minimum 6 kg med ABC-pulver, eller skum- og vannapparater på minimum 9 liter eller på minimum 6 liter og med effektivitetsklasse minst 21A etter NS-EN 3-7:2004+A1:2007.",
+            "RIBr"
+          ));
+        }
       }
     } else {
       rows.push(contentRow(
