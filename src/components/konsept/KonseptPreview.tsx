@@ -5576,7 +5576,17 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                       <td className="border border-gray-400 p-2 align-top">RIV</td>
                     </tr>
                   )}
-                  {formData.slokkeHandslukker && (
+                  {formData.slokkeHandslukker && bf85Kraftstasjon && (
+                    <tr>
+                      <td className="border border-gray-400 p-2 align-top">Håndslokker (kraftstasjon)</td>
+                      <td className="border border-gray-400 p-2">
+                        <p>Der det er plassert ut håndslukkere skal det benyttes følgende. Brannslokkeren må være egnet for brannen den er antatt at skal kunne slokke.</p>
+                        <p className="mt-2">Håndslokkeapparater kan være pulverapparater på minimum 6 kg med ABC-pulver, eller skum- og vannapparater på minimum 9 liter eller på minimum 6 liter og med effektivitetsklasse minst 21A etter NS-EN 3-7:2004+A1:2007.</p>
+                      </td>
+                      <td className="border border-gray-400 p-2 align-top">RIBr</td>
+                    </tr>
+                  )}
+                  {formData.slokkeHandslukker && !bf85Kraftstasjon && (
                     <tr>
                       <td className="border border-gray-400 p-2 align-top">Håndslokker</td>
                       <td className="border border-gray-400 p-2">
