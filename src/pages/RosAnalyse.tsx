@@ -270,60 +270,21 @@ export default function RosAnalyse() {
   };
 
   const projectName = useMemo(() => {
-    const pid = analyses.find((a) => a.id === rosId)?.project_id;
-    return projects.find((p) => p.id === pid)?.name;
-  }, [analyses, projects, rosId]);
+    return projects.find((p) => p.id === projectId)?.name;
+  }, [projects, projectId]);
 
-  // ============ LANDING ============
+  // ============ CREATE-ONLY VIEW (no rosId, dialog open) ============
   if (!rosId) {
     return (
       <div className="min-h-screen bg-gradient-subtle">
-        <div className="container mx-auto px-4 py-8 max-w-5xl space-y-6">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <Link to="/" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
-                <ArrowLeft className="h-4 w-4 mr-1" /> Tilbake
-              </Link>
-              <h1 className="text-2xl font-bold mt-2 flex items-center gap-2">
-                <ShieldAlert className="h-6 w-6 text-primary" /> ROS-analyse
-              </h1>
-              <p className="text-sm text-muted-foreground">Brannrelatert risiko- og sårbarhetsanalyse (5×5).</p>
-            </div>
-            <Button onClick={() => setShowCreate(true)}>
-              <Plus className="h-4 w-4 mr-2" /> Ny ROS-analyse
-            </Button>
-          </div>
-
-          <div>
-            <h2 className="text-lg font-semibold mb-3">Mine ROS-analyser</h2>
-            {analyses.length === 0 ? (
-              <Card><CardContent className="py-10 text-center text-sm text-muted-foreground">
-                Ingen ROS-analyser ennå. Klikk «Ny ROS-analyse» for å starte.
-              </CardContent></Card>
-            ) : (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {analyses.map((a) => {
-                  const proj = projects.find((p) => p.id === a.project_id);
-                  return (
-                    <Card key={a.id} className="hover:shadow-medium transition-shadow cursor-pointer"
-                      onClick={() => setParams({ id: a.id })}>
-                      <CardHeader>
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 mb-2">
-                          <FileText className="h-5 w-5 text-primary" />
-                        </div>
-                        <CardTitle className="text-base">{a.name}</CardTitle>
-                        <p className="text-xs text-muted-foreground">{proj?.name ?? "Ukjent prosjekt"}</p>
-                      </CardHeader>
-                    </Card>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
+        <div className="container mx-auto px-4 py-8 max-w-5xl">
+          <p className="text-sm text-muted-foreground">Åpner…</p>
           <CreateDialog
             open={showCreate}
-            onOpenChange={setShowCreate}
+            onOpenChange={(o) => {
+              setShowCreate(o);
+              if (!o) navigate(projectFromUrl ? `/prosjekt/${projectFromUrl}` : "/mine-prosjekter");
+            }}
             projects={projects}
             newName={newName}
             setNewName={setNewName}
