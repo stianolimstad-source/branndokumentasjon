@@ -55,6 +55,7 @@ Returner BARE et rent JSON-objekt (ingen markdown, ingen forklaring), med denne 
 }
 
 Mapping-regler:
+- prosjekt = KORT navn (maks 80 tegn) på prosjektet/anlegget hendelsen tilhører. Hent fra seksjonsoverskrifter, kolonne "Anlegg"/"Prosjekt"/"Stasjon"/"Lokasjon", eller arkfane-navn i Excel. Hvis hele dokumentet kun omhandler ETT prosjekt, sett prosjekt = "". Husk å videreføre samme prosjektnavn for alle påfølgende rader inntil en ny prosjektoverskrift dukker opp.
 - "Sårbarhet" → sarbarhet
 - "Hendelse/Scenario" → hendelse
 - tittel = KORT navn (maks 60 tegn, helst 1-4 ord) som beskriver sårbarheten/objektet, f.eks. "Trafo 1", "Generator 2", "Bryterrom". IKKE kopier hele sårbarhets- eller hendelsesteksten. Hvis sårbarhet er kort (≤60 tegn), bruk den som tittel.
