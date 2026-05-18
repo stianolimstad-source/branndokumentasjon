@@ -686,6 +686,28 @@ function Area({
   );
 }
 
+function generateBakgrunnText(meta: RosContent["metadata"]): string {
+  const navn = meta.prosjektnavn?.trim();
+  const adresse = meta.adresse?.trim();
+  const objekt = navn && adresse ? `${navn} (${adresse})` : navn || adresse || "tiltaket";
+  return (
+    `Denne risiko- og sårbarhetsanalysen (ROS-analyse) er utarbeidet for ${objekt}. ` +
+    `Analysen skal kartlegge og vurdere uønskede hendelser som kan oppstå knyttet til brann, eksplosjon og andre uhell som påvirker liv, helse, miljø og materielle verdier. ` +
+    `ROS-analysen er gjennomført i samsvar med kravene i plan- og bygningsloven, byggteknisk forskrift (TEK17), brann- og eksplosjonsvernloven, samt forskrift om systematisk helse-, miljø- og sikkerhetsarbeid (internkontrollforskriften). ` +
+    `Metodikken bygger på NS 5814 «Krav til risikovurderinger», med bruk av en 5×5 risikomatrise for vurdering av sannsynlighet og konsekvens.`
+  );
+}
+
+function generateFormalText(meta: RosContent["metadata"]): string {
+  const navn = meta.prosjektnavn?.trim();
+  const objekt = navn ? `for ${navn}` : "for tiltaket";
+  return (
+    `Formålet med ROS-analysen ${objekt} er å identifisere relevante uønskede hendelser, vurdere sannsynlighet for at de inntreffer og konsekvensene dersom de skjer, samt å foreslå risikoreduserende tiltak. ` +
+    `Analysen skal gi beslutningsgrunnlag for prosjektering, bygging og drift, og bidra til at akseptabelt sikkerhetsnivå oppnås i tråd med gjeldende regelverk og anerkjente normer. ` +
+    `Resultatene benyttes videre i brannkonseptet og som underlag for organisatoriske og tekniske tiltak gjennom byggets levetid.`
+  );
+}
+
 // ----- Create dialog -----
 function CreateDialog({
   open, onOpenChange, projects, newName, setNewName, newProjectId, setNewProjectId, onCreate,
