@@ -446,10 +446,182 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
         </section>
       </div>
 
-      {/* Ark 3 — stående A4 for kap. 4 & 5 */}
+      {/* Ark 3 — bow-tie (hvis registrert) */}
+      {content.bowTies && content.bowTies.length > 0 && (
+        <div style={landscapePageStyle}>
+          <section id="kap-4">
+            <h2 style={h2}>4. Bow-tie analyse</h2>
+            <p style={pStyle}>
+              Bow-tie-analysen knytter registrerte hendelser fra kapittel 3 til overordnede uønskede topphendelser.
+              Dette synliggjør hvilke årsaker som kan lede til samme topphendelse, og hvilke tiltak som virker på tvers.
+            </p>
+            {content.bowTies.map((bt, idx) => {
+              const arsaker = bt.hendelseIds
+                .map((id) => content.hendelser.find((h) => h.id === id))
+                .filter((h): h is RosHendelse => !!h);
+              const tiltakSamlet = [
+                ...arsaker
+                  .map((a) => ({ kilde: a.tittel || a.sarbarhet || a.hendelse || "Hendelse", tekst: a.tiltak }))
+                  .filter((t) => t.tekst?.trim()),
+                ...(bt.fellesBarrierer?.trim()
+                  ? [{ kilde: "Felles barriere", tekst: bt.fellesBarrierer }]
+                  : []),
+              ];
+              return (
+                <div key={bt.id} style={{ marginTop: idx === 0 ? 6 : 28, pageBreakInside: "avoid" }}>
+                  <h3 style={{ ...h3, fontSize: 13 }}>
+                    4.{idx + 1} {bt.navn || "Uten navn"}
+                  </h3>
+                  {bt.beskrivelse && <p style={pStyle}>{bt.beskrivelse}</p>}
+
+                  {/* Bow-tie diagram */}
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 220px 1fr",
+                      gap: 10,
+                      alignItems: "center",
+                      background: "#f7f9fc",
+                      border: "1px solid #e2e8f0",
+                      borderRadius: 8,
+                      padding: 12,
+                      marginBottom: 10,
+                    }}
+                  >
+                    {/* Årsaker */}
+                    <div>
+                      <p style={{ fontSize: 9, fontWeight: 700, color: "#1e3a5f", margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: 0.5 }}>
+                        Årsaker
+                      </p>
+                      {arsaker.length === 0 ? (
+                        <p style={{ ...pStyle, fontSize: 10, fontStyle: "italic", color: "#64748b" }}>
+                          Ingen årsaker knyttet.
+                        </p>
+                      ) : (
+                        arsaker.map((a) => {
+                          const f = FARGE[risikoFarge(a.sannsynlighet, a.konsekvens)];
+                          return (
+                            <div
+                              key={a.id}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 6,
+                                background: "#fff",
+                                border: "1px solid #cbd5e1",
+                                borderRadius: 4,
+                                padding: "4px 8px",
+                                marginBottom: 4,
+                                fontSize: 10,
+                              }}
+                            >
+                              <span
+                                style={{
+                                  display: "inline-block",
+                                  minWidth: 22,
+                                  textAlign: "center",
+                                  background: f.bg,
+                                  color: f.fg,
+                                  borderRadius: 3,
+                                  padding: "1px 4px",
+                                  fontWeight: 700,
+                                  fontSize: 9,
+                                }}
+                              >
+                                {a.sannsynlighet * a.konsekvens}
+                              </span>
+                              <span style={{ flex: 1 }}>{a.tittel || a.sarbarhet || a.hendelse}</span>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+
+                    {/* Topphendelse */}
+                    <div
+                      style={{
+                        background: "#DC3545",
+                        color: "#fff",
+                        textAlign: "center",
+                        padding: "16px 10px",
+                        borderRadius: 6,
+                        fontWeight: 700,
+                        fontSize: 12,
+                        boxShadow: "0 2px 6px rgba(220,53,69,0.3)",
+                      }}
+                    >
+                      <div style={{ fontSize: 8, opacity: 0.85, letterSpacing: 1, marginBottom: 4 }}>TOPPHENDELSE</div>
+                      {bt.navn || "Uten navn"}
+                    </div>
+
+                    {/* Konsekvenser */}
+                    <div>
+                      <p style={{ fontSize: 9, fontWeight: 700, color: "#1e3a5f", margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: 0.5 }}>
+                        Konsekvenser
+                      </p>
+                      {bt.konsekvenser.length === 0 ? (
+                        <p style={{ ...pStyle, fontSize: 10, fontStyle: "italic", color: "#64748b" }}>
+                          Ingen konsekvenser registrert.
+                        </p>
+                      ) : (
+                        bt.konsekvenser.map((k, i) => (
+                          <div
+                            key={i}
+                            style={{
+                              background: "#fff",
+                              border: "1px solid #cbd5e1",
+                              borderRadius: 4,
+                              padding: "4px 8px",
+                              marginBottom: 4,
+                              fontSize: 10,
+                            }}
+                          >
+                            {k}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Aggregerte tiltak / barrierer */}
+                  <p style={{ fontSize: 10, fontWeight: 600, color: "#1e3a5f", margin: "10px 0 4px 0" }}>
+                    Barrierer / tiltak
+                  </p>
+                  <table style={{ ...tableStyle, fontSize: 10 }}>
+                    <thead>
+                      <tr>
+                        <th style={{ ...thStyle, width: "30%" }}>Kilde</th>
+                        <th style={thStyle}>Tiltak / barriere</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tiltakSamlet.length === 0 ? (
+                        <tr>
+                          <td colSpan={2} style={{ ...tdStyle, fontStyle: "italic", color: "#64748b" }}>
+                            Ingen tiltak registrert.
+                          </td>
+                        </tr>
+                      ) : (
+                        tiltakSamlet.map((t, i) => (
+                          <tr key={i}>
+                            <td style={{ ...tdStyle, fontWeight: 600 }}>{t.kilde}</td>
+                            <td style={tdStyle}>{t.tekst}</td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })}
+          </section>
+        </div>
+      )}
+
+      {/* Ark 4 — stående A4 for oppsummering & revisjonshistorikk */}
       <div style={pageStyle}>
-        <section id="kap-4">
-          <h2 style={h2}>4. Oppsummering</h2>
+        <section id="kap-5">
+          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "5" : "4"}. Oppsummering</h2>
           {content.oppsummering ? (
             <p style={pStyle}>{content.oppsummering}</p>
           ) : (
@@ -457,9 +629,9 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
           )}
         </section>
 
-        {/* Kap. 5 Revisjonshistorikk */}
-        <section id="kap-5" style={chapterDivider}>
-          <h2 style={h2}>5. Revisjonshistorikk</h2>
+        {/* Revisjonshistorikk */}
+        <section id="kap-6" style={chapterDivider}>
+          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "6" : "5"}. Revisjonshistorikk</h2>
           <table style={tableStyle}>
             <thead>
               <tr>
