@@ -321,13 +321,99 @@ export const exportRosToWord = async (options: ExportOptions) => {
       : new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: hendelseRows }),
   ];
 
-  // Kap. 4 Oppsummering
+  // Kap. 4 Bow-tie (kun hvis registrert)
+  const harBowTie = !!(content.bowTies && content.bowTies.length > 0);
+  const bowTieBlocks: (Paragraph | Table)[] = [];
+  if (harBowTie) {
+    bowTieBlocks.push(buildSectionHeading(theme, "4. Bow-tie analyse"));
+    bowTieBlocks.push(
+      para(
+        "Bow-tie-analysen knytter registrerte hendelser fra kapittel 3 til overordnede uønskede topphendelser. " +
+          "Dette synliggjør hvilke årsaker som kan lede til samme topphendelse, og hvilke tiltak som virker på tvers.",
+      ),
+    );
+    (content.bowTies || []).forEach((bt, idx) => {
+      const arsaker = bt.hendelseIds
+        .map((id) => content.hendelser.find((h) => h.id === id))
+        .filter((h): h is NonNullable<typeof h> => !!h);
+      bowTieBlocks.push(new Paragraph({ children: [text("")] }));
+      bowTieBlocks.push(para(`4.${idx + 1} ${bt.navn || "Uten navn"}`, { bold: true, size: 24 }));
+      if (bt.beskrivelse?.trim()) bowTieBlocks.push(para(bt.beskrivelse));
+
+      // Årsaker-tabell
+      const aHeader = new TableRow({
+        children: [
+          smallHeader("Årsak (hendelse)", 60),
+          smallHeader("S", 8),
+          smallHeader("K", 8),
+          smallHeader("R", 8),
+          smallHeader("Tiltak", 16),
+        ],
+      });
+      const aRows: TableRow[] = [aHeader];
+      if (arsaker.length === 0) {
+        aRows.push(new TableRow({ children: [smallCell("Ingen årsaker knyttet.", 100)] }));
+      } else {
+        arsaker.forEach((a) => {
+          aRows.push(
+            new TableRow({
+              children: [
+                smallCell(a.tittel || a.sarbarhet || a.hendelse || "—", 60, true),
+                smallCell(String(a.sannsynlighet), 8),
+                smallCell(String(a.konsekvens), 8),
+                new TableCell({
+                  width: { size: 8, type: WidthType.PERCENTAGE },
+                  shading: risikoShading(a.sannsynlighet, a.konsekvens),
+                  children: [
+                    new Paragraph({
+                      alignment: AlignmentType.CENTER,
+                      children: [
+                        text(String(a.sannsynlighet * a.konsekvens), {
+                          bold: true,
+                          size: 16,
+                          color: risikoTekstFarge(a.sannsynlighet, a.konsekvens),
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+                smallCell(a.tiltak || "", 16),
+              ],
+            }),
+          );
+        });
+      }
+      bowTieBlocks.push(para("Årsaker", { bold: true }));
+      bowTieBlocks.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: aRows }));
+
+      // Konsekvenser
+      bowTieBlocks.push(new Paragraph({ children: [text("")] }));
+      bowTieBlocks.push(para("Konsekvenser", { bold: true }));
+      if (bt.konsekvenser.length === 0) {
+        bowTieBlocks.push(para("Ingen konsekvenser registrert."));
+      } else {
+        bt.konsekvenser.forEach((k) => bowTieBlocks.push(para(`• ${k}`)));
+      }
+
+      // Felles barrierer
+      if (bt.fellesBarrierer?.trim()) {
+        bowTieBlocks.push(new Paragraph({ children: [text("")] }));
+        bowTieBlocks.push(para("Felles barrierer / tiltak", { bold: true }));
+        bowTieBlocks.push(para(bt.fellesBarrierer));
+      }
+    });
+  }
+
+  // Oppsummering & revisjon
+  const oppsummeringNr = harBowTie ? "5" : "4";
+  const revisjonNr = harBowTie ? "6" : "5";
+
   const oppsummering: Paragraph[] = [
-    buildSectionHeading(theme, "4. Oppsummering"),
+    buildSectionHeading(theme, `${oppsummeringNr}. Oppsummering`),
     ...((content.oppsummering || "Ingen oppsummering registrert.").split("\n").map((line) => para(line))),
   ];
 
-  // Kap. 5 Revisjonshistorikk
+  // Revisjonshistorikk
   const revRows: TableRow[] = [
     new TableRow({
       children: [
@@ -351,7 +437,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
     );
   });
   const revisjonshistorikk: (Paragraph | Table)[] = [
-    buildSectionHeading(theme, "5. Revisjonshistorikk"),
+    buildSectionHeading(theme, `${revisjonNr}. Revisjonshistorikk`),
     content.revisjonshistorikk.length === 0
       ? para("Ingen revisjoner registrert.")
       : new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: revRows }),
