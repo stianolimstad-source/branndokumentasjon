@@ -1,17 +1,22 @@
-## Plan
+## Inkludér ROS-analyser i «Siste dokumenter»
 
-1. Oppdater importfunksjonen for ROS slik at `tittel` ikke lenger tas fra AI-responsens lange tekstfelt, men settes konsekvent fra `sarbarhet` ved import.
-2. Juster AI-instruksen i samme importflyt så modellen blir bedt om å bruke kort tittel basert på sårbarhet, ikke `sårbarhet – hendelse`.
-3. Behold fallback når `sarbarhet` mangler, men prioriter kortest meningsfulle verdi slik at tittelen fortsatt blir kort og redigerbar i editoren.
-4. Verifiser at importoversikten og ROS-editoren viser den korte tittelen uten at hendelsesbeskrivelsen går tapt i `hendelse`-feltet.
+I dag henter dashbordet kun fra `fire_concepts`. ROS-analyser (`ros_analyses`) skal også telle som dokumenter brukeren jobber med.
 
-## Teknisk
+### Endringer
 
-- Fil: `supabase/functions/parse-ros-analysis/index.ts`
-- Endringer:
-  - Endre promptregelen for `tittel` til å bruke kun sårbarhet som kort importtittel.
-  - Endre sanitizingen slik at vi ikke stoler på `h.tittel` fra modellen hvis den er lang/komponert, men bygger tittelen selv med prioritet `sarbarhet -> hendelse`.
-  - La full tekst fortsatt ligge i `hendelse`/`beskrivelse`.
-- Forventet effekt:
-  - Eksempel: importert rad får `tittel = "Trafo 1"` i stedet for en lang sammenslått streng.
-  - Tittelen er fortsatt redigerbar etter import i ROS-analysen.
+**1. `src/components/dashboard/DashboardPanel.tsx` (widget på forsiden)**
+- Hent også de 5 nyeste fra `ros_analyses` parallelt med `fire_concepts`.
+- Slå sammen begge listene, sortér på `updated_at` desc, vis topp 3 i «Siste dokumenter».
+- Tell ROS-analyser med i totalantall dokumenter.
+- Lenke ROS-rader til `/ros-analyse?project=<project_id>&analysis=<id>` (matcher eksisterende rute i `RosAnalyse.tsx`; verifiseres ved implementering).
+- Behold eksisterende logikk for Brensellagring-konsepter.
+
+**2. `src/pages/Dashboard.tsx` (full dashboard-side)**
+- Hent også `ros_analyses` (siste 20) parallelt.
+- Slå sammen med `fire_concepts` til én liste «Siste dokumenter», sortert på `updated_at`.
+- I tabellen/listen markér dokumenttype (Brannkonsept / Tilstandsvurdering / ROS) som en liten etikett, slik at brukeren ser hva det er.
+- Oppdatér statistikk-kortet «Konsepter» til «Dokumenter» som teller begge typer.
+
+### Ikke endret
+- Database, RLS og ROS-import er uberørt.
+- Andre sider (Mine prosjekter, Mine oppgaver) er uberørt.

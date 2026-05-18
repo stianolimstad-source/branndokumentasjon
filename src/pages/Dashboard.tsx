@@ -25,21 +25,26 @@ const Dashboard = () => {
 
     const fetchAll = async () => {
       setLoading(true);
-      const [projRes, concRes, taskRes, compRes] = await Promise.all([
+      const [projRes, concRes, rosRes, taskRes, compRes] = await Promise.all([
         supabase.from("projects").select("*").eq("user_id", user.id).order("updated_at", { ascending: false }).limit(20),
         supabase.from("fire_concepts").select("*").eq("user_id", user.id).order("updated_at", { ascending: false }).limit(20),
+        supabase.from("ros_analyses").select("*").eq("user_id", user.id).order("updated_at", { ascending: false }).limit(20),
         supabase.from("tasks").select("*").eq("assigned_to", user.id).order("created_at", { ascending: false }).limit(20),
         supabase.from("tasks").select("id", { count: "exact", head: true }).eq("assigned_to", user.id).eq("status", "completed"),
       ]);
 
       setProjects(projRes.data ?? []);
-      setConcepts(concRes.data ?? []);
+      const merged = [
+        ...((concRes.data ?? []) as any[]).map((c) => ({ ...c, _kind: c.name?.startsWith("Brensellagring") ? "brensel" : c.name?.toLowerCase?.().includes("tilstand") ? "tilstand" : "konsept" })),
+        ...((rosRes.data ?? []) as any[]).map((r) => ({ ...r, _kind: "ros" })),
+      ].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+      setConcepts(merged);
       setTasks(taskRes.data ?? []);
 
       const pending = (taskRes.data ?? []).filter((t: any) => t.status !== "completed");
       setStats({
         totalProjects: projRes.data?.length ?? 0,
-        totalConcepts: concRes.data?.length ?? 0,
+        totalConcepts: (concRes.data?.length ?? 0) + (rosRes.data?.length ?? 0),
         pendingTasks: pending.length,
         completedTasks: compRes.count ?? 0,
       });
@@ -109,7 +114,7 @@ const Dashboard = () => {
               </div>
               <div>
                 <p className="text-3xl font-bold">{stats.totalConcepts}</p>
-                <p className="text-sm text-muted-foreground">Konsepter</p>
+                <p className="text-sm text-muted-foreground">Dokumenter</p>
               </div>
             </CardContent>
           </Card>
@@ -188,25 +193,28 @@ const Dashboard = () => {
         <div className="grid lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>Siste konsepter</CardTitle>
-              <CardDescription>Dine nylig oppdaterte brannkonsepter</CardDescription>
+              <CardTitle>Siste dokumenter</CardTitle>
+              <CardDescription>Dine nylig oppdaterte dokumenter</CardDescription>
             </CardHeader>
             <CardContent>
               {concepts.length === 0 ? (
-                <p className="text-sm text-muted-foreground py-4 text-center">Ingen konsepter ennå</p>
+                <p className="text-sm text-muted-foreground py-4 text-center">Ingen dokumenter ennå</p>
               ) : (
                 <ul className="space-y-3">
-                  {concepts.slice(0, 10).map((c) => (
-                    <li key={c.id} className="flex items-center justify-between border-b pb-2 last:border-0">
+                  {concepts.slice(0, 10).map((c) => {
+                    const kindLabel = c._kind === "ros" ? "ROS" : c._kind === "brensel" ? "Brensellagring" : c._kind === "tilstand" ? "Tilstand" : "Brannkonsept";
+                    return (
+                    <li key={`${c._kind}-${c.id}`} className="flex items-center justify-between border-b pb-2 last:border-0">
                       <div>
                         <p className="text-sm font-medium">{c.name}</p>
-                        <p className="text-xs text-muted-foreground">{format(new Date(c.updated_at), "d. MMM yyyy", { locale: nb })}</p>
+                        <p className="text-xs text-muted-foreground">{kindLabel} · {format(new Date(c.updated_at), "d. MMM yyyy", { locale: nb })}</p>
                       </div>
                       <Badge variant={c.status === "draft" ? "secondary" : "default"} className="text-xs">
                         {c.status === "draft" ? "Utkast" : c.status}
                       </Badge>
                     </li>
-                  ))}
+                    );
+                  })}
                 </ul>
               )}
             </CardContent>
