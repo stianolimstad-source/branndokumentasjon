@@ -363,6 +363,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 ref={tableScrollRef}
                 onScroll={handleTableScroll}
                 className="ros-h-scroll-hidden"
+                style={{ overflowX: "auto" }}
               >
               <table style={{ ...tableStyle, fontSize: 9, minWidth: 1100 }}>
                 <thead>
@@ -418,12 +419,14 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 className="ros-h-scroll"
                 style={{
                   position: "sticky",
-                  bottom: 0,
+                  bottom: 16,
                   overflowX: "scroll",
                   background: "#fff",
-                  borderTop: "1px solid #e2e8f0",
+                  border: "1px solid #cbd5e1",
+                  borderRadius: 10,
+                  boxShadow: "0 -4px 12px -4px rgba(0,0,0,0.15)",
                   zIndex: 5,
-                  marginTop: 4,
+                  marginTop: 8,
                 }}
               >
                 <div style={{ width: 1100, height: 1 }} />
