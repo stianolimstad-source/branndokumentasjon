@@ -130,7 +130,9 @@ Mapping-regler:
       const aiTittel = String(h?.tittel || "");
       const useAi = aiTittel && aiTittel.length <= 60 && !aiTittel.includes("\n");
       const tittel = (useAi ? aiTittel : shortTitle(sarbarhet) || shortTitle(hendelse)).trim();
+      const prosjekt = String(h?.prosjekt || "").replace(/\s+/g, " ").trim().slice(0, 80);
       return {
+        prosjekt,
         tittel,
         sarbarhet,
         hendelse,
