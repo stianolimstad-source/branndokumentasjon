@@ -259,9 +259,50 @@ export default function RosAnalyse() {
     setOpenHendelser((o) => [...o, id]);
   };
   const removeHendelse = (id: string) => {
-    setContent((c) => ({ ...c, hendelser: c.hendelser.filter((h) => h.id !== id) }));
+    setContent((c) => ({
+      ...c,
+      hendelser: c.hendelser.filter((h) => h.id !== id),
+      bowTies: (c.bowTies || []).map((b) => ({
+        ...b,
+        hendelseIds: b.hendelseIds.filter((hid) => hid !== id),
+      })),
+    }));
     setOpenHendelser((o) => o.filter((x) => x !== id));
   };
+
+  // ----- Bow-tie -----
+  const addBowTie = () => {
+    const id = makeId();
+    setContent((c) => ({
+      ...c,
+      bowTies: [...(c.bowTies || []), { id, navn: "", beskrivelse: "", hendelseIds: [], konsekvenser: [], fellesBarrierer: "" }],
+    }));
+  };
+  const updateBowTie = (id: string, patch: Partial<RosBowTie>) => {
+    setContent((c) => ({
+      ...c,
+      bowTies: (c.bowTies || []).map((b) => (b.id === id ? { ...b, ...patch } : b)),
+    }));
+  };
+  const removeBowTie = (id: string) => {
+    setContent((c) => ({ ...c, bowTies: (c.bowTies || []).filter((b) => b.id !== id) }));
+  };
+  const toggleBowTieHendelse = (bowTieId: string, hendelseId: string) => {
+    setContent((c) => ({
+      ...c,
+      bowTies: (c.bowTies || []).map((b) => {
+        if (b.id !== bowTieId) return b;
+        const exists = b.hendelseIds.includes(hendelseId);
+        return {
+          ...b,
+          hendelseIds: exists
+            ? b.hendelseIds.filter((x) => x !== hendelseId)
+            : [...b.hendelseIds, hendelseId],
+        };
+      }),
+    }));
+  };
+
   const importHendelser = (data: ExtractedRosData, mode: "append" | "replace") => {
     const nye: RosHendelse[] = data.hendelser.map((h) => ({ ...h, id: makeId() }));
     setContent((c) => ({
