@@ -1239,7 +1239,6 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
       const isPII = ["RK3","RK5","RK6"].includes(rorParts[0].rk) || ["BKL2","BKL3"].includes(rorParts[0].bkl);
       rorLines.push(`   Øvrig isolasjon på rør og kanaler må minst tilfredsstille klasse ${isPII ? 'CL-s3,d0 [PII]' : 'DL-s3,d0 [PIII]'}.`);
     } else if (isMultiRor) {
-    } else {
       // Multiple parts – list per part
       rorLines.push("   Øvrig isolasjon på rør og kanaler:");
       rorParts.forEach(p => {
