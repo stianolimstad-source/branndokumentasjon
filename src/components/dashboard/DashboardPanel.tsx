@@ -26,23 +26,30 @@ const DashboardPanel = () => {
     if (!user) return;
     const fetchStats = async () => {
       setLoading(true);
-      const [projectsRes, conceptsRes, pendingTasksRes, completedTasksRes] = await Promise.all([
+      const [projectsRes, conceptsRes, rosRes, pendingTasksRes, completedTasksRes] = await Promise.all([
         supabase.from("projects").select("id, name, updated_at").eq("user_id", user.id).order("updated_at", { ascending: false }).limit(5),
         supabase.from("fire_concepts").select("id, name, project_id, status, updated_at").eq("user_id", user.id).order("updated_at", { ascending: false }).limit(5),
+        supabase.from("ros_analyses").select("id, name, project_id, status, updated_at").eq("user_id", user.id).order("updated_at", { ascending: false }).limit(5),
         supabase.from("tasks").select("id, title, status, priority, due_date").eq("assigned_to", user.id).in("status", ["pending", "in_progress"]).order("created_at", { ascending: false }).limit(5),
         supabase.from("tasks").select("id", { count: "exact", head: true }).eq("assigned_to", user.id).eq("status", "completed"),
       ]);
 
       const totalProjectsRes = await supabase.from("projects").select("id", { count: "exact", head: true }).eq("user_id", user.id);
       const totalConceptsRes = await supabase.from("fire_concepts").select("id", { count: "exact", head: true }).eq("user_id", user.id);
+      const totalRosRes = await supabase.from("ros_analyses").select("id", { count: "exact", head: true }).eq("user_id", user.id);
+
+      const mergedDocs = [
+        ...((conceptsRes.data ?? []) as any[]).map((c) => ({ ...c, _kind: "concept" as const })),
+        ...((rosRes.data ?? []) as any[]).map((r) => ({ ...r, _kind: "ros" as const })),
+      ].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()).slice(0, 5);
 
       setStats({
         totalProjects: totalProjectsRes.count ?? 0,
-        totalConcepts: totalConceptsRes.count ?? 0,
+        totalConcepts: (totalConceptsRes.count ?? 0) + (totalRosRes.count ?? 0),
         pendingTasks: pendingTasksRes.data?.length ?? 0,
         completedTasks: completedTasksRes.count ?? 0,
         recentProjects: (projectsRes.data ?? []) as any,
-        recentConcepts: (conceptsRes.data ?? []) as any,
+        recentConcepts: mergedDocs as any,
         pendingTasksList: (pendingTasksRes.data ?? []) as any,
       });
       setLoading(false);
