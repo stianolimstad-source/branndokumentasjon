@@ -505,7 +505,7 @@ export default function RosAnalyse() {
                       <AlertDialogFooter>
                         <AlertDialogCancel>Avbryt</AlertDialogCancel>
                         <AlertDialogAction
-                          onClick={() => setContent((c) => ({ ...c, hendelser: [] }))}
+                          onClick={() => setContent((c) => ({ ...c, hendelser: [], bowTies: (c.bowTies || []).map((b) => ({ ...b, hendelseIds: [] })) }))}
                         >
                           Slett alle
                         </AlertDialogAction>
