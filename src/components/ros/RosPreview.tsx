@@ -161,6 +161,22 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
   const dato = m.dato || new Date().toISOString().slice(0, 10);
   const utfort = m.utfortAv || utarbeidetAv || "";
 
+  const tableScrollRef = useRef<HTMLDivElement>(null);
+  const proxyScrollRef = useRef<HTMLDivElement>(null);
+  const syncingRef = useRef(false);
+  const handleTableScroll = () => {
+    if (syncingRef.current || !proxyScrollRef.current || !tableScrollRef.current) return;
+    syncingRef.current = true;
+    proxyScrollRef.current.scrollLeft = tableScrollRef.current.scrollLeft;
+    requestAnimationFrame(() => { syncingRef.current = false; });
+  };
+  const handleProxyScroll = () => {
+    if (syncingRef.current || !proxyScrollRef.current || !tableScrollRef.current) return;
+    syncingRef.current = true;
+    tableScrollRef.current.scrollLeft = proxyScrollRef.current.scrollLeft;
+    requestAnimationFrame(() => { syncingRef.current = false; });
+  };
+
   return (
     <div className="bg-muted/20 p-4 md:p-8">
       <style>{`
@@ -341,10 +357,12 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
             <p style={{ ...pStyle, fontStyle: "italic", color: "#64748b" }}>Ingen hendelser registrert ennå.</p>
           ) : (
             <>
-              <p style={{ ...pStyle, fontSize: 10, color: "#64748b", margin: "0 0 6px 0", fontStyle: "italic" }}>
-                ← Scroll horisontalt for å se hele tabellen →
-              </p>
-              <div className="ros-h-scroll" style={{ overflowX: "scroll", paddingBottom: 4 }}>
+              <div
+                ref={tableScrollRef}
+                onScroll={handleTableScroll}
+                className="ros-h-scroll"
+                style={{ overflowX: "scroll", paddingBottom: 4 }}
+              >
               <table style={{ ...tableStyle, fontSize: 9, minWidth: 1100 }}>
                 <thead>
                   <tr>
@@ -393,6 +411,22 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 </tbody>
               </table>
             </div>
+              <div
+                ref={proxyScrollRef}
+                onScroll={handleProxyScroll}
+                className="ros-h-scroll"
+                style={{
+                  position: "sticky",
+                  bottom: 0,
+                  overflowX: "scroll",
+                  background: "#fff",
+                  borderTop: "1px solid #e2e8f0",
+                  zIndex: 5,
+                  marginTop: 4,
+                }}
+              >
+                <div style={{ width: 1100, height: 1 }} />
+              </div>
             </>
           )}
         </section>
