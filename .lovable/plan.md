@@ -1,49 +1,24 @@
 ## Mål
-I forhåndsvisningen av ROS-rapporten skal den horisontale scrollbaren for hendelsesregisteret (kap. 3) være synlig så lenge brukeren ser på kap. 3 — ikke bare når man har scrollet helt ned til bunnen av tabellen. Scrollbaren skal «følge» viewporten (sticky) nederst på skjermen mens kap. 3 er synlig.
+Kun én horisontal scrollbar nederst i kap. 3 — den som følger viewporten (sticky). Den skal også løftes noen piksler opp fra bunnen så den blir tydeligere/lettere å treffe.
 
-## Endring
+## Endringer
 **Fil:** `src/components/ros/RosPreview.tsx`
 
-### Teknikk: dobbel scrollbar med sticky overlay
-Standard `overflow-x: scroll` viser scrollbaren bare nederst i tabellens egen container. For å gjøre den synlig hele tiden brukes en kjent teknikk med to synkroniserte scroll-containere:
+1. **Skjul scrollbaren på tabell-containeren** (men behold scroll-funksjonen via JS-sync):
+   - Bytt `className="ros-h-scroll"` på `tableScrollRef`-div-en til en ny klasse `ros-h-scroll-hidden`.
+   - Legg til CSS-regler i `<style>`-blokken:
+     ```css
+     .ros-h-scroll-hidden { scrollbar-width: none; }
+     .ros-h-scroll-hidden::-webkit-scrollbar { display: none; }
+     ```
+   - Tabellen kan fortsatt scrolles horisontalt programmatisk (via sync fra proxy) og med touch/shift+wheel.
 
-1. **Hoved-container** (allerede på plass): `div.ros-h-scroll` rundt `<table>` med `overflowX: scroll`. Denne håndterer selve tabellvisningen.
+2. **Løft sticky-proxyen opp fra bunnen**:
+   - Endre `bottom: 0` til `bottom: 16` på `proxyScrollRef`-div-en.
+   - Øk scrollbar-høyden litt: ny CSS-regel `.ros-h-scroll-proxy::-webkit-scrollbar { height: 16px; }` (eller behold 14 px og bare flytt baren opp — anbefalt 16 px + bottom 16).
+   - Legg på en svak skygge over baren (`boxShadow: "0 -4px 8px -4px rgba(0,0,0,0.08)"`) og litt padding/border-radius så den ser ut som et eget «verktøy».
 
-2. **Sticky scroll-proxy** rett over/under tabellen:
-   - Egen `<div>` med `position: sticky; bottom: 0; z-index: 5;`
-   - Inne i den: en tom `<div>` med samme bredde som tabellen (`minWidth: 1100px`) og høyde 1px, slik at den ytre containeren får horisontal scroll.
-   - Synkroniseres med hoved-containeren via to `onScroll`-handlere (refs) — når den ene scrolles, oppdateres `scrollLeft` på den andre.
-
-3. **Plassering:** Sticky-proxyen plasseres **inni `<section id="kap-3">`** slik at den kun er synlig så lenge kap. 3-seksjonen er i viewporten. Når man har scrollet forbi kap. 3, forsvinner den naturlig.
-
-4. **Styling:** Beholder eksisterende `.ros-h-scroll` webkit-styling (mørk thumb, 14 px høyde) på begge containere så scrollbaren ser tydelig og lik ut.
-
-5. **Fjerne "scroll horisontalt"-hint-teksten** over tabellen (eller flytte den til sticky-baren) siden scrollbaren nå er synlig hele tiden.
-
-### Implementasjonsdetaljer
-- Bruke `useRef<HTMLDivElement>(null)` for begge containere.
-- `onScroll` på topp-proxy: `tableRef.current.scrollLeft = proxyRef.current.scrollLeft`.
-- `onScroll` på tabell-container: `proxyRef.current.scrollLeft = tableRef.current.scrollLeft`.
-- Bruke en `isSyncing`-ref for å unngå evig loop.
-- Sticky-elementet trenger en bakgrunnsfarge (f.eks. `#fff`) så det dekker innholdet bak når det «klister seg» nederst.
+3. **Behold** synkroniseringen mellom de to containerne, plassering inni `<section id="kap-3">`, og bakgrunnsfargen så den dekker innholdet bak.
 
 ## Ikke endret
-- `src/lib/ros-word-export.ts` (Word-eksport berøres ikke).
-- Layout/struktur av de tre arkene (stående → liggende → stående) beholdes.
-- Datamodell og forretningslogikk.
-
-## Teknisk skisse
-
-```text
-┌─ Ark 2 (liggende A4) ─────────────────────┐
-│  Kap. 3 Hendelsesregister                 │
-│  ┌─────────────────────────────────────┐  │
-│  │ <table> (overflow-x scroll)         │  │
-│  │  ... mange kolonner ...             │  │
-│  └─────────────────────────────────────┘  │
-│                                            │
-│  ┌─ position: sticky; bottom: 0 ───────┐  │ ← følger viewporten
-│  │ ▓▓▓▓▓▓▓░░░░░░░░░░░  scroll-proxy   │  │
-│  └─────────────────────────────────────┘  │
-└────────────────────────────────────────────┘
-```
+- Word-eksport, layout av de tre arkene, datamodell, andre kapitler.
