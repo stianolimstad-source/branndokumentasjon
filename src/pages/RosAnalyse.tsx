@@ -650,10 +650,35 @@ function Field({ label, value, onChange, type = "text" }: { label: string; value
     </div>
   );
 }
-function Area({ label, value, onChange, rows = 3 }: { label: string; value: string; onChange: (v: string) => void; rows?: number }) {
+function Area({
+  label,
+  value,
+  onChange,
+  rows = 3,
+  onGenerate,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  rows?: number;
+  onGenerate?: () => string;
+}) {
+  const handleGenerate = () => {
+    if (!onGenerate) return;
+    if (value.trim() && !window.confirm("Erstatt eksisterende tekst med generert standardtekst?")) return;
+    onChange(onGenerate());
+  };
   return (
     <div className="space-y-1">
-      <Label className="text-xs">{label}</Label>
+      <div className="flex items-center justify-between gap-2">
+        <Label className="text-xs">{label}</Label>
+        {onGenerate && (
+          <Button type="button" variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={handleGenerate}>
+            <Sparkles className="h-3 w-3 mr-1" />
+            Generer tekst
+          </Button>
+        )}
+      </div>
       <Textarea value={value} rows={rows} onChange={(e) => onChange(e.target.value)} />
     </div>
   );
