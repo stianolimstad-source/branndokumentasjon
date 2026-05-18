@@ -16,7 +16,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search, Sparkles } from "lucide-react";
-import RosPreview, { type RosContent, type RosHendelse } from "@/components/ros/RosPreview";
+import RosPreview, { type RosContent, type RosHendelse, type RosBowTie } from "@/components/ros/RosPreview";
 import UploadRosDialog, { type ExtractedRosData } from "@/components/ros/UploadRosDialog";
 import RosMatriks, { risikoFarge } from "@/components/ros/RosMatriks";
 import { exportRosToWord } from "@/lib/ros-word-export";
@@ -30,6 +30,7 @@ const EMPTY_CONTENT: RosContent = {
   metadata: { prosjektnavn: "", adresse: "", oppdragsgiver: "", utfortAv: "", dato: "", versjon: "1.0" },
   innledning: { bakgrunn: "", formal: "", omfang: "", avgrensninger: "" },
   hendelser: [],
+  bowTies: [],
   oppsummering: "",
   revisjonshistorikk: [],
 };
