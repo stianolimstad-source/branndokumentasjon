@@ -3974,7 +3974,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                                 const isMulti = formData.harFlereRisikoklasser && formData.bygningsdeler?.length > 0;
                                 if (!isMulti) {
                                   // Single part – show one line
-                                  const isPII = ["RK3","RK5","RK6"].includes(allParts[0].rk) || ["BKL2","BKL3"].includes(allParts[0].bkl);
+                                  const first = allParts[0];
+                                  if (!first) return null;
+                                  const isPII = ["RK3","RK5","RK6"].includes(first.rk) || ["BKL2","BKL3"].includes(first.bkl);
                                   return (
                                     <li>Øvrig isolasjon på rør og kanaler må minst tilfredsstille klasse <span className="text-red-600 font-medium">{isPII ? <>C<sub>L</sub>-s3,d0 [PII]</> : <>D<sub>L</sub>-s3,d0 [PIII]</>}</span>.</li>
                                   );
