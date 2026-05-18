@@ -386,9 +386,11 @@ export default function RosAnalyse() {
           <section className="space-y-3">
             <h2 className="text-lg font-semibold">1. Innledning</h2>
             <Area label="Bakgrunn" value={content.innledning.bakgrunn}
-              onChange={(v) => setContent((c) => ({ ...c, innledning: { ...c.innledning, bakgrunn: v } }))} />
+              onChange={(v) => setContent((c) => ({ ...c, innledning: { ...c.innledning, bakgrunn: v } }))}
+              onGenerate={() => generateBakgrunnText(content.metadata)} />
             <Area label="Formål" value={content.innledning.formal}
-              onChange={(v) => setContent((c) => ({ ...c, innledning: { ...c.innledning, formal: v } }))} />
+              onChange={(v) => setContent((c) => ({ ...c, innledning: { ...c.innledning, formal: v } }))}
+              onGenerate={() => generateFormalText(content.metadata)} />
             <Area label="Omfang" value={content.innledning.omfang}
               onChange={(v) => setContent((c) => ({ ...c, innledning: { ...c.innledning, omfang: v } }))} />
             <Area label="Avgrensninger" value={content.innledning.avgrensninger}
