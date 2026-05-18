@@ -25,21 +25,26 @@ const Dashboard = () => {
 
     const fetchAll = async () => {
       setLoading(true);
-      const [projRes, concRes, taskRes, compRes] = await Promise.all([
+      const [projRes, concRes, rosRes, taskRes, compRes] = await Promise.all([
         supabase.from("projects").select("*").eq("user_id", user.id).order("updated_at", { ascending: false }).limit(20),
         supabase.from("fire_concepts").select("*").eq("user_id", user.id).order("updated_at", { ascending: false }).limit(20),
+        supabase.from("ros_analyses").select("*").eq("user_id", user.id).order("updated_at", { ascending: false }).limit(20),
         supabase.from("tasks").select("*").eq("assigned_to", user.id).order("created_at", { ascending: false }).limit(20),
         supabase.from("tasks").select("id", { count: "exact", head: true }).eq("assigned_to", user.id).eq("status", "completed"),
       ]);
 
       setProjects(projRes.data ?? []);
-      setConcepts(concRes.data ?? []);
+      const merged = [
+        ...((concRes.data ?? []) as any[]).map((c) => ({ ...c, _kind: c.name?.startsWith("Brensellagring") ? "brensel" : c.name?.toLowerCase?.().includes("tilstand") ? "tilstand" : "konsept" })),
+        ...((rosRes.data ?? []) as any[]).map((r) => ({ ...r, _kind: "ros" })),
+      ].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+      setConcepts(merged);
       setTasks(taskRes.data ?? []);
 
       const pending = (taskRes.data ?? []).filter((t: any) => t.status !== "completed");
       setStats({
         totalProjects: projRes.data?.length ?? 0,
-        totalConcepts: concRes.data?.length ?? 0,
+        totalConcepts: (concRes.data?.length ?? 0) + (rosRes.data?.length ?? 0),
         pendingTasks: pending.length,
         completedTasks: compRes.count ?? 0,
       });
