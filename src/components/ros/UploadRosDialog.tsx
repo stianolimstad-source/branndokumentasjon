@@ -16,7 +16,7 @@ const RISK_BG: Record<"gronn" | "gul" | "rod", string> = {
   rod: "bg-red-500/85 text-white",
 };
 
-export type ExtractedHendelse = Omit<RosHendelse, "id">;
+export type ExtractedHendelse = Omit<RosHendelse, "id"> & { prosjekt?: string };
 
 export interface ExtractedRosData {
   metadata: { prosjektnavn?: string; adresse?: string; oppdragsgiver?: string };
