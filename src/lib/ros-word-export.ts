@@ -10,6 +10,8 @@ import {
   ShadingType,
   Packer,
   AlignmentType,
+  PageOrientation,
+  SectionType,
 } from "docx";
 import { saveAs } from "file-saver";
 import {
