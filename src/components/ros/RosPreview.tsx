@@ -87,11 +87,17 @@ const pageStyle: React.CSSProperties = {
 const h2: React.CSSProperties = {
   fontSize: 15,
   fontWeight: 700,
-  marginTop: 28,
+  marginTop: 0,
   marginBottom: 10,
   color: "#1e3a5f",
   borderBottom: "2px solid #1e3a5f",
   paddingBottom: 5,
+};
+const chapterDivider: React.CSSProperties = {
+  marginTop: 64,
+  paddingTop: 40,
+  borderTop: "2px dashed #c8d2df",
+  position: "relative",
 };
 const h3: React.CSSProperties = {
   fontSize: 12,
@@ -233,7 +239,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
         </section>
 
         {/* Kap. 2 Metode */}
-        <section id="kap-2">
+        <section id="kap-2" style={chapterDivider}>
           <h2 style={h2}>2. Metode</h2>
           <p style={pStyle}>
             Analysen er utført som en kvalitativ risiko- og sårbarhetsanalyse med en 5×5-matrise der
@@ -312,7 +318,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
         </section>
 
         {/* Kap. 3 Hendelsesregister */}
-        <section id="kap-3">
+        <section id="kap-3" style={chapterDivider}>
           <h2 style={h2}>3. Hendelsesregister</h2>
           {content.hendelser.length === 0 ? (
             <p style={{ ...pStyle, fontStyle: "italic", color: "#64748b" }}>Ingen hendelser registrert ennå.</p>
@@ -369,7 +375,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
           )}
         </section>
 
-        <section id="kap-4">
+        <section id="kap-4" style={chapterDivider}>
           <h2 style={h2}>4. Oppsummering</h2>
           {content.oppsummering ? (
             <p style={pStyle}>{content.oppsummering}</p>
@@ -379,7 +385,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
         </section>
 
         {/* Kap. 5 Revisjonshistorikk */}
-        <section id="kap-5">
+        <section id="kap-5" style={chapterDivider}>
           <h2 style={h2}>5. Revisjonshistorikk</h2>
           <table style={tableStyle}>
             <thead>
