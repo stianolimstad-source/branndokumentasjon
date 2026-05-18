@@ -330,14 +330,21 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
             Fargekoding: grønn = akseptabel (R 1–4), gul = vurderes / ALARP (R 5–9), rød = ikke akseptabel (R 10–25).
           </p>
         </section>
+      </div>
 
+      {/* Ark 2 — liggende A4 for kap. 3 */}
+      <div style={landscapePageStyle}>
         {/* Kap. 3 Hendelsesregister */}
-        <section id="kap-3" style={chapterDivider}>
+        <section id="kap-3">
           <h2 style={h2}>3. Hendelsesregister</h2>
           {content.hendelser.length === 0 ? (
             <p style={{ ...pStyle, fontStyle: "italic", color: "#64748b" }}>Ingen hendelser registrert ennå.</p>
           ) : (
-            <div style={{ overflowX: "auto" }}>
+            <>
+              <p style={{ ...pStyle, fontSize: 10, color: "#64748b", margin: "0 0 6px 0", fontStyle: "italic" }}>
+                ← Scroll horisontalt for å se hele tabellen →
+              </p>
+              <div className="ros-h-scroll" style={{ overflowX: "scroll", paddingBottom: 4 }}>
               <table style={{ ...tableStyle, fontSize: 9, minWidth: 1100 }}>
                 <thead>
                   <tr>
@@ -386,10 +393,14 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </section>
+      </div>
 
-        <section id="kap-4" style={chapterDivider}>
+      {/* Ark 3 — stående A4 for kap. 4 & 5 */}
+      <div style={pageStyle}>
+        <section id="kap-4">
           <h2 style={h2}>4. Oppsummering</h2>
           {content.oppsummering ? (
             <p style={pStyle}>{content.oppsummering}</p>
@@ -447,6 +458,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
           <span>ROS-analyse · {m.prosjektnavn || ""}</span>
           <span>{dato}</span>
         </div>
+      </div>
       </div>
     </div>
   );
