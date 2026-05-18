@@ -644,15 +644,163 @@ export default function RosAnalyse() {
             )}
           </section>
 
+          <section className="space-y-3">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div>
+                <h2 className="text-lg font-semibold">4. Bow-tie analyse</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Definer en uønsket topphendelse og knytt registrerte hendelser som årsaker. Gir oversikt over felles tiltak på tvers.
+                </p>
+              </div>
+              <Button size="sm" variant="outline" onClick={addBowTie}>
+                <Plus className="h-4 w-4 mr-1" /> Ny topphendelse
+              </Button>
+            </div>
+            {(!content.bowTies || content.bowTies.length === 0) ? (
+              <p className="text-sm text-muted-foreground italic">Ingen topphendelser ennå.</p>
+            ) : (
+              <div className="space-y-3">
+                {content.bowTies.map((bt, idx) => (
+                  <div key={bt.id} className="border rounded-lg p-3 space-y-3 bg-muted/20">
+                    <div className="flex items-start gap-2">
+                      <span className="text-xs font-medium text-muted-foreground shrink-0 mt-2">#{idx + 1}</span>
+                      <div className="flex-1 space-y-2">
+                        <Field
+                          label="Navn på topphendelse"
+                          value={bt.navn}
+                          onChange={(v) => updateBowTie(bt.id, { navn: v })}
+                        />
+                        <Area
+                          label="Beskrivelse (valgfri)"
+                          value={bt.beskrivelse || ""}
+                          onChange={(v) => updateBowTie(bt.id, { beskrivelse: v })}
+                          rows={2}
+                        />
+                      </div>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive shrink-0">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Slette topphendelse?</AlertDialogTitle>
+                            <AlertDialogDescription>Dette kan ikke angres.</AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => removeBowTie(bt.id)}>Slett</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+
+                    <div className="space-y-1 border-t pt-3">
+                      <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        Årsaker (hendelser fra kap. 3)
+                      </Label>
+                      {content.hendelser.length === 0 ? (
+                        <p className="text-xs text-muted-foreground italic">Registrer hendelser først.</p>
+                      ) : (
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {content.hendelser.map((h) => {
+                            const selected = bt.hendelseIds.includes(h.id);
+                            const farge = risikoFarge(h.sannsynlighet, h.konsekvens);
+                            const dot = farge === "rod" ? "bg-red-500" : farge === "gul" ? "bg-amber-400" : "bg-emerald-500";
+                            return (
+                              <button
+                                key={h.id}
+                                type="button"
+                                onClick={() => toggleBowTieHendelse(bt.id, h.id)}
+                                className={`text-xs px-2 py-1 rounded-full border transition-colors flex items-center gap-1.5 ${
+                                  selected
+                                    ? "bg-primary text-primary-foreground border-primary"
+                                    : "bg-background border-border hover:bg-accent"
+                                }`}
+                              >
+                                <span className={`inline-block h-2 w-2 rounded-full ${dot}`} />
+                                {h.tittel || h.sarbarhet || h.hendelse || "Uten tittel"}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-2 border-t pt-3">
+                      <div className="flex items-center justify-between">
+                        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          Konsekvenser
+                        </Label>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 text-xs"
+                          onClick={() => updateBowTie(bt.id, { konsekvenser: [...bt.konsekvenser, ""] })}
+                        >
+                          <Plus className="h-3 w-3 mr-1" /> Legg til
+                        </Button>
+                      </div>
+                      {bt.konsekvenser.length === 0 ? (
+                        <p className="text-xs text-muted-foreground italic">Ingen konsekvenser registrert.</p>
+                      ) : (
+                        <div className="space-y-1.5">
+                          {bt.konsekvenser.map((k, i) => (
+                            <div key={i} className="flex gap-2">
+                              <Input
+                                value={k}
+                                onChange={(e) => {
+                                  const next = [...bt.konsekvenser];
+                                  next[i] = e.target.value;
+                                  updateBowTie(bt.id, { konsekvenser: next });
+                                }}
+                                className="h-8 text-sm"
+                                placeholder="f.eks. Personskade, materielle skader"
+                              />
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive shrink-0"
+                                onClick={() =>
+                                  updateBowTie(bt.id, { konsekvenser: bt.konsekvenser.filter((_, j) => j !== i) })
+                                }
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-1 border-t pt-3">
+                      <Area
+                        label="Felles barrierer / tiltak (valgfri)"
+                        value={bt.fellesBarrierer || ""}
+                        onChange={(v) => updateBowTie(bt.id, { fellesBarrierer: v })}
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
           <section className="space-y-2">
-            <h2 className="text-lg font-semibold">4. Oppsummering</h2>
+            <h2 className="text-lg font-semibold">
+              {content.bowTies && content.bowTies.length > 0 ? "5" : "4"}. Oppsummering
+            </h2>
             <Textarea value={content.oppsummering} rows={6}
               onChange={(e) => setContent((c) => ({ ...c, oppsummering: e.target.value }))} />
           </section>
 
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">5. Revisjonshistorikk</h2>
+              <h2 className="text-lg font-semibold">
+                {content.bowTies && content.bowTies.length > 0 ? "6" : "5"}. Revisjonshistorikk
+              </h2>
               <Button size="sm" variant="outline" onClick={addRevisjon}>
                 <Plus className="h-4 w-4 mr-1" /> Ny revisjon
               </Button>
