@@ -22,6 +22,7 @@ import { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, Tabl
 import { saveAs } from "file-saver";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useCanDownload } from "@/hooks/useCanDownload";
+import { useIsFullAccess } from "@/hooks/useIsFullAccess";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import SendToKSDialog from "@/components/konsept/SendToKSDialog";
@@ -396,6 +397,7 @@ const Konsept = () => {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const canDownload = useCanDownload();
+  const isFullAccess = useIsFullAccess();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const isViewMode = searchParams.get('view') === 'true';
@@ -10483,19 +10485,23 @@ const Konsept = () => {
                 <Save className="h-4 w-4 mr-2" />
                 {isSaving ? "Lagrer..." : "Lagre endringer"}
               </Button>
-              <SendToKSDialog
-                conceptName={conceptName}
-                projectId={selectedProjectId}
-                conceptId={conceptId}
-                conceptContent={formData}
-                disabled={!conceptName}
-              />
-              <UpdateKSButton
-                conceptId={conceptId}
-                conceptName={conceptName}
-                conceptContent={formData}
-                disabled={!conceptName}
-              />
+              {isFullAccess && (
+                <>
+                  <SendToKSDialog
+                    conceptName={conceptName}
+                    projectId={selectedProjectId}
+                    conceptId={conceptId}
+                    conceptContent={formData}
+                    disabled={!conceptName}
+                  />
+                  <UpdateKSButton
+                    conceptId={conceptId}
+                    conceptName={conceptName}
+                    conceptContent={formData}
+                    disabled={!conceptName}
+                  />
+                </>
+              )}
             </>
           )}
         </div>
