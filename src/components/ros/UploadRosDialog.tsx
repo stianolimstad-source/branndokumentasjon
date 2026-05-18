@@ -239,7 +239,25 @@ export const UploadRosDialog = ({ onApply }: Props) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {data.hendelser.map((h, i) => {
+                      {(() => {
+                        const groups = new Map<string, number[]>();
+                        data.hendelser.forEach((h, i) => {
+                          const key = (h.prosjekt || "").trim();
+                          if (!groups.has(key)) groups.set(key, []);
+                          groups.get(key)!.push(i);
+                        });
+                        const hasMultiple = groups.size > 1 || (groups.size === 1 && !groups.has(""));
+                        const toggleGroup = (idxs: number[]) => {
+                          const allOn = idxs.every((i) => selected.has(i));
+                          setSelected((prev) => {
+                            const n = new Set(prev);
+                            if (allOn) idxs.forEach((i) => n.delete(i));
+                            else idxs.forEach((i) => n.add(i));
+                            return n;
+                          });
+                        };
+                        const renderRow = (i: number) => {
+                          const h = data.hendelser[i];
                         const farge = risikoFarge(h.sannsynlighet, h.konsekvens);
                         const sE = h.sannsynlighetEtter ?? h.sannsynlighet;
                         const kE = h.konsekvensEtter ?? h.konsekvens;
