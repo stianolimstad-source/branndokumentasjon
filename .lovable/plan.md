@@ -1,40 +1,49 @@
 ## Mål
-I forhåndsvisningen av ROS-rapporten skal overgangen mellom kap. 2 (stående A4) og kap. 3 «Hendelsesregister» (liggende A4) se ut som to fysisk adskilte ark. Tabellen i kap. 3 skal også ha en tydelig, alltid synlig horisontal scrollbar slik at det er åpenbart at innholdet fortsetter til siden.
+I forhåndsvisningen av ROS-rapporten skal den horisontale scrollbaren for hendelsesregisteret (kap. 3) være synlig så lenge brukeren ser på kap. 3 — ikke bare når man har scrollet helt ned til bunnen av tabellen. Scrollbaren skal «følge» viewporten (sticky) nederst på skjermen mens kap. 3 er synlig.
 
 ## Endring
 **Fil:** `src/components/ros/RosPreview.tsx`
 
-### 1. Del opp i flere «ark»
-- Bytte ut dagens enkelt-`<div style={pageStyle}>` med flere «ark»-blokker, hver med samme `pageStyle` (skygge, hvit bakgrunn, A4-bredde) — dette gir den fysiske «to ark»-følelsen via mellomrom og skygge:
-  - **Ark 1 (stående):** Logo, header-bar, prosjektinfo-tabell, kap. 1, kap. 2.
-  - **Ark 2 (liggende):** Kap. 3 Hendelsesregister.
-  - **Ark 3 (stående):** Kap. 4, kap. 5, footer.
-- Wrappe alt i en ytre container med `display: flex; flex-direction: column; gap: 48px;` slik at det blir tydelig luft mellom arkene (grå bakgrunn synes mellom dem).
+### Teknikk: dobbel scrollbar med sticky overlay
+Standard `overflow-x: scroll` viser scrollbaren bare nederst i tabellens egen container. For å gjøre den synlig hele tiden brukes en kjent teknikk med to synkroniserte scroll-containere:
 
-### 2. Liggende ark for kap. 3
-- Ny `landscapePageStyle` basert på `pageStyle`, men med byttede dimensjoner: `maxWidth: 297mm`, `minHeight: 210mm`, padding tilpasset liggende format.
-- Beholde samme skygge/bakgrunn så det visuelt matcher de stående arkene, bare bredere/lavere.
+1. **Hoved-container** (allerede på plass): `div.ros-h-scroll` rundt `<table>` med `overflowX: scroll`. Denne håndterer selve tabellvisningen.
 
-### 3. Tydelig scroll-indikasjon på hendelsesregisteret
-- Bytte den enkle `<div style={{ overflowX: "auto" }}>` rundt tabellen med en wrapper som har:
-  - `overflowX: scroll` (ikke `auto`) for alltid-synlig scrollbar.
-  - En liten «← scroll →»-hint over tabellen (muted tekst, kun synlig dersom innholdet er bredere enn arket).
-  - Tydelig styling på scrollbaren via inline `<style>` (eller en liten CSS-klasse) med høyde ~12px, mørk thumb, lys track, slik at den blir godt synlig (Webkit + standard `scrollbar-color`).
+2. **Sticky scroll-proxy** rett over/under tabellen:
+   - Egen `<div>` med `position: sticky; bottom: 0; z-index: 5;`
+   - Inne i den: en tom `<div>` med samme bredde som tabellen (`minWidth: 1100px`) og høyde 1px, slik at den ytre containeren får horisontal scroll.
+   - Synkroniseres med hoved-containeren via to `onScroll`-handlere (refs) — når den ene scrolles, oppdateres `scrollLeft` på den andre.
 
-### 4. Rydde opp
-- Fjerne dagens `chapterDivider` (stiplet linje) på kap. 3, siden det fysiske skillet mellom ark erstatter det. Beholde `chapterDivider` (eller bytte til vanlig `marginTop`) for kap. 2, 4 og 5 internt i arkene — eller fjerne helt hvis luft mellom seksjoner i samme ark er nok. Anbefaling: fjerne `chapterDivider` på kap. 4 (siden ark-skillet allerede er der), men beholde luft (`marginTop: 32`) for kap. 2 og 5 innenfor samme ark.
+3. **Plassering:** Sticky-proxyen plasseres **inni `<section id="kap-3">`** slik at den kun er synlig så lenge kap. 3-seksjonen er i viewporten. Når man har scrollet forbi kap. 3, forsvinner den naturlig.
+
+4. **Styling:** Beholder eksisterende `.ros-h-scroll` webkit-styling (mørk thumb, 14 px høyde) på begge containere så scrollbaren ser tydelig og lik ut.
+
+5. **Fjerne "scroll horisontalt"-hint-teksten** over tabellen (eller flytte den til sticky-baren) siden scrollbaren nå er synlig hele tiden.
+
+### Implementasjonsdetaljer
+- Bruke `useRef<HTMLDivElement>(null)` for begge containere.
+- `onScroll` på topp-proxy: `tableRef.current.scrollLeft = proxyRef.current.scrollLeft`.
+- `onScroll` på tabell-container: `proxyRef.current.scrollLeft = tableRef.current.scrollLeft`.
+- Bruke en `isSyncing`-ref for å unngå evig loop.
+- Sticky-elementet trenger en bakgrunnsfarge (f.eks. `#fff`) så det dekker innholdet bak når det «klister seg» nederst.
 
 ## Ikke endret
-- `src/lib/ros-word-export.ts` (Word-eksporten beholder allerede liggende A4 for kap. 3).
-- `src/pages/RosAnalyse.tsx` og innputt-UI.
-- Datamodell / forretningslogikk.
+- `src/lib/ros-word-export.ts` (Word-eksport berøres ikke).
+- Layout/struktur av de tre arkene (stående → liggende → stående) beholdes.
+- Datamodell og forretningslogikk.
 
 ## Teknisk skisse
 
 ```text
-[ Ark 1 — A4 stående ]   <- skygge
-       (luft 48px)
-[ Ark 2 — A4 liggende ]  <- bredere, egen skygge, scrollbar synlig på tabell
-       (luft 48px)
-[ Ark 3 — A4 stående ]   <- skygge
+┌─ Ark 2 (liggende A4) ─────────────────────┐
+│  Kap. 3 Hendelsesregister                 │
+│  ┌─────────────────────────────────────┐  │
+│  │ <table> (overflow-x scroll)         │  │
+│  │  ... mange kolonner ...             │  │
+│  └─────────────────────────────────────┘  │
+│                                            │
+│  ┌─ position: sticky; bottom: 0 ───────┐  │ ← følger viewporten
+│  │ ▓▓▓▓▓▓▓░░░░░░░░░░░  scroll-proxy   │  │
+│  └─────────────────────────────────────┘  │
+└────────────────────────────────────────────┘
 ```
