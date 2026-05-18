@@ -139,6 +139,16 @@ export default function RosAnalyse() {
             : [],
           oppsummering: (c as any).oppsummering ?? "",
           revisjonshistorikk: Array.isArray((c as any).revisjonshistorikk) ? (c as any).revisjonshistorikk : [],
+          bowTies: Array.isArray((c as any).bowTies)
+            ? (c as any).bowTies.map((b: any) => ({
+                id: b.id || Math.random().toString(36).slice(2, 10),
+                navn: String(b.navn || ""),
+                beskrivelse: String(b.beskrivelse || ""),
+                hendelseIds: Array.isArray(b.hendelseIds) ? b.hendelseIds.filter((x: any) => typeof x === "string") : [],
+                konsekvenser: Array.isArray(b.konsekvenser) ? b.konsekvenser.map((x: any) => String(x)) : [],
+                fellesBarrierer: String(b.fellesBarrierer || ""),
+              }))
+            : [],
         });
         setLoadingDoc(false);
       });
