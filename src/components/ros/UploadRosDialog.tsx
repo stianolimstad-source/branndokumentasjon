@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
@@ -16,7 +16,7 @@ const RISK_BG: Record<"gronn" | "gul" | "rod", string> = {
   rod: "bg-red-500/85 text-white",
 };
 
-export type ExtractedHendelse = Omit<RosHendelse, "id">;
+export type ExtractedHendelse = Omit<RosHendelse, "id"> & { prosjekt?: string };
 
 export interface ExtractedRosData {
   metadata: { prosjektnavn?: string; adresse?: string; oppdragsgiver?: string };
@@ -239,7 +239,25 @@ export const UploadRosDialog = ({ onApply }: Props) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {data.hendelser.map((h, i) => {
+                      {(() => {
+                        const groups = new Map<string, number[]>();
+                        data.hendelser.forEach((h, i) => {
+                          const key = (h.prosjekt || "").trim();
+                          if (!groups.has(key)) groups.set(key, []);
+                          groups.get(key)!.push(i);
+                        });
+                        const hasMultiple = groups.size > 1 || (groups.size === 1 && !groups.has(""));
+                        const toggleGroup = (idxs: number[]) => {
+                          const allOn = idxs.every((i) => selected.has(i));
+                          setSelected((prev) => {
+                            const n = new Set(prev);
+                            if (allOn) idxs.forEach((i) => n.delete(i));
+                            else idxs.forEach((i) => n.add(i));
+                            return n;
+                          });
+                        };
+                        const renderRow = (i: number) => {
+                          const h = data.hendelser[i];
                         const farge = risikoFarge(h.sannsynlighet, h.konsekvens);
                         const sE = h.sannsynlighetEtter ?? h.sannsynlighet;
                         const kE = h.konsekvensEtter ?? h.konsekvens;
@@ -305,9 +323,36 @@ export const UploadRosDialog = ({ onApply }: Props) => {
                                 </td>
                               </tr>
                             )}
-                          </>
-                        );
-                      })}
+                            </>
+                          );
+                        };
+                        return Array.from(groups.entries()).map(([key, idxs]) => {
+                          const selectedCount = idxs.filter((i) => selected.has(i)).length;
+                          const allOn = selectedCount === idxs.length;
+                          return (
+                            <React.Fragment key={`grp-${key || "_"}`}>
+                              {hasMultiple && (
+                                <tr className="bg-accent/50 border-t sticky">
+                                  <td className="px-2 py-2">
+                                    <Checkbox
+                                      checked={allOn}
+                                      onCheckedChange={() => toggleGroup(idxs)}
+                                      aria-label={`Velg alle i ${key || "uten prosjekt"}`}
+                                    />
+                                  </td>
+                                  <td colSpan={5} className="px-2 py-2 text-xs font-semibold uppercase tracking-wide">
+                                    {key || "Uten prosjekt"}
+                                    <span className="ml-2 text-muted-foreground font-normal normal-case">
+                                      ({selectedCount}/{idxs.length} valgt)
+                                    </span>
+                                  </td>
+                                </tr>
+                              )}
+                              {idxs.map((i) => renderRow(i))}
+                            </React.Fragment>
+                          );
+                        });
+                      })()}
                     </tbody>
                   </table>
                 </div>
