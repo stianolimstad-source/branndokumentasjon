@@ -323,9 +323,36 @@ export const UploadRosDialog = ({ onApply }: Props) => {
                                 </td>
                               </tr>
                             )}
-                          </>
-                        );
-                      })}
+                            </>
+                          );
+                        };
+                        return Array.from(groups.entries()).map(([key, idxs]) => {
+                          const selectedCount = idxs.filter((i) => selected.has(i)).length;
+                          const allOn = selectedCount === idxs.length;
+                          return (
+                            <React.Fragment key={`grp-${key || "_"}`}>
+                              {hasMultiple && (
+                                <tr className="bg-accent/50 border-t sticky">
+                                  <td className="px-2 py-2">
+                                    <Checkbox
+                                      checked={allOn}
+                                      onCheckedChange={() => toggleGroup(idxs)}
+                                      aria-label={`Velg alle i ${key || "uten prosjekt"}`}
+                                    />
+                                  </td>
+                                  <td colSpan={5} className="px-2 py-2 text-xs font-semibold uppercase tracking-wide">
+                                    {key || "Uten prosjekt"}
+                                    <span className="ml-2 text-muted-foreground font-normal normal-case">
+                                      ({selectedCount}/{idxs.length} valgt)
+                                    </span>
+                                  </td>
+                                </tr>
+                              )}
+                              {idxs.map((i) => renderRow(i))}
+                            </React.Fragment>
+                          );
+                        });
+                      })()}
                     </tbody>
                   </table>
                 </div>
