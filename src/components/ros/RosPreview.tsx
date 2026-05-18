@@ -83,6 +83,12 @@ const pageStyle: React.CSSProperties = {
   boxShadow: "0 2px 16px rgba(0,0,0,0.12)",
   marginInline: "auto",
 };
+const landscapePageStyle: React.CSSProperties = {
+  ...pageStyle,
+  maxWidth: "297mm",
+  minHeight: "210mm",
+  padding: "16mm 14mm 18mm 14mm",
+};
 
 const h2: React.CSSProperties = {
   fontSize: 15,
