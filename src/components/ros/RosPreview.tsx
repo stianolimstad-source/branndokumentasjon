@@ -162,7 +162,15 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
   const utfort = m.utfortAv || utarbeidetAv || "";
 
   return (
-    <div className="bg-muted/20 p-4 md:p-8 flex justify-center">
+    <div className="bg-muted/20 p-4 md:p-8">
+      <style>{`
+        .ros-h-scroll::-webkit-scrollbar { height: 14px; }
+        .ros-h-scroll::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 7px; }
+        .ros-h-scroll::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 7px; border: 2px solid #e2e8f0; }
+        .ros-h-scroll::-webkit-scrollbar-thumb:hover { background: #2d4a6f; }
+        .ros-h-scroll { scrollbar-color: #1e3a5f #e2e8f0; scrollbar-width: auto; }
+      `}</style>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 56 }}>
       <div style={pageStyle}>
         {/* Logo */}
         {logoUrl && (
