@@ -397,6 +397,7 @@ const Konsept = () => {
   const { toast } = useToast();
   const { user, loading: authLoading } = useAuth();
   const canDownload = useCanDownload();
+  const isFullAccess = useIsFullAccess();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const isViewMode = searchParams.get('view') === 'true';
