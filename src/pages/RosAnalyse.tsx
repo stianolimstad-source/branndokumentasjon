@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search } from "lucide-react";
+import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search, Sparkles } from "lucide-react";
 import RosPreview, { type RosContent, type RosHendelse } from "@/components/ros/RosPreview";
 import UploadRosDialog, { type ExtractedRosData } from "@/components/ros/UploadRosDialog";
 import RosMatriks, { risikoFarge } from "@/components/ros/RosMatriks";
@@ -386,9 +386,11 @@ export default function RosAnalyse() {
           <section className="space-y-3">
             <h2 className="text-lg font-semibold">1. Innledning</h2>
             <Area label="Bakgrunn" value={content.innledning.bakgrunn}
-              onChange={(v) => setContent((c) => ({ ...c, innledning: { ...c.innledning, bakgrunn: v } }))} />
+              onChange={(v) => setContent((c) => ({ ...c, innledning: { ...c.innledning, bakgrunn: v } }))}
+              onGenerate={() => generateBakgrunnText(content.metadata)} />
             <Area label="Formål" value={content.innledning.formal}
-              onChange={(v) => setContent((c) => ({ ...c, innledning: { ...c.innledning, formal: v } }))} />
+              onChange={(v) => setContent((c) => ({ ...c, innledning: { ...c.innledning, formal: v } }))}
+              onGenerate={() => generateFormalText(content.metadata)} />
             <Area label="Omfang" value={content.innledning.omfang}
               onChange={(v) => setContent((c) => ({ ...c, innledning: { ...c.innledning, omfang: v } }))} />
             <Area label="Avgrensninger" value={content.innledning.avgrensninger}
@@ -650,12 +652,59 @@ function Field({ label, value, onChange, type = "text" }: { label: string; value
     </div>
   );
 }
-function Area({ label, value, onChange, rows = 3 }: { label: string; value: string; onChange: (v: string) => void; rows?: number }) {
+function Area({
+  label,
+  value,
+  onChange,
+  rows = 3,
+  onGenerate,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  rows?: number;
+  onGenerate?: () => string;
+}) {
+  const handleGenerate = () => {
+    if (!onGenerate) return;
+    if (value.trim() && !window.confirm("Erstatt eksisterende tekst med generert standardtekst?")) return;
+    onChange(onGenerate());
+  };
   return (
     <div className="space-y-1">
-      <Label className="text-xs">{label}</Label>
+      <div className="flex items-center justify-between gap-2">
+        <Label className="text-xs">{label}</Label>
+        {onGenerate && (
+          <Button type="button" variant="ghost" size="sm" className="h-6 px-2 text-xs" onClick={handleGenerate}>
+            <Sparkles className="h-3 w-3 mr-1" />
+            Generer tekst
+          </Button>
+        )}
+      </div>
       <Textarea value={value} rows={rows} onChange={(e) => onChange(e.target.value)} />
     </div>
+  );
+}
+
+function generateBakgrunnText(meta: RosContent["metadata"]): string {
+  const navn = meta.prosjektnavn?.trim();
+  const adresse = meta.adresse?.trim();
+  const objekt = navn && adresse ? `${navn} (${adresse})` : navn || adresse || "tiltaket";
+  return (
+    `Denne risiko- og sårbarhetsanalysen (ROS-analyse) er utarbeidet for ${objekt}. ` +
+    `Analysen skal kartlegge og vurdere uønskede hendelser som kan oppstå knyttet til brann, eksplosjon og andre uhell som påvirker liv, helse, miljø og materielle verdier. ` +
+    `ROS-analysen er gjennomført i samsvar med kravene i plan- og bygningsloven, byggteknisk forskrift (TEK17), brann- og eksplosjonsvernloven, samt forskrift om systematisk helse-, miljø- og sikkerhetsarbeid (internkontrollforskriften). ` +
+    `Metodikken bygger på NS 5814 «Krav til risikovurderinger», med bruk av en 5×5 risikomatrise for vurdering av sannsynlighet og konsekvens.`
+  );
+}
+
+function generateFormalText(meta: RosContent["metadata"]): string {
+  const navn = meta.prosjektnavn?.trim();
+  const objekt = navn ? `for ${navn}` : "for tiltaket";
+  return (
+    `Formålet med ROS-analysen ${objekt} er å identifisere relevante uønskede hendelser, vurdere sannsynlighet for at de inntreffer og konsekvensene dersom de skjer, samt å foreslå risikoreduserende tiltak. ` +
+    `Analysen skal gi beslutningsgrunnlag for prosjektering, bygging og drift, og bidra til at akseptabelt sikkerhetsnivå oppnås i tråd med gjeldende regelverk og anerkjente normer. ` +
+    `Resultatene benyttes videre i brannkonseptet og som underlag for organisatoriske og tekniske tiltak gjennom byggets levetid.`
   );
 }
 

@@ -1,13 +1,21 @@
 ## Mål
-Skjul «Send til KS» og «Oppdater KS» for alle brukere unntatt eierne (definert i `useIsFullAccess`), siden funksjonen ikke er ferdig.
+Legg til en «Generer tekst»-knapp i ROS-analyse under seksjon 1. Innledning som fyller inn standardtekst for Bakgrunn og Formål. Teksten er fortsatt fullt redigerbar etterpå.
 
-## Endring
+## Tilnærming
+Bruk lokal mal-tekst (ikke AI-kall) — gir umiddelbar respons og en konsistent, profesjonell standardtekst som beskriver hva en ROS-analyse er og hvorfor den utføres. Metadata (prosjektnavn/adresse) flettes inn der det finnes.
 
-**`src/pages/Konsept.tsx`** (samme side håndterer både brannkonsept og tilstandsvurdering):
-- Importer `useIsFullAccess` fra `@/hooks/useIsFullAccess`.
-- Hent `const isFullAccess = useIsFullAccess();` i komponenten.
-- Pakk inn `<SendToKSDialog />` (linje 10486) og `<UpdateKSButton />` (linje 10493) i `{isFullAccess && ( ... )}` slik at kun eier-e-postene (`stianolimstad@gmail.com` m.fl.) ser knappene. Andre brukere ser fortsatt «Lagre endringer».
+## Endring i `src/pages/RosAnalyse.tsx`
+
+1. Legg til to hjelpefunksjoner som returnerer standardtekst:
+   - `generateBakgrunn(meta)` — beskriver at ROS-analysen utføres for å kartlegge brannrisiko ved [prosjektnavn/adresse], i tråd med plan- og bygningsloven, brann- og eksplosjonsvernloven og internkontrollforskriften.
+   - `generateFormal(meta)` — beskriver formålet: identifisere uønskede hendelser, vurdere sannsynlighet og konsekvens, og foreslå risikoreduserende tiltak slik at akseptabelt sikkerhetsnivå oppnås.
+
+2. Utvid `Area`-komponenten (eller wrap den i seksjonen) slik at felt-overskriften kan ha en liten «Generer tekst»-knapp (Sparkles-ikon) til høyre. Klikk setter feltverdien til generert tekst — men bekrefter overskriving hvis feltet allerede har innhold (enkel `window.confirm("Erstatt eksisterende tekst?")`).
+
+3. Legg knappene på Bakgrunn og Formål i seksjon 1. Innledning (linje 388–391).
 
 ## Verifisering
-- Logget inn som eier: begge KS-knappene synlige under «Lagre endringer» på både `/konsept` og `/tilstandsvurdering`.
-- Logget inn som annen bruker: kun «Lagre endringer» vises; ingen referanse til KS-funksjonen.
+- Åpne en ROS-analyse → klikk «Generer tekst» ved Bakgrunn → standardtekst fylles inn.
+- Tekstområdet er fortsatt redigerbart.
+- Klikk igjen når feltet har innhold → bekreftelse vises før overskriving.
+- Tilsvarende for Formål.
