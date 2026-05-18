@@ -10,6 +10,8 @@ import {
   ShadingType,
   Packer,
   AlignmentType,
+  PageOrientation,
+  SectionType,
 } from "docx";
 import { saveAs } from "file-saver";
 import {
@@ -359,6 +361,11 @@ export const exportRosToWord = async (options: ExportOptions) => {
     styles: defaultDocStyles(theme),
     sections: [
       {
+        properties: {
+          page: {
+            size: { width: 11906, height: 16838, orientation: PageOrientation.PORTRAIT },
+          },
+        },
         headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
         footers: { default: buildFooter(theme) },
         children: [
@@ -369,9 +376,29 @@ export const exportRosToWord = async (options: ExportOptions) => {
           ...innledning,
           new Paragraph({ text: "", spacing: { before: 200 } }),
           ...metode,
-          new Paragraph({ text: "", spacing: { before: 200 } }),
-          ...hendelser,
-          new Paragraph({ text: "", spacing: { before: 200 } }),
+        ],
+      },
+      {
+        properties: {
+          type: SectionType.NEXT_PAGE,
+          page: {
+            size: { width: 11906, height: 16838, orientation: PageOrientation.LANDSCAPE },
+          },
+        },
+        headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
+        footers: { default: buildFooter(theme) },
+        children: [...hendelser],
+      },
+      {
+        properties: {
+          type: SectionType.NEXT_PAGE,
+          page: {
+            size: { width: 11906, height: 16838, orientation: PageOrientation.PORTRAIT },
+          },
+        },
+        headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
+        footers: { default: buildFooter(theme) },
+        children: [
           ...oppsummering,
           new Paragraph({ text: "", spacing: { before: 200 } }),
           ...revisjonshistorikk,
