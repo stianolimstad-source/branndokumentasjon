@@ -114,7 +114,7 @@ const Dashboard = () => {
               </div>
               <div>
                 <p className="text-3xl font-bold">{stats.totalConcepts}</p>
-                <p className="text-sm text-muted-foreground">Konsepter</p>
+                <p className="text-sm text-muted-foreground">Dokumenter</p>
               </div>
             </CardContent>
           </Card>
