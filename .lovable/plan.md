@@ -1,26 +1,20 @@
 ## Mål
-I Word-rapporten for ROS-analysen skal kapittel 3 «Hendelsesregister» vises på liggende A4, mens resten av rapporten beholder stående format. Innputsiden i appen endres ikke.
+I forhåndsvisningen av ROS-rapporten skal det være et tydelig fysisk skille mellom kapitlene, slik at hvert kapittel oppleves som en egen «side»/blokk. Endringen gjelder kun visningen i appen (`RosPreview`), ikke Word-eksporten eller innputt­sidene.
 
 ## Endring
+**Fil:** `src/components/ros/RosPreview.tsx`
 
-**Fil:** `src/lib/ros-word-export.ts`
+Legge til en felles «kapittel-skille»-stil som plasseres mellom kap. 1–5 (`<section id="kap-1">` … `kap-5`). Skillet består av:
 
-Dagens dokument bygges som én seksjon (portrett). Jeg deler det opp i tre seksjoner i `Document.sections`:
+- Tydelig vertikal luft mellom seksjonene (`margin-top: 56px`, `padding-top: 40px`).
+- En tynn horisontal linje på toppen av hver seksjon fra og med kap. 2 (`border-top: 1px dashed #c8d2df`).
+- Liten «sidebryter»-etikett sentrert over linjen (f.eks. «— Nytt kapittel —» i muted farge, valgfritt) for å forsterke det fysiske skillet.
 
-1. **Seksjon 1 — Portrett:** forside, infotabell, kap. 1 Innledning, kap. 2 Metode.
-2. **Seksjon 2 — Landskap:** kap. 3 Hendelsesregister (overskrift + tabell/«Ingen hendelser registrert»).
-   - `properties.page.size`: `width: 11906, height: 16838, orientation: PageOrientation.LANDSCAPE` (A4).
-   - `properties.type: SectionType.NEXT_PAGE` så kapittelet starter på ny side — fungerer som tydelig skille for kap. 3.
-   - Tabellbredden i hendelseslisten settes opp så den utnytter den bredere siden (full prosent-bredde beholdes, men `columnWidths`/cellebredder justeres ved behov for jevn fordeling i landskap).
-3. **Seksjon 3 — Portrett igjen:** kap. 4 Oppsummering og kap. 5 Revisjonshistorikk, også med `SectionType.NEXT_PAGE`.
+Konkret:
+1. Definere `chapterDivider: React.CSSProperties` øverst sammen med øvrige stiler.
+2. Sette `style={chapterDivider}` på `<section id="kap-2">`, `kap-3`, `kap-4` og `kap-5` (kap. 1 beholdes uten skille siden den følger rett etter infotabellen).
+3. Beholde eksisterende `h2`-styling; eventuelt redusere `marginTop` på `h2` til 0 når elementet ligger inne i en seksjon med skille, for å unngå dobbel luft.
 
-Alle tre seksjonene får samme `headers`/`footers` (samme `buildHeader`/`buildFooter`) for visuell konsistens.
-
-## Det som ikke endres
-- `src/components/ros/RosPreview.tsx`, `RosMatriks.tsx`, `src/pages/RosAnalyse.tsx` og øvrig UI for innputt/forhåndsvisning forblir uendret.
-- Innhold, tekster, farger og temalogikk i rapporten beholdes.
-
-## Tekniske detaljer
-- Importere `PageOrientation` og `SectionType` fra `docx` i `ros-word-export.ts`.
-- A4 i DXA: portrett `width: 11906, height: 16838`; for landskap sendes samme verdier inn med `orientation: LANDSCAPE` (docx-js bytter selv internt).
-- Marginer beholdes som i nåværende oppsett (eller settes eksplisitt likt i alle tre seksjoner for å unngå hopp).
+## Ikke endret
+- `src/lib/ros-word-export.ts` (Word-rapporten beholdes som nå med liggende A4 for kap. 3).
+- `src/pages/RosAnalyse.tsx` og øvrig innputt-UI.

@@ -87,11 +87,17 @@ const pageStyle: React.CSSProperties = {
 const h2: React.CSSProperties = {
   fontSize: 15,
   fontWeight: 700,
-  marginTop: 28,
+  marginTop: 0,
   marginBottom: 10,
   color: "#1e3a5f",
   borderBottom: "2px solid #1e3a5f",
   paddingBottom: 5,
+};
+const chapterDivider: React.CSSProperties = {
+  marginTop: 64,
+  paddingTop: 40,
+  borderTop: "2px dashed #c8d2df",
+  position: "relative",
 };
 const h3: React.CSSProperties = {
   fontSize: 12,
