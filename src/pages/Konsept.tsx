@@ -10485,19 +10485,23 @@ const Konsept = () => {
                 <Save className="h-4 w-4 mr-2" />
                 {isSaving ? "Lagrer..." : "Lagre endringer"}
               </Button>
-              <SendToKSDialog
-                conceptName={conceptName}
-                projectId={selectedProjectId}
-                conceptId={conceptId}
-                conceptContent={formData}
-                disabled={!conceptName}
-              />
-              <UpdateKSButton
-                conceptId={conceptId}
-                conceptName={conceptName}
-                conceptContent={formData}
-                disabled={!conceptName}
-              />
+              {isFullAccess && (
+                <>
+                  <SendToKSDialog
+                    conceptName={conceptName}
+                    projectId={selectedProjectId}
+                    conceptId={conceptId}
+                    conceptContent={formData}
+                    disabled={!conceptName}
+                  />
+                  <UpdateKSButton
+                    conceptId={conceptId}
+                    conceptName={conceptName}
+                    conceptContent={formData}
+                    disabled={!conceptName}
+                  />
+                </>
+              )}
             </>
           )}
         </div>
