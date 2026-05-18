@@ -3320,7 +3320,20 @@ const Konsept = () => {
                             onChange={(e) => {
                               const checked = e.target.checked;
                               if (checked && formData.bygningsdeler.length === 0) {
-                                const del2 = { id: crypto.randomUUID(), navn: "Bygningsdel 2", bygningstype: "", risikoklasse: "", brannklasse: "", brannklasseUnntak: "", harTerrengTilgang: "", areal: "", etasjer: formData.etasjer || "", spesifikkBrannenergi: "" };
+                                // Forhåndsutfyll med samme risiko-/brannklasse som Bygningsdel 1 for å unngå
+                                // tomme felter som kan gi krasj i preview-rendering.
+                                const del2 = {
+                                  id: crypto.randomUUID(),
+                                  navn: "Bygningsdel 2",
+                                  bygningstype: "",
+                                  risikoklasse: formData.risikoklasse || "",
+                                  brannklasse: formData.brannklasse || "",
+                                  brannklasseUnntak: "",
+                                  harTerrengTilgang: formData.harTerrengTilgang || "",
+                                  areal: "",
+                                  etasjer: formData.etasjer || "",
+                                  spesifikkBrannenergi: ""
+                                };
                                 setFormData({...formData, harFlereRisikoklasser: true, bygningsdeler: [del2]});
                               } else {
                                 setFormData({...formData, harFlereRisikoklasser: checked});
