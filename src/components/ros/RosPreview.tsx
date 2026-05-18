@@ -180,11 +180,13 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
   return (
     <div className="bg-muted/20 p-4 md:p-8">
       <style>{`
-        .ros-h-scroll::-webkit-scrollbar { height: 14px; }
-        .ros-h-scroll::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 7px; }
-        .ros-h-scroll::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 7px; border: 2px solid #e2e8f0; }
+        .ros-h-scroll::-webkit-scrollbar { height: 16px; }
+        .ros-h-scroll::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 8px; }
+        .ros-h-scroll::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 8px; border: 2px solid #e2e8f0; }
         .ros-h-scroll::-webkit-scrollbar-thumb:hover { background: #2d4a6f; }
         .ros-h-scroll { scrollbar-color: #1e3a5f #e2e8f0; scrollbar-width: auto; }
+        .ros-h-scroll-hidden { scrollbar-width: none; -ms-overflow-style: none; }
+        .ros-h-scroll-hidden::-webkit-scrollbar { display: none; width: 0; height: 0; }
       `}</style>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 56 }}>
       <div style={pageStyle}>
@@ -360,8 +362,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
               <div
                 ref={tableScrollRef}
                 onScroll={handleTableScroll}
-                className="ros-h-scroll"
-                style={{ overflowX: "scroll", paddingBottom: 4 }}
+                className="ros-h-scroll-hidden"
               >
               <table style={{ ...tableStyle, fontSize: 9, minWidth: 1100 }}>
                 <thead>
