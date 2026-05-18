@@ -27,6 +27,15 @@ export interface RosRevisjon {
   endring: string;
 }
 
+export interface RosBowTie {
+  id: string;
+  navn: string;
+  beskrivelse?: string;
+  hendelseIds: string[];
+  konsekvenser: string[];
+  fellesBarrierer?: string;
+}
+
 export interface RosContent {
   metadata: {
     prosjektnavn: string;
@@ -43,6 +52,7 @@ export interface RosContent {
     avgrensninger: string;
   };
   hendelser: RosHendelse[];
+  bowTies?: RosBowTie[];
   oppsummering: string;
   revisjonshistorikk: RosRevisjon[];
 }
