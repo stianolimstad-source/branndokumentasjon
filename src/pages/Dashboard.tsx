@@ -193,25 +193,28 @@ const Dashboard = () => {
         <div className="grid lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>Siste konsepter</CardTitle>
-              <CardDescription>Dine nylig oppdaterte brannkonsepter</CardDescription>
+              <CardTitle>Siste dokumenter</CardTitle>
+              <CardDescription>Dine nylig oppdaterte dokumenter</CardDescription>
             </CardHeader>
             <CardContent>
               {concepts.length === 0 ? (
-                <p className="text-sm text-muted-foreground py-4 text-center">Ingen konsepter ennå</p>
+                <p className="text-sm text-muted-foreground py-4 text-center">Ingen dokumenter ennå</p>
               ) : (
                 <ul className="space-y-3">
-                  {concepts.slice(0, 10).map((c) => (
-                    <li key={c.id} className="flex items-center justify-between border-b pb-2 last:border-0">
+                  {concepts.slice(0, 10).map((c) => {
+                    const kindLabel = c._kind === "ros" ? "ROS" : c._kind === "brensel" ? "Brensellagring" : c._kind === "tilstand" ? "Tilstand" : "Brannkonsept";
+                    return (
+                    <li key={`${c._kind}-${c.id}`} className="flex items-center justify-between border-b pb-2 last:border-0">
                       <div>
                         <p className="text-sm font-medium">{c.name}</p>
-                        <p className="text-xs text-muted-foreground">{format(new Date(c.updated_at), "d. MMM yyyy", { locale: nb })}</p>
+                        <p className="text-xs text-muted-foreground">{kindLabel} · {format(new Date(c.updated_at), "d. MMM yyyy", { locale: nb })}</p>
                       </div>
                       <Badge variant={c.status === "draft" ? "secondary" : "default"} className="text-xs">
                         {c.status === "draft" ? "Utkast" : c.status}
                       </Badge>
                     </li>
-                  ))}
+                    );
+                  })}
                 </ul>
               )}
             </CardContent>
