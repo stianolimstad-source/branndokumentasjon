@@ -7826,7 +7826,8 @@ const Konsept = () => {
                                   }
                                   const isMulti = allParts.length > 1;
                                   if (!isMulti) {
-                                    const isPII = ["RK3","RK5","RK6"].includes(allParts[0].rk) || ["BKL2","BKL3"].includes(allParts[0].bkl);
+                                    const first = allParts[0];
+                                    const isPII = !!first && (["RK3","RK5","RK6"].includes(first.rk) || ["BKL2","BKL3"].includes(first.bkl));
                                     return <li>Øvrig isolasjon: {isPII ? 'CL-s3,d0 [PII]' : 'DL-s3,d0 [PIII]'}</li>;
                                   }
                                   return allParts.map((p, idx) => {
