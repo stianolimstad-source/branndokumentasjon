@@ -1,21 +1,61 @@
 ## Mål
-Legg til en «Generer tekst»-knapp i ROS-analyse under seksjon 1. Innledning som fyller inn standardtekst for Bakgrunn og Formål. Teksten er fortsatt fullt redigerbar etterpå.
+Legg til bow-tie-analyse i ROS-modulen slik at brukeren kan definere en uønsket topphendelse (f.eks. «Eksplosjon») og knytte eksisterende registrerte hendelser til den som årsaker. Dette gir kategorisering av hendelser og synliggjør tiltak som virker på tvers av flere topphendelser.
 
-## Tilnærming
-Bruk lokal mal-tekst (ikke AI-kall) — gir umiddelbar respons og en konsistent, profesjonell standardtekst som beskriver hva en ROS-analyse er og hvorfor den utføres. Metadata (prosjektnavn/adresse) flettes inn der det finnes.
+## Konsept (bow-tie)
+```text
+   Årsaker (registrerte hendelser)            Konsekvenser
+   ─────────────────────────────┐         ┌──────────────────
+   • Hendelse A  ──┐            │         │
+   • Hendelse B  ──┼── Barrierer ▶ TOPPHENDELSE ▶ Barrierer ── • Konsekvens 1
+   • Hendelse C  ──┘            │         │                    • Konsekvens 2
+   ─────────────────────────────┘         └──────────────────
+```
+Venstre side («årsaker») kobles direkte til allerede registrerte hendelser i ROS-analysen. Høyre side («konsekvenser») skrives som korte fritekstpunkter per topphendelse. Tiltak hentes automatisk fra de koblede hendelsene + en valgfri «felles barriere»-tekst.
 
-## Endring i `src/pages/RosAnalyse.tsx`
+## Datamodell (utvidelse av `RosContent`)
+I `src/components/ros/RosPreview.tsx`:
+```ts
+export interface RosBowTie {
+  id: string;
+  navn: string;                 // f.eks. "Eksplosjon i transformator"
+  beskrivelse?: string;
+  hendelseIds: string[];        // refererer til RosHendelse.id (årsaker)
+  konsekvenser: string[];       // fritekst-punkter
+  fellesBarrierer?: string;     // valgfri tekst om felles tiltak
+}
+export interface RosContent {
+  ...
+  bowTies?: RosBowTie[];        // valgfri => bakoverkompatibel
+}
+```
+Eksisterende analyser uten `bowTies` fungerer uendret.
 
-1. Legg til to hjelpefunksjoner som returnerer standardtekst:
-   - `generateBakgrunn(meta)` — beskriver at ROS-analysen utføres for å kartlegge brannrisiko ved [prosjektnavn/adresse], i tråd med plan- og bygningsloven, brann- og eksplosjonsvernloven og internkontrollforskriften.
-   - `generateFormal(meta)` — beskriver formålet: identifisere uønskede hendelser, vurdere sannsynlighet og konsekvens, og foreslå risikoreduserende tiltak slik at akseptabelt sikkerhetsnivå oppnås.
+## Endringer
 
-2. Utvid `Area`-komponenten (eller wrap den i seksjonen) slik at felt-overskriften kan ha en liten «Generer tekst»-knapp (Sparkles-ikon) til høyre. Klikk setter feltverdien til generert tekst — men bekrefter overskriving hvis feltet allerede har innhold (enkel `window.confirm("Erstatt eksisterende tekst?")`).
+### 1. `src/pages/RosAnalyse.tsx`
+- Ny seksjon «4. Bow-tie analyse» (etter Hendelser, før Oppsummering).
+- «+ Ny topphendelse»-knapp åpner Accordion-item med:
+  - Tittel + valgfri beskrivelse.
+  - **Årsaker**: multi-select chip-liste over alle `content.hendelser` (søkbar). Klikk på chip toggler tilhørighet. Viser også risiko-fargekode per hendelse.
+  - **Konsekvenser**: enkel liste med + / slett, tekstfelt per rad.
+  - **Felles barrierer / tiltak**: textarea (valgfri).
+  - Slett topphendelse-knapp (med `AlertDialog`-bekreftelse).
+- Oppdater søk/innholdshåndtering i samme mønster som eksisterende `hendelser`.
 
-3. Legg knappene på Bakgrunn og Formål i seksjon 1. Innledning (linje 388–391).
+### 2. `src/components/ros/RosPreview.tsx`
+- Render ny seksjon «4. Bow-tie analyse» når `bowTies?.length`:
+  - Per topphendelse: SVG-/CSS-bow-tie med årsaker (venstre kolonne, knyttet til topp via linjer), topphendelse-boks i midten, konsekvenser (høyre kolonne).
+  - Under diagrammet: tabell «Aggregerte tiltak» som lister `tiltak` fra alle koblede hendelser + felles barrierer. Tiltak som forekommer i ≥2 topphendelser merkes som «Felles tiltak» (badge).
+
+### 3. `src/lib/ros-word-export.ts`
+- Eksporter samme seksjon til Word: per topphendelse en tabell med kolonnene «Årsak (hendelse-ID/tittel) | S | K | Risiko» og under: «Konsekvenser» + «Felles barrierer» + «Aggregerte tiltak».
+- Numerisk kapittelnummerering oppdateres så Oppsummering blir kap. 5.
+
+### 4. Hendelser ↔ bow-tie konsistens
+- Hvis en hendelse slettes, fjern `id` fra alle `bowTies[].hendelseIds` automatisk.
 
 ## Verifisering
-- Åpne en ROS-analyse → klikk «Generer tekst» ved Bakgrunn → standardtekst fylles inn.
-- Tekstområdet er fortsatt redigerbart.
-- Klikk igjen når feltet har innhold → bekreftelse vises før overskriving.
-- Tilsvarende for Formål.
+- Opprett ROS → legg til 3 hendelser → opprett topphendelse «Eksplosjon» → tilknytt 2 av hendelsene → legg til 2 konsekvenser. Preview viser bow-tie med riktige årsaker, konsekvenser og aggregerte tiltak.
+- Slett en koblet hendelse → forsvinner automatisk fra bow-tie.
+- Eksporter til Word → bow-tie-seksjonen er med, med korrekt nummerering.
+- Eksisterende ROS-analyser uten `bowTies` åpnes uten feil og viser ingen bow-tie-seksjon før første topphendelse opprettes.
