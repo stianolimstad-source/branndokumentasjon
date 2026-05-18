@@ -36,6 +36,7 @@ Returner BARE et rent JSON-objekt (ingen markdown, ingen forklaring), med denne 
   "metadata": { "prosjektnavn": "", "adresse": "", "oppdragsgiver": "" },
   "hendelser": [
     {
+      "prosjekt": "",
       "tittel": "",
       "sarbarhet": "",
       "hendelse": "",

@@ -1,22 +1,23 @@
-## Inkludér ROS-analyser i «Siste dokumenter»
+## Mål
+Når en opplastet ROS-analyse inneholder hendelser fra flere prosjekter, skal hendelsene grupperes per prosjekt i gjennomgangs-dialogen, slik at brukeren enkelt kan velge/avvelge alle hendelser i ett prosjekt om gangen.
 
-I dag henter dashbordet kun fra `fire_concepts`. ROS-analyser (`ros_analyses`) skal også telle som dokumenter brukeren jobber med.
+## Endringer
 
-### Endringer
+### 1. `supabase/functions/parse-ros-analysis/index.ts`
+- Utvid AI-prompt og JSON-skjema med felt `prosjekt` per hendelse (kort prosjekt-/anleggsnavn hentet fra rad/seksjons-header, f.eks. "Trafostasjon A").
+- AI instrueres til å detektere prosjektskillelinjer (overskrifter, kolonne "Anlegg/Prosjekt", arkfaner i Excel) og fylle inn `prosjekt` for hver hendelse. Hvis bare ett prosjekt finnes, settes feltet tomt.
+- Sanitering: ta vare på `prosjekt` som string (trimmet, maks 80 tegn) i `clean`-mapping.
 
-**1. `src/components/dashboard/DashboardPanel.tsx` (widget på forsiden)**
-- Hent også de 5 nyeste fra `ros_analyses` parallelt med `fire_concepts`.
-- Slå sammen begge listene, sortér på `updated_at` desc, vis topp 3 i «Siste dokumenter».
-- Tell ROS-analyser med i totalantall dokumenter.
-- Lenke ROS-rader til `/ros-analyse?project=<project_id>&analysis=<id>` (matcher eksisterende rute i `RosAnalyse.tsx`; verifiseres ved implementering).
-- Behold eksisterende logikk for Brensellagring-konsepter.
+### 2. `src/components/ros/UploadRosDialog.tsx`
+- Utvid `ExtractedHendelse` med valgfritt `prosjekt?: string`.
+- I review-tabellen: gruppér `data.hendelser` etter `prosjekt` (fallback "Uten prosjekt" hvis blandet, eller ingen gruppering hvis alle er tomme/like).
+- Render én seksjons-header-rad per gruppe med:
+  - Prosjektnavn
+  - Antall hendelser i gruppen + antall valgte
+  - Checkbox for å velge/avvelge alle i gruppen
+  - Sammenslå-/utvid-knapp (valgfritt — start med alle åpne)
+- Behold eksisterende per-rad checkbox, ekspandering og "Velg alle"-toppcheckbox (som nå styrer på tvers av alle grupper).
+- Ingen endring i `onApply` — `prosjekt` blir bare metadata for visning og forsvinner ved import (eller kan eventuelt prependes til `tittel` i en senere iterasjon — ikke i denne).
 
-**2. `src/pages/Dashboard.tsx` (full dashboard-side)**
-- Hent også `ros_analyses` (siste 20) parallelt.
-- Slå sammen med `fire_concepts` til én liste «Siste dokumenter», sortert på `updated_at`.
-- I tabellen/listen markér dokumenttype (Brannkonsept / Tilstandsvurdering / ROS) som en liten etikett, slik at brukeren ser hva det er.
-- Oppdatér statistikk-kortet «Konsepter» til «Dokumenter» som teller begge typer.
-
-### Ikke endret
-- Database, RLS og ROS-import er uberørt.
-- Andre sider (Mine prosjekter, Mine oppgaver) er uberørt.
+## Ikke endret
+- Database/RLS, edge-funksjons-kontrakt utover ett nytt valgfritt felt, eksisterende import-flyt, eller `RosPreview`.
