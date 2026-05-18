@@ -2166,6 +2166,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 });
               }
               if (alleDeler.length === 0 && formData.brannklasse) alleDeler.push({ index: 1, navn: "", bkl: formData.brannklasse });
+              if (alleDeler.length === 0) return null;
               const showLabel = alleDeler.length > 1;
 
               const renderValue = (getValue: (bkl: string) => string) => {
