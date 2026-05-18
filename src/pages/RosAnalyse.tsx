@@ -434,6 +434,30 @@ export default function RosAnalyse() {
                     onClick={() => setOpenHendelser([])}>
                     Lukk alle
                   </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button size="sm" variant="ghost" className="h-8 text-xs text-destructive hover:text-destructive">
+                        <Trash2 className="h-3.5 w-3.5 mr-1" />
+                        Slett alle
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Slette alle hendelser?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Dette fjerner alle {content.hendelser.length} hendelser fra analysen. Endringen lagres først når du trykker «Lagre».
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => setContent((c) => ({ ...c, hendelser: [] }))}
+                        >
+                          Slett alle
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                   <span className="text-xs text-muted-foreground ml-auto">{content.hendelser.length} hendelser</span>
                 </div>
                 <Accordion type="multiple" value={openHendelser} onValueChange={setOpenHendelser} className="space-y-2">
