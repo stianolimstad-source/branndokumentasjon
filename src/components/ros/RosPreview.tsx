@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { risikoFarge } from "./RosMatriks";
+import rosNivaaIllustrasjon from "@/assets/ros-detaljeringsnivaa.jpg";
 
 export interface RosHendelse {
   id: string;
@@ -417,6 +418,11 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
             Detaljeringsnivået i ROS-analysen tilpasses analysens formål. Det skilles mellom
             tre nivåer:
           </p>
+          <img
+            src={rosNivaaIllustrasjon}
+            alt="Illustrasjon av de tre detaljeringsnivåene i ROS-analyse"
+            style={{ width: "100%", height: "auto", margin: "8px 0 10px", borderRadius: 6, border: "1px solid #d0d7e2" }}
+          />
           {(() => {
             const niva = content.metadata.nivaa;
             const nivaer: { n: 1 | 2 | 3; tittel: string; beskrivelse: string }[] = [
