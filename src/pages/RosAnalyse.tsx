@@ -568,10 +568,46 @@ export default function RosAnalyse() {
             <p className="text-xs text-muted-foreground">
               5×5-matrisen er forhåndsdefinert. Skalaer for sannsynlighet og konsekvens vises i forhåndsvisningen.
             </p>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Detaljeringsnivå</label>
+              <p className="text-xs text-muted-foreground">
+                Velg nivå iht. Beredskapsforskriftens kartleggingskrav.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                {([
+                  { n: 1, t: "Nivå 1", d: "Overordnet ROS-analyse" },
+                  { n: 2, t: "Nivå 2", d: "Anlegg og aktiviteter" },
+                  { n: 3, t: "Nivå 3", d: "Delsystem / komponenter" },
+                ] as const).map((x) => {
+                  const valgt = content.metadata.nivaa === x.n;
+                  return (
+                    <button
+                      key={x.n}
+                      type="button"
+                      onClick={() =>
+                        setContent((c) => ({
+                          ...c,
+                          metadata: { ...c.metadata, nivaa: valgt ? undefined : (x.n as 1 | 2 | 3) },
+                        }))
+                      }
+                      className={`text-left rounded-md border px-3 py-2 transition ${
+                        valgt
+                          ? "border-primary bg-primary/10 ring-1 ring-primary"
+                          : "border-border bg-background hover:bg-muted/40"
+                      }`}
+                    >
+                      <div className="text-sm font-semibold">{x.t}</div>
+                      <div className="text-xs text-muted-foreground">{x.d}</div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
             <div className="rounded-lg border p-4 bg-muted/30">
               <RosMatriks size="sm" />
             </div>
           </section>
+
 
           <section className="space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
