@@ -31,13 +31,15 @@ export interface RosRevisjon {
 export interface RosFellesBarriere {
   tekst: string;
   arsakIds: string[];
-  kilde?: "ai" | "manuell";
+  kilde?: "ai" | "manuell" | "kap3";
+  kildeRef?: string;
 }
 
 export interface RosKonsekvensTiltak {
   tekst: string;
   konsekvensIndekser: number[]; // peker inn i bt.konsekvenser[]
-  kilde?: "ai" | "manuell";
+  kilde?: "ai" | "manuell" | "kap3";
+  kildeRef?: string;
 }
 
 export interface RosBowTie {
