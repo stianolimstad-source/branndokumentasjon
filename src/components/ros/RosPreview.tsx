@@ -499,6 +499,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                   </h3>
                   {bt.beskrivelse && <p style={pStyle}>{bt.beskrivelse}</p>}
 
+                  <BowTieScroll>
                   {/* Bow-tie diagram */}
                   <div
                     style={{
@@ -674,6 +675,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                       )}
                     </tbody>
                   </table>
+                  </BowTieScroll>
                 </div>
               );
             })}
@@ -744,6 +746,54 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
       </div>
       </div>
     </div>
+  );
+}
+
+function BowTieScroll({ children, minWidth = 1100 }: { children: React.ReactNode; minWidth?: number }) {
+  const tableRef = useRef<HTMLDivElement>(null);
+  const proxyRef = useRef<HTMLDivElement>(null);
+  const syncing = useRef(false);
+  const onTable = () => {
+    if (syncing.current || !proxyRef.current || !tableRef.current) return;
+    syncing.current = true;
+    proxyRef.current.scrollLeft = tableRef.current.scrollLeft;
+    requestAnimationFrame(() => { syncing.current = false; });
+  };
+  const onProxy = () => {
+    if (syncing.current || !proxyRef.current || !tableRef.current) return;
+    syncing.current = true;
+    tableRef.current.scrollLeft = proxyRef.current.scrollLeft;
+    requestAnimationFrame(() => { syncing.current = false; });
+  };
+  return (
+    <>
+      <div
+        ref={tableRef}
+        onScroll={onTable}
+        className="ros-h-scroll-hidden"
+        style={{ overflowX: "auto" }}
+      >
+        <div style={{ minWidth }}>{children}</div>
+      </div>
+      <div
+        ref={proxyRef}
+        onScroll={onProxy}
+        className="ros-h-scroll"
+        style={{
+          position: "sticky",
+          bottom: 16,
+          overflowX: "scroll",
+          background: "#fff",
+          border: "1px solid #cbd5e1",
+          borderRadius: 10,
+          boxShadow: "0 -4px 12px -4px rgba(0,0,0,0.15)",
+          zIndex: 5,
+          marginTop: 8,
+        }}
+      >
+        <div style={{ width: minWidth, height: 1 }} />
+      </div>
+    </>
   );
 }
 
