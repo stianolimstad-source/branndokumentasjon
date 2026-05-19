@@ -659,6 +659,18 @@ export default function RosAnalyse() {
                           });
                         }}
                       />
+                      <Input
+                        placeholder="Bedrift"
+                        value={d.bedrift || ""}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setContent((c) => {
+                            const list = [...(c.metode?.deltakere || [])];
+                            list[idx] = { ...list[idx], bedrift: v };
+                            return { ...c, metode: { ...(c.metode || {}), deltakere: list } };
+                          });
+                        }}
+                      />
                       <Button
                         variant="ghost"
                         size="icon"
