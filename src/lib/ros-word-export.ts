@@ -283,6 +283,31 @@ export const exportRosToWord = async (options: ExportOptions) => {
         ]
       : [para("Nivå er ikke valgt i input.")]),
     new Paragraph({ children: [text("")] }),
+    para("Planlegging av analysen", { bold: true }),
+    para(
+      "God planlegging er avgjørende for resultatet. Det må være tydelig hvorfor og hvordan analysen skal gjennomføres, samt hvilke forskriftskrav som skal tilfredsstilles. Følgende momenter inngår i planleggingen:",
+    ),
+    para("1. Definere formål og omfang av analysen. Se kap. 1.2 Formål og 1.3 Omfang."),
+    para("2. Valg av konsekvens- og sannsynlighetsdimensjon. Se sannsynlighets- og konsekvensskala (5-trinns skala)."),
+    para(
+      `3. Informasjonsinnhenting: ${
+        content.metode?.informasjonsinnhenting?.trim() ||
+        "Ikke utfylt (kilder, tegningsgrunnlag, befaringer, intervjuer, statistikk)."
+      }`,
+    ),
+    para(
+      `4. Organisering av arbeidet: ${
+        content.metode?.organisering?.trim() ||
+        "Ikke utfylt (deltakere, roller, ansvar, møtestruktur)."
+      }`,
+    ),
+    para(
+      `5. Klargjøring av analyseskjema og sjekklister: ${
+        content.metode?.skjemaOgSjekklister?.trim() ||
+        "Hendelser registreres i 5×5-skjema (kap. 3) med vurdering før og etter tiltak."
+      }`,
+    ),
+    new Paragraph({ children: [text("")] }),
     para("Sannsynlighetsskala", { bold: true }),
     ...SKALA_S.map((s) => para(s)),
     new Paragraph({ children: [text("")] }),
