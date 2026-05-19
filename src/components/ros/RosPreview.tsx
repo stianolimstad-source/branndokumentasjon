@@ -850,7 +850,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 ...konsTiltak.map((t) => ({
                   kilde:
                     "Konsekvensreduserende" +
-                    (t.kilde === "ai" ? " (AI)" : "") +
+                    (t.kilde === "ai" ? " (AI)" : t.kilde === "kap3" ? ` (Kap. 3${t.kildeRef ? " " + t.kildeRef : ""})` : "") +
                     (t.konsekvensIndekser.length
                       ? " · reduserer: " +
                         t.konsekvensIndekser
