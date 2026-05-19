@@ -27,6 +27,12 @@ export interface RosRevisjon {
   endring: string;
 }
 
+export interface RosFellesBarriere {
+  tekst: string;
+  arsakIds: string[];
+  kilde?: "ai" | "manuell";
+}
+
 export interface RosBowTie {
   id: string;
   navn: string;
@@ -34,6 +40,7 @@ export interface RosBowTie {
   hendelseIds: string[];
   konsekvenser: string[];
   fellesBarrierer?: string;
+  felleseBarrierer?: RosFellesBarriere[];
 }
 
 export interface RosContent {
