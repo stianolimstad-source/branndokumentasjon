@@ -541,8 +541,28 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 nr: "4",
                 tittel: "Organisering av arbeidet",
                 tekst:
-                  m.organisering?.trim() ||
-                  "Ikke utfylt (deltakere, roller, ansvar, møtestruktur).",
+                  (m.deltakere && m.deltakere.length > 0)
+                    ? ""
+                    : (m.organisering?.trim() ||
+                      "Ikke utfylt (deltakere, roller, ansvar, møtestruktur)."),
+                extra: (m.deltakere && m.deltakere.length > 0) ? (
+                  <table style={{ borderCollapse: "collapse", marginTop: 6, fontSize: 11, width: "auto" }}>
+                    <thead>
+                      <tr>
+                        <th style={{ border: "1px solid #cbd5e1", background: "#f1f5f9", padding: "4px 8px", textAlign: "left" }}>Navn</th>
+                        <th style={{ border: "1px solid #cbd5e1", background: "#f1f5f9", padding: "4px 8px", textAlign: "left" }}>Stillingstittel</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {m.deltakere.map((d, i) => (
+                        <tr key={i}>
+                          <td style={{ border: "1px solid #cbd5e1", padding: "4px 8px" }}>{d.navn || "—"}</td>
+                          <td style={{ border: "1px solid #cbd5e1", padding: "4px 8px" }}>{d.stilling || "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : undefined,
               },
               {
                 nr: "5",
@@ -551,7 +571,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                   m.skjemaOgSjekklister?.trim() ||
                   "Hendelser registreres i 5×5-skjema (kap. 3) med vurdering før og etter tiltak.",
               },
-            ];
+            ] as Array<{ nr: string; tittel: string; tekst: string; ref?: string; extra?: React.ReactNode }>;
             return (
               <ol style={{ margin: "6px 0 12px 18px", padding: 0 }}>
                 {items.map((it) => (
@@ -563,6 +583,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                     {it.ref && (
                       <span style={{ fontStyle: "italic", color: "#64748b" }}> {it.ref}</span>
                     )}
+                    {it.extra}
                   </li>
                 ))}
               </ol>
