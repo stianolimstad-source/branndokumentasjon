@@ -18,7 +18,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { KONSEKVENS_FORSLAG, groupKonsekvenserByKategori } from "@/lib/ros-konsekvenser";
-import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search, Sparkles, Check, GitBranch, X } from "lucide-react";
+import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search, Sparkles, Check, GitBranch, X, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import RosPreview, { type RosContent, type RosHendelse, type RosBowTie } from "@/components/ros/RosPreview";
@@ -42,6 +42,23 @@ const EMPTY_CONTENT: RosContent = {
 
 function makeId() {
   return Math.random().toString(36).slice(2, 10);
+}
+
+function JumpToPreview({ previewId }: { previewId: string }) {
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        const el = document.getElementById(previewId);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }}
+      className="p-1.5 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+      title="Gå til i forhåndsvisning"
+      aria-label="Gå til i forhåndsvisning"
+    >
+      <Eye className="h-3.5 w-3.5" />
+    </button>
+  );
 }
 
 export default function RosAnalyse() {
@@ -441,7 +458,7 @@ export default function RosAnalyse() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-lg font-semibold">1. Innledning</h2>
+            <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">1. Innledning</h2><JumpToPreview previewId="kap-1" /></div>
             <Area label="Bakgrunn" value={content.innledning.bakgrunn}
               onChange={(v) => setContent((c) => ({ ...c, innledning: { ...c.innledning, bakgrunn: v } }))}
               onGenerate={() => generateBakgrunnText(content.metadata)} />
@@ -455,7 +472,7 @@ export default function RosAnalyse() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-lg font-semibold">2. Metode</h2>
+            <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">2. Metode</h2><JumpToPreview previewId="kap-2" /></div>
             <p className="text-xs text-muted-foreground">
               5×5-matrisen er forhåndsdefinert. Skalaer for sannsynlighet og konsekvens vises i forhåndsvisningen.
             </p>
@@ -466,7 +483,7 @@ export default function RosAnalyse() {
 
           <section className="space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
-              <h2 className="text-lg font-semibold">3. Hendelser</h2>
+              <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">3. Hendelser</h2><JumpToPreview previewId="kap-3" /></div>
               <Button size="sm" variant="outline" onClick={addHendelse}>
                 <Plus className="h-4 w-4 mr-1" /> Ny hendelse
               </Button>
@@ -680,7 +697,7 @@ export default function RosAnalyse() {
           <section className="space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
-                <h2 className="text-lg font-semibold">4. Bow-tie analyse</h2>
+                <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">4. Bow-tie analyse</h2><JumpToPreview previewId="kap-4" /></div>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Definer en uønsket topphendelse og knytt registrerte hendelser som årsaker. Gir oversikt over felles tiltak på tvers.
                 </p>
@@ -805,18 +822,24 @@ export default function RosAnalyse() {
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-lg font-semibold">
-              {content.bowTies && content.bowTies.length > 0 ? "5" : "4"}. Oppsummering
-            </h2>
+            <div className="flex items-center gap-1">
+              <h2 className="text-lg font-semibold">
+                {content.bowTies && content.bowTies.length > 0 ? "5" : "4"}. Oppsummering
+              </h2>
+              <JumpToPreview previewId="kap-5" />
+            </div>
             <Textarea value={content.oppsummering} rows={6}
               onChange={(e) => setContent((c) => ({ ...c, oppsummering: e.target.value }))} />
           </section>
 
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">
-                {content.bowTies && content.bowTies.length > 0 ? "6" : "5"}. Revisjonshistorikk
-              </h2>
+              <div className="flex items-center gap-1">
+                <h2 className="text-lg font-semibold">
+                  {content.bowTies && content.bowTies.length > 0 ? "6" : "5"}. Revisjonshistorikk
+                </h2>
+                <JumpToPreview previewId="kap-6" />
+              </div>
               <Button size="sm" variant="outline" onClick={addRevisjon}>
                 <Plus className="h-4 w-4 mr-1" /> Ny revisjon
               </Button>

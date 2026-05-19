@@ -1,32 +1,31 @@
 ## Mål
-1. Gjøre «Årsaker (hendelser fra kap. 3)» i bow-tie-editoren til en kompakt nedtrekksmeny i stedet for en stor chip-liste.
-2. Vise et merke/badge på hver hendelse i kap. 3 som forteller at den er brukt i én eller flere bow-tie-analyser (inkl. navn på topphendelsen(e)).
+Legge til et øye-ikon ved siden av hver kapitteloverskrift i ROS-analyse-editoren — samme mønster som i brannkonseptet — som scroller forhåndsvisningen til riktig kapittel.
+
+## Bakgrunn
+- `RosPreview.tsx` har allerede ankere: `#kap-1`, `#kap-2`, `#kap-3`, `#kap-4` (når bow-tie finnes), `#kap-5` (oppsummering), `#kap-6` (revisjonshistorikk).
+- Editor-seksjonene i `src/pages/RosAnalyse.tsx` har overskriftene «Metadata», «1. Innledning», «2. Metode», «3. Hendelser», «4. Bow-tie analyse», «Oppsummering», «Revisjonshistorikk».
+- Konsept bruker mønsteret `document.getElementById(previewId).scrollIntoView({ behavior: 'smooth', block: 'start' })`.
 
 ## Endringer
 
 ### `src/pages/RosAnalyse.tsx`
-
-**A. Årsaker som nedtrekksmeny (linje ~702–732)**
-- Erstatte chip-grid med en `Popover` + `Command` (samme mønster som `KonsekvensPicker`):
-  - Trigger: `Button variant="outline" size="sm"` som viser «Velg årsaker ({antall valgt})».
-  - I popoveren: `CommandInput` (søk på tittel/sårbarhet), `CommandList` med alle `content.hendelser`. Hver `CommandItem`:
-    - Liten farget prikk (rød/gul/grønn fra `risikoFarge`) + tittel
-    - `Check`-ikon når valgt
-    - Klikk kaller `toggleBowTieHendelse(bt.id, h.id)` (popover holdes åpen).
-  - Under trigger: kompakt rad med valgte som små «removable» chips (klikk × kaller toggle) — bevarer rask oversikt uten å fylle hele kortet.
-- Tom-tilstand: «Registrer hendelser først» beholdes når `content.hendelser.length === 0`.
-
-**B. Merknad i kap. 3-listen (linje ~535–551)**
-- Beregne én gang per render: `bowTieBruk: Map<hendelseId, { navn: string }[]>` fra `content.bowTies`.
-- I `AccordionTrigger`-raden, etter tittelen og før R-badgene, vise et lite badge når hendelsen er brukt:
-  - `Badge variant="secondary"` med ikon (`Network` eller `GitBranch` fra lucide) + tekst «Bow-tie» (skjult under sm-breakpoint).
-  - `Tooltip` (eller `title`) viser navnene på topphendelsene den inngår i, f.eks. «Brukt i: Eksplosjon, Brann i lager».
-- Ingen endring i datamodellen eller eksport — kun visning i editor.
+- Importere `Eye` fra `lucide-react`.
+- Legge til en liten hjelpefunksjon `scrollToPreview(id: string)` (top i komponenten eller modul-scope).
+- Lage en liten lokal komponent `KapittelHeading({ title, previewId })` som rendrer `<h2>` + en `button` med `Eye`-ikon (klassene matcher Konsept: `p-1.5 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors`, `title="Gå til i forhåndsvisning"`).
+- Bytte ut de eksisterende `<h2>`-overskriftene med `KapittelHeading`:
+  - «1. Innledning» → `previewId="kap-1"`
+  - «2. Metode» → `previewId="kap-2"`
+  - «3. Hendelser» → `previewId="kap-3"` (beholde eksisterende knappe-rad ved siden av)
+  - «4. Bow-tie analyse» → `previewId="kap-4"`
+  - «Oppsummering»-overskrift → `previewId="kap-5"`
+  - «Revisjonshistorikk»-overskrift → `previewId="kap-6"`
+- «Metadata»-seksjonen får ikke øye (ingen tilsvarende preview-anker).
 
 ### Ingen endringer
-- `RosPreview.tsx`, `ros-word-export.ts`, datamodell (`RosBowTie`), Konsekvens-pickeren.
+- `RosPreview.tsx` — ankrene finnes allerede.
+- Datamodell, eksport, andre filer.
 
 ## Verifisering
-- Åpne en ROS-analyse, opprett bow-tie → «Velg årsaker» åpner søkbar liste, valg vises som chips, popoveren tar minimal plass.
-- Velg en hendelse fra kap. 3 → samme hendelse i kap. 3-listen får «Bow-tie»-badge med tooltip som lister topphendelsen.
-- Fjern valg → badge forsvinner. Slett hendelse → fjernes også fra bow-tie (eksisterende logikk).
+- Klikk øye-ikonet ved «3. Hendelser» → preview til høyre scroller til kapittel 3.
+- Klikk øye ved «4. Bow-tie analyse» når det finnes en bow-tie → scroller til kap. 4.
+- Test alle 6 ikon — riktig kapittel kommer i toppen av preview.
