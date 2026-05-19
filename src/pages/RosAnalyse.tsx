@@ -627,13 +627,71 @@ export default function RosAnalyse() {
                   setContent((c) => ({ ...c, metode: { ...(c.metode || {}), informasjonsinnhenting: v } }))
                 }
               />
-              <Area
-                label="Organisering av arbeidet (deltakere, roller, ansvar, møter)"
-                value={content.metode?.organisering || ""}
-                onChange={(v) =>
-                  setContent((c) => ({ ...c, metode: { ...(c.metode || {}), organisering: v } }))
-                }
-              />
+              <div className="space-y-2">
+                <Label className="text-sm">Organisering av arbeidet — deltakere</Label>
+                <p className="text-xs text-muted-foreground">
+                  Legg til personene som har deltatt i analysen med navn og stillingstittel.
+                </p>
+                <div className="space-y-2">
+                  {(content.metode?.deltakere || []).map((d, idx) => (
+                    <div key={idx} className="flex gap-2 items-center">
+                      <Input
+                        placeholder="Navn"
+                        value={d.navn}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setContent((c) => {
+                            const list = [...(c.metode?.deltakere || [])];
+                            list[idx] = { ...list[idx], navn: v };
+                            return { ...c, metode: { ...(c.metode || {}), deltakere: list } };
+                          });
+                        }}
+                      />
+                      <Input
+                        placeholder="Stillingstittel"
+                        value={d.stilling}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setContent((c) => {
+                            const list = [...(c.metode?.deltakere || [])];
+                            list[idx] = { ...list[idx], stilling: v };
+                            return { ...c, metode: { ...(c.metode || {}), deltakere: list } };
+                          });
+                        }}
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() =>
+                          setContent((c) => {
+                            const list = [...(c.metode?.deltakere || [])];
+                            list.splice(idx, 1);
+                            return { ...c, metode: { ...(c.metode || {}), deltakere: list } };
+                          })
+                        }
+                        aria-label="Fjern deltaker"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setContent((c) => ({
+                      ...c,
+                      metode: {
+                        ...(c.metode || {}),
+                        deltakere: [...(c.metode?.deltakere || []), { navn: "", stilling: "" }],
+                      },
+                    }))
+                  }
+                >
+                  <Plus className="h-4 w-4 mr-1" /> Legg til deltaker
+                </Button>
+              </div>
               <Area
                 label="Analyseskjema og sjekklister (5×5-skjema, eventuelle sjekklister/maler)"
                 value={content.metode?.skjemaOgSjekklister || ""}
