@@ -1,13 +1,13 @@
+## Problem
+
+Etter at årsak-boksene ble venstrejustert blir det et stort tomrom mellom boksen og der de fargede strekene starter. Strekene tegnes nemlig fra høyre kant av hele Årsaker-kolonnen (`ARSAK.x + ARSAK.w`), ikke fra selve boksen.
+
 ## Endring
 
-Årsak-boksene (Trafo 1, Trafo 2, …) er i dag høyrejustert i Årsaker-kolonnen, mens kolonneoverskriften «ÅRSAKER» står til venstre. Resultatet er at boksene flyter til høyre, et godt stykke unna teksten.
+I `src/components/ros/RosPreview.tsx`:
 
-## Hva som gjøres
+1. Smalere Årsaker-kolonne: endre `ARSAK = { x: 16, w: 180 }` til `ARSAK = { x: 16, w: 140 }`. Det reduserer avstanden mellom boksens høyre kant og strekstarten betraktelig.
 
-I `src/components/ros/RosPreview.tsx`, i rendringen av årsakskortene (rundt linje 1396–1410), endre `justifyContent: "flex-end"` til `justifyContent: "flex-start"` slik at årsak-boksene venstrejusteres og legger seg rett under «ÅRSAKER»-overskriften.
+2. La selve årsak-boksen fylle kolonnebredden, så høyre kant av boksen alltid faller sammen med strekstarten. På den indre boksen (rundt linje 1413–1448), bytt `display: "inline-flex"` til `display: "flex"` og fjern `maxWidth: "100%"` (overflødig med `display: flex` i en wrapper med fast bredde). Da blir boksen alltid like bred som kolonnen, uansett tittelens lengde, og strekene treffer kanten av boksen.
 
-## Bivirkninger
-
-Bezier-linjene starter fra `ARSAK.x + ARSAK.w` (høyre kant av kolonnen), uavhengig av hvor selve boksen tegnes. Når boksene flyttes til venstre vil det derfor være litt mer luft mellom boks og linjestart — det er ønskelig her siden hovedmålet er bedre visuell tilknytning til kolonneoverskriften.
-
-Ingen andre kolonner, beregninger eller Word-eksport berøres.
+Ingen endringer i bezier-beregning, kolonneoverskrift eller andre kolonner — bare bredde og box display.
