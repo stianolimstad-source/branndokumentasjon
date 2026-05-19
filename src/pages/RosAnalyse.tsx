@@ -90,22 +90,8 @@ export default function RosAnalyse() {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [firmaNavn, setFirmaNavn] = useState<string | null>(null);
   const [fullName, setFullName] = useState<string | null>(null);
-  const [konseptContent, setKonseptContent] = useState<Record<string, any> | null>(null);
 
-  // Last brannkonsept for samme prosjekt (siste opprettet)
-  useEffect(() => {
-    if (!projectId) { setKonseptContent(null); return; }
-    supabase
-      .from("fire_concepts")
-      .select("content")
-      .eq("project_id", projectId)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle()
-      .then(({ data }) => {
-        setKonseptContent((data as any)?.content ?? null);
-      });
-  }, [projectId]);
+
 
   // Load profile (logo, company, name) for live preview + export
   useEffect(() => {
@@ -425,13 +411,9 @@ export default function RosAnalyse() {
     }
   };
 
-  // Hent barrierer som allerede ligger i brannkonseptets kap. 3
+  // Hent barrierer som allerede er ført opp på hendelsene i ROS-analysens kap. 3
   const [extractingBarrId, setExtractingBarrId] = useState<string | null>(null);
   const extractBarriererFraKonsept = async (bt: RosBowTie) => {
-    if (!konseptContent) {
-      toast({ title: "Ingen brannkonsept", description: "Prosjektet har ikke et brannkonsept å hente fra.", variant: "destructive" });
-      return;
-    }
     const arsaker = bt.hendelseIds
       .map((id) => content.hendelser.find((h) => h.id === id))
       .filter((h): h is RosHendelse => !!h);
@@ -439,15 +421,20 @@ export default function RosAnalyse() {
       toast({ title: "Trenger minst 1 årsak", variant: "destructive" });
       return;
     }
+    const hendelserKap3 = arsaker.map((a) => ({
+      id: a.id,
+      tittel: a.tittel || a.sarbarhet || a.hendelse || "Uten navn",
+      tiltak: a.tiltak || "",
+      beskrivelseEtter: a.beskrivelseEtter || "",
+    }));
     setExtractingBarrId(bt.id);
     try {
-      const { data, error } = await supabase.functions.invoke("extract-bowtie-from-konsept", {
+      const { data, error } = await supabase.functions.invoke("extract-bowtie-from-ros", {
         body: {
           type: "barrier",
           topphendelse: bt.navn,
           beskrivelse: bt.beskrivelse || "",
-          arsaker: arsaker.map((a) => ({ id: a.id, tittel: a.tittel || a.sarbarhet || a.hendelse || "Uten navn" })),
-          konseptContent,
+          hendelserKap3,
         },
       });
       if (error) throw error;
@@ -464,7 +451,7 @@ export default function RosAnalyse() {
       updateBowTie(bt.id, { felleseBarrierer: [...nye, ...beholdt] });
       toast({
         title: nye.length > 0 ? `Hentet ${nye.length} barriere${nye.length === 1 ? "" : "r"} fra kap. 3` : "Ingen barrierer i kap. 3",
-        description: nye.length > 0 ? "Lagt til i diagrammet og tabellen." : "Fant ingen relevante tiltak i brannkonseptets kap. 3.",
+        description: nye.length > 0 ? "Lagt til i diagrammet og tabellen." : "Fant ingen forebyggende tiltak på hendelsene i kap. 3 — prøv 'Foreslå nye (AI)'.",
       });
     } catch (e: any) {
       toast({ title: "Henting feilet", description: e?.message || "Kunne ikke hente fra kap. 3.", variant: "destructive" });
@@ -544,23 +531,32 @@ export default function RosAnalyse() {
 
   const [extractingKonsId, setExtractingKonsId] = useState<string | null>(null);
   const extractKonsTiltakFraKonsept = async (bt: RosBowTie) => {
-    if (!konseptContent) {
-      toast({ title: "Ingen brannkonsept", description: "Prosjektet har ikke et brannkonsept å hente fra.", variant: "destructive" });
-      return;
-    }
     if (bt.konsekvenser.length < 1) {
       toast({ title: "Trenger minst 1 konsekvens", variant: "destructive" });
       return;
     }
+    const arsaker = bt.hendelseIds
+      .map((id) => content.hendelser.find((h) => h.id === id))
+      .filter((h): h is RosHendelse => !!h);
+    if (arsaker.length < 1) {
+      toast({ title: "Trenger minst 1 årsak", variant: "destructive" });
+      return;
+    }
+    const hendelserKap3 = arsaker.map((a) => ({
+      id: a.id,
+      tittel: a.tittel || a.sarbarhet || a.hendelse || "Uten navn",
+      tiltak: a.tiltak || "",
+      beskrivelseEtter: a.beskrivelseEtter || "",
+    }));
     setExtractingKonsId(bt.id);
     try {
-      const { data, error } = await supabase.functions.invoke("extract-bowtie-from-konsept", {
+      const { data, error } = await supabase.functions.invoke("extract-bowtie-from-ros", {
         body: {
           type: "mitigation",
           topphendelse: bt.navn,
           beskrivelse: bt.beskrivelse || "",
           konsekvenser: bt.konsekvenser.map((tekst, i) => ({ id: String(i), tekst })),
-          konseptContent,
+          hendelserKap3,
         },
       });
       if (error) throw error;
@@ -578,7 +574,7 @@ export default function RosAnalyse() {
       updateBowTie(bt.id, { konsekvensReduserende: [...nye, ...beholdt] });
       toast({
         title: nye.length > 0 ? `Hentet ${nye.length} tiltak fra kap. 3` : "Ingen tiltak i kap. 3",
-        description: nye.length > 0 ? "Lagt til i diagrammet og tabellen." : "Fant ingen relevante konsekvensreduserende tiltak i kap. 3.",
+        description: nye.length > 0 ? "Lagt til i diagrammet og tabellen." : "Fant ingen konsekvensreduserende tiltak på hendelsene i kap. 3 — prøv 'Foreslå nye (AI)'.",
       });
     } catch (e: any) {
       toast({ title: "Henting feilet", description: e?.message || "Kunne ikke hente fra kap. 3.", variant: "destructive" });
@@ -1267,9 +1263,9 @@ export default function RosAnalyse() {
                             type="button"
                             size="sm"
                             variant="outline"
-                            disabled={extractingBarrId === bt.id || !konseptContent || bt.hendelseIds.length < 1}
+                            disabled={extractingBarrId === bt.id || bt.hendelseIds.length < 1}
                             onClick={() => extractBarriererFraKonsept(bt)}
-                            title={!konseptContent ? "Prosjektet har ikke et brannkonsept" : "Hent barrierer som allerede er prosjektert i brannkonseptets kap. 3"}
+                            title="Hent forebyggende tiltak som er ført opp på hendelsene i ROS-analysens kap. 3"
                           >
                             <GitBranch className="h-3.5 w-3.5 mr-1.5" />
                             {extractingBarrId === bt.id ? "Henter…" : "Hent fra kap. 3"}
@@ -1287,11 +1283,6 @@ export default function RosAnalyse() {
                           </Button>
                         </div>
                       </div>
-                      {!konseptContent && (
-                        <p className="text-xs text-muted-foreground italic">
-                          Ingen brannkonsept tilknyttet prosjektet — opprett et konsept for å kunne hente fra kap. 3.
-                        </p>
-                      )}
                       {bt.hendelseIds.length < 2 && (
                         <p className="text-xs text-muted-foreground italic">
                           Velg minst to årsaker for å la AI foreslå nye felles barrierer.
@@ -1413,9 +1404,9 @@ export default function RosAnalyse() {
                             type="button"
                             size="sm"
                             variant="outline"
-                            disabled={extractingKonsId === bt.id || !konseptContent || bt.konsekvenser.length < 1}
+                            disabled={extractingKonsId === bt.id || bt.konsekvenser.length < 1 || bt.hendelseIds.length < 1}
                             onClick={() => extractKonsTiltakFraKonsept(bt)}
-                            title={!konseptContent ? "Prosjektet har ikke et brannkonsept" : "Hent konsekvensreduserende tiltak fra brannkonseptets kap. 3"}
+                            title="Hent konsekvensreduserende tiltak som er ført opp på hendelsene i ROS-analysens kap. 3"
                           >
                             <GitBranch className="h-3.5 w-3.5 mr-1.5" />
                             {extractingKonsId === bt.id ? "Henter…" : "Hent fra kap. 3"}
@@ -1433,11 +1424,6 @@ export default function RosAnalyse() {
                           </Button>
                         </div>
                       </div>
-                      {!konseptContent && (
-                        <p className="text-xs text-muted-foreground italic">
-                          Ingen brannkonsept tilknyttet prosjektet — opprett et konsept for å kunne hente fra kap. 3.
-                        </p>
-                      )}
                       {bt.konsekvenser.length < 1 && (
                         <p className="text-xs text-muted-foreground italic">
                           Registrer minst én konsekvens for å foreslå konsekvensreduserende tiltak.
