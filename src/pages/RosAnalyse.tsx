@@ -89,6 +89,22 @@ export default function RosAnalyse() {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [firmaNavn, setFirmaNavn] = useState<string | null>(null);
   const [fullName, setFullName] = useState<string | null>(null);
+  const [konseptContent, setKonseptContent] = useState<Record<string, any> | null>(null);
+
+  // Last brannkonsept for samme prosjekt (siste opprettet)
+  useEffect(() => {
+    if (!projectId) { setKonseptContent(null); return; }
+    supabase
+      .from("fire_concepts")
+      .select("content")
+      .eq("project_id", projectId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        setKonseptContent((data as any)?.content ?? null);
+      });
+  }, [projectId]);
 
   // Load profile (logo, company, name) for live preview + export
   useEffect(() => {
