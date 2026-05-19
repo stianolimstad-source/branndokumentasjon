@@ -1,83 +1,32 @@
 ## Mål
-Erstatte fritekst-input for konsekvenser i bow-tie-analysen med en nedtrekksliste (Combobox) med forhåndsdefinerte, brann- og eksplosjonsrelevante konsekvenser for ulike bygningstyper. Brukeren skal fortsatt kunne legge til egne (fri tekst).
-
-## UX
-- «Legg til konsekvens» åpner en **Combobox** (Popover + cmdk) med søk.
-- Konsekvenser er gruppert i kategorier (`CommandGroup`) for rask navigering.
-- Søkefeltet filtrerer i sanntid. Skriver brukeren noe som ikke finnes, vises «+ Legg til "{tekst}"» som lar dem opprette en egen konsekvens.
-- Valgte konsekvenser vises som rader under (eksisterende UI), fortsatt redigerbare og slettbare.
-- Samme konsekvens kan ikke velges to ganger på samme topphendelse (dempet i listen).
-
-## Forhåndsdefinerte konsekvenser
-Ny fil `src/lib/ros-konsekvenser.ts` — kuratert liste basert på DSB, NS 5814, FEU, Sintef og generell ROS-praksis. Fokus: brann og eksplosjon, dekker bolig, næring, industri, lager, helse, skole, kulturbygg, parkering, kraftstasjon.
-
-```ts
-export interface KonsekvensForslag { kategori: string; tekst: string; }
-export const KONSEKVENS_KATEGORIER = [
-  // Liv og helse
-  "Dødsfall blant beboere / brukere",
-  "Alvorlig personskade (brannskader, røykforgiftning)",
-  "Lettere personskader",
-  "Dødsfall eller skade på innsatspersonell (brannvesen)",
-  "Panikk og klemskader under evakuering",
-  "Skade på husdyr / dyr i landbruksbygg",
-  // Bygning og materielle verdier
-  "Totalskade av bygning",
-  "Omfattende brann- og røykskader i deler av bygget",
-  "Vannskader som følge av slokkeinnsats",
-  "Skade på bærende konstruksjoner / fare for kollaps",
-  "Skade på fasade og tak ved utvendig brannspredning",
-  "Skade på tekniske installasjoner (el, VVS, ventilasjon)",
-  "Skade på heis og rømningsveier",
-  // Eksplosjon
-  "Trykkbølge med skade på bygningskropp",
-  "Splintskader fra knust glass og fasadeelementer",
-  "Sekundær brann etter eksplosjon",
-  "Skade på nabobygg fra trykkbølge / kastestykker",
-  "Utslipp av brennbar gass / damp",
-  // Miljø
-  "Utslipp av røyk og forurenset slokkevann til grunn/vassdrag",
-  "Spredning av farlige stoffer (kjemikalier, asbest, PCB)",
-  "Klimagassutslipp ved storbrann",
-  // Drift, økonomi, samfunn
-  "Driftsstans / produksjonsstopp",
-  "Tap av kritisk infrastruktur (strøm, IKT, nødnett)",
-  "Tap av kulturhistoriske verdier / uerstattelige objekter",
-  "Tap av forskningsdata / dokumentasjon",
-  "Økonomisk tap (gjenoppbygging, erstatninger)",
-  "Tap av omdømme",
-  "Forsikringsmessige konsekvenser / regress",
-  // Evakuering / beredskap
-  "Behov for omplassering av beboere / brukere",
-  "Stenging av vei eller område rundt bygget",
-  "Belastning på nødetater og helsetjeneste",
-  // Spesifikt for sårbare bygg
-  "Risiko for pasienter som ikke kan evakuere selv (sykehus, sykehjem)",
-  "Risiko for barn i barnehage / skole",
-  "Spredning til lagrede brannfarlige varer",
-  "Domino-effekt på nærliggende industri / tankanlegg",
-];
-```
-(Endelig liste utvides/justeres ved skriving — ca. 30–40 punkter gruppert i ~7 kategorier.)
+1. Gjøre «Årsaker (hendelser fra kap. 3)» i bow-tie-editoren til en kompakt nedtrekksmeny i stedet for en stor chip-liste.
+2. Vise et merke/badge på hver hendelse i kap. 3 som forteller at den er brukt i én eller flere bow-tie-analyser (inkl. navn på topphendelsen(e)).
 
 ## Endringer
 
-### `src/lib/ros-konsekvenser.ts` (ny)
-- Eksporterer `KONSEKVENS_FORSLAG: KonsekvensForslag[]` og hjelper `groupByKategori()`.
-
 ### `src/pages/RosAnalyse.tsx`
-- Importere `Command*` fra `@/components/ui/command`, `Popover*` fra `@/components/ui/popover` og listen.
-- Erstatte «Legg til»-knappen og fritekst-rader med:
-  - Knapp «+ Legg til konsekvens» som åpner Popover med Command-søk gruppert per kategori.
-  - Valg legger strengen direkte i `bt.konsekvenser`.
-  - `CommandEmpty` rendres som klikkbar «Legg til "{søk}"» for egne konsekvenser.
-- Beholde nåværende visning av valgte konsekvenser som rader (med slett-knapp), men erstatte fri-tekst `Input` med vanlig tekst — brukeren kan fortsatt redigere via et lite blyantikon som bytter til Input, ELLER vi beholder Input slik at egne tekster kan finpusses. Vi beholder Input for fleksibilitet.
+
+**A. Årsaker som nedtrekksmeny (linje ~702–732)**
+- Erstatte chip-grid med en `Popover` + `Command` (samme mønster som `KonsekvensPicker`):
+  - Trigger: `Button variant="outline" size="sm"` som viser «Velg årsaker ({antall valgt})».
+  - I popoveren: `CommandInput` (søk på tittel/sårbarhet), `CommandList` med alle `content.hendelser`. Hver `CommandItem`:
+    - Liten farget prikk (rød/gul/grønn fra `risikoFarge`) + tittel
+    - `Check`-ikon når valgt
+    - Klikk kaller `toggleBowTieHendelse(bt.id, h.id)` (popover holdes åpen).
+  - Under trigger: kompakt rad med valgte som små «removable» chips (klikk × kaller toggle) — bevarer rask oversikt uten å fylle hele kortet.
+- Tom-tilstand: «Registrer hendelser først» beholdes når `content.hendelser.length === 0`.
+
+**B. Merknad i kap. 3-listen (linje ~535–551)**
+- Beregne én gang per render: `bowTieBruk: Map<hendelseId, { navn: string }[]>` fra `content.bowTies`.
+- I `AccordionTrigger`-raden, etter tittelen og før R-badgene, vise et lite badge når hendelsen er brukt:
+  - `Badge variant="secondary"` med ikon (`Network` eller `GitBranch` fra lucide) + tekst «Bow-tie» (skjult under sm-breakpoint).
+  - `Tooltip` (eller `title`) viser navnene på topphendelsene den inngår i, f.eks. «Brukt i: Eksplosjon, Brann i lager».
+- Ingen endring i datamodellen eller eksport — kun visning i editor.
 
 ### Ingen endringer
-- `RosPreview.tsx`, `ros-word-export.ts` og datamodellen er uendret — konsekvenser er fortsatt `string[]`.
+- `RosPreview.tsx`, `ros-word-export.ts`, datamodell (`RosBowTie`), Konsekvens-pickeren.
 
 ## Verifisering
-- Klikk «+ Legg til konsekvens» → Popover åpnes, kategorier vises, søk filtrerer.
-- Velg «Totalskade av bygning» → vises som rad.
-- Skriv «Egendefinert X» → «Legg til "Egendefinert X"» → legges til.
-- Slett-knapp fjerner rad. Lagring og Word-eksport fungerer som før.
+- Åpne en ROS-analyse, opprett bow-tie → «Velg årsaker» åpner søkbar liste, valg vises som chips, popoveren tar minimal plass.
+- Velg en hendelse fra kap. 3 → samme hendelse i kap. 3-listen får «Bow-tie»-badge med tooltip som lister topphendelsen.
+- Fjern valg → badge forsvinner. Slett hendelse → fjernes også fra bow-tie (eksisterende logikk).
