@@ -827,6 +827,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 .map((id) => content.hendelser.find((h) => h.id === id))
                 .filter((h): h is RosHendelse => !!h);
               const aiBarrierer = (bt.felleseBarrierer || []).filter((b) => b.tekst?.trim());
+              const konsTiltak = (bt.konsekvensReduserende || []).filter((t) => t.tekst?.trim());
               const tiltakSamlet = [
                 ...aiBarrierer.map((b) => ({
                   kilde:
@@ -844,6 +845,19 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                       : ""),
                   tekst: b.tekst,
                 })),
+                ...konsTiltak.map((t) => ({
+                  kilde:
+                    "Konsekvensreduserende" +
+                    (t.kilde === "ai" ? " (AI)" : "") +
+                    (t.konsekvensIndekser.length
+                      ? " · reduserer: " +
+                        t.konsekvensIndekser
+                          .map((ki) => bt.konsekvenser[ki])
+                          .filter(Boolean)
+                          .join(", ")
+                      : ""),
+                  tekst: t.tekst,
+                })),
                 ...arsaker
                   .map((a) => ({ kilde: a.tittel || a.sarbarhet || a.hendelse || "Hendelse", tekst: a.tiltak }))
                   .filter((t) => t.tekst?.trim()),
@@ -852,6 +866,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                   : []),
               ];
               const harBarrierer = aiBarrierer.length > 0;
+              const harKonsTiltak = konsTiltak.length > 0;
+              const scrollMin = harKonsTiltak ? 1280 : 1040;
               return (
                 <div key={bt.id} style={{ marginTop: idx === 0 ? 6 : 28, pageBreakInside: "avoid" }}>
                   <h3 style={{ ...h3, fontSize: 13 }}>
@@ -859,8 +875,15 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                   </h3>
                   {bt.beskrivelse && <p style={pStyle}>{bt.beskrivelse}</p>}
 
-                  <BowTieScroll minWidth={1040}>
-                  <BowTieDiagram bt={bt} arsaker={arsaker} aiBarrierer={aiBarrierer} harBarrierer={harBarrierer} />
+                  <BowTieScroll minWidth={scrollMin}>
+                  <BowTieDiagram
+                    bt={bt}
+                    arsaker={arsaker}
+                    aiBarrierer={aiBarrierer}
+                    harBarrierer={harBarrierer}
+                    konsTiltak={konsTiltak}
+                    harKonsTiltak={harKonsTiltak}
+                  />
 
 
                   {/* Aggregerte tiltak / barrierer */}
