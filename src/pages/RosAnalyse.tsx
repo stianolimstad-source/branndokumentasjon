@@ -149,6 +149,7 @@ export default function RosAnalyse() {
         setContent({
           metadata: { ...EMPTY_CONTENT.metadata, ...(c as any).metadata },
           innledning: { ...EMPTY_CONTENT.innledning, ...(c as any).innledning },
+          metode: { ...EMPTY_CONTENT.metode, ...((c as any).metode || {}) },
           hendelser: Array.isArray((c as any).hendelser)
             ? (c as any).hendelser.map((h: any) => ({
                 ...h,
