@@ -1,68 +1,43 @@
 ## Mål
-Erstatte dagens grid-baserte bow-tie i kap. 4 (`RosPreview.tsx`) med et ekte bow-tie-diagram der:
-- Årsakene fordeles jevnt fra topp til bunn på venstre side.
-- Konsekvensene fordeles jevnt fra topp til bunn på høyre side.
-- Topphendelsen sitter sentrert i midten som "knuten".
-- SVG-linjer går fra hver årsak gjennom relevante felles barrierer og inn i topphendelsen, og fra topphendelsen ut til hver konsekvens — slik at silhuetten faktisk ser ut som en sløyfe.
-- Linjer som krysser hverandre rutes med liten vertikal offset så de ikke ligger oppå hverandre.
+Legg til en ny innledende seksjon **2.1 Analyseprosess** i kap. 2 i `src/components/ros/RosPreview.tsx`, som beskriver hvordan ROS-analysen er bygget opp basert på risikoanalyseprosessen i Aven, Røed, Wiencke (2008) / ISO 31000. Eksisterende skala/matrise-seksjoner renummereres tilsvarende. Tilsvarende oppdatering i Word-eksporten (`src/lib/ros-word-export.ts`) hvis den speiler kapittel 2.
 
-Bare visuell endring i kap. 4 i `src/components/ros/RosPreview.tsx`. Ingen endring i Word-eksport, AI-logikk, datamodell eller "Barrierer / tiltak"-tabellen.
+## Innhold i ny 2.1 Analyseprosess
 
-## Layout
+Kort introtekst:
+> Analysen følger risikoanalyseprosessen beskrevet i Aven, Røed og Wiencke (2008) "Risikoanalyser – prinsipper og metoder, med anvendelser", som igjen bygger på ISO 31000. Prosessen deles i tre hovedfaser: planlegging, risiko- og sårbarhetsvurdering og risikohåndtering.
 
-```text
-ÅRSAKER            FELLES BARRIERER             TOPPHENDELSE       KONSEKVENSER
-[Trafo 1] ─┐        ┌─[Termografering]─┐                            ┌─ [Personskade]
-[Trafo 2] ─┼────────┼─[Oljeanalyse]────┼──►   ┌──────────┐  ───────┼─ [Materiell]
-[Trafo 3] ─┼────────┼─[Isolasjons.]────┼──►   │ EKSPLOSJON│  ──────┼─ [Brann]
-[Trafo 4] ─┼────────┼─[Oljegrube]──────┼──►   └──────────┘  ──────┘
-[Trafo 5] ─┘        └─[Trykkavlast.]──┘
+Etterfølges av et **vertikalt prosessdiagram** med tre nummererte grupper (rendret som ren HTML/CSS, ingen ekstern bibliotek — fungerer i preview, PDF og Word-eksport via samme markup):
+
+```
+1) Planlegging
+   ├─ Problemdefinisjon, informasjonsinnhenting og organisering
+   └─ Valg av analysemetode
+
+2) Risiko- og sårbarhetsvurdering
+   ├─ Identifikasjon av mulige initierende hendelser (farer, trusler, muligheter)
+   ├─ Årsaksanalysen   |   Konsekvensanalysen
+   └─ Risikobilde
+
+3) Risikohåndtering
+   ├─ Sammenligning av alternativer, identifisering og vurdering av tiltak
+   └─ Ledelsens vurdering og beslutning
 ```
 
-Hele diagrammet rendres inne i én `position: relative`-container med et absolutt SVG-lerret i bakgrunnen som tegner alle linjer. Innholdet (kort/chips) ligger oppå med `position: relative; zIndex: 1`.
+Implementasjon: en flex/grid-basert komponent inline i seksjonen — lyseblå bokser (`#e8eef7`, border `#94a3b8`), piler mellom (Unicode `▼` eller liten SVG), gruppe-merking til høyre med vertikal klamme (border-right + label). Tilsvarende stil som matriserammen ellers i dokumentet. Avsluttes med kildehenvisning: *Figur: Risiko- og sårbarhetsanalyseprosessens ulike trinn (ref. Aven et al. 2008)*.
 
-## Tekniske detaljer
+## Renummerering
+- 2.1 Sannsynlighetsskala → **2.2**
+- 2.2 Konsekvensskala → **2.3**
+- 2.3 Risikomatrise (5×5) → **2.4**
 
-1. **Container**
-   - `BowTieScroll` beholdes (horisontal scroll på smal skjerm).
-   - Indre wrapper: `position: relative`, fast `minHeight` beregnet fra `max(arsaker.length, konsekvenser.length, aiBarrierer.length) * RAD_HOYDE + PADDING` (RAD_HOYDE ≈ 42 px, min 240 px).
-   - Fire absolutt-posisjonerte kolonner med kjente `left/width`:
-     - Årsaker: `left: 0`, `width: 180`
-     - Felles barrierer (hvis finnes): `left: 210`, `width: 230`
-     - Topphendelse: sentrert, `width: 180`
-     - Konsekvenser: `right: 0`, `width: 180`
-   - Hver chip i en kolonne fordeles vertikalt med jevn `top` slik at de spenner hele høyden (første chip øverst, siste nederst, jevn avstand). Topphendelsen plasseres vertikalt sentrert.
+Eksisterende intro-avsnitt under "2. Metode" beholdes som den er; ny 2.1 legges inn rett etter intro-avsnittet.
 
-2. **SVG-lerret**
-   - `<svg style="position:absolute; inset:0; width:100%; height:100%; zIndex:0">` med `viewBox` lik faktiske px (bruk `useRef` + `useLayoutEffect` + `ResizeObserver` for å lese container-bredden, eller bare bruk `100%` koordinater via `getBoundingClientRect` etter mount).
-   - Enklere alternativ uten ref-måling: bruk kjente kolonne-`left`-verdier (px) og beregn `top` for hver chip ut fra index/antall. Da kan SVG bruke samme talleksens som layoutet og vi slipper måling.
-
-3. **Linjer**
-   - Fra hver årsak: bezier-kurve fra (xÅrsakHøyre, yÅrsak) til (xBarriereVenstre, yBarriere) for hver relevant barriere (matchet via `b.arsakIds`). Hvis ingen barriere matcher den årsaken, går linjen direkte til topphendelsens venstre kant.
-   - Fra hver barriere: bezier fra (xBarriereHøyre, yBarriere) til topphendelsens venstre kant (xTopp, yTopp).
-   - Fra topphendelsens høyre kant: bezier til hver konsekvens (xKonsHøyre kant).
-   - Alle linjer: `stroke="#94a3b8"`, `strokeWidth="1.2"`, `fill="none"`, `opacity="0.7"`.
-   - Linjer inn til/ut fra topphendelsen samles mot ett senterpunkt — det gir den klassiske "sløyfe"-formen automatisk.
-
-4. **Anti-overlap**
-   - For hver gruppe linjer som ender i samme punkt (f.eks. alle inn til en barriere eller inn til topphendelsen), fordel ankerpunktet langs en kort vertikal "kam" (f.eks. yTopp ± i·3 px) basert på sortert kilde-y. Dette gjør at parallelle linjer ikke ligger oppå hverandre.
-   - Bezier-kontrollpunkter settes midt mellom kolonnene horisontalt, samme y som henholdsvis start og slutt — gir myke S-kurver uten å trenge full ruting.
-
-5. **Bow-tie vinger**
-   - Fjernes som egne `<polygon>` — sløyfeformen kommer nå fra linjene selv. Topphendelse-boksen beholdes som rødt rektangel sentrert.
-
-6. **Chips**
-   - Beholder dagens stil (hvit boks med score-badge for årsaker, grønne kort for barrierer, hvite bokser for konsekvenser). Bare plassering endres til absolutt med beregnet `top`.
-
-7. **Responsivt / utskrift**
-   - `BowTieScroll` gir horisontal scroll på skjerm.
-   - Hele containeren har fast bredde (sum av kolonner + gap, f.eks. 980 px) slik at både skjerm-rendring og PDF-utskrift av liggende A4 viser hele diagrammet.
+## Word-eksport
+Sjekk `src/lib/ros-word-export.ts` for kap. 2-struktur. Hvis den speiler underseksjonene, legges samme 2.1 inn (tekst + enkel punktliste eller tabell som representerer prosesstrinnene — ingen SVG-figur i Word, kun strukturert liste/tabell), og 2.1→2.2 osv. renummereres. Hvis Word-eksporten kun har én samlet "Metode"-bolk, legges teksten inn der.
 
 ## Filer som endres
-- `src/components/ros/RosPreview.tsx` — kun bow-tie-blokken (linjene 502–679).
+- `src/components/ros/RosPreview.tsx` — kap. 2-blokken (linjer ~290–370): legg til 2.1 Analyseprosess + renummerer underseksjoner.
+- `src/lib/ros-word-export.ts` — speil endringen for nedlastet Word-dokument.
 
-## Filer som ikke endres
-- `src/lib/ros-word-export.ts`
-- `supabase/functions/analyze-bowtie-barriers/index.ts`
-- "Barrierer / tiltak"-tabellen under diagrammet
-- All AI-/data-/RLS-logikk
+## Ingen endringer
+- Datamodell, AI, RLS, kap. 1, 3, 4, 5/6.
