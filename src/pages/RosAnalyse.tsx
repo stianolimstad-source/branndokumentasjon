@@ -1255,6 +1255,129 @@ export default function RosAnalyse() {
                       )}
                     </div>
 
+                    {/* Konsekvensreduserende tiltak (AI + manuell) */}
+                    <div className="space-y-2 border-t pt-3">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          Konsekvensreduserende tiltak (etter topphendelse)
+                        </Label>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          disabled={analyzingKonsId === bt.id || bt.konsekvenser.length < 1}
+                          onClick={() => analyzeKonsekvensTiltak(bt)}
+                        >
+                          <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+                          {analyzingKonsId === bt.id ? "Analyserer…" : "Analyser med AI"}
+                        </Button>
+                      </div>
+                      {bt.konsekvenser.length < 1 && (
+                        <p className="text-xs text-muted-foreground italic">
+                          Registrer minst én konsekvens for å foreslå konsekvensreduserende tiltak.
+                        </p>
+                      )}
+
+                      {(bt.konsekvensReduserende || []).length > 0 && (
+                        <div className="space-y-1.5">
+                          {(bt.konsekvensReduserende || []).map((kt, i) => {
+                            const konsNavn = kt.konsekvensIndekser
+                              .map((ki) => bt.konsekvenser[ki])
+                              .filter(Boolean);
+                            return (
+                              <div
+                                key={i}
+                                className="flex items-start gap-2 rounded-md border border-amber-200 dark:border-amber-900 bg-amber-50/60 dark:bg-amber-950/30 px-2.5 py-2"
+                              >
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="text-sm font-medium text-amber-900 dark:text-amber-100">{kt.tekst}</span>
+                                    <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
+                                      {kt.kilde === "ai" ? "AI" : "Manuell"}
+                                    </Badge>
+                                  </div>
+                                  {konsNavn.length > 0 && (
+                                    <div className="text-[11px] text-amber-700 dark:text-amber-300 mt-0.5 italic">
+                                      Reduserer: {konsNavn.join(", ")}
+                                    </div>
+                                  )}
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-6 w-6 text-destructive shrink-0"
+                                  onClick={() => removeKonsekvensTiltak(bt.id, i)}
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Legg til manuelt konsekvensreduserende tiltak */}
+                      {bt.konsekvenser.length >= 1 && (
+                        <div className="rounded-md border border-dashed p-2 space-y-2">
+                          <Input
+                            value={newKonsTekst[bt.id] || ""}
+                            onChange={(e) => setNewKonsTekst((s) => ({ ...s, [bt.id]: e.target.value }))}
+                            placeholder="Legg til eget konsekvensreduserende tiltak…"
+                            className="h-8 text-sm"
+                          />
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button type="button" variant="outline" size="sm" className="h-7 text-xs">
+                                  Velg konsekvenser ({(newKonsIndekser[bt.id] || []).length})
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-72 p-0" align="start">
+                                <Command>
+                                  <CommandList>
+                                    <CommandEmpty>Ingen konsekvenser.</CommandEmpty>
+                                    <CommandGroup>
+                                      {bt.konsekvenser.map((k, ki) => {
+                                        const valgt = (newKonsIndekser[bt.id] || []).includes(ki);
+                                        return (
+                                          <CommandItem
+                                            key={ki}
+                                            onSelect={() => {
+                                              setNewKonsIndekser((s) => {
+                                                const cur = s[bt.id] || [];
+                                                return {
+                                                  ...s,
+                                                  [bt.id]: valgt ? cur.filter((x) => x !== ki) : [...cur, ki],
+                                                };
+                                              });
+                                            }}
+                                            className="text-sm"
+                                          >
+                                            <Check className={"h-3.5 w-3.5 mr-2 " + (valgt ? "opacity-100" : "opacity-0")} />
+                                            {k || `Konsekvens ${ki + 1}`}
+                                          </CommandItem>
+                                        );
+                                      })}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="default"
+                              className="h-7 text-xs"
+                              onClick={() => addManuellKonsekvensTiltak(bt.id)}
+                            >
+                              <Plus className="h-3.5 w-3.5 mr-1" /> Legg til
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+
                     <div className="space-y-1 border-t pt-3">
                       <Area
                         label="Felles barrierer / tiltak (fritekst, valgfri)"
