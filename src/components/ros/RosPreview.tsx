@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { risikoFarge } from "./RosMatriks";
 import rosNivaaIllustrasjon from "@/assets/ros-detaljeringsnivaa.jpg";
+import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell } from "@/lib/ros-risk-criteria";
 
 export interface RosHendelse {
   id: string;
