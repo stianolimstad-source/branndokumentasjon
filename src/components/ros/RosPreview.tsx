@@ -529,36 +529,38 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         arsaker.map((a) => {
                           const f = FARGE[risikoFarge(a.sannsynlighet, a.konsekvens)];
                           return (
-                            <div
-                              key={a.id}
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: 6,
-                                background: "#fff",
-                                border: "1px solid #cbd5e1",
-                                borderRadius: 4,
-                                padding: "4px 8px",
-                                marginBottom: 4,
-                                fontSize: 10,
-                              }}
-                            >
-                              <span
+                            <div key={a.id} style={{ marginBottom: 4 }}>
+                              <div
                                 style={{
-                                  display: "inline-block",
-                                  minWidth: 22,
-                                  textAlign: "center",
-                                  background: f.bg,
-                                  color: f.fg,
-                                  borderRadius: 3,
-                                  padding: "1px 4px",
-                                  fontWeight: 700,
-                                  fontSize: 9,
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: 6,
+                                  background: "#fff",
+                                  border: "1px solid #cbd5e1",
+                                  borderRadius: 4,
+                                  padding: "4px 8px",
+                                  fontSize: 10,
+                                  width: "fit-content",
+                                  maxWidth: "100%",
                                 }}
                               >
-                                {a.sannsynlighet * a.konsekvens}
-                              </span>
-                              <span style={{ flex: 1 }}>{a.tittel || a.sarbarhet || a.hendelse}</span>
+                                <span
+                                  style={{
+                                    display: "inline-block",
+                                    minWidth: 22,
+                                    textAlign: "center",
+                                    background: f.bg,
+                                    color: f.fg,
+                                    borderRadius: 3,
+                                    padding: "1px 4px",
+                                    fontWeight: 700,
+                                    fontSize: 9,
+                                  }}
+                                >
+                                  {a.sannsynlighet * a.konsekvens}
+                                </span>
+                                <span>{a.tittel || a.sarbarhet || a.hendelse}</span>
+                              </div>
                             </div>
                           );
                         })
