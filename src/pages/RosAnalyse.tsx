@@ -472,7 +472,7 @@ export default function RosAnalyse() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-lg font-semibold">2. Metode</h2>
+            <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">2. Metode</h2><JumpToPreview previewId="kap-2" /></div>
             <p className="text-xs text-muted-foreground">
               5×5-matrisen er forhåndsdefinert. Skalaer for sannsynlighet og konsekvens vises i forhåndsvisningen.
             </p>
