@@ -899,9 +899,136 @@ export default function RosAnalyse() {
                     </div>
 
 
+                    {/* Felles barrierer (AI + manuell) */}
+                    <div className="space-y-2 border-t pt-3">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          Felles barrierer (på tvers av årsaker)
+                        </Label>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          disabled={analyzingId === bt.id || bt.hendelseIds.length < 2}
+                          onClick={() => analyzeBarrierer(bt)}
+                        >
+                          <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+                          {analyzingId === bt.id ? "Analyserer…" : "Analyser med AI"}
+                        </Button>
+                      </div>
+                      {bt.hendelseIds.length < 2 && (
+                        <p className="text-xs text-muted-foreground italic">
+                          Velg minst to årsaker for å finne felles barrierer.
+                        </p>
+                      )}
+
+                      {(bt.felleseBarrierer || []).length > 0 && (
+                        <div className="space-y-1.5">
+                          {(bt.felleseBarrierer || []).map((fb, i) => {
+                            const arsakNavn = fb.arsakIds
+                              .map((id) => {
+                                const a = content.hendelser.find((h) => h.id === id);
+                                return a?.tittel || a?.sarbarhet || a?.hendelse || "";
+                              })
+                              .filter(Boolean);
+                            return (
+                              <div
+                                key={i}
+                                className="flex items-start gap-2 rounded-md border border-emerald-200 dark:border-emerald-900 bg-emerald-50/60 dark:bg-emerald-950/30 px-2.5 py-2"
+                              >
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="text-sm font-medium text-emerald-900 dark:text-emerald-100">{fb.tekst}</span>
+                                    <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
+                                      {fb.kilde === "ai" ? "AI" : "Manuell"}
+                                    </Badge>
+                                  </div>
+                                  {arsakNavn.length > 0 && (
+                                    <div className="text-[11px] text-emerald-700 dark:text-emerald-300 mt-0.5 italic">
+                                      Dekker: {arsakNavn.join(", ")}
+                                    </div>
+                                  )}
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-6 w-6 text-destructive shrink-0"
+                                  onClick={() => removeFellesBarriere(bt.id, i)}
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Legg til manuell felles barriere */}
+                      {bt.hendelseIds.length >= 1 && (
+                        <div className="rounded-md border border-dashed p-2 space-y-2">
+                          <Input
+                            value={newFellesTekst[bt.id] || ""}
+                            onChange={(e) => setNewFellesTekst((s) => ({ ...s, [bt.id]: e.target.value }))}
+                            placeholder="Legg til egen felles barriere…"
+                            className="h-8 text-sm"
+                          />
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button type="button" variant="outline" size="sm" className="h-7 text-xs">
+                                  Velg årsaker ({(newFellesArsaker[bt.id] || []).length})
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-72 p-0" align="start">
+                                <Command>
+                                  <CommandList>
+                                    <CommandEmpty>Ingen årsaker.</CommandEmpty>
+                                    <CommandGroup>
+                                      {bt.hendelseIds.map((hid) => {
+                                        const h = content.hendelser.find((x) => x.id === hid);
+                                        if (!h) return null;
+                                        const valgt = (newFellesArsaker[bt.id] || []).includes(hid);
+                                        return (
+                                          <CommandItem
+                                            key={hid}
+                                            onSelect={() => {
+                                              setNewFellesArsaker((s) => {
+                                                const cur = s[bt.id] || [];
+                                                return {
+                                                  ...s,
+                                                  [bt.id]: valgt ? cur.filter((x) => x !== hid) : [...cur, hid],
+                                                };
+                                              });
+                                            }}
+                                            className="text-sm"
+                                          >
+                                            <Check className={"h-3.5 w-3.5 mr-2 " + (valgt ? "opacity-100" : "opacity-0")} />
+                                            {h.tittel || h.sarbarhet || h.hendelse || "Uten navn"}
+                                          </CommandItem>
+                                        );
+                                      })}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="default"
+                              className="h-7 text-xs"
+                              onClick={() => addManuellBarriere(bt.id)}
+                            >
+                              <Plus className="h-3.5 w-3.5 mr-1" /> Legg til
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
                     <div className="space-y-1 border-t pt-3">
                       <Area
-                        label="Felles barrierer / tiltak (valgfri)"
+                        label="Felles barrierer / tiltak (fritekst, valgfri)"
                         value={bt.fellesBarrierer || ""}
                         onChange={(v) => updateBowTie(bt.id, { fellesBarrierer: v })}
                         rows={2}
