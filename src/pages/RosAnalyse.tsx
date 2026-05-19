@@ -545,23 +545,32 @@ export default function RosAnalyse() {
 
   const [extractingKonsId, setExtractingKonsId] = useState<string | null>(null);
   const extractKonsTiltakFraKonsept = async (bt: RosBowTie) => {
-    if (!konseptContent) {
-      toast({ title: "Ingen brannkonsept", description: "Prosjektet har ikke et brannkonsept å hente fra.", variant: "destructive" });
-      return;
-    }
     if (bt.konsekvenser.length < 1) {
       toast({ title: "Trenger minst 1 konsekvens", variant: "destructive" });
       return;
     }
+    const arsaker = bt.hendelseIds
+      .map((id) => content.hendelser.find((h) => h.id === id))
+      .filter((h): h is RosHendelse => !!h);
+    if (arsaker.length < 1) {
+      toast({ title: "Trenger minst 1 årsak", variant: "destructive" });
+      return;
+    }
+    const hendelserKap3 = arsaker.map((a) => ({
+      id: a.id,
+      tittel: a.tittel || a.sarbarhet || a.hendelse || "Uten navn",
+      tiltak: a.tiltak || "",
+      beskrivelseEtter: a.beskrivelseEtter || "",
+    }));
     setExtractingKonsId(bt.id);
     try {
-      const { data, error } = await supabase.functions.invoke("extract-bowtie-from-konsept", {
+      const { data, error } = await supabase.functions.invoke("extract-bowtie-from-ros", {
         body: {
           type: "mitigation",
           topphendelse: bt.navn,
           beskrivelse: bt.beskrivelse || "",
           konsekvenser: bt.konsekvenser.map((tekst, i) => ({ id: String(i), tekst })),
-          konseptContent,
+          hendelserKap3,
         },
       });
       if (error) throw error;
@@ -579,7 +588,7 @@ export default function RosAnalyse() {
       updateBowTie(bt.id, { konsekvensReduserende: [...nye, ...beholdt] });
       toast({
         title: nye.length > 0 ? `Hentet ${nye.length} tiltak fra kap. 3` : "Ingen tiltak i kap. 3",
-        description: nye.length > 0 ? "Lagt til i diagrammet og tabellen." : "Fant ingen relevante konsekvensreduserende tiltak i kap. 3.",
+        description: nye.length > 0 ? "Lagt til i diagrammet og tabellen." : "Fant ingen konsekvensreduserende tiltak på hendelsene i kap. 3 — prøv 'Foreslå nye (AI)'.",
       });
     } catch (e: any) {
       toast({ title: "Henting feilet", description: e?.message || "Kunne ikke hente fra kap. 3.", variant: "destructive" });
