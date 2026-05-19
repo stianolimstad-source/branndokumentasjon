@@ -1089,7 +1089,7 @@ function BowTieDiagram({
   const PAD_TOP = 28;
   const PAD_BOT = 16;
   const ROW_H = 48;
-  const ARSAK = { x: 16, w: 180 };
+  const ARSAK = { x: 16, w: 140 };
   const BARR = harKonsTiltak ? { x: 260, w: 240 } : { x: 280, w: 250 };
   const TOPP = harBarrierer
     ? (harKonsTiltak ? { x: 540, w: 180 } : { x: 570, w: 200 })
@@ -1412,7 +1412,7 @@ function BowTieDiagram({
             >
               <div
                 style={{
-                  display: "inline-flex",
+                  display: "flex",
                   alignItems: "center",
                   gap: 6,
                   background: "#fff",
@@ -1421,7 +1421,7 @@ function BowTieDiagram({
                   borderRadius: 4,
                   padding: "4px 8px",
                   fontSize: 10,
-                  maxWidth: "100%",
+                  width: "100%",
                   boxShadow: active
                     ? `0 0 0 2px ${col}33, 0 1px 2px rgba(0,0,0,0.04)`
                     : "0 1px 2px rgba(0,0,0,0.04)",
