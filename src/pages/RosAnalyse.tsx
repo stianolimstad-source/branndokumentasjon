@@ -701,37 +701,21 @@ export default function RosAnalyse() {
                       </AlertDialog>
                     </div>
 
-                    <div className="space-y-1 border-t pt-3">
+                    <div className="space-y-2 border-t pt-3">
                       <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                         Årsaker (hendelser fra kap. 3)
                       </Label>
                       {content.hendelser.length === 0 ? (
                         <p className="text-xs text-muted-foreground italic">Registrer hendelser først.</p>
                       ) : (
-                        <div className="flex flex-wrap gap-1.5 pt-1">
-                          {content.hendelser.map((h) => {
-                            const selected = bt.hendelseIds.includes(h.id);
-                            const farge = risikoFarge(h.sannsynlighet, h.konsekvens);
-                            const dot = farge === "rod" ? "bg-red-500" : farge === "gul" ? "bg-amber-400" : "bg-emerald-500";
-                            return (
-                              <button
-                                key={h.id}
-                                type="button"
-                                onClick={() => toggleBowTieHendelse(bt.id, h.id)}
-                                className={`text-xs px-2 py-1 rounded-full border transition-colors flex items-center gap-1.5 ${
-                                  selected
-                                    ? "bg-primary text-primary-foreground border-primary"
-                                    : "bg-background border-border hover:bg-accent"
-                                }`}
-                              >
-                                <span className={`inline-block h-2 w-2 rounded-full ${dot}`} />
-                                {h.tittel || h.sarbarhet || h.hendelse || "Uten tittel"}
-                              </button>
-                            );
-                          })}
-                        </div>
+                        <ArsakPicker
+                          hendelser={content.hendelser}
+                          valgteIds={bt.hendelseIds}
+                          onToggle={(hid) => toggleBowTieHendelse(bt.id, hid)}
+                        />
                       )}
                     </div>
+
 
                     <div className="space-y-2 border-t pt-3">
                       <div className="flex items-center justify-between">
