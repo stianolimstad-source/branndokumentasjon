@@ -301,12 +301,12 @@ export const exportRosToWord = async (options: ExportOptions) => {
         return [
           para("4. Organisering av arbeidet — deltakere:"),
           new Table({
-            width: { size: 70, type: WidthType.PERCENTAGE },
+            width: { size: 90, type: WidthType.PERCENTAGE },
             rows: [
-              new TableRow({ children: [headerCell("Navn", 50), headerCell("Stillingstittel", 50)] }),
+              new TableRow({ children: [headerCell("Navn", 34), headerCell("Stillingstittel", 33), headerCell("Bedrift", 33)] }),
               ...deltakere.map((d) =>
                 new TableRow({
-                  children: [cell(d.navn || "—", 50), cell(d.stilling || "—", 50)],
+                  children: [cell(d.navn || "—", 34), cell(d.stilling || "—", 33), cell(d.bedrift || "—", 33)],
                 }),
               ),
             ],

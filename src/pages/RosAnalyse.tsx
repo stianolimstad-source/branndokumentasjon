@@ -630,7 +630,7 @@ export default function RosAnalyse() {
               <div className="space-y-2">
                 <Label className="text-sm">Organisering av arbeidet — deltakere</Label>
                 <p className="text-xs text-muted-foreground">
-                  Legg til personene som har deltatt i analysen med navn og stillingstittel.
+                  Legg til personene som har deltatt i analysen med navn, stillingstittel og bedrift.
                 </p>
                 <div className="space-y-2">
                   {(content.metode?.deltakere || []).map((d, idx) => (
@@ -655,6 +655,18 @@ export default function RosAnalyse() {
                           setContent((c) => {
                             const list = [...(c.metode?.deltakere || [])];
                             list[idx] = { ...list[idx], stilling: v };
+                            return { ...c, metode: { ...(c.metode || {}), deltakere: list } };
+                          });
+                        }}
+                      />
+                      <Input
+                        placeholder="Bedrift"
+                        value={d.bedrift || ""}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setContent((c) => {
+                            const list = [...(c.metode?.deltakere || [])];
+                            list[idx] = { ...list[idx], bedrift: v };
                             return { ...c, metode: { ...(c.metode || {}), deltakere: list } };
                           });
                         }}
@@ -684,7 +696,7 @@ export default function RosAnalyse() {
                       ...c,
                       metode: {
                         ...(c.metode || {}),
-                        deltakere: [...(c.metode?.deltakere || []), { navn: "", stilling: "" }],
+                        deltakere: [...(c.metode?.deltakere || []), { navn: "", stilling: "", bedrift: "" }],
                       },
                     }))
                   }
