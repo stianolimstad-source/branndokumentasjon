@@ -541,6 +541,52 @@ export default function RosAnalyse() {
     }
   };
 
+  const [extractingKonsId, setExtractingKonsId] = useState<string | null>(null);
+  const extractKonsTiltakFraKonsept = async (bt: RosBowTie) => {
+    if (!konseptContent) {
+      toast({ title: "Ingen brannkonsept", description: "Prosjektet har ikke et brannkonsept å hente fra.", variant: "destructive" });
+      return;
+    }
+    if (bt.konsekvenser.length < 1) {
+      toast({ title: "Trenger minst 1 konsekvens", variant: "destructive" });
+      return;
+    }
+    setExtractingKonsId(bt.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("extract-bowtie-from-konsept", {
+        body: {
+          type: "mitigation",
+          topphendelse: bt.navn,
+          beskrivelse: bt.beskrivelse || "",
+          konsekvenser: bt.konsekvenser.map((tekst, i) => ({ id: String(i), tekst })),
+          konseptContent,
+        },
+      });
+      if (error) throw error;
+      const nye = Array.isArray(data?.tiltak)
+        ? data.tiltak.map((t: any) => ({
+            tekst: String(t.tekst || "").trim(),
+            konsekvensIndekser: Array.isArray(t.konsekvensIds)
+              ? t.konsekvensIds.map((x: any) => Number(x)).filter((n: number) => Number.isInteger(n) && n >= 0 && n < bt.konsekvenser.length)
+              : [],
+            kilde: "kap3" as const,
+            kildeRef: t.kildeRef ? String(t.kildeRef) : undefined,
+          }))
+        : [];
+      const beholdt = (bt.konsekvensReduserende || []).filter((t) => t.kilde !== "kap3");
+      updateBowTie(bt.id, { konsekvensReduserende: [...nye, ...beholdt] });
+      toast({
+        title: nye.length > 0 ? `Hentet ${nye.length} tiltak fra kap. 3` : "Ingen tiltak i kap. 3",
+        description: nye.length > 0 ? "Lagt til i diagrammet og tabellen." : "Fant ingen relevante konsekvensreduserende tiltak i kap. 3.",
+      });
+    } catch (e: any) {
+      toast({ title: "Henting feilet", description: e?.message || "Kunne ikke hente fra kap. 3.", variant: "destructive" });
+    } finally {
+      setExtractingKonsId(null);
+    }
+  };
+
+
   const addManuellKonsekvensTiltak = (btId: string) => {
     const tekst = (newKonsTekst[btId] || "").trim();
     const indekser = newKonsIndekser[btId] || [];
