@@ -1022,3 +1022,85 @@ function KonsekvensPicker({ valgte, onAdd }: { valgte: string[]; onAdd: (tekst: 
     </Popover>
   );
 }
+
+function ArsakPicker({
+  hendelser,
+  valgteIds,
+  onToggle,
+}: {
+  hendelser: RosHendelse[];
+  valgteIds: string[];
+  onToggle: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const valgte = hendelser.filter((h) => valgteIds.includes(h.id));
+  return (
+    <div className="space-y-2">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button type="button" variant="outline" size="sm" className="w-full justify-between">
+            <span className="text-xs">
+              {valgteIds.length === 0
+                ? "Velg årsaker fra hendelsesregisteret"
+                : `${valgteIds.length} årsak${valgteIds.length === 1 ? "" : "er"} valgt`}
+            </span>
+            <Plus className="h-3.5 w-3.5 opacity-60" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[340px] p-0" align="start">
+          <Command>
+            <CommandInput placeholder="Søk hendelse..." />
+            <CommandList className="max-h-[320px]">
+              <CommandEmpty>Ingen treff.</CommandEmpty>
+              <CommandGroup>
+                {hendelser.map((h) => {
+                  const selected = valgteIds.includes(h.id);
+                  const farge = risikoFarge(h.sannsynlighet, h.konsekvens);
+                  const dot = farge === "rod" ? "bg-red-500" : farge === "gul" ? "bg-amber-400" : "bg-emerald-500";
+                  const label = h.tittel || h.sarbarhet || h.hendelse || "Uten tittel";
+                  return (
+                    <CommandItem
+                      key={h.id}
+                      value={`${label} ${h.sarbarhet || ""} ${h.hendelse || ""}`}
+                      onSelect={() => onToggle(h.id)}
+                    >
+                      <span className={`inline-block h-2 w-2 rounded-full mr-2 ${dot}`} />
+                      <span className="text-sm truncate">{label}</span>
+                      {selected && <Check className="ml-auto h-4 w-4 text-primary" />}
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+      {valgte.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {valgte.map((h) => {
+            const farge = risikoFarge(h.sannsynlighet, h.konsekvens);
+            const dot = farge === "rod" ? "bg-red-500" : farge === "gul" ? "bg-amber-400" : "bg-emerald-500";
+            const label = h.tittel || h.sarbarhet || h.hendelse || "Uten tittel";
+            return (
+              <span
+                key={h.id}
+                className="text-xs px-2 py-1 rounded-full border bg-background flex items-center gap-1.5"
+              >
+                <span className={`inline-block h-2 w-2 rounded-full ${dot}`} />
+                {label}
+                <button
+                  type="button"
+                  onClick={() => onToggle(h.id)}
+                  className="ml-1 text-muted-foreground hover:text-destructive"
+                  aria-label="Fjern"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
