@@ -517,7 +517,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
           </p>
           {(() => {
             const m = content.metode || {};
-            const items: { nr: string; tittel: string; tekst: string; ref?: string }[] = [
+            const items = [
               {
                 nr: "1",
                 tittel: "Definere formål og omfang av analysen",
