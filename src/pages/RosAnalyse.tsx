@@ -696,7 +696,7 @@ export default function RosAnalyse() {
                       ...c,
                       metode: {
                         ...(c.metode || {}),
-                        deltakere: [...(c.metode?.deltakere || []), { navn: "", stilling: "" }],
+                        deltakere: [...(c.metode?.deltakere || []), { navn: "", stilling: "", bedrift: "" }],
                       },
                     }))
                   }
