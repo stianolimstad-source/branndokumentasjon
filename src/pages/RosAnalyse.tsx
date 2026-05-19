@@ -181,6 +181,19 @@ export default function RosAnalyse() {
                       }))
                       .filter((x: any) => x.tekst)
                   : [],
+                konsekvensReduserende: Array.isArray(b.konsekvensReduserende)
+                  ? b.konsekvensReduserende
+                      .map((x: any) => ({
+                        tekst: String(x?.tekst || "").trim(),
+                        konsekvensIndekser: Array.isArray(x?.konsekvensIndekser)
+                          ? x.konsekvensIndekser
+                              .map((y: any) => Number(y))
+                              .filter((y: number) => Number.isInteger(y) && y >= 0)
+                          : [],
+                        kilde: x?.kilde === "ai" ? "ai" : "manuell",
+                      }))
+                      .filter((x: any) => x.tekst)
+                  : [],
               }))
             : [],
         });
@@ -314,7 +327,7 @@ export default function RosAnalyse() {
       ...c,
       bowTies: [
         ...(c.bowTies || []),
-        { id, navn: "", beskrivelse: "", hendelseIds: [], konsekvenser: [], fellesBarrierer: "", felleseBarrierer: [] },
+        { id, navn: "", beskrivelse: "", hendelseIds: [], konsekvenser: [], fellesBarrierer: "", felleseBarrierer: [], konsekvensReduserende: [] },
       ],
     }));
   };
@@ -419,6 +432,76 @@ export default function RosAnalyse() {
       felleseBarrierer: (bt.felleseBarrierer || []).filter((_, i) => i !== index),
     });
   };
+
+  // ----- Konsekvensreduserende tiltak -----
+  const [analyzingKonsId, setAnalyzingKonsId] = useState<string | null>(null);
+  const [newKonsTekst, setNewKonsTekst] = useState<Record<string, string>>({});
+  const [newKonsIndekser, setNewKonsIndekser] = useState<Record<string, number[]>>({});
+
+  const analyzeKonsekvensTiltak = async (bt: RosBowTie) => {
+    if (bt.konsekvenser.length < 1) {
+      toast({ title: "Trenger minst 1 konsekvens", description: "Registrer minst én konsekvens først.", variant: "destructive" });
+      return;
+    }
+    setAnalyzingKonsId(bt.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("analyze-bowtie-mitigations", {
+        body: {
+          topphendelse: bt.navn,
+          beskrivelse: bt.beskrivelse || "",
+          konsekvenser: bt.konsekvenser.map((tekst, i) => ({ id: String(i), tekst })),
+        },
+      });
+      if (error) throw error;
+      const nye = Array.isArray(data?.tiltak)
+        ? data.tiltak.map((t: any) => ({
+            tekst: String(t.tekst || "").trim(),
+            konsekvensIndekser: Array.isArray(t.konsekvensIds)
+              ? t.konsekvensIds.map((x: any) => Number(x)).filter((n: number) => Number.isInteger(n) && n >= 0 && n < bt.konsekvenser.length)
+              : [],
+            kilde: "ai" as const,
+          }))
+        : [];
+      const beholdt = (bt.konsekvensReduserende || []).filter((t) => t.kilde !== "ai");
+      updateBowTie(bt.id, { konsekvensReduserende: [...nye, ...beholdt] });
+      toast({
+        title: nye.length > 0 ? `Fant ${nye.length} konsekvensreduserende tiltak` : "Ingen tiltak funnet",
+        description: nye.length > 0 ? "Lagt til i diagrammet og tabellen." : "AI fant ingen relevante konsekvensreduserende tiltak.",
+      });
+    } catch (e: any) {
+      toast({ title: "AI-analyse feilet", description: e?.message || "Kunne ikke analysere tiltak.", variant: "destructive" });
+    } finally {
+      setAnalyzingKonsId(null);
+    }
+  };
+
+  const addManuellKonsekvensTiltak = (btId: string) => {
+    const tekst = (newKonsTekst[btId] || "").trim();
+    const indekser = newKonsIndekser[btId] || [];
+    if (!tekst || indekser.length < 1) {
+      toast({ title: "Mangler informasjon", description: "Skriv tekst og velg minst én konsekvens.", variant: "destructive" });
+      return;
+    }
+    const bt = (content.bowTies || []).find((b) => b.id === btId);
+    if (!bt) return;
+    updateBowTie(btId, {
+      konsekvensReduserende: [
+        ...(bt.konsekvensReduserende || []),
+        { tekst, konsekvensIndekser: indekser, kilde: "manuell" },
+      ],
+    });
+    setNewKonsTekst((s) => ({ ...s, [btId]: "" }));
+    setNewKonsIndekser((s) => ({ ...s, [btId]: [] }));
+  };
+
+  const removeKonsekvensTiltak = (btId: string, index: number) => {
+    const bt = (content.bowTies || []).find((b) => b.id === btId);
+    if (!bt) return;
+    updateBowTie(btId, {
+      konsekvensReduserende: (bt.konsekvensReduserende || []).filter((_, i) => i !== index),
+    });
+  };
+
 
   const importHendelser = (data: ExtractedRosData, mode: "append" | "replace") => {
     const nye: RosHendelse[] = data.hendelser.map((h) => ({ ...h, id: makeId() }));
@@ -1171,6 +1254,129 @@ export default function RosAnalyse() {
                         </div>
                       )}
                     </div>
+
+                    {/* Konsekvensreduserende tiltak (AI + manuell) */}
+                    <div className="space-y-2 border-t pt-3">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          Konsekvensreduserende tiltak (etter topphendelse)
+                        </Label>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          disabled={analyzingKonsId === bt.id || bt.konsekvenser.length < 1}
+                          onClick={() => analyzeKonsekvensTiltak(bt)}
+                        >
+                          <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+                          {analyzingKonsId === bt.id ? "Analyserer…" : "Analyser med AI"}
+                        </Button>
+                      </div>
+                      {bt.konsekvenser.length < 1 && (
+                        <p className="text-xs text-muted-foreground italic">
+                          Registrer minst én konsekvens for å foreslå konsekvensreduserende tiltak.
+                        </p>
+                      )}
+
+                      {(bt.konsekvensReduserende || []).length > 0 && (
+                        <div className="space-y-1.5">
+                          {(bt.konsekvensReduserende || []).map((kt, i) => {
+                            const konsNavn = kt.konsekvensIndekser
+                              .map((ki) => bt.konsekvenser[ki])
+                              .filter(Boolean);
+                            return (
+                              <div
+                                key={i}
+                                className="flex items-start gap-2 rounded-md border border-amber-200 dark:border-amber-900 bg-amber-50/60 dark:bg-amber-950/30 px-2.5 py-2"
+                              >
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="text-sm font-medium text-amber-900 dark:text-amber-100">{kt.tekst}</span>
+                                    <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
+                                      {kt.kilde === "ai" ? "AI" : "Manuell"}
+                                    </Badge>
+                                  </div>
+                                  {konsNavn.length > 0 && (
+                                    <div className="text-[11px] text-amber-700 dark:text-amber-300 mt-0.5 italic">
+                                      Reduserer: {konsNavn.join(", ")}
+                                    </div>
+                                  )}
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-6 w-6 text-destructive shrink-0"
+                                  onClick={() => removeKonsekvensTiltak(bt.id, i)}
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Legg til manuelt konsekvensreduserende tiltak */}
+                      {bt.konsekvenser.length >= 1 && (
+                        <div className="rounded-md border border-dashed p-2 space-y-2">
+                          <Input
+                            value={newKonsTekst[bt.id] || ""}
+                            onChange={(e) => setNewKonsTekst((s) => ({ ...s, [bt.id]: e.target.value }))}
+                            placeholder="Legg til eget konsekvensreduserende tiltak…"
+                            className="h-8 text-sm"
+                          />
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button type="button" variant="outline" size="sm" className="h-7 text-xs">
+                                  Velg konsekvenser ({(newKonsIndekser[bt.id] || []).length})
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-72 p-0" align="start">
+                                <Command>
+                                  <CommandList>
+                                    <CommandEmpty>Ingen konsekvenser.</CommandEmpty>
+                                    <CommandGroup>
+                                      {bt.konsekvenser.map((k, ki) => {
+                                        const valgt = (newKonsIndekser[bt.id] || []).includes(ki);
+                                        return (
+                                          <CommandItem
+                                            key={ki}
+                                            onSelect={() => {
+                                              setNewKonsIndekser((s) => {
+                                                const cur = s[bt.id] || [];
+                                                return {
+                                                  ...s,
+                                                  [bt.id]: valgt ? cur.filter((x) => x !== ki) : [...cur, ki],
+                                                };
+                                              });
+                                            }}
+                                            className="text-sm"
+                                          >
+                                            <Check className={"h-3.5 w-3.5 mr-2 " + (valgt ? "opacity-100" : "opacity-0")} />
+                                            {k || `Konsekvens ${ki + 1}`}
+                                          </CommandItem>
+                                        );
+                                      })}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="default"
+                              className="h-7 text-xs"
+                              onClick={() => addManuellKonsekvensTiltak(bt.id)}
+                            >
+                              <Plus className="h-3.5 w-3.5 mr-1" /> Legg til
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
 
                     <div className="space-y-1 border-t pt-3">
                       <Area

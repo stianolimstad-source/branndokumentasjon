@@ -1,45 +1,89 @@
 ## Mål
 
-Gjøre det åpenbart hvilke barrierer som dekker hvilke årsaker i bow-tie-diagrammet (punkt 4 i ROS-preview og Word-eksport). I dag tegnes alle linjer i samme grå farge med samme tykkelse, så når 5 årsaker × 6 barrierer gir 20+ kryssende streker, blir det umulig å lese.
+I dag støtter bow-tie-analysen kun **preventive barrierer** (venstre side: årsak → topphendelse). Vi mangler **konsekvensreduserende tiltak** på høyre side (topphendelse → konsekvens) – det vil si tiltak som ikke hindrer at topphendelsen inntreffer, men som reduserer skaden etterpå (f.eks. sprinkler, røykventilasjon, beredskapsplan, evakueringsplan).
 
-## Forslag (kombineres)
+Endringen gjelder bow-tie-delen i ROS-analysen (kap. 4) – både input, diagram, AI-analyse og Word-eksport.
 
-### 1. Fargekode per årsak (hovedgrep)
-Hver årsak får en unik farge fra en kvalitativ palett (8–10 fargesterke, godt adskilte farger; gjenbrukes med stiplet linje hvis flere enn 10 årsaker). Alle linjer fra årsaken til sine barrierer tegnes i den fargen. Et lite fargemerke (prikk/strek) plasseres til venstre for årsakskortet og foran hver barriere som dekkes — slik at det går å lese sammenhengen uten å følge linjen.
+## Datamodell
 
-### 2. Hover/klikk-uthevning (kun preview, ikke Word)
-- Hover på en årsak → kun dens linjer + tilhørende barrierer beholder full opacity; resten dempes til ~0.15.
-- Hover på en barriere → kun linjer til årsakene den dekker uthevet, og de aktuelle årsakskortene får ramme.
-- Klikk for å «låse» uthevning til man klikker utenfor.
+Utvid `RosBowTie` i `src/components/ros/RosPreview.tsx`:
 
-### 3. Bedre linjegeometri
-- Ortogonal ruting (rette segmenter med avrundede hjørner) i stedet for bezier — lettere å spore visuelt.
-- Linjene fra én årsak samles til en felles vertikal «buss» før de splittes ut til hver barriere, slik at man tydelig ser én utgang per årsak.
-- Tykkere strek (2 px) og hvit «halo» (3.5 px hvit understrek) for å redusere visuell støy der linjer krysser.
+```ts
+export interface RosKonsekvensTiltak {
+  tekst: string;
+  konsekvensIndekser: number[]; // peker inn i bt.konsekvenser[]
+  kilde?: "ai" | "manuell";
+}
 
-### 4. Liten matrise-tabell under diagrammet
-For Word-eksporten (der hover ikke finnes) og som backup i preview: en kompakt tabell
-
-```
-                | Barriere 1 | Barriere 2 | Barriere 3 | ...
-Årsak Trafo 1   |     X      |            |     X      |
-Årsak Trafo 2   |            |     X      |     X      |
+export interface RosBowTie {
+  // ... eksisterende felt
+  konsekvensReduserende?: RosKonsekvensTiltak[];
+}
 ```
 
-Dette er entydig og overlever utskrift/PDF.
+Vi bruker indekser fordi `bt.konsekvenser` er `string[]` uten ID. Hvis bruker fjerner en konsekvens må vi re-indeksere (samme mønster som vi allerede har for `arsakIds` på barrierer).
 
-### 5. Sortering av barrierer
-Barrierer sorteres slik at de som dekker overlappende sett av årsaker plasseres nær hverandre — reduserer linjekrysning betydelig.
+## Ny edge function: `analyze-bowtie-mitigations`
 
-## Anbefaling
-Implementer **1 + 3 + 4** som standard (fungerer i både skjerm og Word), og legg til **2** som ekstra hjelp i skjermversjonen. **5** er en liten ekstra forbedring som krever lite kode.
+Speilbilde av `analyze-bowtie-barriers`, men:
+- Input: `{ topphendelse, beskrivelse, konsekvenser: [{ id: index, tekst }] }`
+- Systemprompt fokuserer på **konsekvensreduserende** tiltak (sprinkler, røykventilasjon, brannvesen-respons, beredskap, evakuering, varsling, branncellebegrensning av spredning). Maks ~80 tegn per tiltak.
+- Returnerer `{ tiltak: [{ tekst, konsekvensIndekser: number[] }] }`
+- Et tiltak må dekke minst 1 konsekvens (ikke 2 som for barrierer – konsekvensreduserende kan godt være målrettet mot én konsekvens).
+
+## Input-side (`src/pages/RosAnalyse.tsx`)
+
+Under blokken «Felles barrierer / tiltak» legger vi en **ny seksjon «Konsekvensreduserende tiltak»** med samme oppsett:
+
+- Knapp «Analyser med AI» (krever ≥ 1 konsekvens registrert)
+- Liste over genererte/manuelle tiltak med tekst + multivelg av konsekvenser
+- Manuelt skjema: tekst-felt + popover-multivelg av konsekvenser + «Legg til»
+- Slett-knapp per tiltak
+- Hold tiltak i synk: når en konsekvens slettes/redigeres, fjernes ugyldige indekser, og indekser over slettet posisjon dekrementeres
+
+Funksjoner som speiler eksisterende mønster:
+- `analyzeKonsekvensTiltak(bt)`
+- `addManuellKonsekvensTiltak(btId)`
+- `removeKonsekvensTiltak(btId, index)`
+- Nye lokale states: `analyzingKonsId`, `newKonsTekst`, `newKonsIndekser`
+
+## Diagram (`BowTieDiagram` i `RosPreview.tsx`)
+
+På høyre side får vi nå tre kolonner i stedet for to:
+
+```text
+TOPP  →  KONS-TILTAK  →  KONSEKVENSER
+```
+
+- Endre `KONS` til `KTIL` (tiltak) og legg til ny `KONS`-kolonne enda lengre til høyre når det finnes konsekvensreduserende tiltak.
+- Hver konsekvens får sin egen farge (samme palett gjenbrukt).
+- Linje topphendelse → tiltak farges nøytralt (grønn, lik dagens barrierer).
+- Linje tiltak → konsekvens farges etter konsekvensen.
+- Tiltak-kort viser «K1, K2 …»-prikker for hvilke konsekvenser de dekker (speiler dagens B1/B2-mønster på barrierer).
+- Hover på en konsekvens fremhever tilhørende tiltak (og motsatt).
+- Diagrambredde økes til ~1200 px når begge sider har «mellomledd».
+
+Dekningsmatrise under diagrammet får et eget panel: «Konsekvens × tiltak» med fargede prikker, parallelt med dagens «Årsak × barriere»-matrise.
+
+## Word-eksport (`src/lib/ros-word-export.ts`)
+
+I bow-tie-blokken legges:
+- Ny seksjon «Konsekvensreduserende tiltak» som lister punkter med «(reduserer: konsekvens A, konsekvens B)»-suffiks
+- Ny dekningsmatrise «Konsekvens × tiltak» (samme stil som dagens årsak × barriere-matrise)
+
+## Hva endringen ikke berører
+
+- Hendelsesregister (kap. 3) er uendret – tiltak per hendelse er fortsatt frittstående.
+- Datamigrering: ikke nødvendig, alt ligger i eksisterende `content` JSONB. Eksisterende bow-tier får bare et tomt `konsekvensReduserende`-felt.
 
 ## Filer som endres
-- `src/components/ros/RosPreview.tsx` — fargepalett per årsak, ortogonal ruting med halo, fargeprikker på årsaks/barrierekort, hover-state, matrisetabell, sortering.
-- `src/lib/ros-word-export.ts` — fargede streker (eller fargeprikker) per årsak i bow-tie-bildet, matrisetabell under bow-tie.
 
-Ingen DB-endringer. Ingen endring i datamodell — koblingene finnes allerede i `felleseBarrierer[].arsakIds`.
+- `src/components/ros/RosPreview.tsx` – type, diagram (tre kolonner høyre side), ny matrise
+- `src/pages/RosAnalyse.tsx` – ny seksjon i input, sanitering ved last og ved sletting av konsekvens
+- `src/lib/ros-word-export.ts` – ny seksjon + matrise i bow-tie-eksport
+- **Ny fil:** `supabase/functions/analyze-bowtie-mitigations/index.ts`
 
 ## Spørsmål før implementasjon
-1. Vil du ha alle fire grepene (1+2+3+4) eller bare et utvalg?
-2. Skal matrisetabellen erstatte dagens «Barrierer / tiltak»-tabell under diagrammet, eller komme i tillegg?
+
+1. Skal AI-analysen for konsekvensreduserende tiltak være en **egen knapp** i UI, eller skal dagens «Analyser med AI»-knapp kjøre **begge** analysene samtidig (én klikk → AI foreslår både barrierer og konsekvensreduserende tiltak)?
+2. Skal et tiltak måtte dekke **minst 1** konsekvens (mer fleksibelt) eller **minst 2** (kun «felles» tiltak, som for barrierene)?

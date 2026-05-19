@@ -34,6 +34,12 @@ export interface RosFellesBarriere {
   kilde?: "ai" | "manuell";
 }
 
+export interface RosKonsekvensTiltak {
+  tekst: string;
+  konsekvensIndekser: number[]; // peker inn i bt.konsekvenser[]
+  kilde?: "ai" | "manuell";
+}
+
 export interface RosBowTie {
   id: string;
   navn: string;
@@ -42,6 +48,7 @@ export interface RosBowTie {
   konsekvenser: string[];
   fellesBarrierer?: string;
   felleseBarrierer?: RosFellesBarriere[];
+  konsekvensReduserende?: RosKonsekvensTiltak[];
 }
 
 export interface RosContent {
@@ -820,6 +827,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 .map((id) => content.hendelser.find((h) => h.id === id))
                 .filter((h): h is RosHendelse => !!h);
               const aiBarrierer = (bt.felleseBarrierer || []).filter((b) => b.tekst?.trim());
+              const konsTiltak = (bt.konsekvensReduserende || []).filter((t) => t.tekst?.trim());
               const tiltakSamlet = [
                 ...aiBarrierer.map((b) => ({
                   kilde:
@@ -837,6 +845,19 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                       : ""),
                   tekst: b.tekst,
                 })),
+                ...konsTiltak.map((t) => ({
+                  kilde:
+                    "Konsekvensreduserende" +
+                    (t.kilde === "ai" ? " (AI)" : "") +
+                    (t.konsekvensIndekser.length
+                      ? " · reduserer: " +
+                        t.konsekvensIndekser
+                          .map((ki) => bt.konsekvenser[ki])
+                          .filter(Boolean)
+                          .join(", ")
+                      : ""),
+                  tekst: t.tekst,
+                })),
                 ...arsaker
                   .map((a) => ({ kilde: a.tittel || a.sarbarhet || a.hendelse || "Hendelse", tekst: a.tiltak }))
                   .filter((t) => t.tekst?.trim()),
@@ -845,6 +866,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                   : []),
               ];
               const harBarrierer = aiBarrierer.length > 0;
+              const harKonsTiltak = konsTiltak.length > 0;
+              const scrollMin = harKonsTiltak ? 1280 : 1040;
               return (
                 <div key={bt.id} style={{ marginTop: idx === 0 ? 6 : 28, pageBreakInside: "avoid" }}>
                   <h3 style={{ ...h3, fontSize: 13 }}>
@@ -852,8 +875,15 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                   </h3>
                   {bt.beskrivelse && <p style={pStyle}>{bt.beskrivelse}</p>}
 
-                  <BowTieScroll minWidth={1040}>
-                  <BowTieDiagram bt={bt} arsaker={arsaker} aiBarrierer={aiBarrierer} harBarrierer={harBarrierer} />
+                  <BowTieScroll minWidth={scrollMin}>
+                  <BowTieDiagram
+                    bt={bt}
+                    arsaker={arsaker}
+                    aiBarrierer={aiBarrierer}
+                    harBarrierer={harBarrierer}
+                    konsTiltak={konsTiltak}
+                    harKonsTiltak={harKonsTiltak}
+                  />
 
 
                   {/* Aggregerte tiltak / barrierer */}
@@ -1019,14 +1049,18 @@ function BowTieDiagram({
   arsaker,
   aiBarrierer,
   harBarrierer,
+  konsTiltak,
+  harKonsTiltak,
 }: {
   bt: RosBowTie;
   arsaker: RosHendelse[];
   aiBarrierer: RosFellesBarriere[];
   harBarrierer: boolean;
+  konsTiltak: RosKonsekvensTiltak[];
+  harKonsTiltak: boolean;
 }) {
   const [hover, setHover] = useState<
-    { kind: "arsak" | "barriere"; idx: number } | null
+    { kind: "arsak" | "barriere" | "kons" | "kt"; idx: number } | null
   >(null);
 
   // ----- Sortering av barrierer for å redusere linjekrysninger -----
@@ -1042,21 +1076,33 @@ function BowTieDiagram({
     return b.arsakIds.length - a.arsakIds.length;
   });
 
+  // ----- Sortering av konsekvensreduserende tiltak -----
+  const sortedKonsTiltak = [...konsTiltak].sort((a, b) => {
+    const aMin = a.konsekvensIndekser.length ? Math.min(...a.konsekvensIndekser) : 999;
+    const bMin = b.konsekvensIndekser.length ? Math.min(...b.konsekvensIndekser) : 999;
+    if (aMin !== bMin) return aMin - bMin;
+    return b.konsekvensIndekser.length - a.konsekvensIndekser.length;
+  });
+
   // ----- Bow-tie geometri -----
-  const W = 1040;
+  const W = harKonsTiltak ? 1280 : 1040;
   const PAD_TOP = 28;
   const PAD_BOT = 16;
   const ROW_H = 48;
   const ARSAK = { x: 16, w: 180 };
-  const BARR = { x: 280, w: 250 };
-  const TOPP = harBarrierer ? { x: 570, w: 200 } : { x: 400, w: 240 };
-  const KONS = { x: 830, w: 196 };
+  const BARR = harKonsTiltak ? { x: 260, w: 240 } : { x: 280, w: 250 };
+  const TOPP = harBarrierer
+    ? (harKonsTiltak ? { x: 540, w: 180 } : { x: 570, w: 200 })
+    : (harKonsTiltak ? { x: 380, w: 200 } : { x: 400, w: 240 });
+  const KTIL = harKonsTiltak ? { x: 780, w: 240 } : null;
+  const KONS = harKonsTiltak ? { x: 1060, w: 200 } : { x: 830, w: 196 };
   const topH = 84;
 
   const nA = Math.max(arsaker.length, 1);
   const nB = sortedBarrierer.length;
+  const nKT = sortedKonsTiltak.length;
   const nK = Math.max(bt.konsekvenser.length, 1);
-  const maxRows = Math.max(nA, nB, nK, 3);
+  const maxRows = Math.max(nA, nB, nKT, nK, 3);
   const H = Math.max(280, PAD_TOP + PAD_BOT + maxRows * ROW_H);
 
   const yFor = (i: number, n: number) =>
@@ -1064,6 +1110,7 @@ function BowTieDiagram({
 
   const arsakY = arsaker.map((_, i) => yFor(i, nA));
   const barrY = sortedBarrierer.map((_, i) => yFor(i, nB));
+  const ktY = sortedKonsTiltak.map((_, i) => yFor(i, nKT));
   const konsY = bt.konsekvenser.map((_, i) => yFor(i, nK));
   const toppCy = H / 2;
   const toppY = toppCy - topH / 2;
@@ -1073,16 +1120,21 @@ function BowTieDiagram({
     toppCy +
     (i - (leftAnchorCount - 1) / 2) *
       Math.min(8, (topH - 12) / Math.max(leftAnchorCount, 1));
+  const rightAnchorCount = harKonsTiltak ? nKT : nK;
   const rightAnchorY = (i: number) =>
     toppCy +
-    (i - (nK - 1) / 2) * Math.min(8, (topH - 12) / Math.max(nK, 1));
+    (i - (rightAnchorCount - 1) / 2) *
+      Math.min(8, (topH - 12) / Math.max(rightAnchorCount, 1));
 
   const bez = (x1: number, y1: number, x2: number, y2: number) => {
     const mx = (x1 + x2) / 2;
     return `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
   };
 
-  // Bygg linjer med årsaks-tilhørighet (for fargekoding + hover)
+  // ----- Farger -----
+  const colorForKons = (i: number) => CAUSE_COLORS[i % CAUSE_COLORS.length];
+  const dashForKons = (i: number) => (i >= CAUSE_COLORS.length ? "5 3" : undefined);
+
   type Line = {
     key: string;
     d: string;
@@ -1090,19 +1142,20 @@ function BowTieDiagram({
     dash?: string;
     arsakIdx?: number;
     barrIdx?: number;
+    ktIdx?: number;
     konsIdx?: number;
   };
   const lines: Line[] = [];
 
+  // ----- Venstre side -----
   if (harBarrierer) {
-    // Årsak → relevante barrierer (farge fra årsak)
     arsaker.forEach((a, ai) => {
       const matched = sortedBarrierer
         .map((b, bi) => ({ b, bi }))
         .filter(({ b }) => b.arsakIds.includes(a.id));
       const targets = matched.length
         ? matched
-        : sortedBarrierer.map((b, bi) => ({ b, bi })); // fallback
+        : sortedBarrierer.map((b, bi) => ({ b, bi }));
       targets.forEach(({ bi }) => {
         lines.push({
           key: `a${ai}-b${bi}`,
@@ -1114,7 +1167,6 @@ function BowTieDiagram({
         });
       });
     });
-    // Barriere → topphendelse (grønn, men tones ned hvis ikke relevant for hover)
     sortedBarrierer.forEach((_, bi) => {
       lines.push({
         key: `b${bi}-t`,
@@ -1134,22 +1186,54 @@ function BowTieDiagram({
       });
     });
   }
-  // Topphendelse → konsekvenser
-  bt.konsekvenser.forEach((_, ki) => {
-    lines.push({
-      key: `t-k${ki}`,
-      d: bez(TOPP.x + TOPP.w, rightAnchorY(ki), KONS.x, konsY[ki]),
-      color: "#DC3545",
-      konsIdx: ki,
-    });
-  });
 
+  // ----- Høyre side -----
+  if (harKonsTiltak && KTIL) {
+    // Topp → konsekvensreduserende tiltak (nøytral oransje)
+    sortedKonsTiltak.forEach((_, ki) => {
+      lines.push({
+        key: `t-kt${ki}`,
+        d: bez(TOPP.x + TOPP.w, rightAnchorY(ki), KTIL.x, ktY[ki]),
+        color: "#f59e0b",
+        ktIdx: ki,
+      });
+    });
+    // Tiltak → konsekvens (farge per konsekvens)
+    sortedKonsTiltak.forEach((t, ki) => {
+      const matched = t.konsekvensIndekser.filter(
+        (idx) => idx >= 0 && idx < bt.konsekvenser.length,
+      );
+      const targets = matched.length
+        ? matched
+        : bt.konsekvenser.map((_, i) => i); // fallback
+      targets.forEach((konsI) => {
+        lines.push({
+          key: `kt${ki}-k${konsI}`,
+          d: bez(KTIL.x + KTIL.w, ktY[ki], KONS.x, konsY[konsI]),
+          color: colorForKons(konsI),
+          dash: dashForKons(konsI),
+          ktIdx: ki,
+          konsIdx: konsI,
+        });
+      });
+    });
+  } else {
+    bt.konsekvenser.forEach((_, ki) => {
+      lines.push({
+        key: `t-k${ki}`,
+        d: bez(TOPP.x + TOPP.w, rightAnchorY(ki), KONS.x, konsY[ki]),
+        color: "#DC3545",
+        konsIdx: ki,
+      });
+    });
+  }
+
+  // ----- Hover-aktivering -----
   const isLineActive = (l: Line): boolean => {
     if (!hover) return true;
     if (hover.kind === "arsak") {
       if (l.arsakIdx === hover.idx) return true;
       if (harBarrierer && l.barrIdx !== undefined && l.arsakIdx === undefined) {
-        // barriere → topphendelse: aktiv hvis barriere dekker hover-årsaken
         const arsakId = arsaker[hover.idx]?.id;
         return arsakId
           ? sortedBarrierer[l.barrIdx]?.arsakIds.includes(arsakId) === true
@@ -1159,6 +1243,16 @@ function BowTieDiagram({
     }
     if (hover.kind === "barriere") {
       return l.barrIdx === hover.idx;
+    }
+    if (hover.kind === "kt") {
+      return l.ktIdx === hover.idx;
+    }
+    if (hover.kind === "kons") {
+      if (l.konsIdx === hover.idx) return true;
+      if (harKonsTiltak && l.ktIdx !== undefined && l.konsIdx === undefined) {
+        return sortedKonsTiltak[l.ktIdx]?.konsekvensIndekser.includes(hover.idx) === true;
+      }
+      return false;
     }
     return true;
   };
@@ -1170,7 +1264,7 @@ function BowTieDiagram({
       const b = sortedBarrierer[hover.idx];
       return b ? b.arsakIds.includes(arsaker[i]?.id) : false;
     }
-    return true;
+    return false;
   };
 
   const isBarriereActive = (i: number): boolean => {
@@ -1181,7 +1275,25 @@ function BowTieDiagram({
       const b = sortedBarrierer[i];
       return arsakId ? b.arsakIds.includes(arsakId) : false;
     }
-    return true;
+    return false;
+  };
+
+  const isKtActive = (i: number): boolean => {
+    if (!hover) return true;
+    if (hover.kind === "kt") return hover.idx === i;
+    if (hover.kind === "kons") {
+      return sortedKonsTiltak[i]?.konsekvensIndekser.includes(hover.idx) === true;
+    }
+    return false;
+  };
+
+  const isKonsActive = (i: number): boolean => {
+    if (!hover) return true;
+    if (hover.kind === "kons") return hover.idx === i;
+    if (hover.kind === "kt") {
+      return sortedKonsTiltak[hover.idx]?.konsekvensIndekser.includes(i) === true;
+    }
+    return false;
   };
 
   const colHeader = (color: string): React.CSSProperties => ({
@@ -1206,13 +1318,11 @@ function BowTieDiagram({
           marginBottom: 10,
         }}
       >
-        {/* SVG-linjer bak alt: hvit halo + farget linje */}
         <svg
           width={W}
           height={H}
           style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}
         >
-          {/* Halo (hvit understrek for å skille kryssende linjer) */}
           {lines.map((l) => {
             const active = isLineActive(l);
             return (
@@ -1226,7 +1336,6 @@ function BowTieDiagram({
               />
             );
           })}
-          {/* Farget linje */}
           {lines.map((l) => {
             const active = isLineActive(l);
             return (
@@ -1251,6 +1360,11 @@ function BowTieDiagram({
         {harBarrierer && (
           <div style={{ position: "absolute", left: BARR.x, top: 8, width: BARR.w, zIndex: 2 }}>
             <p style={colHeader("#065f46")}>Felles barrierer</p>
+          </div>
+        )}
+        {harKonsTiltak && KTIL && (
+          <div style={{ position: "absolute", left: KTIL.x, top: 8, width: KTIL.w, zIndex: 2 }}>
+            <p style={colHeader("#92400e")}>Konsekvensreduserende</p>
           </div>
         )}
         <div style={{ position: "absolute", left: KONS.x, top: 8, width: KONS.w, zIndex: 2 }}>
@@ -1369,7 +1483,6 @@ function BowTieDiagram({
                   <span style={{ fontSize: 8, fontWeight: 700, color: "#065f46", letterSpacing: 0.4 }}>
                     B{i + 1}
                   </span>
-                  {/* Fargeprikker for hver dekket årsak */}
                   <div style={{ display: "flex", gap: 2 }}>
                     {b.arsakIds
                       .map((id) => arsakIndex.get(id))
@@ -1424,6 +1537,65 @@ function BowTieDiagram({
           <div>{bt.navn || "Uten navn"}</div>
         </div>
 
+        {/* Konsekvensreduserende tiltak */}
+        {harKonsTiltak && KTIL &&
+          sortedKonsTiltak.map((t, i) => {
+            const active = isKtActive(i);
+            return (
+              <div
+                key={i}
+                onMouseEnter={() => setHover({ kind: "kt", idx: i })}
+                onMouseLeave={() => setHover(null)}
+                style={{
+                  position: "absolute",
+                  left: KTIL.x,
+                  top: ktY[i] - 20,
+                  width: KTIL.w,
+                  background: "#fffbeb",
+                  border: "1px solid #f59e0b",
+                  borderRadius: 4,
+                  padding: "5px 8px",
+                  fontSize: 10,
+                  color: "#78350f",
+                  boxShadow: active
+                    ? "0 0 0 2px #f59e0b55, 0 1px 2px rgba(0,0,0,0.04)"
+                    : "0 1px 2px rgba(0,0,0,0.04)",
+                  zIndex: 2,
+                  opacity: active ? 1 : 0.35,
+                  cursor: "pointer",
+                  transition: "opacity 120ms",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
+                  <span style={{ fontSize: 8, fontWeight: 700, color: "#92400e", letterSpacing: 0.4 }}>
+                    T{i + 1}
+                  </span>
+                  <div style={{ display: "flex", gap: 2 }}>
+                    {t.konsekvensIndekser
+                      .filter((idx) => idx >= 0 && idx < bt.konsekvenser.length)
+                      .sort((a, b) => a - b)
+                      .map((ki) => (
+                        <span
+                          key={ki}
+                          title={bt.konsekvenser[ki]}
+                          style={{
+                            display: "inline-block",
+                            width: 8,
+                            height: 8,
+                            borderRadius: "50%",
+                            background: colorForKons(ki),
+                            border: "1px solid #ffffff",
+                            boxShadow: "0 0 0 1px rgba(0,0,0,0.1)",
+                          }}
+                        />
+                      ))}
+                  </div>
+                </div>
+                <div style={{ fontWeight: 600, lineHeight: 1.3 }}>{t.tekst}</div>
+              </div>
+            );
+          })}
+
         {/* Konsekvenser */}
         {bt.konsekvenser.length === 0 && (
           <div
@@ -1441,39 +1613,54 @@ function BowTieDiagram({
             Ingen konsekvenser registrert.
           </div>
         )}
-        {bt.konsekvenser.map((k, i) => (
-          <div
-            key={i}
-            style={{
-              position: "absolute",
-              left: KONS.x,
-              top: konsY[i] - 14,
-              width: KONS.w,
-              zIndex: 2,
-            }}
-          >
+        {bt.konsekvenser.map((k, i) => {
+          const active = isKonsActive(i);
+          const col = colorForKons(i);
+          return (
             <div
+              key={i}
+              onMouseEnter={() => setHover({ kind: "kons", idx: i })}
+              onMouseLeave={() => setHover(null)}
               style={{
-                display: "inline-block",
-                background: "#fff",
-                border: "1px solid #cbd5e1",
-                borderRadius: 4,
-                padding: "4px 8px",
-                fontSize: 10,
-                maxWidth: "100%",
-                boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+                position: "absolute",
+                left: KONS.x,
+                top: konsY[i] - 14,
+                width: KONS.w,
+                zIndex: 2,
+                opacity: active ? 1 : 0.35,
+                cursor: harKonsTiltak ? "pointer" : "default",
+                transition: "opacity 120ms",
               }}
             >
-              {k}
+              <div
+                style={{
+                  display: "inline-block",
+                  background: "#fff",
+                  border: `1px solid ${harKonsTiltak && active ? col : "#cbd5e1"}`,
+                  borderLeft: harKonsTiltak ? `4px solid ${col}` : "1px solid #cbd5e1",
+                  borderRadius: 4,
+                  padding: "4px 8px",
+                  fontSize: 10,
+                  maxWidth: "100%",
+                  boxShadow:
+                    harKonsTiltak && active
+                      ? `0 0 0 2px ${col}33, 0 1px 2px rgba(0,0,0,0.04)`
+                      : "0 1px 2px rgba(0,0,0,0.04)",
+                }}
+              >
+                {k}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Hint / hjelpetekst */}
-      {harBarrierer && (
+      {(harBarrierer || harKonsTiltak) && (
         <p style={{ fontSize: 9, color: "#64748b", margin: "0 0 8px 0", fontStyle: "italic" }}>
-          Hver årsak har sin egen farge. Hold musepekeren over en årsak eller barriere for å fremheve koblingene. Fargeprikkene i barriere-kortene viser hvilke årsaker barrieren dekker.
+          {harBarrierer && "Hver årsak har sin egen farge. "}
+          {harKonsTiltak && "Hver konsekvens har sin egen farge på høyre side. "}
+          Hold musepekeren over en boks for å fremheve koblingene. Fargeprikkene viser hvilke årsaker/konsekvenser tiltaket dekker.
         </p>
       )}
 
@@ -1541,9 +1728,75 @@ function BowTieDiagram({
           </div>
         </div>
       )}
+
+      {/* Dekningsmatrise (konsekvens × konsekvensreduserende tiltak) */}
+      {harKonsTiltak && bt.konsekvenser.length > 0 && sortedKonsTiltak.length > 0 && (
+        <div style={{ marginBottom: 10 }}>
+          <p style={{ fontSize: 10, fontWeight: 600, color: "#92400e", margin: "10px 0 4px 0" }}>
+            Dekningsmatrise – hvilke konsekvensreduserende tiltak som virker på hver konsekvens
+          </p>
+          <table style={{ ...tableStyle, fontSize: 9 }}>
+            <thead>
+              <tr>
+                <th style={{ ...thStyle, textAlign: "left", width: 180 }}>Konsekvens</th>
+                {sortedKonsTiltak.map((_, ti) => (
+                  <th key={ti} style={{ ...thStyle, textAlign: "center", width: 30 }} title={sortedKonsTiltak[ti].tekst}>
+                    T{ti + 1}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {bt.konsekvenser.map((k, ki) => (
+                <tr key={ki}>
+                  <td style={{ ...tdStyle, fontWeight: 600 }}>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        background: colorForKons(ki),
+                        marginRight: 6,
+                        verticalAlign: "middle",
+                      }}
+                    />
+                    {k || "—"}
+                  </td>
+                  {sortedKonsTiltak.map((t, ti) => {
+                    const dekket = t.konsekvensIndekser.includes(ki);
+                    return (
+                      <td
+                        key={ti}
+                        style={{
+                          ...tdStyle,
+                          textAlign: "center",
+                          background: dekket ? "#fffbeb" : undefined,
+                          color: dekket ? "#92400e" : "#cbd5e1",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {dekket ? "●" : "—"}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div style={{ fontSize: 9, color: "#475569", lineHeight: 1.5 }}>
+            {sortedKonsTiltak.map((t, ti) => (
+              <div key={ti}>
+                <strong>T{ti + 1}:</strong> {t.tekst}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </>
   );
 }
+
 
 
 function SubField({ nummer, tittel, value }: { nummer: string; tittel: string; value: string }) {
