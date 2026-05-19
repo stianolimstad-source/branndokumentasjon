@@ -607,21 +607,43 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                       </div>
                     )}
 
-                    {/* Topphendelse */}
+                    {/* Topphendelse med bow-tie vinger */}
                     <div
                       style={{
-                        background: "#DC3545",
-                        color: "#fff",
-                        textAlign: "center",
-                        padding: "16px 10px",
-                        borderRadius: 6,
-                        fontWeight: 700,
-                        fontSize: 12,
-                        boxShadow: "0 2px 6px rgba(220,53,69,0.3)",
+                        position: "relative",
+                        minHeight: 160,
+                        height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
-                      <div style={{ fontSize: 8, opacity: 0.85, letterSpacing: 1, marginBottom: 4 }}>TOPPHENDELSE</div>
-                      {bt.navn || "Uten navn"}
+                      <svg
+                        viewBox="0 0 100 100"
+                        preserveAspectRatio="none"
+                        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", zIndex: 0 }}
+                      >
+                        <polygon points="0,0 0,100 50,65 50,35" fill="#fde2e4" stroke="#DC3545" strokeWidth="0.6" />
+                        <polygon points="100,0 100,100 50,65 50,35" fill="#fde2e4" stroke="#DC3545" strokeWidth="0.6" />
+                      </svg>
+                      <div
+                        style={{
+                          position: "relative",
+                          zIndex: 1,
+                          background: "#DC3545",
+                          color: "#fff",
+                          textAlign: "center",
+                          padding: "16px 10px",
+                          borderRadius: 6,
+                          fontWeight: 700,
+                          fontSize: 12,
+                          boxShadow: "0 2px 6px rgba(220,53,69,0.3)",
+                          width: "100%",
+                        }}
+                      >
+                        <div style={{ fontSize: 8, opacity: 0.85, letterSpacing: 1, marginBottom: 4 }}>TOPPHENDELSE</div>
+                        {bt.navn || "Uten navn"}
+                      </div>
                     </div>
 
                     {/* Konsekvenser */}
