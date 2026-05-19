@@ -834,9 +834,12 @@ export default function RosAnalyse() {
 
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">
-                {content.bowTies && content.bowTies.length > 0 ? "6" : "5"}. Revisjonshistorikk
-              </h2>
+              <div className="flex items-center gap-1">
+                <h2 className="text-lg font-semibold">
+                  {content.bowTies && content.bowTies.length > 0 ? "6" : "5"}. Revisjonshistorikk
+                </h2>
+                <JumpToPreview previewId="kap-6" />
+              </div>
               <Button size="sm" variant="outline" onClick={addRevisjon}>
                 <Plus className="h-4 w-4 mr-1" /> Ny revisjon
               </Button>
