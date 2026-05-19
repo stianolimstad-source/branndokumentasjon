@@ -28,6 +28,7 @@ import {
   tableHeaderShading,
 } from "@/lib/document-templates";
 import { risikoFarge } from "@/components/ros/RosMatriks";
+import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell } from "@/lib/ros-risk-criteria";
 import type { RosContent } from "@/components/ros/RosPreview";
 
 export interface RosSenderInfo {
