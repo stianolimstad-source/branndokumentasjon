@@ -169,6 +169,15 @@ export default function RosAnalyse() {
                 hendelseIds: Array.isArray(b.hendelseIds) ? b.hendelseIds.filter((x: any) => typeof x === "string") : [],
                 konsekvenser: Array.isArray(b.konsekvenser) ? b.konsekvenser.map((x: any) => String(x)) : [],
                 fellesBarrierer: String(b.fellesBarrierer || ""),
+                felleseBarrierer: Array.isArray(b.felleseBarrierer)
+                  ? b.felleseBarrierer
+                      .map((x: any) => ({
+                        tekst: String(x?.tekst || "").trim(),
+                        arsakIds: Array.isArray(x?.arsakIds) ? x.arsakIds.map((y: any) => String(y)) : [],
+                        kilde: x?.kilde === "ai" ? "ai" : "manuell",
+                      }))
+                      .filter((x: any) => x.tekst)
+                  : [],
               }))
             : [],
         });
@@ -287,6 +296,9 @@ export default function RosAnalyse() {
       bowTies: (c.bowTies || []).map((b) => ({
         ...b,
         hendelseIds: b.hendelseIds.filter((hid) => hid !== id),
+        felleseBarrierer: (b.felleseBarrierer || [])
+          .map((fb) => ({ ...fb, arsakIds: fb.arsakIds.filter((x) => x !== id) }))
+          .filter((fb) => fb.arsakIds.length >= 2),
       })),
     }));
     setOpenHendelser((o) => o.filter((x) => x !== id));
@@ -297,7 +309,10 @@ export default function RosAnalyse() {
     const id = makeId();
     setContent((c) => ({
       ...c,
-      bowTies: [...(c.bowTies || []), { id, navn: "", beskrivelse: "", hendelseIds: [], konsekvenser: [], fellesBarrierer: "" }],
+      bowTies: [
+        ...(c.bowTies || []),
+        { id, navn: "", beskrivelse: "", hendelseIds: [], konsekvenser: [], fellesBarrierer: "", felleseBarrierer: [] },
+      ],
     }));
   };
   const updateBowTie = (id: string, patch: Partial<RosBowTie>) => {
@@ -315,14 +330,91 @@ export default function RosAnalyse() {
       bowTies: (c.bowTies || []).map((b) => {
         if (b.id !== bowTieId) return b;
         const exists = b.hendelseIds.includes(hendelseId);
-        return {
-          ...b,
-          hendelseIds: exists
-            ? b.hendelseIds.filter((x) => x !== hendelseId)
-            : [...b.hendelseIds, hendelseId],
-        };
+        const nyeIds = exists
+          ? b.hendelseIds.filter((x) => x !== hendelseId)
+          : [...b.hendelseIds, hendelseId];
+        // Hold AI-barrierer i synk når årsaker fjernes
+        const nyeBarrierer = (b.felleseBarrierer || [])
+          .map((fb) => ({ ...fb, arsakIds: fb.arsakIds.filter((x) => nyeIds.includes(x)) }))
+          .filter((fb) => fb.arsakIds.length >= 2);
+        return { ...b, hendelseIds: nyeIds, felleseBarrierer: nyeBarrierer };
       }),
     }));
+  };
+
+  const [analyzingId, setAnalyzingId] = useState<string | null>(null);
+  const [newFellesTekst, setNewFellesTekst] = useState<Record<string, string>>({});
+  const [newFellesArsaker, setNewFellesArsaker] = useState<Record<string, string[]>>({});
+
+  const analyzeBarrierer = async (bt: RosBowTie) => {
+    const arsaker = bt.hendelseIds
+      .map((id) => content.hendelser.find((h) => h.id === id))
+      .filter((h): h is RosHendelse => !!h);
+    if (arsaker.length < 2) {
+      toast({ title: "Trenger minst 2 årsaker", description: "Velg minst to årsaker for å finne felles barrierer.", variant: "destructive" });
+      return;
+    }
+    setAnalyzingId(bt.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("analyze-bowtie-barriers", {
+        body: {
+          topphendelse: bt.navn,
+          beskrivelse: bt.beskrivelse || "",
+          arsaker: arsaker.map((a) => ({
+            id: a.id,
+            tittel: a.tittel || a.sarbarhet || a.hendelse || "Uten navn",
+            tiltak: a.tiltak || "",
+          })),
+        },
+      });
+      if (error) throw error;
+      const nye = Array.isArray(data?.barrierer)
+        ? data.barrierer.map((b: any) => ({
+            tekst: String(b.tekst || "").trim(),
+            arsakIds: Array.isArray(b.arsakIds) ? b.arsakIds.map((x: any) => String(x)) : [],
+            kilde: "ai" as const,
+          }))
+        : [];
+      // Behold manuelle, erstatt AI-genererte
+      const beholdt = (bt.felleseBarrierer || []).filter((b) => b.kilde !== "ai");
+      updateBowTie(bt.id, { felleseBarrierer: [...nye, ...beholdt] });
+      toast({
+        title: nye.length > 0 ? `Fant ${nye.length} felles barriere${nye.length === 1 ? "" : "r"}` : "Ingen felles barrierer funnet",
+        description: nye.length > 0 ? "Lagt til i diagrammet og tabellen." : "AI fant ingen barrierer som dekker flere årsaker.",
+      });
+    } catch (e: any) {
+      const msg = e?.message || "Kunne ikke analysere barrierer.";
+      toast({ title: "AI-analyse feilet", description: msg, variant: "destructive" });
+    } finally {
+      setAnalyzingId(null);
+    }
+  };
+
+  const addManuellBarriere = (btId: string) => {
+    const tekst = (newFellesTekst[btId] || "").trim();
+    const arsakIds = newFellesArsaker[btId] || [];
+    if (!tekst || arsakIds.length < 1) {
+      toast({ title: "Mangler informasjon", description: "Skriv tekst og velg minst én årsak.", variant: "destructive" });
+      return;
+    }
+    const bt = (content.bowTies || []).find((b) => b.id === btId);
+    if (!bt) return;
+    updateBowTie(btId, {
+      felleseBarrierer: [
+        ...(bt.felleseBarrierer || []),
+        { tekst, arsakIds, kilde: "manuell" },
+      ],
+    });
+    setNewFellesTekst((s) => ({ ...s, [btId]: "" }));
+    setNewFellesArsaker((s) => ({ ...s, [btId]: [] }));
+  };
+
+  const removeFellesBarriere = (btId: string, index: number) => {
+    const bt = (content.bowTies || []).find((b) => b.id === btId);
+    if (!bt) return;
+    updateBowTie(btId, {
+      felleseBarrierer: (bt.felleseBarrierer || []).filter((_, i) => i !== index),
+    });
   };
 
   const importHendelser = (data: ExtractedRosData, mode: "append" | "replace") => {
@@ -807,9 +899,136 @@ export default function RosAnalyse() {
                     </div>
 
 
+                    {/* Felles barrierer (AI + manuell) */}
+                    <div className="space-y-2 border-t pt-3">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          Felles barrierer (på tvers av årsaker)
+                        </Label>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          disabled={analyzingId === bt.id || bt.hendelseIds.length < 2}
+                          onClick={() => analyzeBarrierer(bt)}
+                        >
+                          <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+                          {analyzingId === bt.id ? "Analyserer…" : "Analyser med AI"}
+                        </Button>
+                      </div>
+                      {bt.hendelseIds.length < 2 && (
+                        <p className="text-xs text-muted-foreground italic">
+                          Velg minst to årsaker for å finne felles barrierer.
+                        </p>
+                      )}
+
+                      {(bt.felleseBarrierer || []).length > 0 && (
+                        <div className="space-y-1.5">
+                          {(bt.felleseBarrierer || []).map((fb, i) => {
+                            const arsakNavn = fb.arsakIds
+                              .map((id) => {
+                                const a = content.hendelser.find((h) => h.id === id);
+                                return a?.tittel || a?.sarbarhet || a?.hendelse || "";
+                              })
+                              .filter(Boolean);
+                            return (
+                              <div
+                                key={i}
+                                className="flex items-start gap-2 rounded-md border border-emerald-200 dark:border-emerald-900 bg-emerald-50/60 dark:bg-emerald-950/30 px-2.5 py-2"
+                              >
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="text-sm font-medium text-emerald-900 dark:text-emerald-100">{fb.tekst}</span>
+                                    <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
+                                      {fb.kilde === "ai" ? "AI" : "Manuell"}
+                                    </Badge>
+                                  </div>
+                                  {arsakNavn.length > 0 && (
+                                    <div className="text-[11px] text-emerald-700 dark:text-emerald-300 mt-0.5 italic">
+                                      Dekker: {arsakNavn.join(", ")}
+                                    </div>
+                                  )}
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-6 w-6 text-destructive shrink-0"
+                                  onClick={() => removeFellesBarriere(bt.id, i)}
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      {/* Legg til manuell felles barriere */}
+                      {bt.hendelseIds.length >= 1 && (
+                        <div className="rounded-md border border-dashed p-2 space-y-2">
+                          <Input
+                            value={newFellesTekst[bt.id] || ""}
+                            onChange={(e) => setNewFellesTekst((s) => ({ ...s, [bt.id]: e.target.value }))}
+                            placeholder="Legg til egen felles barriere…"
+                            className="h-8 text-sm"
+                          />
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button type="button" variant="outline" size="sm" className="h-7 text-xs">
+                                  Velg årsaker ({(newFellesArsaker[bt.id] || []).length})
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-72 p-0" align="start">
+                                <Command>
+                                  <CommandList>
+                                    <CommandEmpty>Ingen årsaker.</CommandEmpty>
+                                    <CommandGroup>
+                                      {bt.hendelseIds.map((hid) => {
+                                        const h = content.hendelser.find((x) => x.id === hid);
+                                        if (!h) return null;
+                                        const valgt = (newFellesArsaker[bt.id] || []).includes(hid);
+                                        return (
+                                          <CommandItem
+                                            key={hid}
+                                            onSelect={() => {
+                                              setNewFellesArsaker((s) => {
+                                                const cur = s[bt.id] || [];
+                                                return {
+                                                  ...s,
+                                                  [bt.id]: valgt ? cur.filter((x) => x !== hid) : [...cur, hid],
+                                                };
+                                              });
+                                            }}
+                                            className="text-sm"
+                                          >
+                                            <Check className={"h-3.5 w-3.5 mr-2 " + (valgt ? "opacity-100" : "opacity-0")} />
+                                            {h.tittel || h.sarbarhet || h.hendelse || "Uten navn"}
+                                          </CommandItem>
+                                        );
+                                      })}
+                                    </CommandGroup>
+                                  </CommandList>
+                                </Command>
+                              </PopoverContent>
+                            </Popover>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="default"
+                              className="h-7 text-xs"
+                              onClick={() => addManuellBarriere(bt.id)}
+                            >
+                              <Plus className="h-3.5 w-3.5 mr-1" /> Legg til
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
                     <div className="space-y-1 border-t pt-3">
                       <Area
-                        label="Felles barrierer / tiltak (valgfri)"
+                        label="Felles barrierer / tiltak (fritekst, valgfri)"
                         value={bt.fellesBarrierer || ""}
                         onChange={(v) => updateBowTie(bt.id, { fellesBarrierer: v })}
                         rows={2}

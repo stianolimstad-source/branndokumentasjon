@@ -27,6 +27,12 @@ export interface RosRevisjon {
   endring: string;
 }
 
+export interface RosFellesBarriere {
+  tekst: string;
+  arsakIds: string[];
+  kilde?: "ai" | "manuell";
+}
+
 export interface RosBowTie {
   id: string;
   navn: string;
@@ -34,6 +40,7 @@ export interface RosBowTie {
   hendelseIds: string[];
   konsekvenser: string[];
   fellesBarrierer?: string;
+  felleseBarrierer?: RosFellesBarriere[];
 }
 
 export interface RosContent {
@@ -459,7 +466,24 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
               const arsaker = bt.hendelseIds
                 .map((id) => content.hendelser.find((h) => h.id === id))
                 .filter((h): h is RosHendelse => !!h);
+              const aiBarrierer = (bt.felleseBarrierer || []).filter((b) => b.tekst?.trim());
               const tiltakSamlet = [
+                ...aiBarrierer.map((b) => ({
+                  kilde:
+                    "Felles barriere" +
+                    (b.kilde === "ai" ? " (AI)" : "") +
+                    (b.arsakIds.length
+                      ? " · " +
+                        b.arsakIds
+                          .map((id) => {
+                            const a = arsaker.find((x) => x.id === id);
+                            return a?.tittel || a?.sarbarhet || a?.hendelse || "";
+                          })
+                          .filter(Boolean)
+                          .join(", ")
+                      : ""),
+                  tekst: b.tekst,
+                })),
                 ...arsaker
                   .map((a) => ({ kilde: a.tittel || a.sarbarhet || a.hendelse || "Hendelse", tekst: a.tiltak }))
                   .filter((t) => t.tekst?.trim()),
@@ -467,6 +491,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                   ? [{ kilde: "Felles barriere", tekst: bt.fellesBarrierer }]
                   : []),
               ];
+              const harBarrierer = aiBarrierer.length > 0;
               return (
                 <div key={bt.id} style={{ marginTop: idx === 0 ? 6 : 28, pageBreakInside: "avoid" }}>
                   <h3 style={{ ...h3, fontSize: 13 }}>
@@ -478,7 +503,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                   <div
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "1fr 220px 1fr",
+                      gridTemplateColumns: harBarrierer ? "1fr 180px 200px 1fr" : "1fr 220px 1fr",
                       gap: 10,
                       alignItems: "center",
                       background: "#f7f9fc",
@@ -536,6 +561,44 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         })
                       )}
                     </div>
+
+                    {/* Felles barrierer (kun hvis registrert) */}
+                    {harBarrierer && (
+                      <div>
+                        <p style={{ fontSize: 9, fontWeight: 700, color: "#065f46", margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: 0.5 }}>
+                          Felles barrierer
+                        </p>
+                        {aiBarrierer.map((b, i) => {
+                          const navn = b.arsakIds
+                            .map((id) => {
+                              const a = arsaker.find((x) => x.id === id);
+                              return a?.tittel || a?.sarbarhet || a?.hendelse || "";
+                            })
+                            .filter(Boolean);
+                          return (
+                            <div
+                              key={i}
+                              style={{
+                                background: "#ecfdf5",
+                                border: "1px solid #10b981",
+                                borderRadius: 4,
+                                padding: "5px 8px",
+                                marginBottom: 5,
+                                fontSize: 10,
+                                color: "#064e3b",
+                              }}
+                            >
+                              <div style={{ fontWeight: 600, lineHeight: 1.3 }}>{b.tekst}</div>
+                              {navn.length > 0 && (
+                                <div style={{ fontSize: 8, color: "#047857", marginTop: 2, fontStyle: "italic" }}>
+                                  Dekker: {navn.join(", ")}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
 
                     {/* Topphendelse */}
                     <div
