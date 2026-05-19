@@ -177,7 +177,8 @@ export default function RosAnalyse() {
                       .map((x: any) => ({
                         tekst: String(x?.tekst || "").trim(),
                         arsakIds: Array.isArray(x?.arsakIds) ? x.arsakIds.map((y: any) => String(y)) : [],
-                        kilde: x?.kilde === "ai" ? "ai" : "manuell",
+                        kilde: x?.kilde === "ai" ? "ai" : x?.kilde === "kap3" ? "kap3" : "manuell",
+                        kildeRef: x?.kildeRef ? String(x.kildeRef) : undefined,
                       }))
                       .filter((x: any) => x.tekst)
                   : [],
@@ -190,7 +191,8 @@ export default function RosAnalyse() {
                               .map((y: any) => Number(y))
                               .filter((y: number) => Number.isInteger(y) && y >= 0)
                           : [],
-                        kilde: x?.kilde === "ai" ? "ai" : "manuell",
+                        kilde: x?.kilde === "ai" ? "ai" : x?.kilde === "kap3" ? "kap3" : "manuell",
+                        kildeRef: x?.kildeRef ? String(x.kildeRef) : undefined,
                       }))
                       .filter((x: any) => x.tekst)
                   : [],
