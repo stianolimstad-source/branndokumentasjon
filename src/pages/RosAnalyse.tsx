@@ -425,13 +425,9 @@ export default function RosAnalyse() {
     }
   };
 
-  // Hent barrierer som allerede ligger i brannkonseptets kap. 3
+  // Hent barrierer som allerede er ført opp på hendelsene i ROS-analysens kap. 3
   const [extractingBarrId, setExtractingBarrId] = useState<string | null>(null);
   const extractBarriererFraKonsept = async (bt: RosBowTie) => {
-    if (!konseptContent) {
-      toast({ title: "Ingen brannkonsept", description: "Prosjektet har ikke et brannkonsept å hente fra.", variant: "destructive" });
-      return;
-    }
     const arsaker = bt.hendelseIds
       .map((id) => content.hendelser.find((h) => h.id === id))
       .filter((h): h is RosHendelse => !!h);
@@ -439,15 +435,20 @@ export default function RosAnalyse() {
       toast({ title: "Trenger minst 1 årsak", variant: "destructive" });
       return;
     }
+    const hendelserKap3 = arsaker.map((a) => ({
+      id: a.id,
+      tittel: a.tittel || a.sarbarhet || a.hendelse || "Uten navn",
+      tiltak: a.tiltak || "",
+      beskrivelseEtter: a.beskrivelseEtter || "",
+    }));
     setExtractingBarrId(bt.id);
     try {
-      const { data, error } = await supabase.functions.invoke("extract-bowtie-from-konsept", {
+      const { data, error } = await supabase.functions.invoke("extract-bowtie-from-ros", {
         body: {
           type: "barrier",
           topphendelse: bt.navn,
           beskrivelse: bt.beskrivelse || "",
-          arsaker: arsaker.map((a) => ({ id: a.id, tittel: a.tittel || a.sarbarhet || a.hendelse || "Uten navn" })),
-          konseptContent,
+          hendelserKap3,
         },
       });
       if (error) throw error;
@@ -464,7 +465,7 @@ export default function RosAnalyse() {
       updateBowTie(bt.id, { felleseBarrierer: [...nye, ...beholdt] });
       toast({
         title: nye.length > 0 ? `Hentet ${nye.length} barriere${nye.length === 1 ? "" : "r"} fra kap. 3` : "Ingen barrierer i kap. 3",
-        description: nye.length > 0 ? "Lagt til i diagrammet og tabellen." : "Fant ingen relevante tiltak i brannkonseptets kap. 3.",
+        description: nye.length > 0 ? "Lagt til i diagrammet og tabellen." : "Fant ingen forebyggende tiltak på hendelsene i kap. 3 — prøv 'Foreslå nye (AI)'.",
       });
     } catch (e: any) {
       toast({ title: "Henting feilet", description: e?.message || "Kunne ikke hente fra kap. 3.", variant: "destructive" });
