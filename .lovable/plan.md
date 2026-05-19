@@ -1,61 +1,83 @@
 ## Mål
-Legg til bow-tie-analyse i ROS-modulen slik at brukeren kan definere en uønsket topphendelse (f.eks. «Eksplosjon») og knytte eksisterende registrerte hendelser til den som årsaker. Dette gir kategorisering av hendelser og synliggjør tiltak som virker på tvers av flere topphendelser.
+Erstatte fritekst-input for konsekvenser i bow-tie-analysen med en nedtrekksliste (Combobox) med forhåndsdefinerte, brann- og eksplosjonsrelevante konsekvenser for ulike bygningstyper. Brukeren skal fortsatt kunne legge til egne (fri tekst).
 
-## Konsept (bow-tie)
-```text
-   Årsaker (registrerte hendelser)            Konsekvenser
-   ─────────────────────────────┐         ┌──────────────────
-   • Hendelse A  ──┐            │         │
-   • Hendelse B  ──┼── Barrierer ▶ TOPPHENDELSE ▶ Barrierer ── • Konsekvens 1
-   • Hendelse C  ──┘            │         │                    • Konsekvens 2
-   ─────────────────────────────┘         └──────────────────
-```
-Venstre side («årsaker») kobles direkte til allerede registrerte hendelser i ROS-analysen. Høyre side («konsekvenser») skrives som korte fritekstpunkter per topphendelse. Tiltak hentes automatisk fra de koblede hendelsene + en valgfri «felles barriere»-tekst.
+## UX
+- «Legg til konsekvens» åpner en **Combobox** (Popover + cmdk) med søk.
+- Konsekvenser er gruppert i kategorier (`CommandGroup`) for rask navigering.
+- Søkefeltet filtrerer i sanntid. Skriver brukeren noe som ikke finnes, vises «+ Legg til "{tekst}"» som lar dem opprette en egen konsekvens.
+- Valgte konsekvenser vises som rader under (eksisterende UI), fortsatt redigerbare og slettbare.
+- Samme konsekvens kan ikke velges to ganger på samme topphendelse (dempet i listen).
 
-## Datamodell (utvidelse av `RosContent`)
-I `src/components/ros/RosPreview.tsx`:
+## Forhåndsdefinerte konsekvenser
+Ny fil `src/lib/ros-konsekvenser.ts` — kuratert liste basert på DSB, NS 5814, FEU, Sintef og generell ROS-praksis. Fokus: brann og eksplosjon, dekker bolig, næring, industri, lager, helse, skole, kulturbygg, parkering, kraftstasjon.
+
 ```ts
-export interface RosBowTie {
-  id: string;
-  navn: string;                 // f.eks. "Eksplosjon i transformator"
-  beskrivelse?: string;
-  hendelseIds: string[];        // refererer til RosHendelse.id (årsaker)
-  konsekvenser: string[];       // fritekst-punkter
-  fellesBarrierer?: string;     // valgfri tekst om felles tiltak
-}
-export interface RosContent {
-  ...
-  bowTies?: RosBowTie[];        // valgfri => bakoverkompatibel
-}
+export interface KonsekvensForslag { kategori: string; tekst: string; }
+export const KONSEKVENS_KATEGORIER = [
+  // Liv og helse
+  "Dødsfall blant beboere / brukere",
+  "Alvorlig personskade (brannskader, røykforgiftning)",
+  "Lettere personskader",
+  "Dødsfall eller skade på innsatspersonell (brannvesen)",
+  "Panikk og klemskader under evakuering",
+  "Skade på husdyr / dyr i landbruksbygg",
+  // Bygning og materielle verdier
+  "Totalskade av bygning",
+  "Omfattende brann- og røykskader i deler av bygget",
+  "Vannskader som følge av slokkeinnsats",
+  "Skade på bærende konstruksjoner / fare for kollaps",
+  "Skade på fasade og tak ved utvendig brannspredning",
+  "Skade på tekniske installasjoner (el, VVS, ventilasjon)",
+  "Skade på heis og rømningsveier",
+  // Eksplosjon
+  "Trykkbølge med skade på bygningskropp",
+  "Splintskader fra knust glass og fasadeelementer",
+  "Sekundær brann etter eksplosjon",
+  "Skade på nabobygg fra trykkbølge / kastestykker",
+  "Utslipp av brennbar gass / damp",
+  // Miljø
+  "Utslipp av røyk og forurenset slokkevann til grunn/vassdrag",
+  "Spredning av farlige stoffer (kjemikalier, asbest, PCB)",
+  "Klimagassutslipp ved storbrann",
+  // Drift, økonomi, samfunn
+  "Driftsstans / produksjonsstopp",
+  "Tap av kritisk infrastruktur (strøm, IKT, nødnett)",
+  "Tap av kulturhistoriske verdier / uerstattelige objekter",
+  "Tap av forskningsdata / dokumentasjon",
+  "Økonomisk tap (gjenoppbygging, erstatninger)",
+  "Tap av omdømme",
+  "Forsikringsmessige konsekvenser / regress",
+  // Evakuering / beredskap
+  "Behov for omplassering av beboere / brukere",
+  "Stenging av vei eller område rundt bygget",
+  "Belastning på nødetater og helsetjeneste",
+  // Spesifikt for sårbare bygg
+  "Risiko for pasienter som ikke kan evakuere selv (sykehus, sykehjem)",
+  "Risiko for barn i barnehage / skole",
+  "Spredning til lagrede brannfarlige varer",
+  "Domino-effekt på nærliggende industri / tankanlegg",
+];
 ```
-Eksisterende analyser uten `bowTies` fungerer uendret.
+(Endelig liste utvides/justeres ved skriving — ca. 30–40 punkter gruppert i ~7 kategorier.)
 
 ## Endringer
 
-### 1. `src/pages/RosAnalyse.tsx`
-- Ny seksjon «4. Bow-tie analyse» (etter Hendelser, før Oppsummering).
-- «+ Ny topphendelse»-knapp åpner Accordion-item med:
-  - Tittel + valgfri beskrivelse.
-  - **Årsaker**: multi-select chip-liste over alle `content.hendelser` (søkbar). Klikk på chip toggler tilhørighet. Viser også risiko-fargekode per hendelse.
-  - **Konsekvenser**: enkel liste med + / slett, tekstfelt per rad.
-  - **Felles barrierer / tiltak**: textarea (valgfri).
-  - Slett topphendelse-knapp (med `AlertDialog`-bekreftelse).
-- Oppdater søk/innholdshåndtering i samme mønster som eksisterende `hendelser`.
+### `src/lib/ros-konsekvenser.ts` (ny)
+- Eksporterer `KONSEKVENS_FORSLAG: KonsekvensForslag[]` og hjelper `groupByKategori()`.
 
-### 2. `src/components/ros/RosPreview.tsx`
-- Render ny seksjon «4. Bow-tie analyse» når `bowTies?.length`:
-  - Per topphendelse: SVG-/CSS-bow-tie med årsaker (venstre kolonne, knyttet til topp via linjer), topphendelse-boks i midten, konsekvenser (høyre kolonne).
-  - Under diagrammet: tabell «Aggregerte tiltak» som lister `tiltak` fra alle koblede hendelser + felles barrierer. Tiltak som forekommer i ≥2 topphendelser merkes som «Felles tiltak» (badge).
+### `src/pages/RosAnalyse.tsx`
+- Importere `Command*` fra `@/components/ui/command`, `Popover*` fra `@/components/ui/popover` og listen.
+- Erstatte «Legg til»-knappen og fritekst-rader med:
+  - Knapp «+ Legg til konsekvens» som åpner Popover med Command-søk gruppert per kategori.
+  - Valg legger strengen direkte i `bt.konsekvenser`.
+  - `CommandEmpty` rendres som klikkbar «Legg til "{søk}"» for egne konsekvenser.
+- Beholde nåværende visning av valgte konsekvenser som rader (med slett-knapp), men erstatte fri-tekst `Input` med vanlig tekst — brukeren kan fortsatt redigere via et lite blyantikon som bytter til Input, ELLER vi beholder Input slik at egne tekster kan finpusses. Vi beholder Input for fleksibilitet.
 
-### 3. `src/lib/ros-word-export.ts`
-- Eksporter samme seksjon til Word: per topphendelse en tabell med kolonnene «Årsak (hendelse-ID/tittel) | S | K | Risiko» og under: «Konsekvenser» + «Felles barrierer» + «Aggregerte tiltak».
-- Numerisk kapittelnummerering oppdateres så Oppsummering blir kap. 5.
-
-### 4. Hendelser ↔ bow-tie konsistens
-- Hvis en hendelse slettes, fjern `id` fra alle `bowTies[].hendelseIds` automatisk.
+### Ingen endringer
+- `RosPreview.tsx`, `ros-word-export.ts` og datamodellen er uendret — konsekvenser er fortsatt `string[]`.
 
 ## Verifisering
-- Opprett ROS → legg til 3 hendelser → opprett topphendelse «Eksplosjon» → tilknytt 2 av hendelsene → legg til 2 konsekvenser. Preview viser bow-tie med riktige årsaker, konsekvenser og aggregerte tiltak.
-- Slett en koblet hendelse → forsvinner automatisk fra bow-tie.
-- Eksporter til Word → bow-tie-seksjonen er med, med korrekt nummerering.
-- Eksisterende ROS-analyser uten `bowTies` åpnes uten feil og viser ingen bow-tie-seksjon før første topphendelse opprettes.
+- Klikk «+ Legg til konsekvens» → Popover åpnes, kategorier vises, søk filtrerer.
+- Velg «Totalskade av bygning» → vises som rad.
+- Skriv «Egendefinert X» → «Legg til "Egendefinert X"» → legges til.
+- Slett-knapp fjerner rad. Lagring og Word-eksport fungerer som før.

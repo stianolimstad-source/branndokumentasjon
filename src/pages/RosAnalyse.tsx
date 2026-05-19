@@ -15,6 +15,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { KONSEKVENS_FORSLAG, groupKonsekvenserByKategori } from "@/lib/ros-konsekvenser";
 import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search, Sparkles } from "lucide-react";
 import RosPreview, { type RosContent, type RosHendelse, type RosBowTie } from "@/components/ros/RosPreview";
 import UploadRosDialog, { type ExtractedRosData } from "@/components/ros/UploadRosDialog";
@@ -733,14 +736,12 @@ export default function RosAnalyse() {
                         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                           Konsekvenser
                         </Label>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-7 text-xs"
-                          onClick={() => updateBowTie(bt.id, { konsekvenser: [...bt.konsekvenser, ""] })}
-                        >
-                          <Plus className="h-3 w-3 mr-1" /> Legg til
-                        </Button>
+                        <KonsekvensPicker
+                          valgte={bt.konsekvenser}
+                          onAdd={(tekst) =>
+                            updateBowTie(bt.id, { konsekvenser: [...bt.konsekvenser, tekst] })
+                          }
+                        />
                       </div>
                       {bt.konsekvenser.length === 0 ? (
                         <p className="text-xs text-muted-foreground italic">Ingen konsekvenser registrert.</p>
@@ -773,6 +774,7 @@ export default function RosAnalyse() {
                         </div>
                       )}
                     </div>
+
 
                     <div className="space-y-1 border-t pt-3">
                       <Area
@@ -954,5 +956,83 @@ function CreateDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function KonsekvensPicker({ valgte, onAdd }: { valgte: string[]; onAdd: (tekst: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const grupper = useMemo(() => groupKonsekvenserByKategori(), []);
+  const valgteSet = useMemo(() => new Set(valgte.map((v) => v.trim().toLowerCase())), [valgte]);
+  const trimmed = search.trim();
+  const finnesAllerede = trimmed && (
+    valgteSet.has(trimmed.toLowerCase()) ||
+    KONSEKVENS_FORSLAG.some((k) => k.tekst.toLowerCase() === trimmed.toLowerCase())
+  );
+
+  const handleAdd = (tekst: string) => {
+    onAdd(tekst);
+    setSearch("");
+    setOpen(false);
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button size="sm" variant="ghost" className="h-7 text-xs">
+          <Plus className="h-3 w-3 mr-1" /> Legg til
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[420px] p-0" align="end">
+        <Command>
+          <CommandInput
+            placeholder="Søk eller skriv egen konsekvens..."
+            value={search}
+            onValueChange={setSearch}
+          />
+          <CommandList className="max-h-[360px]">
+            <CommandEmpty>
+              {trimmed ? (
+                <button
+                  type="button"
+                  onClick={() => handleAdd(trimmed)}
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-accent rounded-sm"
+                >
+                  <Plus className="h-3 w-3 inline mr-1" /> Legg til «{trimmed}»
+                </button>
+              ) : (
+                <span className="text-xs text-muted-foreground">Skriv for å lage egen konsekvens</span>
+              )}
+            </CommandEmpty>
+            {Object.entries(grupper).map(([kategori, items]) => (
+              <CommandGroup key={kategori} heading={kategori}>
+                {items.map((k) => {
+                  const erValgt = valgteSet.has(k.tekst.toLowerCase());
+                  return (
+                    <CommandItem
+                      key={k.tekst}
+                      value={`${kategori} ${k.tekst}`}
+                      disabled={erValgt}
+                      onSelect={() => !erValgt && handleAdd(k.tekst)}
+                      className={erValgt ? "opacity-50" : ""}
+                    >
+                      <span className="text-sm">{k.tekst}</span>
+                      {erValgt && <span className="ml-auto text-xs text-muted-foreground">Valgt</span>}
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            ))}
+            {trimmed && !finnesAllerede && (
+              <CommandGroup heading="Egendefinert">
+                <CommandItem value={`__custom__${trimmed}`} onSelect={() => handleAdd(trimmed)}>
+                  <Plus className="h-3 w-3 mr-2" /> Legg til «{trimmed}»
+                </CommandItem>
+              </CommandGroup>
+            )}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }
