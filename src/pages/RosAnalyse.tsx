@@ -169,6 +169,15 @@ export default function RosAnalyse() {
                 hendelseIds: Array.isArray(b.hendelseIds) ? b.hendelseIds.filter((x: any) => typeof x === "string") : [],
                 konsekvenser: Array.isArray(b.konsekvenser) ? b.konsekvenser.map((x: any) => String(x)) : [],
                 fellesBarrierer: String(b.fellesBarrierer || ""),
+                felleseBarrierer: Array.isArray(b.felleseBarrierer)
+                  ? b.felleseBarrierer
+                      .map((x: any) => ({
+                        tekst: String(x?.tekst || "").trim(),
+                        arsakIds: Array.isArray(x?.arsakIds) ? x.arsakIds.map((y: any) => String(y)) : [],
+                        kilde: x?.kilde === "ai" ? "ai" : "manuell",
+                      }))
+                      .filter((x: any) => x.tekst)
+                  : [],
               }))
             : [],
         });
