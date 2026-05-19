@@ -520,7 +520,17 @@ export default function RosAnalyse() {
                   <span className="text-xs text-muted-foreground ml-auto">{content.hendelser.length} hendelser</span>
                 </div>
                 <Accordion type="multiple" value={openHendelser} onValueChange={setOpenHendelser} className="space-y-2">
-                  {content.hendelser.map((h, idx) => {
+                  {(() => {
+                    const bowTieBruk = new Map<string, string[]>();
+                    (content.bowTies || []).forEach((bt, i) => {
+                      const navn = bt.navn?.trim() || `Topphendelse ${i + 1}`;
+                      bt.hendelseIds.forEach((hid) => {
+                        const arr = bowTieBruk.get(hid) || [];
+                        arr.push(navn);
+                        bowTieBruk.set(hid, arr);
+                      });
+                    });
+                    return content.hendelser.map((h, idx) => {
                     const farge = risikoFarge(h.sannsynlighet, h.konsekvens);
                     const cls = farge === "rod" ? "bg-red-500/85 text-white"
                       : farge === "gul" ? "bg-amber-400/90 text-foreground"
@@ -534,6 +544,7 @@ export default function RosAnalyse() {
                     const sok = hendelseSok.trim().toLowerCase();
                     const sokTekst = `${h.tittel} ${h.sarbarhet || ""} ${h.hendelse || h.beskrivelse || ""} ${h.arsak}`.toLowerCase();
                     if (sok && !sokTekst.includes(sok)) return null;
+                    const bruk = bowTieBruk.get(h.id);
                     return (
                       <AccordionItem key={h.id} value={h.id} className="border rounded-lg px-3 border-b">
                         <div className="flex items-center gap-2">
@@ -543,6 +554,22 @@ export default function RosAnalyse() {
                               <span className="truncate text-sm font-medium">
                                 {h.tittel || h.sarbarhet || h.hendelse || <span className="italic text-muted-foreground">Uten tittel</span>}
                               </span>
+                              {bruk && bruk.length > 0 && (
+                                <TooltipProvider delayDuration={200}>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Badge variant="secondary" className="shrink-0 gap-1 px-1.5 py-0 text-[10px] font-medium">
+                                        <GitBranch className="h-3 w-3" />
+                                        <span className="hidden sm:inline">Bow-tie</span>
+                                        {bruk.length > 1 && <span>×{bruk.length}</span>}
+                                      </Badge>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <span className="text-xs">Brukt i: {bruk.join(", ")}</span>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
                               <span className={`ml-auto rounded px-2 py-0.5 text-xs font-semibold shrink-0 ${cls}`}>
                                 R {h.sannsynlighet * h.konsekvens}
                               </span>
