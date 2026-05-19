@@ -483,7 +483,7 @@ export default function RosAnalyse() {
 
           <section className="space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
-              <h2 className="text-lg font-semibold">3. Hendelser</h2>
+              <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">3. Hendelser</h2><JumpToPreview previewId="kap-3" /></div>
               <Button size="sm" variant="outline" onClick={addHendelse}>
                 <Plus className="h-4 w-4 mr-1" /> Ny hendelse
               </Button>
