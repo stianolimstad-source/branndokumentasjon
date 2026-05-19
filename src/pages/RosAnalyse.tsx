@@ -907,8 +907,11 @@ export default function RosAnalyse() {
                 }
               />
             </div>
-            <div className="rounded-lg border p-4 bg-muted/30">
+            <div className="rounded-lg border p-4 bg-muted/30 space-y-4">
               <RosMatriks size="sm" />
+              <div className="border-t pt-4">
+                <RosKriterier />
+              </div>
             </div>
           </section>
 
