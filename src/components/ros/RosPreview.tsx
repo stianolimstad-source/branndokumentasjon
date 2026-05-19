@@ -31,13 +31,15 @@ export interface RosRevisjon {
 export interface RosFellesBarriere {
   tekst: string;
   arsakIds: string[];
-  kilde?: "ai" | "manuell";
+  kilde?: "ai" | "manuell" | "kap3";
+  kildeRef?: string;
 }
 
 export interface RosKonsekvensTiltak {
   tekst: string;
   konsekvensIndekser: number[]; // peker inn i bt.konsekvenser[]
-  kilde?: "ai" | "manuell";
+  kilde?: "ai" | "manuell" | "kap3";
+  kildeRef?: string;
 }
 
 export interface RosBowTie {
@@ -832,7 +834,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 ...aiBarrierer.map((b) => ({
                   kilde:
                     "Felles barriere" +
-                    (b.kilde === "ai" ? " (AI)" : "") +
+                    (b.kilde === "ai" ? " (AI)" : b.kilde === "kap3" ? ` (Kap. 3${b.kildeRef ? " " + b.kildeRef : ""})` : "") +
                     (b.arsakIds.length
                       ? " · " +
                         b.arsakIds
@@ -848,7 +850,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 ...konsTiltak.map((t) => ({
                   kilde:
                     "Konsekvensreduserende" +
-                    (t.kilde === "ai" ? " (AI)" : "") +
+                    (t.kilde === "ai" ? " (AI)" : t.kilde === "kap3" ? ` (Kap. 3${t.kildeRef ? " " + t.kildeRef : ""})` : "") +
                     (t.konsekvensIndekser.length
                       ? " · reduserer: " +
                         t.konsekvensIndekser

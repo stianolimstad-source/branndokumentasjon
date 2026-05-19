@@ -89,6 +89,22 @@ export default function RosAnalyse() {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [firmaNavn, setFirmaNavn] = useState<string | null>(null);
   const [fullName, setFullName] = useState<string | null>(null);
+  const [konseptContent, setKonseptContent] = useState<Record<string, any> | null>(null);
+
+  // Last brannkonsept for samme prosjekt (siste opprettet)
+  useEffect(() => {
+    if (!projectId) { setKonseptContent(null); return; }
+    supabase
+      .from("fire_concepts")
+      .select("content")
+      .eq("project_id", projectId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        setKonseptContent((data as any)?.content ?? null);
+      });
+  }, [projectId]);
 
   // Load profile (logo, company, name) for live preview + export
   useEffect(() => {
@@ -177,7 +193,8 @@ export default function RosAnalyse() {
                       .map((x: any) => ({
                         tekst: String(x?.tekst || "").trim(),
                         arsakIds: Array.isArray(x?.arsakIds) ? x.arsakIds.map((y: any) => String(y)) : [],
-                        kilde: x?.kilde === "ai" ? "ai" : "manuell",
+                        kilde: x?.kilde === "ai" ? "ai" : x?.kilde === "kap3" ? "kap3" : "manuell",
+                        kildeRef: x?.kildeRef ? String(x.kildeRef) : undefined,
                       }))
                       .filter((x: any) => x.tekst)
                   : [],
@@ -190,7 +207,8 @@ export default function RosAnalyse() {
                               .map((y: any) => Number(y))
                               .filter((y: number) => Number.isInteger(y) && y >= 0)
                           : [],
-                        kilde: x?.kilde === "ai" ? "ai" : "manuell",
+                        kilde: x?.kilde === "ai" ? "ai" : x?.kilde === "kap3" ? "kap3" : "manuell",
+                        kildeRef: x?.kildeRef ? String(x.kildeRef) : undefined,
                       }))
                       .filter((x: any) => x.tekst)
                   : [],
@@ -406,6 +424,54 @@ export default function RosAnalyse() {
     }
   };
 
+  // Hent barrierer som allerede ligger i brannkonseptets kap. 3
+  const [extractingBarrId, setExtractingBarrId] = useState<string | null>(null);
+  const extractBarriererFraKonsept = async (bt: RosBowTie) => {
+    if (!konseptContent) {
+      toast({ title: "Ingen brannkonsept", description: "Prosjektet har ikke et brannkonsept å hente fra.", variant: "destructive" });
+      return;
+    }
+    const arsaker = bt.hendelseIds
+      .map((id) => content.hendelser.find((h) => h.id === id))
+      .filter((h): h is RosHendelse => !!h);
+    if (arsaker.length < 1) {
+      toast({ title: "Trenger minst 1 årsak", variant: "destructive" });
+      return;
+    }
+    setExtractingBarrId(bt.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("extract-bowtie-from-konsept", {
+        body: {
+          type: "barrier",
+          topphendelse: bt.navn,
+          beskrivelse: bt.beskrivelse || "",
+          arsaker: arsaker.map((a) => ({ id: a.id, tittel: a.tittel || a.sarbarhet || a.hendelse || "Uten navn" })),
+          konseptContent,
+        },
+      });
+      if (error) throw error;
+      const nye = Array.isArray(data?.barrierer)
+        ? data.barrierer.map((b: any) => ({
+            tekst: String(b.tekst || "").trim(),
+            arsakIds: Array.isArray(b.arsakIds) ? b.arsakIds.map((x: any) => String(x)) : [],
+            kilde: "kap3" as const,
+            kildeRef: b.kildeRef ? String(b.kildeRef) : undefined,
+          }))
+        : [];
+      // Behold manuelle og AI-genererte, erstatt kun kap3
+      const beholdt = (bt.felleseBarrierer || []).filter((b) => b.kilde !== "kap3");
+      updateBowTie(bt.id, { felleseBarrierer: [...nye, ...beholdt] });
+      toast({
+        title: nye.length > 0 ? `Hentet ${nye.length} barriere${nye.length === 1 ? "" : "r"} fra kap. 3` : "Ingen barrierer i kap. 3",
+        description: nye.length > 0 ? "Lagt til i diagrammet og tabellen." : "Fant ingen relevante tiltak i brannkonseptets kap. 3.",
+      });
+    } catch (e: any) {
+      toast({ title: "Henting feilet", description: e?.message || "Kunne ikke hente fra kap. 3.", variant: "destructive" });
+    } finally {
+      setExtractingBarrId(null);
+    }
+  };
+
   const addManuellBarriere = (btId: string) => {
     const tekst = (newFellesTekst[btId] || "").trim();
     const arsakIds = newFellesArsaker[btId] || [];
@@ -474,6 +540,52 @@ export default function RosAnalyse() {
       setAnalyzingKonsId(null);
     }
   };
+
+  const [extractingKonsId, setExtractingKonsId] = useState<string | null>(null);
+  const extractKonsTiltakFraKonsept = async (bt: RosBowTie) => {
+    if (!konseptContent) {
+      toast({ title: "Ingen brannkonsept", description: "Prosjektet har ikke et brannkonsept å hente fra.", variant: "destructive" });
+      return;
+    }
+    if (bt.konsekvenser.length < 1) {
+      toast({ title: "Trenger minst 1 konsekvens", variant: "destructive" });
+      return;
+    }
+    setExtractingKonsId(bt.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("extract-bowtie-from-konsept", {
+        body: {
+          type: "mitigation",
+          topphendelse: bt.navn,
+          beskrivelse: bt.beskrivelse || "",
+          konsekvenser: bt.konsekvenser.map((tekst, i) => ({ id: String(i), tekst })),
+          konseptContent,
+        },
+      });
+      if (error) throw error;
+      const nye = Array.isArray(data?.tiltak)
+        ? data.tiltak.map((t: any) => ({
+            tekst: String(t.tekst || "").trim(),
+            konsekvensIndekser: Array.isArray(t.konsekvensIds)
+              ? t.konsekvensIds.map((x: any) => Number(x)).filter((n: number) => Number.isInteger(n) && n >= 0 && n < bt.konsekvenser.length)
+              : [],
+            kilde: "kap3" as const,
+            kildeRef: t.kildeRef ? String(t.kildeRef) : undefined,
+          }))
+        : [];
+      const beholdt = (bt.konsekvensReduserende || []).filter((t) => t.kilde !== "kap3");
+      updateBowTie(bt.id, { konsekvensReduserende: [...nye, ...beholdt] });
+      toast({
+        title: nye.length > 0 ? `Hentet ${nye.length} tiltak fra kap. 3` : "Ingen tiltak i kap. 3",
+        description: nye.length > 0 ? "Lagt til i diagrammet og tabellen." : "Fant ingen relevante konsekvensreduserende tiltak i kap. 3.",
+      });
+    } catch (e: any) {
+      toast({ title: "Henting feilet", description: e?.message || "Kunne ikke hente fra kap. 3.", variant: "destructive" });
+    } finally {
+      setExtractingKonsId(null);
+    }
+  };
+
 
   const addManuellKonsekvensTiltak = (btId: string) => {
     const tekst = (newKonsTekst[btId] || "").trim();
@@ -1146,20 +1258,39 @@ export default function RosAnalyse() {
                         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                           Felles barrierer (på tvers av årsaker)
                         </Label>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          disabled={analyzingId === bt.id || bt.hendelseIds.length < 2}
-                          onClick={() => analyzeBarrierer(bt)}
-                        >
-                          <Sparkles className="h-3.5 w-3.5 mr-1.5" />
-                          {analyzingId === bt.id ? "Analyserer…" : "Analyser med AI"}
-                        </Button>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            disabled={extractingBarrId === bt.id || !konseptContent || bt.hendelseIds.length < 1}
+                            onClick={() => extractBarriererFraKonsept(bt)}
+                            title={!konseptContent ? "Prosjektet har ikke et brannkonsept" : "Hent barrierer som allerede er prosjektert i brannkonseptets kap. 3"}
+                          >
+                            <GitBranch className="h-3.5 w-3.5 mr-1.5" />
+                            {extractingBarrId === bt.id ? "Henter…" : "Hent fra kap. 3"}
+                          </Button>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            disabled={analyzingId === bt.id || bt.hendelseIds.length < 2}
+                            onClick={() => analyzeBarrierer(bt)}
+                            title="La AI foreslå nye/utfyllende barrierer"
+                          >
+                            <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+                            {analyzingId === bt.id ? "Analyserer…" : "Foreslå nye (AI)"}
+                          </Button>
+                        </div>
                       </div>
+                      {!konseptContent && (
+                        <p className="text-xs text-muted-foreground italic">
+                          Ingen brannkonsept tilknyttet prosjektet — opprett et konsept for å kunne hente fra kap. 3.
+                        </p>
+                      )}
                       {bt.hendelseIds.length < 2 && (
                         <p className="text-xs text-muted-foreground italic">
-                          Velg minst to årsaker for å finne felles barrierer.
+                          Velg minst to årsaker for å la AI foreslå nye felles barrierer.
                         </p>
                       )}
 
@@ -1181,7 +1312,7 @@ export default function RosAnalyse() {
                                   <div className="flex items-center gap-1.5 flex-wrap">
                                     <span className="text-sm font-medium text-emerald-900 dark:text-emerald-100">{fb.tekst}</span>
                                     <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
-                                      {fb.kilde === "ai" ? "AI" : "Manuell"}
+                                      {fb.kilde === "ai" ? "AI" : fb.kilde === "kap3" ? (fb.kildeRef ? `Kap. 3 ${fb.kildeRef}` : "Kap. 3") : "Manuell"}
                                     </Badge>
                                   </div>
                                   {arsakNavn.length > 0 && (
@@ -1273,17 +1404,36 @@ export default function RosAnalyse() {
                         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                           Konsekvensreduserende tiltak (etter topphendelse)
                         </Label>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          disabled={analyzingKonsId === bt.id || bt.konsekvenser.length < 1}
-                          onClick={() => analyzeKonsekvensTiltak(bt)}
-                        >
-                          <Sparkles className="h-3.5 w-3.5 mr-1.5" />
-                          {analyzingKonsId === bt.id ? "Analyserer…" : "Analyser med AI"}
-                        </Button>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            disabled={extractingKonsId === bt.id || !konseptContent || bt.konsekvenser.length < 1}
+                            onClick={() => extractKonsTiltakFraKonsept(bt)}
+                            title={!konseptContent ? "Prosjektet har ikke et brannkonsept" : "Hent konsekvensreduserende tiltak fra brannkonseptets kap. 3"}
+                          >
+                            <GitBranch className="h-3.5 w-3.5 mr-1.5" />
+                            {extractingKonsId === bt.id ? "Henter…" : "Hent fra kap. 3"}
+                          </Button>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            disabled={analyzingKonsId === bt.id || bt.konsekvenser.length < 1}
+                            onClick={() => analyzeKonsekvensTiltak(bt)}
+                            title="La AI foreslå nye/utfyllende konsekvensreduserende tiltak"
+                          >
+                            <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+                            {analyzingKonsId === bt.id ? "Analyserer…" : "Foreslå nye (AI)"}
+                          </Button>
+                        </div>
                       </div>
+                      {!konseptContent && (
+                        <p className="text-xs text-muted-foreground italic">
+                          Ingen brannkonsept tilknyttet prosjektet — opprett et konsept for å kunne hente fra kap. 3.
+                        </p>
+                      )}
                       {bt.konsekvenser.length < 1 && (
                         <p className="text-xs text-muted-foreground italic">
                           Registrer minst én konsekvens for å foreslå konsekvensreduserende tiltak.
@@ -1305,7 +1455,7 @@ export default function RosAnalyse() {
                                   <div className="flex items-center gap-1.5 flex-wrap">
                                     <span className="text-sm font-medium text-amber-900 dark:text-amber-100">{kt.tekst}</span>
                                     <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
-                                      {kt.kilde === "ai" ? "AI" : "Manuell"}
+                                      {kt.kilde === "ai" ? "AI" : kt.kilde === "kap3" ? (kt.kildeRef ? `Kap. 3 ${kt.kildeRef}` : "Kap. 3") : "Manuell"}
                                     </Badge>
                                   </div>
                                   {konsNavn.length > 0 && (
