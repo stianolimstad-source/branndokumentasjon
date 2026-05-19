@@ -514,7 +514,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
             </tbody>
           </table>
 
-          <h3 style={h3}>2.3 Konsekvensskala</h3>
+          <h3 style={h3}>2.4 Konsekvensskala</h3>
           <table style={tableStyle}>
             <thead>
               <tr>
