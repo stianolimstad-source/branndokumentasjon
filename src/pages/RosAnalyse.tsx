@@ -1115,9 +1115,21 @@ export default function RosAnalyse() {
                                 variant="ghost"
                                 size="icon"
                                 className="h-8 w-8 text-destructive shrink-0"
-                                onClick={() =>
-                                  updateBowTie(bt.id, { konsekvenser: bt.konsekvenser.filter((_, j) => j !== i) })
-                                }
+                                onClick={() => {
+                                  const nyeKons = bt.konsekvenser.filter((_, j) => j !== i);
+                                  const nyeTiltak = (bt.konsekvensReduserende || [])
+                                    .map((t) => ({
+                                      ...t,
+                                      konsekvensIndekser: (t.konsekvensIndekser || [])
+                                        .filter((ki) => ki !== i)
+                                        .map((ki) => (ki > i ? ki - 1 : ki)),
+                                    }))
+                                    .filter((t) => t.konsekvensIndekser.length > 0);
+                                  updateBowTie(bt.id, {
+                                    konsekvenser: nyeKons,
+                                    konsekvensReduserende: nyeTiltak,
+                                  });
+                                }}
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                               </Button>

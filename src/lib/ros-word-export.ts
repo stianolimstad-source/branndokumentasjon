@@ -569,6 +569,67 @@ export const exportRosToWord = async (options: ExportOptions) => {
         }
       }
 
+      // Konsekvensreduserende tiltak (AI/manuelle)
+      const kt = (bt.konsekvensReduserende || []).filter((t: any) => t.tekst?.trim());
+      if (kt.length > 0 && bt.konsekvenser.length > 0) {
+        bowTieBlocks.push(new Paragraph({ children: [text("")] }));
+        bowTieBlocks.push(para("Konsekvensreduserende tiltak", { bold: true }));
+        kt.forEach((t: any, ti: number) => {
+          const navn = (t.konsekvensIndekser || [])
+            .filter((ki: number) => ki >= 0 && ki < bt.konsekvenser.length)
+            .map((ki: number) => `K${ki + 1}`)
+            .join(", ");
+          const suffix = navn ? ` (dekker: ${navn})` : "";
+          const tag = t.kilde === "ai" ? " [AI]" : "";
+          bowTieBlocks.push(para(`• T${ti + 1} – ${t.tekst}${tag}${suffix}`));
+        });
+
+        // Dekningsmatrise (konsekvens × tiltak)
+        bowTieBlocks.push(new Paragraph({ children: [text("")] }));
+        bowTieBlocks.push(
+          para("Dekningsmatrise – hvilke tiltak som reduserer hver konsekvens", { bold: true }),
+        );
+        const ktHeader = new TableRow({
+          children: [
+            smallHeader("Konsekvens", 40),
+            ...kt.map((_: any, ti: number) => smallHeader(`T${ti + 1}`, Math.floor(60 / kt.length))),
+          ],
+        });
+        const ktRows: TableRow[] = [ktHeader];
+        bt.konsekvenser.forEach((k: string, ki: number) => {
+          ktRows.push(
+            new TableRow({
+              children: [
+                smallCell(`K${ki + 1} – ${k}`, 40, true),
+                ...kt.map((t: any) => {
+                  const dekket = (t.konsekvensIndekser || []).includes(ki);
+                  return new TableCell({
+                    width: { size: Math.floor(60 / kt.length), type: WidthType.PERCENTAGE },
+                    shading: dekket
+                      ? { type: ShadingType.CLEAR, color: "auto", fill: "ECFDF5" }
+                      : undefined,
+                    children: [
+                      new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [
+                          text(dekket ? "●" : "—", {
+                            bold: true,
+                            size: 16,
+                            color: dekket ? "065F46" : "CBD5E1",
+                          }),
+                        ],
+                      }),
+                    ],
+                  });
+                }),
+              ],
+            }),
+          );
+        });
+        bowTieBlocks.push(
+          new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: ktRows }),
+        );
+      }
 
       // Felles barrierer (fritekst)
       if (bt.fellesBarrierer?.trim()) {
