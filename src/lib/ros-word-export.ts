@@ -395,10 +395,29 @@ export const exportRosToWord = async (options: ExportOptions) => {
         bt.konsekvenser.forEach((k) => bowTieBlocks.push(para(`• ${k}`)));
       }
 
-      // Felles barrierer
+      // Felles barrierer (AI/manuelle)
+      const fb = (bt.felleseBarrierer || []).filter((b) => b.tekst?.trim());
+      if (fb.length > 0) {
+        bowTieBlocks.push(new Paragraph({ children: [text("")] }));
+        bowTieBlocks.push(para("Felles barrierer (på tvers av årsaker)", { bold: true }));
+        fb.forEach((b) => {
+          const navn = b.arsakIds
+            .map((id) => {
+              const a = arsaker.find((x) => x.id === id);
+              return a?.tittel || a?.sarbarhet || a?.hendelse || "";
+            })
+            .filter(Boolean)
+            .join(", ");
+          const suffix = navn ? ` (dekker: ${navn})` : "";
+          const tag = b.kilde === "ai" ? " [AI]" : "";
+          bowTieBlocks.push(para(`• ${b.tekst}${tag}${suffix}`));
+        });
+      }
+
+      // Felles barrierer (fritekst)
       if (bt.fellesBarrierer?.trim()) {
         bowTieBlocks.push(new Paragraph({ children: [text("")] }));
-        bowTieBlocks.push(para("Felles barrierer / tiltak", { bold: true }));
+        bowTieBlocks.push(para("Felles barrierer / tiltak (fritekst)", { bold: true }));
         bowTieBlocks.push(para(bt.fellesBarrierer));
       }
     });
