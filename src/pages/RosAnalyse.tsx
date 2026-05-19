@@ -670,7 +670,8 @@ export default function RosAnalyse() {
                         </AccordionContent>
                       </AccordionItem>
                     );
-                  })}
+                  });
+                  })()}
                 </Accordion>
               </>
             )}
