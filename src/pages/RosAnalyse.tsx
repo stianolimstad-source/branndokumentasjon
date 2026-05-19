@@ -296,6 +296,9 @@ export default function RosAnalyse() {
       bowTies: (c.bowTies || []).map((b) => ({
         ...b,
         hendelseIds: b.hendelseIds.filter((hid) => hid !== id),
+        felleseBarrierer: (b.felleseBarrierer || [])
+          .map((fb) => ({ ...fb, arsakIds: fb.arsakIds.filter((x) => x !== id) }))
+          .filter((fb) => fb.arsakIds.length >= 2),
       })),
     }));
     setOpenHendelser((o) => o.filter((x) => x !== id));
