@@ -18,7 +18,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { KONSEKVENS_FORSLAG, groupKonsekvenserByKategori } from "@/lib/ros-konsekvenser";
-import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search, Sparkles } from "lucide-react";
+import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search, Sparkles, Check, GitBranch, X } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import RosPreview, { type RosContent, type RosHendelse, type RosBowTie } from "@/components/ros/RosPreview";
 import UploadRosDialog, { type ExtractedRosData } from "@/components/ros/UploadRosDialog";
 import RosMatriks, { risikoFarge } from "@/components/ros/RosMatriks";
@@ -518,7 +520,17 @@ export default function RosAnalyse() {
                   <span className="text-xs text-muted-foreground ml-auto">{content.hendelser.length} hendelser</span>
                 </div>
                 <Accordion type="multiple" value={openHendelser} onValueChange={setOpenHendelser} className="space-y-2">
-                  {content.hendelser.map((h, idx) => {
+                  {(() => {
+                    const bowTieBruk = new Map<string, string[]>();
+                    (content.bowTies || []).forEach((bt, i) => {
+                      const navn = bt.navn?.trim() || `Topphendelse ${i + 1}`;
+                      bt.hendelseIds.forEach((hid) => {
+                        const arr = bowTieBruk.get(hid) || [];
+                        arr.push(navn);
+                        bowTieBruk.set(hid, arr);
+                      });
+                    });
+                    return content.hendelser.map((h, idx) => {
                     const farge = risikoFarge(h.sannsynlighet, h.konsekvens);
                     const cls = farge === "rod" ? "bg-red-500/85 text-white"
                       : farge === "gul" ? "bg-amber-400/90 text-foreground"
@@ -532,6 +544,7 @@ export default function RosAnalyse() {
                     const sok = hendelseSok.trim().toLowerCase();
                     const sokTekst = `${h.tittel} ${h.sarbarhet || ""} ${h.hendelse || h.beskrivelse || ""} ${h.arsak}`.toLowerCase();
                     if (sok && !sokTekst.includes(sok)) return null;
+                    const bruk = bowTieBruk.get(h.id);
                     return (
                       <AccordionItem key={h.id} value={h.id} className="border rounded-lg px-3 border-b">
                         <div className="flex items-center gap-2">
@@ -541,6 +554,22 @@ export default function RosAnalyse() {
                               <span className="truncate text-sm font-medium">
                                 {h.tittel || h.sarbarhet || h.hendelse || <span className="italic text-muted-foreground">Uten tittel</span>}
                               </span>
+                              {bruk && bruk.length > 0 && (
+                                <TooltipProvider delayDuration={200}>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Badge variant="secondary" className="shrink-0 gap-1 px-1.5 py-0 text-[10px] font-medium">
+                                        <GitBranch className="h-3 w-3" />
+                                        <span className="hidden sm:inline">Bow-tie</span>
+                                        {bruk.length > 1 && <span>×{bruk.length}</span>}
+                                      </Badge>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <span className="text-xs">Brukt i: {bruk.join(", ")}</span>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
                               <span className={`ml-auto rounded px-2 py-0.5 text-xs font-semibold shrink-0 ${cls}`}>
                                 R {h.sannsynlighet * h.konsekvens}
                               </span>
@@ -641,7 +670,8 @@ export default function RosAnalyse() {
                         </AccordionContent>
                       </AccordionItem>
                     );
-                  })}
+                  });
+                  })()}
                 </Accordion>
               </>
             )}
@@ -699,37 +729,21 @@ export default function RosAnalyse() {
                       </AlertDialog>
                     </div>
 
-                    <div className="space-y-1 border-t pt-3">
+                    <div className="space-y-2 border-t pt-3">
                       <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                         Årsaker (hendelser fra kap. 3)
                       </Label>
                       {content.hendelser.length === 0 ? (
                         <p className="text-xs text-muted-foreground italic">Registrer hendelser først.</p>
                       ) : (
-                        <div className="flex flex-wrap gap-1.5 pt-1">
-                          {content.hendelser.map((h) => {
-                            const selected = bt.hendelseIds.includes(h.id);
-                            const farge = risikoFarge(h.sannsynlighet, h.konsekvens);
-                            const dot = farge === "rod" ? "bg-red-500" : farge === "gul" ? "bg-amber-400" : "bg-emerald-500";
-                            return (
-                              <button
-                                key={h.id}
-                                type="button"
-                                onClick={() => toggleBowTieHendelse(bt.id, h.id)}
-                                className={`text-xs px-2 py-1 rounded-full border transition-colors flex items-center gap-1.5 ${
-                                  selected
-                                    ? "bg-primary text-primary-foreground border-primary"
-                                    : "bg-background border-border hover:bg-accent"
-                                }`}
-                              >
-                                <span className={`inline-block h-2 w-2 rounded-full ${dot}`} />
-                                {h.tittel || h.sarbarhet || h.hendelse || "Uten tittel"}
-                              </button>
-                            );
-                          })}
-                        </div>
+                        <ArsakPicker
+                          hendelser={content.hendelser}
+                          valgteIds={bt.hendelseIds}
+                          onToggle={(hid) => toggleBowTieHendelse(bt.id, hid)}
+                        />
                       )}
                     </div>
+
 
                     <div className="space-y-2 border-t pt-3">
                       <div className="flex items-center justify-between">
@@ -1034,5 +1048,87 @@ function KonsekvensPicker({ valgte, onAdd }: { valgte: string[]; onAdd: (tekst: 
         </Command>
       </PopoverContent>
     </Popover>
+  );
+}
+
+function ArsakPicker({
+  hendelser,
+  valgteIds,
+  onToggle,
+}: {
+  hendelser: RosHendelse[];
+  valgteIds: string[];
+  onToggle: (id: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const valgte = hendelser.filter((h) => valgteIds.includes(h.id));
+  return (
+    <div className="space-y-2">
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button type="button" variant="outline" size="sm" className="w-full justify-between">
+            <span className="text-xs">
+              {valgteIds.length === 0
+                ? "Velg årsaker fra hendelsesregisteret"
+                : `${valgteIds.length} årsak${valgteIds.length === 1 ? "" : "er"} valgt`}
+            </span>
+            <Plus className="h-3.5 w-3.5 opacity-60" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[340px] p-0" align="start">
+          <Command>
+            <CommandInput placeholder="Søk hendelse..." />
+            <CommandList className="max-h-[320px]">
+              <CommandEmpty>Ingen treff.</CommandEmpty>
+              <CommandGroup>
+                {hendelser.map((h) => {
+                  const selected = valgteIds.includes(h.id);
+                  const farge = risikoFarge(h.sannsynlighet, h.konsekvens);
+                  const dot = farge === "rod" ? "bg-red-500" : farge === "gul" ? "bg-amber-400" : "bg-emerald-500";
+                  const label = h.tittel || h.sarbarhet || h.hendelse || "Uten tittel";
+                  return (
+                    <CommandItem
+                      key={h.id}
+                      value={`${label} ${h.sarbarhet || ""} ${h.hendelse || ""}`}
+                      onSelect={() => onToggle(h.id)}
+                    >
+                      <span className={`inline-block h-2 w-2 rounded-full mr-2 ${dot}`} />
+                      <span className="text-sm truncate">{label}</span>
+                      {selected && <Check className="ml-auto h-4 w-4 text-primary" />}
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+      {valgte.length > 0 && (
+        <div className="flex flex-wrap gap-1.5">
+          {valgte.map((h) => {
+            const farge = risikoFarge(h.sannsynlighet, h.konsekvens);
+            const dot = farge === "rod" ? "bg-red-500" : farge === "gul" ? "bg-amber-400" : "bg-emerald-500";
+            const label = h.tittel || h.sarbarhet || h.hendelse || "Uten tittel";
+            return (
+              <span
+                key={h.id}
+                className="text-xs px-2 py-1 rounded-full border bg-background flex items-center gap-1.5"
+              >
+                <span className={`inline-block h-2 w-2 rounded-full ${dot}`} />
+                {label}
+                <button
+                  type="button"
+                  onClick={() => onToggle(h.id)}
+                  className="ml-1 text-muted-foreground hover:text-destructive"
+                  aria-label="Fjern"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }
