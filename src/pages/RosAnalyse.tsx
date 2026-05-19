@@ -181,6 +181,19 @@ export default function RosAnalyse() {
                       }))
                       .filter((x: any) => x.tekst)
                   : [],
+                konsekvensReduserende: Array.isArray(b.konsekvensReduserende)
+                  ? b.konsekvensReduserende
+                      .map((x: any) => ({
+                        tekst: String(x?.tekst || "").trim(),
+                        konsekvensIndekser: Array.isArray(x?.konsekvensIndekser)
+                          ? x.konsekvensIndekser
+                              .map((y: any) => Number(y))
+                              .filter((y: number) => Number.isInteger(y) && y >= 0)
+                          : [],
+                        kilde: x?.kilde === "ai" ? "ai" : "manuell",
+                      }))
+                      .filter((x: any) => x.tekst)
+                  : [],
               }))
             : [],
         });
