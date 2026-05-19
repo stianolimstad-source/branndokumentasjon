@@ -1,28 +1,30 @@
-# Kompakt bow-tie-layout i ROS-forhåndsvisning
+## Problem
+Etter at årsak-/konsekvens-boksene ble krympet til "fit-content" og grid-en fikk `alignItems: "start"`, mistet diagrammet bow-tie-fasongen: topphendelsen står øverst sammen med chip-ene i stedet for å være sentrert i "knytepunktet", og det er ingen visuell innsnevring mot midten.
 
-Årsak- og konsekvens-boksene i bow-tie-diagrammet (`src/components/ros/RosPreview.tsx`) tar i dag full kolonnebredde (`1fr`) selv når teksten bare er noen få tegn ("Trafo 1"). Vi gjør hver boks så bred som innholdet krever, og smalere kolonner totalt.
+## Mål
+Behold de kompakte chip-boksene, men gjenopprett den klassiske bow-tie-silhuetten: årsaker vifter ut til venstre, konsekvenser vifter ut til høyre, og topphendelsen sitter sentrert i midten som knuten.
 
 ## Endringer i `src/components/ros/RosPreview.tsx` (kap. 4 Bow-tie)
 
-1. **Kolonnebredder** – endre `gridTemplateColumns` slik at årsak/konsekvens får faste, smale kolonner i stedet for å sluke all plass:
-   - Med felles barrierer: `"minmax(160px, 240px) 200px 220px minmax(160px, 240px)"`
-   - Uten felles barrierer: `"minmax(160px, 240px) 240px minmax(160px, 240px)"`
-   - Endre `alignItems` fra `center` til `start` så kolonnene starter øverst når de har ulik høyde.
+1. **Vertikal sentrering av topphendelsen**
+   - Behold `alignItems: "start"` på det ytre gridet (slik at chip-kolonnene stables fra toppen), men wrap topphendelse-boksen i en flex-container som er `height: "100%"`, `display: "flex"`, `alignItems: "center"`, `justifyContent: "center"`. Da synker den røde boksen ned til midten av diagrammet, uansett hvor mange årsaker/konsekvenser som er listet.
 
-2. **Årsak-kort (linje 530–560)** – la kortet krympe til tekst:
-   - `display: "inline-flex"`, `width: "fit-content"`, `maxWidth: "100%"`
-   - `gap: 6`, samme padding, tekst-`span` mister `flex: 1` (bare la teksten flyte naturlig).
-   - Wrap hver i en `<div style={{ marginBottom: 4 }}>` slik at flex-bokser stables vertikalt og hver får sin egen bredde.
+2. **Bow-tie-vinger (SVG-wedges)**
+   - Legg en absolutt-posisjonert SVG bak topphendelsen som tegner to trekanter:
+     - Venstre trekant: punktene (0, 0) – (0, høyde) – (midt, midt/2..midt) som krymper mot midten. Fyll: lys rød (`#fde2e4`), stroke `#DC3545` 1px.
+     - Høyre trekant: speilbilde.
+   - Topphendelse-boksen ligger oppå, sentrert. Dette gir den klassiske "sløyfe"-formen uten å øke kolonnebredden.
+   - Implementasjon: wrap topphendelse-kolonnen i `position: relative` + `<svg style="position:absolute; inset:0; width:100%; height:100%; z-index:0">` med to `<polygon>`. Topphendelse-div får `position: relative; zIndex: 1`.
 
-3. **Konsekvens-kort (linje 632–644)** – samme behandling: `display: "inline-block"`, `width: "fit-content"`, `maxWidth: "100%"`, wrapper-div for vertikal stabling.
+3. **Minimum høyde**
+   - Sett `minHeight: 160` på topphendelse-wrapperen slik at vingene alltid er synlige selv om det bare er én årsak/konsekvens.
 
-4. **Felles barriere-kort (linje 580–598)** – også `width: "fit-content"`, `maxWidth: "100%"` så de ikke unødvendig strekker seg.
-
-5. **`BowTieScroll` minWidth** – senk fra 1100 til ca. 900, siden diagrammet nå er mer kompakt. Sticky proxy-scrollbaren beholdes uendret ellers.
+4. **Kolonnebredder uendret**
+   - `gridTemplateColumns` beholdes som i forrige iterasjon (smale chip-kolonner + sentral kolonne). Chip-boksene forblir `width: fit-content`.
 
 ## Ingen endringer
-- `src/lib/ros-word-export.ts` (Word-eksport) – uberørt.
-- Logikk for AI-barrierer / state – uberørt.
+- Word-eksport (`src/lib/ros-word-export.ts`)
+- Felles barrierer-kortene, AI-logikk, "Barrierer/tiltak"-tabellen, `BowTieScroll`
 
 ## Resultat
-Korte årsak-/konsekvens-tekster (f.eks. "Trafo 1") vises som små chip-lignende bokser i stedet for fullbreddebokser. Lange tekster wrapper innenfor maks kolonnebredde. Diagrammet blir merkbart mer kompakt og lesbart på liggende A4.
+Kompakte chip-bokser for årsaker og konsekvenser, men topphendelsen sentreres vertikalt i midten med to lyserøde trekant-vinger som visuelt former en "bow-tie". Diagrammet leses umiddelbart som en bow-tie igjen.
