@@ -327,7 +327,7 @@ export default function RosAnalyse() {
       ...c,
       bowTies: [
         ...(c.bowTies || []),
-        { id, navn: "", beskrivelse: "", hendelseIds: [], konsekvenser: [], fellesBarrierer: "", felleseBarrierer: [] },
+        { id, navn: "", beskrivelse: "", hendelseIds: [], konsekvenser: [], fellesBarrierer: "", felleseBarrierer: [], konsekvensReduserende: [] },
       ],
     }));
   };
