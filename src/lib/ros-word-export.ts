@@ -237,6 +237,28 @@ export const exportRosToWord = async (options: ExportOptions) => {
     para("   • Sammenligning av alternativer, identifisering og vurdering av tiltak"),
     para("   • Ledelsens vurdering og beslutning"),
     new Paragraph({ children: [text("")] }),
+    para("Detaljeringsnivå", { bold: true }),
+    para(
+      "Beredskapsforskriften stiller krav om å kartlegge virksomhetens risikopotensiale. Detaljeringsnivået i ROS-analysen tilpasses analysens formål:",
+    ),
+    para("   • Nivå 1 — Overordnet ROS-analyse (helhetsbilde av virksomheten/anlegget)"),
+    para("   • Nivå 2 — ROS-analyse for anlegg og aktiviteter"),
+    para("   • Nivå 3 — Detaljert ROS-analyse av delsystem/komponenter"),
+    ...(content.metadata.nivaa
+      ? [
+          para(
+            `Valgt for denne analysen: Nivå ${content.metadata.nivaa} — ${
+              content.metadata.nivaa === 1
+                ? "Overordnet ROS-analyse"
+                : content.metadata.nivaa === 2
+                ? "ROS-analyse for anlegg og aktiviteter"
+                : "Detaljert ROS-analyse av delsystem/komponenter"
+            }.`,
+            { bold: true },
+          ),
+        ]
+      : [para("Nivå er ikke valgt i input.")]),
+    new Paragraph({ children: [text("")] }),
     para("Sannsynlighetsskala", { bold: true }),
     ...SKALA_S.map((s) => para(s)),
     new Paragraph({ children: [text("")] }),
