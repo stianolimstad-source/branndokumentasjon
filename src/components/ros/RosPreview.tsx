@@ -60,6 +60,11 @@ export interface RosContent {
     omfang: string;
     avgrensninger: string;
   };
+  metode?: {
+    informasjonsinnhenting?: string;
+    organisering?: string;
+    skjemaOgSjekklister?: string;
+  };
   hendelser: RosHendelse[];
   bowTies?: RosBowTie[];
   oppsummering: string;
