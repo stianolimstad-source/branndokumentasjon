@@ -35,7 +35,7 @@ interface RosRow { id: string; name: string; project_id: string; updated_at: str
 const EMPTY_CONTENT: RosContent = {
   metadata: { prosjektnavn: "", adresse: "", oppdragsgiver: "", utfortAv: "", dato: "", versjon: "1.0" },
   innledning: { bakgrunn: "", formal: "", omfang: "", avgrensninger: "" },
-  metode: { informasjonsinnhenting: "", organisering: "", skjemaOgSjekklister: "" },
+  metode: { informasjonsinnhenting: "", organisering: "", deltakere: [], skjemaOgSjekklister: "" },
   hendelser: [],
   bowTies: [],
   oppsummering: "",
