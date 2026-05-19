@@ -60,6 +60,11 @@ export interface RosContent {
     omfang: string;
     avgrensninger: string;
   };
+  metode?: {
+    informasjonsinnhenting?: string;
+    organisering?: string;
+    skjemaOgSjekklister?: string;
+  };
   hendelser: RosHendelse[];
   bowTies?: RosBowTie[];
   oppsummering: string;
@@ -502,7 +507,125 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
             );
           })()}
 
-          <h3 style={h3}>2.3 Sannsynlighetsskala</h3>
+          <h3 style={h3}>2.3 Planlegging av analysen</h3>
+          <p style={pStyle}>
+            God planlegging er avgjørende for resultatet. Det må være tydelig
+            <em> hvorfor</em> og <em>hvordan</em> analysen skal gjennomføres, samt hvilke
+            forskriftskrav som skal tilfredsstilles. Følgende momenter inngår i planleggingen
+            (jf. figur under):
+          </p>
+          {(() => {
+            const m = content.metode || {};
+            const items: { nr: string; tittel: string; tekst: string; ref?: string }[] = [
+              {
+                nr: "1",
+                tittel: "Definere formål og omfang av analysen",
+                tekst: "",
+                ref: "Se kap. 1.2 Formål og 1.3 Omfang.",
+              },
+              {
+                nr: "2",
+                tittel: "Valg av konsekvens- og sannsynlighetsdimensjon",
+                tekst: "",
+                ref: "Se kap. 2.4 Sannsynlighetsskala og 2.5 Konsekvensskala (5-trinns skala).",
+              },
+              {
+                nr: "3",
+                tittel: "Informasjonsinnhenting",
+                tekst:
+                  m.informasjonsinnhenting?.trim() ||
+                  "Ikke utfylt (kilder, tegningsgrunnlag, befaringer, intervjuer, statistikk).",
+              },
+              {
+                nr: "4",
+                tittel: "Organisering av arbeidet",
+                tekst:
+                  m.organisering?.trim() ||
+                  "Ikke utfylt (deltakere, roller, ansvar, møtestruktur).",
+              },
+              {
+                nr: "5",
+                tittel: "Klargjøring av analyseskjema og sjekklister",
+                tekst:
+                  m.skjemaOgSjekklister?.trim() ||
+                  "Hendelser registreres i 5×5-skjema (kap. 3) med vurdering før og etter tiltak.",
+              },
+            ];
+            return (
+              <ol style={{ margin: "6px 0 12px 18px", padding: 0 }}>
+                {items.map((it) => (
+                  <li key={it.nr} style={{ marginBottom: 6, fontSize: 11 }}>
+                    <span style={{ fontWeight: 600 }}>{it.tittel}.</span>{" "}
+                    {it.tekst && (
+                      <span style={{ whiteSpace: "pre-line" }}>{it.tekst}</span>
+                    )}
+                    {it.ref && (
+                      <span style={{ fontStyle: "italic", color: "#64748b" }}> {it.ref}</span>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            );
+          })()}
+          {(() => {
+            const fase: React.CSSProperties = {
+              background: "#1e3a5f",
+              color: "#fff",
+              padding: "8px 12px",
+              borderRadius: 4,
+              fontSize: 11,
+              fontWeight: 700,
+              textAlign: "center",
+              minWidth: 160,
+            };
+            const sub: React.CSSProperties = {
+              background: "#e8eef7",
+              color: "#1e3a5f",
+              border: "1px solid #6b86b3",
+              padding: "6px 10px",
+              borderRadius: 4,
+              fontSize: 10,
+              textAlign: "center",
+            };
+            const pil: React.CSSProperties = { color: "#6b86b3", fontSize: 14, lineHeight: 1, margin: "2px 0" };
+            return (
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "auto 1fr",
+                  gap: 18,
+                  alignItems: "center",
+                  maxWidth: 620,
+                  margin: "10px auto 4px",
+                  pageBreakInside: "avoid",
+                }}
+              >
+                <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center" }}>
+                  <div style={fase}>Planlegging</div>
+                  <div style={pil}>▼</div>
+                  <div style={{ ...fase, background: "#2d4a6f" }}>Risiko- og sårbarhetsvurdering</div>
+                  <div style={pil}>▼</div>
+                  <div style={{ ...fase, background: "#3a5a85" }}>Risikohåndtering</div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <div style={sub}>Formål og omfang</div>
+                  <div style={pil}>▼</div>
+                  <div style={sub}>Valg av konsekvens- og sannsynlighetsdimensjon</div>
+                  <div style={pil}>▼</div>
+                  <div style={sub}>Informasjonsinnhenting</div>
+                  <div style={pil}>▼</div>
+                  <div style={sub}>Organisering</div>
+                  <div style={pil}>▼</div>
+                  <div style={sub}>Klargjøring av analyseskjema og sjekklister</div>
+                </div>
+              </div>
+            );
+          })()}
+          <p style={{ fontSize: 9, fontStyle: "italic", color: "#64748b", textAlign: "center", margin: "4px 0 12px" }}>
+            Figur: De ulike stegene i planlegging av ROS-analysen.
+          </p>
+
+          <h3 style={h3}>2.4 Sannsynlighetsskala</h3>
           <table style={tableStyle}>
             <thead>
               <tr>
@@ -520,7 +643,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
             </tbody>
           </table>
 
-          <h3 style={h3}>2.4 Konsekvensskala</h3>
+          <h3 style={h3}>2.5 Konsekvensskala</h3>
           <table style={tableStyle}>
             <thead>
               <tr>
@@ -538,7 +661,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
             </tbody>
           </table>
 
-          <h3 style={h3}>2.5 Risikomatrise (5×5)</h3>
+          <h3 style={h3}>2.6 Risikomatrise (5×5)</h3>
+
 
           <table style={{ ...tableStyle, width: "auto", marginInline: "auto" }}>
             <thead>

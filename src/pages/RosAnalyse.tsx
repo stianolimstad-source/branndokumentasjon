@@ -35,6 +35,7 @@ interface RosRow { id: string; name: string; project_id: string; updated_at: str
 const EMPTY_CONTENT: RosContent = {
   metadata: { prosjektnavn: "", adresse: "", oppdragsgiver: "", utfortAv: "", dato: "", versjon: "1.0" },
   innledning: { bakgrunn: "", formal: "", omfang: "", avgrensninger: "" },
+  metode: { informasjonsinnhenting: "", organisering: "", skjemaOgSjekklister: "" },
   hendelser: [],
   bowTies: [],
   oppsummering: "",
@@ -148,6 +149,7 @@ export default function RosAnalyse() {
         setContent({
           metadata: { ...EMPTY_CONTENT.metadata, ...(c as any).metadata },
           innledning: { ...EMPTY_CONTENT.innledning, ...(c as any).innledning },
+          metode: { ...EMPTY_CONTENT.metode, ...((c as any).metode || {}) },
           hendelser: Array.isArray((c as any).hendelser)
             ? (c as any).hendelser.map((h: any) => ({
                 ...h,
@@ -610,10 +612,41 @@ export default function RosAnalyse() {
                 })}
               </div>
             </div>
+            <div className="space-y-3 rounded-lg border p-4 bg-muted/20">
+              <div>
+                <h3 className="text-sm font-semibold">2.3 Planlegging av analysen</h3>
+                <p className="text-xs text-muted-foreground">
+                  Punkt 1 (formål/omfang) og 2 (S/K-dimensjon) er allerede dekket i kap. 1 og
+                  metodeskalaen. Fyll inn de tre siste momentene under.
+                </p>
+              </div>
+              <Area
+                label="Informasjonsinnhenting (kilder, tegninger, befaringer, intervjuer, statistikk)"
+                value={content.metode?.informasjonsinnhenting || ""}
+                onChange={(v) =>
+                  setContent((c) => ({ ...c, metode: { ...(c.metode || {}), informasjonsinnhenting: v } }))
+                }
+              />
+              <Area
+                label="Organisering av arbeidet (deltakere, roller, ansvar, møter)"
+                value={content.metode?.organisering || ""}
+                onChange={(v) =>
+                  setContent((c) => ({ ...c, metode: { ...(c.metode || {}), organisering: v } }))
+                }
+              />
+              <Area
+                label="Analyseskjema og sjekklister (5×5-skjema, eventuelle sjekklister/maler)"
+                value={content.metode?.skjemaOgSjekklister || ""}
+                onChange={(v) =>
+                  setContent((c) => ({ ...c, metode: { ...(c.metode || {}), skjemaOgSjekklister: v } }))
+                }
+              />
+            </div>
             <div className="rounded-lg border p-4 bg-muted/30">
               <RosMatriks size="sm" />
             </div>
           </section>
+
 
 
           <section className="space-y-3">
