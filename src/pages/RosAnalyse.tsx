@@ -822,9 +822,12 @@ export default function RosAnalyse() {
           </section>
 
           <section className="space-y-2">
-            <h2 className="text-lg font-semibold">
-              {content.bowTies && content.bowTies.length > 0 ? "5" : "4"}. Oppsummering
-            </h2>
+            <div className="flex items-center gap-1">
+              <h2 className="text-lg font-semibold">
+                {content.bowTies && content.bowTies.length > 0 ? "5" : "4"}. Oppsummering
+              </h2>
+              <JumpToPreview previewId="kap-5" />
+            </div>
             <Textarea value={content.oppsummering} rows={6}
               onChange={(e) => setContent((c) => ({ ...c, oppsummering: e.target.value }))} />
           </section>
