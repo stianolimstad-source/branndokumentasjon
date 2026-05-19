@@ -257,7 +257,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
             { bold: true },
           ),
         ]
-      : [para("Nivå er ikke valgt i input.", { italics: true })]),
+      : [para("Nivå er ikke valgt i input.")]),
     new Paragraph({ children: [text("")] }),
     para("Sannsynlighetsskala", { bold: true }),
     ...SKALA_S.map((s) => para(s)),
