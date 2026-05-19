@@ -24,6 +24,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import RosPreview, { type RosContent, type RosHendelse, type RosBowTie } from "@/components/ros/RosPreview";
 import UploadRosDialog, { type ExtractedRosData } from "@/components/ros/UploadRosDialog";
 import RosMatriks, { risikoFarge } from "@/components/ros/RosMatriks";
+import RosKriterier from "@/components/ros/RosKriterier";
 import { exportRosToWord } from "@/lib/ros-word-export";
 import { useCanDownload } from "@/hooks/useCanDownload";
 import { resolveDocumentTheme } from "@/lib/document-templates";
@@ -907,8 +908,11 @@ export default function RosAnalyse() {
                 }
               />
             </div>
-            <div className="rounded-lg border p-4 bg-muted/30">
+            <div className="rounded-lg border p-4 bg-muted/30 space-y-4">
               <RosMatriks size="sm" />
+              <div className="border-t pt-4">
+                <RosKriterier />
+              </div>
             </div>
           </section>
 

@@ -1,61 +1,65 @@
-
 ## Mål
 
-I bow-tie-seksjonene "Felles barrierer" og "Konsekvensreduserende tiltak" skal vi tilby **to tydelige AI-knapper**:
+Vise tabeller for **konsekvenskriterier** og **sannsynlighetskriterier** for kraftstasjoner sammen med 5×5-risikomatrisen, slik at leseren forstår hva nivåene 1–5 betyr. Merket tydelig "Gjelder kraftstasjoner" — strukturen åpnes senere for andre bransjer.
 
-1. **"Hent fra brannkonsept (kap. 3)"** — AI leser brannkonseptet som er knyttet til samme prosjekt, plukker ut allerede definerte tiltak fra kapittel 3 (§11-4 til §11-17), og matcher dem mot årsakene/konsekvensene i bow-tien.
-2. **"Foreslå nye tiltak (AI)"** — dagens AI-knapp, men tydeligere merket. Foreslår *nye* barrierer/tiltak som ikke allerede ligger i kap. 3.
+## Innhold (faste data fra opplastet bilde)
 
-## Endringer
+Nytt modul `src/lib/ros-risk-criteria.ts`:
 
-### 1. Hent brannkonsept i `RosAnalyse.tsx`
-
-- Når ROS-analysen åpnes og `projectId` er kjent, hent siste `fire_concepts`-rad for prosjektet (`select content`, `order created_at desc`, `limit 1`).
-- Lagre i `useState` (kan være `null` hvis prosjektet ikke har konsept).
-- Brukes som input til nye edge functions.
-
-### 2. To nye edge functions
-
-**`extract-bowtie-from-concept`** (én function som dekker både barrierer og tiltak via `type`-felt):
-- Input: `{ type: "barrier" | "mitigation", topphendelse, beskrivelse, arsaker?, konsekvenser?, konseptKap3 }`
-- Bygger en kompakt tekstrepresentasjon av kap. 3 (alle aktive seksjoner §11-4…§11-17 med tiltakstekster fra konseptets `content.chapter3` / `kapittel3` struktur).
-- Ber Lovable AI om å plukke ut eksisterende tiltak fra kap. 3 som virker forebyggende (for `barrier`) eller konsekvensreduserende (for `mitigation`), og knytte dem til riktige årsak-/konsekvens-id-er.
-- Hver returnert post inkluderer `kildeRef` (f.eks. "§11-12 Brannalarmanlegg") slik at brukeren ser hvor den kommer fra.
-- Returnerer samme JSON-struktur som dagens funksjoner, med ekstra `kildeRef`-felt.
-
-Eksisterende `analyze-bowtie-barriers` og `analyze-bowtie-mitigations` beholdes som de er, men system-prompten utvides med en seksjon: *"Følgende tiltak er allerede dekket av brannkonseptet kap. 3 — ikke gjenta disse, foreslå nye/utfyllende"*. Den får `konseptKap3` som ekstra input.
-
-### 3. UI i `RosPreview`/`RosAnalyse` (bow-tie-seksjonen)
-
-For både "Felles barrierer" og "Konsekvensreduserende tiltak":
-
-```text
-[ Sparkles  Hent fra kap. 3 ]   [ Wand2  Foreslå nye (AI) ]
-```
-
-- Knappene plasseres side om side over listen.
-- "Hent fra kap. 3" er disabled (med tooltip) hvis prosjektet ikke har et brannkonsept.
-- Egen `analyzingSource: "kap3" | "ai" | null` per bow-tie, slik at riktig knapp viser spinner.
-- AI-genererte rader får badge "AI" som i dag; kap.3-rader får badge "Kap. 3 §11-x" (klikkbar tooltip viser kildeRef).
-- `kilde`-typen utvides: `"manuell" | "ai" | "kap3"`. Erstattelseslogikken endres slik at "Hent fra kap. 3" kun bytter ut tidligere `kap3`-rader, og "Foreslå nye" kun bytter ut tidligere `ai`-rader. Manuelle rader berøres aldri.
-
-### 4. Datamodell
-
-I `RosBowTie.felleseBarrierer[]` og `konsekvensReduserende[]` legges til valgfritt felt:
 ```ts
-kildeRef?: string; // f.eks. "§11-12 Brannalarmanlegg"
+export type BransjeId = "kraftstasjon"; // utvides senere
+
+export interface KriterieRad { niva: 1|2|3|4|5; navn: string; beskrivelse: string; }
+
+export const KONSEKVENS_KRITERIER: Record<BransjeId, {tittel: string; rader: KriterieRad[]}> = {
+  kraftstasjon: {
+    tittel: "Konsekvenskriterier – forsyningssikkerhet (kraftstasjon)",
+    rader: [
+      {niva:1, navn:"Ubetydelig", beskrivelse:"Ikke avbrudd i strøm- eller fjernvarmeforsyning."},
+      {niva:2, navn:"Liten",      beskrivelse:"Ingen samfunnskonsekvenser. Avbrudd < 10 timer hos < 10 sluttbrukere."},
+      {niva:3, navn:"Middels",    beskrivelse:"Noen lokale konsekvenser for privatabonnenter. Avbrudd < 10 t hos < 1000 sluttbrukere, eller ≥ 10 t hos < 10 sluttbrukere."},
+      {niva:4, navn:"Alvorlig",   beskrivelse:"Alvorlige konsekvenser i infrastruktur og lokalsamfunn. Avbrudd ≥ 10 t hos < 1000 sluttbrukere."},
+      {niva:5, navn:"Kritisk",    beskrivelse:"Samfunnsviktige funksjoner som liv og helse, samt viktig infrastruktur, rammet/satt ut av funksjon. Avbrudd ≥ 10 t hos ≥ 1000 sluttbrukere."},
+    ],
+  },
+};
+
+export const SANNSYNLIGHET_KRITERIER: Record<BransjeId, {tittel: string; rader: KriterieRad[]}> = {
+  kraftstasjon: {
+    tittel: "Sannsynlighetskriterier – frekvens (kraftstasjon)",
+    rader: [
+      {niva:1, navn:"Svært lite sannsynlig", beskrivelse:"Sjeldnere enn hvert 1000. år (aldri hørt om lignende). Inkluderer tilnærmet «utenkelige» forhold."},
+      {niva:2, navn:"Lite sannsynlig",       beskrivelse:"Fra hvert 100. år til hvert 1000. år (hørt om lignende i Norge eller utlandet)."},
+      {niva:3, navn:"Sannsynlig",            beskrivelse:"Fra hvert 10. år til hvert 100. år (skjedd i selskapet eller hos andre)."},
+      {niva:4, navn:"Meget sannsynlig",      beskrivelse:"Fra 1 gang pr. år til hvert 10. år (skjedd flere ganger i eget eller andres selskap)."},
+      {niva:5, navn:"Svært sannsynlig",      beskrivelse:"Oftere enn 1 gang pr. år (skjer ofte/svært ofte i eget/andres selskap)."},
+    ],
+  },
+};
 ```
-Bakoverkompatibelt — eksisterende lagrede analyser leses fortsatt korrekt.
+
+Strukturen `Record<BransjeId, ...>` gjør det enkelt å legge til f.eks. `"industri"`, `"helse"` senere uten å endre UI.
+
+## Ny komponent
+
+`src/components/ros/RosKriterier.tsx` — viser de to tabellene kompakt under hverandre, med liten badge "Gjelder kraftstasjoner". Bruker semantiske tokens (`bg-muted/30`, `border`, `text-muted-foreground`). Props: `bransje?: BransjeId` (default `"kraftstasjon"`), `compact?: boolean`.
+
+Hver rad: `[niva]  Navn — beskrivelse`, der niva er en liten farget pille (grønn 1–2, gul 3, oransje 4, rød 5) for å koble visuelt til matrisen.
+
+## Hvor det vises
+
+1. **Redigering** — `src/pages/RosAnalyse.tsx` ved linje 910–912: under `<RosMatriks size="sm" />` i samme `border`-kortet.
+2. **Preview** — `src/components/ros/RosPreview.tsx` rett etter den eksisterende fargeforklaringen på linje 728 (under 2.6 Risikomatrise).
+3. **Word-eksport** — `src/lib/ros-word-export.ts` etter `matriseTabell` (linje 339): to nye `Table`-er med samme innhold (gjenbruker `KONSEKVENS_KRITERIER`/`SANNSYNLIGHET_KRITERIER`). Overskrift: "Konsekvens- og sannsynlighetskriterier (kraftstasjon)".
 
 ## Tekniske detaljer
 
-- `fire_concepts.content` er JSONB. Vi må sjekke faktisk feltstruktur for kap. 3 (mest sannsynlig `content.kapittel3` eller per-paragraf nøkler som `paragraf_11_4`, `paragraf_11_12` osv.). Edge functionen normaliserer dette til en flat liste `{ paragraf, tittel, tiltakstekst }` før den sendes til AI.
-- Bruker `google/gemini-2.5-flash` (samme modell som dagens to functions) for konsistens og lav kostnad.
-- CORS + 429/402-håndtering kopieres fra eksisterende functions.
-- Ingen DB-skjemaendringer.
+- Ingen DB-endringer, ingen ROS-modellendringer. Bransje er hardkodet til `"kraftstasjon"` nå.
+- Når flere bransjer skal støttes, kan vi legge `risikoKriterierBransje?: BransjeId` på ROS-content og en velger i metadata. Utenfor scope nå.
+- Preview- og Word-tabellene bruker samme `KriterieRad`-data slik at HTML og .docx alltid er i synk.
 
-## Hva som *ikke* gjøres
+## Ikke gjort
 
-- Ingen endring av kapittel 3-redigeringen i konseptet.
-- Ingen automatisk synkronisering tilbake fra bow-tien til konseptet.
-- Ingen endring av Word-eksport (badges vises kun i UI; eksisterende eksportlogikk fungerer videre).
+- Ingen bransje-velger i UI (kommer senere).
+- Ingen endring av risikofargene i selve matrisen.
+- Ingen tekstendringer i kap. 2.1 metode.

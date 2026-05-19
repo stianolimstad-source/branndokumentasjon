@@ -28,6 +28,7 @@ import {
   tableHeaderShading,
 } from "@/lib/document-templates";
 import { risikoFarge } from "@/components/ros/RosMatriks";
+import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell } from "@/lib/ros-risk-criteria";
 import type { RosContent } from "@/components/ros/RosPreview";
 
 export interface RosSenderInfo {
@@ -342,7 +343,66 @@ export const exportRosToWord = async (options: ExportOptions) => {
         text("Fargekoding: grønn = akseptabel (R 1–4), gul = vurderes / ALARP (R 5–9), rød = ikke akseptabel (R 10–25).", { size: 18 }),
       ],
     }),
+    new Paragraph({ children: [text("")] }),
+    new Paragraph({
+      children: [
+        text("Kriteriene under gjelder kraftstasjoner og tilpasses den enkelte virksomhet.", { size: 18 }),
+      ],
+    }),
+    para(KONSEKVENS_KRITERIER.kraftstasjon.tittel, { bold: true }),
+    buildKriterieTabell(KONSEKVENS_KRITERIER.kraftstasjon),
+    new Paragraph({ children: [text("")] }),
+    para(SANNSYNLIGHET_KRITERIER.kraftstasjon.tittel, { bold: true }),
+    buildKriterieTabell(SANNSYNLIGHET_KRITERIER.kraftstasjon),
   ];
+
+  function buildKriterieTabell(tab: KriterieTabell): Table {
+    const nivaBg = (n: number) =>
+      n <= 2 ? "22A06B" : n === 3 ? "F5B82E" : n === 4 ? "F97316" : "DC3545";
+    const nivaFg = (n: number) => (n === 3 ? "1F2937" : "FFFFFF");
+    const header = new TableRow({
+      children: [
+        new TableCell({
+          children: [new Paragraph({ children: [text("Nivå", { bold: true, size: 18, color: "FFFFFF" })] })],
+          shading: tableHeaderShading(theme),
+          width: { size: 10, type: WidthType.PERCENTAGE },
+        }),
+        new TableCell({
+          children: [new Paragraph({ children: [text("Betegnelse", { bold: true, size: 18, color: "FFFFFF" })] })],
+          shading: tableHeaderShading(theme),
+          width: { size: 22, type: WidthType.PERCENTAGE },
+        }),
+        new TableCell({
+          children: [new Paragraph({ children: [text("Beskrivelse", { bold: true, size: 18, color: "FFFFFF" })] })],
+          shading: tableHeaderShading(theme),
+          width: { size: 68, type: WidthType.PERCENTAGE },
+        }),
+      ],
+    });
+    const rows = tab.rader.map(
+      (r) =>
+        new TableRow({
+          children: [
+            new TableCell({
+              shading: { fill: nivaBg(r.niva), type: ShadingType.CLEAR, color: "auto" },
+              children: [
+                new Paragraph({
+                  alignment: AlignmentType.CENTER,
+                  children: [text(String(r.niva), { bold: true, size: 20, color: nivaFg(r.niva) })],
+                }),
+              ],
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [text(r.navn, { bold: true, size: 18 })] })],
+            }),
+            new TableCell({
+              children: [new Paragraph({ children: [text(r.beskrivelse, { size: 18 })] })],
+            }),
+          ],
+        }),
+    );
+    return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [header, ...rows] });
+  }
 
   // Kap. 3 Hendelsesregister
   const smallHeader = (t: string, widthPct?: number): TableCell =>

@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { risikoFarge } from "./RosMatriks";
 import rosNivaaIllustrasjon from "@/assets/ros-detaljeringsnivaa.jpg";
+import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell } from "@/lib/ros-risk-criteria";
 
 export interface RosHendelse {
   id: string;
@@ -726,6 +727,57 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
           <p style={{ ...pStyle, fontSize: 10, color: "#475569", marginTop: 6 }}>
             Fargekoding: grønn = akseptabel (R 1–4), gul = vurderes / ALARP (R 5–9), rød = ikke akseptabel (R 10–25).
           </p>
+
+          {(() => {
+            const nivaBg = (n: number) =>
+              n <= 2 ? "#22A06B" : n === 3 ? "#F5B82E" : n === 4 ? "#F97316" : "#DC3545";
+            const nivaFg = (n: number) => (n === 3 ? "#1F2937" : "#FFFFFF");
+            const KritTabell = ({ tabell }: { tabell: KriterieTabell }) => (
+              <table style={{ ...tableStyle, marginTop: 8, fontSize: 11 }}>
+                <thead>
+                  <tr>
+                    <th style={{ ...thStyle, width: 40, textAlign: "center" }}>Nivå</th>
+                    <th style={{ ...thStyle, width: 140 }}>Betegnelse</th>
+                    <th style={thStyle}>Beskrivelse</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tabell.rader.map((r) => (
+                    <tr key={r.niva}>
+                      <td
+                        style={{
+                          ...tdStyle,
+                          textAlign: "center",
+                          fontWeight: 700,
+                          background: nivaBg(r.niva),
+                          color: nivaFg(r.niva),
+                        }}
+                      >
+                        {r.niva}
+                      </td>
+                      <td style={{ ...tdStyle, fontWeight: 600 }}>{r.navn}</td>
+                      <td style={tdStyle}>{r.beskrivelse}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            );
+            return (
+              <div style={{ marginTop: 16 }}>
+                <p style={{ ...pStyle, fontSize: 11, fontStyle: "italic", color: "#475569", marginBottom: 6 }}>
+                  Kriteriene under gjelder kraftstasjoner og tilpasses den enkelte virksomhet.
+                </p>
+                <h4 style={{ ...h3, fontSize: 12, marginTop: 8 }}>
+                  {KONSEKVENS_KRITERIER.kraftstasjon.tittel}
+                </h4>
+                <KritTabell tabell={KONSEKVENS_KRITERIER.kraftstasjon} />
+                <h4 style={{ ...h3, fontSize: 12, marginTop: 12 }}>
+                  {SANNSYNLIGHET_KRITERIER.kraftstasjon.tittel}
+                </h4>
+                <KritTabell tabell={SANNSYNLIGHET_KRITERIER.kraftstasjon} />
+              </div>
+            );
+          })()}
         </section>
       </div>
 
