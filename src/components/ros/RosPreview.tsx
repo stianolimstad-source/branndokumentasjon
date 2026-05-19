@@ -675,6 +675,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                       )}
                     </tbody>
                   </table>
+                  </BowTieScroll>
                 </div>
               );
             })}
