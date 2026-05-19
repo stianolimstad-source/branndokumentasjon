@@ -507,7 +507,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
       if (fb.length > 0) {
         bowTieBlocks.push(new Paragraph({ children: [text("")] }));
         bowTieBlocks.push(para("Felles barrierer (på tvers av årsaker)", { bold: true }));
-        fb.forEach((b) => {
+        fb.forEach((b, bi) => {
           const navn = b.arsakIds
             .map((id) => {
               const a = arsaker.find((x) => x.id === id);
@@ -517,9 +517,58 @@ export const exportRosToWord = async (options: ExportOptions) => {
             .join(", ");
           const suffix = navn ? ` (dekker: ${navn})` : "";
           const tag = b.kilde === "ai" ? " [AI]" : "";
-          bowTieBlocks.push(para(`• ${b.tekst}${tag}${suffix}`));
+          bowTieBlocks.push(para(`• B${bi + 1} – ${b.tekst}${tag}${suffix}`));
         });
+
+        // Dekningsmatrise (årsak × barriere)
+        if (arsaker.length > 0) {
+          bowTieBlocks.push(new Paragraph({ children: [text("")] }));
+          bowTieBlocks.push(
+            para("Dekningsmatrise – hvilke barrierer som dekker hver årsak", { bold: true }),
+          );
+          const matrixHeader = new TableRow({
+            children: [
+              smallHeader("Årsak", 40),
+              ...fb.map((_, bi) => smallHeader(`B${bi + 1}`, Math.floor(60 / fb.length))),
+            ],
+          });
+          const matrixRows: TableRow[] = [matrixHeader];
+          arsaker.forEach((a) => {
+            matrixRows.push(
+              new TableRow({
+                children: [
+                  smallCell(a.tittel || a.sarbarhet || a.hendelse || "—", 40, true),
+                  ...fb.map((b) => {
+                    const dekket = b.arsakIds.includes(a.id);
+                    return new TableCell({
+                      width: { size: Math.floor(60 / fb.length), type: WidthType.PERCENTAGE },
+                      shading: dekket
+                        ? { type: ShadingType.CLEAR, color: "auto", fill: "ECFDF5" }
+                        : undefined,
+                      children: [
+                        new Paragraph({
+                          alignment: AlignmentType.CENTER,
+                          children: [
+                            text(dekket ? "●" : "—", {
+                              bold: true,
+                              size: 16,
+                              color: dekket ? "065F46" : "CBD5E1",
+                            }),
+                          ],
+                        }),
+                      ],
+                    });
+                  }),
+                ],
+              }),
+            );
+          });
+          bowTieBlocks.push(
+            new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: matrixRows }),
+          );
+        }
       }
+
 
       // Felles barrierer (fritekst)
       if (bt.fellesBarrierer?.trim()) {
