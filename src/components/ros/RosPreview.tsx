@@ -1043,14 +1043,14 @@ function BowTieDiagram({
   });
 
   // ----- Bow-tie geometri -----
-  const W = 960;
+  const W = 1040;
   const PAD_TOP = 28;
   const PAD_BOT = 16;
   const ROW_H = 48;
   const ARSAK = { x: 16, w: 180 };
-  const BARR = { x: 220, w: 250 };
-  const TOPP = harBarrierer ? { x: 500, w: 200 } : { x: 380, w: 220 };
-  const KONS = { x: 760, w: 184 };
+  const BARR = { x: 280, w: 250 };
+  const TOPP = harBarrierer ? { x: 570, w: 200 } : { x: 400, w: 240 };
+  const KONS = { x: 830, w: 196 };
   const topH = 84;
 
   const nA = Math.max(arsaker.length, 1);
