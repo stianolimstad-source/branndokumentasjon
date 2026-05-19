@@ -591,6 +591,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                                 marginBottom: 5,
                                 fontSize: 10,
                                 color: "#064e3b",
+                                width: "fit-content",
+                                maxWidth: "100%",
                               }}
                             >
                               <div style={{ fontWeight: 600, lineHeight: 1.3 }}>{b.tekst}</div>
