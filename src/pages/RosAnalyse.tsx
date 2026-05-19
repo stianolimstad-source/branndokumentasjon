@@ -1258,20 +1258,39 @@ export default function RosAnalyse() {
                         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                           Felles barrierer (på tvers av årsaker)
                         </Label>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          disabled={analyzingId === bt.id || bt.hendelseIds.length < 2}
-                          onClick={() => analyzeBarrierer(bt)}
-                        >
-                          <Sparkles className="h-3.5 w-3.5 mr-1.5" />
-                          {analyzingId === bt.id ? "Analyserer…" : "Analyser med AI"}
-                        </Button>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            disabled={extractingBarrId === bt.id || !konseptContent || bt.hendelseIds.length < 1}
+                            onClick={() => extractBarriererFraKonsept(bt)}
+                            title={!konseptContent ? "Prosjektet har ikke et brannkonsept" : "Hent barrierer som allerede er prosjektert i brannkonseptets kap. 3"}
+                          >
+                            <GitBranch className="h-3.5 w-3.5 mr-1.5" />
+                            {extractingBarrId === bt.id ? "Henter…" : "Hent fra kap. 3"}
+                          </Button>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            disabled={analyzingId === bt.id || bt.hendelseIds.length < 2}
+                            onClick={() => analyzeBarrierer(bt)}
+                            title="La AI foreslå nye/utfyllende barrierer"
+                          >
+                            <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+                            {analyzingId === bt.id ? "Analyserer…" : "Foreslå nye (AI)"}
+                          </Button>
+                        </div>
                       </div>
+                      {!konseptContent && (
+                        <p className="text-xs text-muted-foreground italic">
+                          Ingen brannkonsept tilknyttet prosjektet — opprett et konsept for å kunne hente fra kap. 3.
+                        </p>
+                      )}
                       {bt.hendelseIds.length < 2 && (
                         <p className="text-xs text-muted-foreground italic">
-                          Velg minst to årsaker for å finne felles barrierer.
+                          Velg minst to årsaker for å la AI foreslå nye felles barrierer.
                         </p>
                       )}
 
