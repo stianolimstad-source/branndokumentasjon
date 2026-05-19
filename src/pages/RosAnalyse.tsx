@@ -27,6 +27,7 @@ import RosMatriks, { risikoFarge } from "@/components/ros/RosMatriks";
 import { exportRosToWord } from "@/lib/ros-word-export";
 import { useCanDownload } from "@/hooks/useCanDownload";
 import { resolveDocumentTheme } from "@/lib/document-templates";
+import rosNivaaIllustrasjon from "@/assets/ros-detaljeringsnivaa.jpg";
 
 interface ProjectOption { id: string; name: string; address: string | null; }
 interface RosRow { id: string; name: string; project_id: string; updated_at: string; }
@@ -573,6 +574,12 @@ export default function RosAnalyse() {
               <p className="text-xs text-muted-foreground">
                 Velg nivå iht. Beredskapsforskriftens kartleggingskrav.
               </p>
+              <img
+                src={rosNivaaIllustrasjon}
+                alt="Illustrasjon av de tre detaljeringsnivåene i ROS-analyse"
+                loading="lazy"
+                className="w-full rounded-md border border-border"
+              />
               <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
                 {([
                   { n: 1, t: "Nivå 1", d: "Overordnet ROS-analyse" },

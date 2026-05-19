@@ -5,6 +5,7 @@ import {
   TableRow,
   TableCell,
   TextRun,
+  ImageRun,
   WidthType,
   HeadingLevel,
   ShadingType,
@@ -13,6 +14,7 @@ import {
   PageOrientation,
   SectionType,
 } from "docx";
+import rosNivaaIllustrasjon from "@/assets/ros-detaljeringsnivaa.jpg";
 import { saveAs } from "file-saver";
 import {
   ResolvedTheme,
@@ -83,6 +85,14 @@ export const exportRosToWord = async (options: ExportOptions) => {
     options.theme ?? buildResolvedTheme({}, logoUrl ?? null, sender.company || null);
   const logo = await fetchLogoBuffer(theme.logoUrl ?? logoUrl ?? null);
   const font = theme.fontFamily;
+
+  let nivaaImageBuffer: ArrayBuffer | null = null;
+  try {
+    const r = await fetch(rosNivaaIllustrasjon);
+    if (r.ok) nivaaImageBuffer = await r.arrayBuffer();
+  } catch {
+    nivaaImageBuffer = null;
+  }
 
   const m = content.metadata;
   const dateStr = m.dato || new Date().toISOString().slice(0, 10);
@@ -244,6 +254,20 @@ export const exportRosToWord = async (options: ExportOptions) => {
     para("   • Nivå 1 — Overordnet ROS-analyse (helhetsbilde av virksomheten/anlegget)"),
     para("   • Nivå 2 — ROS-analyse for anlegg og aktiviteter"),
     para("   • Nivå 3 — Detaljert ROS-analyse av delsystem/komponenter"),
+    ...(nivaaImageBuffer
+      ? [
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+              new ImageRun({
+                data: nivaaImageBuffer,
+                transformation: { width: 560, height: 425 },
+                type: "jpg",
+              }),
+            ],
+          }),
+        ]
+      : []),
     ...(content.metadata.nivaa
       ? [
           para(
