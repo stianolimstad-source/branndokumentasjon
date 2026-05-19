@@ -1312,7 +1312,7 @@ export default function RosAnalyse() {
                                   <div className="flex items-center gap-1.5 flex-wrap">
                                     <span className="text-sm font-medium text-emerald-900 dark:text-emerald-100">{fb.tekst}</span>
                                     <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
-                                      {fb.kilde === "ai" ? "AI" : "Manuell"}
+                                      {fb.kilde === "ai" ? "AI" : fb.kilde === "kap3" ? (fb.kildeRef ? `Kap. 3 ${fb.kildeRef}` : "Kap. 3") : "Manuell"}
                                     </Badge>
                                   </div>
                                   {arsakNavn.length > 0 && (
