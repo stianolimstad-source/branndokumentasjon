@@ -458,7 +458,7 @@ export default function RosAnalyse() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-lg font-semibold">1. Innledning</h2>
+            <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">1. Innledning</h2><JumpToPreview previewId="kap-1" /></div>
             <Area label="Bakgrunn" value={content.innledning.bakgrunn}
               onChange={(v) => setContent((c) => ({ ...c, innledning: { ...c.innledning, bakgrunn: v } }))}
               onGenerate={() => generateBakgrunnText(content.metadata)} />
