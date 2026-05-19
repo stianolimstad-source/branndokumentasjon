@@ -499,6 +499,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                   </h3>
                   {bt.beskrivelse && <p style={pStyle}>{bt.beskrivelse}</p>}
 
+                  <BowTieScroll>
                   {/* Bow-tie diagram */}
                   <div
                     style={{
