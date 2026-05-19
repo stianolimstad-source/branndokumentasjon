@@ -1418,9 +1418,9 @@ export default function RosAnalyse() {
                             type="button"
                             size="sm"
                             variant="outline"
-                            disabled={extractingKonsId === bt.id || !konseptContent || bt.konsekvenser.length < 1}
+                            disabled={extractingKonsId === bt.id || bt.konsekvenser.length < 1 || bt.hendelseIds.length < 1}
                             onClick={() => extractKonsTiltakFraKonsept(bt)}
-                            title={!konseptContent ? "Prosjektet har ikke et brannkonsept" : "Hent konsekvensreduserende tiltak fra brannkonseptets kap. 3"}
+                            title="Hent konsekvensreduserende tiltak som er ført opp på hendelsene i ROS-analysens kap. 3"
                           >
                             <GitBranch className="h-3.5 w-3.5 mr-1.5" />
                             {extractingKonsId === bt.id ? "Henter…" : "Hent fra kap. 3"}
@@ -1438,11 +1438,6 @@ export default function RosAnalyse() {
                           </Button>
                         </div>
                       </div>
-                      {!konseptContent && (
-                        <p className="text-xs text-muted-foreground italic">
-                          Ingen brannkonsept tilknyttet prosjektet — opprett et konsept for å kunne hente fra kap. 3.
-                        </p>
-                      )}
                       {bt.konsekvenser.length < 1 && (
                         <p className="text-xs text-muted-foreground italic">
                           Registrer minst én konsekvens for å foreslå konsekvensreduserende tiltak.
