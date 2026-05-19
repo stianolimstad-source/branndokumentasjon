@@ -411,7 +411,92 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
             );
           })()}
 
-          <h3 style={h3}>2.2 Sannsynlighetsskala</h3>
+          <h3 style={h3}>2.2 Detaljeringsnivå</h3>
+          <p style={pStyle}>
+            Beredskapsforskriften stiller krav om å kartlegge virksomhetens risikopotensiale.
+            Detaljeringsnivået i ROS-analysen tilpasses analysens formål. Det skilles mellom
+            tre nivåer:
+          </p>
+          {(() => {
+            const niva = content.metadata.nivaa;
+            const nivaer: { n: 1 | 2 | 3; tittel: string; beskrivelse: string }[] = [
+              { n: 1, tittel: "Nivå 1 — Overordnet ROS-analyse", beskrivelse: "Helhetsbilde av virksomheten/anlegget." },
+              { n: 2, tittel: "Nivå 2 — ROS-analyse for anlegg og aktiviteter", beskrivelse: "Konkretiserer risiko per anlegg og aktivitet." },
+              { n: 3, tittel: "Nivå 3 — Detaljert ROS-analyse av delsystem/komponenter", beskrivelse: "Dyptgående analyse av enkeltkomponenter eller delsystemer." },
+            ];
+            return (
+              <div style={{ pageBreakInside: "avoid" }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr 1fr",
+                    gap: 10,
+                    margin: "10px 0 6px",
+                  }}
+                >
+                  {nivaer.map((x) => {
+                    const valgt = niva === x.n;
+                    return (
+                      <div
+                        key={x.n}
+                        style={{
+                          background: valgt ? "#fff5f6" : "#e8eef7",
+                          border: valgt ? "2px solid #DC3545" : "1px solid #6b86b3",
+                          borderRadius: 6,
+                          padding: "10px 12px",
+                          fontSize: 10,
+                          lineHeight: 1.35,
+                          position: "relative",
+                          boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+                        }}
+                      >
+                        <div style={{ fontWeight: 700, fontSize: 11, marginBottom: 4, color: "#1e3a5f" }}>
+                          {x.tittel}
+                        </div>
+                        <div>{x.beskrivelse}</div>
+                        {valgt && (
+                          <div
+                            style={{
+                              marginTop: 8,
+                              fontSize: 9,
+                              fontWeight: 700,
+                              color: "#fff",
+                              background: "#DC3545",
+                              padding: "2px 6px",
+                              borderRadius: 3,
+                              display: "inline-block",
+                              letterSpacing: 0.4,
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            Valgt for denne analysen
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+                {!niva && (
+                  <p style={{ ...pStyle, fontStyle: "italic", color: "#64748b", fontSize: 10 }}>
+                    Nivå er ikke valgt i input.
+                  </p>
+                )}
+                <p
+                  style={{
+                    fontSize: 9,
+                    fontStyle: "italic",
+                    color: "#64748b",
+                    textAlign: "center",
+                    margin: "4px 0 0 0",
+                  }}
+                >
+                  Figur basert på NVE / Proactima — nivåinndeling iht. Beredskapsforskriften.
+                </p>
+              </div>
+            );
+          })()}
+
+          <h3 style={h3}>2.3 Sannsynlighetsskala</h3>
           <table style={tableStyle}>
             <thead>
               <tr>
