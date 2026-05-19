@@ -834,7 +834,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 ...aiBarrierer.map((b) => ({
                   kilde:
                     "Felles barriere" +
-                    (b.kilde === "ai" ? " (AI)" : "") +
+                    (b.kilde === "ai" ? " (AI)" : b.kilde === "kap3" ? ` (Kap. 3${b.kildeRef ? " " + b.kildeRef : ""})` : "") +
                     (b.arsakIds.length
                       ? " · " +
                         b.arsakIds
