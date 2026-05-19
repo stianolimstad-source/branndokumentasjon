@@ -532,7 +532,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
             </tbody>
           </table>
 
-          <h3 style={h3}>2.4 Risikomatrise (5×5)</h3>
+          <h3 style={h3}>2.5 Risikomatrise (5×5)</h3>
 
           <table style={{ ...tableStyle, width: "auto", marginInline: "auto" }}>
             <thead>
