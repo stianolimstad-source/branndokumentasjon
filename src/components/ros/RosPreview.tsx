@@ -34,6 +34,12 @@ export interface RosFellesBarriere {
   kilde?: "ai" | "manuell";
 }
 
+export interface RosKonsekvensTiltak {
+  tekst: string;
+  konsekvensIndekser: number[]; // peker inn i bt.konsekvenser[]
+  kilde?: "ai" | "manuell";
+}
+
 export interface RosBowTie {
   id: string;
   navn: string;
@@ -42,6 +48,7 @@ export interface RosBowTie {
   konsekvenser: string[];
   fellesBarrierer?: string;
   felleseBarrierer?: RosFellesBarriere[];
+  konsekvensReduserende?: RosKonsekvensTiltak[];
 }
 
 export interface RosContent {
