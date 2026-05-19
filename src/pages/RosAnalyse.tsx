@@ -1404,17 +1404,36 @@ export default function RosAnalyse() {
                         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                           Konsekvensreduserende tiltak (etter topphendelse)
                         </Label>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          disabled={analyzingKonsId === bt.id || bt.konsekvenser.length < 1}
-                          onClick={() => analyzeKonsekvensTiltak(bt)}
-                        >
-                          <Sparkles className="h-3.5 w-3.5 mr-1.5" />
-                          {analyzingKonsId === bt.id ? "Analyserer…" : "Analyser med AI"}
-                        </Button>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            disabled={extractingKonsId === bt.id || !konseptContent || bt.konsekvenser.length < 1}
+                            onClick={() => extractKonsTiltakFraKonsept(bt)}
+                            title={!konseptContent ? "Prosjektet har ikke et brannkonsept" : "Hent konsekvensreduserende tiltak fra brannkonseptets kap. 3"}
+                          >
+                            <GitBranch className="h-3.5 w-3.5 mr-1.5" />
+                            {extractingKonsId === bt.id ? "Henter…" : "Hent fra kap. 3"}
+                          </Button>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            disabled={analyzingKonsId === bt.id || bt.konsekvenser.length < 1}
+                            onClick={() => analyzeKonsekvensTiltak(bt)}
+                            title="La AI foreslå nye/utfyllende konsekvensreduserende tiltak"
+                          >
+                            <Sparkles className="h-3.5 w-3.5 mr-1.5" />
+                            {analyzingKonsId === bt.id ? "Analyserer…" : "Foreslå nye (AI)"}
+                          </Button>
+                        </div>
                       </div>
+                      {!konseptContent && (
+                        <p className="text-xs text-muted-foreground italic">
+                          Ingen brannkonsept tilknyttet prosjektet — opprett et konsept for å kunne hente fra kap. 3.
+                        </p>
+                      )}
                       {bt.konsekvenser.length < 1 && (
                         <p className="text-xs text-muted-foreground italic">
                           Registrer minst én konsekvens for å foreslå konsekvensreduserende tiltak.
