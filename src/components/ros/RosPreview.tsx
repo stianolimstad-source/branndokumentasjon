@@ -1403,7 +1403,7 @@ function BowTieDiagram({
                 top: arsakY[i] - 14,
                 width: ARSAK.w,
                 display: "flex",
-                justifyContent: "flex-end",
+                justifyContent: "flex-start",
                 zIndex: 2,
                 opacity: active ? 1 : 0.35,
                 cursor: "pointer",
