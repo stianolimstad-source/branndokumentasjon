@@ -736,14 +736,12 @@ export default function RosAnalyse() {
                         <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                           Konsekvenser
                         </Label>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-7 text-xs"
-                          onClick={() => updateBowTie(bt.id, { konsekvenser: [...bt.konsekvenser, ""] })}
-                        >
-                          <Plus className="h-3 w-3 mr-1" /> Legg til
-                        </Button>
+                        <KonsekvensPicker
+                          valgte={bt.konsekvenser}
+                          onAdd={(tekst) =>
+                            updateBowTie(bt.id, { konsekvenser: [...bt.konsekvenser, tekst] })
+                          }
+                        />
                       </div>
                       {bt.konsekvenser.length === 0 ? (
                         <p className="text-xs text-muted-foreground italic">Ingen konsekvenser registrert.</p>
@@ -776,6 +774,7 @@ export default function RosAnalyse() {
                         </div>
                       )}
                     </div>
+
 
                     <div className="space-y-1 border-t pt-3">
                       <Area
