@@ -852,7 +852,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                   </h3>
                   {bt.beskrivelse && <p style={pStyle}>{bt.beskrivelse}</p>}
 
-                  <BowTieScroll>
+                  <BowTieScroll minWidth={1040}>
                   <BowTieDiagram bt={bt} arsaker={arsaker} aiBarrierer={aiBarrierer} harBarrierer={harBarrierer} />
 
 
