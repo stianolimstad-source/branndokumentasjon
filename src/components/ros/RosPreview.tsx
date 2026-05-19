@@ -63,7 +63,7 @@ export interface RosContent {
   metode?: {
     informasjonsinnhenting?: string;
     organisering?: string;
-    deltakere?: { navn: string; stilling: string }[];
+    deltakere?: { navn: string; stilling: string; bedrift?: string }[];
     skjemaOgSjekklister?: string;
   };
   hendelser: RosHendelse[];
