@@ -1,42 +1,45 @@
-## Mål
-Legg til en ny seksjon **2.2 Detaljeringsnivå** i kap. 2 i ROS-analysen, basert på Beredskapsforskriften/NVE/Proactima sin 3-trinns nivåinndeling. Brukeren velger i input-skjemaet hvilket nivå analysen dekker (Nivå 1, 2 eller 3), og valgt nivå rendres i preview-kapitlet og Word-eksporten. Eksisterende underkapitler i kap. 2 forskyves: 2.2 Sannsynlighetsskala → 2.3, 2.3 Konsekvensskala → 2.4, 2.4 Risikomatrise → 2.5.
+## Plan: Illustrasjon for detaljeringsnivå i ROS-analyse
 
-## Datamodell
-- Utvid `RosContent.metadata` i `src/components/ros/RosPreview.tsx` med felt `nivaa?: 1 | 2 | 3` (valgfritt for bakoverkompatibilitet; default udefinert = ikke valgt).
+Lage et nytt, profesjonelt illustrasjonsbilde som viser konseptet med de tre detaljeringsnivåene i en ROS-analyse, inspirert av det opplastede referansebildet, men med et renere og mer moderne uttrykk som passer applikasjonens visuelle stil.
 
-## Input — `src/pages/RosAnalyse.tsx`
-- I "2. Metode"-seksjonen (linje ~566), legg til en `<Select>` eller radioknapp-gruppe:
-  - **Nivå 1 — Overordnet ROS-analyse** (hele virksomheten/anlegget)
-  - **Nivå 2 — ROS-analyse av anlegg og aktiviteter**
-  - **Nivå 3 — Detaljert ROS-analyse av delsystem/komponenter**
-- Skriver til `content.metadata.nivaa`.
-- Liten hjelpetekst: "Velg detaljeringsnivå iht. Beredskapsforskriftens kartleggingskrav."
-- Oppdater `EMPTY_CONTENT.metadata` (linje 35) med `nivaa: undefined`.
+### Innhold i illustrasjonen
 
-## Preview — `src/components/ros/RosPreview.tsx`
-Etter eksisterende 2.1 Analyseprosess legges en ny **2.2 Detaljeringsnivå**:
-- Kort introtekst: "Beredskapsforskriften stiller krav om å kartlegge virksomhetens risikopotensiale. Analysens detaljeringsnivå tilpasses formålet. Det skilles mellom tre nivåer:"
-- Tre stilrene "kort" side-ved-side (CSS grid 3 kolonner, samme stil som boksene i 2.1):
-  - Nivå 1 — Overordnet ROS-analyse — *Helhetsbilde av virksomheten/anlegget*
-  - Nivå 2 — ROS-analyse for anlegg og aktiviteter — *Konkretiserer risiko per anlegg/aktivitet*
-  - Nivå 3 — Detaljert ROS-analyse av delsystem/komponenter — *Dyptgående på enkeltkomponenter/delsystemer*
-- Hvert kort har samme blå farge som boksene i 2.1; det **valgte** nivået utheves med tykkere ramme (`2px solid #DC3545`) + et "Valgt for denne analysen"-merke nederst.
-- Hvis `metadata.nivaa` ikke er satt: alle tre kort vises nøytralt + en kursiv note: "Nivå er ikke valgt i input."
-- Kilde-footer: "Figur basert på NVE/Proactima — nivåinndeling iht. Beredskapsforskriften."
+Bildet skal inneholde to lag som i originalen:
 
-Renummerer eksisterende h3-er fra 2.2/2.3/2.4 til 2.3/2.4/2.5.
+1. **Øvre del — systemoversikt med nivå-soner**
+   - Et stilisert energisystem-landskap (vannkraft, gasskraft, bioenergi, transformatorstasjoner, kraftlinjer, boliger, industri, tankskip)
+   - Tre konsentriske/overlappende soner som markerer omfanget for hvert nivå:
+     - Stor blå sone = Nivå 1 (hele systemet)
+     - Mindre lilla sone = Nivå 2 (et anlegg/aktivitet)
+     - Liten oransje sirkel = Nivå 3 (én komponent, f.eks. en tank)
 
-## Word-eksport — `src/lib/ros-word-export.ts`
-Etter blokken for "Analyseprosess" i kap. 2 legges:
-- `para("Detaljeringsnivå", { bold: true })`
-- Tre punkter med samme tekster som over.
-- Hvis `metadata.nivaa` er satt: avsluttende linje `para("Valgt for denne analysen: Nivå X — <navn>", { bold: true })`.
+2. **Nedre del — tre prosess-spalter**
+   - Tre kolonner med overskrifter:
+     - **Nivå 1:** Overordnet ROS-analyse (blå)
+     - **Nivå 2:** ROS-analyse for anlegg og aktiviteter (lilla)
+     - **Nivå 3:** Detaljert ROS-analyse av delsystem/komponenter (oransje)
+   - Hver kolonne med tre bokser i rekkefølge: **Planlegging → ROS-vurdering → Risikohåndtering**
+   - Piler mellom kolonnene som viser progresjon fra grovt til detaljert nivå
 
-## Filer som endres
-- `src/components/ros/RosPreview.tsx` — utvid `RosContent.metadata` type + ny 2.2-seksjon + renummerering.
-- `src/pages/RosAnalyse.tsx` — input-felt for nivåvalg + oppdatert `EMPTY_CONTENT`.
-- `src/lib/ros-word-export.ts` — ny Detaljeringsnivå-bolk i kap. 2.
+### Visuell stil
 
-## Ingen endringer
-- Database-skjema (lagres som JSON i eksisterende `content`-felt).
-- Kap. 1, 3, 4, 5/6, AI-logikk, RLS.
+- Flat, moderne vektor-look (ikke tegneserieaktig som originalen)
+- Rene linjer, mild fargepalett som matcher appens profesjonelle uttrykk
+- Tydelige fargekoder for nivåene: blå/lilla/oransje (samme som kortene i 2.2-seksjonen)
+- Norsk tekst på alle etiketter
+- 16:9 format, høy oppløsning, lesbar når den vises i full bredde i metodeseksjonen
+
+### Implementering
+
+1. Generere bildet med `imagegen` (premium-kvalitet pga. norsk tekst som må være leselig)
+2. Lagre som `src/assets/ros-detaljeringsnivaa.jpg`
+3. Importere bildet i `src/pages/RosAnalyse.tsx` og vise det i input-seksjonen for "Detaljeringsnivå" (under select-feltet) som visuell forklaring
+4. Importere samme bilde i `src/components/ros/RosPreview.tsx` og vise det i kap. 2.2 over de tre valgkortene
+5. Legge bildet inn i Word-eksport (`src/lib/ros-word-export.ts`) i 2.2-blokken via `ImageRun`
+
+### Filer som endres
+
+- Ny: `src/assets/ros-detaljeringsnivaa.jpg`
+- `src/pages/RosAnalyse.tsx` (vise bildet i input)
+- `src/components/ros/RosPreview.tsx` (vise bildet i preview-kap. 2.2)
+- `src/lib/ros-word-export.ts` (inkludere bildet i Word-eksport)
