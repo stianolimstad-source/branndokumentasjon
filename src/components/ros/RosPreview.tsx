@@ -51,6 +51,7 @@ export interface RosContent {
     utfortAv: string;
     dato: string;
     versjon: string;
+    nivaa?: 1 | 2 | 3;
   };
   innledning: {
     bakgrunn: string;
