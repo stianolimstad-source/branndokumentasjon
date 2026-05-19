@@ -635,18 +635,21 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         </p>
                       ) : (
                         bt.konsekvenser.map((k, i) => (
-                          <div
-                            key={i}
-                            style={{
-                              background: "#fff",
-                              border: "1px solid #cbd5e1",
-                              borderRadius: 4,
-                              padding: "4px 8px",
-                              marginBottom: 4,
-                              fontSize: 10,
-                            }}
-                          >
-                            {k}
+                          <div key={i} style={{ marginBottom: 4 }}>
+                            <div
+                              style={{
+                                display: "inline-block",
+                                background: "#fff",
+                                border: "1px solid #cbd5e1",
+                                borderRadius: 4,
+                                padding: "4px 8px",
+                                fontSize: 10,
+                                width: "fit-content",
+                                maxWidth: "100%",
+                              }}
+                            >
+                              {k}
+                            </div>
                           </div>
                         ))
                       )}
