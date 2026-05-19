@@ -551,6 +551,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                       <tr>
                         <th style={{ border: "1px solid #cbd5e1", background: "#f1f5f9", padding: "4px 8px", textAlign: "left" }}>Navn</th>
                         <th style={{ border: "1px solid #cbd5e1", background: "#f1f5f9", padding: "4px 8px", textAlign: "left" }}>Stillingstittel</th>
+                        <th style={{ border: "1px solid #cbd5e1", background: "#f1f5f9", padding: "4px 8px", textAlign: "left" }}>Bedrift</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -558,6 +559,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         <tr key={i}>
                           <td style={{ border: "1px solid #cbd5e1", padding: "4px 8px" }}>{d.navn || "—"}</td>
                           <td style={{ border: "1px solid #cbd5e1", padding: "4px 8px" }}>{d.stilling || "—"}</td>
+                          <td style={{ border: "1px solid #cbd5e1", padding: "4px 8px" }}>{d.bedrift || "—"}</td>
                         </tr>
                       ))}
                     </tbody>
