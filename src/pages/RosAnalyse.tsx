@@ -1277,9 +1277,9 @@ export default function RosAnalyse() {
                             type="button"
                             size="sm"
                             variant="outline"
-                            disabled={extractingBarrId === bt.id || !konseptContent || bt.hendelseIds.length < 1}
+                            disabled={extractingBarrId === bt.id || bt.hendelseIds.length < 1}
                             onClick={() => extractBarriererFraKonsept(bt)}
-                            title={!konseptContent ? "Prosjektet har ikke et brannkonsept" : "Hent barrierer som allerede er prosjektert i brannkonseptets kap. 3"}
+                            title="Hent forebyggende tiltak som er ført opp på hendelsene i ROS-analysens kap. 3"
                           >
                             <GitBranch className="h-3.5 w-3.5 mr-1.5" />
                             {extractingBarrId === bt.id ? "Henter…" : "Hent fra kap. 3"}
@@ -1297,11 +1297,6 @@ export default function RosAnalyse() {
                           </Button>
                         </div>
                       </div>
-                      {!konseptContent && (
-                        <p className="text-xs text-muted-foreground italic">
-                          Ingen brannkonsept tilknyttet prosjektet — opprett et konsept for å kunne hente fra kap. 3.
-                        </p>
-                      )}
                       {bt.hendelseIds.length < 2 && (
                         <p className="text-xs text-muted-foreground italic">
                           Velg minst to årsaker for å la AI foreslå nye felles barrierer.
