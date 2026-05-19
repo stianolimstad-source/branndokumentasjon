@@ -504,9 +504,11 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                   <div
                     style={{
                       display: "grid",
-                      gridTemplateColumns: harBarrierer ? "1fr 180px 200px 1fr" : "1fr 220px 1fr",
+                      gridTemplateColumns: harBarrierer
+                        ? "minmax(160px, 240px) 200px 220px minmax(160px, 240px)"
+                        : "minmax(160px, 240px) 240px minmax(160px, 240px)",
                       gap: 10,
-                      alignItems: "center",
+                      alignItems: "start",
                       background: "#f7f9fc",
                       border: "1px solid #e2e8f0",
                       borderRadius: 8,
