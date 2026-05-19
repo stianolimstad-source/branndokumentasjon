@@ -309,7 +309,10 @@ export default function RosAnalyse() {
     const id = makeId();
     setContent((c) => ({
       ...c,
-      bowTies: [...(c.bowTies || []), { id, navn: "", beskrivelse: "", hendelseIds: [], konsekvenser: [], fellesBarrierer: "" }],
+      bowTies: [
+        ...(c.bowTies || []),
+        { id, navn: "", beskrivelse: "", hendelseIds: [], konsekvenser: [], fellesBarrierer: "", felleseBarrierer: [] },
+      ],
     }));
   };
   const updateBowTie = (id: string, patch: Partial<RosBowTie>) => {
@@ -327,14 +330,91 @@ export default function RosAnalyse() {
       bowTies: (c.bowTies || []).map((b) => {
         if (b.id !== bowTieId) return b;
         const exists = b.hendelseIds.includes(hendelseId);
-        return {
-          ...b,
-          hendelseIds: exists
-            ? b.hendelseIds.filter((x) => x !== hendelseId)
-            : [...b.hendelseIds, hendelseId],
-        };
+        const nyeIds = exists
+          ? b.hendelseIds.filter((x) => x !== hendelseId)
+          : [...b.hendelseIds, hendelseId];
+        // Hold AI-barrierer i synk når årsaker fjernes
+        const nyeBarrierer = (b.felleseBarrierer || [])
+          .map((fb) => ({ ...fb, arsakIds: fb.arsakIds.filter((x) => nyeIds.includes(x)) }))
+          .filter((fb) => fb.arsakIds.length >= 2);
+        return { ...b, hendelseIds: nyeIds, felleseBarrierer: nyeBarrierer };
       }),
     }));
+  };
+
+  const [analyzingId, setAnalyzingId] = useState<string | null>(null);
+  const [newFellesTekst, setNewFellesTekst] = useState<Record<string, string>>({});
+  const [newFellesArsaker, setNewFellesArsaker] = useState<Record<string, string[]>>({});
+
+  const analyzeBarrierer = async (bt: RosBowTie) => {
+    const arsaker = bt.hendelseIds
+      .map((id) => content.hendelser.find((h) => h.id === id))
+      .filter((h): h is RosHendelse => !!h);
+    if (arsaker.length < 2) {
+      toast({ title: "Trenger minst 2 årsaker", description: "Velg minst to årsaker for å finne felles barrierer.", variant: "destructive" });
+      return;
+    }
+    setAnalyzingId(bt.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("analyze-bowtie-barriers", {
+        body: {
+          topphendelse: bt.navn,
+          beskrivelse: bt.beskrivelse || "",
+          arsaker: arsaker.map((a) => ({
+            id: a.id,
+            tittel: a.tittel || a.sarbarhet || a.hendelse || "Uten navn",
+            tiltak: a.tiltak || "",
+          })),
+        },
+      });
+      if (error) throw error;
+      const nye = Array.isArray(data?.barrierer)
+        ? data.barrierer.map((b: any) => ({
+            tekst: String(b.tekst || "").trim(),
+            arsakIds: Array.isArray(b.arsakIds) ? b.arsakIds.map((x: any) => String(x)) : [],
+            kilde: "ai" as const,
+          }))
+        : [];
+      // Behold manuelle, erstatt AI-genererte
+      const beholdt = (bt.felleseBarrierer || []).filter((b) => b.kilde !== "ai");
+      updateBowTie(bt.id, { felleseBarrierer: [...nye, ...beholdt] });
+      toast({
+        title: nye.length > 0 ? `Fant ${nye.length} felles barriere${nye.length === 1 ? "" : "r"}` : "Ingen felles barrierer funnet",
+        description: nye.length > 0 ? "Lagt til i diagrammet og tabellen." : "AI fant ingen barrierer som dekker flere årsaker.",
+      });
+    } catch (e: any) {
+      const msg = e?.message || "Kunne ikke analysere barrierer.";
+      toast({ title: "AI-analyse feilet", description: msg, variant: "destructive" });
+    } finally {
+      setAnalyzingId(null);
+    }
+  };
+
+  const addManuellBarriere = (btId: string) => {
+    const tekst = (newFellesTekst[btId] || "").trim();
+    const arsakIds = newFellesArsaker[btId] || [];
+    if (!tekst || arsakIds.length < 1) {
+      toast({ title: "Mangler informasjon", description: "Skriv tekst og velg minst én årsak.", variant: "destructive" });
+      return;
+    }
+    const bt = (content.bowTies || []).find((b) => b.id === btId);
+    if (!bt) return;
+    updateBowTie(btId, {
+      felleseBarrierer: [
+        ...(bt.felleseBarrierer || []),
+        { tekst, arsakIds, kilde: "manuell" },
+      ],
+    });
+    setNewFellesTekst((s) => ({ ...s, [btId]: "" }));
+    setNewFellesArsaker((s) => ({ ...s, [btId]: [] }));
+  };
+
+  const removeFellesBarriere = (btId: string, index: number) => {
+    const bt = (content.bowTies || []).find((b) => b.id === btId);
+    if (!bt) return;
+    updateBowTie(btId, {
+      felleseBarrierer: (bt.felleseBarrierer || []).filter((_, i) => i !== index),
+    });
   };
 
   const importHendelser = (data: ExtractedRosData, mode: "append" | "replace") => {
