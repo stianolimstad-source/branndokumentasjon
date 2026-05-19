@@ -295,12 +295,33 @@ export const exportRosToWord = async (options: ExportOptions) => {
         "Ikke utfylt (kilder, tegningsgrunnlag, befaringer, intervjuer, statistikk)."
       }`,
     ),
-    para(
-      `4. Organisering av arbeidet: ${
-        content.metode?.organisering?.trim() ||
-        "Ikke utfylt (deltakere, roller, ansvar, møtestruktur)."
-      }`,
-    ),
+    ...((() => {
+      const deltakere = content.metode?.deltakere || [];
+      if (deltakere.length > 0) {
+        return [
+          para("4. Organisering av arbeidet — deltakere:"),
+          new Table({
+            width: { size: 70, type: WidthType.PERCENTAGE },
+            rows: [
+              new TableRow({ children: [headerCell("Navn", 50), headerCell("Stillingstittel", 50)] }),
+              ...deltakere.map((d) =>
+                new TableRow({
+                  children: [cell(d.navn || "—", 50), cell(d.stilling || "—", 50)],
+                }),
+              ),
+            ],
+          }),
+        ] as (Paragraph | Table)[];
+      }
+      return [
+        para(
+          `4. Organisering av arbeidet: ${
+            content.metode?.organisering?.trim() ||
+            "Ikke utfylt (deltakere, roller, ansvar, møtestruktur)."
+          }`,
+        ),
+      ] as (Paragraph | Table)[];
+    })()),
     para(
       `5. Klargjøring av analyseskjema og sjekklister: ${
         content.metode?.skjemaOgSjekklister?.trim() ||
