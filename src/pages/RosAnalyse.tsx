@@ -433,6 +433,76 @@ export default function RosAnalyse() {
     });
   };
 
+  // ----- Konsekvensreduserende tiltak -----
+  const [analyzingKonsId, setAnalyzingKonsId] = useState<string | null>(null);
+  const [newKonsTekst, setNewKonsTekst] = useState<Record<string, string>>({});
+  const [newKonsIndekser, setNewKonsIndekser] = useState<Record<string, number[]>>({});
+
+  const analyzeKonsekvensTiltak = async (bt: RosBowTie) => {
+    if (bt.konsekvenser.length < 1) {
+      toast({ title: "Trenger minst 1 konsekvens", description: "Registrer minst én konsekvens først.", variant: "destructive" });
+      return;
+    }
+    setAnalyzingKonsId(bt.id);
+    try {
+      const { data, error } = await supabase.functions.invoke("analyze-bowtie-mitigations", {
+        body: {
+          topphendelse: bt.navn,
+          beskrivelse: bt.beskrivelse || "",
+          konsekvenser: bt.konsekvenser.map((tekst, i) => ({ id: String(i), tekst })),
+        },
+      });
+      if (error) throw error;
+      const nye = Array.isArray(data?.tiltak)
+        ? data.tiltak.map((t: any) => ({
+            tekst: String(t.tekst || "").trim(),
+            konsekvensIndekser: Array.isArray(t.konsekvensIds)
+              ? t.konsekvensIds.map((x: any) => Number(x)).filter((n: number) => Number.isInteger(n) && n >= 0 && n < bt.konsekvenser.length)
+              : [],
+            kilde: "ai" as const,
+          }))
+        : [];
+      const beholdt = (bt.konsekvensReduserende || []).filter((t) => t.kilde !== "ai");
+      updateBowTie(bt.id, { konsekvensReduserende: [...nye, ...beholdt] });
+      toast({
+        title: nye.length > 0 ? `Fant ${nye.length} konsekvensreduserende tiltak` : "Ingen tiltak funnet",
+        description: nye.length > 0 ? "Lagt til i diagrammet og tabellen." : "AI fant ingen relevante konsekvensreduserende tiltak.",
+      });
+    } catch (e: any) {
+      toast({ title: "AI-analyse feilet", description: e?.message || "Kunne ikke analysere tiltak.", variant: "destructive" });
+    } finally {
+      setAnalyzingKonsId(null);
+    }
+  };
+
+  const addManuellKonsekvensTiltak = (btId: string) => {
+    const tekst = (newKonsTekst[btId] || "").trim();
+    const indekser = newKonsIndekser[btId] || [];
+    if (!tekst || indekser.length < 1) {
+      toast({ title: "Mangler informasjon", description: "Skriv tekst og velg minst én konsekvens.", variant: "destructive" });
+      return;
+    }
+    const bt = (content.bowTies || []).find((b) => b.id === btId);
+    if (!bt) return;
+    updateBowTie(btId, {
+      konsekvensReduserende: [
+        ...(bt.konsekvensReduserende || []),
+        { tekst, konsekvensIndekser: indekser, kilde: "manuell" },
+      ],
+    });
+    setNewKonsTekst((s) => ({ ...s, [btId]: "" }));
+    setNewKonsIndekser((s) => ({ ...s, [btId]: [] }));
+  };
+
+  const removeKonsekvensTiltak = (btId: string, index: number) => {
+    const bt = (content.bowTies || []).find((b) => b.id === btId);
+    if (!bt) return;
+    updateBowTie(btId, {
+      konsekvensReduserende: (bt.konsekvensReduserende || []).filter((_, i) => i !== index),
+    });
+  };
+
+
   const importHendelser = (data: ExtractedRosData, mode: "append" | "replace") => {
     const nye: RosHendelse[] = data.hendelser.map((h) => ({ ...h, id: makeId() }));
     setContent((c) => ({
