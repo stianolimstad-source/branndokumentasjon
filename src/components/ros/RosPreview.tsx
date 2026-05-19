@@ -298,7 +298,119 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
             bruk, brannenergi, evakueringsforhold og aktive/passive brannsikringstiltak.
           </p>
 
-          <h3 style={h3}>2.1 Sannsynlighetsskala</h3>
+          <h3 style={h3}>2.1 Analyseprosess</h3>
+          <p style={pStyle}>
+            Analysen følger risikoanalyseprosessen beskrevet i Aven, Røed og Wiencke (2008)
+            «Risikoanalyser – prinsipper og metoder, med anvendelser», som igjen bygger på
+            ISO 31000. Prosessen deles i tre hovedfaser: planlegging, risiko- og
+            sårbarhetsvurdering og risikohåndtering.
+          </p>
+          {(() => {
+            const boks: React.CSSProperties = {
+              background: "#e8eef7",
+              border: "1px solid #6b86b3",
+              borderRadius: 4,
+              padding: "8px 10px",
+              fontSize: 11,
+              textAlign: "center",
+              lineHeight: 1.3,
+              boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+            };
+            const pil: React.CSSProperties = {
+              textAlign: "center",
+              color: "#6b86b3",
+              fontSize: 14,
+              lineHeight: 1,
+              margin: "2px 0",
+            };
+            const gruppeLabel: React.CSSProperties = {
+              writingMode: "vertical-rl",
+              transform: "rotate(180deg)",
+              fontSize: 10,
+              fontWeight: 600,
+              color: "#1e3a5f",
+              padding: "0 6px",
+              borderLeft: "2px solid #94a3b8",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            };
+            const fasekol: React.CSSProperties = {
+              display: "flex",
+              flexDirection: "column",
+              gap: 0,
+              flex: 1,
+            };
+            return (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 4,
+                  maxWidth: 560,
+                  margin: "12px auto 6px",
+                  pageBreakInside: "avoid",
+                }}
+              >
+                {/* Fase 1 — Planlegging */}
+                <div style={{ display: "flex", alignItems: "stretch" }}>
+                  <div style={fasekol}>
+                    <div style={boks}>Problemdefinisjon, informasjonsinnhenting og organisering</div>
+                    <div style={pil}>▼</div>
+                    <div style={boks}>Valg av analysemetode</div>
+                  </div>
+                  <div style={gruppeLabel}>1) Planlegging</div>
+                </div>
+                <div style={pil}>▼</div>
+
+                {/* Fase 2 — Risiko- og sårbarhetsvurdering */}
+                <div style={{ display: "flex", alignItems: "stretch" }}>
+                  <div style={fasekol}>
+                    <div style={boks}>
+                      Identifikasjon av mulige initierende hendelser
+                      <br />
+                      (farer, trusler, muligheter)
+                    </div>
+                    <div style={pil}>▼</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                      <div style={boks}>Årsaksanalysen</div>
+                      <div style={boks}>Konsekvensanalysen</div>
+                    </div>
+                    <div style={pil}>▼</div>
+                    <div style={boks}>Risikobilde</div>
+                  </div>
+                  <div style={gruppeLabel}>2) Risiko- og sårbarhetsvurdering</div>
+                </div>
+                <div style={pil}>▼</div>
+
+                {/* Fase 3 — Risikohåndtering */}
+                <div style={{ display: "flex", alignItems: "stretch" }}>
+                  <div style={fasekol}>
+                    <div style={boks}>
+                      Sammenligning av alternativer, identifisering og vurdering av tiltak
+                    </div>
+                    <div style={pil}>▼</div>
+                    <div style={boks}>Ledelsens vurdering og beslutning</div>
+                  </div>
+                  <div style={gruppeLabel}>3) Risikohåndtering</div>
+                </div>
+
+                <p
+                  style={{
+                    fontSize: 9,
+                    fontStyle: "italic",
+                    color: "#64748b",
+                    textAlign: "center",
+                    margin: "8px 0 0 0",
+                  }}
+                >
+                  Figur: Risiko- og sårbarhetsanalyseprosessens ulike trinn (ref. Aven et al. 2008).
+                </p>
+              </div>
+            );
+          })()}
+
+          <h3 style={h3}>2.2 Sannsynlighetsskala</h3>
           <table style={tableStyle}>
             <thead>
               <tr>
@@ -316,7 +428,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
             </tbody>
           </table>
 
-          <h3 style={h3}>2.2 Konsekvensskala</h3>
+          <h3 style={h3}>2.3 Konsekvensskala</h3>
           <table style={tableStyle}>
             <thead>
               <tr>
@@ -334,7 +446,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
             </tbody>
           </table>
 
-          <h3 style={h3}>2.3 Risikomatrise (5×5)</h3>
+          <h3 style={h3}>2.4 Risikomatrise (5×5)</h3>
+
           <table style={{ ...tableStyle, width: "auto", marginInline: "auto" }}>
             <thead>
               <tr>
