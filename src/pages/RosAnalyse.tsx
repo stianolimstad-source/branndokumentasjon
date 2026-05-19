@@ -44,6 +44,23 @@ function makeId() {
   return Math.random().toString(36).slice(2, 10);
 }
 
+function JumpToPreview({ previewId }: { previewId: string }) {
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        const el = document.getElementById(previewId);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }}
+      className="p-1.5 rounded hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+      title="Gå til i forhåndsvisning"
+      aria-label="Gå til i forhåndsvisning"
+    >
+      <Eye className="h-3.5 w-3.5" />
+    </button>
+  );
+}
+
 export default function RosAnalyse() {
   const { user } = useAuth();
   const { toast } = useToast();
