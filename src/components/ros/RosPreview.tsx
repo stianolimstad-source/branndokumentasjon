@@ -758,7 +758,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
   );
 }
 
-function BowTieScroll({ children, minWidth = 1100 }: { children: React.ReactNode; minWidth?: number }) {
+function BowTieScroll({ children, minWidth = 900 }: { children: React.ReactNode; minWidth?: number }) {
   const tableRef = useRef<HTMLDivElement>(null);
   const proxyRef = useRef<HTMLDivElement>(null);
   const syncing = useRef(false);
