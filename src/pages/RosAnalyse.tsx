@@ -1455,7 +1455,7 @@ export default function RosAnalyse() {
                                   <div className="flex items-center gap-1.5 flex-wrap">
                                     <span className="text-sm font-medium text-amber-900 dark:text-amber-100">{kt.tekst}</span>
                                     <Badge variant="secondary" className="text-[10px] h-4 px-1.5">
-                                      {kt.kilde === "ai" ? "AI" : "Manuell"}
+                                      {kt.kilde === "ai" ? "AI" : kt.kilde === "kap3" ? (kt.kildeRef ? `Kap. 3 ${kt.kildeRef}` : "Kap. 3") : "Manuell"}
                                     </Badge>
                                   </div>
                                   {konsNavn.length > 0 && (
