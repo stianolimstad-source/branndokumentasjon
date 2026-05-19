@@ -630,7 +630,7 @@ export default function RosAnalyse() {
               <div className="space-y-2">
                 <Label className="text-sm">Organisering av arbeidet — deltakere</Label>
                 <p className="text-xs text-muted-foreground">
-                  Legg til personene som har deltatt i analysen med navn og stillingstittel.
+                  Legg til personene som har deltatt i analysen med navn, stillingstittel og bedrift.
                 </p>
                 <div className="space-y-2">
                   {(content.metode?.deltakere || []).map((d, idx) => (
