@@ -1006,6 +1006,546 @@ function BowTieScroll({ children, minWidth = 900 }: { children: React.ReactNode;
   );
 }
 
+// Kvalitativ palett – tydelig adskilte farger per årsak
+const CAUSE_COLORS = [
+  "#2563eb", "#dc2626", "#059669", "#d97706", "#7c3aed",
+  "#0891b2", "#db2777", "#65a30d", "#ea580c", "#4338ca",
+];
+const colorForCause = (i: number) => CAUSE_COLORS[i % CAUSE_COLORS.length];
+const dashForCause = (i: number) => (i >= CAUSE_COLORS.length ? "5 3" : undefined);
+
+function BowTieDiagram({
+  bt,
+  arsaker,
+  aiBarrierer,
+  harBarrierer,
+}: {
+  bt: RosBowTie;
+  arsaker: RosHendelse[];
+  aiBarrierer: RosFellesBarriere[];
+  harBarrierer: boolean;
+}) {
+  const [hover, setHover] = useState<
+    { kind: "arsak" | "barriere"; idx: number } | null
+  >(null);
+
+  // ----- Sortering av barrierer for å redusere linjekrysninger -----
+  const arsakIndex = new Map(arsaker.map((a, i) => [a.id, i] as const));
+  const sortedBarrierer = [...aiBarrierer].sort((a, b) => {
+    const aMin = a.arsakIds.length
+      ? Math.min(...a.arsakIds.map((id) => arsakIndex.get(id) ?? 999))
+      : 999;
+    const bMin = b.arsakIds.length
+      ? Math.min(...b.arsakIds.map((id) => arsakIndex.get(id) ?? 999))
+      : 999;
+    if (aMin !== bMin) return aMin - bMin;
+    return b.arsakIds.length - a.arsakIds.length;
+  });
+
+  // ----- Bow-tie geometri -----
+  const W = 960;
+  const PAD_TOP = 28;
+  const PAD_BOT = 16;
+  const ROW_H = 48;
+  const ARSAK = { x: 16, w: 180 };
+  const BARR = { x: 220, w: 250 };
+  const TOPP = harBarrierer ? { x: 500, w: 200 } : { x: 380, w: 220 };
+  const KONS = { x: 760, w: 184 };
+  const topH = 84;
+
+  const nA = Math.max(arsaker.length, 1);
+  const nB = sortedBarrierer.length;
+  const nK = Math.max(bt.konsekvenser.length, 1);
+  const maxRows = Math.max(nA, nB, nK, 3);
+  const H = Math.max(280, PAD_TOP + PAD_BOT + maxRows * ROW_H);
+
+  const yFor = (i: number, n: number) =>
+    n <= 1 ? H / 2 : PAD_TOP + (i + 0.5) * ((H - PAD_TOP - PAD_BOT) / n);
+
+  const arsakY = arsaker.map((_, i) => yFor(i, nA));
+  const barrY = sortedBarrierer.map((_, i) => yFor(i, nB));
+  const konsY = bt.konsekvenser.map((_, i) => yFor(i, nK));
+  const toppCy = H / 2;
+  const toppY = toppCy - topH / 2;
+
+  const leftAnchorCount = harBarrierer ? nB : nA;
+  const leftAnchorY = (i: number) =>
+    toppCy +
+    (i - (leftAnchorCount - 1) / 2) *
+      Math.min(8, (topH - 12) / Math.max(leftAnchorCount, 1));
+  const rightAnchorY = (i: number) =>
+    toppCy +
+    (i - (nK - 1) / 2) * Math.min(8, (topH - 12) / Math.max(nK, 1));
+
+  const bez = (x1: number, y1: number, x2: number, y2: number) => {
+    const mx = (x1 + x2) / 2;
+    return `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+  };
+
+  // Bygg linjer med årsaks-tilhørighet (for fargekoding + hover)
+  type Line = {
+    key: string;
+    d: string;
+    color: string;
+    dash?: string;
+    arsakIdx?: number;
+    barrIdx?: number;
+    konsIdx?: number;
+  };
+  const lines: Line[] = [];
+
+  if (harBarrierer) {
+    // Årsak → relevante barrierer (farge fra årsak)
+    arsaker.forEach((a, ai) => {
+      const matched = sortedBarrierer
+        .map((b, bi) => ({ b, bi }))
+        .filter(({ b }) => b.arsakIds.includes(a.id));
+      const targets = matched.length
+        ? matched
+        : sortedBarrierer.map((b, bi) => ({ b, bi })); // fallback
+      targets.forEach(({ bi }) => {
+        lines.push({
+          key: `a${ai}-b${bi}`,
+          d: bez(ARSAK.x + ARSAK.w, arsakY[ai], BARR.x, barrY[bi]),
+          color: colorForCause(ai),
+          dash: dashForCause(ai),
+          arsakIdx: ai,
+          barrIdx: bi,
+        });
+      });
+    });
+    // Barriere → topphendelse (grønn, men tones ned hvis ikke relevant for hover)
+    sortedBarrierer.forEach((_, bi) => {
+      lines.push({
+        key: `b${bi}-t`,
+        d: bez(BARR.x + BARR.w, barrY[bi], TOPP.x, leftAnchorY(bi)),
+        color: "#10b981",
+        barrIdx: bi,
+      });
+    });
+  } else {
+    arsaker.forEach((_, ai) => {
+      lines.push({
+        key: `a${ai}-t`,
+        d: bez(ARSAK.x + ARSAK.w, arsakY[ai], TOPP.x, leftAnchorY(ai)),
+        color: colorForCause(ai),
+        dash: dashForCause(ai),
+        arsakIdx: ai,
+      });
+    });
+  }
+  // Topphendelse → konsekvenser
+  bt.konsekvenser.forEach((_, ki) => {
+    lines.push({
+      key: `t-k${ki}`,
+      d: bez(TOPP.x + TOPP.w, rightAnchorY(ki), KONS.x, konsY[ki]),
+      color: "#DC3545",
+      konsIdx: ki,
+    });
+  });
+
+  const isLineActive = (l: Line): boolean => {
+    if (!hover) return true;
+    if (hover.kind === "arsak") {
+      if (l.arsakIdx === hover.idx) return true;
+      if (harBarrierer && l.barrIdx !== undefined && l.arsakIdx === undefined) {
+        // barriere → topphendelse: aktiv hvis barriere dekker hover-årsaken
+        const arsakId = arsaker[hover.idx]?.id;
+        return arsakId
+          ? sortedBarrierer[l.barrIdx]?.arsakIds.includes(arsakId) === true
+          : false;
+      }
+      return false;
+    }
+    if (hover.kind === "barriere") {
+      return l.barrIdx === hover.idx;
+    }
+    return true;
+  };
+
+  const isArsakActive = (i: number): boolean => {
+    if (!hover) return true;
+    if (hover.kind === "arsak") return hover.idx === i;
+    if (hover.kind === "barriere") {
+      const b = sortedBarrierer[hover.idx];
+      return b ? b.arsakIds.includes(arsaker[i]?.id) : false;
+    }
+    return true;
+  };
+
+  const isBarriereActive = (i: number): boolean => {
+    if (!hover) return true;
+    if (hover.kind === "barriere") return hover.idx === i;
+    if (hover.kind === "arsak") {
+      const arsakId = arsaker[hover.idx]?.id;
+      const b = sortedBarrierer[i];
+      return arsakId ? b.arsakIds.includes(arsakId) : false;
+    }
+    return true;
+  };
+
+  const colHeader = (color: string): React.CSSProperties => ({
+    fontSize: 9,
+    fontWeight: 700,
+    color,
+    margin: 0,
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  });
+
+  return (
+    <>
+      <div
+        style={{
+          position: "relative",
+          width: W,
+          height: H,
+          background: "#f7f9fc",
+          border: "1px solid #e2e8f0",
+          borderRadius: 8,
+          marginBottom: 10,
+        }}
+      >
+        {/* SVG-linjer bak alt: hvit halo + farget linje */}
+        <svg
+          width={W}
+          height={H}
+          style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}
+        >
+          {/* Halo (hvit understrek for å skille kryssende linjer) */}
+          {lines.map((l) => {
+            const active = isLineActive(l);
+            return (
+              <path
+                key={`halo-${l.key}`}
+                d={l.d}
+                fill="none"
+                stroke="#ffffff"
+                strokeWidth={4}
+                opacity={active ? 0.9 : 0.15}
+              />
+            );
+          })}
+          {/* Farget linje */}
+          {lines.map((l) => {
+            const active = isLineActive(l);
+            return (
+              <path
+                key={l.key}
+                d={l.d}
+                fill="none"
+                stroke={l.color}
+                strokeWidth={2}
+                strokeDasharray={l.dash}
+                opacity={active ? 0.95 : 0.12}
+                strokeLinecap="round"
+              />
+            );
+          })}
+        </svg>
+
+        {/* Kolonnetitler */}
+        <div style={{ position: "absolute", left: ARSAK.x, top: 8, width: ARSAK.w, zIndex: 2 }}>
+          <p style={colHeader("#1e3a5f")}>Årsaker</p>
+        </div>
+        {harBarrierer && (
+          <div style={{ position: "absolute", left: BARR.x, top: 8, width: BARR.w, zIndex: 2 }}>
+            <p style={colHeader("#065f46")}>Felles barrierer</p>
+          </div>
+        )}
+        <div style={{ position: "absolute", left: KONS.x, top: 8, width: KONS.w, zIndex: 2 }}>
+          <p style={colHeader("#1e3a5f")}>Konsekvenser</p>
+        </div>
+
+        {/* Årsaker */}
+        {arsaker.length === 0 && (
+          <div
+            style={{
+              position: "absolute",
+              left: ARSAK.x,
+              top: arsakY[0] - 10,
+              width: ARSAK.w,
+              fontSize: 10,
+              fontStyle: "italic",
+              color: "#64748b",
+              zIndex: 2,
+            }}
+          >
+            Ingen årsaker knyttet.
+          </div>
+        )}
+        {arsaker.map((a, i) => {
+          const f = FARGE[risikoFarge(a.sannsynlighet, a.konsekvens)];
+          const active = isArsakActive(i);
+          const col = colorForCause(i);
+          return (
+            <div
+              key={a.id}
+              onMouseEnter={() => setHover({ kind: "arsak", idx: i })}
+              onMouseLeave={() => setHover(null)}
+              style={{
+                position: "absolute",
+                left: ARSAK.x,
+                top: arsakY[i] - 14,
+                width: ARSAK.w,
+                display: "flex",
+                justifyContent: "flex-end",
+                zIndex: 2,
+                opacity: active ? 1 : 0.35,
+                cursor: "pointer",
+                transition: "opacity 120ms",
+              }}
+            >
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  background: "#fff",
+                  border: `1px solid ${active ? col : "#cbd5e1"}`,
+                  borderLeft: `4px solid ${col}`,
+                  borderRadius: 4,
+                  padding: "4px 8px",
+                  fontSize: 10,
+                  maxWidth: "100%",
+                  boxShadow: active
+                    ? `0 0 0 2px ${col}33, 0 1px 2px rgba(0,0,0,0.04)`
+                    : "0 1px 2px rgba(0,0,0,0.04)",
+                }}
+              >
+                <span
+                  style={{
+                    display: "inline-block",
+                    minWidth: 22,
+                    textAlign: "center",
+                    background: f.bg,
+                    color: f.fg,
+                    borderRadius: 3,
+                    padding: "1px 4px",
+                    fontWeight: 700,
+                    fontSize: 9,
+                  }}
+                >
+                  {a.sannsynlighet * a.konsekvens}
+                </span>
+                <span style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {a.tittel || a.sarbarhet || a.hendelse}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+
+        {/* Felles barrierer */}
+        {harBarrierer &&
+          sortedBarrierer.map((b, i) => {
+            const active = isBarriereActive(i);
+            return (
+              <div
+                key={i}
+                onMouseEnter={() => setHover({ kind: "barriere", idx: i })}
+                onMouseLeave={() => setHover(null)}
+                style={{
+                  position: "absolute",
+                  left: BARR.x,
+                  top: barrY[i] - 20,
+                  width: BARR.w,
+                  background: "#ecfdf5",
+                  border: "1px solid #10b981",
+                  borderRadius: 4,
+                  padding: "5px 8px",
+                  fontSize: 10,
+                  color: "#064e3b",
+                  boxShadow: active
+                    ? "0 0 0 2px #10b98155, 0 1px 2px rgba(0,0,0,0.04)"
+                    : "0 1px 2px rgba(0,0,0,0.04)",
+                  zIndex: 2,
+                  opacity: active ? 1 : 0.35,
+                  cursor: "pointer",
+                  transition: "opacity 120ms",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
+                  <span style={{ fontSize: 8, fontWeight: 700, color: "#065f46", letterSpacing: 0.4 }}>
+                    B{i + 1}
+                  </span>
+                  {/* Fargeprikker for hver dekket årsak */}
+                  <div style={{ display: "flex", gap: 2 }}>
+                    {b.arsakIds
+                      .map((id) => arsakIndex.get(id))
+                      .filter((x): x is number => x !== undefined)
+                      .sort((a, b) => a - b)
+                      .map((ai) => (
+                        <span
+                          key={ai}
+                          title={arsaker[ai]?.tittel || ""}
+                          style={{
+                            display: "inline-block",
+                            width: 8,
+                            height: 8,
+                            borderRadius: "50%",
+                            background: colorForCause(ai),
+                            border: "1px solid #ffffff",
+                            boxShadow: "0 0 0 1px rgba(0,0,0,0.1)",
+                          }}
+                        />
+                      ))}
+                  </div>
+                </div>
+                <div style={{ fontWeight: 600, lineHeight: 1.3 }}>{b.tekst}</div>
+              </div>
+            );
+          })}
+
+        {/* Topphendelse */}
+        <div
+          style={{
+            position: "absolute",
+            left: TOPP.x,
+            top: toppY,
+            width: TOPP.w,
+            height: topH,
+            background: "#DC3545",
+            color: "#fff",
+            textAlign: "center",
+            padding: "12px 10px",
+            borderRadius: 6,
+            fontWeight: 700,
+            fontSize: 12,
+            boxShadow: "0 2px 8px rgba(220,53,69,0.35)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 3,
+          }}
+        >
+          <div style={{ fontSize: 8, opacity: 0.85, letterSpacing: 1, marginBottom: 4 }}>TOPPHENDELSE</div>
+          <div>{bt.navn || "Uten navn"}</div>
+        </div>
+
+        {/* Konsekvenser */}
+        {bt.konsekvenser.length === 0 && (
+          <div
+            style={{
+              position: "absolute",
+              left: KONS.x,
+              top: konsY[0] - 10,
+              width: KONS.w,
+              fontSize: 10,
+              fontStyle: "italic",
+              color: "#64748b",
+              zIndex: 2,
+            }}
+          >
+            Ingen konsekvenser registrert.
+          </div>
+        )}
+        {bt.konsekvenser.map((k, i) => (
+          <div
+            key={i}
+            style={{
+              position: "absolute",
+              left: KONS.x,
+              top: konsY[i] - 14,
+              width: KONS.w,
+              zIndex: 2,
+            }}
+          >
+            <div
+              style={{
+                display: "inline-block",
+                background: "#fff",
+                border: "1px solid #cbd5e1",
+                borderRadius: 4,
+                padding: "4px 8px",
+                fontSize: 10,
+                maxWidth: "100%",
+                boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+              }}
+            >
+              {k}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Hint / hjelpetekst */}
+      {harBarrierer && (
+        <p style={{ fontSize: 9, color: "#64748b", margin: "0 0 8px 0", fontStyle: "italic" }}>
+          Hver årsak har sin egen farge. Hold musepekeren over en årsak eller barriere for å fremheve koblingene. Fargeprikkene i barriere-kortene viser hvilke årsaker barrieren dekker.
+        </p>
+      )}
+
+      {/* Dekningsmatrise (årsak × barriere) */}
+      {harBarrierer && arsaker.length > 0 && sortedBarrierer.length > 0 && (
+        <div style={{ marginBottom: 10 }}>
+          <p style={{ fontSize: 10, fontWeight: 600, color: "#1e3a5f", margin: "10px 0 4px 0" }}>
+            Dekningsmatrise – hvilke barrierer som dekker hver årsak
+          </p>
+          <table style={{ ...tableStyle, fontSize: 9 }}>
+            <thead>
+              <tr>
+                <th style={{ ...thStyle, textAlign: "left", width: 180 }}>Årsak</th>
+                {sortedBarrierer.map((_, bi) => (
+                  <th key={bi} style={{ ...thStyle, textAlign: "center", width: 30 }} title={sortedBarrierer[bi].tekst}>
+                    B{bi + 1}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {arsaker.map((a, ai) => (
+                <tr key={a.id}>
+                  <td style={{ ...tdStyle, fontWeight: 600 }}>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        width: 8,
+                        height: 8,
+                        borderRadius: "50%",
+                        background: colorForCause(ai),
+                        marginRight: 6,
+                        verticalAlign: "middle",
+                      }}
+                    />
+                    {a.tittel || a.sarbarhet || a.hendelse || "—"}
+                  </td>
+                  {sortedBarrierer.map((b, bi) => {
+                    const dekket = b.arsakIds.includes(a.id);
+                    return (
+                      <td
+                        key={bi}
+                        style={{
+                          ...tdStyle,
+                          textAlign: "center",
+                          background: dekket ? "#ecfdf5" : undefined,
+                          color: dekket ? "#065f46" : "#cbd5e1",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {dekket ? "●" : "—"}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div style={{ fontSize: 9, color: "#475569", lineHeight: 1.5 }}>
+            {sortedBarrierer.map((b, bi) => (
+              <div key={bi}>
+                <strong>B{bi + 1}:</strong> {b.tekst}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+
 function SubField({ nummer, tittel, value }: { nummer: string; tittel: string; value: string }) {
   return (
     <div style={{ marginBottom: 10 }}>
