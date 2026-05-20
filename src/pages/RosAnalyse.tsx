@@ -682,18 +682,18 @@ export default function RosAnalyse() {
   return (
     <div className="min-h-screen bg-background">
       <div className="border-b sticky top-[65px] z-30 bg-background/95 backdrop-blur">
-        <div className="container mx-auto px-4 py-2 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <Button variant="ghost" size="sm" onClick={() => navigate(projectId ? `/prosjekt/${projectId}` : "/mine-prosjekter")}>
-              <ArrowLeft className="h-4 w-4 mr-1" /> Tilbake til prosjekt
+        <div className="container mx-auto px-2 sm:px-4 py-2 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
+            <Button variant="ghost" size="sm" className="px-2 sm:px-3" onClick={() => navigate(projectId ? `/prosjekt/${projectId}` : "/mine-prosjekter")}>
+              <ArrowLeft className="h-4 w-4 sm:mr-1" /> <span className="hidden sm:inline">Tilbake til prosjekt</span>
             </Button>
-            {projectName && <span className="text-sm font-medium truncate">{projectName}</span>}
+            {projectName && <span className="text-xs sm:text-sm font-medium truncate">{projectName}</span>}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             <UploadRosDialog onApply={importHendelser} />
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-destructive">
+                <Button variant="ghost" size="sm" className="text-destructive px-2">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </AlertDialogTrigger>
@@ -711,12 +711,13 @@ export default function RosAnalyse() {
             <Button
               size="sm"
               variant="outline"
+              className="px-2 sm:px-3"
               onClick={handleExportWord}
               disabled={exporting || !canDownload}
               title={canDownload ? "Last ned som Word" : "Krever aktivt abonnement"}
             >
-              {canDownload ? <Download className="h-4 w-4 mr-1" /> : <Lock className="h-4 w-4 mr-1" />}
-              {exporting ? "Eksporterer…" : "Word"}
+              {canDownload ? <Download className="h-4 w-4 sm:mr-1" /> : <Lock className="h-4 w-4 sm:mr-1" />}
+              <span className="hidden sm:inline">{exporting ? "Eksporterer…" : "Word"}</span>
             </Button>
           </div>
         </div>
