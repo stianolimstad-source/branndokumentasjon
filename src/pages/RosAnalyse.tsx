@@ -725,11 +725,11 @@ export default function RosAnalyse() {
 
       <div className="grid lg:grid-cols-2 gap-0">
         {/* INPUT */}
-        <div className="border-r flex flex-col h-[calc(100vh-117px)]">
-          <div className="p-6 space-y-8 overflow-y-auto flex-1">
+        <div className="lg:border-r flex flex-col lg:h-[calc(100vh-117px)]">
+          <div className="p-4 sm:p-6 space-y-8 lg:overflow-y-auto lg:flex-1">
           <section className="space-y-3">
             <h2 className="text-lg font-semibold">Metadata</h2>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Field label="Prosjektnavn" value={content.metadata.prosjektnavn}
                 onChange={(v) => setContent((c) => ({ ...c, metadata: { ...c.metadata, prosjektnavn: v } }))} />
               <Field label="Adresse" value={content.metadata.adresse}
