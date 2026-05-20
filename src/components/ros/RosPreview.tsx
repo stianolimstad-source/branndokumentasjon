@@ -231,7 +231,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
         }
       `}</style>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 56 }}>
-      <div style={pageStyle}>
+      <div style={pageStyle} className="ros-page">
         {/* Logo */}
         {logoUrl && (
           <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "-10mm", marginBottom: 8 }}>
