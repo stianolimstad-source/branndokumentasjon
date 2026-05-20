@@ -1579,7 +1579,7 @@ export default function RosAnalyse() {
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <Field label="Versjon" value={r.versjon} onChange={(v) => updateRevisjon(i, { versjon: v })} />
                     <Field label="Dato" type="date" value={r.dato} onChange={(v) => updateRevisjon(i, { dato: v })} />
                     <Field label="Utførende" value={r.utfortAv} onChange={(v) => updateRevisjon(i, { utfortAv: v })} />
