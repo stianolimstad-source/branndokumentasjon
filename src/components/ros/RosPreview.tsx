@@ -789,7 +789,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
       </div>
 
       {/* Ark 2 — liggende A4 for kap. 3 */}
-      <div style={landscapePageStyle}>
+      <div style={landscapePageStyle} className="ros-page-landscape">
         {/* Kap. 3 Hendelsesregister */}
         <section id="kap-3">
           <h2 style={h2}>3. Hendelsesregister</h2>
