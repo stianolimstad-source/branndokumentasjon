@@ -1051,7 +1051,7 @@ export default function RosAnalyse() {
                             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Før tiltak</p>
                             <Area label="Beskrivelse av sannsynlighet" value={h.beskrivelseSannsynlighetFor || ""} onChange={(v) => updateHendelse(h.id, { beskrivelseSannsynlighetFor: v })} rows={2} />
                             <Area label="Beskrivelse av risiko / konsekvens" value={h.beskrivelseRisikoFor || ""} onChange={(v) => updateHendelse(h.id, { beskrivelseRisikoFor: v })} rows={2} />
-                            <div className="grid grid-cols-3 gap-2 items-end">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
                               <div>
                                 <Label className="text-xs">Sannsynlighet (1–5)</Label>
                                 <Select value={String(h.sannsynlighet)} onValueChange={(v) => updateHendelse(h.id, { sannsynlighet: Number(v) })}>
