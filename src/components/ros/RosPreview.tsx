@@ -876,7 +876,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
 
       {/* Ark 3 — bow-tie (hvis registrert) */}
       {content.bowTies && content.bowTies.length > 0 && (
-        <div style={landscapePageStyle}>
+        <div style={landscapePageStyle} className="ros-page-landscape">
           <section id="kap-4">
             <h2 style={h2}>4. Bow-tie analyse</h2>
             <p style={pStyle}>
