@@ -682,18 +682,18 @@ export default function RosAnalyse() {
   return (
     <div className="min-h-screen bg-background">
       <div className="border-b sticky top-[65px] z-30 bg-background/95 backdrop-blur">
-        <div className="container mx-auto px-4 py-2 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0">
-            <Button variant="ghost" size="sm" onClick={() => navigate(projectId ? `/prosjekt/${projectId}` : "/mine-prosjekter")}>
-              <ArrowLeft className="h-4 w-4 mr-1" /> Tilbake til prosjekt
+        <div className="container mx-auto px-2 sm:px-4 py-2 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
+            <Button variant="ghost" size="sm" className="px-2 sm:px-3" onClick={() => navigate(projectId ? `/prosjekt/${projectId}` : "/mine-prosjekter")}>
+              <ArrowLeft className="h-4 w-4 sm:mr-1" /> <span className="hidden sm:inline">Tilbake til prosjekt</span>
             </Button>
-            {projectName && <span className="text-sm font-medium truncate">{projectName}</span>}
+            {projectName && <span className="text-xs sm:text-sm font-medium truncate">{projectName}</span>}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             <UploadRosDialog onApply={importHendelser} />
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-destructive">
+                <Button variant="ghost" size="sm" className="text-destructive px-2">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </AlertDialogTrigger>
@@ -711,12 +711,13 @@ export default function RosAnalyse() {
             <Button
               size="sm"
               variant="outline"
+              className="px-2 sm:px-3"
               onClick={handleExportWord}
               disabled={exporting || !canDownload}
               title={canDownload ? "Last ned som Word" : "Krever aktivt abonnement"}
             >
-              {canDownload ? <Download className="h-4 w-4 mr-1" /> : <Lock className="h-4 w-4 mr-1" />}
-              {exporting ? "Eksporterer…" : "Word"}
+              {canDownload ? <Download className="h-4 w-4 sm:mr-1" /> : <Lock className="h-4 w-4 sm:mr-1" />}
+              <span className="hidden sm:inline">{exporting ? "Eksporterer…" : "Word"}</span>
             </Button>
           </div>
         </div>
@@ -724,11 +725,11 @@ export default function RosAnalyse() {
 
       <div className="grid lg:grid-cols-2 gap-0">
         {/* INPUT */}
-        <div className="border-r flex flex-col h-[calc(100vh-117px)]">
-          <div className="p-6 space-y-8 overflow-y-auto flex-1">
+        <div className="lg:border-r flex flex-col lg:h-[calc(100vh-117px)]">
+          <div className="p-4 sm:p-6 space-y-8 lg:overflow-y-auto lg:flex-1">
           <section className="space-y-3">
             <h2 className="text-lg font-semibold">Metadata</h2>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Field label="Prosjektnavn" value={content.metadata.prosjektnavn}
                 onChange={(v) => setContent((c) => ({ ...c, metadata: { ...c.metadata, prosjektnavn: v } }))} />
               <Field label="Adresse" value={content.metadata.adresse}
@@ -1050,7 +1051,7 @@ export default function RosAnalyse() {
                             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Før tiltak</p>
                             <Area label="Beskrivelse av sannsynlighet" value={h.beskrivelseSannsynlighetFor || ""} onChange={(v) => updateHendelse(h.id, { beskrivelseSannsynlighetFor: v })} rows={2} />
                             <Area label="Beskrivelse av risiko / konsekvens" value={h.beskrivelseRisikoFor || ""} onChange={(v) => updateHendelse(h.id, { beskrivelseRisikoFor: v })} rows={2} />
-                            <div className="grid grid-cols-3 gap-2 items-end">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
                               <div>
                                 <Label className="text-xs">Sannsynlighet (1–5)</Label>
                                 <Select value={String(h.sannsynlighet)} onValueChange={(v) => updateHendelse(h.id, { sannsynlighet: Number(v) })}>
@@ -1086,7 +1087,7 @@ export default function RosAnalyse() {
                           <div className="space-y-2 border-t pt-3">
                             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Etter tiltak</p>
                             <Area label="Beskrivelse av risiko og konsekvens etter tiltak" value={h.beskrivelseEtter || ""} onChange={(v) => updateHendelse(h.id, { beskrivelseEtter: v })} rows={2} />
-                            <div className="grid grid-cols-3 gap-2 items-end">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
                               <div>
                                 <Label className="text-xs">Sannsynlighet etter (1–5)</Label>
                                 <Select value={String(sE)} onValueChange={(v) => updateHendelse(h.id, { sannsynlighetEtter: Number(v) })}>
@@ -1578,7 +1579,7 @@ export default function RosAnalyse() {
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </div>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <Field label="Versjon" value={r.versjon} onChange={(v) => updateRevisjon(i, { versjon: v })} />
                     <Field label="Dato" type="date" value={r.dato} onChange={(v) => updateRevisjon(i, { dato: v })} />
                     <Field label="Utførende" value={r.utfortAv} onChange={(v) => updateRevisjon(i, { utfortAv: v })} />
@@ -1589,7 +1590,7 @@ export default function RosAnalyse() {
             </div>
           </section>
           </div>
-          <div className="border-t bg-background/95 backdrop-blur px-6 py-2 flex items-center justify-end">
+          <div className="border-t bg-background/95 backdrop-blur px-4 sm:px-6 py-2 flex items-center justify-end sticky bottom-0 lg:static z-20">
             <Button size="sm" onClick={handleSave} disabled={saving}>
               <Save className="h-4 w-4 mr-1" /> {saving ? "Lagrer…" : "Lagre"}
             </Button>
@@ -1597,7 +1598,7 @@ export default function RosAnalyse() {
         </div>
 
         {/* PREVIEW */}
-        <div className="bg-muted/20 overflow-y-auto h-[calc(100vh-117px)]">
+        <div className="bg-muted/20 lg:overflow-y-auto lg:h-[calc(100vh-117px)] border-t lg:border-t-0">
           <RosPreview content={content} logoUrl={logoUrl} firmaNavn={firmaNavn} utarbeidetAv={content.metadata.utfortAv || fullName || ""} />
         </div>
       </div>
