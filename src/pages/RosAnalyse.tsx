@@ -1590,7 +1590,7 @@ export default function RosAnalyse() {
             </div>
           </section>
           </div>
-          <div className="border-t bg-background/95 backdrop-blur px-6 py-2 flex items-center justify-end">
+          <div className="border-t bg-background/95 backdrop-blur px-4 sm:px-6 py-2 flex items-center justify-end sticky bottom-0 lg:static z-20">
             <Button size="sm" onClick={handleSave} disabled={saving}>
               <Save className="h-4 w-4 mr-1" /> {saving ? "Lagrer…" : "Lagre"}
             </Button>
@@ -1598,7 +1598,7 @@ export default function RosAnalyse() {
         </div>
 
         {/* PREVIEW */}
-        <div className="bg-muted/20 overflow-y-auto h-[calc(100vh-117px)]">
+        <div className="bg-muted/20 lg:overflow-y-auto lg:h-[calc(100vh-117px)] border-t lg:border-t-0">
           <RosPreview content={content} logoUrl={logoUrl} firmaNavn={firmaNavn} utarbeidetAv={content.metadata.utfortAv || fullName || ""} />
         </div>
       </div>
