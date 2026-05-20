@@ -222,6 +222,13 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
         .ros-h-scroll { scrollbar-color: #1e3a5f #e2e8f0; scrollbar-width: auto; }
         .ros-h-scroll-hidden { scrollbar-width: none; -ms-overflow-style: none; }
         .ros-h-scroll-hidden::-webkit-scrollbar { display: none; width: 0; height: 0; }
+        @media (max-width: 640px) {
+          .ros-page, .ros-page-landscape {
+            padding: 14px 12px 18px 12px !important;
+            box-shadow: none !important;
+            min-height: 0 !important;
+          }
+        }
       `}</style>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 56 }}>
       <div style={pageStyle}>
