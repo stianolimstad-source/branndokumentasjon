@@ -1,34 +1,22 @@
-# Mobiltilpasning av ROS-analyse
+## Problem
 
-ROS-analysen (`/ros-analyse`) er bygget som en låst todelt visning: input til venstre, forhåndsvisning til høyre, begge med fast høyde `h-[calc(100vh-117px)]` og egen scroll. På mobil stables panelene, men de beholder fast viewport-høyde — det gir to konkurrerende scroll-områder, knapper som forsvinner under tastaturet, og en topplinje som blir trang.
+På mobil (390 px viewport) stables input- og preview-panelet riktig, men store deler av forhåndsvisningen blir kuttet på høyre side. Årsaken:
 
-## Endringer (kun `src/pages/RosAnalyse.tsx`)
+1. `pageStyle` i `RosPreview.tsx` har `padding: "20mm 18mm 24mm 18mm"` — 18 mm (~68 px) horisontal padding × 2 spiser nesten halvparten av en 390 px skjerm før innholdet starter.
+2. Flere tabeller har `minWidth: 1100` eller bred kolonneoppsett. De ligger ikke alle i en `overflow-x: auto`-wrapper, og global CSS-regelen `html, body { overflow-x: hidden }` klipper det som stikker ut.
+3. Preview-wrapperen (`<div className="bg-muted/20 lg:overflow-y-auto …">` i `RosAnalyse.tsx` linje 1601) har ingen `overflow-x` på mobil — bredt innhold blir derfor skjult, ikke scrollbart.
+4. `landscapePageStyle` (linje 980) brukes for bow-tie-siden med samme problem.
 
-### 1. Topplinje (sticky header, linje 684–723)
-- På mobil: vis kun ikoner for "Tilbake" og "Word"-knappen (skjul tekst med `hidden sm:inline`).
-- La prosjektnavn ta plass med `truncate` og mindre tekst (`text-xs sm:text-sm`).
-- Reduser horisontal padding på mobil (`px-2 sm:px-4`).
+## Endringer (kun frontend / CSS)
 
-### 2. Split-screen → Tabs på mobil (linje 725–1603)
-- Under `lg`-breakpoint: vis input og forhåndsvisning i `<Tabs>` ("Rediger" / "Forhåndsvisning") slik at brukeren ser ett panel av gangen.
-- På `lg`+: behold dagens side-ved-side layout uendret.
-- Tabs-navigasjonen plasseres sticky rett under topplinjen på mobil.
+### `src/components/ros/RosPreview.tsx`
+- Reduser `pageStyle` horisontal padding på små skjermer. Konverter den ene inline-stilen til en kombinasjon av inline + CSS-klasse (legg `.ros-page` regel i den eksisterende `<style>`-blokken) som overstyrer padding til `12px` under 640 px, samt `boxShadow: none` for å spare plass. Samme for `landscapePageStyle` via `.ros-page-landscape`.
+- Sett `maxWidth: "100%"` fallback så landscape-siden ikke krever 297 mm — la container styre.
+- Gå gjennom alle `<table>` som ikke allerede er pakket i en scrollende ref, og sørg for at de står inne i `<div style={{ overflowX: "auto" }} className="ros-h-scroll-hidden">` slik at brede tabeller (særlig de med `minWidth: 1100` rundt linje 794 og 1727/1792) kan scrolles horisontalt på mobil i stedet for å klippes.
 
-### 3. Fast høyde → naturlig flyt på mobil
-- Input-panelet og preview-panelet bruker i dag `h-[calc(100vh-117px)]` + intern `overflow-y-auto`. På mobil fjernes fast høyde slik at hele siden scroller naturlig (ett scroll-område). På `lg`+ beholdes dagens oppførsel.
-- Lagre-baren nederst (linje 1592) endres fra fast bunn-i-panel til normal flyt på mobil; på `lg`+ uendret.
-
-### 4. Tetthet/overflow i input-seksjonene
-- Metadata-grid (linje 731): `grid-cols-1 sm:grid-cols-2` (i dag alltid 2 kolonner → trange felter på mobil).
-- Revisjonshistorikk-grid (linje 1581): `grid-cols-1 sm:grid-cols-3`.
-- Reduser ytre padding på input-panelet: `p-4 sm:p-6` (linje 728).
-
-### 5. Bow-tie kort (linje 1131–1545)
-- Sjekk at de tre rutene (årsaker / topphendelse / konsekvenser) med `grid grid-cols-3` ikke sprenger mobilvisning — disse er allerede inne i et kort som blir smalt. Bytt til `grid-cols-1 md:grid-cols-3` der det forekommer (linje 1053, 1089) for å la S/K/R-feltene stable seg.
-
-### 6. Preview-kontainer
-- `RosPreview` har allerede `p-4 md:p-8` og horisontal-scroll-wrappere for tabeller — ingen endringer nødvendig der.
-- Wrapper i RosAnalyse (linje 1600) får fjernet fast høyde på mobil, beholder den på `lg`+.
+### `src/pages/RosAnalyse.tsx`
+- Linje 1601: legg til `overflow-x-auto` på preview-wrapperen så hele forhåndsvisningen kan scrolles horisontalt på mobil hvis noe likevel er bredere enn skjermen. Behold `lg:overflow-y-auto lg:h-[calc(100vh-117px)]`.
 
 ## Ikke berørt
-- Forretningslogikk, AI-kall, datamodell, Word-eksport, RosPreview-komponenten, RosMatriks, RosKriterier.
+- Forretningslogikk, Word-eksport, AI-funksjoner, RosMatriks, RosKriterier, datamodell.
+- Desktop-layout (alle endringer er gated på `max-width: 640px` eller fungerer identisk på desktop).

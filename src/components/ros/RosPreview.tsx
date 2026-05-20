@@ -222,9 +222,16 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
         .ros-h-scroll { scrollbar-color: #1e3a5f #e2e8f0; scrollbar-width: auto; }
         .ros-h-scroll-hidden { scrollbar-width: none; -ms-overflow-style: none; }
         .ros-h-scroll-hidden::-webkit-scrollbar { display: none; width: 0; height: 0; }
+        @media (max-width: 640px) {
+          .ros-page, .ros-page-landscape {
+            padding: 14px 12px 18px 12px !important;
+            box-shadow: none !important;
+            min-height: 0 !important;
+          }
+        }
       `}</style>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 56 }}>
-      <div style={pageStyle}>
+      <div style={pageStyle} className="ros-page">
         {/* Logo */}
         {logoUrl && (
           <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "-10mm", marginBottom: 8 }}>
@@ -782,7 +789,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
       </div>
 
       {/* Ark 2 — liggende A4 for kap. 3 */}
-      <div style={landscapePageStyle}>
+      <div style={landscapePageStyle} className="ros-page-landscape">
         {/* Kap. 3 Hendelsesregister */}
         <section id="kap-3">
           <h2 style={h2}>3. Hendelsesregister</h2>
@@ -869,7 +876,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
 
       {/* Ark 3 — bow-tie (hvis registrert) */}
       {content.bowTies && content.bowTies.length > 0 && (
-        <div style={landscapePageStyle}>
+        <div style={landscapePageStyle} className="ros-page-landscape">
           <section id="kap-4">
             <h2 style={h2}>4. Bow-tie analyse</h2>
             <p style={pStyle}>
@@ -977,7 +984,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
       )}
 
       {/* Ark 4 — stående A4 for oppsummering & revisjonshistorikk */}
-      <div style={pageStyle}>
+      <div style={pageStyle} className="ros-page">
         <section id="kap-5">
           <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "5" : "4"}. Oppsummering</h2>
           {content.oppsummering ? (
