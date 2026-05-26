@@ -67,6 +67,8 @@ export interface Resultat {
   };
   bleve: { fatal_radius_m: number; innenfor_personell: boolean; innenfor_maskinhall: boolean };
   sannsynlighet: { aarlig_pct: number; levetid40_pct: number };
+  containment_ok: boolean;
+  containment_paakrevd_m2: number;
   anbefalinger: Anbefaling[];
 }
 
