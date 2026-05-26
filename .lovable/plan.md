@@ -1,32 +1,35 @@
-## Plan: Auto-beregning av tankkapasitet i TrafoEksplosjonTool
+## Endring av terskel-logikk i `src/lib/trafo-eksplosjon.ts`
 
-### Endringer i `src/components/verktoy/TrafoEksplosjonTool.tsx`
+### 1. Tank-status: Bytt til margin-baserte soner
+**Nåværende:**
+- `error`: `E_eff > tankkapasitet * 1.3`
+- `warning`: `E_eff > tankkapasitet`
+- `ok`: ellers (inkl. eksakt lik kapasitet)
 
-1. **Ny auto-beregningslogikk** for tankkapasitet:
-   - `E = oljevolum_L / 1000 * 0.2` (MJ) — grunnverdi i kubikkmeter
-   - Multipliser med tanktype-faktor:
-     - `conservator` → 1,0
-     - `corrugated` → 0,85
-     - `hermetic` → 0,70
-   - Multipliser med spenningsfaktor:
-     - `spenning_kV > 220` → 1,3
-     - `132 <= spenning_kV <= 220` → 1,0
-     - `spenning_kV < 132` → 0,8
-   - Minimumsverdi: 1,0 MJ
+**Ny logikk (margin = E_eff / tankkapasitet):**
+- `error`: margin ≥ 1.30
+- `warning`: margin ≥ 0.85 og < 1.30
+- `ok`: margin < 0.85
 
-2. **State-håndtering**:
-   - Lag en `useEffect` som oppdaterer `input.tankkapasitet_MJ` automatisk når `oljevolum_L`, `tanktype` eller `spenning_kV` endres.
-   - Legg til et flagg `tankkapManuellOverstyrt` (boolean) som settes til `true` når brukeren manuelt endrer tankkapasitet-feltet, slik at auto-beregningen stopper å overskrive brukerens verdi.
+Dette gir en "gul sone" fra 85 % til 130 % av tankkapasiteten, som reflekterer usikkerheten i forsøksdataene. Når buenergi er eksakt lik kapasiteten, blir det nå `warning` (margin = 1,0), ikke `ok`.
 
-3. **UI-endringer i tankkapasitet-feltet (linje 232-234)**:
-   - Legg en «Beregn automatisk»-knapp ved siden av input-feltet. Knappen setter `tankkapManuellOverstyrt = false` og oppdaterer feltet til den beregnede verdien.
-   - Legg til hjelpetekst under feltet: «Auto-beregnet fra oljevolum, tanktype og spenning. Overstyr hvis trafoleverandøren har testet høyere kapasitet.»
-   - Input-feltet forblir redigerbart som i dag.
+**Tekstoppdateringer:**
+- `ok`-teksten beholdes med effektiv buenergi under elastisk kapasitet.
+- `warning`-teksten justeres for å reflektere at det er innenfor "gul sone" (≥ 85 % av kapasiteten).
+- `error`-teksten beholdes (margin ≥ 1,3).
 
-4. **Default-verdi**:
-   - `defaultInput.tankkapasitet_MJ` fjernes eller settes til `null`/undefined; verdien populeres i stedet av `useEffect` ved første render.
+### 2. Trykkbølge-status: Hev warning-terskel fra 10 % til 30 %
+**Nåværende:**
+- `error`: sannsynlighet > 50 %
+- `warning`: sannsynlighet > 10 %
+- `ok`: ellers
 
-### Tekniske detaljer
-- Funksjon for beregning: `beregnTankkapasitet(oljevolum_L, tanktype, spenning_kV) => number`
-- Ingen endringer i `trafo-eksplosjon.ts` (beregningslogikken bruker allerede `input.tankkapasitet_MJ`).
-- Ingen endringer i routing, API-kall eller andre komponenter.
+**Ny logikk:**
+- `error`: sannsynlighet > 50 % (uendret)
+- `warning`: sannsynlighet > 30 % (endret fra 10 %)
+- `ok`: ellers
+
+Dette gjør varslingen mer konsistent med faglige vurderinger.
+
+### 3. Fil
+Kun `src/lib/trafo-eksplosjon.ts` berøres (linje 96–104 og 121). Ingen andre filer endres.
