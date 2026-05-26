@@ -92,6 +92,7 @@ const App = () => (
             <Route path="/verktoy/brannareal" element={<RequireSubscription feature="Beregningsverktøy"><Brannareal /></RequireSubscription>} />
             <Route path="/verktoy/roykventilasjon" element={<RequireSubscription feature="Beregningsverktøy"><RoykventilasjonPage /></RequireSubscription>} />
             <Route path="/verktoy/brannsimulering" element={<RequireFullAccess><Brannsimulering /></RequireFullAccess>} />
+            <Route path="/verktoy/trafoeksplosjon" element={<RequireFullAccess><Trafoeksplosjon /></RequireFullAccess>} />
             
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/auth" element={<Auth />} />
