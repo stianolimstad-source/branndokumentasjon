@@ -184,7 +184,8 @@ export function beregn(input: TrafoInput): Resultat {
 
   // 6. BLEVE — fatal-radius skaleres mot ASME case (140 m for stor oljemengde, anta 5000 L referanse)
   const bleveSkala = Math.cbrt(Math.max(input.oljevolum_L, 100) / 5000);
-  const bleveR = 140 * bleveSkala;
+  const bleveR = 140 * bleveSkala * (innendors ? 0.6 : 1.0);
+  const hydrogen_advarsel = innendors && !b.rom_ventilasjon;
 
   // 7. Sannsynlighet — redusert ved kombinasjon av DGA + temperaturovervåking
   const aarlig = (b.dga && b.temperaturovervaking ? 0.07 : 0.1) * oljeF.brannsannsynlighet;
