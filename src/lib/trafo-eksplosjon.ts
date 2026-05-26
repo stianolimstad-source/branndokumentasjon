@@ -29,7 +29,7 @@ export interface Barrierer {
   brannmur_EI: 0 | 60 | 120 | 240;
   deluge_vannspray: boolean;
   oljegruve: boolean;
-  avstand_standard: boolean;
+  
 }
 
 export type Status = "ok" | "warning" | "error";
@@ -42,6 +42,8 @@ export interface Resultat {
     peak_kPa: number;
     sannsynlighet_personell_pct: number;
     sannsynlighet_maskinhall_pct: number;
+    r20_m: number;
+    r78_m: number;
     tekst: string;
   };
   fragmenter: { status: Status; soner: { p80_m: number; ytter_m: number; ekstrem_m: number }; tekst: string };
@@ -195,7 +197,7 @@ export function beregn(input: TrafoInput): Resultat {
     kategori: "Avstand",
     tekst: "Klaringsavstand iht. IEEE 979 (≥9,1 m) / EN 61936-1",
     prioritet: minAvstand < 9.1 ? "kritisk" : "anbefalt",
-    oppfylt: b.avstand_standard && minAvstand >= 9.1,
+    oppfylt: minAvstand >= 9.1,
   });
 
   let trykkTekst = `Estimert topptrykk ${peak_kPa.toFixed(0)} kPa. Strukturskade-sannsynlighet personell: ${p_pers.toFixed(0)} %, maskinhall: ${p_mh.toFixed(0)} %.`;
@@ -208,6 +210,8 @@ export function beregn(input: TrafoInput): Resultat {
       peak_kPa,
       sannsynlighet_personell_pct: p_pers,
       sannsynlighet_maskinhall_pct: p_mh,
+      r20_m: 20 * skala,
+      r78_m: 78 * skala,
       tekst: trykkTekst,
     },
     fragmenter: { status: fragStatus, soner: { p80_m: p80, ytter_m: ytter, ekstrem_m: ekstrem }, tekst: fragTekst },

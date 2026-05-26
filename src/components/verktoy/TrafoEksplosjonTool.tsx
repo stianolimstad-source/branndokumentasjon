@@ -51,7 +51,7 @@ const defaultInput: TrafoInput = {
     brannmur_EI: 120,
     deluge_vannspray: false,
     oljegruve: true,
-    avstand_standard: false,
+    
   },
 };
 
@@ -321,7 +321,6 @@ const TrafoEksplosjonTool = () => {
               ["aktiv_trykkavlastning", "Aktivt trykkavlastningssystem"],
               ["deluge_vannspray", "Deluge / vannspray"],
               ["oljegruve", "Oljegruve m/avskiller"],
-              ["avstand_standard", "Avstand iht. IEEE 979 / NEK 440"],
             ] as const).map(([k, lbl]) => (
               <label key={k} className="flex items-center gap-2 cursor-pointer">
                 <Checkbox checked={input.barrierer[k] as boolean} onCheckedChange={(v) => updB(k as any, !!v)} />
@@ -485,6 +484,8 @@ const Soneskisse = ({ res, input }: { res: Resultat; input: TrafoInput }) => {
   const maxR = Math.max(
     res.fragmenter.soner.ekstrem_m,
     res.bleve.fatal_radius_m,
+    res.trykkbolge.r20_m,
+    res.trykkbolge.r78_m,
     input.avstand_maskinhall_m,
     input.avstand_personell_m,
   ) * 1.1;
@@ -501,8 +502,8 @@ const Soneskisse = ({ res, input }: { res: Resultat; input: TrafoInput }) => {
       <line x1={cx} x2={W - 10} y1={cy} y2={cy} stroke="hsl(var(--border))" />
       <circle cx={cx} cy={cy} r={6} fill="hsl(var(--destructive))" />
       <text x={cx - 4} y={cy + 22} fontSize="10" fill="hsl(var(--foreground))">Trafo</text>
-      {linje(sc(20), "#dc2626", "20 m (100 % trykk)", cy - 8)}
-      {linje(sc(78), "#f59e0b", "78 m (50 % trykk)", cy + 28)}
+      {linje(sc(res.trykkbolge.r20_m), "#dc2626", `${res.trykkbolge.r20_m.toFixed(0)} m (100 % trykk)`, cy - 8)}
+      {linje(sc(res.trykkbolge.r78_m), "#f59e0b", `${res.trykkbolge.r78_m.toFixed(0)} m (50 % trykk)`, cy + 28)}
       {linje(sc(res.fragmenter.soner.p80_m), "#a855f7", `${res.fragmenter.soner.p80_m.toFixed(0)} m frag 80 %`, cy - 24)}
       {linje(sc(res.bleve.fatal_radius_m), "#b91c1c", `${res.bleve.fatal_radius_m.toFixed(0)} m BLEVE`, cy + 44)}
       {linje(sc(input.avstand_personell_m), "#16a34a", `${input.avstand_personell_m} m personell`, cy - 40)}
