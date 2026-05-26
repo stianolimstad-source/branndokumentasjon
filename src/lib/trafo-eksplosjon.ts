@@ -121,13 +121,18 @@ export function beregn(input: TrafoInput): Resultat {
   }
   tankTekst += barriereSuffix;
 
+  // Plassering: innendørs gir trykkrefleksjon og redusert BLEVE; utendørs gir lengre fragmentkast.
+  const innendors = input.plassering === "innendørs";
+  const refleksjon = innendors ? 1.3 : 1.0;
+  const fragSkalaPlass = innendors ? 1.0 : 1.15;
+
   // 3. Trykkbølge — skaleres med effektiv buenergi
   const skala = Math.cbrt(Math.max(E_eff, 0.1) / 2.64);
-  const peak_kPa = 80 * skala;
+  const peak_kPa = 80 * skala * refleksjon;
+  const r20 = 20 * skala * refleksjon;
+  const r78 = 78 * skala * refleksjon;
   const sannsynlighetTrykk = (r: number) => {
     if (r <= 0) return 100;
-    const r20 = 20 * skala;
-    const r78 = 78 * skala;
     if (r <= r20) return 100;
     if (r >= r78 * 2) return 0;
     if (r <= r78) return 100 - ((r - r20) / (r78 - r20)) * 50;
@@ -139,9 +144,9 @@ export function beregn(input: TrafoInput): Resultat {
 
   // 4. Fragmenter — skaleres med oljevolum mot 1100 L referanse
   const fragSkala = Math.cbrt(Math.max(input.oljevolum_L, 100) / 1100);
-  const p80 = 115 * fragSkala;
-  const ytter = 430 * fragSkala;
-  const ekstrem = 860 * fragSkala;
+  const p80 = 115 * fragSkala * fragSkalaPlass;
+  const ytter = 430 * fragSkala * fragSkalaPlass;
+  const ekstrem = 860 * fragSkala * fragSkalaPlass;
   const minAvstand = Math.min(input.avstand_personell_m, input.avstand_maskinhall_m);
   let fragStatus: Status = "ok";
   let fragTekst = `Hovedmengden fragmenter forventes innenfor ${p80.toFixed(0)} m. Personell/maskinhall ligger utenfor sannsynlig fragmentsone.`;
