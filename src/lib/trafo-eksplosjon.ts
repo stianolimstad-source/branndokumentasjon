@@ -4,10 +4,19 @@
 
 export type TankType = "corrugated" | "conservator" | "hermetic";
 export type Plassering = "innendørs" | "utendørs";
+export type Oljetype = "mineralolje" | "naturlig_ester" | "syntetisk_ester" | "silikonolje";
+
+export const OLJETYPE_FAKTOR: Record<Oljetype, { brennverdi: number; brannsannsynlighet: number; tetthet: number }> = {
+  mineralolje: { brennverdi: 1.0, brannsannsynlighet: 1.0, tetthet: 880 },
+  naturlig_ester: { brennverdi: 0.85, brannsannsynlighet: 0.40, tetthet: 920 },
+  syntetisk_ester: { brennverdi: 0.85, brannsannsynlighet: 0.40, tetthet: 920 },
+  silikonolje: { brennverdi: 0.75, brannsannsynlighet: 0.20, tetthet: 960 },
+};
 
 export interface TrafoInput {
   oljevolum_L: number;
   tanktype: TankType;
+  oljetype: Oljetype;
   spenning_kV: number;
   effekt_MVA: number;
   buenergi_MJ: number;
@@ -75,6 +84,7 @@ const X_RAD = 0.35; // strålingsandel av Q
 
 export function beregn(input: TrafoInput): Resultat {
   const b = input.barrierer;
+  const oljeF = OLJETYPE_FAKTOR[input.oljetype];
   const E = input.buenergi_MJ;
   const E_kJ = E * 1000;
 
@@ -145,6 +155,7 @@ export function beregn(input: TrafoInput): Resultat {
   const D = 2 * Math.sqrt(A / Math.PI);
   let Q_MW = M_BURN * A * DH_C; // kg/s · MJ/kg = MW
   if (b.deluge_vannspray) Q_MW *= 0.45;
+  Q_MW *= oljeF.brennverdi;
   const stralePunkt = (r: number) => {
     if (r <= 0.1) return 1000;
     return (X_RAD * Q_MW * 1000) / (4 * Math.PI * r * r); // kW/m²
@@ -153,7 +164,7 @@ export function beregn(input: TrafoInput): Resultat {
   let q_mh = stralePunkt(input.avstand_maskinhall_m);
   if (b.brannmur_EI >= 60) q_mh *= 0.10;
   const qMax = Math.max(q_pers, q_mh);
-  const varighet_min = (input.oljevolum_L * 0.88) / (M_BURN * A * 60);
+  const varighet_min = (input.oljevolum_L * oljeF.tetthet / 1000) / (M_BURN * A * 60);
   let brannStatus: Status = qMax > 12.5 ? "error" : qMax > 4.7 ? "warning" : "ok";
   if (varighet_min > 240 && brannStatus === "ok") brannStatus = "warning";
   let brannTekst = `Pølbrann med diameter ${D.toFixed(1)} m gir Q ≈ ${Q_MW.toFixed(1)} MW. Stråling mot personell: ${q_pers.toFixed(2)} kW/m², mot maskinhall: ${q_mh.toFixed(2)} kW/m². Terskler: 1,58 / 4,7 / 12,5 kW/m².${barriereSuffix}`;
@@ -168,7 +179,7 @@ export function beregn(input: TrafoInput): Resultat {
   const bleveR = 140 * bleveSkala;
 
   // 7. Sannsynlighet — redusert ved kombinasjon av DGA + temperaturovervåking
-  const aarlig = b.dga && b.temperaturovervaking ? 0.07 : 0.1;
+  const aarlig = (b.dga && b.temperaturovervaking ? 0.07 : 0.1) * oljeF.brannsannsynlighet;
   const levetid40 = (1 - Math.pow(1 - aarlig / 100, 40)) * 100;
   const sann = { aarlig_pct: aarlig, levetid40_pct: levetid40 };
 

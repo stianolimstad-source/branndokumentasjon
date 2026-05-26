@@ -1,26 +1,41 @@
-# Brannvarighet for pølbrann
+# Oljetype-støtte i trafoeksplosjon-verktøyet
 
-## Endringer i `src/lib/trafo-eksplosjon.ts`
+## `src/lib/trafo-eksplosjon.ts`
 
-1. **Utvid `Resultat.oljebrann`** med nytt felt:
-   - `varighet_min: number`
-
-2. **Beregn varighet** i `beregn()` etter at `A` er definert:
+1. Ny type: `export type Oljetype = "mineralolje" | "naturlig_ester" | "syntetisk_ester" | "silikonolje";`
+2. Konstanttabell:
    ```
-   varighet_min = (oljevolum_L * 0.88) / (M_BURN * A * 60)
+   OLJETYPE_FAKTOR: Record<Oljetype, { brennverdi: number; brannsannsynlighet: number; tetthet: number }>
    ```
-   (bruker eksisterende `M_BURN = 0.015` og `basseng_areal_m2`).
+   - `mineralolje`: 1.0 / 1.0 / 880
+   - `naturlig_ester`: 0.85 / 0.40 / 920
+   - `syntetisk_ester`: 0.85 / 0.40 / 920
+   - `silikonolje`: 0.75 / 0.20 / 960
+3. Legg `oljetype: Oljetype` på `TrafoInput`.
+4. I `beregn()`:
+   - Hent `const f = OLJETYPE_FAKTOR[input.oljetype];`
+   - Etter eksisterende `if (b.deluge_vannspray) Q_MW *= 0.45;` → `Q_MW *= f.brennverdi;`
+   - `varighet_min = (input.oljevolum_L * f.tetthet / 1000) / (M_BURN * A * 60)` (oljevolum_L × tetthet (kg/m³) / 1000 = kg).
+   - `const aarlig = (b.dga && b.temperaturovervaking ? 0.07 : 0.1) * f.brannsannsynlighet;`
 
-3. **Statusoppgradering**: hvis `varighet_min > 240` og `brannStatus === "ok"`, sett `brannStatus = "warning"`.
+## `src/components/verktoy/TrafoEksplosjonTool.tsx`
 
-4. **Utvid `brannTekst`** med en ny linje etter eksisterende tekst:
-   - Hvis `varighet_min > 90`: `"Brannvarighet ved fri brann: ca. {Math.round(varighet_min)} minutter ({(varighet_min/60).toFixed(1)} timer)."`
-   - Ellers: `"Brannvarighet ved fri brann: ca. {Math.round(varighet_min)} minutter."`
-   - Hvis `b.deluge_vannspray`: legg til ` (Med effektivt slokkesystem antas brannen begrenset til 15–30 minutter etter aktivering.)`
-   - Skilles fra eksisterende tekst med linjeskift (`\n`).
+1. Importer `Oljetype` (typeimport via `TrafoInput["oljetype"]` holder).
+2. `defaultInput.oljetype = "mineralolje"`.
+3. Ny dropdown «Oljetype» plassert mellom «Tanktype» (linje 184) og «Spenning»:
+   ```
+   <div className="space-y-2">
+     <Label>Oljetype</Label>
+     <Select value={input.oljetype} onValueChange={(v) => upd("oljetype", v as any)}>
+       <SelectTrigger><SelectValue /></SelectTrigger>
+       <SelectContent>
+         <SelectItem value="mineralolje">Mineralolje</SelectItem>
+         <SelectItem value="naturlig_ester">Naturlig ester (FR3)</SelectItem>
+         <SelectItem value="syntetisk_ester">Syntetisk ester (Midel 7131)</SelectItem>
+         <SelectItem value="silikonolje">Silikonolje</SelectItem>
+       </SelectContent>
+     </Select>
+   </div>
+   ```
 
-5. Returner `varighet_min` i `oljebrann`-objektet.
-
-## Ingen UI-endring nødvendig
-
-`TrafoEksplosjonTool.tsx` rendrer allerede `res.oljebrann.tekst` — den nye linjen vises automatisk hvis teksten rendres med `whitespace-pre-line`. Verifiseres ved implementering; hvis ikke, legges `whitespace-pre-line` til på relevant `<p>` der `oljebrann.tekst` vises.
+Ingen andre filer berøres.

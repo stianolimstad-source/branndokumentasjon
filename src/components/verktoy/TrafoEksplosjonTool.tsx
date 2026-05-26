@@ -33,6 +33,7 @@ const REFERANSE_TESTER = [
 const defaultInput: TrafoInput = {
   oljevolum_L: 25000,
   tanktype: "conservator",
+  oljetype: "mineralolje",
   spenning_kV: 132,
   effekt_MVA: 100,
   buenergi_MJ: 4,
@@ -188,6 +189,18 @@ const TrafoEksplosjonTool = () => {
                   <SelectItem value="corrugated">Corrugated (riflet)</SelectItem>
                   <SelectItem value="conservator">Conservator</SelectItem>
                   <SelectItem value="hermetic">Hermetisk</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Oljetype</Label>
+              <Select value={input.oljetype} onValueChange={(v) => upd("oljetype", v as any)}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="mineralolje">Mineralolje</SelectItem>
+                  <SelectItem value="naturlig_ester">Naturlig ester (FR3)</SelectItem>
+                  <SelectItem value="syntetisk_ester">Syntetisk ester (Midel 7131)</SelectItem>
+                  <SelectItem value="silikonolje">Silikonolje</SelectItem>
                 </SelectContent>
               </Select>
             </div>
