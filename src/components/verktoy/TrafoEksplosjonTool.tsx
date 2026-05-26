@@ -119,16 +119,114 @@ const TrafoEksplosjonTool = () => {
                 <Input type="number" value={input.effekt_MVA} onChange={(e) => upd("effekt_MVA", +e.target.value)} />
               </div>
             </div>
-            <div>
-              <Label>Buenergi (MJ)</Label>
-              <Input type="number" step="0.01" value={input.buenergi_MJ} onChange={(e) => upd("buenergi_MJ", +e.target.value)} />
-              <div className="flex flex-wrap gap-1 mt-1">
-                {BUENERGI_PRESETS.map((p) => (
-                  <Badge key={p} variant="outline" className="cursor-pointer" onClick={() => upd("buenergi_MJ", p)}>
-                    {p} MJ
-                  </Badge>
-                ))}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>Buenergi</Label>
+                <span className="text-sm text-muted-foreground">
+                  Brukes: <strong className="text-foreground">{input.buenergi_MJ.toFixed(2)} MJ</strong>
+                </span>
               </div>
+              <Tabs value={buMetode} onValueChange={(v) => setBuMetode(v as any)}>
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="scenario">Scenario</TabsTrigger>
+                  <TabsTrigger value="kortslutning">Kortslutning</TabsTrigger>
+                  <TabsTrigger value="manuell">Manuell</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="scenario" className="pt-3">
+                  <TooltipProvider delayDuration={200}>
+                    <div className="grid grid-cols-2 gap-2">
+                      {SCENARIOER.map((s) => {
+                        const aktiv = Math.abs(input.buenergi_MJ - s.verdi) < 0.01;
+                        return (
+                          <Tooltip key={s.navn}>
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant={aktiv ? "default" : "outline"}
+                                onClick={() => upd("buenergi_MJ", s.verdi)}
+                                className="flex flex-col h-auto py-2"
+                              >
+                                <span className="font-semibold">{s.navn}</span>
+                                <span className="text-xs opacity-80">{s.verdi.toFixed(1)} MJ</span>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>{s.beskrivelse}</TooltipContent>
+                          </Tooltip>
+                        );
+                      })}
+                    </div>
+                  </TooltipProvider>
+                </TabsContent>
+
+                <TabsContent value="kortslutning" className="pt-3 space-y-3">
+                  <div>
+                    <Label className="text-xs">Kortslutningsstrøm I_k (kA)</Label>
+                    <Input type="number" value={ik_kA} onChange={(e) => setIk(+e.target.value)} />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Buespenning U_bue</Label>
+                    <Select value={String(uBue_V)} onValueChange={(v) => setUBue(+v)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="500">Kort bue — 500 V</SelectItem>
+                        <SelectItem value="1000">Middels bue — 1000 V</SelectItem>
+                        <SelectItem value="2000">Lang bue — 2000 V</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs">Klareringstid t_klar</Label>
+                    <Select value={String(tKlar_ms)} onValueChange={(v) => setT(+v)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="60">Primærvern hurtig — 60 ms</SelectItem>
+                        <SelectItem value="100">Primærvern normalt — 100 ms</SelectItem>
+                        <SelectItem value="300">Reservevern — 300 ms</SelectItem>
+                        <SelectItem value="500">Reservevern langsomt — 500 ms</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="rounded-md border bg-muted/50 p-3 text-center">
+                    <div className="text-xs text-muted-foreground">E = U · I · t</div>
+                    <div className="text-2xl font-bold mt-1">{E_kortslutning.toFixed(2)} MJ</div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {uBue_V} V × {ik_kA} kA × {tKlar_ms} ms
+                    </div>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="manuell" className="pt-3 space-y-3">
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={input.buenergi_MJ}
+                    onChange={(e) => upd("buenergi_MJ", +e.target.value)}
+                  />
+                  <div className="rounded-md border p-2">
+                    <div className="text-xs font-semibold mb-1.5">Referansetester (PLOS One 2015)</div>
+                    <TooltipProvider delayDuration={200}>
+                      <div className="flex flex-wrap gap-1">
+                        {REFERANSE_TESTER.map((r) => (
+                          <Tooltip key={r.mj}>
+                            <TooltipTrigger asChild>
+                              <Badge
+                                variant="outline"
+                                className="cursor-pointer"
+                                onClick={() => upd("buenergi_MJ", r.mj)}
+                              >
+                                {r.mj} MJ
+                              </Badge>
+                            </TooltipTrigger>
+                            <TooltipContent>{r.forklaring}</TooltipContent>
+                          </Tooltip>
+                        ))}
+                      </div>
+                    </TooltipProvider>
+                  </div>
+                </TabsContent>
+              </Tabs>
             </div>
             <div>
               <Label>Tankkapasitet elastisk (MJ)</Label>
