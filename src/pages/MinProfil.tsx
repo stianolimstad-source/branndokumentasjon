@@ -32,6 +32,8 @@ const MinProfil = () => {
   const [themedGroups, setThemedGroups] = useState<{ id: string; name: string }[]>([]);
   const [defaultTemplateGroupId, setDefaultTemplateGroupId] = useState<string>("none");
   const [savingTemplate, setSavingTemplate] = useState(false);
+  const [invoices, setInvoices] = useState<any[]>([]);
+  const [loadingInvoices, setLoadingInvoices] = useState(true);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -41,8 +43,26 @@ const MinProfil = () => {
     if (user) {
       fetchProfile();
       fetchTemplateGroups();
+      fetchInvoices();
     }
   }, [user, loading]);
+
+  const fetchInvoices = async () => {
+    setLoadingInvoices(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("get-stripe-invoices", {
+        body: { environment: getStripeEnvironment() },
+      });
+      if (error) throw error;
+      setInvoices(data?.invoices ?? []);
+    } catch (e) {
+      console.error("fetchInvoices error:", e);
+      setInvoices([]);
+    } finally {
+      setLoadingInvoices(false);
+    }
+  };
+
 
   const fetchTemplateGroups = async () => {
     if (!user) return;
