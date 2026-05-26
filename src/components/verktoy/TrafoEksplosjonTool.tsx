@@ -53,6 +53,7 @@ const defaultInput: TrafoInput = {
     brannmur_EI: 120,
     deluge_vannspray: false,
     oljegruve: true,
+    rom_ventilasjon: false,
     
   },
 };
@@ -406,6 +407,7 @@ const TrafoEksplosjonTool = () => {
               ["aktiv_trykkavlastning", "Aktivt trykkavlastningssystem"],
               ["deluge_vannspray", "Deluge / vannspray"],
               ["oljegruve", "Oljegruve m/avskiller"],
+              ["rom_ventilasjon", "Romventilasjon (hydrogenavlasting)"],
             ] as const).map(([k, lbl]) => (
               <label key={k} className="flex items-center gap-2 cursor-pointer">
                 <Checkbox checked={input.barrierer[k] as boolean} onCheckedChange={(v) => updB(k as any, !!v)} />
@@ -427,6 +429,15 @@ const TrafoEksplosjonTool = () => {
           </CardContent>
         </Card>
       </div>
+
+      {res.hydrogen_advarsel && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            Innendørs plassering uten dedikert romventilasjon: hydrogen og andre brennbare gasser fra buespaltet olje kan akkumulere og gi sekundær gasseksplosjon. Vurder ventilasjon dimensjonert iht. CIGRE TB 537.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* RESULTAT */}
       <div className="grid md:grid-cols-2 gap-4">

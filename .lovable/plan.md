@@ -1,42 +1,52 @@
-# Containment-validering (NFPA 850)
+# Plassering påvirker beregninger
 
 ## `src/lib/trafo-eksplosjon.ts`
 
-1. Utvid `Resultat` med:
-   - `containment_ok: boolean`
-   - `containment_paakrevd_m2: number`
-2. I `beregn()`:
+1. `Barrierer` — legg til `rom_ventilasjon: boolean`.
+2. `Resultat` — legg til `hydrogen_advarsel: boolean`.
+3. I `beregn()`:
+   - `const innendors = input.plassering === "innendørs";`
+   - **Trykkbølge**: etter `const skala = ...` og `peak_kPa`:
+     ```
+     const refleksjon = innendors ? 1.3 : 1.0;
+     const peak_kPa = 80 * skala * refleksjon;
+     const r20 = 20 * skala * refleksjon;
+     const r78 = 78 * skala * refleksjon;
+     ```
+     Bruk `r20`/`r78` i `sannsynlighetTrykk` og returner som `r20_m`/`r78_m`.
+   - **Fragmenter** (utendørs ×1,15):
+     ```
+     const fragSkalaPlass = innendors ? 1.0 : 1.15;
+     const p80 = 115 * fragSkala * fragSkalaPlass;
+     const ytter = 430 * fragSkala * fragSkalaPlass;
+     const ekstrem = 860 * fragSkala * fragSkalaPlass;
+     ```
+   - **BLEVE** (innendørs ×0,6): `const bleveR = 140 * bleveSkala * (innendors ? 0.6 : 1.0);`
+   - **Hydrogen**: `const hydrogen_advarsel = innendors && !b.rom_ventilasjon;`
+4. Returner `hydrogen_advarsel`.
+5. Legg til ny anbefaling for rom_ventilasjon (kritisk ved innendørs, ellers valgfri):
    ```
-   const containment_paakrevd_m2 = (input.oljevolum_L * 1.10) / 500;
-   const containment_ok = b.oljegruve && input.basseng_areal_m2 >= containment_paakrevd_m2;
+   a.push({
+     kategori: "Ventilasjon",
+     tekst: "Romventilasjon for hydrogenavlasting (CIGRE TB 537)",
+     prioritet: innendors ? "kritisk" : "valgfri",
+     oppfylt: b.rom_ventilasjon,
+   });
    ```
-3. Oppdater anbefalingen «Containment» — tekst:
-   ```
-   `Oljegruve dimensjonert for full oljemengde + slokkevann (minimum ${containment_paakrevd_m2.toFixed(0)} m²), med oljeavskiller`
-   ```
-   og `oppfylt: containment_ok`.
-4. Returner de to nye feltene.
-
-## `src/components/ui/alert.tsx`
-
-Legg til `warning`-variant i `alertVariants` (varianten finnes ikke i dag) — bruk semantiske tokens for å holde dark/light mode konsistent:
-```
-warning: "border-yellow-500/50 text-yellow-700 dark:text-yellow-400 [&>svg]:text-yellow-600 bg-yellow-50 dark:bg-yellow-950/20"
-```
 
 ## `src/components/verktoy/TrafoEksplosjonTool.tsx`
 
-1. Importer `Alert, AlertDescription` fra `@/components/ui/alert` og `AlertTriangle` (allerede importert fra lucide).
-2. Rett under `<Input>` for «Oljegruve / bassengareal» (linje 383), når `!res.containment_ok && input.barrierer.oljegruve` (eller alltid når arealet < påkrevd, uavhengig av checkbox? Spec sier «når arealet er for lite» → vis hvis `input.basseng_areal_m2 < res.containment_paakrevd_m2`):
+1. `defaultInput.barrierer.rom_ventilasjon = false`.
+2. I barriere-listen (rundt linje 399), legg inn ny rad: `["rom_ventilasjon", "Romventilasjon (hydrogenavlasting)"]`.
+3. Under barriere-kortet, når `res.hydrogen_advarsel`:
    ```
-   {input.basseng_areal_m2 < res.containment_paakrevd_m2 && (
-     <Alert variant="warning" className="mt-2">
-       <AlertTriangle className="h-4 w-4" />
-       <AlertDescription>
-         Oljegruven bør være minst {Math.ceil(res.containment_paakrevd_m2)} m² for å romme 110 % av oljemengden iht. NFPA 850. Underdimensjonert containment medfører risiko for spredning av brennende olje utover anlegget.
-       </AlertDescription>
-     </Alert>
-   )}
+   <Alert variant="destructive" className="mt-3">
+     <AlertTriangle className="h-4 w-4" />
+     <AlertDescription>
+       Innendørs plassering uten dedikert romventilasjon: hydrogen og andre brennbare gasser fra buespaltet olje kan akkumulere og gi sekundær gasseksplosjon. Vurder ventilasjon dimensjonert iht. CIGRE TB 537.
+     </AlertDescription>
+   </Alert>
    ```
+   (`Alert`/`AlertDescription` allerede importert, `AlertTriangle` allerede importert.)
 
 Ingen andre filer berøres.

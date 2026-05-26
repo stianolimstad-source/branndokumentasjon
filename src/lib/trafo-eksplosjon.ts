@@ -38,7 +38,7 @@ export interface Barrierer {
   brannmur_EI: 0 | 60 | 120 | 240;
   deluge_vannspray: boolean;
   oljegruve: boolean;
-  
+  rom_ventilasjon: boolean;
 }
 
 export type Status = "ok" | "warning" | "error";
@@ -69,6 +69,7 @@ export interface Resultat {
   sannsynlighet: { aarlig_pct: number; levetid40_pct: number };
   containment_ok: boolean;
   containment_paakrevd_m2: number;
+  hydrogen_advarsel: boolean;
   anbefalinger: Anbefaling[];
 }
 
@@ -120,13 +121,18 @@ export function beregn(input: TrafoInput): Resultat {
   }
   tankTekst += barriereSuffix;
 
+  // Plassering: innendørs gir trykkrefleksjon og redusert BLEVE; utendørs gir lengre fragmentkast.
+  const innendors = input.plassering === "innendørs";
+  const refleksjon = innendors ? 1.3 : 1.0;
+  const fragSkalaPlass = innendors ? 1.0 : 1.15;
+
   // 3. Trykkbølge — skaleres med effektiv buenergi
   const skala = Math.cbrt(Math.max(E_eff, 0.1) / 2.64);
-  const peak_kPa = 80 * skala;
+  const peak_kPa = 80 * skala * refleksjon;
+  const r20 = 20 * skala * refleksjon;
+  const r78 = 78 * skala * refleksjon;
   const sannsynlighetTrykk = (r: number) => {
     if (r <= 0) return 100;
-    const r20 = 20 * skala;
-    const r78 = 78 * skala;
     if (r <= r20) return 100;
     if (r >= r78 * 2) return 0;
     if (r <= r78) return 100 - ((r - r20) / (r78 - r20)) * 50;
@@ -138,9 +144,9 @@ export function beregn(input: TrafoInput): Resultat {
 
   // 4. Fragmenter — skaleres med oljevolum mot 1100 L referanse
   const fragSkala = Math.cbrt(Math.max(input.oljevolum_L, 100) / 1100);
-  const p80 = 115 * fragSkala;
-  const ytter = 430 * fragSkala;
-  const ekstrem = 860 * fragSkala;
+  const p80 = 115 * fragSkala * fragSkalaPlass;
+  const ytter = 430 * fragSkala * fragSkalaPlass;
+  const ekstrem = 860 * fragSkala * fragSkalaPlass;
   const minAvstand = Math.min(input.avstand_personell_m, input.avstand_maskinhall_m);
   let fragStatus: Status = "ok";
   let fragTekst = `Hovedmengden fragmenter forventes innenfor ${p80.toFixed(0)} m. Personell/maskinhall ligger utenfor sannsynlig fragmentsone.`;
@@ -178,7 +184,8 @@ export function beregn(input: TrafoInput): Resultat {
 
   // 6. BLEVE — fatal-radius skaleres mot ASME case (140 m for stor oljemengde, anta 5000 L referanse)
   const bleveSkala = Math.cbrt(Math.max(input.oljevolum_L, 100) / 5000);
-  const bleveR = 140 * bleveSkala;
+  const bleveR = 140 * bleveSkala * (innendors ? 0.6 : 1.0);
+  const hydrogen_advarsel = innendors && !b.rom_ventilasjon;
 
   // 7. Sannsynlighet — redusert ved kombinasjon av DGA + temperaturovervåking
   const aarlig = (b.dga && b.temperaturovervaking ? 0.07 : 0.1) * oljeF.brannsannsynlighet;
@@ -217,6 +224,12 @@ export function beregn(input: TrafoInput): Resultat {
     oppfylt: containment_ok,
   });
   a.push({
+    kategori: "Ventilasjon",
+    tekst: "Romventilasjon for hydrogenavlasting (CIGRE TB 537)",
+    prioritet: innendors ? "kritisk" : "valgfri",
+    oppfylt: b.rom_ventilasjon,
+  });
+  a.push({
     kategori: "Avstand",
     tekst: "Klaringsavstand iht. IEEE 979 (≥9,1 m) / EN 61936-1",
     prioritet: minAvstand < 9.1 ? "kritisk" : "anbefalt",
@@ -233,8 +246,8 @@ export function beregn(input: TrafoInput): Resultat {
       peak_kPa,
       sannsynlighet_personell_pct: p_pers,
       sannsynlighet_maskinhall_pct: p_mh,
-      r20_m: 20 * skala,
-      r78_m: 78 * skala,
+      r20_m: r20,
+      r78_m: r78,
       tekst: trykkTekst,
     },
     fragmenter: { status: fragStatus, soner: { p80_m: p80, ytter_m: ytter, ekstrem_m: ekstrem }, tekst: fragTekst },
@@ -255,6 +268,7 @@ export function beregn(input: TrafoInput): Resultat {
     sannsynlighet: sann,
     containment_ok,
     containment_paakrevd_m2,
+    hydrogen_advarsel,
     anbefalinger: a,
   };
 }
