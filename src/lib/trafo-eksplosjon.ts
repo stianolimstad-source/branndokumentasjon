@@ -84,6 +84,7 @@ const X_RAD = 0.35; // strålingsandel av Q
 
 export function beregn(input: TrafoInput): Resultat {
   const b = input.barrierer;
+  const oljeF = OLJETYPE_FAKTOR[input.oljetype];
   const E = input.buenergi_MJ;
   const E_kJ = E * 1000;
 
