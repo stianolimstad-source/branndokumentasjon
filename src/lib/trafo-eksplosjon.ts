@@ -4,10 +4,19 @@
 
 export type TankType = "corrugated" | "conservator" | "hermetic";
 export type Plassering = "innendørs" | "utendørs";
+export type Oljetype = "mineralolje" | "naturlig_ester" | "syntetisk_ester" | "silikonolje";
+
+export const OLJETYPE_FAKTOR: Record<Oljetype, { brennverdi: number; brannsannsynlighet: number; tetthet: number }> = {
+  mineralolje: { brennverdi: 1.0, brannsannsynlighet: 1.0, tetthet: 880 },
+  naturlig_ester: { brennverdi: 0.85, brannsannsynlighet: 0.40, tetthet: 920 },
+  syntetisk_ester: { brennverdi: 0.85, brannsannsynlighet: 0.40, tetthet: 920 },
+  silikonolje: { brennverdi: 0.75, brannsannsynlighet: 0.20, tetthet: 960 },
+};
 
 export interface TrafoInput {
   oljevolum_L: number;
   tanktype: TankType;
+  oljetype: Oljetype;
   spenning_kV: number;
   effekt_MVA: number;
   buenergi_MJ: number;
