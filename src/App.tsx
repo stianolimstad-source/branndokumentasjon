@@ -20,6 +20,7 @@ import Brannmotstand from "./pages/verktoy/Brannmotstand";
 import Brannareal from "./pages/verktoy/Brannareal";
 import RoykventilasjonPage from "./pages/verktoy/Roykventilasjon";
 import Brannsimulering from "./pages/verktoy/Brannsimulering";
+import Trafoeksplosjon from "./pages/verktoy/Trafoeksplosjon";
 
 import Auth from "./pages/Auth";
 import MineProsjekter from "./pages/MineProsjekter";
