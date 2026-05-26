@@ -67,6 +67,8 @@ export interface Resultat {
   };
   bleve: { fatal_radius_m: number; innenfor_personell: boolean; innenfor_maskinhall: boolean };
   sannsynlighet: { aarlig_pct: number; levetid40_pct: number };
+  containment_ok: boolean;
+  containment_paakrevd_m2: number;
   anbefalinger: Anbefaling[];
 }
 
@@ -206,11 +208,13 @@ export function beregn(input: TrafoInput): Resultat {
     prioritet: brannStatus === "ok" ? "anbefalt" : "kritisk",
     oppfylt: b.deluge_vannspray,
   });
+  const containment_paakrevd_m2 = (input.oljevolum_L * 1.10) / 500;
+  const containment_ok = b.oljegruve && input.basseng_areal_m2 >= containment_paakrevd_m2;
   a.push({
     kategori: "Containment",
-    tekst: "Oljegruve dimensjonert for full oljemengde + slokkevann, med oljeavskiller",
+    tekst: `Oljegruve dimensjonert for full oljemengde + slokkevann (minimum ${containment_paakrevd_m2.toFixed(0)} m²), med oljeavskiller`,
     prioritet: "kritisk",
-    oppfylt: b.oljegruve,
+    oppfylt: containment_ok,
   });
   a.push({
     kategori: "Avstand",
@@ -249,6 +253,8 @@ export function beregn(input: TrafoInput): Resultat {
       innenfor_maskinhall: input.avstand_maskinhall_m < bleveR,
     },
     sannsynlighet: sann,
+    containment_ok,
+    containment_paakrevd_m2,
     anbefalinger: a,
   };
 }
