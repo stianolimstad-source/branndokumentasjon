@@ -1,49 +1,72 @@
 ## Mål
-Gjøre barrierene i Trafoeksplosjon-verktøyet faktisk virksomme i fysikkberegningen, ikke bare som anbefalingsliste.
+Erstatte dagens buenergi-input (numerisk felt + seks rå preset-badges) med en faglig forståelig Tabs-velger med tre faner.
 
-## Endringer i `src/lib/trafo-eksplosjon.ts`
+## Endring i `src/components/verktoy/TrafoEksplosjonTool.tsx`
 
-Kun `beregn`-funksjonen endres. Inn-/utdata-typer er uendret (utvides kun med et lite flagg for barriere-info i tekstene).
+Kun blokken for "Buenergi" (linje 91–101) byttes ut. Resten av komponenten er uendret.
 
-### 1. Effektiv buenergi (påvirker tank + trykkbølge)
+### Ny lokal state
+```ts
+const [buMetode, setBuMetode] = useState<"scenario" | "kortslutning" | "manuell">("scenario");
+const [ik_kA, setIk] = useState(30);
+const [uBue_V, setUBue] = useState(1000);
+const [tKlar_ms, setT] = useState(100);
 ```
-let E_eff = input.buenergi_MJ;
-if (b.bristeskive)            E_eff *= 0.80;
-if (b.aktiv_trykkavlastning)  E_eff *= 0.30;  // multiplikativt med bristeskive
-```
-Bruk `E_eff` (ikke rå `buenergi_MJ`) for:
-- tankvurdering (sammenligning mot `tankkapasitet_MJ`)
-- `skala = cbrt(E_eff / 2.64)` for peak_kPa og trykkbølge-sannsynlighet
-- `gass_L` regnes fortsatt på rå buenergi (gassproduksjon i lysbuen er fysisk uavhengig av trykkavlastning).
+En `useEffect` beregner `E = U·I·t / 1e6` (MJ) når fanen er "kortslutning" og kaller `upd("buenergi_MJ", E)`.
 
-### 2. Brannmur reduserer stråling mot maskinhall
-```
-let q_mh = stralePunkt(input.avstand_maskinhall_m);
-if (b.brannmur_EI >= 60) q_mh *= 0.10;
-```
-`q_pers` påvirkes ikke (brannmur står typisk mot maskinhall/kontrollbygg).
+### Tabs-struktur (shadcn `Tabs`, `Tooltip`)
 
-### 3. Deluge/vannspray reduserer pølbrann
-```
-let Q_eff = M_BURN * A * DH_C;       // MW
-if (b.deluge_vannspray) Q_eff *= 0.45;
-```
-Bruk `Q_eff` i `stralePunkt` (q = X_RAD · Q_eff · 1000 / (4π r²)) før brannmur-reduksjonen på maskinhall.
+**Fane 1 — "Scenario" (default)**
+Grid med 4 knapper (`Button variant="outline"`), aktiv knapp får `variant="default"` når `input.buenergi_MJ === verdi`:
 
-### 4. Sannsynlighet
-```
-let aarlig = 0.1;
-if (b.dga && b.temperaturovervaking) aarlig = 0.07;
-const levetid40 = (1 - Math.pow(1 - aarlig/100, 40)) * 100;
-```
+| Knapp | MJ | Tooltip |
+|---|---|---|
+| Lavt | 1,5 | Primærvern OK, kort bue |
+| Sannsynlig | 4,0 | Primærvern OK, middels bue |
+| Høyt | 8,0 | Primærvern feiler, reservevern utløser |
+| Worst case | 15,0 | Lang bue og tregt reservevern |
 
-### 5. Tekstmarkering
-Bygg `barriereAktiv = b.bristeskive || b.aktiv_trykkavlastning || b.brannmur_EI >= 60 || b.deluge_vannspray || (b.dga && b.temperaturovervaking)`.
-Når sant, suffiks « (inkluderer effekt av eksisterende barrierer)» på tekstene i `tank`, `trykkbolge`, `oljebrann` og `sannsynlighet`-relaterte kort der relevant.
+Klikk → `upd("buenergi_MJ", verdi)`. Beskrivelsen vises både som liten tekst under tittelen og som `Tooltip` på hover.
 
-## Ikke endret
-- Fragmenter, BLEVE og anbefalingslisten beholder dagens logikk (anbefalinger leser allerede `b.*` direkte).
-- UI-komponentene (`TrafoEksplosjonTool.tsx`) trenger ingen endringer — de viser feltene fra `Resultat` som nå inneholder de barriere-justerte verdiene.
+**Fane 2 — "Beregn fra kortslutning"**
+Tre felt:
+- `I_k` (kA): `Input type="number"`, default 30
+- `U_bue` (V): `Select` — 500 (Kort bue) / 1000 (Middels bue, default) / 2000 (Lang bue)
+- `t_klar` (ms): `Select` — 60 (Primærvern hurtig) / 100 (Primærvern normalt, default) / 300 (Reservevern) / 500 (Reservevern langsomt)
+
+Under inputs vises beregnet verdi i stor tekst:
+```
+E = U · I · t = {U} V · {I} kA · {t} ms = {E.toFixed(2)} MJ
+```
+Formel: `E_MJ = (uBue_V * ik_kA * 1000 * tKlar_ms / 1000) / 1e6 = uBue_V * ik_kA * tKlar_ms / 1e6`.
+Verdien synkroniseres til `input.buenergi_MJ` via `useEffect` så lenge fanen er aktiv.
+
+**Fane 3 — "Manuell"**
+Eksisterende numeriske input beholdes (`type="number" step="0.01"`).
+Under inputen, en liten seksjon:
+```
+Referansetester (PLOS One 2015)
+[0,65 MJ] [1,28 MJ] [2,64 MJ] [5 MJ] [6,3 MJ] [17,3 MJ]
+```
+Hver badge med kort forklaring i tooltip:
+- 0,65 — Lav testenergi, kort bue
+- 1,28 — Lav-middels test
+- 2,64 — Referansetest brukt for skalering av trykkbølge
+- 5 — Elastisk tankkapasitet (benchmark)
+- 6,3 — Middels-høy test
+- 17,3 — Høyeste testenergi, lang bue
+
+Klikk → `upd("buenergi_MJ", verdi)`.
+
+### UI-detaljer
+- Tabs erstatter den nåværende `<Label>Buenergi (MJ)</Label> + Input + Badge-rad`-blokken.
+- Over Tabs vises «Buenergi: **{input.buenergi_MJ.toFixed(2)} MJ**» som lite resultat-display, slik at brukeren alltid ser hva som faktisk brukes uansett valgt fane.
+- Tooltip importeres fra `@/components/ui/tooltip` (`TooltipProvider`, `Tooltip`, `TooltipTrigger`, `TooltipContent`).
+
+### Ikke endret
+- `defaultInput.buenergi_MJ` settes til 4,0 (matcher «Sannsynlig» som default-fane).
+- `BUENERGI_PRESETS` i `src/lib/trafo-eksplosjon.ts` brukes ikke lenger fra komponenten, men eksporten beholdes for bakoverkompatibilitet.
+- All beregningslogikk, resultatkort, soneskisse og barriereanbefalinger er uendret.
 
 ## Filer
-- `src/lib/trafo-eksplosjon.ts` (kun `beregn`-funksjonen)
+- `src/components/verktoy/TrafoEksplosjonTool.tsx` (kun buenergi-blokken + nye imports + ny lokal state/effekt)

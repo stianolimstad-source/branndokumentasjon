@@ -1,14 +1,34 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
-import { beregn, BUENERGI_PRESETS, type TrafoInput, type Status, type Resultat } from "@/lib/trafo-eksplosjon";
+import { beregn, type TrafoInput, type Status, type Resultat } from "@/lib/trafo-eksplosjon";
 import { TRAFO_CASES } from "@/lib/trafo-cases";
+
+const SCENARIOER = [
+  { navn: "Lavt", verdi: 1.5, beskrivelse: "Primærvern OK, kort bue" },
+  { navn: "Sannsynlig", verdi: 4.0, beskrivelse: "Primærvern OK, middels bue" },
+  { navn: "Høyt", verdi: 8.0, beskrivelse: "Primærvern feiler, reservevern utløser" },
+  { navn: "Worst case", verdi: 15.0, beskrivelse: "Lang bue og tregt reservevern" },
+];
+
+const REFERANSE_TESTER = [
+  { mj: 0.65, forklaring: "Lav testenergi, kort bue" },
+  { mj: 1.28, forklaring: "Lav-middels test" },
+  { mj: 2.64, forklaring: "Referansetest brukt for skalering av trykkbølge" },
+  { mj: 5, forklaring: "Elastisk tankkapasitet (benchmark)" },
+  { mj: 6.3, forklaring: "Middels-høy test" },
+  { mj: 17.3, forklaring: "Høyeste testenergi, lang bue" },
+];
+
 
 const defaultInput: TrafoInput = {
   oljevolum_L: 25000,
