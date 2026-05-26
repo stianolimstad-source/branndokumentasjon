@@ -1,5 +1,5 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, MoveVertical, Box, Users, Zap, Shield, Maximize, Wind, Bot, Activity, Lock } from "lucide-react";
+import { Flame, MoveVertical, Box, Users, Zap, Shield, Maximize, Wind, Bot, Activity, Lock, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useIsFullAccess } from "@/hooks/useIsFullAccess";
 
