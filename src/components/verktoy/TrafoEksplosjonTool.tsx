@@ -108,6 +108,69 @@ const TrafoEksplosjonTool = () => {
 
   return (
     <div className="space-y-6">
+      {/* VEILEDNING */}
+      <Accordion type="single" collapsible defaultValue="veiledning">
+        <AccordionItem value="veiledning">
+          <AccordionTrigger>Slik bruker du verktøyet</AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-4 text-sm leading-relaxed">
+              <section>
+                <h4 className="font-semibold mb-1">Hva verktøyet gjør</h4>
+                <p>
+                  Verktøyet gir en overordnet screening av eksplosjons- og brannrisiko ved en oljefylt
+                  krafttrafo, typisk for en vannkraftstasjon. Det er ment som grunnlag for tidlig
+                  risikovurdering og diskusjon med oppdragsgiver – ikke som erstatning for detaljert
+                  prosjektering eller leverandørspesifikke analyser. Verdiene er forenklede
+                  ingeniøranslag basert på CIGRE TB 537, NFPA 850, IEEE 979, EN 61936-1 og forsøksdata
+                  fra PLOS One og ASME.
+                </p>
+              </section>
+              <section>
+                <h4 className="font-semibold mb-1">Slik fyller du ut</h4>
+                <p>
+                  Start til venstre med trafo og olje – oljevolum og spenning får du fra typeskilt
+                  eller datablad. Tankkapasiteten beregnes automatisk, men kan overstyres hvis
+                  leverandøren har dokumentert høyere kapasitet. For buenergi: bruk fanen «Scenario»
+                  hvis du ikke har detaljert verninformasjon; bruk «Kortslutning» hvis du har
+                  kortslutningsstrøm fra nettselskapet og kjenner reléverntidene. I midten legger du
+                  inn plassering og avstander fra trafoen til personellsoner, maskinhall og
+                  oljegruve. Til høyre huker du av de barrierer som faktisk finnes på anlegget –
+                  disse påvirker beregningene direkte.
+                </p>
+              </section>
+              <section>
+                <h4 className="font-semibold mb-1">Slik tolker du resultatene</h4>
+                <p>
+                  De seks resultatboksene representerer hver sin uavhengige risiko. Grønn betyr at
+                  risikoen er innenfor akseptable grenser gitt antakelsene. Gul betyr at situasjonen
+                  ligger i usikkerhetssonen – tallene er innenfor spredningen i forsøksdataene, og du
+                  bør vurdere tiltak eller verifisering. Rød betyr at risikoen klart overstiger
+                  terskelverdiene. Det er normalt at noen bokser er grønne mens andre er røde – en
+                  hendelse kan være trygg på ett område og kritisk på et annet samtidig.
+                </p>
+              </section>
+              <section>
+                <h4 className="font-semibold mb-1">Iterativ vurdering</h4>
+                <p>
+                  Verktøyet er bygget for å vurderes iterativt. Hvis noen bokser er røde, prøv å hake
+                  av flere barrierer for å se hvilke tiltak som faktisk reduserer risikoen
+                  tilstrekkelig. Sammenlign deretter listen i «Barriereanbefalinger» nederst med
+                  dagens situasjon – den viser hvilke barrierer som er kritiske gitt risikobildet, og
+                  hvilke som mangler. Avslutt med å notere alle antakelser du har brukt (særlig
+                  buenergi-modus og verdiene i kortslutningsfanen) i rapporten din slik at andre kan
+                  etterprøve vurderingen.
+                </p>
+              </section>
+              <p className="text-xs text-muted-foreground pt-2 border-t">
+                Verktøyet erstatter ikke en fullstendig risikovurdering eller branntekniske analyser
+                etter NS-EN 1991-1-2 / preaksepterte ytelser. Verdier skal verifiseres mot
+                primærkilder og prosjektspesifikke forutsetninger før bruk i prosjektering.
+              </p>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
       {/* INPUT */}
       <div className="grid lg:grid-cols-3 gap-4">
         <Card>
