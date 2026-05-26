@@ -53,6 +53,7 @@ export interface Resultat {
     Q_MW: number;
     qStrale_personell_kW: number;
     qStrale_maskinhall_kW: number;
+    varighet_min: number;
     tekst: string;
   };
   bleve: { fatal_radius_m: number; innenfor_personell: boolean; innenfor_maskinhall: boolean };
