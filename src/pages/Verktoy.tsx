@@ -61,6 +61,13 @@ const tools = [
     locked: true,
   },
   {
+    icon: AlertTriangle,
+    title: "Trafoeksplosjon",
+    description: "Vurder omfang og barrierer ved eksplosjon i oljefylt krafttrafo (vannkraft, transmisjon).",
+    href: "/verktoy/trafoeksplosjon",
+    locked: true,
+  },
+  {
     icon: Bot,
     title: "AI Brannkonsulent",
     description: "Still spørsmål om branntekniske krav fra TEK17, VTEK17 og BF85",
