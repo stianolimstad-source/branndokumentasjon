@@ -153,8 +153,15 @@ export function beregn(input: TrafoInput): Resultat {
   let q_mh = stralePunkt(input.avstand_maskinhall_m);
   if (b.brannmur_EI >= 60) q_mh *= 0.10;
   const qMax = Math.max(q_pers, q_mh);
+  const varighet_min = (input.oljevolum_L * 0.88) / (M_BURN * A * 60);
   let brannStatus: Status = qMax > 12.5 ? "error" : qMax > 4.7 ? "warning" : "ok";
-  const brannTekst = `Pølbrann med diameter ${D.toFixed(1)} m gir Q ≈ ${Q_MW.toFixed(1)} MW. Stråling mot personell: ${q_pers.toFixed(2)} kW/m², mot maskinhall: ${q_mh.toFixed(2)} kW/m². Terskler: 1,58 / 4,7 / 12,5 kW/m².${barriereSuffix}`;
+  if (varighet_min > 240 && brannStatus === "ok") brannStatus = "warning";
+  let brannTekst = `Pølbrann med diameter ${D.toFixed(1)} m gir Q ≈ ${Q_MW.toFixed(1)} MW. Stråling mot personell: ${q_pers.toFixed(2)} kW/m², mot maskinhall: ${q_mh.toFixed(2)} kW/m². Terskler: 1,58 / 4,7 / 12,5 kW/m².${barriereSuffix}`;
+  const varighetLinje = varighet_min > 90
+    ? `Brannvarighet ved fri brann: ca. ${Math.round(varighet_min)} minutter (${(varighet_min / 60).toFixed(1)} timer).`
+    : `Brannvarighet ved fri brann: ca. ${Math.round(varighet_min)} minutter.`;
+  brannTekst += `\n${varighetLinje}`;
+  if (b.deluge_vannspray) brannTekst += ` (Med effektivt slokkesystem antas brannen begrenset til 15–30 minutter etter aktivering.)`;
 
   // 6. BLEVE — fatal-radius skaleres mot ASME case (140 m for stor oljemengde, anta 5000 L referanse)
   const bleveSkala = Math.cbrt(Math.max(input.oljevolum_L, 100) / 5000);
