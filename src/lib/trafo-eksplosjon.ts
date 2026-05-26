@@ -253,6 +253,8 @@ export function beregn(input: TrafoInput): Resultat {
       innenfor_maskinhall: input.avstand_maskinhall_m < bleveR,
     },
     sannsynlighet: sann,
+    containment_ok,
+    containment_paakrevd_m2,
     anbefalinger: a,
   };
 }
