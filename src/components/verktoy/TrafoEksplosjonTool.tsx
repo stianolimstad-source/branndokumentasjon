@@ -248,8 +248,35 @@ const TrafoEksplosjonTool = () => {
               </Tabs>
             </div>
             <div>
-              <Label>Tankkapasitet elastisk (MJ)</Label>
-              <Input type="number" step="0.1" value={input.tankkapasitet_MJ} onChange={(e) => upd("tankkapasitet_MJ", +e.target.value)} />
+              <div className="flex items-center justify-between">
+                <Label>Tankkapasitet elastisk (MJ)</Label>
+                {tankkapManuellOverstyrt && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 text-xs"
+                    onClick={() => {
+                      setTankkapManuellOverstyrt(false);
+                      upd("tankkapasitet_MJ", +autoTankkap.toFixed(2));
+                    }}
+                  >
+                    Beregn automatisk
+                  </Button>
+                )}
+              </div>
+              <Input
+                type="number"
+                step="0.1"
+                value={input.tankkapasitet_MJ}
+                onChange={(e) => {
+                  setTankkapManuellOverstyrt(true);
+                  upd("tankkapasitet_MJ", +e.target.value);
+                }}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Auto-beregnet fra oljevolum, tanktype og spenning. Overstyr hvis trafoleverandøren har testet høyere kapasitet.
+              </p>
             </div>
           </CardContent>
         </Card>
