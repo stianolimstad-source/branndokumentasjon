@@ -197,7 +197,7 @@ export function beregn(input: TrafoInput): Resultat {
     kategori: "Avstand",
     tekst: "Klaringsavstand iht. IEEE 979 (≥9,1 m) / EN 61936-1",
     prioritet: minAvstand < 9.1 ? "kritisk" : "anbefalt",
-    oppfylt: b.avstand_standard && minAvstand >= 9.1,
+    oppfylt: minAvstand >= 9.1,
   });
 
   let trykkTekst = `Estimert topptrykk ${peak_kPa.toFixed(0)} kPa. Strukturskade-sannsynlighet personell: ${p_pers.toFixed(0)} %, maskinhall: ${p_mh.toFixed(0)} %.`;
