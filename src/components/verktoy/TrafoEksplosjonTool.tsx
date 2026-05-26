@@ -35,7 +35,7 @@ const defaultInput: TrafoInput = {
   tanktype: "conservator",
   spenning_kV: 132,
   effekt_MVA: 100,
-  buenergi_MJ: 5,
+  buenergi_MJ: 4,
   tankkapasitet_MJ: 5,
   plassering: "innendørs",
   avstand_personell_m: 15,
