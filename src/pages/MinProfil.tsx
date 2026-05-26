@@ -324,6 +324,65 @@ const MinProfil = () => {
             </Button>
           </CardContent>
         </Card>
+
+        {/* Receipts / invoices */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Receipt className="h-5 w-5 text-primary" />
+              Kvitteringer
+            </CardTitle>
+            <CardDescription>
+              Kvitteringer for betalte abonnementer. Klikk for å vise eller laste ned PDF.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loadingInvoices ? (
+              <p className="text-sm text-muted-foreground">Laster kvitteringer...</p>
+            ) : invoices.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Ingen kvitteringer funnet.</p>
+            ) : (
+              <div className="divide-y border rounded-md">
+                {invoices.map((inv) => (
+                  <div key={inv.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="font-medium text-sm">
+                        {inv.created ? new Date(inv.created).toLocaleDateString("nb-NO", { day: "2-digit", month: "short", year: "numeric" }) : "—"}
+                        {inv.number && <span className="text-muted-foreground font-normal"> · {inv.number}</span>}
+                      </div>
+                      {inv.description && (
+                        <div className="text-xs text-muted-foreground truncate">{inv.description}</div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className="text-sm font-semibold tabular-nums">
+                        {new Intl.NumberFormat("nb-NO", { style: "currency", currency: (inv.currency || "nok").toUpperCase() }).format(inv.amount_paid)}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        {inv.hosted_invoice_url && (
+                          <Button variant="ghost" size="sm" asChild>
+                            <a href={inv.hosted_invoice_url} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="h-4 w-4 mr-1" />
+                              Vis
+                            </a>
+                          </Button>
+                        )}
+                        {inv.pdf_url && (
+                          <Button variant="ghost" size="sm" asChild>
+                            <a href={inv.pdf_url} target="_blank" rel="noopener noreferrer">
+                              <Download className="h-4 w-4 mr-1" />
+                              PDF
+                            </a>
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
