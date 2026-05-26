@@ -210,6 +210,8 @@ export function beregn(input: TrafoInput): Resultat {
       peak_kPa,
       sannsynlighet_personell_pct: p_pers,
       sannsynlighet_maskinhall_pct: p_mh,
+      r20_m: 20 * skala,
+      r78_m: 78 * skala,
       tekst: trykkTekst,
     },
     fragmenter: { status: fragStatus, soner: { p80_m: p80, ytter_m: ytter, ekstrem_m: ekstrem }, tekst: fragTekst },
