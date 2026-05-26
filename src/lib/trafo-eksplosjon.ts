@@ -229,6 +229,7 @@ export function beregn(input: TrafoInput): Resultat {
       Q_MW,
       qStrale_personell_kW: q_pers,
       qStrale_maskinhall_kW: q_mh,
+      varighet_min,
       tekst: brannTekst,
     },
     bleve: {
