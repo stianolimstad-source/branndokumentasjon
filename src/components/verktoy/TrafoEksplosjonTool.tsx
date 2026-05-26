@@ -321,7 +321,6 @@ const TrafoEksplosjonTool = () => {
               ["aktiv_trykkavlastning", "Aktivt trykkavlastningssystem"],
               ["deluge_vannspray", "Deluge / vannspray"],
               ["oljegruve", "Oljegruve m/avskiller"],
-              ["avstand_standard", "Avstand iht. IEEE 979 / NEK 440"],
             ] as const).map(([k, lbl]) => (
               <label key={k} className="flex items-center gap-2 cursor-pointer">
                 <Checkbox checked={input.barrierer[k] as boolean} onCheckedChange={(v) => updB(k as any, !!v)} />
