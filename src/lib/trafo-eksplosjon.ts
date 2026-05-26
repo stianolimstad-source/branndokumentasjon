@@ -69,6 +69,7 @@ export interface Resultat {
   sannsynlighet: { aarlig_pct: number; levetid40_pct: number };
   containment_ok: boolean;
   containment_paakrevd_m2: number;
+  hydrogen_advarsel: boolean;
   anbefalinger: Anbefaling[];
 }
 
