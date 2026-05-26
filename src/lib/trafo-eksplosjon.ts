@@ -164,7 +164,7 @@ export function beregn(input: TrafoInput): Resultat {
   let q_mh = stralePunkt(input.avstand_maskinhall_m);
   if (b.brannmur_EI >= 60) q_mh *= 0.10;
   const qMax = Math.max(q_pers, q_mh);
-  const varighet_min = (input.oljevolum_L * 0.88) / (M_BURN * A * 60);
+  const varighet_min = (input.oljevolum_L * oljeF.tetthet / 1000) / (M_BURN * A * 60);
   let brannStatus: Status = qMax > 12.5 ? "error" : qMax > 4.7 ? "warning" : "ok";
   if (varighet_min > 240 && brannStatus === "ok") brannStatus = "warning";
   let brannTekst = `Pølbrann med diameter ${D.toFixed(1)} m gir Q ≈ ${Q_MW.toFixed(1)} MW. Stråling mot personell: ${q_pers.toFixed(2)} kW/m², mot maskinhall: ${q_mh.toFixed(2)} kW/m². Terskler: 1,58 / 4,7 / 12,5 kW/m².${barriereSuffix}`;
