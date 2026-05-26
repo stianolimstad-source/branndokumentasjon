@@ -92,15 +92,16 @@ export function beregn(input: TrafoInput): Resultat {
   // 1. Gassproduksjon (midt 80 cm³/kJ) — uavhengig av barrierer
   const gass_L = (E_kJ * 80) / 1000;
 
-  // 2. Tankvurdering — bruk effektiv buenergi
+  // 2. Tankvurdering — bruk margin (E_eff / kapasitet) i tre soner
+  const tankMargin = E_eff / Math.max(input.tankkapasitet_MJ, 0.0001);
   let tankStatus: Status = "ok";
-  let tankTekst = `Effektiv buenergi ${E_eff.toFixed(2)} MJ er under elastisk kapasitet (${input.tankkapasitet_MJ} MJ). Tanken antas å tåle hendelsen.`;
-  if (E_eff > input.tankkapasitet_MJ * 1.3) {
+  let tankTekst = `Effektiv buenergi ${E_eff.toFixed(2)} MJ er under 85 % av elastisk kapasitet (${input.tankkapasitet_MJ} MJ). Tanken antas å tåle hendelsen.`;
+  if (tankMargin >= 1.3) {
     tankStatus = "error";
-    tankTekst = `Effektiv buenergi ${E_eff.toFixed(2)} MJ overskrider tankkapasitet (${input.tankkapasitet_MJ} MJ) vesentlig — sannsynlig tankbrudd og eksplosjon.`;
-  } else if (E_eff > input.tankkapasitet_MJ) {
+    tankTekst = `Effektiv buenergi ${E_eff.toFixed(2)} MJ overskrider tankkapasitet (${input.tankkapasitet_MJ} MJ) vesentlig (margin ${(tankMargin * 100).toFixed(0)} %) — sannsynlig tankbrudd og eksplosjon.`;
+  } else if (tankMargin >= 0.85) {
     tankStatus = "warning";
-    tankTekst = `Effektiv buenergi ${E_eff.toFixed(2)} MJ overskrider elastisk kapasitet — risiko for deformasjon/brudd.`;
+    tankTekst = `Effektiv buenergi ${E_eff.toFixed(2)} MJ ligger i usikkerhetssonen (${(tankMargin * 100).toFixed(0)} % av elastisk kapasitet, ${input.tankkapasitet_MJ} MJ) — risiko for deformasjon/brudd innenfor spredningen i forsøksdataene.`;
   }
   tankTekst += barriereSuffix;
 
@@ -118,7 +119,7 @@ export function beregn(input: TrafoInput): Resultat {
   };
   const p_pers = sannsynlighetTrykk(input.avstand_personell_m);
   const p_mh = sannsynlighetTrykk(input.avstand_maskinhall_m);
-  let trykkStatus: Status = p_pers > 50 || p_mh > 50 ? "error" : p_pers > 10 || p_mh > 10 ? "warning" : "ok";
+  let trykkStatus: Status = p_pers > 50 || p_mh > 50 ? "error" : p_pers > 30 || p_mh > 30 ? "warning" : "ok";
 
   // 4. Fragmenter — skaleres med oljevolum mot 1100 L referanse
   const fragSkala = Math.cbrt(Math.max(input.oljevolum_L, 100) / 1100);
