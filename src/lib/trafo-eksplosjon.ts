@@ -179,7 +179,7 @@ export function beregn(input: TrafoInput): Resultat {
   const bleveR = 140 * bleveSkala;
 
   // 7. Sannsynlighet — redusert ved kombinasjon av DGA + temperaturovervåking
-  const aarlig = b.dga && b.temperaturovervaking ? 0.07 : 0.1;
+  const aarlig = (b.dga && b.temperaturovervaking ? 0.07 : 0.1) * oljeF.brannsannsynlighet;
   const levetid40 = (1 - Math.pow(1 - aarlig / 100, 40)) * 100;
   const sann = { aarlig_pct: aarlig, levetid40_pct: levetid40 };
 
