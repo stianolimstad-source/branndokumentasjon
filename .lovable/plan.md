@@ -1,35 +1,22 @@
-## Endring av terskel-logikk i `src/lib/trafo-eksplosjon.ts`
+## To mindre forbedringer
 
-### 1. Tank-status: Bytt til margin-baserte soner
-**Nåværende:**
-- `error`: `E_eff > tankkapasitet * 1.3`
-- `warning`: `E_eff > tankkapasitet`
-- `ok`: ellers (inkl. eksakt lik kapasitet)
+### 1. Skaler trykksoner (20 m / 78 m) i Soneskisse-SVG
+Trykksonen 20 m og 78 m i SVG-en er hardkodet, men `sannsynlighetTrykk` i `trafo-eksplosjon.ts` skalerer dem internt med `skala = cbrt(E_eff / 2.64)`. Etter at barrierene reduserer `E_eff` (bristeskive, aktiv trykkavlastning), må SVG-en bruke samme skalering.
 
-**Ny logikk (margin = E_eff / tankkapasitet):**
-- `error`: margin ≥ 1.30
-- `warning`: margin ≥ 0.85 og < 1.30
-- `ok`: margin < 0.85
+**Endringer:**
+- I `src/lib/trafo-eksplosjon.ts`: Utvid `Resultat.trykkbolge` med `r20_m` og `r78_m` (= `20 * skala` og `78 * skala`). Fyll dem inn i return-objektet.
+- I `src/components/verktoy/TrafoEksplosjonTool.tsx` (`Soneskisse`): Bytt `sc(20)` → `sc(res.trykkbolge.r20_m)` og `sc(78)` → `sc(res.trykkbolge.r78_m)`. Oppdater label-tekstene til å vise faktisk skalert avstand (f.eks. `${res.trykkbolge.r20_m.toFixed(0)} m (100 % trykk)`).
+- Inkluder `r20_m` og `r78_m` i `maxR`-beregningen slik at skissen aldri klipper sonene.
 
-Dette gir en "gul sone" fra 85 % til 130 % av tankkapasiteten, som reflekterer usikkerheten i forsøksdataene. Når buenergi er eksakt lik kapasiteten, blir det nå `warning` (margin = 1,0), ikke `ok`.
+### 2. IEEE 979-avstand: fjern overflødig checkbox
+**Endringer i `src/lib/trafo-eksplosjon.ts`:**
+- I `Barrierer`-interfacet: fjern `avstand_standard: boolean`.
+- I anbefalingen "Klaringsavstand iht. IEEE 979": endre `oppfylt: b.avstand_standard && minAvstand >= 9.1` til `oppfylt: minAvstand >= 9.1`.
 
-**Tekstoppdateringer:**
-- `ok`-teksten beholdes med effektiv buenergi under elastisk kapasitet.
-- `warning`-teksten justeres for å reflektere at det er innenfor "gul sone" (≥ 85 % av kapasiteten).
-- `error`-teksten beholdes (margin ≥ 1,3).
+**Endringer i `src/components/verktoy/TrafoEksplosjonTool.tsx`:**
+- Fjern `avstand_standard: false` fra `defaultInput.barrierer`.
+- Fjern raden `["avstand_standard", "Avstand iht. IEEE 979 / NEK 440"]` fra barriere-checkboxlisten.
 
-### 2. Trykkbølge-status: Hev warning-terskel fra 10 % til 30 %
-**Nåværende:**
-- `error`: sannsynlighet > 50 %
-- `warning`: sannsynlighet > 10 %
-- `ok`: ellers
-
-**Ny logikk:**
-- `error`: sannsynlighet > 50 % (uendret)
-- `warning`: sannsynlighet > 30 % (endret fra 10 %)
-- `ok`: ellers
-
-Dette gjør varslingen mer konsistent med faglige vurderinger.
-
-### 3. Fil
-Kun `src/lib/trafo-eksplosjon.ts` berøres (linje 96–104 og 121). Ingen andre filer endres.
+### Filer
+- `src/lib/trafo-eksplosjon.ts`
+- `src/components/verktoy/TrafoEksplosjonTool.tsx`

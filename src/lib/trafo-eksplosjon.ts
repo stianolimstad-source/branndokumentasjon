@@ -42,6 +42,8 @@ export interface Resultat {
     peak_kPa: number;
     sannsynlighet_personell_pct: number;
     sannsynlighet_maskinhall_pct: number;
+    r20_m: number;
+    r78_m: number;
     tekst: string;
   };
   fragmenter: { status: Status; soner: { p80_m: number; ytter_m: number; ekstrem_m: number }; tekst: string };
