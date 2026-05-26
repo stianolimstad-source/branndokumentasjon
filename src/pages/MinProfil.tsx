@@ -5,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Save, Upload, Trash2, Sparkles } from "lucide-react";
+import { Save, Upload, Trash2, Sparkles, Receipt, ExternalLink, Download } from "lucide-react";
+import { getStripeEnvironment } from "@/lib/stripe";
+
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,6 +32,8 @@ const MinProfil = () => {
   const [themedGroups, setThemedGroups] = useState<{ id: string; name: string }[]>([]);
   const [defaultTemplateGroupId, setDefaultTemplateGroupId] = useState<string>("none");
   const [savingTemplate, setSavingTemplate] = useState(false);
+  const [invoices, setInvoices] = useState<any[]>([]);
+  const [loadingInvoices, setLoadingInvoices] = useState(true);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -39,8 +43,26 @@ const MinProfil = () => {
     if (user) {
       fetchProfile();
       fetchTemplateGroups();
+      fetchInvoices();
     }
   }, [user, loading]);
+
+  const fetchInvoices = async () => {
+    setLoadingInvoices(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("get-stripe-invoices", {
+        body: { environment: getStripeEnvironment() },
+      });
+      if (error) throw error;
+      setInvoices(data?.invoices ?? []);
+    } catch (e) {
+      console.error("fetchInvoices error:", e);
+      setInvoices([]);
+    } finally {
+      setLoadingInvoices(false);
+    }
+  };
+
 
   const fetchTemplateGroups = async () => {
     if (!user) return;
@@ -300,6 +322,65 @@ const MinProfil = () => {
               <Save className="h-4 w-4 mr-2" />
               {saving ? "Lagrer..." : "Lagre profil"}
             </Button>
+          </CardContent>
+        </Card>
+
+        {/* Receipts / invoices */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Receipt className="h-5 w-5 text-primary" />
+              Kvitteringer
+            </CardTitle>
+            <CardDescription>
+              Kvitteringer for betalte abonnementer. Klikk for å vise eller laste ned PDF.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loadingInvoices ? (
+              <p className="text-sm text-muted-foreground">Laster kvitteringer...</p>
+            ) : invoices.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Ingen kvitteringer funnet.</p>
+            ) : (
+              <div className="divide-y border rounded-md">
+                {invoices.map((inv) => (
+                  <div key={inv.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="font-medium text-sm">
+                        {inv.created ? new Date(inv.created).toLocaleDateString("nb-NO", { day: "2-digit", month: "short", year: "numeric" }) : "—"}
+                        {inv.number && <span className="text-muted-foreground font-normal"> · {inv.number}</span>}
+                      </div>
+                      {inv.description && (
+                        <div className="text-xs text-muted-foreground truncate">{inv.description}</div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className="text-sm font-semibold tabular-nums">
+                        {new Intl.NumberFormat("nb-NO", { style: "currency", currency: (inv.currency || "nok").toUpperCase() }).format(inv.amount_paid)}
+                      </span>
+                      <div className="flex items-center gap-1">
+                        {inv.hosted_invoice_url && (
+                          <Button variant="ghost" size="sm" asChild>
+                            <a href={inv.hosted_invoice_url} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="h-4 w-4 mr-1" />
+                              Vis
+                            </a>
+                          </Button>
+                        )}
+                        {inv.pdf_url && (
+                          <Button variant="ghost" size="sm" asChild>
+                            <a href={inv.pdf_url} target="_blank" rel="noopener noreferrer">
+                              <Download className="h-4 w-4 mr-1" />
+                              PDF
+                            </a>
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
