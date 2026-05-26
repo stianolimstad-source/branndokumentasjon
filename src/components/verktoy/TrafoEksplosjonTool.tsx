@@ -381,6 +381,14 @@ const TrafoEksplosjonTool = () => {
             <div>
               <Label>Oljegruve / bassengareal (m²)</Label>
               <Input type="number" value={input.basseng_areal_m2} onChange={(e) => upd("basseng_areal_m2", +e.target.value)} />
+              {input.basseng_areal_m2 < res.containment_paakrevd_m2 && (
+                <Alert variant="warning" className="mt-2">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription>
+                    Oljegruven bør være minst {Math.ceil(res.containment_paakrevd_m2)} m² for å romme 110 % av oljemengden iht. NFPA 850. Underdimensjonert containment medfører risiko for spredning av brennende olje utover anlegget.
+                  </AlertDescription>
+                </Alert>
+              )}
             </div>
           </CardContent>
         </Card>
