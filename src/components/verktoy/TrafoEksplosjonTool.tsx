@@ -430,6 +430,15 @@ const TrafoEksplosjonTool = () => {
         </Card>
       </div>
 
+      {res.hydrogen_advarsel && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            Innendørs plassering uten dedikert romventilasjon: hydrogen og andre brennbare gasser fra buespaltet olje kan akkumulere og gi sekundær gasseksplosjon. Vurder ventilasjon dimensjonert iht. CIGRE TB 537.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* RESULTAT */}
       <div className="grid md:grid-cols-2 gap-4">
         <Card className={statusKlasse(res.tank.status)}>
