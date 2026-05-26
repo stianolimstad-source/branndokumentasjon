@@ -155,6 +155,7 @@ export function beregn(input: TrafoInput): Resultat {
   const D = 2 * Math.sqrt(A / Math.PI);
   let Q_MW = M_BURN * A * DH_C; // kg/s · MJ/kg = MW
   if (b.deluge_vannspray) Q_MW *= 0.45;
+  Q_MW *= oljeF.brennverdi;
   const stralePunkt = (r: number) => {
     if (r <= 0.1) return 1000;
     return (X_RAD * Q_MW * 1000) / (4 * Math.PI * r * r); // kW/m²
