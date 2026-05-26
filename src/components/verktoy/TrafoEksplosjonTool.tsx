@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 import { beregn, type TrafoInput, type Status, type Resultat } from "@/lib/trafo-eksplosjon";
 import { TRAFO_CASES } from "@/lib/trafo-cases";
