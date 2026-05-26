@@ -163,7 +163,6 @@ export function beregn(input: TrafoInput): Resultat {
 
   // Anbefalinger
   const a: Anbefaling[] = [];
-  const b = input.barrierer;
   a.push({ kategori: "Vern", tekst: "Bucholtz-vern installert", prioritet: "kritisk", oppfylt: b.bucholtz });
   a.push({ kategori: "Vern", tekst: "Differensialvern (87T)", prioritet: "kritisk", oppfylt: b.differensialvern });
   a.push({ kategori: "Overvåking", tekst: "DGA (gass-i-olje-analyse)", prioritet: "anbefalt", oppfylt: b.dga });
