@@ -1,52 +1,42 @@
-# Plassering påvirker beregninger
+## Endringer i `src/lib/trafo-eksplosjon.ts`
 
-## `src/lib/trafo-eksplosjon.ts`
+1. Endre `Resultat.sannsynlighet` til:
+```ts
+sannsynlighet: {
+  intern_feil_aarlig_pct: number;
+  arc_gitt_feil_pct: number;
+  tankbrudd_gitt_arc_pct: number;
+  brann_gitt_brudd_pct: number;
+  eskalering_gitt_brann_pct: number;
+  total_eskalering_aarlig_pct: number;
+  total_levetid40_pct: number;
+}
+```
 
-1. `Barrierer` — legg til `rom_ventilasjon: boolean`.
-2. `Resultat` — legg til `hydrogen_advarsel: boolean`.
-3. I `beregn()`:
-   - `const innendors = input.plassering === "innendørs";`
-   - **Trykkbølge**: etter `const skala = ...` og `peak_kPa`:
-     ```
-     const refleksjon = innendors ? 1.3 : 1.0;
-     const peak_kPa = 80 * skala * refleksjon;
-     const r20 = 20 * skala * refleksjon;
-     const r78 = 78 * skala * refleksjon;
-     ```
-     Bruk `r20`/`r78` i `sannsynlighetTrykk` og returner som `r20_m`/`r78_m`.
-   - **Fragmenter** (utendørs ×1,15):
-     ```
-     const fragSkalaPlass = innendors ? 1.0 : 1.15;
-     const p80 = 115 * fragSkala * fragSkalaPlass;
-     const ytter = 430 * fragSkala * fragSkalaPlass;
-     const ekstrem = 860 * fragSkala * fragSkalaPlass;
-     ```
-   - **BLEVE** (innendørs ×0,6): `const bleveR = 140 * bleveSkala * (innendors ? 0.6 : 1.0);`
-   - **Hydrogen**: `const hydrogen_advarsel = innendors && !b.rom_ventilasjon;`
-4. Returner `hydrogen_advarsel`.
-5. Legg til ny anbefaling for rom_ventilasjon (kritisk ved innendørs, ellers valgfri):
-   ```
-   a.push({
-     kategori: "Ventilasjon",
-     tekst: "Romventilasjon for hydrogenavlasting (CIGRE TB 537)",
-     prioritet: innendors ? "kritisk" : "valgfri",
-     oppfylt: b.rom_ventilasjon,
-   });
-   ```
+2. I `beregn()`, erstatt nåværende `aarlig`/`levetid40`-blokk med:
 
-## `src/components/verktoy/TrafoEksplosjonTool.tsx`
+- `intern_feil = 1.0 * oljeF.brannsannsynlighet`, deretter `* 0.6` hvis `b.dga && b.temperaturovervaking`.
+- `arc = 40`; hvis `b.bucholtz && b.differensialvern` → 15; ellers hvis `b.differensialvern` → 25.
+- `tankbrudd` basert på `tankMargin` (allerede beregnet): `<0.5` → 5; `<0.85` → 15; `<1.3` → 50; ellers 90.
+- `brann = 70 * oljeF.brannsannsynlighet`.
+- `eskalering = 50`; hvis `b.brannmur_EI >= 120 && b.deluge_vannspray` → 20; hvis i tillegg `b.brannmur_EI === 240` → 10.
+- `total_aarlig_pct = (intern/100) * (arc/100) * (tankbrudd/100) * (brann/100) * (eskalering/100) * 100`.
+- `levetid40 = (1 - (1 - total_aarlig_pct/100)^40) * 100`.
 
-1. `defaultInput.barrierer.rom_ventilasjon = false`.
-2. I barriere-listen (rundt linje 399), legg inn ny rad: `["rom_ventilasjon", "Romventilasjon (hydrogenavlasting)"]`.
-3. Under barriere-kortet, når `res.hydrogen_advarsel`:
-   ```
-   <Alert variant="destructive" className="mt-3">
-     <AlertTriangle className="h-4 w-4" />
-     <AlertDescription>
-       Innendørs plassering uten dedikert romventilasjon: hydrogen og andre brennbare gasser fra buespaltet olje kan akkumulere og gi sekundær gasseksplosjon. Vurder ventilasjon dimensjonert iht. CIGRE TB 537.
-     </AlertDescription>
-   </Alert>
-   ```
-   (`Alert`/`AlertDescription` allerede importert, `AlertTriangle` allerede importert.)
+3. Returner alle syv feltene i `sannsynlighet`-objektet.
 
-Ingen andre filer berøres.
+## Endringer i `src/components/verktoy/TrafoEksplosjonTool.tsx`
+
+Erstatt Sannsynlighet-kortets innhold (linjer 489–495) med et hendelsestre:
+
+- Fem rader (intern feil, arc gitt feil, tankbrudd gitt arc, brann gitt brudd, eskalering gitt brann), hver med label, prosentverdi (1 desimal) og en nedover-pil (`ArrowDown` fra lucide) mellom radene.
+- Bruk semantiske tokens (`bg-muted`, `text-foreground`, `text-muted-foreground`, `border`).
+- Under treet: en tydelig blokk med
+  - "Total årlig eskaleringssannsynlighet: **X %**" (formatert med passende antall desimaler, f.eks. `toFixed(3)` siden tallene blir små)
+  - "Kumulert over 40 år: **Y %**" (`toFixed(1)`)
+- Importere `ArrowDown` fra `lucide-react`.
+
+## Filer
+
+- `src/lib/trafo-eksplosjon.ts`
+- `src/components/verktoy/TrafoEksplosjonTool.tsx`

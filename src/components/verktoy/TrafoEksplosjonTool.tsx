@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
+import { CheckCircle2, AlertTriangle, XCircle, ArrowDown } from "lucide-react";
 import { beregn, type TrafoInput, type Status, type Resultat } from "@/lib/trafo-eksplosjon";
 import { TRAFO_CASES } from "@/lib/trafo-cases";
 
@@ -488,9 +488,42 @@ const TrafoEksplosjonTool = () => {
 
         <Card>
           <CardHeader><CardTitle className="text-base">Sannsynlighet (CIGRE TB 537)</CardTitle></CardHeader>
-          <CardContent className="text-sm space-y-1">
-            <p>Trafobrann: ~<strong>{res.sannsynlighet.aarlig_pct} %/år</strong>.</p>
-            <p>Kumulert over 40 års levetid: ~<strong>{res.sannsynlighet.levetid40_pct} %</strong>.</p>
+          <CardContent className="text-sm">
+            <div className="space-y-1">
+              {[
+                { label: "Intern feil (per år)", val: res.sannsynlighet.intern_feil_aarlig_pct },
+                { label: "Arc gitt feil", val: res.sannsynlighet.arc_gitt_feil_pct },
+                { label: "Tankbrudd gitt arc", val: res.sannsynlighet.tankbrudd_gitt_arc_pct },
+                { label: "Brann gitt brudd", val: res.sannsynlighet.brann_gitt_brudd_pct },
+                { label: "Eskalering gitt brann", val: res.sannsynlighet.eskalering_gitt_brann_pct },
+              ].map((row, i, arr) => (
+                <div key={row.label}>
+                  <div className="flex items-center justify-between rounded-md border bg-muted/40 px-3 py-2">
+                    <span className="text-foreground">{row.label}</span>
+                    <span className="font-semibold tabular-nums">{row.val.toFixed(1)} %</span>
+                  </div>
+                  {i < arr.length - 1 && (
+                    <div className="flex justify-center text-muted-foreground py-0.5">
+                      <ArrowDown className="h-4 w-4" />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="mt-3 pt-3 border-t space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Total årlig eskaleringssannsynlighet</span>
+                <span className="text-lg font-bold tabular-nums">
+                  {res.sannsynlighet.total_eskalering_aarlig_pct.toFixed(3)} %
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Kumulert over 40 år</span>
+                <span className="text-lg font-bold tabular-nums">
+                  {res.sannsynlighet.total_levetid40_pct.toFixed(1)} %
+                </span>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
