@@ -68,8 +68,16 @@ const statusKlasse = (s: Status) =>
     ? "border-yellow-500 bg-yellow-50 dark:bg-yellow-950"
     : "border-red-500 bg-red-50 dark:bg-red-950";
 
+const beregnTankkapasitet = (oljevolum_L: number, tanktype: TrafoInput["tanktype"], spenning_kV: number): number => {
+  const grunn = (oljevolum_L / 1000) * 0.2;
+  const tankF = tanktype === "conservator" ? 1.0 : tanktype === "corrugated" ? 0.85 : 0.7;
+  const spF = spenning_kV > 220 ? 1.3 : spenning_kV >= 132 ? 1.0 : 0.8;
+  return Math.max(1.0, grunn * tankF * spF);
+};
+
 const TrafoEksplosjonTool = () => {
   const [input, setInput] = useState<TrafoInput>(defaultInput);
+  const [tankkapManuellOverstyrt, setTankkapManuellOverstyrt] = useState(false);
   const [buMetode, setBuMetode] = useState<"scenario" | "kortslutning" | "manuell">("scenario");
   const [ik_kA, setIk] = useState(30);
   const [uBue_V, setUBue] = useState(1000);
@@ -79,6 +87,17 @@ const TrafoEksplosjonTool = () => {
   const upd = <K extends keyof TrafoInput>(k: K, v: TrafoInput[K]) => setInput((p) => ({ ...p, [k]: v }));
   const updB = <K extends keyof TrafoInput["barrierer"]>(k: K, v: TrafoInput["barrierer"][K]) =>
     setInput((p) => ({ ...p, barrierer: { ...p.barrierer, [k]: v } }));
+
+  const autoTankkap = useMemo(
+    () => beregnTankkapasitet(input.oljevolum_L, input.tanktype, input.spenning_kV),
+    [input.oljevolum_L, input.tanktype, input.spenning_kV]
+  );
+
+  useEffect(() => {
+    if (!tankkapManuellOverstyrt) {
+      setInput((p) => ({ ...p, tankkapasitet_MJ: +autoTankkap.toFixed(2) }));
+    }
+  }, [autoTankkap, tankkapManuellOverstyrt]);
 
   const E_kortslutning = (uBue_V * ik_kA * tKlar_ms) / 1e6; // MJ
   useEffect(() => {
@@ -229,8 +248,35 @@ const TrafoEksplosjonTool = () => {
               </Tabs>
             </div>
             <div>
-              <Label>Tankkapasitet elastisk (MJ)</Label>
-              <Input type="number" step="0.1" value={input.tankkapasitet_MJ} onChange={(e) => upd("tankkapasitet_MJ", +e.target.value)} />
+              <div className="flex items-center justify-between">
+                <Label>Tankkapasitet elastisk (MJ)</Label>
+                {tankkapManuellOverstyrt && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    className="h-7 text-xs"
+                    onClick={() => {
+                      setTankkapManuellOverstyrt(false);
+                      upd("tankkapasitet_MJ", +autoTankkap.toFixed(2));
+                    }}
+                  >
+                    Beregn automatisk
+                  </Button>
+                )}
+              </div>
+              <Input
+                type="number"
+                step="0.1"
+                value={input.tankkapasitet_MJ}
+                onChange={(e) => {
+                  setTankkapManuellOverstyrt(true);
+                  upd("tankkapasitet_MJ", +e.target.value);
+                }}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Auto-beregnet fra oljevolum, tanktype og spenning. Overstyr hvis trafoleverandøren har testet høyere kapasitet.
+              </p>
             </div>
           </CardContent>
         </Card>
