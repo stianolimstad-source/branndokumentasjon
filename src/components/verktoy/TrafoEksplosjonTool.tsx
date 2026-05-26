@@ -33,6 +33,7 @@ const REFERANSE_TESTER = [
 const defaultInput: TrafoInput = {
   oljevolum_L: 25000,
   tanktype: "conservator",
+  oljetype: "mineralolje",
   spenning_kV: 132,
   effekt_MVA: 100,
   buenergi_MJ: 4,
