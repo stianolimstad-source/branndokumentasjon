@@ -38,7 +38,7 @@ export interface Barrierer {
   brannmur_EI: 0 | 60 | 120 | 240;
   deluge_vannspray: boolean;
   oljegruve: boolean;
-  
+  rom_ventilasjon: boolean;
 }
 
 export type Status = "ok" | "warning" | "error";
