@@ -53,6 +53,7 @@ const defaultInput: TrafoInput = {
     brannmur_EI: 120,
     deluge_vannspray: false,
     oljegruve: true,
+    rom_ventilasjon: false,
     
   },
 };
