@@ -71,26 +71,41 @@ const M_BURN = 0.015; // kg/(m²·s) modnet pølbrann
 const X_RAD = 0.35; // strålingsandel av Q
 
 export function beregn(input: TrafoInput): Resultat {
+  const b = input.barrierer;
   const E = input.buenergi_MJ;
   const E_kJ = E * 1000;
 
-  // 1. Gassproduksjon (midt 80 cm³/kJ)
+  // Effektiv buenergi mot tank — påvirkes av trykkavlastning
+  let E_eff = E;
+  if (b.bristeskive) E_eff *= 0.80;
+  if (b.aktiv_trykkavlastning) E_eff *= 0.30;
+
+  // Marker om noen barrierer faktisk endrer beregningene
+  const barriereAktiv =
+    b.bristeskive ||
+    b.aktiv_trykkavlastning ||
+    b.brannmur_EI >= 60 ||
+    b.deluge_vannspray ||
+    (b.dga && b.temperaturovervaking);
+  const barriereSuffix = barriereAktiv ? " (inkluderer effekt av eksisterende barrierer)" : "";
+
+  // 1. Gassproduksjon (midt 80 cm³/kJ) — uavhengig av barrierer
   const gass_L = (E_kJ * 80) / 1000;
 
-  // 2. Tankvurdering
+  // 2. Tankvurdering — bruk effektiv buenergi
   let tankStatus: Status = "ok";
-  let tankTekst = `Buenergi ${E.toFixed(2)} MJ er under elastisk kapasitet (${input.tankkapasitet_MJ} MJ). Tanken antas å tåle hendelsen.`;
-  if (E > input.tankkapasitet_MJ * 1.3) {
+  let tankTekst = `Effektiv buenergi ${E_eff.toFixed(2)} MJ er under elastisk kapasitet (${input.tankkapasitet_MJ} MJ). Tanken antas å tåle hendelsen.`;
+  if (E_eff > input.tankkapasitet_MJ * 1.3) {
     tankStatus = "error";
-    tankTekst = `Buenergi ${E.toFixed(2)} MJ overskrider tankkapasitet (${input.tankkapasitet_MJ} MJ) vesentlig — sannsynlig tankbrudd og eksplosjon.`;
-  } else if (E > input.tankkapasitet_MJ) {
+    tankTekst = `Effektiv buenergi ${E_eff.toFixed(2)} MJ overskrider tankkapasitet (${input.tankkapasitet_MJ} MJ) vesentlig — sannsynlig tankbrudd og eksplosjon.`;
+  } else if (E_eff > input.tankkapasitet_MJ) {
     tankStatus = "warning";
-    tankTekst = `Buenergi ${E.toFixed(2)} MJ overskrider elastisk kapasitet — risiko for deformasjon/brudd.`;
+    tankTekst = `Effektiv buenergi ${E_eff.toFixed(2)} MJ overskrider elastisk kapasitet — risiko for deformasjon/brudd.`;
   }
+  tankTekst += barriereSuffix;
 
-  // 3. Trykkbølge — kalibrert mot ASME 2022 case (80 kPa, 100 % skade <=20 m, 50 % <=78 m)
-  // Skalering med (E/2.64)^(1/3) ift. PLOS One testenergi.
-  const skala = Math.cbrt(Math.max(E, 0.1) / 2.64);
+  // 3. Trykkbølge — skaleres med effektiv buenergi
+  const skala = Math.cbrt(Math.max(E_eff, 0.1) / 2.64);
   const peak_kPa = 80 * skala;
   const sannsynlighetTrykk = (r: number) => {
     if (r <= 0) return 100;
@@ -98,7 +113,6 @@ export function beregn(input: TrafoInput): Resultat {
     const r78 = 78 * skala;
     if (r <= r20) return 100;
     if (r >= r78 * 2) return 0;
-    // lineær interpolasjon 100 -> 50 -> 0
     if (r <= r78) return 100 - ((r - r20) / (r78 - r20)) * 50;
     return 50 - ((r - r78) / r78) * 50;
   };
@@ -122,26 +136,30 @@ export function beregn(input: TrafoInput): Resultat {
     fragTekst = `Personell/maskinhall (${minAvstand} m) ligger innenfor ytterspekter for fragmenter (${ytter.toFixed(0)} m).`;
   }
 
-  // 5. Pølbrann
+  // 5. Pølbrann — Q reduseres ved deluge, q_mh reduseres ved brannmur ≥ EI60
   const A = Math.max(input.basseng_areal_m2, 1);
   const D = 2 * Math.sqrt(A / Math.PI);
-  const Q_MW = (M_BURN * A * DH_C * 1000) / 1000; // MW = kg/s * MJ/kg
+  let Q_MW = M_BURN * A * DH_C; // kg/s · MJ/kg = MW
+  if (b.deluge_vannspray) Q_MW *= 0.45;
   const stralePunkt = (r: number) => {
     if (r <= 0.1) return 1000;
     return (X_RAD * Q_MW * 1000) / (4 * Math.PI * r * r); // kW/m²
   };
   const q_pers = stralePunkt(input.avstand_personell_m);
-  const q_mh = stralePunkt(input.avstand_maskinhall_m);
+  let q_mh = stralePunkt(input.avstand_maskinhall_m);
+  if (b.brannmur_EI >= 60) q_mh *= 0.10;
   const qMax = Math.max(q_pers, q_mh);
   let brannStatus: Status = qMax > 12.5 ? "error" : qMax > 4.7 ? "warning" : "ok";
-  const brannTekst = `Pølbrann med diameter ${D.toFixed(1)} m gir Q ≈ ${Q_MW.toFixed(1)} MW. Stråling mot personell: ${q_pers.toFixed(2)} kW/m², mot maskinhall: ${q_mh.toFixed(2)} kW/m². Terskler: 1,58 / 4,7 / 12,5 kW/m².`;
+  const brannTekst = `Pølbrann med diameter ${D.toFixed(1)} m gir Q ≈ ${Q_MW.toFixed(1)} MW. Stråling mot personell: ${q_pers.toFixed(2)} kW/m², mot maskinhall: ${q_mh.toFixed(2)} kW/m². Terskler: 1,58 / 4,7 / 12,5 kW/m².${barriereSuffix}`;
 
   // 6. BLEVE — fatal-radius skaleres mot ASME case (140 m for stor oljemengde, anta 5000 L referanse)
   const bleveSkala = Math.cbrt(Math.max(input.oljevolum_L, 100) / 5000);
   const bleveR = 140 * bleveSkala;
 
-  // 7. Sannsynlighet
-  const sann = { aarlig_pct: 0.1, levetid40_pct: 4 };
+  // 7. Sannsynlighet — redusert ved kombinasjon av DGA + temperaturovervåking
+  const aarlig = b.dga && b.temperaturovervaking ? 0.07 : 0.1;
+  const levetid40 = (1 - Math.pow(1 - aarlig / 100, 40)) * 100;
+  const sann = { aarlig_pct: aarlig, levetid40_pct: levetid40 };
 
   // Anbefalinger
   const a: Anbefaling[] = [];
