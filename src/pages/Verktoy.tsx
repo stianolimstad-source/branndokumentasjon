@@ -1,5 +1,5 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flame, MoveVertical, Box, Users, Zap, Shield, Maximize, Wind, Bot, Activity, Lock } from "lucide-react";
+import { Flame, MoveVertical, Box, Users, Zap, Shield, Maximize, Wind, Bot, Activity, Lock, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useIsFullAccess } from "@/hooks/useIsFullAccess";
 
@@ -58,6 +58,13 @@ const tools = [
     title: "Brannsimulering",
     description: "Forenklet to-sonemodell for brannvekst, røykutvikling og røyklagshøyde i tidlig fase.",
     href: "/verktoy/brannsimulering",
+    locked: true,
+  },
+  {
+    icon: AlertTriangle,
+    title: "Trafoeksplosjon",
+    description: "Vurder omfang og barrierer ved eksplosjon i oljefylt krafttrafo (vannkraft, transmisjon).",
+    href: "/verktoy/trafoeksplosjon",
     locked: true,
   },
   {
