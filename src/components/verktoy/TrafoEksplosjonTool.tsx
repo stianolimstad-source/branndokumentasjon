@@ -70,11 +70,22 @@ const statusKlasse = (s: Status) =>
 
 const TrafoEksplosjonTool = () => {
   const [input, setInput] = useState<TrafoInput>(defaultInput);
+  const [buMetode, setBuMetode] = useState<"scenario" | "kortslutning" | "manuell">("scenario");
+  const [ik_kA, setIk] = useState(30);
+  const [uBue_V, setUBue] = useState(1000);
+  const [tKlar_ms, setT] = useState(100);
   const res: Resultat = useMemo(() => beregn(input), [input]);
 
   const upd = <K extends keyof TrafoInput>(k: K, v: TrafoInput[K]) => setInput((p) => ({ ...p, [k]: v }));
   const updB = <K extends keyof TrafoInput["barrierer"]>(k: K, v: TrafoInput["barrierer"][K]) =>
     setInput((p) => ({ ...p, barrierer: { ...p.barrierer, [k]: v } }));
+
+  const E_kortslutning = (uBue_V * ik_kA * tKlar_ms) / 1e6; // MJ
+  useEffect(() => {
+    if (buMetode === "kortslutning") {
+      setInput((p) => ({ ...p, buenergi_MJ: +E_kortslutning.toFixed(2) }));
+    }
+  }, [buMetode, E_kortslutning]);
 
   return (
     <div className="space-y-6">
