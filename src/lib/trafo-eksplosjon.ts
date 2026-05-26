@@ -66,7 +66,15 @@ export interface Resultat {
     tekst: string;
   };
   bleve: { fatal_radius_m: number; innenfor_personell: boolean; innenfor_maskinhall: boolean };
-  sannsynlighet: { aarlig_pct: number; levetid40_pct: number };
+  sannsynlighet: {
+    intern_feil_aarlig_pct: number;
+    arc_gitt_feil_pct: number;
+    tankbrudd_gitt_arc_pct: number;
+    brann_gitt_brudd_pct: number;
+    eskalering_gitt_brann_pct: number;
+    total_eskalering_aarlig_pct: number;
+    total_levetid40_pct: number;
+  };
   containment_ok: boolean;
   containment_paakrevd_m2: number;
   hydrogen_advarsel: boolean;
