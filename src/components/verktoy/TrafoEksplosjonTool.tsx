@@ -436,7 +436,7 @@ const TrafoEksplosjonTool = () => {
         <Card className={statusKlasse(res.oljebrann.status)}>
           <CardHeader className="flex flex-row items-center gap-2"><StatusIcon s={res.oljebrann.status} /><CardTitle className="text-base">Oljebrann / stråling</CardTitle></CardHeader>
           <CardContent className="text-sm">
-            <p>{res.oljebrann.tekst}</p>
+            <p className="whitespace-pre-line">{res.oljebrann.tekst}</p>
           </CardContent>
         </Card>
 

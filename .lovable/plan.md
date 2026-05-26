@@ -1,24 +1,26 @@
-## Legg til kollapsbar veiledning øverst i TrafoEksplosjonTool
+# Brannvarighet for pølbrann
 
-I `src/components/verktoy/TrafoEksplosjonTool.tsx` skal det legges til en Accordion-komponent helt øverst i retur-JSX-en, før `/* INPUT */`-seksjonen.
+## Endringer i `src/lib/trafo-eksplosjon.ts`
 
-### Endringer
+1. **Utvid `Resultat.oljebrann`** med nytt felt:
+   - `varighet_min: number`
 
-1. **Accordion med `type="single"` og `defaultValue="veiledning"`**
-   - Bruker eksisterende import fra `@/components/ui/accordion`.
-   - En `<AccordionItem value="veiledning">` som er åpen ved første sidelast.
-   - `<AccordionTrigger>`-tekst: **«Slik bruker du verktøyet»**
+2. **Beregn varighet** i `beregn()` etter at `A` er definert:
+   ```
+   varighet_min = (oljevolum_L * 0.88) / (M_BURN * A * 60)
+   ```
+   (bruker eksisterende `M_BURN = 0.015` og `basseng_areal_m2`).
 
-2. **Innhold i fire seksjoner**
-   - Hver seksjon har en liten overskrift (`<h4>` eller `font-semibold`) etterfulgt av kortfattet prosa (ingen punktlister).
-   - Teksten følger brukerens fire seksjoner nøyaktig:
-     1. «Hva verktøyet gjør»
-     2. «Slik fyller du ut»
-     3. «Slik tolker du resultatene»
-     4. «Iterativ vurdering»
+3. **Statusoppgradering**: hvis `varighet_min > 240` og `brannStatus === "ok"`, sett `brannStatus = "warning"`.
 
-3. **Disclaimer-note nederst**
-   - En kort avsluttende paragraf i liten skrift (`text-xs text-muted-foreground`) med den nøyaktige teksten brukeren spesifiserte om at verktøyet ikke erstatter fullstendig risikovurdering.
+4. **Utvid `brannTekst`** med en ny linje etter eksisterende tekst:
+   - Hvis `varighet_min > 90`: `"Brannvarighet ved fri brann: ca. {Math.round(varighet_min)} minutter ({(varighet_min/60).toFixed(1)} timer)."`
+   - Ellers: `"Brannvarighet ved fri brann: ca. {Math.round(varighet_min)} minutter."`
+   - Hvis `b.deluge_vannspray`: legg til ` (Med effektivt slokkesystem antas brannen begrenset til 15–30 minutter etter aktivering.)`
+   - Skilles fra eksisterende tekst med linjeskift (`\n`).
 
-### Fil
-- `src/components/verktoy/TrafoEksplosjonTool.tsx`
+5. Returner `varighet_min` i `oljebrann`-objektet.
+
+## Ingen UI-endring nødvendig
+
+`TrafoEksplosjonTool.tsx` rendrer allerede `res.oljebrann.tekst` — den nye linjen vises automatisk hvis teksten rendres med `whitespace-pre-line`. Verifiseres ved implementering; hvis ikke, legges `whitespace-pre-line` til på relevant `<p>` der `oljebrann.tekst` vises.
