@@ -195,10 +195,39 @@ export function beregn(input: TrafoInput): Resultat {
   const bleveR = 140 * bleveSkala * (innendors ? 0.6 : 1.0);
   const hydrogen_advarsel = innendors && !b.rom_ventilasjon;
 
-  // 7. Sannsynlighet — redusert ved kombinasjon av DGA + temperaturovervåking
-  const aarlig = (b.dga && b.temperaturovervaking ? 0.07 : 0.1) * oljeF.brannsannsynlighet;
-  const levetid40 = (1 - Math.pow(1 - aarlig / 100, 40)) * 100;
-  const sann = { aarlig_pct: aarlig, levetid40_pct: levetid40 };
+  // 7. Sannsynlighet — hendelsestre (CIGRE TB 537)
+  let intern_feil = 1.0 * oljeF.brannsannsynlighet;
+  if (b.dga && b.temperaturovervaking) intern_feil *= 0.6;
+
+  let arc = 40;
+  if (b.bucholtz && b.differensialvern) arc = 15;
+  else if (b.differensialvern) arc = 25;
+
+  let tankbrudd: number;
+  if (tankMargin < 0.5) tankbrudd = 5;
+  else if (tankMargin < 0.85) tankbrudd = 15;
+  else if (tankMargin < 1.3) tankbrudd = 50;
+  else tankbrudd = 90;
+
+  const brann = 70 * oljeF.brannsannsynlighet;
+
+  let eskalering = 50;
+  if (b.brannmur_EI >= 120 && b.deluge_vannspray) eskalering = 20;
+  if (b.brannmur_EI === 240 && b.deluge_vannspray) eskalering = 10;
+
+  const total_aarlig =
+    (intern_feil / 100) * (arc / 100) * (tankbrudd / 100) * (brann / 100) * (eskalering / 100) * 100;
+  const levetid40 = (1 - Math.pow(1 - total_aarlig / 100, 40)) * 100;
+
+  const sann = {
+    intern_feil_aarlig_pct: intern_feil,
+    arc_gitt_feil_pct: arc,
+    tankbrudd_gitt_arc_pct: tankbrudd,
+    brann_gitt_brudd_pct: brann,
+    eskalering_gitt_brann_pct: eskalering,
+    total_eskalering_aarlig_pct: total_aarlig,
+    total_levetid40_pct: levetid40,
+  };
 
   // Anbefalinger
   const a: Anbefaling[] = [];
