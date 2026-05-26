@@ -224,6 +224,12 @@ export function beregn(input: TrafoInput): Resultat {
     oppfylt: containment_ok,
   });
   a.push({
+    kategori: "Ventilasjon",
+    tekst: "Romventilasjon for hydrogenavlasting (CIGRE TB 537)",
+    prioritet: innendors ? "kritisk" : "valgfri",
+    oppfylt: b.rom_ventilasjon,
+  });
+  a.push({
     kategori: "Avstand",
     tekst: "Klaringsavstand iht. IEEE 979 (≥9,1 m) / EN 61936-1",
     prioritet: minAvstand < 9.1 ? "kritisk" : "anbefalt",
