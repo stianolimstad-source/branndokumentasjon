@@ -119,7 +119,7 @@ export function beregn(input: TrafoInput): Resultat {
   };
   const p_pers = sannsynlighetTrykk(input.avstand_personell_m);
   const p_mh = sannsynlighetTrykk(input.avstand_maskinhall_m);
-  let trykkStatus: Status = p_pers > 50 || p_mh > 50 ? "error" : p_pers > 10 || p_mh > 10 ? "warning" : "ok";
+  let trykkStatus: Status = p_pers > 50 || p_mh > 50 ? "error" : p_pers > 30 || p_mh > 30 ? "warning" : "ok";
 
   // 4. Fragmenter — skaleres med oljevolum mot 1100 L referanse
   const fragSkala = Math.cbrt(Math.max(input.oljevolum_L, 100) / 1100);
