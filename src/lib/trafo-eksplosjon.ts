@@ -208,11 +208,13 @@ export function beregn(input: TrafoInput): Resultat {
     prioritet: brannStatus === "ok" ? "anbefalt" : "kritisk",
     oppfylt: b.deluge_vannspray,
   });
+  const containment_paakrevd_m2 = (input.oljevolum_L * 1.10) / 500;
+  const containment_ok = b.oljegruve && input.basseng_areal_m2 >= containment_paakrevd_m2;
   a.push({
     kategori: "Containment",
-    tekst: "Oljegruve dimensjonert for full oljemengde + slokkevann, med oljeavskiller",
+    tekst: `Oljegruve dimensjonert for full oljemengde + slokkevann (minimum ${containment_paakrevd_m2.toFixed(0)} m²), med oljeavskiller`,
     prioritet: "kritisk",
-    oppfylt: b.oljegruve,
+    oppfylt: containment_ok,
   });
   a.push({
     kategori: "Avstand",
