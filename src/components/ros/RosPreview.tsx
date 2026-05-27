@@ -1030,15 +1030,33 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         </td>
                       </tr>
 
-                      {h.beregninger && h.beregninger.length > 0 && (
-                        <tr>
-                          <td colSpan={15} style={{ ...tdStyle, padding: "4px 10px", background: "#f7f9fc" }}>
-                            <span style={{ fontSize: 9, fontStyle: "italic", color: "#64748b" }}>
-                              Beregninger: {h.beregninger.map((_, bi) => `B${i + 1}.${bi + 1}`).join(", ")} – se kapittel 4 Beregningsgrunnlag.
-                            </span>
-                          </td>
-                        </tr>
-                      )}
+                      {(() => {
+                        const ider = byggBeregningIder(content);
+                        const tilknyttede = (content.beregninger || []).filter((b) => b.hendelseIds.includes(h.id));
+                        if (tilknyttede.length > 0) {
+                          return (
+                            <tr>
+                              <td colSpan={15} style={{ ...tdStyle, padding: "4px 10px", background: "#f7f9fc" }}>
+                                <span style={{ fontSize: 9, fontStyle: "italic", color: "#64748b" }}>
+                                  Beregninger: {tilknyttede.map((b) => ider.get(b.id) || "B?").join(", ")} – se kapittel 4 Beregningsgrunnlag.
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        }
+                        if (h.kreverBeregning) {
+                          return (
+                            <tr>
+                              <td colSpan={15} style={{ ...tdStyle, padding: "4px 10px", background: "#fff3cd", color: "#7a5a00" }}>
+                                <span style={{ fontSize: 9, fontWeight: 600 }}>
+                                  Krever beregning – ikke registrert ennå{h.beregningTekst ? `: ${h.beregningTekst}` : ""}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        }
+                        return null;
+                      })()}
                       </React.Fragment>
                     );
                   })}
