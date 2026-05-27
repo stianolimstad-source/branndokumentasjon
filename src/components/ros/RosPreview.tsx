@@ -145,10 +145,65 @@ export interface RosContent {
     skjemaOgSjekklister?: string;
   };
   hendelser: RosHendelse[];
+  beregninger?: RosBeregning[];
   bowTies?: RosBowTie[];
   oppsummering: string;
   revisjonshistorikk: RosRevisjon[];
 }
+
+/**
+ * Migrerer gamle hendelse.beregninger til content.beregninger med hendelseIds.
+ * Setter kreverBeregning=true på hendelser som hadde beregninger.
+ */
+export function migrerBeregninger(content: RosContent): RosContent {
+  if (!content?.hendelser) return content;
+  const nyeBeregninger: RosBeregning[] = [...(content.beregninger || [])];
+  let endret = false;
+  const nyeHendelser = content.hendelser.map((h) => {
+    if (!h.beregninger || h.beregninger.length === 0) return h;
+    endret = true;
+    h.beregninger.forEach((b) => {
+      const finnes = nyeBeregninger.find((nb) => nb.id === b.id);
+      if (finnes) {
+        if (!finnes.hendelseIds.includes(h.id)) {
+          finnes.hendelseIds = [...finnes.hendelseIds, h.id];
+        }
+      } else {
+        nyeBeregninger.push({ ...b, hendelseIds: [h.id] });
+      }
+    });
+    const { beregninger: _drop, ...rest } = h;
+    return { ...rest, kreverBeregning: true } as RosHendelse;
+  });
+  if (!endret && !content.beregninger) return content;
+  return { ...content, hendelser: nyeHendelser, beregninger: nyeBeregninger };
+}
+
+/**
+ * Bygger ID-string `B<hendelsesnr>.<løpenr>` per beregning. For ikke-tilknyttede
+ * beregninger brukes `B–.N`.
+ */
+export function byggBeregningIder(content: RosContent): Map<string, string> {
+  const map = new Map<string, string>();
+  const hendelseIndex = new Map<string, number>();
+  content.hendelser.forEach((h, i) => hendelseIndex.set(h.id, i + 1));
+  const tellerePerHendelse = new Map<number, number>();
+  let unassignedTeller = 0;
+  (content.beregninger || []).forEach((b) => {
+    const forsteHid = b.hendelseIds?.[0];
+    const hnr = forsteHid ? hendelseIndex.get(forsteHid) : undefined;
+    if (hnr) {
+      const teller = (tellerePerHendelse.get(hnr) || 0) + 1;
+      tellerePerHendelse.set(hnr, teller);
+      map.set(b.id, `B${hnr}.${teller}`);
+    } else {
+      unassignedTeller += 1;
+      map.set(b.id, `B–.${unassignedTeller}`);
+    }
+  });
+  return map;
+}
+
 
 interface Props {
   content: RosContent;
