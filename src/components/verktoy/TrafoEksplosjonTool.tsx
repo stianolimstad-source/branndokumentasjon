@@ -11,7 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
-import { CheckCircle2, AlertTriangle, XCircle, ArrowDown, HelpCircle, Printer } from "lucide-react";
+import { CheckCircle2, AlertTriangle, XCircle, ArrowDown, HelpCircle, Printer, FileDown } from "lucide-react";
 import { beregn, beregnDriftsfaktor, type TrafoInput, type Status, type Resultat } from "@/lib/trafo-eksplosjon";
 import { TRAFO_CASES } from "@/lib/trafo-cases";
 
@@ -59,6 +59,111 @@ const REFERANSE_TESTER = [
   { mj: 6.3, forklaring: "Middels-høy test" },
   { mj: 17.3, forklaring: "Høyeste testenergi, lang bue" },
 ];
+
+const SJEKKLISTE_GRUPPER: { tittel: string; punkter: string[] }[] = [
+  {
+    tittel: "Trafo og olje",
+    punkter: [
+      "Typeskilt eller datablad",
+      "Oljevolum (L eller kg)",
+      "Tanktype (conservator / hermetisk / corrugated)",
+      "Oljetype (mineral / ester)",
+      "Nominell spenning HV og LV",
+      "Nominell effekt MVA",
+      "Idriftsettingsår",
+      "Tankens trykkbestandighet hvis testet",
+    ],
+  },
+  {
+    tittel: "Elektrisk og vern",
+    punkter: [
+      "Kortslutningsstrøm I_k på begge spenningssider (nettselskap eller intern kortslutningsanalyse)",
+      "Oversikt over installert vern (Bucholtz, differensialvern 87T, jordfeilvern)",
+      "Målte klareringstider for primær- og reservevern",
+      "Siste relévern-koordinering",
+    ],
+  },
+  {
+    tittel: "Plassering og geometri",
+    punkter: [
+      "Plassering innendørs eller utendørs",
+      "Avstand fra trafo til nærmeste personellsone",
+      "Avstand til maskinhall eller annen verdifull bygning",
+      "Oljegruvens areal og dybde",
+      "Ventilasjon (hvis innendørs)",
+    ],
+  },
+  {
+    tittel: "Brannteknisk",
+    punkter: [
+      "Eksisterende brannmurer (EI-klasse)",
+      "Aktivt slokkesystem (deluge / vannspray / vanntåke)",
+      "Oljeavskiller i avløp",
+      "Brannvarslingsanlegg",
+      "Deteksjon (Bucholtz, røyk, varme)",
+    ],
+  },
+  {
+    tittel: "Drift og tilstand",
+    punkter: [
+      "Driftsalder",
+      "Lasthistorikk (kontinuerlig overlast?)",
+      "Siste DGA-analyse (dato og resultat)",
+      "Siste hovedrevisjon",
+      "Oljebehandling / regenerering utført",
+      "Kjente feilmodi eller historikk",
+    ],
+  },
+];
+
+async function lastNedSjekklisteWord() {
+  const [{ Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, LevelFormat }, { saveAs }] = await Promise.all([
+    import("docx"),
+    import("file-saver"),
+  ]);
+
+  const children: any[] = [
+    new Paragraph({
+      heading: HeadingLevel.HEADING_1,
+      children: [new TextRun({ text: "Sjekkliste – informasjon å innhente fra kunde", bold: true })],
+    }),
+    new Paragraph({
+      children: [
+        new TextRun({
+          text: "Til bruk på befaring av oljefylt krafttrafo. Hak av eller noter verdier ved hvert punkt.",
+          italics: true,
+        }),
+      ],
+      spacing: { after: 200 },
+    }),
+  ];
+
+  SJEKKLISTE_GRUPPER.forEach((g) => {
+    children.push(
+      new Paragraph({
+        heading: HeadingLevel.HEADING_2,
+        children: [new TextRun({ text: g.tittel, bold: true })],
+        spacing: { before: 240, after: 120 },
+      }),
+    );
+    g.punkter.forEach((p) => {
+      children.push(
+        new Paragraph({
+          children: [new TextRun(`☐  ${p}`)],
+          spacing: { after: 60 },
+        }),
+      );
+    });
+  });
+
+  const doc = new Document({
+    sections: [{ children }],
+  });
+
+  const blob = await Packer.toBlob(doc);
+  saveAs(blob, "Sjekkliste-trafo-befaring.docx");
+}
+
 
 
 const defaultInput: TrafoInput = {
@@ -936,68 +1041,17 @@ const TrafoEksplosjonTool = () => {
                 .no-print { display: none !important; }
               }
             `}</style>
-            <div className="flex justify-end mb-3 no-print">
+            <div className="flex justify-end gap-2 mb-3 no-print">
               <Button variant="outline" size="sm" onClick={() => window.print()}>
                 <Printer className="h-4 w-4 mr-2" /> Skriv ut sjekkliste
+              </Button>
+              <Button variant="outline" size="sm" onClick={lastNedSjekklisteWord}>
+                <FileDown className="h-4 w-4 mr-2" /> Last ned som Word
               </Button>
             </div>
             <div id="trafo-sjekkliste" className="space-y-5 text-sm">
               <h3 className="text-base font-semibold">Sjekkliste – informasjon å innhente fra kunde</h3>
-              {[
-                {
-                  tittel: "Trafo og olje",
-                  punkter: [
-                    "Typeskilt eller datablad",
-                    "Oljevolum (L eller kg)",
-                    "Tanktype (conservator / hermetisk / corrugated)",
-                    "Oljetype (mineral / ester)",
-                    "Nominell spenning HV og LV",
-                    "Nominell effekt MVA",
-                    "Idriftsettingsår",
-                    "Tankens trykkbestandighet hvis testet",
-                  ],
-                },
-                {
-                  tittel: "Elektrisk og vern",
-                  punkter: [
-                    "Kortslutningsstrøm I_k på begge spenningssider (nettselskap eller intern kortslutningsanalyse)",
-                    "Oversikt over installert vern (Bucholtz, differensialvern 87T, jordfeilvern)",
-                    "Målte klareringstider for primær- og reservevern",
-                    "Siste relévern-koordinering",
-                  ],
-                },
-                {
-                  tittel: "Plassering og geometri",
-                  punkter: [
-                    "Plassering innendørs eller utendørs",
-                    "Avstand fra trafo til nærmeste personellsone",
-                    "Avstand til maskinhall eller annen verdifull bygning",
-                    "Oljegruvens areal og dybde",
-                    "Ventilasjon (hvis innendørs)",
-                  ],
-                },
-                {
-                  tittel: "Brannteknisk",
-                  punkter: [
-                    "Eksisterende brannmurer (EI-klasse)",
-                    "Aktivt slokkesystem (deluge / vannspray / vanntåke)",
-                    "Oljeavskiller i avløp",
-                    "Brannvarslingsanlegg",
-                    "Deteksjon (Bucholtz, røyk, varme)",
-                  ],
-                },
-                {
-                  tittel: "Drift og tilstand",
-                  punkter: [
-                    "Driftsalder",
-                    "Lasthistorikk (kontinuerlig overlast?)",
-                    "Siste DGA-analyse (dato og resultat)",
-                    "Siste hovedrevisjon",
-                    "Oljebehandling / regenerering utført",
-                    "Kjente feilmodi eller historikk",
-                  ],
-                },
-              ].map((gruppe) => (
+              {SJEKKLISTE_GRUPPER.map((gruppe) => (
                 <section key={gruppe.tittel}>
                   <h4 className="font-semibold flex items-center gap-2 mb-1">
                     <CheckCircle2 className="h-4 w-4 text-green-600" />
