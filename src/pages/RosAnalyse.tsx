@@ -337,7 +337,7 @@ export default function RosAnalyse() {
         id, tittel: "",
         sarbarhet: "", hendelse: "", arsak: "",
         beskrivelseSannsynlighetFor: "", beskrivelseRisikoFor: "",
-        sannsynlighet: 1,
+        sannsynlighet: 1, konsekvens: 0,
         tiltak: "",
         beskrivelseEtter: "",
         sannsynlighetEtter: 1,
