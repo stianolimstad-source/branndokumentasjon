@@ -343,8 +343,23 @@ const beregnTankkapasitet = (oljevolum_L: number, tanktype: TrafoInput["tanktype
   return Math.max(1.0, grunn * tankF * spF);
 };
 
-const TrafoEksplosjonTool = () => {
-  const [input, setInput] = useState<TrafoInput>(defaultInput);
+interface Props {
+  input?: TrafoInput;
+  onInputChange?: (input: TrafoInput) => void;
+}
+
+const TrafoEksplosjonTool = ({ input: externalInput, onInputChange }: Props = {}) => {
+  const [internalInput, setInternalInput] = useState<TrafoInput>(defaultInput);
+  const isControlled = externalInput !== undefined && onInputChange !== undefined;
+  const input = isControlled ? externalInput! : internalInput;
+  const setInput = (next: TrafoInput | ((p: TrafoInput) => TrafoInput)) => {
+    if (isControlled) {
+      const value = typeof next === "function" ? (next as (p: TrafoInput) => TrafoInput)(externalInput!) : next;
+      onInputChange!(value);
+    } else {
+      setInternalInput(next);
+    }
+  };
   const [tankkapManuellOverstyrt, setTankkapManuellOverstyrt] = useState(false);
   const [buMetode, setBuMetode] = useState<"scenario" | "kortslutning" | "manuell">("scenario");
   const [ik_kA, setIk] = useState(30);

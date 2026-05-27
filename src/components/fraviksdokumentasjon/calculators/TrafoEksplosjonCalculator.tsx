@@ -41,10 +41,7 @@ interface Props {
 }
 
 const TrafoEksplosjonCalculator = ({ onResult }: Props) => {
-  // Parallell input-tilstand. TrafoEksplosjonTool eksponerer ikke sin interne
-  // state, så denne wrapperen pusher en baseline-beregning basert på
-  // defaultInput. Bruker kan justere kommentaren etter import.
-  const [input] = useState<TrafoInput>(defaultInput);
+  const [input, setInput] = useState<TrafoInput>(defaultInput);
 
   useEffect(() => {
     if (!onResult) return;
@@ -85,7 +82,7 @@ const TrafoEksplosjonCalculator = ({ onResult }: Props) => {
     return () => clearTimeout(t);
   }, [input, onResult]);
 
-  return <TrafoEksplosjonTool />;
+  return <TrafoEksplosjonTool input={input} onInputChange={setInput} />;
 };
 
 export default TrafoEksplosjonCalculator;

@@ -1,52 +1,42 @@
-# Fremheving av beregningsseksjon i RosAnalyse
+# Gjør TrafoEksplosjonTool til kontrollert komponent
 
-Kun visuelle/strukturelle endringer i `src/pages/RosAnalyse.tsx`. Ingen logikkendringer.
+## Endring 1: `src/components/verktoy/TrafoEksplosjonTool.tsx`
 
-## Endringer
+Gjør `TrafoEksplosjonTool` om til en kontrollert/ukontrollert komponent etter samme mønster som React-form-elementer.
 
-### 1. Imports
-- Legg `Calculator` til i `lucide-react`-importen (linje 21).
-- `Card`, `CardContent` og `Badge` er allerede importert.
+- Legg til `Props`-interface:
+  ```ts
+  interface Props {
+    input?: TrafoInput;
+    onInputChange?: (input: TrafoInput) => void;
+  }
+  ```
+- Endre signaturen til `const TrafoEksplosjonTool = ({ input: externalInput, onInputChange }: Props = {}) => { ... }`.
+- Erstatt `const [input, setInput] = useState<TrafoInput>(defaultInput);` med:
+  ```ts
+  const [internalInput, setInternalInput] = useState<TrafoInput>(defaultInput);
+  const isControlled = externalInput !== undefined && onInputChange !== undefined;
+  const input = isControlled ? externalInput : internalInput;
+  const setInput = (next: TrafoInput | ((p: TrafoInput) => TrafoInput)) => {
+    if (isControlled) {
+      const value = typeof next === "function" ? (next as (p: TrafoInput) => TrafoInput)(externalInput!) : next;
+      onInputChange!(value);
+    } else {
+      setInternalInput(next);
+    }
+  };
+  ```
+- Eksisterende `setInput((p) => …)`-kall (i `upd`, `updB`, `updD` og de to `useEffect`-ene som auto-oppdaterer `tankkapasitet_MJ` og `buenergi_MJ`) trenger ikke endres – den nye `setInput` håndterer både objekt og updater-funksjon.
 
-### 2. Flytt og restyle seksjonen "Tilknyttede beregninger"
-Fjern dagens blokk på linje 1120–1128 og sett den inn rett etter "Forebyggende tiltak"-blokken (etter linje 1087), altså før "Etter tiltak"-blokken (linje 1089).
+Standalone-bruk på `/verktoy/trafoeksplosjon` fortsetter å fungere uendret fordi props er valgfrie.
 
-Ny markup:
+## Endring 2: `src/components/fraviksdokumentasjon/calculators/TrafoEksplosjonCalculator.tsx`
 
-```tsx
-<Card className="border-2 border-primary/30 bg-primary/5">
-  <CardContent className="pt-4 space-y-2">
-    <div className="flex items-center gap-2">
-      <Calculator className="h-4 w-4 text-primary" />
-      <p className="text-sm font-bold">Tilknyttede beregninger</p>
-    </div>
-    <p className="text-xs text-muted-foreground">
-      Knytt branntekniske beregningsverktøy til hendelsen – f.eks. trafoeksplosjon,
-      strålingsberegning eller flammehøyde. Importerte beregninger blir med i Word-rapporten.
-    </p>
-    <BeregningSection
-      beregninger={h.beregninger || []}
-      onChange={(beregninger) => updateHendelse(h.id, { beregninger })}
-      fravikIndex={idx}
-    />
-  </CardContent>
-</Card>
-```
-
-Den gamle `<div className="space-y-2 border-t pt-3">`-wrapperen droppes; Card-en står som egen visuell blokk i `AccordionContent`-stacken.
-
-### 3. Badge på AccordionTrigger
-I trigger-blokken (linje 1004–1034), rett etter Bow-tie-badgen (etter linje 1025), legg til:
-
-```tsx
-{(h.beregninger?.length ?? 0) > 0 && (
-  <Badge variant="secondary" className="shrink-0 text-xs">
-    {h.beregninger!.length} {h.beregninger!.length === 1 ? "beregning" : "beregninger"}
-  </Badge>
-)}
-```
-
-Plasseres før risiko-pillen (`ml-auto` på risiko-spanen sørger fortsatt for høyrejustering av S×K-tallene).
+- Bytt `const [input] = useState<TrafoInput>(defaultInput);` til `const [input, setInput] = useState<TrafoInput>(defaultInput);`.
+- Fjern kommentaren om at toolet ikke eksponerer state.
+- Returner `<TrafoEksplosjonTool input={input} onInputChange={setInput} />`.
+- `useEffect` som genererer `onResult` beholdes som i dag (den reagerer allerede på endringer i `input`).
 
 ## Filer som endres
-- `src/pages/RosAnalyse.tsx`
+- `src/components/verktoy/TrafoEksplosjonTool.tsx`
+- `src/components/fraviksdokumentasjon/calculators/TrafoEksplosjonCalculator.tsx`
