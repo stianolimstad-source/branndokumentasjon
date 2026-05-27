@@ -411,7 +411,10 @@ const TrafoEksplosjonTool = () => {
                               <span className="text-xs opacity-80">{s.verdi.toFixed(1)} MJ</span>
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent>{s.beskrivelse}</TooltipContent>
+                          <TooltipContent className="max-w-xs space-y-1">
+                            <p className="font-semibold">{s.beskrivelse}</p>
+                            <p className="text-xs opacity-90">{s.uttrykk}</p>
+                          </TooltipContent>
                         </Tooltip>
                       );
                     })}
