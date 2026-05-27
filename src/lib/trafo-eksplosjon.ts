@@ -26,6 +26,20 @@ export interface TrafoInput {
   avstand_maskinhall_m: number;
   basseng_areal_m2: number;
   barrierer: Barrierer;
+  drift: Drift;
+}
+
+export interface Drift {
+  alder_aar: number;
+  maaneder_siden_dga: number;
+  overlast_historisk: boolean;
+}
+
+export function beregnDriftsfaktor(d: Drift): number {
+  const alderF = d.alder_aar > 30 ? 1.5 : d.alder_aar >= 20 ? 1.2 : 1.0;
+  const dgaF = d.maaneder_siden_dga > 24 ? 1.3 : d.maaneder_siden_dga >= 12 ? 1.1 : 1.0;
+  const overlastF = d.overlast_historisk ? 1.4 : 1.0;
+  return alderF * dgaF * overlastF;
 }
 
 export interface Barrierer {
