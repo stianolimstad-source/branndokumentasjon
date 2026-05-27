@@ -464,7 +464,18 @@ const TrafoEksplosjonTool = () => {
                     <div className="text-xs text-muted-foreground mt-1">
                       {uBue_V} V × {ik_kA} kA × {tKlar_ms} ms
                     </div>
+                    <div className="text-xs text-muted-foreground italic mt-1">
+                      {scenarioFeedback(E_kortslutning)}
+                    </div>
                   </div>
+                  {E_kortslutning > 30 && (
+                    <Alert variant="warning">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertDescription>
+                        Beregnet buenergi er svært høy. Verifiser at kortslutningsstrømmen er hentet fra riktig spenningsside, og at klareringstiden reflekterer faktiske reléinnstillinger – ikke teoretiske worst case.
+                      </AlertDescription>
+                    </Alert>
+                  )}
                 </TabsContent>
 
                 <TabsContent value="manuell" className="pt-3 space-y-3">
