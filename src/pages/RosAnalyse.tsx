@@ -1272,22 +1272,53 @@ export default function RosAnalyse() {
                             })()}
                           </div>
 
-                          <Card className="border-2 border-primary/30 bg-primary/5">
-                            <CardContent className="pt-4 space-y-2">
-                              <div className="flex items-center gap-2">
-                                <Calculator className="h-4 w-4 text-primary" />
-                                <p className="text-sm font-bold">Tilknyttede beregninger</p>
-                              </div>
-                              <p className="text-xs text-muted-foreground">
-                                Knytt branntekniske beregningsverktøy til hendelsen – f.eks. trafoeksplosjon, strålingsberegning eller flammehøyde. Importerte beregninger blir med i Word-rapporten.
-                              </p>
-                              <BeregningSection
-                                beregninger={h.beregninger || []}
-                                onChange={(beregninger) => updateHendelse(h.id, { beregninger })}
-                                fravikIndex={idx}
-                              />
-                            </CardContent>
-                          </Card>
+                          {(() => {
+                            const tilknyttede = (content.beregninger || []).filter((b) => b.hendelseIds.includes(h.id));
+                            const ider = byggBeregningIder(content);
+                            return (
+                              <Card className="border-2 border-primary/30 bg-primary/5">
+                                <CardContent className="pt-4 space-y-2">
+                                  <div className="flex items-center gap-2">
+                                    <Calculator className="h-4 w-4 text-primary" />
+                                    <p className="text-sm font-bold">Beregninger</p>
+                                  </div>
+                                  <label className="flex items-start gap-2 text-sm cursor-pointer">
+                                    <Checkbox
+                                      checked={!!h.kreverBeregning}
+                                      onCheckedChange={(v) => updateHendelse(h.id, { kreverBeregning: !!v })}
+                                      className="mt-0.5"
+                                    />
+                                    <span>Hendelsen krever en branneknisk beregning</span>
+                                  </label>
+                                  {h.kreverBeregning && (
+                                    <Textarea
+                                      rows={2}
+                                      className="text-sm"
+                                      placeholder="F.eks. strålingsberegning mot kontrollbygg, eller trafoeksplosjonsvurdering"
+                                      value={h.beregningTekst || ""}
+                                      onChange={(e) => updateHendelse(h.id, { beregningTekst: e.target.value })}
+                                    />
+                                  )}
+                                  {tilknyttede.length > 0 ? (
+                                    <p className="text-xs text-muted-foreground">
+                                      Tilknyttede beregninger: {tilknyttede.map((b) => ider.get(b.id) || "B?").join(", ")}{" "}
+                                      <button
+                                        type="button"
+                                        className="underline text-primary"
+                                        onClick={() => document.getElementById("kap-beregninger-editor")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                                      >
+                                        Gå til beregningskapittelet
+                                      </button>
+                                    </p>
+                                  ) : h.kreverBeregning ? (
+                                    <p className="text-xs text-amber-700 dark:text-amber-300">
+                                      Ingen beregning registrert ennå – legg til i kapittel 4 Beregninger.
+                                    </p>
+                                  ) : null}
+                                </CardContent>
+                              </Card>
+                            );
+                          })()}
 
                           <div className="space-y-2 border-t pt-3">
                             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Etter tiltak</p>
