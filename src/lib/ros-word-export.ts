@@ -690,11 +690,10 @@ export const exportRosToWord = async (options: ExportOptions) => {
       : new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: hendelseRows }),
   ];
 
-  // Kap. 4 Bow-tie (kun hvis registrert)
-  const harBowTie = !!(content.bowTies && content.bowTies.length > 0);
+  // Bow-tie (kun hvis registrert)
   const bowTieBlocks: (Paragraph | Table)[] = [];
   if (harBowTie) {
-    bowTieBlocks.push(buildSectionHeading(theme, "4. Bow-tie analyse"));
+    bowTieBlocks.push(buildSectionHeading(theme, `${bowTieNr}. Bow-tie analyse`));
     bowTieBlocks.push(
       para(
         "Bow-tie-analysen knytter registrerte hendelser fra kapittel 3 til overordnede uønskede topphendelser. " +
@@ -706,8 +705,9 @@ export const exportRosToWord = async (options: ExportOptions) => {
         .map((id) => content.hendelser.find((h) => h.id === id))
         .filter((h): h is NonNullable<typeof h> => !!h);
       bowTieBlocks.push(new Paragraph({ children: [text("")] }));
-      bowTieBlocks.push(para(`4.${idx + 1} ${bt.navn || "Uten navn"}`, { bold: true, size: 24 }));
+      bowTieBlocks.push(para(`${bowTieNr}.${idx + 1} ${bt.navn || "Uten navn"}`, { bold: true, size: 24 }));
       if (bt.beskrivelse?.trim()) bowTieBlocks.push(para(bt.beskrivelse));
+
 
       // Årsaker-tabell
       const aHeader = new TableRow({
