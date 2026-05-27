@@ -20,9 +20,10 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   type: CalculatorType;
   onImport: (calc: AttachedCalculation) => void;
+  initialInputs?: Record<string, unknown>;
 }
 
-const calculatorComponents: Record<CalculatorType, React.FC<{ onResult: (calc: AttachedCalculation) => void }>> = {
+const calculatorComponents: Record<CalculatorType, React.FC<{ onResult: (calc: AttachedCalculation) => void; initialInputs?: Record<string, unknown> }>> = {
   straling: StralingCalculator,
   flammehoyde: FlammehoydeCalculator,
   brannenergi: BrannenergCalculator,
