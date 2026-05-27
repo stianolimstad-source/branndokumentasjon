@@ -14,7 +14,7 @@ export interface AttachedCalculation {
   kommentar: string;
 }
 
-const calculatorTypes = [
+export const calculatorTypes = [
   { type: "straling" as const, label: "Strålingsberegning", icon: Flame, desc: "Solid flamme-modell" },
   { type: "flammehoyde" as const, label: "Flammehøyde", icon: MoveVertical, desc: "Heskestads korrelasjon" },
   { type: "brannenergi" as const, label: "Brannenergi", icon: Zap, desc: "Total og spesifikk" },
@@ -23,6 +23,7 @@ const calculatorTypes = [
   { type: "brannmotstand" as const, label: "Brannmotstand", icon: Shield, desc: "Veggoppbygning og EI-klasse" },
   { type: "trafoeksplosjon" as const, label: "Trafoeksplosjon", icon: Bolt, desc: "Oljefylte krafttrafoer – risiko og barrierer" },
 ];
+
 
 interface Props {
   beregninger: AttachedCalculation[];
