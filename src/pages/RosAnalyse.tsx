@@ -1010,6 +1010,7 @@ export default function RosAnalyse() {
                       });
                     });
                     return content.hendelser.map((h, idx) => {
+                    const hm = migrerHendelse(h);
                     const farge = risikoFarge(h.sannsynlighet, h.konsekvens);
                     const cls = farge === "rod" ? "bg-red-500/85 text-white"
                       : farge === "gul" ? "bg-amber-400/90 text-foreground"
