@@ -1103,11 +1103,22 @@ export default function RosAnalyse() {
                                   </Tooltip>
                                 </TooltipProvider>
                               )}
-                              {(h.beregninger?.length ?? 0) > 0 && (
-                                <Badge variant="secondary" className="shrink-0 text-xs">
-                                  {h.beregninger!.length} {h.beregninger!.length === 1 ? "beregning" : "beregninger"}
-                                </Badge>
-                              )}
+                              {(() => {
+                                const ant = (content.beregninger || []).filter((b) => b.hendelseIds.includes(h.id)).length;
+                                if (ant === 0 && !h.kreverBeregning) return null;
+                                if (ant === 0) {
+                                  return (
+                                    <Badge variant="outline" className="shrink-0 text-xs border-amber-400 text-amber-700 dark:text-amber-300">
+                                      Krever beregning
+                                    </Badge>
+                                  );
+                                }
+                                return (
+                                  <Badge variant="secondary" className="shrink-0 text-xs">
+                                    {ant} {ant === 1 ? "beregning" : "beregninger"}
+                                  </Badge>
+                                );
+                              })()}
                               <span className={`ml-auto rounded px-2 py-0.5 text-xs font-semibold shrink-0 ${cls}`}>
                                 R {h.sannsynlighet * h.konsekvens}
                               </span>
