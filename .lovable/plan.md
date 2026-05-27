@@ -1,59 +1,38 @@
-## Mål
-
-Legg til hjelpetekst-tooltips på alle input-felt i `src/components/verktoy/TrafoEksplosjonTool.tsx`. Tooltipen åpnes ved hover/klikk på et `HelpCircle`-ikon plassert til høyre for hver `Label`.
-
 ## Endringer i `src/components/verktoy/TrafoEksplosjonTool.tsx`
 
-1. Legg til `HelpCircle` i lucide-react-importen.
+### 1. Utvid SCENARIOER med kortslutnings-uttrykk
 
-2. Lag en liten lokal hjelpekomponent `LabelWithHelp` øverst i filen (utenfor `TrafoEksplosjonTool`):
+Legg til felt `uttrykk` på hvert objekt i `SCENARIOER`-arrayet (linje 17–22):
 
-```tsx
-const LabelWithHelp = ({ label, help, className }: { label: string; help: React.ReactNode; className?: string }) => (
-  <div className={`flex items-center gap-1.5 ${className ?? ""}`}>
-    <Label>{label}</Label>
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <button type="button" className="inline-flex" aria-label="Hjelp">
-          <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
-        </button>
-      </TooltipTrigger>
-      <TooltipContent className="max-w-xs text-xs leading-relaxed">{help}</TooltipContent>
-    </Tooltip>
-  </div>
-);
-```
+- Lavt: «Tilsvarer ca. 15 kA × 500 V × 200 ms eller 25 kA × 500 V × 120 ms. Typisk distribusjonstrafo med fungerende primærvern.»
+- Sannsynlig: «Tilsvarer ca. 25 kA × 1000 V × 160 ms eller 20 kA × 1000 V × 200 ms. Typisk 132 kV regional trafo med primærvern.»
+- Høyt: «Tilsvarer ca. 35 kA × 1000 V × 230 ms eller 25 kA × 1000 V × 320 ms. Typisk 132 kV-trafo der primærvern svikter og reservevern utløser.»
+- Worst case: «Tilsvarer ca. 40 kA × 2000 V × 190 ms eller 30 kA × 2000 V × 250 ms. Lang bue og tregt reservevern på stor trafo.»
 
-`help` blir et JSX-fragment med tre korte avsnitt — «Spør kunden om:», «Typiske verdier:», og evt. «Hvor finne det:» — hver med en `<strong>`-prefiks.
+### 2. Oppdater scenario-knappenes Tooltip
 
-3. Definer en konstant `HELP` med JSX for hvert felt (oljevolum, tanktype, oljetype, spenning, effekt, buenergi, tankkapasitet, plassering, avstand_personell, avstand_maskinhall, basseng_areal, ik, ubue, tklar, alder, dga_maaneder, overlast). Innholdet hentes ordrett fra brukerens tekster.
+Endre `<TooltipContent>{s.beskrivelse}</TooltipContent>` (linje 385) til en `max-w-xs`-versjon med dagens beskrivelse på første linje (fet) og det nye `uttrykk` som ny avsnitt under.
 
-4. Pakk hele input-grid i én `<TooltipProvider delayDuration={200}>` (siden ikke alle steder allerede har en provider rundt seg — det finnes lokale providers i Scenario/Manuell-fanene, men nested providers er trygt).
+### 3. Feedback-linje i Kortslutnings-fanen
 
-5. Erstatt hver `<Label>...</Label>` for input-feltene med `<LabelWithHelp label="..." help={HELP.felt} />`. Felt som får hjelp:
+I resultatboksen (linje 429–435), under `{E_kortslutning.toFixed(2)} MJ`, legg til en hjelpefunksjon `scenarioFeedback(mj)` som returnerer:
 
-   - Trafo og olje-kortet: Oljevolum, Tanktype, Oljetype, Spenning, Effekt, Buenergi (på selve "Buenergi"-labelen øverst i seksjonen), Tankkapasitet elastisk.
-   - Kortslutnings-fanen (under Buenergi): I_k, U_bue, t_klar.
-   - Plassering-kortet: Plassering, Avstand personell, Avstand maskinhall, Oljegruve/bassengareal.
-   - Driftstilstand-kortet: Alder, Måneder siden DGA, Overlast (her står label-teksten ved siden av checkboxen; legg HelpCircle inline etter teksten).
+- `< 1`: «Tilsvarer under Lavt-scenariet»
+- `1–3`: «Tilsvarer Lavt-scenariet»
+- `3–6`: «Tilsvarer Sannsynlig-scenariet»
+- `6–12`: «Tilsvarer Høyt-scenariet»
+- `12–20`: «Tilsvarer Worst case-scenariet»
+- `> 20`: «Overskrider Worst case – sjekk at I_k og klareringstid er realistiske for ditt anlegg»
 
-6. For Buenergi-labelen som allerede er i en `flex items-center justify-between`-rad: bytt ut `<Label>Buenergi</Label>` med `<LabelWithHelp label="Buenergi" help={HELP.buenergi} />` slik at "Brukes: X MJ" fortsatt står til høyre.
+Rendres som liten linje (`text-xs text-muted-foreground italic`) under U×I×t-linjen.
 
-7. For checkboxen "Trafoen har hatt historisk overlast utover skiltverdi": legg `<HelpCircle>` med tooltip rett etter teksten i samme label-rad.
+### 4. Warning-alert ved E > 30 MJ
 
-8. Tankkapasitet-feltet beholder eksisterende «Beregn automatisk»-knapp; `LabelWithHelp` settes inn på venstresiden av flex-raden.
+Rett under resultatboksen (utenfor den, i samme `TabsContent`): hvis `E_kortslutning > 30`, vis `<Alert variant="warning">` med ikon (`AlertTriangle`) og tekst:
 
-## Tekstinnhold
+«Beregnet buenergi er svært høy. Verifiser at kortslutningsstrømmen er hentet fra riktig spenningsside, og at klareringstiden reflekterer faktiske reléinnstillinger – ikke teoretiske worst case.»
 
-Innholdet er en 1:1-overføring av brukerens tekster, med tre seksjoner per tooltip der det er relevant. Hver seksjon vises som en kort linje med en fet ledetekst, f.eks.:
-
-```
-Spør kunden om: typeskilt eller produsentens datablad.
-Typiske verdier: småkraft 2 000–10 000 L, regionalt anlegg 15 000–40 000 L, ...
-Hvor finne det: står ofte angitt på typeskiltet som «Oil weight» (kg) – del på 0,88 for å få liter.
-```
-
-For felter uten en naturlig «Hvor finne det» (f.eks. Plassering, Avstand til personell, Buespenning) brukes bare de to første seksjonene, eller hele teksten settes som én forklarende seksjon der det passer bedre (Tanktype, Buespenning, Klareringstid, Overlast).
+Importer `Alert`, `AlertDescription` fra `@/components/ui/alert` hvis ikke allerede importert; `AlertTriangle` fra `lucide-react` (sjekk eksisterende import).
 
 ## Filer
 
