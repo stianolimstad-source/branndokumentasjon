@@ -592,6 +592,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
   const oppsummeringNr = harBowTie ? "6" : "5";
   const revisjonNr = harBowTie ? "7" : "6";
 
+  const beregningIder = byggBeregningIder(content);
   const hendelseRows: TableRow[] = [hendelseHeader];
   content.hendelser.forEach((h, i) => {
     const hm0 = migrerHendelse(h);
