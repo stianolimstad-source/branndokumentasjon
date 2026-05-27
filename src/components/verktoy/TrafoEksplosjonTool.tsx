@@ -183,7 +183,7 @@ const TrafoEksplosjonTool = () => {
       </Accordion>
 
       {/* INPUT */}
-      <div className="grid lg:grid-cols-3 gap-4">
+      <div className="grid lg:grid-cols-2 xl:grid-cols-4 gap-4">
         <Card>
           <CardHeader><CardTitle className="text-base">Trafo og olje</CardTitle></CardHeader>
           <CardContent className="space-y-3">
