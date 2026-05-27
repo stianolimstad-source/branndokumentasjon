@@ -1,7 +1,13 @@
 import React, { useRef, useState } from "react";
 import { risikoFarge } from "./RosMatriks";
 import rosNivaaIllustrasjon from "@/assets/ros-detaljeringsnivaa.jpg";
-import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell } from "@/lib/ros-risk-criteria";
+import {
+  KONSEKVENS_KRITERIER,
+  SANNSYNLIGHET_KRITERIER,
+  KriterieTabell,
+  type KonsekvensDimensjon,
+  DIMENSJON_NAVN,
+} from "@/lib/ros-risk-criteria";
 import type { AttachedCalculation } from "@/components/fraviksdokumentasjon/BeregningSection";
 import { Flame, MoveVertical, Zap, Users, Box, Shield, Bolt, type LucideIcon } from "lucide-react";
 
@@ -15,6 +21,16 @@ const BEREGNING_IKONER: Record<AttachedCalculation["type"], LucideIcon> = {
   trafoeksplosjon: Bolt,
 };
 
+export interface KonsekvensVurdering {
+  dimensjon: KonsekvensDimensjon;
+  /** 1–5 */
+  score: number;
+  begrunnelse?: string;
+  /** 1–5 etter tiltak */
+  scoreEtter?: number;
+  begrunnelseEtter?: string;
+}
+
 export interface RosHendelse {
   id: string;
   tittel: string;
@@ -24,16 +40,43 @@ export interface RosHendelse {
   hendelse?: string;
   arsak: string;
   beskrivelseSannsynlighetFor?: string;
+  /** @deprecated brukes som fallback før migrering til konsekvensvurderinger[].begrunnelse */
   beskrivelseRisikoFor?: string;
   sannsynlighet: number;
+  /** @deprecated bruk konsekvensvurderinger[] – beholdes som fallback / speil av forsyningssikkerhet */
   konsekvens: number;
   tiltak: string;
   beskrivelseEtter?: string;
   sannsynlighetEtter?: number;
+  /** @deprecated bruk konsekvensvurderinger[] – beholdes som fallback / speil av forsyningssikkerhet */
   konsekvensEtter?: number;
   restrisiko: string;
   beregninger?: AttachedCalculation[];
+  konsekvensvurderinger?: KonsekvensVurdering[];
 }
+
+/**
+ * Sikrer at en hendelse har et `konsekvensvurderinger`-array med
+ * forsyningssikkerhet som første rad. Migrerer gamle felter (`konsekvens`,
+ * `konsekvensEtter`, `beskrivelseRisikoFor`) til en forsyningssikkerhet-rad.
+ */
+export function migrerHendelse(h: RosHendelse): RosHendelse {
+  const eksisterende = Array.isArray(h.konsekvensvurderinger) ? h.konsekvensvurderinger : [];
+  const harForsyning = eksisterende.some((k) => k?.dimensjon === "forsyningssikkerhet");
+  if (eksisterende.length > 0 && harForsyning) return { ...h, konsekvensvurderinger: eksisterende };
+  const forsyning: KonsekvensVurdering = {
+    dimensjon: "forsyningssikkerhet",
+    score: h.konsekvens || 1,
+    begrunnelse: h.beskrivelseRisikoFor || "",
+    scoreEtter: h.konsekvensEtter,
+    begrunnelseEtter: "",
+  };
+  return {
+    ...h,
+    konsekvensvurderinger: [forsyning, ...eksisterende.filter((k) => k?.dimensjon !== "forsyningssikkerhet")],
+  };
+}
+
 
 export interface RosRevisjon {
   versjon: string;
