@@ -1,39 +1,24 @@
-## Endringer i `src/components/verktoy/TrafoEksplosjonTool.tsx`
+## Endringsplan: Referanseverdier-tabell i veiledningen
 
-### 1. Utvid SCENARIOER med kortslutnings-uttrykk
+### Fil: `src/components/verktoy/TrafoEksplosjonTool.tsx`
 
-Legg til felt `uttrykk` på hvert objekt i `SCENARIOER`-arrayet (linje 17–22):
+1. **Importer Table-komponenter**
+   Legg til import av `Table`, `TableHeader`, `TableBody`, `TableHead`, `TableRow`, `TableCell` fra `@/components/ui/table`.
 
-- Lavt: «Tilsvarer ca. 15 kA × 500 V × 200 ms eller 25 kA × 500 V × 120 ms. Typisk distribusjonstrafo med fungerende primærvern.»
-- Sannsynlig: «Tilsvarer ca. 25 kA × 1000 V × 160 ms eller 20 kA × 1000 V × 200 ms. Typisk 132 kV regional trafo med primærvern.»
-- Høyt: «Tilsvarer ca. 35 kA × 1000 V × 230 ms eller 25 kA × 1000 V × 320 ms. Typisk 132 kV-trafo der primærvern svikter og reservevern utløser.»
-- Worst case: «Tilsvarer ca. 40 kA × 2000 V × 190 ms eller 30 kA × 2000 V × 250 ms. Lang bue og tregt reservevern på stor trafo.»
+2. **Legg til ny seksjon i veiledningen**
+   Sett inn en ny `<section>` rett før den avsluttende `<p className="text-xs text-muted-foreground pt-2 border-t">`-noten i `AccordionContent`.
 
-### 2. Oppdater scenario-knappenes Tooltip
+   Seksjonen inneholder:
+   - Overskrift: `<h4>Referanseverdier – typiske norske vannkraftstasjoner</h4>`
+   - En `Table` med følgende kolonner: **Anleggstype**, **Effekt**, **Spenning HV**, **Oljevolum**, **Kortslutningsstrøm I_k**, **Buenergi typisk worst case**
+   - 4 datarader:
+     - Småkraft (mindre enn 10 MW): 1–15 MVA / 22 eller 66 kV / 2 000–10 000 L / 5–15 kA / 0,5–3 MJ
+     - Mellomstor stasjon (10–100 MW): 15–150 MVA / 66 eller 132 kV / 10 000–30 000 L / 15–30 kA / 2–8 MJ
+     - Stort kraftverk (100–300 MW): 150–300 MVA / 132 eller 300 kV / 30 000–70 000 L / 30–50 kA / 5–15 MJ
+     - Storkraftverk (over 300 MW): 300–1100 MVA / 300 eller 420 kV / 50 000–100 000 L / 40–60 kA / 10–25 MJ
+   - Under tabellen: Kommentarparagraf med teksten: «Tallene er typiske intervaller for nye/moderne norske anlegg. Eldre trafoer kan ha vesentlig høyere buenergi-eksponering på grunn av langsommere reléinnstillinger og lavere kortslutningsbidrag fra nettet. Sjekk konkrete prosjektverdier mot leverandør og nettselskap.»
 
-Endre `<TooltipContent>{s.beskrivelse}</TooltipContent>` (linje 385) til en `max-w-xs`-versjon med dagens beskrivelse på første linje (fet) og det nye `uttrykk` som ny avsnitt under.
-
-### 3. Feedback-linje i Kortslutnings-fanen
-
-I resultatboksen (linje 429–435), under `{E_kortslutning.toFixed(2)} MJ`, legg til en hjelpefunksjon `scenarioFeedback(mj)` som returnerer:
-
-- `< 1`: «Tilsvarer under Lavt-scenariet»
-- `1–3`: «Tilsvarer Lavt-scenariet»
-- `3–6`: «Tilsvarer Sannsynlig-scenariet»
-- `6–12`: «Tilsvarer Høyt-scenariet»
-- `12–20`: «Tilsvarer Worst case-scenariet»
-- `> 20`: «Overskrider Worst case – sjekk at I_k og klareringstid er realistiske for ditt anlegg»
-
-Rendres som liten linje (`text-xs text-muted-foreground italic`) under U×I×t-linjen.
-
-### 4. Warning-alert ved E > 30 MJ
-
-Rett under resultatboksen (utenfor den, i samme `TabsContent`): hvis `E_kortslutning > 30`, vis `<Alert variant="warning">` med ikon (`AlertTriangle`) og tekst:
-
-«Beregnet buenergi er svært høy. Verifiser at kortslutningsstrømmen er hentet fra riktig spenningsside, og at klareringstiden reflekterer faktiske reléinnstillinger – ikke teoretiske worst case.»
-
-Importer `Alert`, `AlertDescription` fra `@/components/ui/alert` hvis ikke allerede importert; `AlertTriangle` fra `lucide-react` (sjekk eksisterende import).
-
-## Filer
-
-- `src/components/verktoy/TrafoEksplosjonTool.tsx` (eneste fil som endres)
+### Tekniske detaljer
+- Bruker eksisterende shadcn/ui `Table`-komponent som allerede finnes i prosjektet (`src/components/ui/table.tsx`).
+- Ingen endringer i logikk, beregninger eller datastrukturer – ren presentasjonsendring.
+- Tabellen plasseres som siste seksjon i veiledningen, før den avsluttende noten.
