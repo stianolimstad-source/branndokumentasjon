@@ -63,6 +63,131 @@ const defaultInput: TrafoInput = {
   },
 };
 
+const LabelWithHelp = ({ label, help, className }: { label: string; help: React.ReactNode; className?: string }) => (
+  <div className={`flex items-center gap-1.5 ${className ?? ""}`}>
+    <Label>{label}</Label>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button type="button" className="inline-flex" aria-label="Hjelp">
+          <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent className="max-w-xs text-xs leading-relaxed">{help}</TooltipContent>
+    </Tooltip>
+  </div>
+);
+
+const HelpIcon = ({ help }: { help: React.ReactNode }) => (
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <button type="button" className="inline-flex" aria-label="Hjelp">
+        <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+      </button>
+    </TooltipTrigger>
+    <TooltipContent className="max-w-xs text-xs leading-relaxed">{help}</TooltipContent>
+  </Tooltip>
+);
+
+const H = ({ children }: { children: React.ReactNode }) => (
+  <p className="mb-1 last:mb-0"><strong>{children}</strong></p>
+);
+
+const HELP = {
+  oljevolum: (
+    <div>
+      <p className="mb-1"><strong>Spør kunden om:</strong> typeskilt eller produsentens datablad.</p>
+      <p className="mb-1"><strong>Typiske verdier:</strong> småkraft 2 000–10 000 L, regionalt anlegg 15 000–40 000 L, store generatortrafoer 50 000–100 000 L.</p>
+      <p><strong>Hvor finne det:</strong> står ofte angitt på typeskiltet som «Oil weight» (kg) – del på 0,88 for å få liter.</p>
+    </div>
+  ),
+  tanktype: (
+    <div>
+      <p>Conservator har separat oljebeholder over hovedtanken og er vanlig på nye/store krafttrafoer. Hermetisk er lukket uten luftkontakt, vanligere på mellomstore. Corrugated har riflet vegg som ekspanderer med trykk – typisk på distribusjons- og mindre nettstasjonstrafoer. Sjekk visuelt eller på datablad.</p>
+    </div>
+  ),
+  oljetype: (
+    <div>
+      <p className="mb-1"><strong>Typiske verdier:</strong> eldre trafoer (før ca. 2000) bruker mineralolje. Naturlig ester (FR3) og syntetisk ester (Midel 7131) er vanligere på nye eller spesielle installasjoner.</p>
+      <p><strong>Hvor finne det:</strong> sjekk oljebeholder, siste DGA-rapport eller leverandørens datablad. Ved tvil: anta mineralolje (konservativt).</p>
+    </div>
+  ),
+  spenning: (
+    <div>
+      <p className="mb-1"><strong>Spør kunden om:</strong> høyspentsiden (HV) av trafoen, ikke generator-/lavspentsiden.</p>
+      <p><strong>Typiske verdier:</strong> 22 kV (distribusjon), 66 kV (regional), 132 kV (regional/sentralnett), 300 kV og 420 kV (transmisjon, store kraftverk).</p>
+    </div>
+  ),
+  effekt: (
+    <div>
+      <p className="mb-1"><strong>Hvor finne det:</strong> typeskilt eller datablad.</p>
+      <p><strong>Typiske verdier:</strong> småkraft 1–15 MVA, mellomstore vannkraftstasjoner 15–150 MVA, store generatortrafoer 150–600 MVA, de største norske (Sima, Tonstad, Aurland) opp mot 1100 MVA.</p>
+    </div>
+  ),
+  buenergi: (
+    <div>
+      <p className="mb-1">Avhenger av kortslutningsstrøm, buespenning og klareringstid. For typisk norsk vannkraft ligger realistisk worst case mellom 3 og 25 MJ avhengig av trafostørrelse.</p>
+      <p>Bruk «Scenario» hvis du ikke har detaljert vernedata. Bruk «Kortslutning» hvis du har I_k fra nettselskap og kjenner reléverntider fra eier.</p>
+    </div>
+  ),
+  tankkapasitet: (
+    <div>
+      <p>Auto-beregnes konservativt fra oljevolum, tanktype og spenning. Overstyr bare hvis trafoleverandøren har dokumentert høyere tankkapasitet via IEC 60076-test eller fullskala-arctest. Be om dette dokumentet hvis det finnes.</p>
+    </div>
+  ),
+  plassering: (
+    <div>
+      <p>Innendørs = trafocelle i fjell, bygg eller egen tilbygg. Utendørs = stativ på fundament eller transportabel oppstilling. Generatortrafoer for norske vannkraftverk er ofte innendørs på grunn av klima og snølast.</p>
+    </div>
+  ),
+  avstand_personell: (
+    <div>
+      <p>Mål til nærmeste sted hvor personell ferdes regelmessig: driftsoperatør, kontrollrom-vindu, gangvei mellom utstyr, lasterampe. Bruk verste relevante avstand. Ikke regn med tilfeldig besøk.</p>
+    </div>
+  ),
+  avstand_maskinhall: (
+    <div>
+      <p>Mål til nærmeste vegg på bygning med høy verdi (maskinhall, kontrollrom, hjelpetrafoer, kabelgater). Hvis trafoen står inne i maskinhallen, sett avstanden til avstanden til neste branncelle / brannmur.</p>
+    </div>
+  ),
+  basseng: (
+    <div>
+      <p className="mb-1"><strong>Hvor finne det:</strong> mål eller hent fra branntegning.</p>
+      <p>NFPA 850 krever minimum 110 % av oljemengden + slokkevannmengde. Verktøyet sjekker dette automatisk og varsler om underdimensjonering.</p>
+    </div>
+  ),
+  ik: (
+    <div>
+      <p className="mb-1"><strong>Hvor finne det:</strong> nettselskapets kortslutningsanalyse for tilkoblingspunktet.</p>
+      <p><strong>Typiske verdier:</strong> 22 kV distribusjon 5–15 kA, 132 kV regional 15–30 kA, 300/420 kV transmisjon 30–60 kA. På generatorlavsiden av en GSU-trafo: 20–40 kA ved 11–22 kV.</p>
+    </div>
+  ),
+  ubue: (
+    <div>
+      <p>Velg etter feiltype: Kort bue (500 V) for turn-to-turn eller mindre indre feil, Middels (1000 V) som standard antakelse for vikling-til-jord, Lang (2000 V) for full vikling-til-tank eller bristet gjennomføring.</p>
+    </div>
+  ),
+  tklar: (
+    <div>
+      <p>Spør kunden eller relévernfirma om reléinnstillinger. Primærvern hurtig (60 ms) krever moderne differensialvern + rask effektbryter. Primærvern normalt (100 ms) er typisk for norsk vannkraft. Reservevern (300–500 ms) brukes hvis primærvern svikter eller for vurdering av verste reelle utfall.</p>
+    </div>
+  ),
+  alder: (
+    <div>
+      <p><strong>Hvor finne det:</strong> typeskilt eller idriftsettingsår.</p>
+    </div>
+  ),
+  dga_maaneder: (
+    <div>
+      <p><strong>Hvor finne det:</strong> siste analyserapport (typisk 6–24 mnd intervall).</p>
+    </div>
+  ),
+  overlast: (
+    <div>
+      <p>Spør kunden om trafoen har vært kjørt over skiltverdi i lengre perioder, f.eks. ved produksjonstopper eller utfall av annen kapasitet.</p>
+    </div>
+  ),
+};
+
 const StatusIcon = ({ s }: { s: Status }) => {
   if (s === "ok") return <CheckCircle2 className="h-5 w-5 text-green-600" />;
   if (s === "warning") return <AlertTriangle className="h-5 w-5 text-yellow-600" />;
