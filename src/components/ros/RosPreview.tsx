@@ -958,35 +958,10 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                       )}
                       {h.beregninger && h.beregninger.length > 0 && (
                         <tr>
-                          <td colSpan={14} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
-                            <div style={{ border: "1px solid #e2e8f0", borderRadius: 4, padding: "6px 8px", background: "#fff" }}>
-                              <p style={{ fontSize: 9, fontWeight: 700, color: "#1e3a5f", margin: "0 0 4px 0" }}>
-                                Beregningsgrunnlag ({h.beregninger.length} beregning{h.beregninger.length === 1 ? "" : "er"})
-                              </p>
-                              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                                {h.beregninger.map((b) => {
-                                  const Icon = BEREGNING_IKONER[b.type];
-                                  return (
-                                    <div key={b.id} style={{ display: "flex", gap: 6, alignItems: "flex-start", fontSize: 9 }}>
-                                      {Icon && <Icon size={12} style={{ color: "#1e3a5f", marginTop: 1, flexShrink: 0 }} />}
-                                      <div style={{ flex: 1, minWidth: 0 }}>
-                                        <div style={{ fontWeight: 600, color: "#1e3a5f" }}>{b.label}</div>
-                                        <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 2 }}>
-                                          {Object.entries(b.results).map(([k, v]) => (
-                                            <span key={k} style={{ background: "#e8eef5", border: "1px solid #d0d7e2", borderRadius: 3, padding: "1px 5px", fontSize: 8.5 }}>
-                                              {k.replace(/_/g, " ")}: <strong>{String(v)}</strong>
-                                            </span>
-                                          ))}
-                                        </div>
-                                        {b.kommentar && (
-                                          <div style={{ fontStyle: "italic", color: "#475569", marginTop: 2, fontSize: 9 }}>{b.kommentar}</div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
+                          <td colSpan={15} style={{ ...tdStyle, padding: "4px 10px", background: "#f7f9fc" }}>
+                            <span style={{ fontSize: 9, fontStyle: "italic", color: "#64748b" }}>
+                              Beregninger: {h.beregninger.map((_, bi) => `B${i + 1}.${bi + 1}`).join(", ")} – se kapittel 4 Beregningsgrunnlag.
+                            </span>
                           </td>
                         </tr>
                       )}
