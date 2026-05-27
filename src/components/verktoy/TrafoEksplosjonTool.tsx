@@ -60,6 +60,111 @@ const REFERANSE_TESTER = [
   { mj: 17.3, forklaring: "Høyeste testenergi, lang bue" },
 ];
 
+const SJEKKLISTE_GRUPPER: { tittel: string; punkter: string[] }[] = [
+  {
+    tittel: "Trafo og olje",
+    punkter: [
+      "Typeskilt eller datablad",
+      "Oljevolum (L eller kg)",
+      "Tanktype (conservator / hermetisk / corrugated)",
+      "Oljetype (mineral / ester)",
+      "Nominell spenning HV og LV",
+      "Nominell effekt MVA",
+      "Idriftsettingsår",
+      "Tankens trykkbestandighet hvis testet",
+    ],
+  },
+  {
+    tittel: "Elektrisk og vern",
+    punkter: [
+      "Kortslutningsstrøm I_k på begge spenningssider (nettselskap eller intern kortslutningsanalyse)",
+      "Oversikt over installert vern (Bucholtz, differensialvern 87T, jordfeilvern)",
+      "Målte klareringstider for primær- og reservevern",
+      "Siste relévern-koordinering",
+    ],
+  },
+  {
+    tittel: "Plassering og geometri",
+    punkter: [
+      "Plassering innendørs eller utendørs",
+      "Avstand fra trafo til nærmeste personellsone",
+      "Avstand til maskinhall eller annen verdifull bygning",
+      "Oljegruvens areal og dybde",
+      "Ventilasjon (hvis innendørs)",
+    ],
+  },
+  {
+    tittel: "Brannteknisk",
+    punkter: [
+      "Eksisterende brannmurer (EI-klasse)",
+      "Aktivt slokkesystem (deluge / vannspray / vanntåke)",
+      "Oljeavskiller i avløp",
+      "Brannvarslingsanlegg",
+      "Deteksjon (Bucholtz, røyk, varme)",
+    ],
+  },
+  {
+    tittel: "Drift og tilstand",
+    punkter: [
+      "Driftsalder",
+      "Lasthistorikk (kontinuerlig overlast?)",
+      "Siste DGA-analyse (dato og resultat)",
+      "Siste hovedrevisjon",
+      "Oljebehandling / regenerering utført",
+      "Kjente feilmodi eller historikk",
+    ],
+  },
+];
+
+async function lastNedSjekklisteWord() {
+  const [{ Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, LevelFormat }, { saveAs }] = await Promise.all([
+    import("docx"),
+    import("file-saver"),
+  ]);
+
+  const children: any[] = [
+    new Paragraph({
+      heading: HeadingLevel.HEADING_1,
+      children: [new TextRun({ text: "Sjekkliste – informasjon å innhente fra kunde", bold: true })],
+    }),
+    new Paragraph({
+      children: [
+        new TextRun({
+          text: "Til bruk på befaring av oljefylt krafttrafo. Hak av eller noter verdier ved hvert punkt.",
+          italics: true,
+        }),
+      ],
+      spacing: { after: 200 },
+    }),
+  ];
+
+  SJEKKLISTE_GRUPPER.forEach((g) => {
+    children.push(
+      new Paragraph({
+        heading: HeadingLevel.HEADING_2,
+        children: [new TextRun({ text: g.tittel, bold: true })],
+        spacing: { before: 240, after: 120 },
+      }),
+    );
+    g.punkter.forEach((p) => {
+      children.push(
+        new Paragraph({
+          children: [new TextRun(`☐  ${p}`)],
+          spacing: { after: 60 },
+        }),
+      );
+    });
+  });
+
+  const doc = new Document({
+    sections: [{ children }],
+  });
+
+  const blob = await Packer.toBlob(doc);
+  saveAs(blob, "Sjekkliste-trafo-befaring.docx");
+}
+
+
 
 const defaultInput: TrafoInput = {
   oljevolum_L: 25000,
