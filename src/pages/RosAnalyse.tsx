@@ -707,6 +707,21 @@ export default function RosAnalyse() {
     }));
   };
   const [openCalcType, setOpenCalcType] = useState<CalculatorType | null>(null);
+  const [editingBeregning, setEditingBeregning] = useState<RosBeregning | null>(null);
+
+  const handleCalcImport = (calc: AttachedCalculation) => {
+    if (editingBeregning) {
+      updateBeregning(editingBeregning.id, {
+        ...calc,
+        id: editingBeregning.id,
+        hendelseIds: editingBeregning.hendelseIds,
+        kommentar: editingBeregning.kommentar,
+      });
+      setEditingBeregning(null);
+    } else {
+      addBeregning(calc);
+    }
+  };
 
   // ----- Revisjon -----
   const addRevisjon = () => {
