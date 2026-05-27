@@ -29,7 +29,7 @@ import {
 } from "@/lib/document-templates";
 import { risikoFarge } from "@/components/ros/RosMatriks";
 import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell, DIMENSJON_NAVN } from "@/lib/ros-risk-criteria";
-import { migrerHendelse, type RosContent, type RosHendelse } from "@/components/ros/RosPreview";
+import { migrerHendelse, byggBeregningIder, type RosBeregning, type RosContent, type RosHendelse } from "@/components/ros/RosPreview";
 
 export interface RosSenderInfo {
   full_name?: string | null;
@@ -592,6 +592,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
   const oppsummeringNr = harBowTie ? "6" : "5";
   const revisjonNr = harBowTie ? "7" : "6";
 
+  const beregningIder = byggBeregningIder(content);
   const hendelseRows: TableRow[] = [hendelseHeader];
   content.hendelser.forEach((h, i) => {
     const hm0 = migrerHendelse(h);
@@ -650,8 +651,9 @@ export const exportRosToWord = async (options: ExportOptions) => {
       }),
     );
 
-    if (h.beregninger && h.beregninger.length > 0) {
-      const ids = h.beregninger.map((_, bi) => `B${i + 1}.${bi + 1}`).join(", ");
+    const tilknyttede = (content.beregninger || []).filter((b) => b.hendelseIds.includes(h.id));
+    if (tilknyttede.length > 0) {
+      const ids = tilknyttede.map((b) => beregningIder.get(b.id) || "B?").join(", ");
       hendelseRows.push(
         new TableRow({
           children: [
@@ -659,16 +661,20 @@ export const exportRosToWord = async (options: ExportOptions) => {
               columnSpan: 15,
               width: { size: 100, type: WidthType.PERCENTAGE },
               shading: { fill: "F7F9FC", type: ShadingType.CLEAR, color: "auto" },
-              children: [
-                new Paragraph({
-                  children: [
-                    text(
-                      `Beregninger: ${ids} – se kapittel ${beregningNr} Beregningsgrunnlag.`,
-                      { italics: true, size: 14 },
-                    ),
-                  ],
-                }),
-              ],
+              children: [new Paragraph({ children: [text(`Beregninger: ${ids} – se kapittel ${beregningNr} Beregningsgrunnlag.`, { italics: true, size: 14 })] })],
+            }),
+          ],
+        }),
+      );
+    } else if (h.kreverBeregning) {
+      hendelseRows.push(
+        new TableRow({
+          children: [
+            new TableCell({
+              columnSpan: 15,
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              shading: { fill: "FFF3CD", type: ShadingType.CLEAR, color: "auto" },
+              children: [new Paragraph({ children: [text(`Krever beregning – ikke registrert ennå${h.beregningTekst ? `: ${h.beregningTekst}` : ""}`, { bold: true, size: 14, color: "7A5A00" })] })],
             }),
           ],
         }),
@@ -705,21 +711,38 @@ export const exportRosToWord = async (options: ExportOptions) => {
   ];
 
   // Kap. 4 Beregningsgrunnlag
-  const hendelserMedBeregninger = content.hendelser
-    .map((h, i) => ({ h, i }))
-    .filter(({ h }) => h.beregninger && h.beregninger.length > 0);
+  const alleBeregninger = content.beregninger || [];
+  const grupperBer = new Map<string, RosBeregning[]>();
+  alleBeregninger.forEach((b) => {
+    const key = b.hendelseIds[0] || "_ikke";
+    if (!grupperBer.has(key)) grupperBer.set(key, []);
+    grupperBer.get(key)!.push(b);
+  });
 
   const beregningsgrunnlag: (Paragraph | Table)[] = [
     buildSectionHeading(theme, `${beregningNr}. Beregningsgrunnlag`),
   ];
-  if (hendelserMedBeregninger.length === 0) {
+  if (alleBeregninger.length === 0) {
     beregningsgrunnlag.push(
       new Paragraph({
         children: [text("Ingen beregninger er tilknyttet hendelsene i denne analysen.", { italics: true })],
       }),
     );
   } else {
-    for (const { h, i } of hendelserMedBeregninger) {
+    const pushBeregning = (b: RosBeregning) => {
+      const id = beregningIder.get(b.id) || "B?";
+      const typeLabel = BEREGNING_LABELS[b.type] ?? String(b.type);
+      beregningsgrunnlag.push(
+        new Paragraph({
+          heading: HeadingLevel.HEADING_4,
+          children: [text(`${id} – ${typeLabel}: ${b.label ?? ""}`, { bold: true, size: 18 })],
+        }),
+      );
+      beregningsgrunnlag.push(...buildBeregningTabell(b));
+    };
+    content.hendelser.forEach((h, i) => {
+      const liste = grupperBer.get(h.id);
+      if (!liste || liste.length === 0) return;
       beregningsgrunnlag.push(
         new Paragraph({
           heading: HeadingLevel.HEADING_3,
@@ -729,17 +752,17 @@ export const exportRosToWord = async (options: ExportOptions) => {
           )],
         }),
       );
-      h.beregninger!.forEach((b, bi) => {
-        const id = `B${i + 1}.${bi + 1}`;
-        const typeLabel = BEREGNING_LABELS[b.type] ?? String(b.type);
-        beregningsgrunnlag.push(
-          new Paragraph({
-            heading: HeadingLevel.HEADING_4,
-            children: [text(`${id} – ${typeLabel}: ${b.label ?? ""}`, { bold: true, size: 18 })],
-          }),
-        );
-        beregningsgrunnlag.push(...buildBeregningTabell(b));
-      });
+      liste.forEach(pushBeregning);
+    });
+    const ikke = grupperBer.get("_ikke");
+    if (ikke && ikke.length > 0) {
+      beregningsgrunnlag.push(
+        new Paragraph({
+          heading: HeadingLevel.HEADING_3,
+          children: [text("Ikke tilknyttet hendelse", { bold: true, size: 22 })],
+        }),
+      );
+      ikke.forEach(pushBeregning);
     }
   }
 
