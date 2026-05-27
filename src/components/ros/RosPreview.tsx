@@ -884,11 +884,13 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 <tbody>
                   {content.hendelser.map((h, i) => {
                     const hm = migrerHendelse(h);
-                    const kForsyning = h.konsekvens || 1;
-                    const kForsyningEtter = h.konsekvensEtter ?? kForsyning;
-                    const forsyning = hm.konsekvensvurderinger!.find((k) => k.dimensjon === "forsyningssikkerhet")!;
+                    const forsyning = hm.konsekvensvurderinger?.find((k) => k.dimensjon === "forsyningssikkerhet");
+                    const kForsyning = forsyning?.score;
+                    const kForsyningEtter = forsyning?.scoreEtter;
                     const sE = h.sannsynlighetEtter ?? h.sannsynlighet;
                     const td = { ...tdStyle, fontSize: 9 };
+                    const tdCenter = { ...td, textAlign: "center" as const };
+                    const tdMuted = { ...tdCenter, color: "#94a3b8" };
                     return (
                       <React.Fragment key={h.id}>
                       <tr>
@@ -897,17 +899,18 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         <td style={{ ...td, fontWeight: 600 }}>{h.hendelse || h.beskrivelse || h.tittel || "—"}</td>
                         <td style={td}>{h.arsak}</td>
                         <td style={td}>{h.beskrivelseSannsynlighetFor || ""}</td>
-                        <td style={td}>{forsyning.begrunnelse || h.beskrivelseRisikoFor || ""}</td>
-                        <td style={{ ...td, textAlign: "center" }}>{h.sannsynlighet}</td>
-                        <td style={{ ...td, textAlign: "center" }}>{kForsyning}</td>
-                        <td style={{ ...riskCellStyle(h.sannsynlighet, kForsyning), fontSize: 9 }}>{h.sannsynlighet * kForsyning}</td>
+                        <td style={td}>{forsyning?.begrunnelse || h.beskrivelseRisikoFor || ""}</td>
+                        <td style={tdCenter}>{h.sannsynlighet}</td>
+                        <td style={kForsyning ? tdCenter : tdMuted}>{kForsyning ?? "—"}</td>
+                        <td style={kForsyning ? { ...riskCellStyle(h.sannsynlighet, kForsyning), fontSize: 9 } : tdMuted}>{kForsyning ? h.sannsynlighet * kForsyning : "—"}</td>
                         <td style={td}>{h.tiltak}</td>
                         <td style={td}>{h.beskrivelseEtter || ""}</td>
-                        <td style={{ ...td, textAlign: "center" }}>{sE}</td>
-                        <td style={{ ...td, textAlign: "center" }}>{kForsyningEtter}</td>
-                        <td style={{ ...riskCellStyle(sE, kForsyningEtter), fontSize: 9 }}>{sE * kForsyningEtter}</td>
+                        <td style={tdCenter}>{sE}</td>
+                        <td style={kForsyningEtter ? tdCenter : tdMuted}>{kForsyningEtter ?? "—"}</td>
+                        <td style={kForsyningEtter ? { ...riskCellStyle(sE, kForsyningEtter), fontSize: 9 } : tdMuted}>{kForsyningEtter ? sE * kForsyningEtter : "—"}</td>
                         <td style={td}>{h.restrisiko}</td>
                       </tr>
+
                       {hm.konsekvensvurderinger && hm.konsekvensvurderinger.length > 0 && (
                         <tr>
                           <td colSpan={15} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
