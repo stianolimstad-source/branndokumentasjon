@@ -711,21 +711,38 @@ export const exportRosToWord = async (options: ExportOptions) => {
   ];
 
   // Kap. 4 Beregningsgrunnlag
-  const hendelserMedBeregninger = content.hendelser
-    .map((h, i) => ({ h, i }))
-    .filter(({ h }) => h.beregninger && h.beregninger.length > 0);
+  const alleBeregninger = content.beregninger || [];
+  const grupperBer = new Map<string, RosBeregning[]>();
+  alleBeregninger.forEach((b) => {
+    const key = b.hendelseIds[0] || "_ikke";
+    if (!grupperBer.has(key)) grupperBer.set(key, []);
+    grupperBer.get(key)!.push(b);
+  });
 
   const beregningsgrunnlag: (Paragraph | Table)[] = [
     buildSectionHeading(theme, `${beregningNr}. Beregningsgrunnlag`),
   ];
-  if (hendelserMedBeregninger.length === 0) {
+  if (alleBeregninger.length === 0) {
     beregningsgrunnlag.push(
       new Paragraph({
         children: [text("Ingen beregninger er tilknyttet hendelsene i denne analysen.", { italics: true })],
       }),
     );
   } else {
-    for (const { h, i } of hendelserMedBeregninger) {
+    const pushBeregning = (b: RosBeregning) => {
+      const id = beregningIder.get(b.id) || "B?";
+      const typeLabel = BEREGNING_LABELS[b.type] ?? String(b.type);
+      beregningsgrunnlag.push(
+        new Paragraph({
+          heading: HeadingLevel.HEADING_4,
+          children: [text(`${id} – ${typeLabel}: ${b.label ?? ""}`, { bold: true, size: 18 })],
+        }),
+      );
+      beregningsgrunnlag.push(...buildBeregningTabell(b));
+    };
+    content.hendelser.forEach((h, i) => {
+      const liste = grupperBer.get(h.id);
+      if (!liste || liste.length === 0) return;
       beregningsgrunnlag.push(
         new Paragraph({
           heading: HeadingLevel.HEADING_3,
@@ -735,17 +752,17 @@ export const exportRosToWord = async (options: ExportOptions) => {
           )],
         }),
       );
-      h.beregninger!.forEach((b, bi) => {
-        const id = `B${i + 1}.${bi + 1}`;
-        const typeLabel = BEREGNING_LABELS[b.type] ?? String(b.type);
-        beregningsgrunnlag.push(
-          new Paragraph({
-            heading: HeadingLevel.HEADING_4,
-            children: [text(`${id} – ${typeLabel}: ${b.label ?? ""}`, { bold: true, size: 18 })],
-          }),
-        );
-        beregningsgrunnlag.push(...buildBeregningTabell(b));
-      });
+      liste.forEach(pushBeregning);
+    });
+    const ikke = grupperBer.get("_ikke");
+    if (ikke && ikke.length > 0) {
+      beregningsgrunnlag.push(
+        new Paragraph({
+          heading: HeadingLevel.HEADING_3,
+          children: [text("Ikke tilknyttet hendelse", { bold: true, size: 22 })],
+        }),
+      );
+      ikke.forEach(pushBeregning);
     }
   }
 
