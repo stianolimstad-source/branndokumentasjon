@@ -51,9 +51,19 @@ export interface RosHendelse {
   /** @deprecated bruk konsekvensvurderinger[] – beholdes som fallback / speil av forsyningssikkerhet */
   konsekvensEtter?: number;
   restrisiko: string;
+  /** @deprecated bruk content.beregninger med hendelseIds – beholdes for migrasjon */
   beregninger?: AttachedCalculation[];
   konsekvensvurderinger?: KonsekvensVurdering[];
+  /** Markering at hendelsen trenger en beregning (registreres i eget kapittel) */
+  kreverBeregning?: boolean;
+  /** Kort beskrivelse av hva som må beregnes */
+  beregningTekst?: string;
 }
+
+export interface RosBeregning extends AttachedCalculation {
+  hendelseIds: string[];
+}
+
 
 /**
  * Sørger for at en hendelse har et `konsekvensvurderinger`-array. Migrerer
