@@ -95,6 +95,9 @@ const TrafoEksplosjonTool = () => {
   const upd = <K extends keyof TrafoInput>(k: K, v: TrafoInput[K]) => setInput((p) => ({ ...p, [k]: v }));
   const updB = <K extends keyof TrafoInput["barrierer"]>(k: K, v: TrafoInput["barrierer"][K]) =>
     setInput((p) => ({ ...p, barrierer: { ...p.barrierer, [k]: v } }));
+  const updD = <K extends keyof TrafoInput["drift"]>(k: K, v: TrafoInput["drift"][K]) =>
+    setInput((p) => ({ ...p, drift: { ...p.drift, [k]: v } }));
+  const driftsfaktor = useMemo(() => beregnDriftsfaktor(input.drift), [input.drift]);
 
   const autoTankkap = useMemo(
     () => beregnTankkapasitet(input.oljevolum_L, input.tanktype, input.spenning_kV),
