@@ -653,6 +653,27 @@ export const exportRosToWord = async (options: ExportOptions) => {
         }),
       );
     }
+    const hm = migrerHendelse(h);
+    const kvs = hm.konsekvensvurderinger || [];
+    const harBegrunnelse = kvs.some((k) => (k.begrunnelse || "").trim() || (k.begrunnelseEtter || "").trim());
+    if (kvs.length > 1 || harBegrunnelse) {
+      hendelseRows.push(
+        new TableRow({
+          children: [
+            new TableCell({
+              columnSpan: 15,
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              shading: { fill: "F7F9FC", type: ShadingType.CLEAR, color: "auto" },
+              margins: { top: 100, bottom: 100, left: 300, right: 100 },
+              children: [
+                new Paragraph({ children: [text("Konsekvensvurderinger per dimensjon", { bold: true, size: 16 })] }),
+                buildKonsekvensSubTabell(h, hm),
+              ],
+            }),
+          ],
+        }),
+      );
+    }
   });
   const hendelser: (Paragraph | Table)[] = [
     buildSectionHeading(theme, "3. Hendelsesregister"),
