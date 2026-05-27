@@ -92,6 +92,12 @@ export interface Resultat {
   containment_ok: boolean;
   containment_paakrevd_m2: number;
   hydrogen_advarsel: boolean;
+  compliance: {
+    krav: { navn: string; standard: string; oppfylt: boolean; kommentar: string }[];
+    oppfylt_antall: number;
+    totalt_antall: number;
+    prosent: number;
+  };
   anbefalinger: Anbefaling[];
 }
 
