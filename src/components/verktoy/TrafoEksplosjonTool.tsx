@@ -11,7 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2, AlertTriangle, XCircle, ArrowDown } from "lucide-react";
-import { beregn, type TrafoInput, type Status, type Resultat } from "@/lib/trafo-eksplosjon";
+import { beregn, beregnDriftsfaktor, type TrafoInput, type Status, type Resultat } from "@/lib/trafo-eksplosjon";
 import { TRAFO_CASES } from "@/lib/trafo-cases";
 
 const SCENARIOER = [
