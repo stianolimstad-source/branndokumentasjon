@@ -152,7 +152,7 @@ export default function RosAnalyse() {
           ? { ...EMPTY_CONTENT, ...(data.content as Partial<RosContent>) }
           : EMPTY_CONTENT;
         // Ensure nested defaults
-        setContent({
+        setContent(migrerBeregninger({
           metadata: { ...EMPTY_CONTENT.metadata, ...(c as any).metadata },
           innledning: { ...EMPTY_CONTENT.innledning, ...(c as any).innledning },
           metode: { ...EMPTY_CONTENT.metode, ...((c as any).metode || {}) },
@@ -168,6 +168,12 @@ export default function RosAnalyse() {
                 konsekvensEtter: h.konsekvensEtter ?? h.konsekvens ?? 1,
               }))
             : [],
+          beregninger: Array.isArray((c as any).beregninger)
+            ? ((c as any).beregninger as any[]).map((b: any) => ({
+                ...b,
+                hendelseIds: Array.isArray(b.hendelseIds) ? b.hendelseIds.filter((x: any) => typeof x === "string") : [],
+              }))
+            : undefined,
           oppsummering: (c as any).oppsummering ?? "",
           revisjonshistorikk: Array.isArray((c as any).revisjonshistorikk) ? (c as any).revisjonshistorikk : [],
           bowTies: Array.isArray((c as any).bowTies)
@@ -204,7 +210,8 @@ export default function RosAnalyse() {
                   : [],
               }))
             : [],
-        });
+        }));
+
         setLoadingDoc(false);
       });
   }, [rosId, user, toast]);
