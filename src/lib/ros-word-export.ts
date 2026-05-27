@@ -631,13 +631,24 @@ export const exportRosToWord = async (options: ExportOptions) => {
       }),
     );
     if (h.beregninger && h.beregninger.length > 0) {
+      const ids = h.beregninger.map((_, bi) => `B${i + 1}.${bi + 1}`).join(", ");
       hendelseRows.push(
         new TableRow({
           children: [
             new TableCell({
               columnSpan: 15,
               width: { size: 100, type: WidthType.PERCENTAGE },
-              children: buildBeregningerBlock(h.beregninger),
+              shading: { fill: "F7F9FC", type: ShadingType.CLEAR, color: "auto" },
+              children: [
+                new Paragraph({
+                  children: [
+                    text(
+                      `Beregninger: ${ids} – se kapittel ${beregningNr} Beregningsgrunnlag.`,
+                      { italics: true, size: 14 },
+                    ),
+                  ],
+                }),
+              ],
             }),
           ],
         }),
