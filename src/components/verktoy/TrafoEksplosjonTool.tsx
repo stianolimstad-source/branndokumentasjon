@@ -56,6 +56,11 @@ const defaultInput: TrafoInput = {
     rom_ventilasjon: false,
     
   },
+  drift: {
+    alder_aar: 20,
+    maaneder_siden_dga: 12,
+    overlast_historisk: false,
+  },
 };
 
 const StatusIcon = ({ s }: { s: Status }) => {
