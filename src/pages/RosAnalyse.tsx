@@ -351,7 +351,6 @@ export default function RosAnalyse() {
         beskrivelseEtter: "",
         sannsynlighetEtter: 1,
         restrisiko: "",
-        beregninger: [],
         konsekvensvurderinger: [],
       } as RosHendelse],
     }));
