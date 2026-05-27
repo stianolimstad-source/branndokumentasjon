@@ -327,6 +327,61 @@ const TrafoEksplosjonTool = () => {
                   etterprøve vurderingen.
                 </p>
               </section>
+              <section>
+                <h4 className="font-semibold mb-2">Referanseverdier – typiske norske vannkraftstasjoner</h4>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Anleggstype</TableHead>
+                      <TableHead>Effekt</TableHead>
+                      <TableHead>Spenning HV</TableHead>
+                      <TableHead>Oljevolum</TableHead>
+                      <TableHead>Kortslutningsstrøm I_k</TableHead>
+                      <TableHead>Buenergi typisk worst case</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell>Småkraft (mindre enn 10 MW)</TableCell>
+                      <TableCell>1–15 MVA</TableCell>
+                      <TableCell>22 eller 66 kV</TableCell>
+                      <TableCell>2 000–10 000 L</TableCell>
+                      <TableCell>5–15 kA</TableCell>
+                      <TableCell>0,5–3 MJ</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Mellomstor stasjon (10–100 MW)</TableCell>
+                      <TableCell>15–150 MVA</TableCell>
+                      <TableCell>66 eller 132 kV</TableCell>
+                      <TableCell>10 000–30 000 L</TableCell>
+                      <TableCell>15–30 kA</TableCell>
+                      <TableCell>2–8 MJ</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Stort kraftverk (100–300 MW)</TableCell>
+                      <TableCell>150–300 MVA</TableCell>
+                      <TableCell>132 eller 300 kV</TableCell>
+                      <TableCell>30 000–70 000 L</TableCell>
+                      <TableCell>30–50 kA</TableCell>
+                      <TableCell>5–15 MJ</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Storkraftverk (over 300 MW)</TableCell>
+                      <TableCell>300–1100 MVA</TableCell>
+                      <TableCell>300 eller 420 kV</TableCell>
+                      <TableCell>50 000–100 000 L</TableCell>
+                      <TableCell>40–60 kA</TableCell>
+                      <TableCell>10–25 MJ</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Tallene er typiske intervaller for nye/moderne norske anlegg. Eldre trafoer kan ha
+                  vesentlig høyere buenergi-eksponering på grunn av langsommere reléinnstillinger og
+                  lavere kortslutningsbidrag fra nettet. Sjekk konkrete prosjektverdier mot leverandør
+                  og nettselskap.
+                </p>
+              </section>
               <p className="text-xs text-muted-foreground pt-2 border-t">
                 Verktøyet erstatter ikke en fullstendig risikovurdering eller branntekniske analyser
                 etter NS-EN 1991-1-2 / preaksepterte ytelser. Verdier skal verifiseres mot
