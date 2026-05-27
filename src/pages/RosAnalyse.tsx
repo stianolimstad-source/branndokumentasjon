@@ -155,7 +155,7 @@ export default function RosAnalyse() {
           innledning: { ...EMPTY_CONTENT.innledning, ...(c as any).innledning },
           metode: { ...EMPTY_CONTENT.metode, ...((c as any).metode || {}) },
           hendelser: Array.isArray((c as any).hendelser)
-            ? (c as any).hendelser.map((h: any) => ({
+            ? (c as any).hendelser.map((h: any) => migrerHendelse({
                 ...h,
                 hendelse: h.hendelse || h.beskrivelse || "",
                 sarbarhet: h.sarbarhet || "",
