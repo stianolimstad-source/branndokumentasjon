@@ -15,11 +15,40 @@ import { beregn, beregnDriftsfaktor, type TrafoInput, type Status, type Resultat
 import { TRAFO_CASES } from "@/lib/trafo-cases";
 
 const SCENARIOER = [
-  { navn: "Lavt", verdi: 1.5, beskrivelse: "Primærvern OK, kort bue" },
-  { navn: "Sannsynlig", verdi: 4.0, beskrivelse: "Primærvern OK, middels bue" },
-  { navn: "Høyt", verdi: 8.0, beskrivelse: "Primærvern feiler, reservevern utløser" },
-  { navn: "Worst case", verdi: 15.0, beskrivelse: "Lang bue og tregt reservevern" },
+  {
+    navn: "Lavt",
+    verdi: 1.5,
+    beskrivelse: "Primærvern OK, kort bue",
+    uttrykk: "Tilsvarer ca. 15 kA × 500 V × 200 ms eller 25 kA × 500 V × 120 ms. Typisk distribusjonstrafo med fungerende primærvern.",
+  },
+  {
+    navn: "Sannsynlig",
+    verdi: 4.0,
+    beskrivelse: "Primærvern OK, middels bue",
+    uttrykk: "Tilsvarer ca. 25 kA × 1000 V × 160 ms eller 20 kA × 1000 V × 200 ms. Typisk 132 kV regional trafo med primærvern.",
+  },
+  {
+    navn: "Høyt",
+    verdi: 8.0,
+    beskrivelse: "Primærvern feiler, reservevern utløser",
+    uttrykk: "Tilsvarer ca. 35 kA × 1000 V × 230 ms eller 25 kA × 1000 V × 320 ms. Typisk 132 kV-trafo der primærvern svikter og reservevern utløser.",
+  },
+  {
+    navn: "Worst case",
+    verdi: 15.0,
+    beskrivelse: "Lang bue og tregt reservevern",
+    uttrykk: "Tilsvarer ca. 40 kA × 2000 V × 190 ms eller 30 kA × 2000 V × 250 ms. Lang bue og tregt reservevern på stor trafo.",
+  },
 ];
+
+function scenarioFeedback(mj: number): string {
+  if (mj < 1) return "Tilsvarer under Lavt-scenariet";
+  if (mj < 3) return "Tilsvarer Lavt-scenariet";
+  if (mj < 6) return "Tilsvarer Sannsynlig-scenariet";
+  if (mj < 12) return "Tilsvarer Høyt-scenariet";
+  if (mj <= 20) return "Tilsvarer Worst case-scenariet";
+  return "Overskrider Worst case – sjekk at I_k og klareringstid er realistiske for ditt anlegg";
+}
 
 const REFERANSE_TESTER = [
   { mj: 0.65, forklaring: "Lav testenergi, kort bue" },
@@ -382,7 +411,10 @@ const TrafoEksplosjonTool = () => {
                               <span className="text-xs opacity-80">{s.verdi.toFixed(1)} MJ</span>
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent>{s.beskrivelse}</TooltipContent>
+                          <TooltipContent className="max-w-xs space-y-1">
+                            <p className="font-semibold">{s.beskrivelse}</p>
+                            <p className="text-xs opacity-90">{s.uttrykk}</p>
+                          </TooltipContent>
                         </Tooltip>
                       );
                     })}
@@ -432,7 +464,18 @@ const TrafoEksplosjonTool = () => {
                     <div className="text-xs text-muted-foreground mt-1">
                       {uBue_V} V × {ik_kA} kA × {tKlar_ms} ms
                     </div>
+                    <div className="text-xs text-muted-foreground italic mt-1">
+                      {scenarioFeedback(E_kortslutning)}
+                    </div>
                   </div>
+                  {E_kortslutning > 30 && (
+                    <Alert variant="warning">
+                      <AlertTriangle className="h-4 w-4" />
+                      <AlertDescription>
+                        Beregnet buenergi er svært høy. Verifiser at kortslutningsstrømmen er hentet fra riktig spenningsside, og at klareringstiden reflekterer faktiske reléinnstillinger – ikke teoretiske worst case.
+                      </AlertDescription>
+                    </Alert>
+                  )}
                 </TabsContent>
 
                 <TabsContent value="manuell" className="pt-3 space-y-3">
