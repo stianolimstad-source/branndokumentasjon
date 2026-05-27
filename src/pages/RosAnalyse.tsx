@@ -1122,15 +1122,6 @@ export default function RosAnalyse() {
                             </div>
                           </div>
 
-                          <div className="space-y-2 border-t pt-3">
-                            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Tilknyttede beregninger</p>
-                            <p className="text-xs text-muted-foreground">Knytt branntekniske beregninger til hendelsen for å dokumentere sannsynlighet- og konsekvensvurderingen.</p>
-                            <BeregningSection
-                              beregninger={h.beregninger || []}
-                              onChange={(beregninger) => updateHendelse(h.id, { beregninger })}
-                              fravikIndex={idx}
-                            />
-                          </div>
 
                           <div className="space-y-2 border-t pt-3">
                             <Area label="Restrisiko" value={h.restrisiko} onChange={(v) => updateHendelse(h.id, { restrisiko: v })} rows={2} />
