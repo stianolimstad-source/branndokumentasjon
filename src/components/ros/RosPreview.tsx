@@ -911,9 +911,13 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         <td style={td}>{h.restrisiko}</td>
                       </tr>
 
-                      {hm.konsekvensvurderinger && hm.konsekvensvurderinger.length > 0 && (
-                        <tr>
-                          <td colSpan={15} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
+                      <tr>
+                        <td colSpan={15} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
+                          {(!hm.konsekvensvurderinger || hm.konsekvensvurderinger.length === 0) ? (
+                            <span style={{ fontSize: 9, fontStyle: "italic", color: "#64748b" }}>
+                              Ingen konsekvensdimensjoner vurdert
+                            </span>
+                          ) : (
                             <div style={{ border: "1px solid #e2e8f0", borderRadius: 4, padding: "6px 8px", background: "#fff" }}>
                               <p style={{ fontSize: 9, fontWeight: 700, color: "#1e3a5f", margin: "0 0 4px 0" }}>
                                 Konsekvensvurderinger per dimensjon
@@ -931,9 +935,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                                 </thead>
                                 <tbody>
                                   {hm.konsekvensvurderinger.map((kv, ki) => {
-                                    const isForsyn = kv.dimensjon === "forsyningssikkerhet";
-                                    const kvSc = isForsyn ? kForsyning : (kv.score || 1);
-                                    const kvE = isForsyn ? kForsyningEtter : kv.scoreEtter;
+                                    const kvSc = kv.score || 1;
+                                    const kvE = kv.scoreEtter;
                                     const rowTd = { ...tdStyle, fontSize: 9, padding: "4px 6px" };
                                     return (
                                       <tr key={ki}>
@@ -958,9 +961,10 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                                 </tbody>
                               </table>
                             </div>
-                          </td>
-                        </tr>
-                      )}
+                          )}
+                        </td>
+                      </tr>
+
                       {h.beregninger && h.beregninger.length > 0 && (
                         <tr>
                           <td colSpan={15} style={{ ...tdStyle, padding: "4px 10px", background: "#f7f9fc" }}>
