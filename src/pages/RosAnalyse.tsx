@@ -307,6 +307,7 @@ export default function RosAnalyse() {
         beskrivelseEtter: "",
         sannsynlighetEtter: 1, konsekvensEtter: 1,
         restrisiko: "",
+        beregninger: [],
       }],
     }));
     setOpenHendelser((o) => [...o, id]);
