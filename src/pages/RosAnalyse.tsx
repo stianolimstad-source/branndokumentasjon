@@ -18,7 +18,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { KONSEKVENS_FORSLAG, groupKonsekvenserByKategori } from "@/lib/ros-konsekvenser";
-import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search, Sparkles, Check, GitBranch, X, Eye } from "lucide-react";
+import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search, Sparkles, Check, GitBranch, X, Eye, Calculator } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import RosPreview, { type RosContent, type RosHendelse, type RosBowTie } from "@/components/ros/RosPreview";
@@ -1023,6 +1023,11 @@ export default function RosAnalyse() {
                                   </Tooltip>
                                 </TooltipProvider>
                               )}
+                              {(h.beregninger?.length ?? 0) > 0 && (
+                                <Badge variant="secondary" className="shrink-0 text-xs">
+                                  {h.beregninger!.length} {h.beregninger!.length === 1 ? "beregning" : "beregninger"}
+                                </Badge>
+                              )}
                               <span className={`ml-auto rounded px-2 py-0.5 text-xs font-semibold shrink-0 ${cls}`}>
                                 R {h.sannsynlighet * h.konsekvens}
                               </span>
@@ -1086,6 +1091,23 @@ export default function RosAnalyse() {
                             <Area label="Tiltak" value={h.tiltak} onChange={(v) => updateHendelse(h.id, { tiltak: v })} rows={3} />
                           </div>
 
+                          <Card className="border-2 border-primary/30 bg-primary/5">
+                            <CardContent className="pt-4 space-y-2">
+                              <div className="flex items-center gap-2">
+                                <Calculator className="h-4 w-4 text-primary" />
+                                <p className="text-sm font-bold">Tilknyttede beregninger</p>
+                              </div>
+                              <p className="text-xs text-muted-foreground">
+                                Knytt branntekniske beregningsverktøy til hendelsen – f.eks. trafoeksplosjon, strålingsberegning eller flammehøyde. Importerte beregninger blir med i Word-rapporten.
+                              </p>
+                              <BeregningSection
+                                beregninger={h.beregninger || []}
+                                onChange={(beregninger) => updateHendelse(h.id, { beregninger })}
+                                fravikIndex={idx}
+                              />
+                            </CardContent>
+                          </Card>
+
                           <div className="space-y-2 border-t pt-3">
                             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Etter tiltak</p>
                             <Area label="Beskrivelse av risiko og konsekvens etter tiltak" value={h.beskrivelseEtter || ""} onChange={(v) => updateHendelse(h.id, { beskrivelseEtter: v })} rows={2} />
@@ -1117,15 +1139,6 @@ export default function RosAnalyse() {
                             </div>
                           </div>
 
-                          <div className="space-y-2 border-t pt-3">
-                            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Tilknyttede beregninger</p>
-                            <p className="text-xs text-muted-foreground">Knytt branntekniske beregninger til hendelsen for å dokumentere sannsynlighet- og konsekvensvurderingen.</p>
-                            <BeregningSection
-                              beregninger={h.beregninger || []}
-                              onChange={(beregninger) => updateHendelse(h.id, { beregninger })}
-                              fravikIndex={idx}
-                            />
-                          </div>
 
                           <div className="space-y-2 border-t pt-3">
                             <Area label="Restrisiko" value={h.restrisiko} onChange={(v) => updateHendelse(h.id, { restrisiko: v })} rows={2} />
