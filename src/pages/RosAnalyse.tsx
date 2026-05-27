@@ -22,6 +22,7 @@ import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Downl
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import RosPreview, { type RosContent, type RosHendelse, type RosBowTie } from "@/components/ros/RosPreview";
+import BeregningSection from "@/components/fraviksdokumentasjon/BeregningSection";
 import UploadRosDialog, { type ExtractedRosData } from "@/components/ros/UploadRosDialog";
 import RosMatriks, { risikoFarge } from "@/components/ros/RosMatriks";
 import RosKriterier from "@/components/ros/RosKriterier";
