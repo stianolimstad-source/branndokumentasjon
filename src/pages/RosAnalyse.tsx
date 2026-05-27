@@ -313,13 +313,22 @@ export default function RosAnalyse() {
   };
   const leggTilDimensjon = (h: RosHendelse, dimensjon: KonsekvensDimensjon) => {
     const nye = [...(h.konsekvensvurderinger || []), { dimensjon, score: 1 as 1, begrunnelse: "" }];
-    updateHendelse(h.id, { konsekvensvurderinger: nye });
+    const oppdateringer: Partial<RosHendelse> = { konsekvensvurderinger: nye };
+    if (dimensjon === "forsyningssikkerhet") {
+      oppdateringer.konsekvens = 1;
+    }
+    updateHendelse(h.id, oppdateringer);
   };
   const fjernDimensjon = (h: RosHendelse, dimensjon: KonsekvensDimensjon) => {
-    if (dimensjon === "forsyningssikkerhet") return;
     const nye = (h.konsekvensvurderinger || []).filter((kv) => kv.dimensjon !== dimensjon);
-    updateHendelse(h.id, { konsekvensvurderinger: nye });
+    const oppdateringer: Partial<RosHendelse> = { konsekvensvurderinger: nye };
+    if (dimensjon === "forsyningssikkerhet") {
+      oppdateringer.konsekvens = 0 as any;
+      oppdateringer.konsekvensEtter = undefined;
+    }
+    updateHendelse(h.id, oppdateringer);
   };
+
   const addHendelse = () => {
     const id = makeId();
     setContent((c) => ({
