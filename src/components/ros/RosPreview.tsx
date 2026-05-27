@@ -994,7 +994,65 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
         </section>
       </div>
 
-      {/* Ark 3 — bow-tie (hvis registrert) */}
+      {/* Ark 3 — Beregningsgrunnlag */}
+      <div style={pageStyle} className="ros-page">
+        <section id="kap-4">
+          <h2 style={h2}>4. Beregningsgrunnlag</h2>
+          {(() => {
+            const hms = content.hendelser
+              .map((h, i) => ({ h, i }))
+              .filter(({ h }) => h.beregninger && h.beregninger.length > 0);
+            if (hms.length === 0) {
+              return (
+                <p style={{ ...pStyle, fontStyle: "italic", color: "#64748b" }}>
+                  Ingen beregninger er tilknyttet hendelsene i denne analysen.
+                </p>
+              );
+            }
+            return hms.map(({ h, i }) => (
+              <div key={h.id} style={{ marginBottom: 18 }}>
+                <h3 style={h3}>
+                  4.{i + 1} – Beregninger for hendelse {i + 1}: {h.tittel || h.hendelse || "—"}
+                </h3>
+                {h.beregninger!.map((b, bi) => {
+                  const id = `B${i + 1}.${bi + 1}`;
+                  const Icon = BEREGNING_IKONER[b.type];
+                  return (
+                    <div key={b.id} style={{ border: "1px solid #e2e8f0", borderRadius: 6, padding: 10, marginBottom: 10, background: "#fff" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                        <span style={{ background: "#1e3a5f", color: "#fff", borderRadius: 3, padding: "2px 6px", fontSize: 10, fontWeight: 700 }}>{id}</span>
+                        {Icon && <Icon size={14} style={{ color: "#1e3a5f" }} />}
+                        <span style={{ fontWeight: 700, color: "#1e3a5f", fontSize: 11 }}>{b.label}</span>
+                      </div>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 10, border: "1px solid #e2e8f0" }}>
+                        <thead>
+                          <tr>
+                            <th style={thStyle}>Parameter</th>
+                            <th style={thStyle}>Verdi</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Object.entries(b.results).map(([k, v]) => (
+                            <tr key={k}>
+                              <td style={tdStyle}>{k.replace(/_/g, " ")}</td>
+                              <td style={tdStyle}><strong>{String(v)}</strong></td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {b.kommentar && (
+                        <p style={{ fontStyle: "italic", color: "#475569", fontSize: 10, marginTop: 6, marginBottom: 0 }}>{b.kommentar}</p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ));
+          })()}
+        </section>
+      </div>
+
+      {/* Ark 4 — bow-tie (hvis registrert) */}
       {content.bowTies && content.bowTies.length > 0 && (
         <div style={landscapePageStyle} className="ros-page-landscape">
           <section id="kap-4">
