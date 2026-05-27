@@ -902,9 +902,8 @@ export const exportRosToWord = async (options: ExportOptions) => {
     });
   }
 
-  // Oppsummering & revisjon
-  const oppsummeringNr = harBowTie ? "5" : "4";
-  const revisjonNr = harBowTie ? "6" : "5";
+  // Oppsummering & revisjon (kapittelnummer beregnet over)
+
 
   const oppsummering: Paragraph[] = [
     buildSectionHeading(theme, `${oppsummeringNr}. Oppsummering`),
