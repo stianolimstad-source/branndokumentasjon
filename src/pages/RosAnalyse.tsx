@@ -661,18 +661,52 @@ export default function RosAnalyse() {
 
   const importHendelser = (data: ExtractedRosData, mode: "append" | "replace") => {
     const nye: RosHendelse[] = data.hendelser.map((h) => migrerHendelse({ ...h, id: makeId(), beregninger: (h as any).beregninger || [] } as RosHendelse));
-    setContent((c) => ({
-      ...c,
-      metadata: {
-        ...c.metadata,
-        prosjektnavn: c.metadata.prosjektnavn || data.metadata.prosjektnavn || "",
-        adresse: c.metadata.adresse || data.metadata.adresse || "",
-        oppdragsgiver: c.metadata.oppdragsgiver || data.metadata.oppdragsgiver || "",
-      },
-      hendelser: mode === "replace" ? nye : [...c.hendelser, ...nye],
-    }));
+    setContent((c) => {
+      const next: RosContent = {
+        ...c,
+        metadata: {
+          ...c.metadata,
+          prosjektnavn: c.metadata.prosjektnavn || data.metadata.prosjektnavn || "",
+          adresse: c.metadata.adresse || data.metadata.adresse || "",
+          oppdragsgiver: c.metadata.oppdragsgiver || data.metadata.oppdragsgiver || "",
+        },
+        hendelser: mode === "replace" ? nye : [...c.hendelser, ...nye],
+      };
+      return migrerBeregninger(next);
+    });
     setOpenHendelser([]);
   };
+
+  // ----- Beregninger (kapittel 4) -----
+  const addBeregning = (calc: AttachedCalculation) => {
+    setContent((c) => ({
+      ...c,
+      beregninger: [...(c.beregninger || []), { ...calc, hendelseIds: [] }],
+    }));
+  };
+  const updateBeregning = (id: string, patch: Partial<RosBeregning>) => {
+    setContent((c) => ({
+      ...c,
+      beregninger: (c.beregninger || []).map((b) => (b.id === id ? { ...b, ...patch } : b)),
+    }));
+  };
+  const removeBeregning = (id: string) => {
+    setContent((c) => ({
+      ...c,
+      beregninger: (c.beregninger || []).filter((b) => b.id !== id),
+    }));
+  };
+  const toggleBeregningHendelse = (beregningId: string, hendelseId: string) => {
+    setContent((c) => ({
+      ...c,
+      beregninger: (c.beregninger || []).map((b) => {
+        if (b.id !== beregningId) return b;
+        const har = b.hendelseIds.includes(hendelseId);
+        return { ...b, hendelseIds: har ? b.hendelseIds.filter((x) => x !== hendelseId) : [...b.hendelseIds, hendelseId] };
+      }),
+    }));
+  };
+  const [openCalcType, setOpenCalcType] = useState<CalculatorType | null>(null);
 
   // ----- Revisjon -----
   const addRevisjon = () => {
