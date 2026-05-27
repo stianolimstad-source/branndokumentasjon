@@ -585,6 +585,13 @@ export const exportRosToWord = async (options: ExportOptions) => {
     return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [subHeader, ...subRows] });
   };
 
+  // Dynamisk kapittelnummerering (beregningsgrunnlag alltid 4, bow-tie valgfritt)
+  const harBowTie = !!(content.bowTies && content.bowTies.length > 0);
+  const beregningNr = "4";
+  const bowTieNr = "5";
+  const oppsummeringNr = harBowTie ? "6" : "5";
+  const revisjonNr = harBowTie ? "7" : "6";
+
   const hendelseRows: TableRow[] = [hendelseHeader];
   content.hendelser.forEach((h, i) => {
     const r = h.sannsynlighet * h.konsekvens;
