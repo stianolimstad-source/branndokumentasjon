@@ -21,7 +21,7 @@ import { KONSEKVENS_FORSLAG, groupKonsekvenserByKategori } from "@/lib/ros-konse
 import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search, Sparkles, Check, GitBranch, X, Eye, Calculator } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import RosPreview, { type RosContent, type RosHendelse, type RosBowTie, type KonsekvensVurdering, migrerHendelse } from "@/components/ros/RosPreview";
+import RosPreview, { type RosContent, type RosHendelse, type RosBowTie, type KonsekvensVurdering, type RosBeregning, migrerHendelse, migrerBeregninger, byggBeregningIder } from "@/components/ros/RosPreview";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { DIMENSJON_NAVN, ALLE_DIMENSJONER, type KonsekvensDimensjon } from "@/lib/ros-risk-criteria";
 import BeregningSection from "@/components/fraviksdokumentasjon/BeregningSection";
