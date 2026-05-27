@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Trash2, Flame, MoveVertical, Zap, Calculator, Users, Box, Shield } from "lucide-react";
+import { Trash2, Flame, MoveVertical, Zap, Calculator, Users, Box, Shield, Bolt } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import CalculatorDialog, { CalculatorType } from "./CalculatorDialog";
 
 export interface AttachedCalculation {
   id: string;
-  type: "straling" | "flammehoyde" | "brannenergi" | "persontall" | "omhyllingsflate" | "brannmotstand";
+  type: "straling" | "flammehoyde" | "brannenergi" | "persontall" | "omhyllingsflate" | "brannmotstand" | "trafoeksplosjon";
   label: string;
   inputs: Record<string, string | number>;
   results: Record<string, string | number>;
@@ -21,6 +21,7 @@ const calculatorTypes = [
   { type: "persontall" as const, label: "Persontallsberegning", icon: Users, desc: "Basert på areal og brukskategori" },
   { type: "omhyllingsflate" as const, label: "Omhyllingsflate", icon: Box, desc: "Gulv, tak og vegger" },
   { type: "brannmotstand" as const, label: "Brannmotstand", icon: Shield, desc: "Veggoppbygning og EI-klasse" },
+  { type: "trafoeksplosjon" as const, label: "Trafoeksplosjon", icon: Bolt, desc: "Oljefylte krafttrafoer – risiko og barrierer" },
 ];
 
 interface Props {
