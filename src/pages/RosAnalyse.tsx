@@ -337,16 +337,18 @@ export default function RosAnalyse() {
         id, tittel: "",
         sarbarhet: "", hendelse: "", arsak: "",
         beskrivelseSannsynlighetFor: "", beskrivelseRisikoFor: "",
-        sannsynlighet: 1, konsekvens: 1,
+        sannsynlighet: 1,
         tiltak: "",
         beskrivelseEtter: "",
-        sannsynlighetEtter: 1, konsekvensEtter: 1,
+        sannsynlighetEtter: 1,
         restrisiko: "",
         beregninger: [],
-      }],
+        konsekvensvurderinger: [],
+      } as RosHendelse],
     }));
     setOpenHendelser((o) => [...o, id]);
   };
+
   const removeHendelse = (id: string) => {
     setContent((c) => ({
       ...c,
