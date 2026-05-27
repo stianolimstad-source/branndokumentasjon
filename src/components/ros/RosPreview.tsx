@@ -3,9 +3,9 @@ import { risikoFarge } from "./RosMatriks";
 import rosNivaaIllustrasjon from "@/assets/ros-detaljeringsnivaa.jpg";
 import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell } from "@/lib/ros-risk-criteria";
 import type { AttachedCalculation } from "@/components/fraviksdokumentasjon/BeregningSection";
-import { Flame, MoveVertical, Zap, Users, Box, Shield, Bolt, Calculator } from "lucide-react";
+import { Flame, MoveVertical, Zap, Users, Box, Shield, Bolt, type LucideIcon } from "lucide-react";
 
-const BEREGNING_IKONER: Record<AttachedCalculation["type"], React.ComponentType<{ size?: number; style?: React.CSSProperties }>> = {
+const BEREGNING_IKONER: Record<AttachedCalculation["type"], LucideIcon> = {
   straling: Flame,
   flammehoyde: MoveVertical,
   brannenergi: Zap,
