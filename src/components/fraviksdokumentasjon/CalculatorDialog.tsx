@@ -11,8 +11,9 @@ import BrannenergCalculator from "./calculators/BrannenergCalculator";
 import PersontallCalculator from "./calculators/PersontallCalculator";
 import OmhyllingsflateCalculator from "./calculators/OmhyllingsflateCalculator";
 import BrannmotstandCalculator from "./calculators/BrannmotstandCalculator";
+import TrafoEksplosjonCalculator from "./calculators/TrafoEksplosjonCalculator";
 
-export type CalculatorType = "straling" | "flammehoyde" | "brannenergi" | "persontall" | "omhyllingsflate" | "brannmotstand";
+export type CalculatorType = "straling" | "flammehoyde" | "brannenergi" | "persontall" | "omhyllingsflate" | "brannmotstand" | "trafoeksplosjon";
 
 interface Props {
   open: boolean;
@@ -28,6 +29,7 @@ const calculatorComponents: Record<CalculatorType, React.FC<{ onResult: (calc: A
   persontall: PersontallCalculator,
   omhyllingsflate: OmhyllingsflateCalculator,
   brannmotstand: BrannmotstandCalculator,
+  trafoeksplosjon: TrafoEksplosjonCalculator,
 };
 
 const titles: Record<CalculatorType, string> = {
@@ -37,6 +39,7 @@ const titles: Record<CalculatorType, string> = {
   persontall: "Persontallsberegning",
   omhyllingsflate: "Omhyllingsflate",
   brannmotstand: "Brannmotstand",
+  trafoeksplosjon: "Trafoeksplosjonsvurdering",
 };
 
 const CalculatorDialog = ({ open, onOpenChange, type, onImport }: Props) => {
