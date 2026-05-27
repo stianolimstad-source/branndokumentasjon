@@ -1,74 +1,105 @@
 ## Mål
 
-Fjern påtvunget `forsyningssikkerhet`-rad. Brukeren skal selv legge til dimensjoner per hendelse (inkl. forsyningssikkerhet). Eksisterende data migreres trygt; nye hendelser starter med tom liste.
+Flytt beregningsregistrering ut av hver hendelses accordion og inn i et eget toppnivå-kapittel «4. Beregninger» i `RosAnalyse.tsx`. Hendelser markeres kun som «trenger beregning» med kort merknad. Beregninger lagres på `content.beregninger` med `hendelseIds`-kobling, slik at én beregning kan dekke flere hendelser.
 
 ---
 
-## Endring 1 — `src/components/ros/RosPreview.tsx`
+## Datamodell — `src/components/ros/RosPreview.tsx`
 
-**`migrerHendelse` (linje 63–78):**
-- Hvis `konsekvensvurderinger` har innhold → returner som er (uten å tvinge forsyningssikkerhet inn).
-- Hvis tom og `h.konsekvens` er satt (legacy) → returner med én forsyningssikkerhet-rad bygget fra `h.konsekvens` / `h.konsekvensEtter` / `h.beskrivelseRisikoFor` (samme som dagens fallback).
-- Hvis tom og ingen `h.konsekvens` → returner med `konsekvensvurderinger: []`.
+Nytt interface og felter:
 
-**Hendelsestabellen (linje 883–908):**
-- Finn `forsyning = hm.konsekvensvurderinger?.find(k => k.dimensjon === "forsyningssikkerhet")` (kan være `undefined`).
-- Hvis ikke til stede: vis tomme/`—`-celler for K, R, K-etter, R-etter; bruk nøytral cellestil (ikke `riskCellStyle`). Begrunnelsecellen viser `h.beskrivelseRisikoFor || ""`.
+```ts
+export interface RosBeregning extends AttachedCalculation {
+  hendelseIds: string[];
+}
 
-**Sub-tabell konsekvensvurderinger (linje 909–958):**
-- Hvis `hm.konsekvensvurderinger.length === 0` → vis i stedet en `<tr>` med kursiv tekst «Ingen konsekvensdimensjoner vurdert».
-- Ellers uendret.
+// RosContent:
+beregninger?: RosBeregning[];
 
----
+// RosHendelse:
+kreverBeregning?: boolean;
+beregningTekst?: string;
+/** @deprecated bruk content.beregninger med hendelseIds – beholdes for migrasjon */
+beregninger?: AttachedCalculation[];
+```
 
-## Endring 2 — `src/pages/RosAnalyse.tsx`
-
-**`oppdaterKonsekvensvurdering` (linje 299–313):**
-- Behold sync med `h.konsekvens` / `h.konsekvensEtter` kun når dimensjonen er `forsyningssikkerhet` OG raden faktisk finnes i `konsekvensvurderinger`. (Dagens kode er allerede ok – kjører kun fra map-callbacken på eksisterende rad.)
-
-**`leggTilDimensjon` (linje 314–317):**
-- Hvis ny rad er `forsyningssikkerhet`: sett også `h.konsekvens = 1`, `h.konsekvensEtter = undefined` (eller `1`) for konsistens med matrise/tabell.
-
-**`fjernDimensjon` (linje 318–322):**
-- Fjern guard `if (dimensjon === "forsyningssikkerhet") return;`.
-- Hvis dimensjonen som fjernes er `forsyningssikkerhet`: sett også `konsekvens: 0`/`undefined` og `konsekvensEtter: undefined` i samme `updateHendelse`-kall.
-
-**Sletteknapp-UI (linje 1126–1131):**
-- Fjern `{kv.dimensjon !== "forsyningssikkerhet" && (...)}` – vis Trash-knappen for alle dimensjoner.
-
-**«Legg til dimensjon»-dropdown (linje 1189–1209):**
-- Ingen endring nødvendig: bruker allerede `ALLE_DIMENSJONER` filtrert mot `brukte`. Forsyningssikkerhet dukker automatisk opp når den ikke er lagt til.
-
-**`addHendelse` (linje 323–340):**
-- Endre `sannsynlighet: 1, konsekvens: 1` → fjern `konsekvens` (eller sett `konsekvens: 0`), behold `sannsynlighet: 1`.
-- Sett `konsekvensvurderinger: []`.
-- Tilsvarende: ikke initialiser `konsekvensEtter`.
+Ny migrasjonsfunksjon `migrerBeregninger(content)`:
+- Itererer `content.hendelser`. Hvis `h.beregninger?.length > 0`: flytt hver til `content.beregninger` (dedup på `id`, push `h.id` til `hendelseIds`), sett `h.kreverBeregning = true`, fjern `h.beregninger`.
+- Returnerer nytt `content` med oppdatert `hendelser` og `beregninger`.
 
 ---
 
-## Endring 3 — `src/components/ros/RosMatriks.tsx`
+## Nummerering
 
-- Oppdater info-tekst til: «Viser konsekvensdimensjonen forsyningssikkerhet for hendelser som har denne dimensjonen vurdert. Hendelser uten forsyningssikkerhet-vurdering vises ikke i matrisen.»
-- Komponenten plotter ikke individuelle hendelser i dag (kun `highlight`-prop). Ingen filtreringsendring i selve komponenten er nødvendig; dokumenter i kommentar at evt. fremtidig per-hendelse-plotting må filtrere på `kv.dimensjon === "forsyningssikkerhet"`.
+`B<hendelsesnr>.<løpenr>` der hendelsesnr er 1-basert indeks på første hendelse i `hendelseIds`. Løpenr telles innenfor samme hendelse (rekkefølge = `content.beregninger`-rekkefølge filtrert på hendelseId).
+
+For beregninger uten `hendelseIds` (ikke tilknyttet): bruk badge `B–.N` (N = løpenr i ikke-tilknyttet-listen).
+
+Bygges som en helper `byggBeregningIder(content): Map<beregningId, string>` som returnerer ID-streng per beregning. Brukes i preview, Word og editor for konsistens.
 
 ---
 
-## Endring 4 — `src/lib/ros-word-export.ts`
+## Editor — `src/pages/RosAnalyse.tsx`
 
-**Hendelses-rad-rendering (rundt linje 643–684):**
-- Etter `const hm = migrerHendelse(h)`, finn `forsyning = hm.konsekvensvurderinger?.find(...)`. Hvis ikke til stede, render K/R/K-etter/R-etter-cellene som «—» uten risikoskygge (samme pattern som i preview).
+**Last/import:**
+- Kjør `migrerBeregninger(content)` etter `migrerHendelse` ved lasting og i `UploadRosDialog`-mottak (linje ~655 `data.hendelser.map`).
+- I `addHendelse`: fjern `beregninger: []`.
 
-**Sub-tabell (linje 665–684):**
-- Endre betingelsen: render alltid en sub-blokk hvis det er noe verdt å vise. Hvis `kvs.length === 0` → render i stedet et avsnitt med kursiv tekst «Ingen konsekvensdimensjoner vurdert» (i den eksisterende innrykkede `F7F9FC`-cellen) i stedet for `buildKonsekvensSubTabell`.
-- Sub-tabell forblir uendret når `kvs.length > 0`.
+**Hendelse-accordion (linje 1064–1235):**
+- Fjern beregninger-badgen (linje 1064–1067) og hele «Tilknyttede beregninger»-blokken med `<BeregningSection>` (~linje 1220–1235).
+- Erstatt med kompakt blokk:
+  - `<Checkbox>` «Krever beregning» bundet til `h.kreverBeregning`.
+  - Når på: `<Textarea rows={2}>` for `h.beregningTekst` med placeholder «F.eks. strålingsberegning mot kontrollbygg, eller trafoeksplosjonsvurdering».
+  - Hvis det finnes beregninger i `content.beregninger` med `h.id` i `hendelseIds`: vis liten linje «Tilknyttede beregninger: B<X>.<Y>, …» + lenke «Gå til beregningskapittelet» som scroller til `#kap-beregninger`.
+
+**Nytt toppnivåkapittel «4. Beregninger»** (mellom hendelseslisten og bow-tie-seksjonen, med id `kap-beregninger`):
+
+- Innledende hjelpetekst.
+- Hvis `content.beregninger` er tom: «Ingen beregninger registrert. Klikk på en av knappene under for å legge til en beregning.»
+- Ellers: liste over kort, hvert med:
+  - ID-badge fra `byggBeregningIder`
+  - Ikon + label fra `calculatorTypes` (importert fra `BeregningSection` — eksporter denne).
+  - Kompakt visning av `b.results` (samme styling som dagens `BeregningSection`).
+  - Multi-select for tilknyttede hendelser. Bruk `DropdownMenu` med `DropdownMenuCheckboxItem` for hver `content.hendelser` (vis «{i+1}. {h.tittel || h.hendelse}»). Oppdaterer `b.hendelseIds`.
+  - `<Textarea>` for `b.kommentar`.
+  - Slette-knapp (med `AlertDialog`-bekreftelse, som dagens).
+- Knappgruppe nederst: gjenbruk `calculatorTypes` og `CalculatorDialog` direkte. På `onImport` legges ny `RosBeregning` til `content.beregninger` med `hendelseIds: []`.
+
+Skriv inn nye state-helpers `updateBeregning(id, patch)`, `removeBeregning(id)`, `addBeregning(calc)` i komponenten (parallelt med `updateHendelse`).
+
+**Refaktor av `BeregningSection`-import:**
+- `calculatorTypes` flyttes til navngitt eksport fra `BeregningSection.tsx` (uendret innhold), eller dupliseres lokalt i RosAnalyse hvis enklere. Foretrekker eksport for å unngå drift.
+
+---
+
+## Output — `src/components/ros/RosPreview.tsx`
+
+**Hendelsesregister-rad (linje 968–977):**
+- Bytt fra `h.beregninger` til `content.beregninger.filter(b => b.hendelseIds.includes(h.id))`.
+- Hvis funn: vis kompakt referanse «Beregninger: B<X>.<Y>, …» (bruk `byggBeregningIder`).
+- Hvis tom OG `h.kreverBeregning`: vis advarsel-tr «Krever beregning – ikke registrert ennå» med gul bakgrunn (`#fff3cd` eller `bg-amber-100`).
+
+**Kap. «4. Beregningsgrunnlag» (linje 1000+):**
+- Iterer `content.beregninger` gruppert per første tilknyttet hendelse (eller egen «Ikke tilknyttet hendelse»-undertittel for `hendelseIds.length === 0`).
+- Bruk samme ID-format.
+
+---
+
+## Output — `src/lib/ros-word-export.ts`
+
+Speilbilde av endringene over:
+- Linje 653–675 (kompakt referanse i hendelsesrad): les `content.beregninger.filter(b => b.hendelseIds.includes(h.id))`. Hvis ingen og `h.kreverBeregning`: render advarsel-rad med gul shading.
+- Linje 705–760 (kap. 4): iterer `content.beregninger`, grupper per første tilknyttede hendelse, samme ID-format. Egen «Ikke tilknyttet hendelse»-blokk for ikke-tilknyttede.
+- Importer `migrerBeregninger` ikke nødvendig – Word-eksporten antar at content allerede er migrert (skjer i editor før lagring/preview).
 
 ---
 
 ## Filer som endres
 
-- `src/components/ros/RosPreview.tsx`
-- `src/pages/RosAnalyse.tsx`
-- `src/components/ros/RosMatriks.tsx`
-- `src/lib/ros-word-export.ts`
+- `src/components/ros/RosPreview.tsx` — typer, `migrerBeregninger`, `byggBeregningIder`, output-rendering.
+- `src/components/fraviksdokumentasjon/BeregningSection.tsx` — eksport av `calculatorTypes`.
+- `src/pages/RosAnalyse.tsx` — fjern BeregningSection inni accordion, ny enkel «Krever beregning»-blokk, nytt kapittel-UI.
+- `src/components/ros/UploadRosDialog.tsx` — kjør `migrerBeregninger` etter parsing.
+- `src/lib/ros-word-export.ts` — output-rendering basert på `content.beregninger`.
 
-Ingen datamigrering, ingen DB-endringer. Eksisterende `konsekvensvurderinger`-array i Supabase berøres ikke.
+Eksisterende lagrede ROS-data berøres ikke i DB; migrering kjøres on-the-fly ved lasting. Selve `BeregningSection`-komponenten beholdes (brukes fortsatt av fraviksdokumentasjon).
