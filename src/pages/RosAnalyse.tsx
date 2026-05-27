@@ -1103,6 +1103,112 @@ export default function RosAnalyse() {
                             <Area label="Tiltak" value={h.tiltak} onChange={(v) => updateHendelse(h.id, { tiltak: v })} rows={3} />
                           </div>
 
+                          <div className="space-y-2 border-t pt-3">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Konsekvensvurderinger per dimensjon</p>
+                            <div className="space-y-2">
+                              {(hm.konsekvensvurderinger || []).map((kv) => {
+                                const sFor = h.sannsynlighet;
+                                const sEtt = sE;
+                                const risikoFor = sFor * (kv.score || 1);
+                                const fargeKv = risikoFarge(sFor, kv.score || 1);
+                                const clsKv = fargeKv === "rod" ? "bg-red-500/85 text-white"
+                                  : fargeKv === "gul" ? "bg-amber-400/90 text-foreground"
+                                  : "bg-emerald-500/80 text-white";
+                                const risikoEtt = kv.scoreEtter ? sEtt * kv.scoreEtter : null;
+                                const fargeKvE = kv.scoreEtter ? risikoFarge(sEtt, kv.scoreEtter) : null;
+                                const clsKvE = fargeKvE === "rod" ? "bg-red-500/85 text-white"
+                                  : fargeKvE === "gul" ? "bg-amber-400/90 text-foreground"
+                                  : fargeKvE ? "bg-emerald-500/80 text-white" : "";
+                                return (
+                                  <div key={kv.dimensjon} className="border rounded-md p-2 space-y-2">
+                                    <div className="flex items-center justify-between gap-2">
+                                      <Badge variant="secondary" className="text-xs">{DIMENSJON_NAVN[kv.dimensjon]}</Badge>
+                                      {kv.dimensjon !== "forsyningssikkerhet" && (
+                                        <Button variant="ghost" size="icon" className="h-6 w-6"
+                                          onClick={() => fjernDimensjon(h, kv.dimensjon)}>
+                                          <Trash2 className="h-3.5 w-3.5" />
+                                        </Button>
+                                      )}
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                      <div>
+                                        <Label className="text-xs">Score (1–5)</Label>
+                                        <div className="flex gap-1">
+                                          <Popover>
+                                            <PopoverTrigger asChild>
+                                              <Button variant="outline" size="icon" className="h-9 w-9 shrink-0" title="Vis kriterier">
+                                                <Search className="h-3.5 w-3.5" />
+                                              </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-96"><RosKriterier dimensjon={kv.dimensjon} /></PopoverContent>
+                                          </Popover>
+                                          <Select value={String(kv.score)}
+                                            onValueChange={(v) => oppdaterKonsekvensvurdering(h, kv.dimensjon, { score: Number(v) as 1|2|3|4|5 })}>
+                                            <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                                            <SelectContent>
+                                              {[1,2,3,4,5].map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
+                                            </SelectContent>
+                                          </Select>
+                                          <div className={`h-9 px-2 rounded-md border flex items-center justify-center text-xs font-semibold shrink-0 ${clsKv}`}>
+                                            {risikoFor}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <Label className="text-xs">Score etter (1–5)</Label>
+                                        <div className="flex gap-1">
+                                          <Select value={kv.scoreEtter ? String(kv.scoreEtter) : ""}
+                                            onValueChange={(v) => oppdaterKonsekvensvurdering(h, kv.dimensjon, { scoreEtter: Number(v) as 1|2|3|4|5 })}>
+                                            <SelectTrigger className="h-9"><SelectValue placeholder="–" /></SelectTrigger>
+                                            <SelectContent>
+                                              {[1,2,3,4,5].map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
+                                            </SelectContent>
+                                          </Select>
+                                          {risikoEtt !== null && (
+                                            <div className={`h-9 px-2 rounded-md border flex items-center justify-center text-xs font-semibold shrink-0 ${clsKvE}`}>
+                                              {risikoEtt}
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <Textarea rows={2} className="text-sm"
+                                      placeholder="Begrunnelse for konsekvensvurderingen..."
+                                      value={kv.begrunnelse || ""}
+                                      onChange={(e) => oppdaterKonsekvensvurdering(h, kv.dimensjon, { begrunnelse: e.target.value })} />
+                                    {kv.scoreEtter !== undefined && (
+                                      <Textarea rows={2} className="text-sm"
+                                        placeholder="Begrunnelse etter tiltak..."
+                                        value={kv.begrunnelseEtter || ""}
+                                        onChange={(e) => oppdaterKonsekvensvurdering(h, kv.dimensjon, { begrunnelseEtter: e.target.value })} />
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            {(() => {
+                              const brukte = new Set((hm.konsekvensvurderinger || []).map((k) => k.dimensjon));
+                              const tilgjengelige = ALLE_DIMENSJONER.filter((d) => !brukte.has(d));
+                              if (tilgjengelige.length === 0) return null;
+                              return (
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" size="sm" className="gap-1">
+                                      <Plus className="h-3.5 w-3.5" /> Legg til dimensjon
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent>
+                                    {tilgjengelige.map((d) => (
+                                      <DropdownMenuItem key={d} onSelect={() => leggTilDimensjon(h, d)}>
+                                        {DIMENSJON_NAVN[d]}
+                                      </DropdownMenuItem>
+                                    ))}
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              );
+                            })()}
+                          </div>
+
                           <Card className="border-2 border-primary/30 bg-primary/5">
                             <CardContent className="pt-4 space-y-2">
                               <div className="flex items-center gap-2">
