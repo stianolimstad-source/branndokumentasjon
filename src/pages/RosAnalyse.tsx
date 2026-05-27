@@ -22,9 +22,11 @@ import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Downl
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import RosPreview, { type RosContent, type RosHendelse, type RosBowTie, type KonsekvensVurdering, type RosBeregning, migrerHendelse, migrerBeregninger, byggBeregningIder } from "@/components/ros/RosPreview";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuCheckboxItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
 import { DIMENSJON_NAVN, ALLE_DIMENSJONER, type KonsekvensDimensjon } from "@/lib/ros-risk-criteria";
-import BeregningSection from "@/components/fraviksdokumentasjon/BeregningSection";
+import { calculatorTypes, type AttachedCalculation } from "@/components/fraviksdokumentasjon/BeregningSection";
+import CalculatorDialog, { type CalculatorType } from "@/components/fraviksdokumentasjon/CalculatorDialog";
 import UploadRosDialog, { type ExtractedRosData } from "@/components/ros/UploadRosDialog";
 import RosMatriks, { risikoFarge } from "@/components/ros/RosMatriks";
 import RosKriterier from "@/components/ros/RosKriterier";
