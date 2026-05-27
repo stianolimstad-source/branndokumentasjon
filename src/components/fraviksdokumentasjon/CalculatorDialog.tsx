@@ -20,9 +20,10 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   type: CalculatorType;
   onImport: (calc: AttachedCalculation) => void;
+  initialInputs?: Record<string, unknown>;
 }
 
-const calculatorComponents: Record<CalculatorType, React.FC<{ onResult: (calc: AttachedCalculation) => void }>> = {
+const calculatorComponents: Record<CalculatorType, React.FC<{ onResult: (calc: AttachedCalculation) => void; initialInputs?: Record<string, unknown> }>> = {
   straling: StralingCalculator,
   flammehoyde: FlammehoydeCalculator,
   brannenergi: BrannenergCalculator,
@@ -42,7 +43,7 @@ const titles: Record<CalculatorType, string> = {
   trafoeksplosjon: "Trafoeksplosjonsvurdering",
 };
 
-const CalculatorDialog = ({ open, onOpenChange, type, onImport }: Props) => {
+const CalculatorDialog = ({ open, onOpenChange, type, onImport, initialInputs }: Props) => {
   const [pendingCalc, setPendingCalc] = useState<AttachedCalculation | null>(null);
   const Calculator = calculatorComponents[type];
 
@@ -56,11 +57,11 @@ const CalculatorDialog = ({ open, onOpenChange, type, onImport }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!v) setPendingCalc(null); onOpenChange(v); }}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[95vw] xl:max-w-6xl max-h-[92vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{titles[type]}</DialogTitle>
         </DialogHeader>
-        <Calculator onResult={setPendingCalc} />
+        <Calculator onResult={setPendingCalc} initialInputs={initialInputs} />
         {pendingCalc && (
           <div className="sticky bottom-0 bg-background border-t pt-3 mt-4 flex items-center justify-between gap-3">
             <p className="text-sm text-muted-foreground truncate">{pendingCalc.label}</p>

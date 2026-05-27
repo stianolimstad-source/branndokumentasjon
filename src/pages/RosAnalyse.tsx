@@ -18,7 +18,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { KONSEKVENS_FORSLAG, groupKonsekvenserByKategori } from "@/lib/ros-konsekvenser";
-import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search, Sparkles, Check, GitBranch, X, Eye, Calculator } from "lucide-react";
+import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search, Sparkles, Check, GitBranch, X, Eye, Calculator, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import RosPreview, { type RosContent, type RosHendelse, type RosBowTie, type KonsekvensVurdering, type RosBeregning, migrerHendelse, migrerBeregninger, byggBeregningIder } from "@/components/ros/RosPreview";
@@ -707,6 +707,21 @@ export default function RosAnalyse() {
     }));
   };
   const [openCalcType, setOpenCalcType] = useState<CalculatorType | null>(null);
+  const [editingBeregning, setEditingBeregning] = useState<RosBeregning | null>(null);
+
+  const handleCalcImport = (calc: AttachedCalculation) => {
+    if (editingBeregning) {
+      updateBeregning(editingBeregning.id, {
+        ...calc,
+        id: editingBeregning.id,
+        hendelseIds: editingBeregning.hendelseIds,
+        kommentar: editingBeregning.kommentar,
+      });
+      setEditingBeregning(null);
+    } else {
+      addBeregning(calc);
+    }
+  };
 
   // ----- Revisjon -----
   const addRevisjon = () => {
@@ -1382,6 +1397,15 @@ export default function RosAnalyse() {
                                   ))}
                                 </div>
                               </div>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 shrink-0"
+                                title="Rediger parametere"
+                                onClick={() => setEditingBeregning(b)}
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Button>
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                   <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0">
@@ -1457,12 +1481,14 @@ export default function RosAnalyse() {
                       ))}
                     </div>
                   </div>
-                  {openCalcType && (
+                  {(openCalcType || editingBeregning) && (
                     <CalculatorDialog
-                      open={!!openCalcType}
-                      onOpenChange={(o) => { if (!o) setOpenCalcType(null); }}
-                      type={openCalcType}
-                      onImport={addBeregning}
+                      key={editingBeregning?.id || openCalcType || "new"}
+                      open={!!(openCalcType || editingBeregning)}
+                      onOpenChange={(o) => { if (!o) { setOpenCalcType(null); setEditingBeregning(null); } }}
+                      type={(editingBeregning?.type as CalculatorType) || (openCalcType as CalculatorType)}
+                      onImport={handleCalcImport}
+                      initialInputs={editingBeregning?.inputs as Record<string, unknown> | undefined}
                     />
                   )}
                 </>

@@ -38,10 +38,16 @@ const defaultInput: TrafoInput = {
 
 interface Props {
   onResult?: (calc: AttachedCalculation) => void;
+  initialInputs?: Record<string, unknown>;
 }
 
-const TrafoEksplosjonCalculator = ({ onResult }: Props) => {
-  const [input, setInput] = useState<TrafoInput>(defaultInput);
+const TrafoEksplosjonCalculator = ({ onResult, initialInputs }: Props) => {
+  const [input, setInput] = useState<TrafoInput>(() => {
+    if (initialInputs && typeof initialInputs === "object") {
+      return { ...defaultInput, ...(initialInputs as Partial<TrafoInput>) } as TrafoInput;
+    }
+    return defaultInput;
+  });
 
   useEffect(() => {
     if (!onResult) return;
