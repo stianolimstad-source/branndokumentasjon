@@ -32,6 +32,7 @@ export interface RosHendelse {
   sannsynlighetEtter?: number;
   konsekvensEtter?: number;
   restrisiko: string;
+  beregninger?: AttachedCalculation[];
 }
 
 export interface RosRevisjon {
