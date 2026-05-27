@@ -1350,10 +1350,130 @@ export default function RosAnalyse() {
             )}
           </section>
 
+          <section className="space-y-3" id="kap-beregninger-editor">
+            <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">4. Beregninger</h2><JumpToPreview previewId="kap-4" /></div>
+            <p className="text-xs text-muted-foreground">
+              Registrer branntekniske beregninger her og knytt dem til én eller flere hendelser. Hver beregning får en lesbar ID (f.eks. B2.1) og vises i sitt eget kapittel i rapporten.
+            </p>
+            {(() => {
+              const ider = byggBeregningIder(content);
+              const beregninger = content.beregninger || [];
+              return (
+                <>
+                  {beregninger.length === 0 ? (
+                    <p className="text-sm text-muted-foreground italic">Ingen beregninger registrert. Klikk på en av knappene under for å legge til en beregning.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {beregninger.map((b) => {
+                        const ct = calculatorTypes.find((c) => c.type === b.type);
+                        const Icon = ct?.icon || Calculator;
+                        return (
+                          <div key={b.id} className="border rounded-md p-3 space-y-2 bg-card">
+                            <div className="flex items-start gap-2">
+                              <Badge variant="default" className="shrink-0">{ider.get(b.id) || "B?"}</Badge>
+                              <Icon className="h-4 w-4 text-primary mt-1 shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-semibold">{b.label}</p>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {Object.entries(b.results).map(([k, v]) => (
+                                    <span key={k} className="text-xs bg-muted px-1.5 py-0.5 rounded border">
+                                      {k.replace(/_/g, " ")}: <strong>{String(v)}</strong>
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0">
+                                    <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Slette beregning?</AlertDialogTitle>
+                                    <AlertDialogDescription>Beregningen fjernes fra rapporten. Dette kan ikke angres.</AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => removeBeregning(b.id)}>Slett</AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                            <div>
+                              <Label className="text-xs">Tilknyttede hendelser</Label>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="outline" size="sm" className="h-8 w-full justify-start text-xs mt-1">
+                                    {b.hendelseIds.length === 0
+                                      ? "Velg hendelser…"
+                                      : `${b.hendelseIds.length} hendelse${b.hendelseIds.length === 1 ? "" : "r"} valgt`}
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="max-h-64 overflow-y-auto w-72">
+                                  {content.hendelser.length === 0 ? (
+                                    <DropdownMenuItem disabled>Ingen hendelser registrert</DropdownMenuItem>
+                                  ) : content.hendelser.map((h, i) => (
+                                    <DropdownMenuCheckboxItem
+                                      key={h.id}
+                                      checked={b.hendelseIds.includes(h.id)}
+                                      onCheckedChange={() => toggleBeregningHendelse(b.id, h.id)}
+                                      onSelect={(e) => e.preventDefault()}
+                                    >
+                                      {i + 1}. {h.tittel || h.hendelse || h.sarbarhet || "(uten tittel)"}
+                                    </DropdownMenuCheckboxItem>
+                                  ))}
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                            <Textarea
+                              rows={2}
+                              className="text-xs"
+                              placeholder="Kommentar til beregningen…"
+                              value={b.kommentar || ""}
+                              onChange={(e) => updateBeregning(b.id, { kommentar: e.target.value })}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                  <div className="space-y-1.5">
+                    <p className="text-xs text-muted-foreground">Åpne et beregningsverktøy og importer resultatet:</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+                      {calculatorTypes.map((ct) => (
+                        <button
+                          key={ct.type}
+                          type="button"
+                          onClick={() => setOpenCalcType(ct.type)}
+                          className="flex items-center gap-2 p-2.5 rounded-lg border hover:border-primary/50 hover:bg-accent transition-colors text-left"
+                        >
+                          <ct.icon className="h-4 w-4 text-primary shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-medium">{ct.label}</p>
+                            <p className="text-xs text-muted-foreground truncate">{ct.desc}</p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {openCalcType && (
+                    <CalculatorDialog
+                      open={!!openCalcType}
+                      onOpenChange={(o) => { if (!o) setOpenCalcType(null); }}
+                      type={openCalcType}
+                      onImport={addBeregning}
+                    />
+                  )}
+                </>
+              );
+            })()}
+          </section>
+
           <section className="space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
-                <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">4. Bow-tie analyse</h2><JumpToPreview previewId="kap-4" /></div>
+                <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">5. Bow-tie analyse</h2><JumpToPreview previewId="kap-5" /></div>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Definer en uønsket topphendelse og knytt registrerte hendelser som årsaker. Gir oversikt over felles tiltak på tvers.
                 </p>
