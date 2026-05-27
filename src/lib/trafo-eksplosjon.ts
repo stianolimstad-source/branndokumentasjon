@@ -92,6 +92,12 @@ export interface Resultat {
   containment_ok: boolean;
   containment_paakrevd_m2: number;
   hydrogen_advarsel: boolean;
+  compliance: {
+    krav: { navn: string; standard: string; oppfylt: boolean; kommentar: string }[];
+    oppfylt_antall: number;
+    totalt_antall: number;
+    prosent: number;
+  };
   anbefalinger: Anbefaling[];
 }
 
@@ -290,6 +296,63 @@ export function beregn(input: TrafoInput): Resultat {
 
   let trykkTekst = `Estimert topptrykk ${peak_kPa.toFixed(0)} kPa. Strukturskade-sannsynlighet personell: ${p_pers.toFixed(0)} %, maskinhall: ${p_mh.toFixed(0)} %.`;
 
+  // Standardoppfyllelse — 7 sjekkpunkter
+  const brannmurKrav = innendors ? 120 : 60;
+  const complianceKrav = [
+    {
+      navn: "Min. avstand 9,1 m",
+      standard: "IEEE 979",
+      oppfylt: minAvstand >= 9.1,
+      kommentar: `Minste avstand til personell/maskinhall: ${minAvstand.toFixed(1)} m.`,
+    },
+    {
+      navn: `Brannmur EI ≥ ${brannmurKrav}`,
+      standard: "NFPA 850 / NEK 440",
+      oppfylt: b.brannmur_EI >= brannmurKrav,
+      kommentar: `Valgt: EI ${b.brannmur_EI}. Krav for ${input.plassering}: EI ${brannmurKrav}.`,
+    },
+    {
+      navn: "Oljegruve dimensjonert",
+      standard: "NFPA 850",
+      oppfylt: containment_ok,
+      kommentar: `Påkrevd ${containment_paakrevd_m2.toFixed(0)} m², faktisk ${input.basseng_areal_m2} m²${b.oljegruve ? "" : " (oljegruve mangler)"}.`,
+    },
+    {
+      navn: "Trykkavlastning",
+      standard: "CIGRE TB 537",
+      oppfylt: b.bristeskive,
+      kommentar: b.bristeskive ? "Bristeskive installert." : "Mangler bristeskive / pressure relief valve.",
+    },
+    {
+      navn: "Indre vern (Bucholtz + 87T)",
+      standard: "Standard praksis",
+      oppfylt: b.bucholtz && b.differensialvern,
+      kommentar: `Bucholtz: ${b.bucholtz ? "ja" : "nei"}, differensialvern (87T): ${b.differensialvern ? "ja" : "nei"}.`,
+    },
+    {
+      navn: "Slokkesystem (deluge/vannspray)",
+      standard: "NFPA 850 anbefalt",
+      oppfylt: b.deluge_vannspray,
+      kommentar: b.deluge_vannspray ? "Vannbasert slokking installert." : "Mangler deluge/vannspray.",
+    },
+    {
+      navn: "Romventilasjon",
+      standard: "CIGRE TB 537",
+      oppfylt: b.rom_ventilasjon || !innendors,
+      kommentar: innendors
+        ? (b.rom_ventilasjon ? "Romventilasjon installert." : "Mangler hydrogenavlastende ventilasjon.")
+        : "Ikke relevant ved utendørs plassering.",
+    },
+  ];
+  const compliance_oppfylt = complianceKrav.filter((k) => k.oppfylt).length;
+  const compliance = {
+    krav: complianceKrav,
+    oppfylt_antall: compliance_oppfylt,
+    totalt_antall: 7,
+    prosent: (compliance_oppfylt / 7) * 100,
+  };
+
+
   return {
     gass_L,
     tank: { status: tankStatus, tekst: tankTekst },
@@ -321,6 +384,7 @@ export function beregn(input: TrafoInput): Resultat {
     containment_ok,
     containment_paakrevd_m2,
     hydrogen_advarsel,
+    compliance,
     anbefalinger: a,
   };
 }
