@@ -690,6 +690,46 @@ export const exportRosToWord = async (options: ExportOptions) => {
       : new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: hendelseRows }),
   ];
 
+  // Kap. 4 Beregningsgrunnlag
+  const hendelserMedBeregninger = content.hendelser
+    .map((h, i) => ({ h, i }))
+    .filter(({ h }) => h.beregninger && h.beregninger.length > 0);
+
+  const beregningsgrunnlag: (Paragraph | Table)[] = [
+    buildSectionHeading(theme, `${beregningNr}. Beregningsgrunnlag`),
+  ];
+  if (hendelserMedBeregninger.length === 0) {
+    beregningsgrunnlag.push(
+      new Paragraph({
+        children: [text("Ingen beregninger er tilknyttet hendelsene i denne analysen.", { italics: true })],
+      }),
+    );
+  } else {
+    for (const { h, i } of hendelserMedBeregninger) {
+      beregningsgrunnlag.push(
+        new Paragraph({
+          heading: HeadingLevel.HEADING_3,
+          children: [text(
+            `${beregningNr}.${i + 1} – Beregninger for hendelse ${i + 1}: ${h.tittel || h.hendelse || "—"}`,
+            { bold: true, size: 22 },
+          )],
+        }),
+      );
+      h.beregninger!.forEach((b, bi) => {
+        const id = `B${i + 1}.${bi + 1}`;
+        const typeLabel = BEREGNING_LABELS[b.type] ?? String(b.type);
+        beregningsgrunnlag.push(
+          new Paragraph({
+            heading: HeadingLevel.HEADING_4,
+            children: [text(`${id} – ${typeLabel}: ${b.label ?? ""}`, { bold: true, size: 18 })],
+          }),
+        );
+        beregningsgrunnlag.push(...buildBeregningTabell(b));
+      });
+    }
+  }
+
+
   // Bow-tie (kun hvis registrert)
   const bowTieBlocks: (Paragraph | Table)[] = [];
   if (harBowTie) {
