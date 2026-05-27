@@ -1,210 +1,74 @@
 ## Mål
 
-Flytt rendringen av beregnings-detaljer ut av hendelsesregisteret og inn i et eget «Beregningsgrunnlag»-kapittel, både i live-preview (`RosPreview.tsx`) og Word-eksport (`ros-word-export.ts`). Hendelsesregisteret skal kun vise kompakte ID-referanser (B&lt;hendelsesnr&gt;.&lt;løpenr&gt;). Selve redigerings-UI i `RosAnalyse.tsx` rører vi ikke.
+Fjern påtvunget `forsyningssikkerhet`-rad. Brukeren skal selv legge til dimensjoner per hendelse (inkl. forsyningssikkerhet). Eksisterende data migreres trygt; nye hendelser starter med tom liste.
 
 ---
 
-## Nummereringsskjema
+## Endring 1 — `src/components/ros/RosPreview.tsx`
 
-Genereres dynamisk under rendering, ikke lagret i datamodellen:
-- Hendelse 4 med tre beregninger → `B4.1`, `B4.2`, `B4.3`
-- Hendelse 7 med én beregning → `B7.1`
+**`migrerHendelse` (linje 63–78):**
+- Hvis `konsekvensvurderinger` har innhold → returner som er (uten å tvinge forsyningssikkerhet inn).
+- Hvis tom og `h.konsekvens` er satt (legacy) → returner med én forsyningssikkerhet-rad bygget fra `h.konsekvens` / `h.konsekvensEtter` / `h.beskrivelseRisikoFor` (samme som dagens fallback).
+- Hvis tom og ingen `h.konsekvens` → returner med `konsekvensvurderinger: []`.
 
-Rekkefølge = `content.hendelser`-rekkefølge × `h.beregninger`-rekkefølge.
+**Hendelsestabellen (linje 883–908):**
+- Finn `forsyning = hm.konsekvensvurderinger?.find(k => k.dimensjon === "forsyningssikkerhet")` (kan være `undefined`).
+- Hvis ikke til stede: vis tomme/`—`-celler for K, R, K-etter, R-etter; bruk nøytral cellestil (ikke `riskCellStyle`). Begrunnelsecellen viser `h.beskrivelseRisikoFor || ""`.
 
----
-
-## Endring 1 — `src/lib/ros-word-export.ts`
-
-### Dynamiske kapittelnummer
-
-I dag:
-```ts
-const oppsummeringNr = harBowTie ? "5" : "4";
-const revisjonNr     = harBowTie ? "6" : "5";
-```
-
-Endres til (beregningskapittelet er alltid med):
-```ts
-const beregningNr    = "4";
-const bowTieNr       = "5"; // brukes kun hvis harBowTie
-const oppsummeringNr = harBowTie ? "6" : "5";
-const revisjonNr     = harBowTie ? "7" : "6";
-```
-
-Alle `"4. Bow-tie analyse"`-strenger og `4.${idx + 1}`-prefikser i bow-tie-blokken (linje 689, 701) endres til `${bowTieNr}.` / `${bowTieNr}.${idx + 1}`.
-
-### Erstatt nåværende beregnings-rad i hendelsesregisteret
-
-Linje 643–655 (blokken `if (h.beregninger && h.beregninger.length > 0) { hendelseRows.push(...buildBeregningerBlock...) }`) fjernes.
-
-Erstattes av en kompakt ID-referanselinje, plassert rett under hendelsesraden (før dimensjons-sub-tabellen på linje 656):
-
-```ts
-if (h.beregninger && h.beregninger.length > 0) {
-  const ids = h.beregninger.map((_, bi) => `B${i + 1}.${bi + 1}`).join(", ");
-  hendelseRows.push(
-    new TableRow({
-      children: [
-        new TableCell({
-          columnSpan: 15,
-          width: { size: 100, type: WidthType.PERCENTAGE },
-          shading: { fill: "F7F9FC", type: ShadingType.CLEAR, color: "auto" },
-          children: [
-            new Paragraph({
-              children: [
-                text(
-                  `Beregninger: ${ids} – se kapittel ${beregningNr} Beregningsgrunnlag.`,
-                  { italics: true, size: 14 },
-                ),
-              ],
-            }),
-          ],
-        }),
-      ],
-    }),
-  );
-}
-```
-
-### Nytt kapittel «4. Beregningsgrunnlag»
-
-Bygges som ny array `beregningsgrunnlag: (Paragraph | Table)[]` rett etter `hendelser`-arrayet (etter linje 683):
-
-```ts
-const hendelserMedBeregninger = content.hendelser
-  .map((h, i) => ({ h, i }))
-  .filter(({ h }) => h.beregninger && h.beregninger.length > 0);
-
-const beregningsgrunnlag: (Paragraph | Table)[] = [
-  buildSectionHeading(theme, `${beregningNr}. Beregningsgrunnlag`),
-];
-
-if (hendelserMedBeregninger.length === 0) {
-  beregningsgrunnlag.push(
-    para("Ingen beregninger er tilknyttet hendelsene i denne analysen.", { /* italics via egen variant */ }),
-  );
-} else {
-  for (const { h, i } of hendelserMedBeregninger) {
-    beregningsgrunnlag.push(
-      new Paragraph({
-        heading: HeadingLevel.HEADING_3,
-        children: [text(
-          `${beregningNr}.${i + 1} – Beregninger for hendelse ${i + 1}: ${h.tittel || h.hendelse || "—"}`,
-          { bold: true, size: 22 },
-        )],
-      }),
-    );
-    h.beregninger!.forEach((b, bi) => {
-      const id = `B${i + 1}.${bi + 1}`;
-      const typeLabel = BEREGNING_LABELS[b.type] ?? String(b.type);
-      // HEADING_4 med ID + label
-      beregningsgrunnlag.push(
-        new Paragraph({
-          heading: HeadingLevel.HEADING_4,
-          children: [text(`${id} – ${typeLabel}: ${b.label ?? ""}`, { bold: true, size: 18 })],
-        }),
-      );
-      // Bruk gjenværende del av eksisterende `buildBeregningerBlock`-logikk (resultat-tabell + kommentar)
-      // ved å enten kalle en refaktorert helper, eller inline samme tabell-bygging her.
-      beregningsgrunnlag.push(/* parameter/verdi-tabell og kommentar */);
-    });
-  }
-}
-```
-
-Refaktorering av `buildBeregningerBlock`: splittes i en helper `buildBeregningTabell(b: AttachedCalculation)` som returnerer `(Paragraph | Table)[]` for én beregning (param/verdi-tabell + evt. kommentar), uten den ytre «Beregningsgrunnlag»-headeren. Brukes fra det nye kapittelet.
-
-### Document sections
-
-I `Document.sections`-arrayet (linje 968–982), legg til en ny landskaps-seksjon med `beregningsgrunnlag` rett etter hendelses-seksjonen (linje 967) og før bow-tie-seksjonen. Samme header/footer-oppsett som de andre kapitlene.
+**Sub-tabell konsekvensvurderinger (linje 909–958):**
+- Hvis `hm.konsekvensvurderinger.length === 0` → vis i stedet en `<tr>` med kursiv tekst «Ingen konsekvensdimensjoner vurdert».
+- Ellers uendret.
 
 ---
 
-## Endring 2 — `src/components/ros/RosPreview.tsx`
+## Endring 2 — `src/pages/RosAnalyse.tsx`
 
-### Erstatt beregnings-tr i hendelsestabellen
+**`oppdaterKonsekvensvurdering` (linje 299–313):**
+- Behold sync med `h.konsekvens` / `h.konsekvensEtter` kun når dimensjonen er `forsyningssikkerhet` OG raden faktisk finnes i `konsekvensvurderinger`. (Dagens kode er allerede ok – kjører kun fra map-callbacken på eksisterende rad.)
 
-Linje 959–992 (`{h.beregninger && h.beregninger.length > 0 && (<tr>…</tr>)}`) erstattes av en kompakt linje:
+**`leggTilDimensjon` (linje 314–317):**
+- Hvis ny rad er `forsyningssikkerhet`: sett også `h.konsekvens = 1`, `h.konsekvensEtter = undefined` (eller `1`) for konsistens med matrise/tabell.
 
-```tsx
-{h.beregninger && h.beregninger.length > 0 && (
-  <tr>
-    <td colSpan={15} style={{ ...tdStyle, padding: "4px 10px", background: "#f7f9fc" }}>
-      <span style={{ fontSize: 9, fontStyle: "italic", color: "#64748b" }}>
-        Beregninger: {h.beregninger.map((_, bi) => `B${i + 1}.${bi + 1}`).join(", ")} – se kapittel 4 Beregningsgrunnlag.
-      </span>
-    </td>
-  </tr>
-)}
-```
+**`fjernDimensjon` (linje 318–322):**
+- Fjern guard `if (dimensjon === "forsyningssikkerhet") return;`.
+- Hvis dimensjonen som fjernes er `forsyningssikkerhet`: sett også `konsekvens: 0`/`undefined` og `konsekvensEtter: undefined` i samme `updateHendelse`-kall.
 
-### Nytt seksjons-ark «4. Beregningsgrunnlag»
+**Sletteknapp-UI (linje 1126–1131):**
+- Fjern `{kv.dimensjon !== "forsyningssikkerhet" && (...)}` – vis Trash-knappen for alle dimensjoner.
 
-Plasseres som en ny `<div style={pageStyle} className="ros-page">` (eller landscape om mer naturlig — bruk portrait som de øvrige tekst-kapitlene) etter hendelses-arket (linje 1020) og før bow-tie-arket (linje 1023). Bruk `chapterDivider`, `h2`, `h3` for konsistens.
+**«Legg til dimensjon»-dropdown (linje 1189–1209):**
+- Ingen endring nødvendig: bruker allerede `ALLE_DIMENSJONER` filtrert mot `brukte`. Forsyningssikkerhet dukker automatisk opp når den ikke er lagt til.
 
-Innhold:
-```tsx
-<section id="kap-4">
-  <h2 style={h2}>4. Beregningsgrunnlag</h2>
-  {(() => {
-    const hms = content.hendelser
-      .map((h, i) => ({ h, i }))
-      .filter(({ h }) => h.beregninger && h.beregninger.length > 0);
-    if (hms.length === 0) {
-      return (
-        <p style={{ ...pStyle, fontStyle: "italic", color: "#64748b" }}>
-          Ingen beregninger er tilknyttet hendelsene i denne analysen.
-        </p>
-      );
-    }
-    return hms.map(({ h, i }) => (
-      <div key={h.id} style={{ marginBottom: 18 }}>
-        <h3 style={h3}>
-          4.{i + 1} – Beregninger for hendelse {i + 1}: {h.tittel || h.hendelse || "—"}
-        </h3>
-        {h.beregninger!.map((b, bi) => {
-          const id = `B${i + 1}.${bi + 1}`;
-          const Icon = BEREGNING_IKONER[b.type];
-          return (
-            <div key={b.id} style={{ border: "1px solid #e2e8f0", borderRadius: 6, padding: 10, marginBottom: 10, background: "#fff" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                <span style={{ background: "#1e3a5f", color: "#fff", borderRadius: 3, padding: "2px 6px", fontSize: 10, fontWeight: 700 }}>{id}</span>
-                {Icon && <Icon size={14} style={{ color: "#1e3a5f" }} />}
-                <span style={{ fontWeight: 700, color: "#1e3a5f", fontSize: 11 }}>{b.label}</span>
-              </div>
-              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 10 }}>
-                <thead>
-                  <tr><th style={thStyle}>Parameter</th><th style={thStyle}>Verdi</th></tr>
-                </thead>
-                <tbody>
-                  {Object.entries(b.results).map(([k, v]) => (
-                    <tr key={k}>
-                      <td style={tdStyle}>{k.replace(/_/g, " ")}</td>
-                      <td style={tdStyle}><strong>{String(v)}</strong></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {b.kommentar && (
-                <p style={{ fontStyle: "italic", color: "#475569", fontSize: 10, marginTop: 6 }}>{b.kommentar}</p>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    ));
-  })()}
-</section>
-```
+**`addHendelse` (linje 323–340):**
+- Endre `sannsynlighet: 1, konsekvens: 1` → fjern `konsekvens` (eller sett `konsekvens: 0`), behold `sannsynlighet: 1`.
+- Sett `konsekvensvurderinger: []`.
+- Tilsvarende: ikke initialiser `konsekvensEtter`.
 
-Bow-tie-arket (`<section id="kap-4">` i dag, linje 1025–1026) renummereres til **5**, og overskrifter `4.{idx + 1}` (linje 1080) blir `5.{idx + 1}`. Sjekk om det også finnes oppsummering/revisjon-kapitler senere i filen som må renummereres tilsvarende (5→6, 6→7) – disse må vises kun når bow-tie finnes; ellers blir beregningsgrunnlag = 4, oppsummering = 5, revisjon = 6.
+---
+
+## Endring 3 — `src/components/ros/RosMatriks.tsx`
+
+- Oppdater info-tekst til: «Viser konsekvensdimensjonen forsyningssikkerhet for hendelser som har denne dimensjonen vurdert. Hendelser uten forsyningssikkerhet-vurdering vises ikke i matrisen.»
+- Komponenten plotter ikke individuelle hendelser i dag (kun `highlight`-prop). Ingen filtreringsendring i selve komponenten er nødvendig; dokumenter i kommentar at evt. fremtidig per-hendelse-plotting må filtrere på `kv.dimensjon === "forsyningssikkerhet"`.
+
+---
+
+## Endring 4 — `src/lib/ros-word-export.ts`
+
+**Hendelses-rad-rendering (rundt linje 643–684):**
+- Etter `const hm = migrerHendelse(h)`, finn `forsyning = hm.konsekvensvurderinger?.find(...)`. Hvis ikke til stede, render K/R/K-etter/R-etter-cellene som «—» uten risikoskygge (samme pattern som i preview).
+
+**Sub-tabell (linje 665–684):**
+- Endre betingelsen: render alltid en sub-blokk hvis det er noe verdt å vise. Hvis `kvs.length === 0` → render i stedet et avsnitt med kursiv tekst «Ingen konsekvensdimensjoner vurdert» (i den eksisterende innrykkede `F7F9FC`-cellen) i stedet for `buildKonsekvensSubTabell`.
+- Sub-tabell forblir uendret når `kvs.length > 0`.
 
 ---
 
 ## Filer som endres
 
-- `src/lib/ros-word-export.ts`
 - `src/components/ros/RosPreview.tsx`
+- `src/pages/RosAnalyse.tsx`
+- `src/components/ros/RosMatriks.tsx`
+- `src/lib/ros-word-export.ts`
 
-`src/pages/RosAnalyse.tsx` (selve redigerings-UI) endres **ikke**.
+Ingen datamigrering, ingen DB-endringer. Eksisterende `konsekvensvurderinger`-array i Supabase berøres ikke.
