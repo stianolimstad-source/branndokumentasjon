@@ -31,6 +31,9 @@ export default function RosMatriks({ highlight, size = "md" }: RosMatriksProps) 
   const kCols = [1, 2, 3, 4, 5];
   return (
     <div className="inline-block">
+      <p className="text-xs text-muted-foreground mb-2 max-w-md">
+        Viser konsekvensdimensjonen forsyningssikkerhet. Visning per dimensjon kommer i senere fase.
+      </p>
       <div className="flex">
         <div className="w-8" />
         {kCols.map((k) => (
