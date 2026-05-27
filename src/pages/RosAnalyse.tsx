@@ -1481,12 +1481,14 @@ export default function RosAnalyse() {
                       ))}
                     </div>
                   </div>
-                  {openCalcType && (
+                  {(openCalcType || editingBeregning) && (
                     <CalculatorDialog
-                      open={!!openCalcType}
-                      onOpenChange={(o) => { if (!o) setOpenCalcType(null); }}
-                      type={openCalcType}
-                      onImport={addBeregning}
+                      key={editingBeregning?.id || openCalcType || "new"}
+                      open={!!(openCalcType || editingBeregning)}
+                      onOpenChange={(o) => { if (!o) { setOpenCalcType(null); setEditingBeregning(null); } }}
+                      type={(editingBeregning?.type as CalculatorType) || (openCalcType as CalculatorType)}
+                      onImport={handleCalcImport}
+                      initialInputs={editingBeregning?.inputs as Record<string, unknown> | undefined}
                     />
                   )}
                 </>
