@@ -444,55 +444,45 @@ export const exportRosToWord = async (options: ExportOptions) => {
     brannmotstand: "Brannmotstand",
     trafoeksplosjon: "Trafoeksplosjon",
   };
-  const buildBeregningerBlock = (beregninger: any[]): (Paragraph | Table)[] => {
-    const blocks: (Paragraph | Table)[] = [
-      new Paragraph({
-        heading: HeadingLevel.HEADING_4,
-        children: [text("Beregningsgrunnlag", { bold: true, size: 18 })],
+  // Bygger param/verdi-tabell + evt. kommentar for én beregning (uten heading)
+  const buildBeregningTabell = (b: any): (Paragraph | Table)[] => {
+    const blocks: (Paragraph | Table)[] = [];
+    const resultRows: TableRow[] = [
+      new TableRow({
+        children: [
+          new TableCell({
+            width: { size: 30, type: WidthType.PERCENTAGE },
+            shading: tableHeaderShading(theme),
+            children: [new Paragraph({ children: [text("Parameter", { bold: true, size: 16, color: "FFFFFF" })] })],
+          }),
+          new TableCell({
+            width: { size: 70, type: WidthType.PERCENTAGE },
+            shading: tableHeaderShading(theme),
+            children: [new Paragraph({ children: [text("Verdi", { bold: true, size: 16, color: "FFFFFF" })] })],
+          }),
+        ],
       }),
-    ];
-    for (const b of beregninger) {
-      const typeLabel = BEREGNING_LABELS[b.type] ?? String(b.type);
-      blocks.push(
-        new Paragraph({ children: [text(`${typeLabel} – ${b.label ?? ""}`, { bold: true, size: 16 })] }),
-      );
-      const resultRows: TableRow[] = [
+      ...Object.entries(b.results ?? {}).map(([k, v]) =>
         new TableRow({
           children: [
             new TableCell({
               width: { size: 30, type: WidthType.PERCENTAGE },
-              shading: tableHeaderShading(theme),
-              children: [new Paragraph({ children: [text("Parameter", { bold: true, size: 16, color: "FFFFFF" })] })],
+              children: [new Paragraph({ children: [text(k.replace(/_/g, " "), { size: 16 })] })],
             }),
             new TableCell({
               width: { size: 70, type: WidthType.PERCENTAGE },
-              shading: tableHeaderShading(theme),
-              children: [new Paragraph({ children: [text("Verdi", { bold: true, size: 16, color: "FFFFFF" })] })],
+              children: [new Paragraph({ children: [text(String(v), { size: 16 })] })],
             }),
           ],
         }),
-        ...Object.entries(b.results ?? {}).map(([k, v]) =>
-          new TableRow({
-            children: [
-              new TableCell({
-                width: { size: 30, type: WidthType.PERCENTAGE },
-                children: [new Paragraph({ children: [text(k.replace(/_/g, " "), { size: 16 })] })],
-              }),
-              new TableCell({
-                width: { size: 70, type: WidthType.PERCENTAGE },
-                children: [new Paragraph({ children: [text(String(v), { size: 16 })] })],
-              }),
-            ],
-          }),
-        ),
-      ];
-      blocks.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: resultRows }));
-      if (b.kommentar && String(b.kommentar).trim()) {
-        blocks.push(new Paragraph({ children: [text("Kommentar:", { bold: true, size: 16 })] }));
-        blocks.push(new Paragraph({ children: [text(String(b.kommentar), { italics: true, size: 16 })] }));
-      }
-      blocks.push(new Paragraph({ children: [text("")] }));
+      ),
+    ];
+    blocks.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: resultRows }));
+    if (b.kommentar && String(b.kommentar).trim()) {
+      blocks.push(new Paragraph({ children: [text("Kommentar:", { bold: true, size: 16 })] }));
+      blocks.push(new Paragraph({ children: [text(String(b.kommentar), { italics: true, size: 16 })] }));
     }
+    blocks.push(new Paragraph({ children: [text("")] }));
     return blocks;
   };
 
@@ -595,6 +585,13 @@ export const exportRosToWord = async (options: ExportOptions) => {
     return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [subHeader, ...subRows] });
   };
 
+  // Dynamisk kapittelnummerering (beregningsgrunnlag alltid 4, bow-tie valgfritt)
+  const harBowTie = !!(content.bowTies && content.bowTies.length > 0);
+  const beregningNr = "4";
+  const bowTieNr = "5";
+  const oppsummeringNr = harBowTie ? "6" : "5";
+  const revisjonNr = harBowTie ? "7" : "6";
+
   const hendelseRows: TableRow[] = [hendelseHeader];
   content.hendelser.forEach((h, i) => {
     const r = h.sannsynlighet * h.konsekvens;
@@ -641,13 +638,24 @@ export const exportRosToWord = async (options: ExportOptions) => {
       }),
     );
     if (h.beregninger && h.beregninger.length > 0) {
+      const ids = h.beregninger.map((_, bi) => `B${i + 1}.${bi + 1}`).join(", ");
       hendelseRows.push(
         new TableRow({
           children: [
             new TableCell({
               columnSpan: 15,
               width: { size: 100, type: WidthType.PERCENTAGE },
-              children: buildBeregningerBlock(h.beregninger),
+              shading: { fill: "F7F9FC", type: ShadingType.CLEAR, color: "auto" },
+              children: [
+                new Paragraph({
+                  children: [
+                    text(
+                      `Beregninger: ${ids} – se kapittel ${beregningNr} Beregningsgrunnlag.`,
+                      { italics: true, size: 14 },
+                    ),
+                  ],
+                }),
+              ],
             }),
           ],
         }),
@@ -682,11 +690,50 @@ export const exportRosToWord = async (options: ExportOptions) => {
       : new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: hendelseRows }),
   ];
 
-  // Kap. 4 Bow-tie (kun hvis registrert)
-  const harBowTie = !!(content.bowTies && content.bowTies.length > 0);
+  // Kap. 4 Beregningsgrunnlag
+  const hendelserMedBeregninger = content.hendelser
+    .map((h, i) => ({ h, i }))
+    .filter(({ h }) => h.beregninger && h.beregninger.length > 0);
+
+  const beregningsgrunnlag: (Paragraph | Table)[] = [
+    buildSectionHeading(theme, `${beregningNr}. Beregningsgrunnlag`),
+  ];
+  if (hendelserMedBeregninger.length === 0) {
+    beregningsgrunnlag.push(
+      new Paragraph({
+        children: [text("Ingen beregninger er tilknyttet hendelsene i denne analysen.", { italics: true })],
+      }),
+    );
+  } else {
+    for (const { h, i } of hendelserMedBeregninger) {
+      beregningsgrunnlag.push(
+        new Paragraph({
+          heading: HeadingLevel.HEADING_3,
+          children: [text(
+            `${beregningNr}.${i + 1} – Beregninger for hendelse ${i + 1}: ${h.tittel || h.hendelse || "—"}`,
+            { bold: true, size: 22 },
+          )],
+        }),
+      );
+      h.beregninger!.forEach((b, bi) => {
+        const id = `B${i + 1}.${bi + 1}`;
+        const typeLabel = BEREGNING_LABELS[b.type] ?? String(b.type);
+        beregningsgrunnlag.push(
+          new Paragraph({
+            heading: HeadingLevel.HEADING_4,
+            children: [text(`${id} – ${typeLabel}: ${b.label ?? ""}`, { bold: true, size: 18 })],
+          }),
+        );
+        beregningsgrunnlag.push(...buildBeregningTabell(b));
+      });
+    }
+  }
+
+
+  // Bow-tie (kun hvis registrert)
   const bowTieBlocks: (Paragraph | Table)[] = [];
   if (harBowTie) {
-    bowTieBlocks.push(buildSectionHeading(theme, "4. Bow-tie analyse"));
+    bowTieBlocks.push(buildSectionHeading(theme, `${bowTieNr}. Bow-tie analyse`));
     bowTieBlocks.push(
       para(
         "Bow-tie-analysen knytter registrerte hendelser fra kapittel 3 til overordnede uønskede topphendelser. " +
@@ -698,8 +745,9 @@ export const exportRosToWord = async (options: ExportOptions) => {
         .map((id) => content.hendelser.find((h) => h.id === id))
         .filter((h): h is NonNullable<typeof h> => !!h);
       bowTieBlocks.push(new Paragraph({ children: [text("")] }));
-      bowTieBlocks.push(para(`4.${idx + 1} ${bt.navn || "Uten navn"}`, { bold: true, size: 24 }));
+      bowTieBlocks.push(para(`${bowTieNr}.${idx + 1} ${bt.navn || "Uten navn"}`, { bold: true, size: 24 }));
       if (bt.beskrivelse?.trim()) bowTieBlocks.push(para(bt.beskrivelse));
+
 
       // Årsaker-tabell
       const aHeader = new TableRow({
@@ -894,9 +942,8 @@ export const exportRosToWord = async (options: ExportOptions) => {
     });
   }
 
-  // Oppsummering & revisjon
-  const oppsummeringNr = harBowTie ? "5" : "4";
-  const revisjonNr = harBowTie ? "6" : "5";
+  // Oppsummering & revisjon (kapittelnummer beregnet over)
+
 
   const oppsummering: Paragraph[] = [
     buildSectionHeading(theme, `${oppsummeringNr}. Oppsummering`),
@@ -964,6 +1011,17 @@ export const exportRosToWord = async (options: ExportOptions) => {
         headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
         footers: { default: buildFooter(theme) },
         children: [...hendelser],
+      },
+      {
+        properties: {
+          type: SectionType.NEXT_PAGE,
+          page: {
+            size: { width: 11906, height: 16838, orientation: PageOrientation.PORTRAIT },
+          },
+        },
+        headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
+        footers: { default: buildFooter(theme) },
+        children: [...beregningsgrunnlag],
       },
       ...(harBowTie
         ? [

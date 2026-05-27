@@ -958,35 +958,10 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                       )}
                       {h.beregninger && h.beregninger.length > 0 && (
                         <tr>
-                          <td colSpan={14} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
-                            <div style={{ border: "1px solid #e2e8f0", borderRadius: 4, padding: "6px 8px", background: "#fff" }}>
-                              <p style={{ fontSize: 9, fontWeight: 700, color: "#1e3a5f", margin: "0 0 4px 0" }}>
-                                Beregningsgrunnlag ({h.beregninger.length} beregning{h.beregninger.length === 1 ? "" : "er"})
-                              </p>
-                              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                                {h.beregninger.map((b) => {
-                                  const Icon = BEREGNING_IKONER[b.type];
-                                  return (
-                                    <div key={b.id} style={{ display: "flex", gap: 6, alignItems: "flex-start", fontSize: 9 }}>
-                                      {Icon && <Icon size={12} style={{ color: "#1e3a5f", marginTop: 1, flexShrink: 0 }} />}
-                                      <div style={{ flex: 1, minWidth: 0 }}>
-                                        <div style={{ fontWeight: 600, color: "#1e3a5f" }}>{b.label}</div>
-                                        <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 2 }}>
-                                          {Object.entries(b.results).map(([k, v]) => (
-                                            <span key={k} style={{ background: "#e8eef5", border: "1px solid #d0d7e2", borderRadius: 3, padding: "1px 5px", fontSize: 8.5 }}>
-                                              {k.replace(/_/g, " ")}: <strong>{String(v)}</strong>
-                                            </span>
-                                          ))}
-                                        </div>
-                                        {b.kommentar && (
-                                          <div style={{ fontStyle: "italic", color: "#475569", marginTop: 2, fontSize: 9 }}>{b.kommentar}</div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
+                          <td colSpan={15} style={{ ...tdStyle, padding: "4px 10px", background: "#f7f9fc" }}>
+                            <span style={{ fontSize: 9, fontStyle: "italic", color: "#64748b" }}>
+                              Beregninger: {h.beregninger.map((_, bi) => `B${i + 1}.${bi + 1}`).join(", ")} – se kapittel 4 Beregningsgrunnlag.
+                            </span>
                           </td>
                         </tr>
                       )}
@@ -1019,11 +994,69 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
         </section>
       </div>
 
-      {/* Ark 3 — bow-tie (hvis registrert) */}
+      {/* Ark 3 — Beregningsgrunnlag */}
+      <div style={pageStyle} className="ros-page">
+        <section id="kap-4">
+          <h2 style={h2}>4. Beregningsgrunnlag</h2>
+          {(() => {
+            const hms = content.hendelser
+              .map((h, i) => ({ h, i }))
+              .filter(({ h }) => h.beregninger && h.beregninger.length > 0);
+            if (hms.length === 0) {
+              return (
+                <p style={{ ...pStyle, fontStyle: "italic", color: "#64748b" }}>
+                  Ingen beregninger er tilknyttet hendelsene i denne analysen.
+                </p>
+              );
+            }
+            return hms.map(({ h, i }) => (
+              <div key={h.id} style={{ marginBottom: 18 }}>
+                <h3 style={h3}>
+                  4.{i + 1} – Beregninger for hendelse {i + 1}: {h.tittel || h.hendelse || "—"}
+                </h3>
+                {h.beregninger!.map((b, bi) => {
+                  const id = `B${i + 1}.${bi + 1}`;
+                  const Icon = BEREGNING_IKONER[b.type];
+                  return (
+                    <div key={b.id} style={{ border: "1px solid #e2e8f0", borderRadius: 6, padding: 10, marginBottom: 10, background: "#fff" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                        <span style={{ background: "#1e3a5f", color: "#fff", borderRadius: 3, padding: "2px 6px", fontSize: 10, fontWeight: 700 }}>{id}</span>
+                        {Icon && <Icon size={14} style={{ color: "#1e3a5f" }} />}
+                        <span style={{ fontWeight: 700, color: "#1e3a5f", fontSize: 11 }}>{b.label}</span>
+                      </div>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 10, border: "1px solid #e2e8f0" }}>
+                        <thead>
+                          <tr>
+                            <th style={thStyle}>Parameter</th>
+                            <th style={thStyle}>Verdi</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {Object.entries(b.results).map(([k, v]) => (
+                            <tr key={k}>
+                              <td style={tdStyle}>{k.replace(/_/g, " ")}</td>
+                              <td style={tdStyle}><strong>{String(v)}</strong></td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                      {b.kommentar && (
+                        <p style={{ fontStyle: "italic", color: "#475569", fontSize: 10, marginTop: 6, marginBottom: 0 }}>{b.kommentar}</p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ));
+          })()}
+        </section>
+      </div>
+
+      {/* Ark 4 — bow-tie (hvis registrert) */}
       {content.bowTies && content.bowTies.length > 0 && (
         <div style={landscapePageStyle} className="ros-page-landscape">
-          <section id="kap-4">
-            <h2 style={h2}>4. Bow-tie analyse</h2>
+          <section id="kap-5">
+            <h2 style={h2}>5. Bow-tie analyse</h2>
             <p style={pStyle}>
               Bow-tie-analysen knytter registrerte hendelser fra kapittel 3 til overordnede uønskede topphendelser.
               Dette synliggjør hvilke årsaker som kan lede til samme topphendelse, og hvilke tiltak som virker på tvers.
@@ -1077,7 +1110,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
               return (
                 <div key={bt.id} style={{ marginTop: idx === 0 ? 6 : 28, pageBreakInside: "avoid" }}>
                   <h3 style={{ ...h3, fontSize: 13 }}>
-                    4.{idx + 1} {bt.navn || "Uten navn"}
+                    5.{idx + 1} {bt.navn || "Uten navn"}
                   </h3>
                   {bt.beskrivelse && <p style={pStyle}>{bt.beskrivelse}</p>}
 
@@ -1130,8 +1163,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
 
       {/* Ark 4 — stående A4 for oppsummering & revisjonshistorikk */}
       <div style={pageStyle} className="ros-page">
-        <section id="kap-5">
-          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "5" : "4"}. Oppsummering</h2>
+        <section id="kap-6">
+          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "6" : "5"}. Oppsummering</h2>
           {content.oppsummering ? (
             <p style={pStyle}>{content.oppsummering}</p>
           ) : (
@@ -1140,8 +1173,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
         </section>
 
         {/* Revisjonshistorikk */}
-        <section id="kap-6" style={chapterDivider}>
-          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "6" : "5"}. Revisjonshistorikk</h2>
+        <section id="kap-7" style={chapterDivider}>
+          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "7" : "6"}. Revisjonshistorikk</h2>
           <table style={tableStyle}>
             <thead>
               <tr>
