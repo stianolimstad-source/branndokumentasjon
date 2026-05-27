@@ -882,9 +882,9 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 <tbody>
                   {content.hendelser.map((h, i) => {
                     const hm = migrerHendelse(h);
+                    const kForsyning = h.konsekvens || 1;
+                    const kForsyningEtter = h.konsekvensEtter ?? kForsyning;
                     const forsyning = hm.konsekvensvurderinger!.find((k) => k.dimensjon === "forsyningssikkerhet")!;
-                    const kForsyning = forsyning.score || h.konsekvens || 1;
-                    const kForsyningEtter = forsyning.scoreEtter ?? h.konsekvensEtter ?? kForsyning;
                     const sE = h.sannsynlighetEtter ?? h.sannsynlighet;
                     const td = { ...tdStyle, fontSize: 9 };
                     return (
