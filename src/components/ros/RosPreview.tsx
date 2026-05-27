@@ -788,9 +788,9 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                   Kriteriene under gjelder kraftstasjoner og tilpasses den enkelte virksomhet.
                 </p>
                 <h4 style={{ ...h3, fontSize: 12, marginTop: 8 }}>
-                  {KONSEKVENS_KRITERIER.kraftstasjon.tittel}
+                  {KONSEKVENS_KRITERIER.kraftstasjon.forsyningssikkerhet.tittel}
                 </h4>
-                <KritTabell tabell={KONSEKVENS_KRITERIER.kraftstasjon} />
+                <KritTabell tabell={KONSEKVENS_KRITERIER.kraftstasjon.forsyningssikkerhet} />
                 <h4 style={{ ...h3, fontSize: 12, marginTop: 12 }}>
                   {SANNSYNLIGHET_KRITERIER.kraftstasjon.tittel}
                 </h4>
