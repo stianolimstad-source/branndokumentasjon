@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle2, AlertTriangle, XCircle, ArrowDown } from "lucide-react";
+import { CheckCircle2, AlertTriangle, XCircle, ArrowDown, HelpCircle } from "lucide-react";
 import { beregn, beregnDriftsfaktor, type TrafoInput, type Status, type Resultat } from "@/lib/trafo-eksplosjon";
 import { TRAFO_CASES } from "@/lib/trafo-cases";
 
@@ -61,6 +61,131 @@ const defaultInput: TrafoInput = {
     maaneder_siden_dga: 12,
     overlast_historisk: false,
   },
+};
+
+const LabelWithHelp = ({ label, help, className }: { label: string; help: React.ReactNode; className?: string }) => (
+  <div className={`flex items-center gap-1.5 ${className ?? ""}`}>
+    <Label>{label}</Label>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button type="button" className="inline-flex" aria-label="Hjelp">
+          <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent className="max-w-xs text-xs leading-relaxed">{help}</TooltipContent>
+    </Tooltip>
+  </div>
+);
+
+const HelpIcon = ({ help }: { help: React.ReactNode }) => (
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <button type="button" className="inline-flex" aria-label="Hjelp">
+        <HelpCircle className="h-3.5 w-3.5 text-muted-foreground" />
+      </button>
+    </TooltipTrigger>
+    <TooltipContent className="max-w-xs text-xs leading-relaxed">{help}</TooltipContent>
+  </Tooltip>
+);
+
+const H = ({ children }: { children: React.ReactNode }) => (
+  <p className="mb-1 last:mb-0"><strong>{children}</strong></p>
+);
+
+const HELP = {
+  oljevolum: (
+    <div>
+      <p className="mb-1"><strong>Spør kunden om:</strong> typeskilt eller produsentens datablad.</p>
+      <p className="mb-1"><strong>Typiske verdier:</strong> småkraft 2 000–10 000 L, regionalt anlegg 15 000–40 000 L, store generatortrafoer 50 000–100 000 L.</p>
+      <p><strong>Hvor finne det:</strong> står ofte angitt på typeskiltet som «Oil weight» (kg) – del på 0,88 for å få liter.</p>
+    </div>
+  ),
+  tanktype: (
+    <div>
+      <p>Conservator har separat oljebeholder over hovedtanken og er vanlig på nye/store krafttrafoer. Hermetisk er lukket uten luftkontakt, vanligere på mellomstore. Corrugated har riflet vegg som ekspanderer med trykk – typisk på distribusjons- og mindre nettstasjonstrafoer. Sjekk visuelt eller på datablad.</p>
+    </div>
+  ),
+  oljetype: (
+    <div>
+      <p className="mb-1"><strong>Typiske verdier:</strong> eldre trafoer (før ca. 2000) bruker mineralolje. Naturlig ester (FR3) og syntetisk ester (Midel 7131) er vanligere på nye eller spesielle installasjoner.</p>
+      <p><strong>Hvor finne det:</strong> sjekk oljebeholder, siste DGA-rapport eller leverandørens datablad. Ved tvil: anta mineralolje (konservativt).</p>
+    </div>
+  ),
+  spenning: (
+    <div>
+      <p className="mb-1"><strong>Spør kunden om:</strong> høyspentsiden (HV) av trafoen, ikke generator-/lavspentsiden.</p>
+      <p><strong>Typiske verdier:</strong> 22 kV (distribusjon), 66 kV (regional), 132 kV (regional/sentralnett), 300 kV og 420 kV (transmisjon, store kraftverk).</p>
+    </div>
+  ),
+  effekt: (
+    <div>
+      <p className="mb-1"><strong>Hvor finne det:</strong> typeskilt eller datablad.</p>
+      <p><strong>Typiske verdier:</strong> småkraft 1–15 MVA, mellomstore vannkraftstasjoner 15–150 MVA, store generatortrafoer 150–600 MVA, de største norske (Sima, Tonstad, Aurland) opp mot 1100 MVA.</p>
+    </div>
+  ),
+  buenergi: (
+    <div>
+      <p className="mb-1">Avhenger av kortslutningsstrøm, buespenning og klareringstid. For typisk norsk vannkraft ligger realistisk worst case mellom 3 og 25 MJ avhengig av trafostørrelse.</p>
+      <p>Bruk «Scenario» hvis du ikke har detaljert vernedata. Bruk «Kortslutning» hvis du har I_k fra nettselskap og kjenner reléverntider fra eier.</p>
+    </div>
+  ),
+  tankkapasitet: (
+    <div>
+      <p>Auto-beregnes konservativt fra oljevolum, tanktype og spenning. Overstyr bare hvis trafoleverandøren har dokumentert høyere tankkapasitet via IEC 60076-test eller fullskala-arctest. Be om dette dokumentet hvis det finnes.</p>
+    </div>
+  ),
+  plassering: (
+    <div>
+      <p>Innendørs = trafocelle i fjell, bygg eller egen tilbygg. Utendørs = stativ på fundament eller transportabel oppstilling. Generatortrafoer for norske vannkraftverk er ofte innendørs på grunn av klima og snølast.</p>
+    </div>
+  ),
+  avstand_personell: (
+    <div>
+      <p>Mål til nærmeste sted hvor personell ferdes regelmessig: driftsoperatør, kontrollrom-vindu, gangvei mellom utstyr, lasterampe. Bruk verste relevante avstand. Ikke regn med tilfeldig besøk.</p>
+    </div>
+  ),
+  avstand_maskinhall: (
+    <div>
+      <p>Mål til nærmeste vegg på bygning med høy verdi (maskinhall, kontrollrom, hjelpetrafoer, kabelgater). Hvis trafoen står inne i maskinhallen, sett avstanden til avstanden til neste branncelle / brannmur.</p>
+    </div>
+  ),
+  basseng: (
+    <div>
+      <p className="mb-1"><strong>Hvor finne det:</strong> mål eller hent fra branntegning.</p>
+      <p>NFPA 850 krever minimum 110 % av oljemengden + slokkevannmengde. Verktøyet sjekker dette automatisk og varsler om underdimensjonering.</p>
+    </div>
+  ),
+  ik: (
+    <div>
+      <p className="mb-1"><strong>Hvor finne det:</strong> nettselskapets kortslutningsanalyse for tilkoblingspunktet.</p>
+      <p><strong>Typiske verdier:</strong> 22 kV distribusjon 5–15 kA, 132 kV regional 15–30 kA, 300/420 kV transmisjon 30–60 kA. På generatorlavsiden av en GSU-trafo: 20–40 kA ved 11–22 kV.</p>
+    </div>
+  ),
+  ubue: (
+    <div>
+      <p>Velg etter feiltype: Kort bue (500 V) for turn-to-turn eller mindre indre feil, Middels (1000 V) som standard antakelse for vikling-til-jord, Lang (2000 V) for full vikling-til-tank eller bristet gjennomføring.</p>
+    </div>
+  ),
+  tklar: (
+    <div>
+      <p>Spør kunden eller relévernfirma om reléinnstillinger. Primærvern hurtig (60 ms) krever moderne differensialvern + rask effektbryter. Primærvern normalt (100 ms) er typisk for norsk vannkraft. Reservevern (300–500 ms) brukes hvis primærvern svikter eller for vurdering av verste reelle utfall.</p>
+    </div>
+  ),
+  alder: (
+    <div>
+      <p><strong>Hvor finne det:</strong> typeskilt eller idriftsettingsår.</p>
+    </div>
+  ),
+  dga_maaneder: (
+    <div>
+      <p><strong>Hvor finne det:</strong> siste analyserapport (typisk 6–24 mnd intervall).</p>
+    </div>
+  ),
+  overlast: (
+    <div>
+      <p>Spør kunden om trafoen har vært kjørt over skiltverdi i lengre perioder, f.eks. ved produksjonstopper eller utfall av annen kapasitet.</p>
+    </div>
+  ),
 };
 
 const StatusIcon = ({ s }: { s: Status }) => {
@@ -183,16 +308,17 @@ const TrafoEksplosjonTool = () => {
       </Accordion>
 
       {/* INPUT */}
+      <TooltipProvider delayDuration={200}>
       <div className="grid lg:grid-cols-2 xl:grid-cols-4 gap-4">
         <Card>
           <CardHeader><CardTitle className="text-base">Trafo og olje</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <Label>Oljevolum (L)</Label>
+              <LabelWithHelp label="Oljevolum (L)" help={HELP.oljevolum} />
               <Input type="number" value={input.oljevolum_L} onChange={(e) => upd("oljevolum_L", +e.target.value)} />
             </div>
             <div>
-              <Label>Tanktype</Label>
+              <LabelWithHelp label="Tanktype" help={HELP.tanktype} />
               <Select value={input.tanktype} onValueChange={(v) => upd("tanktype", v as any)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -203,7 +329,7 @@ const TrafoEksplosjonTool = () => {
               </Select>
             </div>
             <div>
-              <Label>Oljetype</Label>
+              <LabelWithHelp label="Oljetype" help={HELP.oljetype} />
               <Select value={input.oljetype} onValueChange={(v) => upd("oljetype", v as any)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -216,17 +342,17 @@ const TrafoEksplosjonTool = () => {
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <Label>Spenning (kV)</Label>
+                <LabelWithHelp label="Spenning (kV)" help={HELP.spenning} />
                 <Input type="number" value={input.spenning_kV} onChange={(e) => upd("spenning_kV", +e.target.value)} />
               </div>
               <div>
-                <Label>Effekt (MVA)</Label>
+                <LabelWithHelp label="Effekt (MVA)" help={HELP.effekt} />
                 <Input type="number" value={input.effekt_MVA} onChange={(e) => upd("effekt_MVA", +e.target.value)} />
               </div>
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label>Buenergi</Label>
+                <LabelWithHelp label="Buenergi" help={HELP.buenergi} />
                 <span className="text-sm text-muted-foreground">
                   Brukes: <strong className="text-foreground">{input.buenergi_MJ.toFixed(2)} MJ</strong>
                 </span>
@@ -239,39 +365,43 @@ const TrafoEksplosjonTool = () => {
                 </TabsList>
 
                 <TabsContent value="scenario" className="pt-3">
-                  <TooltipProvider delayDuration={200}>
-                    <div className="grid grid-cols-2 gap-2">
-                      {SCENARIOER.map((s) => {
-                        const aktiv = Math.abs(input.buenergi_MJ - s.verdi) < 0.01;
-                        return (
-                          <Tooltip key={s.navn}>
-                            <TooltipTrigger asChild>
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant={aktiv ? "default" : "outline"}
-                                onClick={() => upd("buenergi_MJ", s.verdi)}
-                                className="flex flex-col h-auto py-2"
-                              >
-                                <span className="font-semibold">{s.navn}</span>
-                                <span className="text-xs opacity-80">{s.verdi.toFixed(1)} MJ</span>
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>{s.beskrivelse}</TooltipContent>
-                          </Tooltip>
-                        );
-                      })}
-                    </div>
-                  </TooltipProvider>
+                  <div className="grid grid-cols-2 gap-2">
+                    {SCENARIOER.map((s) => {
+                      const aktiv = Math.abs(input.buenergi_MJ - s.verdi) < 0.01;
+                      return (
+                        <Tooltip key={s.navn}>
+                          <TooltipTrigger asChild>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant={aktiv ? "default" : "outline"}
+                              onClick={() => upd("buenergi_MJ", s.verdi)}
+                              className="flex flex-col h-auto py-2"
+                            >
+                              <span className="font-semibold">{s.navn}</span>
+                              <span className="text-xs opacity-80">{s.verdi.toFixed(1)} MJ</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>{s.beskrivelse}</TooltipContent>
+                        </Tooltip>
+                      );
+                    })}
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="kortslutning" className="pt-3 space-y-3">
                   <div>
-                    <Label className="text-xs">Kortslutningsstrøm I_k (kA)</Label>
+                    <div className="flex items-center gap-1.5">
+                      <Label className="text-xs">Kortslutningsstrøm I_k (kA)</Label>
+                      <HelpIcon help={HELP.ik} />
+                    </div>
                     <Input type="number" value={ik_kA} onChange={(e) => setIk(+e.target.value)} />
                   </div>
                   <div>
-                    <Label className="text-xs">Buespenning U_bue</Label>
+                    <div className="flex items-center gap-1.5">
+                      <Label className="text-xs">Buespenning U_bue</Label>
+                      <HelpIcon help={HELP.ubue} />
+                    </div>
                     <Select value={String(uBue_V)} onValueChange={(v) => setUBue(+v)}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
@@ -282,7 +412,10 @@ const TrafoEksplosjonTool = () => {
                     </Select>
                   </div>
                   <div>
-                    <Label className="text-xs">Klareringstid t_klar</Label>
+                    <div className="flex items-center gap-1.5">
+                      <Label className="text-xs">Klareringstid t_klar</Label>
+                      <HelpIcon help={HELP.tklar} />
+                    </div>
                     <Select value={String(tKlar_ms)} onValueChange={(v) => setT(+v)}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
@@ -311,31 +444,29 @@ const TrafoEksplosjonTool = () => {
                   />
                   <div className="rounded-md border p-2">
                     <div className="text-xs font-semibold mb-1.5">Referansetester (PLOS One 2015)</div>
-                    <TooltipProvider delayDuration={200}>
-                      <div className="flex flex-wrap gap-1">
-                        {REFERANSE_TESTER.map((r) => (
-                          <Tooltip key={r.mj}>
-                            <TooltipTrigger asChild>
-                              <Badge
-                                variant="outline"
-                                className="cursor-pointer"
-                                onClick={() => upd("buenergi_MJ", r.mj)}
-                              >
-                                {r.mj} MJ
-                              </Badge>
-                            </TooltipTrigger>
-                            <TooltipContent>{r.forklaring}</TooltipContent>
-                          </Tooltip>
-                        ))}
-                      </div>
-                    </TooltipProvider>
+                    <div className="flex flex-wrap gap-1">
+                      {REFERANSE_TESTER.map((r) => (
+                        <Tooltip key={r.mj}>
+                          <TooltipTrigger asChild>
+                            <Badge
+                              variant="outline"
+                              className="cursor-pointer"
+                              onClick={() => upd("buenergi_MJ", r.mj)}
+                            >
+                              {r.mj} MJ
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>{r.forklaring}</TooltipContent>
+                        </Tooltip>
+                      ))}
+                    </div>
                   </div>
                 </TabsContent>
               </Tabs>
             </div>
             <div>
               <div className="flex items-center justify-between">
-                <Label>Tankkapasitet elastisk (MJ)</Label>
+                <LabelWithHelp label="Tankkapasitet elastisk (MJ)" help={HELP.tankkapasitet} />
                 {tankkapManuellOverstyrt && (
                   <Button
                     type="button"
@@ -371,7 +502,7 @@ const TrafoEksplosjonTool = () => {
           <CardHeader><CardTitle className="text-base">Plassering</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <Label>Plassering</Label>
+              <LabelWithHelp label="Plassering" help={HELP.plassering} />
               <Select value={input.plassering} onValueChange={(v) => upd("plassering", v as any)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -381,15 +512,15 @@ const TrafoEksplosjonTool = () => {
               </Select>
             </div>
             <div>
-              <Label>Avstand til personell/utstyr (m)</Label>
+              <LabelWithHelp label="Avstand til personell/utstyr (m)" help={HELP.avstand_personell} />
               <Input type="number" value={input.avstand_personell_m} onChange={(e) => upd("avstand_personell_m", +e.target.value)} />
             </div>
             <div>
-              <Label>Avstand til maskinhall/kontrollbygg (m)</Label>
+              <LabelWithHelp label="Avstand til maskinhall/kontrollbygg (m)" help={HELP.avstand_maskinhall} />
               <Input type="number" value={input.avstand_maskinhall_m} onChange={(e) => upd("avstand_maskinhall_m", +e.target.value)} />
             </div>
             <div>
-              <Label>Oljegruve / bassengareal (m²)</Label>
+              <LabelWithHelp label="Oljegruve / bassengareal (m²)" help={HELP.basseng} />
               <Input type="number" value={input.basseng_areal_m2} onChange={(e) => upd("basseng_areal_m2", +e.target.value)} />
               {input.basseng_areal_m2 < res.containment_paakrevd_m2 && (
                 <Alert variant="warning" className="mt-2">
@@ -448,7 +579,7 @@ const TrafoEksplosjonTool = () => {
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <Label>Trafoens alder (år)</Label>
+              <LabelWithHelp label="Trafoens alder (år)" help={HELP.alder} />
               <Input
                 type="number"
                 value={input.drift.alder_aar}
@@ -456,7 +587,7 @@ const TrafoEksplosjonTool = () => {
               />
             </div>
             <div>
-              <Label>Måneder siden siste DGA-analyse</Label>
+              <LabelWithHelp label="Måneder siden siste DGA-analyse" help={HELP.dga_maaneder} />
               <Input
                 type="number"
                 value={input.drift.maaneder_siden_dga}
@@ -469,10 +600,13 @@ const TrafoEksplosjonTool = () => {
                 onCheckedChange={(v) => updD("overlast_historisk", !!v)}
               />
               <span>Trafoen har hatt historisk overlast utover skiltverdi</span>
+              <HelpIcon help={HELP.overlast} />
             </label>
           </CardContent>
         </Card>
       </div>
+      </TooltipProvider>
+
 
       {res.hydrogen_advarsel && (
         <Alert variant="destructive">
