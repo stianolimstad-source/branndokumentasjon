@@ -21,7 +21,7 @@ import { KONSEKVENS_FORSLAG, groupKonsekvenserByKategori } from "@/lib/ros-konse
 import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search, Sparkles, Check, GitBranch, X, Eye, Calculator } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import RosPreview, { type RosContent, type RosHendelse, type RosBowTie } from "@/components/ros/RosPreview";
+import RosPreview, { type RosContent, type RosHendelse, type RosBowTie, migrerHendelse } from "@/components/ros/RosPreview";
 import BeregningSection from "@/components/fraviksdokumentasjon/BeregningSection";
 import UploadRosDialog, { type ExtractedRosData } from "@/components/ros/UploadRosDialog";
 import RosMatriks, { risikoFarge } from "@/components/ros/RosMatriks";
@@ -155,7 +155,7 @@ export default function RosAnalyse() {
           innledning: { ...EMPTY_CONTENT.innledning, ...(c as any).innledning },
           metode: { ...EMPTY_CONTENT.metode, ...((c as any).metode || {}) },
           hendelser: Array.isArray((c as any).hendelser)
-            ? (c as any).hendelser.map((h: any) => ({
+            ? (c as any).hendelser.map((h: any) => migrerHendelse({
                 ...h,
                 hendelse: h.hendelse || h.beskrivelse || "",
                 sarbarhet: h.sarbarhet || "",
@@ -615,7 +615,7 @@ export default function RosAnalyse() {
 
 
   const importHendelser = (data: ExtractedRosData, mode: "append" | "replace") => {
-    const nye: RosHendelse[] = data.hendelser.map((h) => ({ ...h, id: makeId(), beregninger: (h as any).beregninger || [] }));
+    const nye: RosHendelse[] = data.hendelser.map((h) => migrerHendelse({ ...h, id: makeId(), beregninger: (h as any).beregninger || [] } as RosHendelse));
     setContent((c) => ({
       ...c,
       metadata: {

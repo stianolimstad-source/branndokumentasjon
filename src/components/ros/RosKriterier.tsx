@@ -1,5 +1,6 @@
 import {
   BransjeId,
+  KonsekvensDimensjon,
   KONSEKVENS_KRITERIER,
   SANNSYNLIGHET_KRITERIER,
   KriterieTabell,
@@ -8,6 +9,7 @@ import {
 
 interface RosKriterierProps {
   bransje?: BransjeId;
+  dimensjon?: KonsekvensDimensjon;
 }
 
 function Tabell({ tabell }: { tabell: KriterieTabell }) {
@@ -34,8 +36,11 @@ function Tabell({ tabell }: { tabell: KriterieTabell }) {
   );
 }
 
-export default function RosKriterier({ bransje = "kraftstasjon" }: RosKriterierProps) {
-  const k = KONSEKVENS_KRITERIER[bransje];
+export default function RosKriterier({
+  bransje = "kraftstasjon",
+  dimensjon = "forsyningssikkerhet",
+}: RosKriterierProps) {
+  const k = KONSEKVENS_KRITERIER[bransje][dimensjon];
   const s = SANNSYNLIGHET_KRITERIER[bransje];
   return (
     <div className="space-y-4">
