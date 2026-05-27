@@ -384,6 +384,7 @@ export function beregn(input: TrafoInput): Resultat {
     containment_ok,
     containment_paakrevd_m2,
     hydrogen_advarsel,
+    compliance,
     anbefalinger: a,
   };
 }
