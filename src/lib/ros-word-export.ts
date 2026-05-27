@@ -28,8 +28,8 @@ import {
   tableHeaderShading,
 } from "@/lib/document-templates";
 import { risikoFarge } from "@/components/ros/RosMatriks";
-import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell } from "@/lib/ros-risk-criteria";
-import type { RosContent } from "@/components/ros/RosPreview";
+import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell, DIMENSJON_NAVN } from "@/lib/ros-risk-criteria";
+import { migrerHendelse, type RosContent, type RosHendelse } from "@/components/ros/RosPreview";
 
 export interface RosSenderInfo {
   full_name?: string | null;
