@@ -98,8 +98,8 @@ export const exportRosToWord = async (options: ExportOptions) => {
   const m = content.metadata;
   const dateStr = m.dato || new Date().toISOString().slice(0, 10);
 
-  const text = (t: string, opts: { bold?: boolean; size?: number; color?: string } = {}) =>
-    new TextRun({ text: t, font, bold: opts.bold, size: opts.size ?? 22, color: opts.color });
+  const text = (t: string, opts: { bold?: boolean; size?: number; color?: string; italics?: boolean } = {}) =>
+    new TextRun({ text: t, font, bold: opts.bold, italics: opts.italics, size: opts.size ?? 22, color: opts.color });
 
   const para = (t: string, opts?: { bold?: boolean; size?: number }) =>
     new Paragraph({ children: [text(t, opts)] });
@@ -435,6 +435,67 @@ export const exportRosToWord = async (options: ExportOptions) => {
       smallHeader("Restrisiko", 9),
     ],
   });
+  const BEREGNING_LABELS: Record<string, string> = {
+    straling: "Strålingsberegning",
+    flammehoyde: "Flammehøyde",
+    brannenergi: "Brannenergi",
+    persontall: "Persontallsberegning",
+    omhyllingsflate: "Omhyllingsflate",
+    brannmotstand: "Brannmotstand",
+    trafoeksplosjon: "Trafoeksplosjon",
+  };
+  const buildBeregningerBlock = (beregninger: any[]): (Paragraph | Table)[] => {
+    const blocks: (Paragraph | Table)[] = [
+      new Paragraph({
+        heading: HeadingLevel.HEADING_4,
+        children: [text("Beregningsgrunnlag", { bold: true, size: 18 })],
+      }),
+    ];
+    for (const b of beregninger) {
+      const typeLabel = BEREGNING_LABELS[b.type] ?? String(b.type);
+      blocks.push(
+        new Paragraph({ children: [text(`${typeLabel} – ${b.label ?? ""}`, { bold: true, size: 16 })] }),
+      );
+      const resultRows: TableRow[] = [
+        new TableRow({
+          children: [
+            new TableCell({
+              width: { size: 30, type: WidthType.PERCENTAGE },
+              shading: tableHeaderShading(theme),
+              children: [new Paragraph({ children: [text("Parameter", { bold: true, size: 16, color: "FFFFFF" })] })],
+            }),
+            new TableCell({
+              width: { size: 70, type: WidthType.PERCENTAGE },
+              shading: tableHeaderShading(theme),
+              children: [new Paragraph({ children: [text("Verdi", { bold: true, size: 16, color: "FFFFFF" })] })],
+            }),
+          ],
+        }),
+        ...Object.entries(b.results ?? {}).map(([k, v]) =>
+          new TableRow({
+            children: [
+              new TableCell({
+                width: { size: 30, type: WidthType.PERCENTAGE },
+                children: [new Paragraph({ children: [text(k.replace(/_/g, " "), { size: 16 })] })],
+              }),
+              new TableCell({
+                width: { size: 70, type: WidthType.PERCENTAGE },
+                children: [new Paragraph({ children: [text(String(v), { size: 16 })] })],
+              }),
+            ],
+          }),
+        ),
+      ];
+      blocks.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: resultRows }));
+      if (b.kommentar && String(b.kommentar).trim()) {
+        blocks.push(new Paragraph({ children: [text("Kommentar:", { bold: true, size: 16 })] }));
+        blocks.push(new Paragraph({ children: [text(String(b.kommentar), { italics: true, size: 16 })] }));
+      }
+      blocks.push(new Paragraph({ children: [text("")] }));
+    }
+    return blocks;
+  };
+
   const hendelseRows: TableRow[] = [hendelseHeader];
   content.hendelser.forEach((h, i) => {
     const r = h.sannsynlighet * h.konsekvens;
@@ -480,6 +541,19 @@ export const exportRosToWord = async (options: ExportOptions) => {
         ],
       }),
     );
+    if (h.beregninger && h.beregninger.length > 0) {
+      hendelseRows.push(
+        new TableRow({
+          children: [
+            new TableCell({
+              columnSpan: 15,
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              children: buildBeregningerBlock(h.beregninger),
+            }),
+          ],
+        }),
+      );
+    }
   });
   const hendelser: (Paragraph | Table)[] = [
     buildSectionHeading(theme, "3. Hendelsesregister"),
