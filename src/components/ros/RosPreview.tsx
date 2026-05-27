@@ -2,6 +2,18 @@ import React, { useRef, useState } from "react";
 import { risikoFarge } from "./RosMatriks";
 import rosNivaaIllustrasjon from "@/assets/ros-detaljeringsnivaa.jpg";
 import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell } from "@/lib/ros-risk-criteria";
+import type { AttachedCalculation } from "@/components/fraviksdokumentasjon/BeregningSection";
+import { Flame, MoveVertical, Zap, Users, Box, Shield, Bolt, Calculator } from "lucide-react";
+
+const BEREGNING_IKONER: Record<AttachedCalculation["type"], React.ComponentType<{ size?: number; style?: React.CSSProperties }>> = {
+  straling: Flame,
+  flammehoyde: MoveVertical,
+  brannenergi: Zap,
+  persontall: Users,
+  omhyllingsflate: Box,
+  brannmotstand: Shield,
+  trafoeksplosjon: Bolt,
+};
 
 export interface RosHendelse {
   id: string;
