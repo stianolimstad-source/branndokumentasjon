@@ -881,8 +881,11 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 </thead>
                 <tbody>
                   {content.hendelser.map((h, i) => {
+                    const hm = migrerHendelse(h);
+                    const forsyning = hm.konsekvensvurderinger!.find((k) => k.dimensjon === "forsyningssikkerhet")!;
+                    const kForsyning = forsyning.score || h.konsekvens || 1;
+                    const kForsyningEtter = forsyning.scoreEtter ?? h.konsekvensEtter ?? kForsyning;
                     const sE = h.sannsynlighetEtter ?? h.sannsynlighet;
-                    const kE = h.konsekvensEtter ?? h.konsekvens;
                     const td = { ...tdStyle, fontSize: 9 };
                     return (
                       <React.Fragment key={h.id}>
@@ -892,17 +895,66 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         <td style={{ ...td, fontWeight: 600 }}>{h.hendelse || h.beskrivelse || h.tittel || "—"}</td>
                         <td style={td}>{h.arsak}</td>
                         <td style={td}>{h.beskrivelseSannsynlighetFor || ""}</td>
-                        <td style={td}>{h.beskrivelseRisikoFor || ""}</td>
+                        <td style={td}>{forsyning.begrunnelse || h.beskrivelseRisikoFor || ""}</td>
                         <td style={{ ...td, textAlign: "center" }}>{h.sannsynlighet}</td>
-                        <td style={{ ...td, textAlign: "center" }}>{h.konsekvens}</td>
-                        <td style={{ ...riskCellStyle(h.sannsynlighet, h.konsekvens), fontSize: 9 }}>{h.sannsynlighet * h.konsekvens}</td>
+                        <td style={{ ...td, textAlign: "center" }}>{kForsyning}</td>
+                        <td style={{ ...riskCellStyle(h.sannsynlighet, kForsyning), fontSize: 9 }}>{h.sannsynlighet * kForsyning}</td>
                         <td style={td}>{h.tiltak}</td>
                         <td style={td}>{h.beskrivelseEtter || ""}</td>
                         <td style={{ ...td, textAlign: "center" }}>{sE}</td>
-                        <td style={{ ...td, textAlign: "center" }}>{kE}</td>
-                        <td style={{ ...riskCellStyle(sE, kE), fontSize: 9 }}>{sE * kE}</td>
+                        <td style={{ ...td, textAlign: "center" }}>{kForsyningEtter}</td>
+                        <td style={{ ...riskCellStyle(sE, kForsyningEtter), fontSize: 9 }}>{sE * kForsyningEtter}</td>
                         <td style={td}>{h.restrisiko}</td>
                       </tr>
+                      {hm.konsekvensvurderinger && hm.konsekvensvurderinger.length > 0 && (
+                        <tr>
+                          <td colSpan={15} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
+                            <div style={{ border: "1px solid #e2e8f0", borderRadius: 4, padding: "6px 8px", background: "#fff" }}>
+                              <p style={{ fontSize: 9, fontWeight: 700, color: "#1e3a5f", margin: "0 0 4px 0" }}>
+                                Konsekvensvurderinger per dimensjon
+                              </p>
+                              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 9 }}>
+                                <thead>
+                                  <tr>
+                                    <th style={{ ...thStyle, fontSize: 9, padding: "4px 6px" }}>Dimensjon</th>
+                                    <th style={{ ...thStyle, fontSize: 9, padding: "4px 6px", textAlign: "center", width: 36 }}>Score</th>
+                                    <th style={{ ...thStyle, fontSize: 9, padding: "4px 6px", textAlign: "center", width: 44 }}>R (S×K)</th>
+                                    <th style={{ ...thStyle, fontSize: 9, padding: "4px 6px", textAlign: "center", width: 44 }}>Score etter</th>
+                                    <th style={{ ...thStyle, fontSize: 9, padding: "4px 6px", textAlign: "center", width: 44 }}>R etter</th>
+                                    <th style={{ ...thStyle, fontSize: 9, padding: "4px 6px" }}>Begrunnelse</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {hm.konsekvensvurderinger.map((kv, ki) => {
+                                    const kvSc = kv.score || 1;
+                                    const kvE = kv.scoreEtter;
+                                    const rowTd = { ...tdStyle, fontSize: 9, padding: "4px 6px" };
+                                    return (
+                                      <tr key={ki}>
+                                        <td style={{ ...rowTd, fontWeight: 600 }}>{DIMENSJON_NAVN[kv.dimensjon]}</td>
+                                        <td style={{ ...rowTd, textAlign: "center" }}>{kvSc}</td>
+                                        <td style={{ ...riskCellStyle(h.sannsynlighet, kvSc), fontSize: 9, padding: "4px 6px" }}>{h.sannsynlighet * kvSc}</td>
+                                        <td style={{ ...rowTd, textAlign: "center" }}>{kvE ?? "—"}</td>
+                                        <td style={kvE ? { ...riskCellStyle(sE, kvE), fontSize: 9, padding: "4px 6px" } : { ...rowTd, textAlign: "center", color: "#94a3b8" }}>
+                                          {kvE ? sE * kvE : "—"}
+                                        </td>
+                                        <td style={rowTd}>
+                                          {kv.begrunnelse || ""}
+                                          {kv.begrunnelseEtter ? (
+                                            <div style={{ marginTop: 2, color: "#475569", fontStyle: "italic" }}>
+                                              Etter: {kv.begrunnelseEtter}
+                                            </div>
+                                          ) : null}
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
                       {h.beregninger && h.beregninger.length > 0 && (
                         <tr>
                           <td colSpan={14} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
