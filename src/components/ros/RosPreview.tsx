@@ -926,8 +926,9 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                                 </thead>
                                 <tbody>
                                   {hm.konsekvensvurderinger.map((kv, ki) => {
-                                    const kvSc = kv.score || 1;
-                                    const kvE = kv.scoreEtter;
+                                    const isForsyn = kv.dimensjon === "forsyningssikkerhet";
+                                    const kvSc = isForsyn ? kForsyning : (kv.score || 1);
+                                    const kvE = isForsyn ? kForsyningEtter : kv.scoreEtter;
                                     const rowTd = { ...tdStyle, fontSize: 9, padding: "4px 6px" };
                                     return (
                                       <tr key={ki}>
