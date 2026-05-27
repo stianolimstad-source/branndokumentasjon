@@ -2,6 +2,18 @@ import React, { useRef, useState } from "react";
 import { risikoFarge } from "./RosMatriks";
 import rosNivaaIllustrasjon from "@/assets/ros-detaljeringsnivaa.jpg";
 import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell } from "@/lib/ros-risk-criteria";
+import type { AttachedCalculation } from "@/components/fraviksdokumentasjon/BeregningSection";
+import { Flame, MoveVertical, Zap, Users, Box, Shield, Bolt, type LucideIcon } from "lucide-react";
+
+const BEREGNING_IKONER: Record<AttachedCalculation["type"], LucideIcon> = {
+  straling: Flame,
+  flammehoyde: MoveVertical,
+  brannenergi: Zap,
+  persontall: Users,
+  omhyllingsflate: Box,
+  brannmotstand: Shield,
+  trafoeksplosjon: Bolt,
+};
 
 export interface RosHendelse {
   id: string;
@@ -20,6 +32,7 @@ export interface RosHendelse {
   sannsynlighetEtter?: number;
   konsekvensEtter?: number;
   restrisiko: string;
+  beregninger?: AttachedCalculation[];
 }
 
 export interface RosRevisjon {
@@ -829,7 +842,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                     const kE = h.konsekvensEtter ?? h.konsekvens;
                     const td = { ...tdStyle, fontSize: 9 };
                     return (
-                      <tr key={h.id}>
+                      <React.Fragment key={h.id}>
+                      <tr>
                         <td style={{ ...td, textAlign: "center", fontWeight: 600 }}>{i + 1}</td>
                         <td style={td}>{h.sarbarhet || ""}</td>
                         <td style={{ ...td, fontWeight: 600 }}>{h.hendelse || h.beskrivelse || h.tittel || "—"}</td>
@@ -846,6 +860,41 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         <td style={{ ...riskCellStyle(sE, kE), fontSize: 9 }}>{sE * kE}</td>
                         <td style={td}>{h.restrisiko}</td>
                       </tr>
+                      {h.beregninger && h.beregninger.length > 0 && (
+                        <tr>
+                          <td colSpan={14} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
+                            <div style={{ border: "1px solid #e2e8f0", borderRadius: 4, padding: "6px 8px", background: "#fff" }}>
+                              <p style={{ fontSize: 9, fontWeight: 700, color: "#1e3a5f", margin: "0 0 4px 0" }}>
+                                Beregningsgrunnlag ({h.beregninger.length} beregning{h.beregninger.length === 1 ? "" : "er"})
+                              </p>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                {h.beregninger.map((b) => {
+                                  const Icon = BEREGNING_IKONER[b.type];
+                                  return (
+                                    <div key={b.id} style={{ display: "flex", gap: 6, alignItems: "flex-start", fontSize: 9 }}>
+                                      {Icon && <Icon size={12} style={{ color: "#1e3a5f", marginTop: 1, flexShrink: 0 }} />}
+                                      <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ fontWeight: 600, color: "#1e3a5f" }}>{b.label}</div>
+                                        <div style={{ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 2 }}>
+                                          {Object.entries(b.results).map(([k, v]) => (
+                                            <span key={k} style={{ background: "#e8eef5", border: "1px solid #d0d7e2", borderRadius: 3, padding: "1px 5px", fontSize: 8.5 }}>
+                                              {k.replace(/_/g, " ")}: <strong>{String(v)}</strong>
+                                            </span>
+                                          ))}
+                                        </div>
+                                        {b.kommentar && (
+                                          <div style={{ fontStyle: "italic", color: "#475569", marginTop: 2, fontSize: 9 }}>{b.kommentar}</div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                      </React.Fragment>
                     );
                   })}
                 </tbody>

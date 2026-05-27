@@ -22,6 +22,7 @@ import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Downl
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import RosPreview, { type RosContent, type RosHendelse, type RosBowTie } from "@/components/ros/RosPreview";
+import BeregningSection from "@/components/fraviksdokumentasjon/BeregningSection";
 import UploadRosDialog, { type ExtractedRosData } from "@/components/ros/UploadRosDialog";
 import RosMatriks, { risikoFarge } from "@/components/ros/RosMatriks";
 import RosKriterier from "@/components/ros/RosKriterier";
@@ -306,6 +307,7 @@ export default function RosAnalyse() {
         beskrivelseEtter: "",
         sannsynlighetEtter: 1, konsekvensEtter: 1,
         restrisiko: "",
+        beregninger: [],
       }],
     }));
     setOpenHendelser((o) => [...o, id]);
@@ -613,7 +615,7 @@ export default function RosAnalyse() {
 
 
   const importHendelser = (data: ExtractedRosData, mode: "append" | "replace") => {
-    const nye: RosHendelse[] = data.hendelser.map((h) => ({ ...h, id: makeId() }));
+    const nye: RosHendelse[] = data.hendelser.map((h) => ({ ...h, id: makeId(), beregninger: (h as any).beregninger || [] }));
     setContent((c) => ({
       ...c,
       metadata: {
@@ -1113,6 +1115,16 @@ export default function RosAnalyse() {
                                 </div>
                               </div>
                             </div>
+                          </div>
+
+                          <div className="space-y-2 border-t pt-3">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Tilknyttede beregninger</p>
+                            <p className="text-xs text-muted-foreground">Knytt branntekniske beregninger til hendelsen for å dokumentere sannsynlighet- og konsekvensvurderingen.</p>
+                            <BeregningSection
+                              beregninger={h.beregninger || []}
+                              onChange={(beregninger) => updateHendelse(h.id, { beregninger })}
+                              fravikIndex={idx}
+                            />
                           </div>
 
                           <div className="space-y-2 border-t pt-3">
