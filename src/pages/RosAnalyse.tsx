@@ -296,6 +296,30 @@ export default function RosAnalyse() {
       hendelser: c.hendelser.map((h) => (h.id === id ? { ...h, ...patch } : h)),
     }));
   };
+  const oppdaterKonsekvensvurdering = (
+    h: RosHendelse,
+    dimensjon: KonsekvensDimensjon,
+    oppdatering: Partial<KonsekvensVurdering>,
+  ) => {
+    const nyeKV = (h.konsekvensvurderinger || []).map((kv) =>
+      kv.dimensjon === dimensjon ? { ...kv, ...oppdatering } : kv,
+    );
+    const oppdateringer: Partial<RosHendelse> = { konsekvensvurderinger: nyeKV };
+    if (dimensjon === "forsyningssikkerhet") {
+      if (oppdatering.score !== undefined) oppdateringer.konsekvens = oppdatering.score;
+      if (oppdatering.scoreEtter !== undefined) oppdateringer.konsekvensEtter = oppdatering.scoreEtter;
+    }
+    updateHendelse(h.id, oppdateringer);
+  };
+  const leggTilDimensjon = (h: RosHendelse, dimensjon: KonsekvensDimensjon) => {
+    const nye = [...(h.konsekvensvurderinger || []), { dimensjon, score: 1 as 1, begrunnelse: "" }];
+    updateHendelse(h.id, { konsekvensvurderinger: nye });
+  };
+  const fjernDimensjon = (h: RosHendelse, dimensjon: KonsekvensDimensjon) => {
+    if (dimensjon === "forsyningssikkerhet") return;
+    const nye = (h.konsekvensvurderinger || []).filter((kv) => kv.dimensjon !== dimensjon);
+    updateHendelse(h.id, { konsekvensvurderinger: nye });
+  };
   const addHendelse = () => {
     const id = makeId();
     setContent((c) => ({
