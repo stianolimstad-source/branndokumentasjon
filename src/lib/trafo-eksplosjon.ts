@@ -210,7 +210,8 @@ export function beregn(input: TrafoInput): Resultat {
   const hydrogen_advarsel = innendors && !b.rom_ventilasjon;
 
   // 7. Sannsynlighet — hendelsestre (CIGRE TB 537)
-  let intern_feil = 1.0 * oljeF.brannsannsynlighet;
+  const driftsfaktor = beregnDriftsfaktor(input.drift);
+  let intern_feil = 1.0 * oljeF.brannsannsynlighet * driftsfaktor;
   if (b.dga && b.temperaturovervaking) intern_feil *= 0.6;
 
   let arc = 40;
