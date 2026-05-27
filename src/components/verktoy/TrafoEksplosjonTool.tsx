@@ -436,6 +436,42 @@ const TrafoEksplosjonTool = () => {
             </div>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader>
+            <div className="flex flex-row items-center justify-between gap-2">
+              <CardTitle className="text-base">Driftstilstand</CardTitle>
+              <span className="text-xs text-muted-foreground">
+                Driftsfaktor: ×{driftsfaktor.toFixed(2).replace(".", ",")}
+              </span>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <Label>Trafoens alder (år)</Label>
+              <Input
+                type="number"
+                value={input.drift.alder_aar}
+                onChange={(e) => updD("alder_aar", +e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Måneder siden siste DGA-analyse</Label>
+              <Input
+                type="number"
+                value={input.drift.maaneder_siden_dga}
+                onChange={(e) => updD("maaneder_siden_dga", +e.target.value)}
+              />
+            </div>
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <Checkbox
+                checked={input.drift.overlast_historisk}
+                onCheckedChange={(v) => updD("overlast_historisk", !!v)}
+              />
+              <span>Trafoen har hatt historisk overlast utover skiltverdi</span>
+            </label>
+          </CardContent>
+        </Card>
       </div>
 
       {res.hydrogen_advarsel && (
