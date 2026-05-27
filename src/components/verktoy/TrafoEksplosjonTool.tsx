@@ -15,11 +15,40 @@ import { beregn, beregnDriftsfaktor, type TrafoInput, type Status, type Resultat
 import { TRAFO_CASES } from "@/lib/trafo-cases";
 
 const SCENARIOER = [
-  { navn: "Lavt", verdi: 1.5, beskrivelse: "Primærvern OK, kort bue" },
-  { navn: "Sannsynlig", verdi: 4.0, beskrivelse: "Primærvern OK, middels bue" },
-  { navn: "Høyt", verdi: 8.0, beskrivelse: "Primærvern feiler, reservevern utløser" },
-  { navn: "Worst case", verdi: 15.0, beskrivelse: "Lang bue og tregt reservevern" },
+  {
+    navn: "Lavt",
+    verdi: 1.5,
+    beskrivelse: "Primærvern OK, kort bue",
+    uttrykk: "Tilsvarer ca. 15 kA × 500 V × 200 ms eller 25 kA × 500 V × 120 ms. Typisk distribusjonstrafo med fungerende primærvern.",
+  },
+  {
+    navn: "Sannsynlig",
+    verdi: 4.0,
+    beskrivelse: "Primærvern OK, middels bue",
+    uttrykk: "Tilsvarer ca. 25 kA × 1000 V × 160 ms eller 20 kA × 1000 V × 200 ms. Typisk 132 kV regional trafo med primærvern.",
+  },
+  {
+    navn: "Høyt",
+    verdi: 8.0,
+    beskrivelse: "Primærvern feiler, reservevern utløser",
+    uttrykk: "Tilsvarer ca. 35 kA × 1000 V × 230 ms eller 25 kA × 1000 V × 320 ms. Typisk 132 kV-trafo der primærvern svikter og reservevern utløser.",
+  },
+  {
+    navn: "Worst case",
+    verdi: 15.0,
+    beskrivelse: "Lang bue og tregt reservevern",
+    uttrykk: "Tilsvarer ca. 40 kA × 2000 V × 190 ms eller 30 kA × 2000 V × 250 ms. Lang bue og tregt reservevern på stor trafo.",
+  },
 ];
+
+function scenarioFeedback(mj: number): string {
+  if (mj < 1) return "Tilsvarer under Lavt-scenariet";
+  if (mj < 3) return "Tilsvarer Lavt-scenariet";
+  if (mj < 6) return "Tilsvarer Sannsynlig-scenariet";
+  if (mj < 12) return "Tilsvarer Høyt-scenariet";
+  if (mj <= 20) return "Tilsvarer Worst case-scenariet";
+  return "Overskrider Worst case – sjekk at I_k og klareringstid er realistiske for ditt anlegg";
+}
 
 const REFERANSE_TESTER = [
   { mj: 0.65, forklaring: "Lav testenergi, kort bue" },
