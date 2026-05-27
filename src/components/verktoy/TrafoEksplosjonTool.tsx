@@ -308,16 +308,17 @@ const TrafoEksplosjonTool = () => {
       </Accordion>
 
       {/* INPUT */}
+      <TooltipProvider delayDuration={200}>
       <div className="grid lg:grid-cols-2 xl:grid-cols-4 gap-4">
         <Card>
           <CardHeader><CardTitle className="text-base">Trafo og olje</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <Label>Oljevolum (L)</Label>
+              <LabelWithHelp label="Oljevolum (L)" help={HELP.oljevolum} />
               <Input type="number" value={input.oljevolum_L} onChange={(e) => upd("oljevolum_L", +e.target.value)} />
             </div>
             <div>
-              <Label>Tanktype</Label>
+              <LabelWithHelp label="Tanktype" help={HELP.tanktype} />
               <Select value={input.tanktype} onValueChange={(v) => upd("tanktype", v as any)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -328,7 +329,7 @@ const TrafoEksplosjonTool = () => {
               </Select>
             </div>
             <div>
-              <Label>Oljetype</Label>
+              <LabelWithHelp label="Oljetype" help={HELP.oljetype} />
               <Select value={input.oljetype} onValueChange={(v) => upd("oljetype", v as any)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -341,17 +342,17 @@ const TrafoEksplosjonTool = () => {
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <Label>Spenning (kV)</Label>
+                <LabelWithHelp label="Spenning (kV)" help={HELP.spenning} />
                 <Input type="number" value={input.spenning_kV} onChange={(e) => upd("spenning_kV", +e.target.value)} />
               </div>
               <div>
-                <Label>Effekt (MVA)</Label>
+                <LabelWithHelp label="Effekt (MVA)" help={HELP.effekt} />
                 <Input type="number" value={input.effekt_MVA} onChange={(e) => upd("effekt_MVA", +e.target.value)} />
               </div>
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label>Buenergi</Label>
+                <LabelWithHelp label="Buenergi" help={HELP.buenergi} />
                 <span className="text-sm text-muted-foreground">
                   Brukes: <strong className="text-foreground">{input.buenergi_MJ.toFixed(2)} MJ</strong>
                 </span>
@@ -364,39 +365,43 @@ const TrafoEksplosjonTool = () => {
                 </TabsList>
 
                 <TabsContent value="scenario" className="pt-3">
-                  <TooltipProvider delayDuration={200}>
-                    <div className="grid grid-cols-2 gap-2">
-                      {SCENARIOER.map((s) => {
-                        const aktiv = Math.abs(input.buenergi_MJ - s.verdi) < 0.01;
-                        return (
-                          <Tooltip key={s.navn}>
-                            <TooltipTrigger asChild>
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant={aktiv ? "default" : "outline"}
-                                onClick={() => upd("buenergi_MJ", s.verdi)}
-                                className="flex flex-col h-auto py-2"
-                              >
-                                <span className="font-semibold">{s.navn}</span>
-                                <span className="text-xs opacity-80">{s.verdi.toFixed(1)} MJ</span>
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>{s.beskrivelse}</TooltipContent>
-                          </Tooltip>
-                        );
-                      })}
-                    </div>
-                  </TooltipProvider>
+                  <div className="grid grid-cols-2 gap-2">
+                    {SCENARIOER.map((s) => {
+                      const aktiv = Math.abs(input.buenergi_MJ - s.verdi) < 0.01;
+                      return (
+                        <Tooltip key={s.navn}>
+                          <TooltipTrigger asChild>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant={aktiv ? "default" : "outline"}
+                              onClick={() => upd("buenergi_MJ", s.verdi)}
+                              className="flex flex-col h-auto py-2"
+                            >
+                              <span className="font-semibold">{s.navn}</span>
+                              <span className="text-xs opacity-80">{s.verdi.toFixed(1)} MJ</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>{s.beskrivelse}</TooltipContent>
+                        </Tooltip>
+                      );
+                    })}
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="kortslutning" className="pt-3 space-y-3">
                   <div>
-                    <Label className="text-xs">Kortslutningsstrøm I_k (kA)</Label>
+                    <div className="flex items-center gap-1.5">
+                      <Label className="text-xs">Kortslutningsstrøm I_k (kA)</Label>
+                      <HelpIcon help={HELP.ik} />
+                    </div>
                     <Input type="number" value={ik_kA} onChange={(e) => setIk(+e.target.value)} />
                   </div>
                   <div>
-                    <Label className="text-xs">Buespenning U_bue</Label>
+                    <div className="flex items-center gap-1.5">
+                      <Label className="text-xs">Buespenning U_bue</Label>
+                      <HelpIcon help={HELP.ubue} />
+                    </div>
                     <Select value={String(uBue_V)} onValueChange={(v) => setUBue(+v)}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
@@ -407,7 +412,10 @@ const TrafoEksplosjonTool = () => {
                     </Select>
                   </div>
                   <div>
-                    <Label className="text-xs">Klareringstid t_klar</Label>
+                    <div className="flex items-center gap-1.5">
+                      <Label className="text-xs">Klareringstid t_klar</Label>
+                      <HelpIcon help={HELP.tklar} />
+                    </div>
                     <Select value={String(tKlar_ms)} onValueChange={(v) => setT(+v)}>
                       <SelectTrigger><SelectValue /></SelectTrigger>
                       <SelectContent>
@@ -436,31 +444,29 @@ const TrafoEksplosjonTool = () => {
                   />
                   <div className="rounded-md border p-2">
                     <div className="text-xs font-semibold mb-1.5">Referansetester (PLOS One 2015)</div>
-                    <TooltipProvider delayDuration={200}>
-                      <div className="flex flex-wrap gap-1">
-                        {REFERANSE_TESTER.map((r) => (
-                          <Tooltip key={r.mj}>
-                            <TooltipTrigger asChild>
-                              <Badge
-                                variant="outline"
-                                className="cursor-pointer"
-                                onClick={() => upd("buenergi_MJ", r.mj)}
-                              >
-                                {r.mj} MJ
-                              </Badge>
-                            </TooltipTrigger>
-                            <TooltipContent>{r.forklaring}</TooltipContent>
-                          </Tooltip>
-                        ))}
-                      </div>
-                    </TooltipProvider>
+                    <div className="flex flex-wrap gap-1">
+                      {REFERANSE_TESTER.map((r) => (
+                        <Tooltip key={r.mj}>
+                          <TooltipTrigger asChild>
+                            <Badge
+                              variant="outline"
+                              className="cursor-pointer"
+                              onClick={() => upd("buenergi_MJ", r.mj)}
+                            >
+                              {r.mj} MJ
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>{r.forklaring}</TooltipContent>
+                        </Tooltip>
+                      ))}
+                    </div>
                   </div>
                 </TabsContent>
               </Tabs>
             </div>
             <div>
               <div className="flex items-center justify-between">
-                <Label>Tankkapasitet elastisk (MJ)</Label>
+                <LabelWithHelp label="Tankkapasitet elastisk (MJ)" help={HELP.tankkapasitet} />
                 {tankkapManuellOverstyrt && (
                   <Button
                     type="button"
@@ -496,7 +502,7 @@ const TrafoEksplosjonTool = () => {
           <CardHeader><CardTitle className="text-base">Plassering</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <Label>Plassering</Label>
+              <LabelWithHelp label="Plassering" help={HELP.plassering} />
               <Select value={input.plassering} onValueChange={(v) => upd("plassering", v as any)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -506,15 +512,15 @@ const TrafoEksplosjonTool = () => {
               </Select>
             </div>
             <div>
-              <Label>Avstand til personell/utstyr (m)</Label>
+              <LabelWithHelp label="Avstand til personell/utstyr (m)" help={HELP.avstand_personell} />
               <Input type="number" value={input.avstand_personell_m} onChange={(e) => upd("avstand_personell_m", +e.target.value)} />
             </div>
             <div>
-              <Label>Avstand til maskinhall/kontrollbygg (m)</Label>
+              <LabelWithHelp label="Avstand til maskinhall/kontrollbygg (m)" help={HELP.avstand_maskinhall} />
               <Input type="number" value={input.avstand_maskinhall_m} onChange={(e) => upd("avstand_maskinhall_m", +e.target.value)} />
             </div>
             <div>
-              <Label>Oljegruve / bassengareal (m²)</Label>
+              <LabelWithHelp label="Oljegruve / bassengareal (m²)" help={HELP.basseng} />
               <Input type="number" value={input.basseng_areal_m2} onChange={(e) => upd("basseng_areal_m2", +e.target.value)} />
               {input.basseng_areal_m2 < res.containment_paakrevd_m2 && (
                 <Alert variant="warning" className="mt-2">
@@ -573,7 +579,7 @@ const TrafoEksplosjonTool = () => {
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <Label>Trafoens alder (år)</Label>
+              <LabelWithHelp label="Trafoens alder (år)" help={HELP.alder} />
               <Input
                 type="number"
                 value={input.drift.alder_aar}
@@ -581,7 +587,7 @@ const TrafoEksplosjonTool = () => {
               />
             </div>
             <div>
-              <Label>Måneder siden siste DGA-analyse</Label>
+              <LabelWithHelp label="Måneder siden siste DGA-analyse" help={HELP.dga_maaneder} />
               <Input
                 type="number"
                 value={input.drift.maaneder_siden_dga}
@@ -594,10 +600,13 @@ const TrafoEksplosjonTool = () => {
                 onCheckedChange={(v) => updD("overlast_historisk", !!v)}
               />
               <span>Trafoen har hatt historisk overlast utover skiltverdi</span>
+              <HelpIcon help={HELP.overlast} />
             </label>
           </CardContent>
         </Card>
       </div>
+      </TooltipProvider>
+
 
       {res.hydrogen_advarsel && (
         <Alert variant="destructive">
