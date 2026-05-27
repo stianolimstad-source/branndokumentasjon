@@ -1134,12 +1134,11 @@ export default function RosAnalyse() {
                                   <div key={kv.dimensjon} className="border rounded-md p-2 space-y-2">
                                     <div className="flex items-center justify-between gap-2">
                                       <Badge variant="secondary" className="text-xs">{DIMENSJON_NAVN[kv.dimensjon]}</Badge>
-                                      {kv.dimensjon !== "forsyningssikkerhet" && (
-                                        <Button variant="ghost" size="icon" className="h-6 w-6"
-                                          onClick={() => fjernDimensjon(h, kv.dimensjon)}>
-                                          <Trash2 className="h-3.5 w-3.5" />
-                                        </Button>
-                                      )}
+                                      <Button variant="ghost" size="icon" className="h-6 w-6"
+                                        onClick={() => fjernDimensjon(h, kv.dimensjon)}>
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                      </Button>
+
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
                                       <div>
