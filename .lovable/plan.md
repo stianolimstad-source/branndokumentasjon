@@ -1,40 +1,38 @@
 ## Endringer i `src/lib/trafo-eksplosjon.ts`
 
-1. Endre `Resultat.sannsynlighet` til:
+1. Utvid `TrafoInput` med:
 ```ts
-sannsynlighet: {
-  intern_feil_aarlig_pct: number;
-  arc_gitt_feil_pct: number;
-  tankbrudd_gitt_arc_pct: number;
-  brann_gitt_brudd_pct: number;
-  eskalering_gitt_brann_pct: number;
-  total_eskalering_aarlig_pct: number;
-  total_levetid40_pct: number;
+drift: {
+  alder_aar: number;
+  maaneder_siden_dga: number;
+  overlast_historisk: boolean;
 }
 ```
 
-2. I `beregn()`, erstatt nåværende `aarlig`/`levetid40`-blokk med:
+2. I `beregn()`, etter at `intern_feil` er beregnet, multipliser med driftsfaktoren:
+- `alderF = alder_aar > 30 ? 1.5 : alder_aar >= 20 ? 1.2 : 1.0`
+- `dgaF = maaneder_siden_dga > 24 ? 1.3 : maaneder_siden_dga >= 12 ? 1.1 : 1.0`
+- `overlastF = overlast_historisk ? 1.4 : 1.0`
+- `driftsfaktor = alderF * dgaF * overlastF`
+- `intern_feil *= driftsfaktor`
 
-- `intern_feil = 1.0 * oljeF.brannsannsynlighet`, deretter `* 0.6` hvis `b.dga && b.temperaturovervaking`.
-- `arc = 40`; hvis `b.bucholtz && b.differensialvern` → 15; ellers hvis `b.differensialvern` → 25.
-- `tankbrudd` basert på `tankMargin` (allerede beregnet): `<0.5` → 5; `<0.85` → 15; `<1.3` → 50; ellers 90.
-- `brann = 70 * oljeF.brannsannsynlighet`.
-- `eskalering = 50`; hvis `b.brannmur_EI >= 120 && b.deluge_vannspray` → 20; hvis i tillegg `b.brannmur_EI === 240` → 10.
-- `total_aarlig_pct = (intern/100) * (arc/100) * (tankbrudd/100) * (brann/100) * (eskalering/100) * 100`.
-- `levetid40 = (1 - (1 - total_aarlig_pct/100)^40) * 100`.
-
-3. Returner alle syv feltene i `sannsynlighet`-objektet.
+(Beregn faktoren før den brukes; ingen endring i resterende sannsynlighetsberegning siden den allerede bruker `intern_feil`.)
 
 ## Endringer i `src/components/verktoy/TrafoEksplosjonTool.tsx`
 
-Erstatt Sannsynlighet-kortets innhold (linjer 489–495) med et hendelsestre:
+1. Legg til `drift: { alder_aar: 20, maaneder_siden_dga: 12, overlast_historisk: false }` i `defaultInput`.
 
-- Fem rader (intern feil, arc gitt feil, tankbrudd gitt arc, brann gitt brudd, eskalering gitt brann), hver med label, prosentverdi (1 desimal) og en nedover-pil (`ArrowDown` fra lucide) mellom radene.
-- Bruk semantiske tokens (`bg-muted`, `text-foreground`, `text-muted-foreground`, `border`).
-- Under treet: en tydelig blokk med
-  - "Total årlig eskaleringssannsynlighet: **X %**" (formatert med passende antall desimaler, f.eks. `toFixed(3)` siden tallene blir små)
-  - "Kumulert over 40 år: **Y %**" (`toFixed(1)`)
-- Importere `ArrowDown` fra `lucide-react`.
+2. Endre input-grid fra `lg:grid-cols-3` til `lg:grid-cols-2 xl:grid-cols-4` slik at det er plass til et fjerde kort. (Kortene flyter naturlig på smale skjermer.)
+
+3. Legg til hjelper `updD` analogt med `updB` for å oppdatere `drift`-felter.
+
+4. Beregn driftsfaktor lokalt i komponenten (samme logikk som i biblioteket) for visning ved siden av kort-tittelen: `Driftsfaktor: ×1,32` (`toFixed(2)` med komma).
+
+5. Nytt `<Card>` «Driftstilstand» som fjerde kort, med:
+   - `CardTitle` som flex-rad: tittel + liten `text-xs text-muted-foreground` badge med driftsfaktor.
+   - Tallinput «Trafoens alder (år)»
+   - Tallinput «Måneder siden siste DGA-analyse»
+   - Checkbox «Trafoen har hatt historisk overlast utover skiltverdi»
 
 ## Filer
 

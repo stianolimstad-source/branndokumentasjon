@@ -11,7 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CheckCircle2, AlertTriangle, XCircle, ArrowDown } from "lucide-react";
-import { beregn, type TrafoInput, type Status, type Resultat } from "@/lib/trafo-eksplosjon";
+import { beregn, beregnDriftsfaktor, type TrafoInput, type Status, type Resultat } from "@/lib/trafo-eksplosjon";
 import { TRAFO_CASES } from "@/lib/trafo-cases";
 
 const SCENARIOER = [
@@ -56,6 +56,11 @@ const defaultInput: TrafoInput = {
     rom_ventilasjon: false,
     
   },
+  drift: {
+    alder_aar: 20,
+    maaneder_siden_dga: 12,
+    overlast_historisk: false,
+  },
 };
 
 const StatusIcon = ({ s }: { s: Status }) => {
@@ -90,6 +95,9 @@ const TrafoEksplosjonTool = () => {
   const upd = <K extends keyof TrafoInput>(k: K, v: TrafoInput[K]) => setInput((p) => ({ ...p, [k]: v }));
   const updB = <K extends keyof TrafoInput["barrierer"]>(k: K, v: TrafoInput["barrierer"][K]) =>
     setInput((p) => ({ ...p, barrierer: { ...p.barrierer, [k]: v } }));
+  const updD = <K extends keyof TrafoInput["drift"]>(k: K, v: TrafoInput["drift"][K]) =>
+    setInput((p) => ({ ...p, drift: { ...p.drift, [k]: v } }));
+  const driftsfaktor = useMemo(() => beregnDriftsfaktor(input.drift), [input.drift]);
 
   const autoTankkap = useMemo(
     () => beregnTankkapasitet(input.oljevolum_L, input.tanktype, input.spenning_kV),
@@ -175,7 +183,7 @@ const TrafoEksplosjonTool = () => {
       </Accordion>
 
       {/* INPUT */}
-      <div className="grid lg:grid-cols-3 gap-4">
+      <div className="grid lg:grid-cols-2 xl:grid-cols-4 gap-4">
         <Card>
           <CardHeader><CardTitle className="text-base">Trafo og olje</CardTitle></CardHeader>
           <CardContent className="space-y-3">
@@ -426,6 +434,42 @@ const TrafoEksplosjonTool = () => {
                 </SelectContent>
               </Select>
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <div className="flex flex-row items-center justify-between gap-2">
+              <CardTitle className="text-base">Driftstilstand</CardTitle>
+              <span className="text-xs text-muted-foreground">
+                Driftsfaktor: ×{driftsfaktor.toFixed(2).replace(".", ",")}
+              </span>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <Label>Trafoens alder (år)</Label>
+              <Input
+                type="number"
+                value={input.drift.alder_aar}
+                onChange={(e) => updD("alder_aar", +e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Måneder siden siste DGA-analyse</Label>
+              <Input
+                type="number"
+                value={input.drift.maaneder_siden_dga}
+                onChange={(e) => updD("maaneder_siden_dga", +e.target.value)}
+              />
+            </div>
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <Checkbox
+                checked={input.drift.overlast_historisk}
+                onCheckedChange={(v) => updD("overlast_historisk", !!v)}
+              />
+              <span>Trafoen har hatt historisk overlast utover skiltverdi</span>
+            </label>
           </CardContent>
         </Card>
       </div>
