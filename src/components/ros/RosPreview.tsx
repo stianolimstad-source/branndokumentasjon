@@ -1110,7 +1110,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
               return (
                 <div key={bt.id} style={{ marginTop: idx === 0 ? 6 : 28, pageBreakInside: "avoid" }}>
                   <h3 style={{ ...h3, fontSize: 13 }}>
-                    4.{idx + 1} {bt.navn || "Uten navn"}
+                    5.{idx + 1} {bt.navn || "Uten navn"}
                   </h3>
                   {bt.beskrivelse && <p style={pStyle}>{bt.beskrivelse}</p>}
 
