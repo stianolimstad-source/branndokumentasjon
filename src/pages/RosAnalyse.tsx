@@ -1085,7 +1085,7 @@ export default function RosAnalyse() {
                             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Før tiltak</p>
                             <Area label="Beskrivelse av sannsynlighet" value={h.beskrivelseSannsynlighetFor || ""} onChange={(v) => updateHendelse(h.id, { beskrivelseSannsynlighetFor: v })} rows={2} />
                             <Area label="Beskrivelse av risiko / konsekvens" value={h.beskrivelseRisikoFor || ""} onChange={(v) => updateHendelse(h.id, { beskrivelseRisikoFor: v })} rows={2} />
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 items-end">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 items-end">
                               <div>
                                 <Label className="text-xs">Sannsynlighet (1–5)</Label>
                                 <Select value={String(h.sannsynlighet)} onValueChange={(v) => updateHendelse(h.id, { sannsynlighet: Number(v) })}>
@@ -1094,21 +1094,6 @@ export default function RosAnalyse() {
                                     {[1,2,3,4,5].map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
                                   </SelectContent>
                                 </Select>
-                              </div>
-                              <div>
-                                <Label className="text-xs">Konsekvens (1–5)</Label>
-                                <Select value={String(h.konsekvens)} onValueChange={(v) => updateHendelse(h.id, { konsekvens: Number(v) })}>
-                                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                                  <SelectContent>
-                                    {[1,2,3,4,5].map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
-                                  </SelectContent>
-                                </Select>
-                              </div>
-                              <div>
-                                <Label className="text-xs">Risiko (S × K)</Label>
-                                <div className={`h-9 rounded-md border flex items-center justify-center text-sm font-semibold ${cls}`}>
-                                  {h.sannsynlighet * h.konsekvens}
-                                </div>
                               </div>
                             </div>
                           </div>
