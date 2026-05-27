@@ -496,6 +496,105 @@ export const exportRosToWord = async (options: ExportOptions) => {
     return blocks;
   };
 
+  const dimRowShading = (score: number | undefined, s: number) => {
+    if (!score) return undefined;
+    if (score === 5 || (score === 4 && s > 3)) {
+      return { fill: FARGE_HEX.rod, type: ShadingType.CLEAR, color: "auto" };
+    }
+    if (score === 4) {
+      return { fill: FARGE_HEX.gul, type: ShadingType.CLEAR, color: "auto" };
+    }
+    return undefined;
+  };
+  const dimTextColor = (score: number | undefined, s: number): string | undefined => {
+    if (!score) return undefined;
+    if (score === 5 || (score === 4 && s > 3)) return FARGE_TEKST.rod;
+    if (score === 4) return FARGE_TEKST.gul;
+    return undefined;
+  };
+
+  const buildKonsekvensSubTabell = (h: RosHendelse, hm: RosHendelse): Table => {
+    const sE = h.sannsynlighetEtter ?? h.sannsynlighet;
+    const subHeader = new TableRow({
+      children: [
+        new TableCell({
+          width: { size: 18, type: WidthType.PERCENTAGE },
+          shading: tableHeaderShading(theme),
+          children: [new Paragraph({ children: [text("Dimensjon", { bold: true, size: 14, color: "FFFFFF" })] })],
+        }),
+        new TableCell({
+          width: { size: 8, type: WidthType.PERCENTAGE },
+          shading: tableHeaderShading(theme),
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text("Score", { bold: true, size: 14, color: "FFFFFF" })] })],
+        }),
+        new TableCell({
+          width: { size: 8, type: WidthType.PERCENTAGE },
+          shading: tableHeaderShading(theme),
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text("R", { bold: true, size: 14, color: "FFFFFF" })] })],
+        }),
+        new TableCell({
+          width: { size: 8, type: WidthType.PERCENTAGE },
+          shading: tableHeaderShading(theme),
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text("Score etter", { bold: true, size: 14, color: "FFFFFF" })] })],
+        }),
+        new TableCell({
+          width: { size: 8, type: WidthType.PERCENTAGE },
+          shading: tableHeaderShading(theme),
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text("R etter", { bold: true, size: 14, color: "FFFFFF" })] })],
+        }),
+        new TableCell({
+          width: { size: 50, type: WidthType.PERCENTAGE },
+          shading: tableHeaderShading(theme),
+          children: [new Paragraph({ children: [text("Begrunnelse", { bold: true, size: 14, color: "FFFFFF" })] })],
+        }),
+      ],
+    });
+
+    const subRows = (hm.konsekvensvurderinger || []).map((kv) => {
+      const rowShade = dimRowShading(kv.score, h.sannsynlighet);
+      const rowFg = dimTextColor(kv.score, h.sannsynlighet);
+      const rDim = h.sannsynlighet * (kv.score || 0);
+      const rDimE = kv.scoreEtter ? sE * kv.scoreEtter : null;
+      const begrunnelseText = [
+        kv.begrunnelse?.trim() || "",
+        kv.begrunnelseEtter?.trim() ? `Etter tiltak: ${kv.begrunnelseEtter.trim()}` : "",
+      ].filter(Boolean).join("\n");
+      const begrunnelseParas = begrunnelseText
+        ? begrunnelseText.split("\n").map((line) => new Paragraph({ children: [text(line, { size: 14, color: rowFg })] }))
+        : [new Paragraph({ children: [text("", { size: 14 })] })];
+      return new TableRow({
+        children: [
+          new TableCell({
+            shading: rowShade,
+            children: [new Paragraph({ children: [text(DIMENSJON_NAVN[kv.dimensjon], { bold: true, size: 14, color: rowFg })] })],
+          }),
+          new TableCell({
+            shading: rowShade,
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text(String(kv.score ?? "—"), { bold: true, size: 14, color: rowFg })] })],
+          }),
+          new TableCell({
+            shading: kv.score ? risikoShading(h.sannsynlighet, kv.score) : rowShade,
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text(String(rDim || "—"), { bold: true, size: 14, color: kv.score ? risikoTekstFarge(h.sannsynlighet, kv.score) : rowFg })] })],
+          }),
+          new TableCell({
+            shading: rowShade,
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text(kv.scoreEtter ? String(kv.scoreEtter) : "—", { bold: true, size: 14, color: rowFg })] })],
+          }),
+          new TableCell({
+            shading: rDimE !== null && kv.scoreEtter ? risikoShading(sE, kv.scoreEtter) : rowShade,
+            children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text(rDimE !== null ? String(rDimE) : "—", { bold: true, size: 14, color: rDimE !== null && kv.scoreEtter ? risikoTekstFarge(sE, kv.scoreEtter) : rowFg })] })],
+          }),
+          new TableCell({
+            shading: rowShade,
+            children: begrunnelseParas,
+          }),
+        ],
+      });
+    });
+
+    return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [subHeader, ...subRows] });
+  };
+
   const hendelseRows: TableRow[] = [hendelseHeader];
   content.hendelser.forEach((h, i) => {
     const r = h.sannsynlighet * h.konsekvens;
