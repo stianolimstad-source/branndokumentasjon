@@ -615,7 +615,7 @@ export default function RosAnalyse() {
 
 
   const importHendelser = (data: ExtractedRosData, mode: "append" | "replace") => {
-    const nye: RosHendelse[] = data.hendelser.map((h) => ({ ...h, id: makeId(), beregninger: (h as any).beregninger || [] }));
+    const nye: RosHendelse[] = data.hendelser.map((h) => migrerHendelse({ ...h, id: makeId(), beregninger: (h as any).beregninger || [] } as RosHendelse));
     setContent((c) => ({
       ...c,
       metadata: {
