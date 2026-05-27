@@ -1,24 +1,33 @@
-## Endringsplan: Referanseverdier-tabell i veiledningen
+## Sjekkliste-accordion for kundeinformasjon
 
 ### Fil: `src/components/verktoy/TrafoEksplosjonTool.tsx`
 
-1. **Importer Table-komponenter**
-   Legg til import av `Table`, `TableHeader`, `TableBody`, `TableHead`, `TableRow`, `TableCell` fra `@/components/ui/table`.
+1. **Legg til ny `AccordionItem value="sjekkliste"`** rett etter `kilder`-elementet (linje 927), inne i samme `Accordion`.
 
-2. **Legg til ny seksjon i veiledningen**
-   Sett inn en ny `<section>` rett før den avsluttende `<p className="text-xs text-muted-foreground pt-2 border-t">`-noten i `AccordionContent`.
+2. **Innhold:** Tittel "Sjekkliste – informasjon å innhente fra kunde". Innholdet skal inneholde:
+   - En `id="trafo-sjekkliste"` wrapper rundt selve listen for print-targeting.
+   - En "Skriv ut sjekkliste"-knapp øverst til høyre (`Button variant="outline" size="sm"` med `Printer`-ikon fra lucide-react) som kaller `window.print()`.
+   - Fem seksjoner, hver med `<h4>` som inneholder `CheckCircle2 className="h-4 w-4 text-green-600"` + tittel, etterfulgt av `<ul className="list-disc pl-6 text-sm">`-punkter:
+     - **Trafo og olje:** Typeskilt/datablad. Oljevolum (L/kg), tanktype (conservator/hermetisk/corrugated), oljetype (mineral/ester), nominell spenning HV og LV, nominell effekt MVA, idriftsettingsår, tankens trykkbestandighet hvis testet.
+     - **Elektrisk og vern:** Kortslutningsstrøm I_k på begge spenningssider, oversikt over installert vern (Bucholtz, differensialvern 87T, jordfeilvern), målte klareringstider for primær-/reservevern, siste relévern-koordinering.
+     - **Plassering og geometri:** Plassering innendørs/utendørs, avstand til personellsone, avstand til maskinhall/verdifull bygning, oljegruvens areal og dybde, ventilasjon (hvis innendørs).
+     - **Brannteknisk:** Eksisterende brannmurer (EI-klasse), aktivt slokkesystem (deluge/vannspray/vanntåke), oljeavskiller i avløp, brannvarslingsanlegg, deteksjon (Bucholtz, røyk, varme).
+     - **Drift og tilstand:** Driftsalder, lasthistorikk (kontinuerlig overlast?), siste DGA-analyse (dato/resultat), siste hovedrevisjon, oljebehandling/regenerering, kjente feilmodi/historikk.
 
-   Seksjonen inneholder:
-   - Overskrift: `<h4>Referanseverdier – typiske norske vannkraftstasjoner</h4>`
-   - En `Table` med følgende kolonner: **Anleggstype**, **Effekt**, **Spenning HV**, **Oljevolum**, **Kortslutningsstrøm I_k**, **Buenergi typisk worst case**
-   - 4 datarader:
-     - Småkraft (mindre enn 10 MW): 1–15 MVA / 22 eller 66 kV / 2 000–10 000 L / 5–15 kA / 0,5–3 MJ
-     - Mellomstor stasjon (10–100 MW): 15–150 MVA / 66 eller 132 kV / 10 000–30 000 L / 15–30 kA / 2–8 MJ
-     - Stort kraftverk (100–300 MW): 150–300 MVA / 132 eller 300 kV / 30 000–70 000 L / 30–50 kA / 5–15 MJ
-     - Storkraftverk (over 300 MW): 300–1100 MVA / 300 eller 420 kV / 50 000–100 000 L / 40–60 kA / 10–25 MJ
-   - Under tabellen: Kommentarparagraf med teksten: «Tallene er typiske intervaller for nye/moderne norske anlegg. Eldre trafoer kan ha vesentlig høyere buenergi-eksponering på grunn av langsommere reléinnstillinger og lavere kortslutningsbidrag fra nettet. Sjekk konkrete prosjektverdier mot leverandør og nettselskap.»
+3. **Print-stylesheet:** Legg til en `<style>`-tag innenfor accordion-innholdet (eller helst en globalt scoped `media="print"`-blokk) som skjuler alle elementer unntatt `#trafo-sjekkliste`:
+   ```css
+   @media print {
+     body * { visibility: hidden; }
+     #trafo-sjekkliste, #trafo-sjekkliste * { visibility: visible; }
+     #trafo-sjekkliste { position: absolute; left: 0; top: 0; width: 100%; }
+     .no-print { display: none !important; }
+   }
+   ```
+   Print-knappen får klasse `no-print`. Stylesheet plasseres som en lokal `<style>`-tag inne i komponenten.
+
+4. **Imports:** Legg til `Printer` i lucide-react-importen ved siden av `CheckCircle2` (allerede importert).
 
 ### Tekniske detaljer
-- Bruker eksisterende shadcn/ui `Table`-komponent som allerede finnes i prosjektet (`src/components/ui/table.tsx`).
-- Ingen endringer i logikk, beregninger eller datastrukturer – ren presentasjonsendring.
-- Tabellen plasseres som siste seksjon i veiledningen, før den avsluttende noten.
+- Ren presentasjonsendring, ingen state eller beregningslogikk.
+- `window.print()` kalles direkte på knappklikk.
+- Print-CSS scoped via `@media print` så det ikke påvirker normal visning.

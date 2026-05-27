@@ -11,7 +11,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
-import { CheckCircle2, AlertTriangle, XCircle, ArrowDown, HelpCircle } from "lucide-react";
+import { CheckCircle2, AlertTriangle, XCircle, ArrowDown, HelpCircle, Printer } from "lucide-react";
 import { beregn, beregnDriftsfaktor, type TrafoInput, type Status, type Resultat } from "@/lib/trafo-eksplosjon";
 import { TRAFO_CASES } from "@/lib/trafo-cases";
 
@@ -923,6 +923,92 @@ const TrafoEksplosjonTool = () => {
             <p className="text-xs text-muted-foreground mt-3">
               Verdiene er forenklede ingeniøranslag basert på skalering av referansetester. Skal verifiseres mot primærkilder og prosjektspesifikke forutsetninger før bruk i prosjektering.
             </p>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="sjekkliste">
+          <AccordionTrigger>Sjekkliste – informasjon å innhente fra kunde</AccordionTrigger>
+          <AccordionContent>
+            <style>{`
+              @media print {
+                body * { visibility: hidden !important; }
+                #trafo-sjekkliste, #trafo-sjekkliste * { visibility: visible !important; }
+                #trafo-sjekkliste { position: absolute; left: 0; top: 0; width: 100%; padding: 16px; }
+                .no-print { display: none !important; }
+              }
+            `}</style>
+            <div className="flex justify-end mb-3 no-print">
+              <Button variant="outline" size="sm" onClick={() => window.print()}>
+                <Printer className="h-4 w-4 mr-2" /> Skriv ut sjekkliste
+              </Button>
+            </div>
+            <div id="trafo-sjekkliste" className="space-y-5 text-sm">
+              <h3 className="text-base font-semibold">Sjekkliste – informasjon å innhente fra kunde</h3>
+              {[
+                {
+                  tittel: "Trafo og olje",
+                  punkter: [
+                    "Typeskilt eller datablad",
+                    "Oljevolum (L eller kg)",
+                    "Tanktype (conservator / hermetisk / corrugated)",
+                    "Oljetype (mineral / ester)",
+                    "Nominell spenning HV og LV",
+                    "Nominell effekt MVA",
+                    "Idriftsettingsår",
+                    "Tankens trykkbestandighet hvis testet",
+                  ],
+                },
+                {
+                  tittel: "Elektrisk og vern",
+                  punkter: [
+                    "Kortslutningsstrøm I_k på begge spenningssider (nettselskap eller intern kortslutningsanalyse)",
+                    "Oversikt over installert vern (Bucholtz, differensialvern 87T, jordfeilvern)",
+                    "Målte klareringstider for primær- og reservevern",
+                    "Siste relévern-koordinering",
+                  ],
+                },
+                {
+                  tittel: "Plassering og geometri",
+                  punkter: [
+                    "Plassering innendørs eller utendørs",
+                    "Avstand fra trafo til nærmeste personellsone",
+                    "Avstand til maskinhall eller annen verdifull bygning",
+                    "Oljegruvens areal og dybde",
+                    "Ventilasjon (hvis innendørs)",
+                  ],
+                },
+                {
+                  tittel: "Brannteknisk",
+                  punkter: [
+                    "Eksisterende brannmurer (EI-klasse)",
+                    "Aktivt slokkesystem (deluge / vannspray / vanntåke)",
+                    "Oljeavskiller i avløp",
+                    "Brannvarslingsanlegg",
+                    "Deteksjon (Bucholtz, røyk, varme)",
+                  ],
+                },
+                {
+                  tittel: "Drift og tilstand",
+                  punkter: [
+                    "Driftsalder",
+                    "Lasthistorikk (kontinuerlig overlast?)",
+                    "Siste DGA-analyse (dato og resultat)",
+                    "Siste hovedrevisjon",
+                    "Oljebehandling / regenerering utført",
+                    "Kjente feilmodi eller historikk",
+                  ],
+                },
+              ].map((gruppe) => (
+                <section key={gruppe.tittel}>
+                  <h4 className="font-semibold flex items-center gap-2 mb-1">
+                    <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    {gruppe.tittel}
+                  </h4>
+                  <ul className="list-disc pl-8 space-y-0.5">
+                    {gruppe.punkter.map((p) => <li key={p}>{p}</li>)}
+                  </ul>
+                </section>
+              ))}
+            </div>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
