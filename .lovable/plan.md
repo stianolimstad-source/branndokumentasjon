@@ -1,32 +1,52 @@
-## Endring i `src/lib/ros-word-export.ts`
+# Fremheving av beregningsseksjon i RosAnalyse
 
-Legg vedlagte beregninger inn i Word-eksporten under hver hendelse i kap. 3-tabellen.
+Kun visuelle/strukturelle endringer i `src/pages/RosAnalyse.tsx`. Ingen logikkendringer.
 
-### Steg
+## Endringer
 
-1. **Utvid `text`-hjelperen** (linje 101–102) til å støtte `italics?: boolean` slik at kommentaren kan rendres i kursiv. Bakoverkompatibelt.
+### 1. Imports
+- Legg `Calculator` til i `lucide-react`-importen (linje 21).
+- `Card`, `CardContent` og `Badge` er allerede importert.
 
-2. **Lokal label-map** like før kap. 3-blokken:
-   ```ts
-   const BEREGNING_LABELS: Record<string, string> = {
-     straling: "Strålingsberegning",
-     flammehoyde: "Flammehøyde",
-     brannenergi: "Brannenergi",
-     persontall: "Persontallsberegning",
-     omhyllingsflate: "Omhyllingsflate",
-     brannmotstand: "Brannmotstand",
-     trafoeksplosjon: "Trafoeksplosjon",
-   };
-   ```
+### 2. Flytt og restyle seksjonen "Tilknyttede beregninger"
+Fjern dagens blokk på linje 1120–1128 og sett den inn rett etter "Forebyggende tiltak"-blokken (etter linje 1087), altså før "Etter tiltak"-blokken (linje 1089).
 
-3. **Hjelpefunksjon `buildBeregningerBlock(beregninger)`** som returnerer `(Paragraph | Table)[]`:
-   - H4-paragraf: `new Paragraph({ heading: HeadingLevel.HEADING_4, children: [text("Beregningsgrunnlag", { bold: true, size: 18 })] })`.
-   - For hver beregning:
-     - Paragraph med fet tekst `"{BEREGNING_LABELS[type] ?? type} – {label}"` (size 16).
-     - To-kolonners `Table` (`WidthType.PERCENTAGE`, 100 %) som bruker eksisterende `smallHeader`/`smallCell`-mønster: header `Parameter` (30 %) / `Verdi` (70 %), deretter én rad per `Object.entries(b.results)` med nøkkel formattert via `replace(/_/g, " ")` og verdi som `String(v)`.
-     - Hvis `b.kommentar?.trim()`: én paragraf «Kommentar:» (fet, size 16) og én paragraf med kommentaren i kursiv (`italics: true`, size 16).
-   - Avsluttende tom paragraph for luft.
+Ny markup:
 
-4. **Legg inn etter hendelsesraden** (rundt linje 482, inne i `content.hendelser.forEach`): hvis `h.beregninger && h.beregninger.length > 0`, push en ekstra `TableRow` med én `TableCell` som har `columnSpan: 15` og `children: buildBeregningerBlock(h.beregninger)`. Dette holder beregningene logisk koblet til hendelsen, mellom restrisiko-feltet og neste hendelse.
+```tsx
+<Card className="border-2 border-primary/30 bg-primary/5">
+  <CardContent className="pt-4 space-y-2">
+    <div className="flex items-center gap-2">
+      <Calculator className="h-4 w-4 text-primary" />
+      <p className="text-sm font-bold">Tilknyttede beregninger</p>
+    </div>
+    <p className="text-xs text-muted-foreground">
+      Knytt branntekniske beregningsverktøy til hendelsen – f.eks. trafoeksplosjon,
+      strålingsberegning eller flammehøyde. Importerte beregninger blir med i Word-rapporten.
+    </p>
+    <BeregningSection
+      beregninger={h.beregninger || []}
+      onChange={(beregninger) => updateHendelse(h.id, { beregninger })}
+      fravikIndex={idx}
+    />
+  </CardContent>
+</Card>
+```
 
-5. Ingen andre filer berøres. Stil og font følger eksisterende `font`/`theme`/`tableHeaderShading`-mønster fra kap. 3.
+Den gamle `<div className="space-y-2 border-t pt-3">`-wrapperen droppes; Card-en står som egen visuell blokk i `AccordionContent`-stacken.
+
+### 3. Badge på AccordionTrigger
+I trigger-blokken (linje 1004–1034), rett etter Bow-tie-badgen (etter linje 1025), legg til:
+
+```tsx
+{(h.beregninger?.length ?? 0) > 0 && (
+  <Badge variant="secondary" className="shrink-0 text-xs">
+    {h.beregninger!.length} {h.beregninger!.length === 1 ? "beregning" : "beregninger"}
+  </Badge>
+)}
+```
+
+Plasseres før risiko-pillen (`ml-auto` på risiko-spanen sørger fortsatt for høyrejustering av S×K-tallene).
+
+## Filer som endres
+- `src/pages/RosAnalyse.tsx`
