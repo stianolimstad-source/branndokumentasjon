@@ -594,10 +594,18 @@ export const exportRosToWord = async (options: ExportOptions) => {
 
   const hendelseRows: TableRow[] = [hendelseHeader];
   content.hendelser.forEach((h, i) => {
-    const r = h.sannsynlighet * h.konsekvens;
+    const hm0 = migrerHendelse(h);
+    const forsyning0 = hm0.konsekvensvurderinger?.find((k) => k.dimensjon === "forsyningssikkerhet");
+    const kForsyning = forsyning0?.score;
+    const kForsyningEtter = forsyning0?.scoreEtter;
     const sE = h.sannsynlighetEtter ?? h.sannsynlighet;
-    const kE = h.konsekvensEtter ?? h.konsekvens;
-    const rE = sE * kE;
+    const r = kForsyning ? h.sannsynlighet * kForsyning : null;
+    const rE = kForsyningEtter ? sE * kForsyningEtter : null;
+    const dashCell = (pct: number) =>
+      new TableCell({
+        width: { size: pct, type: WidthType.PERCENTAGE },
+        children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text("—", { size: 14, color: "94A3B8" })] })],
+      });
     hendelseRows.push(
       new TableRow({
         children: [
@@ -606,37 +614,42 @@ export const exportRosToWord = async (options: ExportOptions) => {
           smallCell(h.hendelse || h.beskrivelse || h.tittel || "—", 9, true),
           smallCell(h.arsak || "", 7),
           smallCell(h.beskrivelseSannsynlighetFor || "", 8),
-          smallCell(h.beskrivelseRisikoFor || "", 8),
+          smallCell(forsyning0?.begrunnelse || h.beskrivelseRisikoFor || "", 8),
           smallCell(String(h.sannsynlighet), 3),
-          smallCell(String(h.konsekvens), 3),
-          new TableCell({
-            width: { size: 4, type: WidthType.PERCENTAGE },
-            shading: risikoShading(h.sannsynlighet, h.konsekvens),
-            children: [
-              new Paragraph({
-                alignment: AlignmentType.CENTER,
-                children: [text(String(r), { bold: true, size: 16, color: risikoTekstFarge(h.sannsynlighet, h.konsekvens) })],
-              }),
-            ],
-          }),
+          kForsyning ? smallCell(String(kForsyning), 3) : dashCell(3),
+          kForsyning
+            ? new TableCell({
+                width: { size: 4, type: WidthType.PERCENTAGE },
+                shading: risikoShading(h.sannsynlighet, kForsyning),
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [text(String(r), { bold: true, size: 16, color: risikoTekstFarge(h.sannsynlighet, kForsyning) })],
+                  }),
+                ],
+              })
+            : dashCell(4),
           smallCell(h.tiltak || "", 9),
           smallCell(h.beskrivelseEtter || "", 9),
           smallCell(String(sE), 3),
-          smallCell(String(kE), 3),
-          new TableCell({
-            width: { size: 4, type: WidthType.PERCENTAGE },
-            shading: risikoShading(sE, kE),
-            children: [
-              new Paragraph({
-                alignment: AlignmentType.CENTER,
-                children: [text(String(rE), { bold: true, size: 16, color: risikoTekstFarge(sE, kE) })],
-              }),
-            ],
-          }),
+          kForsyningEtter ? smallCell(String(kForsyningEtter), 3) : dashCell(3),
+          kForsyningEtter
+            ? new TableCell({
+                width: { size: 4, type: WidthType.PERCENTAGE },
+                shading: risikoShading(sE, kForsyningEtter),
+                children: [
+                  new Paragraph({
+                    alignment: AlignmentType.CENTER,
+                    children: [text(String(rE), { bold: true, size: 16, color: risikoTekstFarge(sE, kForsyningEtter) })],
+                  }),
+                ],
+              })
+            : dashCell(4),
           smallCell(h.restrisiko || "", 9),
         ],
       }),
     );
+
     if (h.beregninger && h.beregninger.length > 0) {
       const ids = h.beregninger.map((_, bi) => `B${i + 1}.${bi + 1}`).join(", ");
       hendelseRows.push(
