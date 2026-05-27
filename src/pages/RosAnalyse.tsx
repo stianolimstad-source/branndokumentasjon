@@ -313,13 +313,22 @@ export default function RosAnalyse() {
   };
   const leggTilDimensjon = (h: RosHendelse, dimensjon: KonsekvensDimensjon) => {
     const nye = [...(h.konsekvensvurderinger || []), { dimensjon, score: 1 as 1, begrunnelse: "" }];
-    updateHendelse(h.id, { konsekvensvurderinger: nye });
+    const oppdateringer: Partial<RosHendelse> = { konsekvensvurderinger: nye };
+    if (dimensjon === "forsyningssikkerhet") {
+      oppdateringer.konsekvens = 1;
+    }
+    updateHendelse(h.id, oppdateringer);
   };
   const fjernDimensjon = (h: RosHendelse, dimensjon: KonsekvensDimensjon) => {
-    if (dimensjon === "forsyningssikkerhet") return;
     const nye = (h.konsekvensvurderinger || []).filter((kv) => kv.dimensjon !== dimensjon);
-    updateHendelse(h.id, { konsekvensvurderinger: nye });
+    const oppdateringer: Partial<RosHendelse> = { konsekvensvurderinger: nye };
+    if (dimensjon === "forsyningssikkerhet") {
+      oppdateringer.konsekvens = 0 as any;
+      oppdateringer.konsekvensEtter = undefined;
+    }
+    updateHendelse(h.id, oppdateringer);
   };
+
   const addHendelse = () => {
     const id = makeId();
     setContent((c) => ({
@@ -328,16 +337,18 @@ export default function RosAnalyse() {
         id, tittel: "",
         sarbarhet: "", hendelse: "", arsak: "",
         beskrivelseSannsynlighetFor: "", beskrivelseRisikoFor: "",
-        sannsynlighet: 1, konsekvens: 1,
+        sannsynlighet: 1, konsekvens: 0,
         tiltak: "",
         beskrivelseEtter: "",
-        sannsynlighetEtter: 1, konsekvensEtter: 1,
+        sannsynlighetEtter: 1,
         restrisiko: "",
         beregninger: [],
-      }],
+        konsekvensvurderinger: [],
+      } as RosHendelse],
     }));
     setOpenHendelser((o) => [...o, id]);
   };
+
   const removeHendelse = (id: string) => {
     setContent((c) => ({
       ...c,
@@ -1123,12 +1134,11 @@ export default function RosAnalyse() {
                                   <div key={kv.dimensjon} className="border rounded-md p-2 space-y-2">
                                     <div className="flex items-center justify-between gap-2">
                                       <Badge variant="secondary" className="text-xs">{DIMENSJON_NAVN[kv.dimensjon]}</Badge>
-                                      {kv.dimensjon !== "forsyningssikkerhet" && (
-                                        <Button variant="ghost" size="icon" className="h-6 w-6"
-                                          onClick={() => fjernDimensjon(h, kv.dimensjon)}>
-                                          <Trash2 className="h-3.5 w-3.5" />
-                                        </Button>
-                                      )}
+                                      <Button variant="ghost" size="icon" className="h-6 w-6"
+                                        onClick={() => fjernDimensjon(h, kv.dimensjon)}>
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                      </Button>
+
                                     </div>
                                     <div className="grid grid-cols-2 gap-2">
                                       <div>

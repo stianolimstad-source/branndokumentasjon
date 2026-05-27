@@ -32,8 +32,9 @@ export default function RosMatriks({ highlight, size = "md" }: RosMatriksProps) 
   return (
     <div className="inline-block">
       <p className="text-xs text-muted-foreground mb-2 max-w-md">
-        Viser konsekvensdimensjonen forsyningssikkerhet. Visning per dimensjon kommer i senere fase.
+        Viser konsekvensdimensjonen forsyningssikkerhet for hendelser som har denne dimensjonen vurdert. Hendelser uten forsyningssikkerhet-vurdering vises ikke i matrisen.
       </p>
+
       <div className="flex">
         <div className="w-8" />
         {kCols.map((k) => (

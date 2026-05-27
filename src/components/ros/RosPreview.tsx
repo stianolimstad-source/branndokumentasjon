@@ -56,26 +56,28 @@ export interface RosHendelse {
 }
 
 /**
- * Sikrer at en hendelse har et `konsekvensvurderinger`-array med
- * forsyningssikkerhet som første rad. Migrerer gamle felter (`konsekvens`,
- * `konsekvensEtter`, `beskrivelseRisikoFor`) til en forsyningssikkerhet-rad.
+ * Sørger for at en hendelse har et `konsekvensvurderinger`-array. Migrerer
+ * KUN gamle hendelser med legacy-feltet `konsekvens` (men ingen vurderinger)
+ * til én forsyningssikkerhet-rad. Nye hendelser uten dimensjoner returneres
+ * med tom liste – ingen dimensjon påtvinges.
  */
 export function migrerHendelse(h: RosHendelse): RosHendelse {
   const eksisterende = Array.isArray(h.konsekvensvurderinger) ? h.konsekvensvurderinger : [];
-  const harForsyning = eksisterende.some((k) => k?.dimensjon === "forsyningssikkerhet");
-  if (eksisterende.length > 0 && harForsyning) return { ...h, konsekvensvurderinger: eksisterende };
-  const forsyning: KonsekvensVurdering = {
-    dimensjon: "forsyningssikkerhet",
-    score: h.konsekvens || 1,
-    begrunnelse: h.beskrivelseRisikoFor || "",
-    scoreEtter: h.konsekvensEtter,
-    begrunnelseEtter: "",
-  };
-  return {
-    ...h,
-    konsekvensvurderinger: [forsyning, ...eksisterende.filter((k) => k?.dimensjon !== "forsyningssikkerhet")],
-  };
+  if (eksisterende.length > 0) return { ...h, konsekvensvurderinger: eksisterende };
+  // Legacy-migrering: konverter h.konsekvens til én forsyningssikkerhet-rad
+  if (typeof h.konsekvens === "number" && h.konsekvens > 0) {
+    const forsyning: KonsekvensVurdering = {
+      dimensjon: "forsyningssikkerhet",
+      score: (h.konsekvens as 1|2|3|4|5) || 1,
+      begrunnelse: h.beskrivelseRisikoFor || "",
+      scoreEtter: h.konsekvensEtter as 1|2|3|4|5 | undefined,
+      begrunnelseEtter: "",
+    };
+    return { ...h, konsekvensvurderinger: [forsyning] };
+  }
+  return { ...h, konsekvensvurderinger: [] };
 }
+
 
 
 export interface RosRevisjon {
@@ -882,11 +884,13 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 <tbody>
                   {content.hendelser.map((h, i) => {
                     const hm = migrerHendelse(h);
-                    const kForsyning = h.konsekvens || 1;
-                    const kForsyningEtter = h.konsekvensEtter ?? kForsyning;
-                    const forsyning = hm.konsekvensvurderinger!.find((k) => k.dimensjon === "forsyningssikkerhet")!;
+                    const forsyning = hm.konsekvensvurderinger?.find((k) => k.dimensjon === "forsyningssikkerhet");
+                    const kForsyning = forsyning?.score;
+                    const kForsyningEtter = forsyning?.scoreEtter;
                     const sE = h.sannsynlighetEtter ?? h.sannsynlighet;
                     const td = { ...tdStyle, fontSize: 9 };
+                    const tdCenter = { ...td, textAlign: "center" as const };
+                    const tdMuted = { ...tdCenter, color: "#94a3b8" };
                     return (
                       <React.Fragment key={h.id}>
                       <tr>
@@ -895,20 +899,25 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         <td style={{ ...td, fontWeight: 600 }}>{h.hendelse || h.beskrivelse || h.tittel || "—"}</td>
                         <td style={td}>{h.arsak}</td>
                         <td style={td}>{h.beskrivelseSannsynlighetFor || ""}</td>
-                        <td style={td}>{forsyning.begrunnelse || h.beskrivelseRisikoFor || ""}</td>
-                        <td style={{ ...td, textAlign: "center" }}>{h.sannsynlighet}</td>
-                        <td style={{ ...td, textAlign: "center" }}>{kForsyning}</td>
-                        <td style={{ ...riskCellStyle(h.sannsynlighet, kForsyning), fontSize: 9 }}>{h.sannsynlighet * kForsyning}</td>
+                        <td style={td}>{forsyning?.begrunnelse || h.beskrivelseRisikoFor || ""}</td>
+                        <td style={tdCenter}>{h.sannsynlighet}</td>
+                        <td style={kForsyning ? tdCenter : tdMuted}>{kForsyning ?? "—"}</td>
+                        <td style={kForsyning ? { ...riskCellStyle(h.sannsynlighet, kForsyning), fontSize: 9 } : tdMuted}>{kForsyning ? h.sannsynlighet * kForsyning : "—"}</td>
                         <td style={td}>{h.tiltak}</td>
                         <td style={td}>{h.beskrivelseEtter || ""}</td>
-                        <td style={{ ...td, textAlign: "center" }}>{sE}</td>
-                        <td style={{ ...td, textAlign: "center" }}>{kForsyningEtter}</td>
-                        <td style={{ ...riskCellStyle(sE, kForsyningEtter), fontSize: 9 }}>{sE * kForsyningEtter}</td>
+                        <td style={tdCenter}>{sE}</td>
+                        <td style={kForsyningEtter ? tdCenter : tdMuted}>{kForsyningEtter ?? "—"}</td>
+                        <td style={kForsyningEtter ? { ...riskCellStyle(sE, kForsyningEtter), fontSize: 9 } : tdMuted}>{kForsyningEtter ? sE * kForsyningEtter : "—"}</td>
                         <td style={td}>{h.restrisiko}</td>
                       </tr>
-                      {hm.konsekvensvurderinger && hm.konsekvensvurderinger.length > 0 && (
-                        <tr>
-                          <td colSpan={15} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
+
+                      <tr>
+                        <td colSpan={15} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
+                          {(!hm.konsekvensvurderinger || hm.konsekvensvurderinger.length === 0) ? (
+                            <span style={{ fontSize: 9, fontStyle: "italic", color: "#64748b" }}>
+                              Ingen konsekvensdimensjoner vurdert
+                            </span>
+                          ) : (
                             <div style={{ border: "1px solid #e2e8f0", borderRadius: 4, padding: "6px 8px", background: "#fff" }}>
                               <p style={{ fontSize: 9, fontWeight: 700, color: "#1e3a5f", margin: "0 0 4px 0" }}>
                                 Konsekvensvurderinger per dimensjon
@@ -926,9 +935,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                                 </thead>
                                 <tbody>
                                   {hm.konsekvensvurderinger.map((kv, ki) => {
-                                    const isForsyn = kv.dimensjon === "forsyningssikkerhet";
-                                    const kvSc = isForsyn ? kForsyning : (kv.score || 1);
-                                    const kvE = isForsyn ? kForsyningEtter : kv.scoreEtter;
+                                    const kvSc = kv.score || 1;
+                                    const kvE = kv.scoreEtter;
                                     const rowTd = { ...tdStyle, fontSize: 9, padding: "4px 6px" };
                                     return (
                                       <tr key={ki}>
@@ -953,9 +961,10 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                                 </tbody>
                               </table>
                             </div>
-                          </td>
-                        </tr>
-                      )}
+                          )}
+                        </td>
+                      </tr>
+
                       {h.beregninger && h.beregninger.length > 0 && (
                         <tr>
                           <td colSpan={15} style={{ ...tdStyle, padding: "4px 10px", background: "#f7f9fc" }}>
