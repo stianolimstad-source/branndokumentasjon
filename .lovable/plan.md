@@ -1,38 +1,40 @@
 ## Endringer i `src/lib/trafo-eksplosjon.ts`
 
-1. Utvid `TrafoInput` med:
+1. Utvid `Resultat` med nytt felt:
 ```ts
-drift: {
-  alder_aar: number;
-  maaneder_siden_dga: number;
-  overlast_historisk: boolean;
+compliance: {
+  krav: { navn: string; standard: string; oppfylt: boolean; kommentar: string }[];
+  oppfylt_antall: number;
+  totalt_antall: number;
+  prosent: number;
 }
 ```
 
-2. I `beregn()`, etter at `intern_feil` er beregnet, multipliser med driftsfaktoren:
-- `alderF = alder_aar > 30 ? 1.5 : alder_aar >= 20 ? 1.2 : 1.0`
-- `dgaF = maaneder_siden_dga > 24 ? 1.3 : maaneder_siden_dga >= 12 ? 1.1 : 1.0`
-- `overlastF = overlast_historisk ? 1.4 : 1.0`
-- `driftsfaktor = alderF * dgaF * overlastF`
-- `intern_feil *= driftsfaktor`
+2. I `beregn()`, etter at `containment_ok`, `minAvstand` og barrierer er kjent, bygg listen med 7 krav:
 
-(Beregn faktoren før den brukes; ingen endring i resterende sannsynlighetsberegning siden den allerede bruker `intern_feil`.)
+- **Min. avstand 9,1 m** (IEEE 979) — `min(avstand_personell, avstand_maskinhall) >= 9.1`. Kommentar viser faktisk minste avstand.
+- **Brannmur EI ≥ 120** (NFPA 850 / NEK 440) — innendørs: `brannmur_EI >= 120`; utendørs: `brannmur_EI >= 60`. Kommentar viser valgt EI-klasse + krav for plasseringen.
+- **Oljegruve dimensjonert** (NFPA 850) — `containment_ok`. Kommentar viser påkrevd areal vs faktisk.
+- **Trykkavlastning** (CIGRE TB 537) — `barrierer.bristeskive`.
+- **Indre vern (Bucholtz + 87T)** (Standard praksis) — `bucholtz && differensialvern`.
+- **Slokkesystem (deluge/vannspray)** (NFPA 850 anbefalt) — `deluge_vannspray`.
+- **Romventilasjon** (CIGRE TB 537) — `rom_ventilasjon || plassering === "utendørs"`. Kommentar nevner at det ikke er relevant utendørs.
+
+3. Beregn `oppfylt_antall = krav.filter(k => k.oppfylt).length`, `totalt_antall = 7`, `prosent = oppfylt_antall / 7 * 100`. Returner i `compliance`.
 
 ## Endringer i `src/components/verktoy/TrafoEksplosjonTool.tsx`
 
-1. Legg til `drift: { alder_aar: 20, maaneder_siden_dga: 12, overlast_historisk: false }` i `defaultInput`.
+1. Importer `CheckCircle2` og `XCircle` fra `lucide-react`.
 
-2. Endre input-grid fra `lg:grid-cols-3` til `lg:grid-cols-2 xl:grid-cols-4` slik at det er plass til et fjerde kort. (Kortene flyter naturlig på smale skjermer.)
+2. Nytt `<Card>` «Standardoppfyllelse» plassert rett over sannsynlighet/hendelsestre-kortet.
 
-3. Legg til hjelper `updD` analogt med `updB` for å oppdatere `drift`-felter.
-
-4. Beregn driftsfaktor lokalt i komponenten (samme logikk som i biblioteket) for visning ved siden av kort-tittelen: `Driftsfaktor: ×1,32` (`toFixed(2)` med komma).
-
-5. Nytt `<Card>` «Driftstilstand» som fjerde kort, med:
-   - `CardTitle` som flex-rad: tittel + liten `text-xs text-muted-foreground` badge med driftsfaktor.
-   - Tallinput «Trafoens alder (år)»
-   - Tallinput «Måneder siden siste DGA-analyse»
-   - Checkbox «Trafoen har hatt historisk overlast utover skiltverdi»
+3. Layout:
+   - Stor prosentangivelse øverst (`text-4xl font-bold`) med fargeklasse basert på terskel:
+     - `>= 85` → `text-green-600` (dark: `text-green-500`)
+     - `60–85` → `text-yellow-600`
+     - `< 60` → `text-red-600`
+   - Liten tabell under (bruker `Table`-komponenter eller en enkel grid) med kolonner: ikon, navn, standard, kommentar. `CheckCircle2` grønn for oppfylt, `XCircle` rød for ikke oppfylt.
+   - Bunntekst: `«X av 7 anbefalte tiltak iht. NFPA 850, IEEE 979 og CIGRE TB 537 er oppfylt.»` med `text-sm text-muted-foreground`.
 
 ## Filer
 
