@@ -98,8 +98,8 @@ export const exportRosToWord = async (options: ExportOptions) => {
   const m = content.metadata;
   const dateStr = m.dato || new Date().toISOString().slice(0, 10);
 
-  const text = (t: string, opts: { bold?: boolean; size?: number; color?: string } = {}) =>
-    new TextRun({ text: t, font, bold: opts.bold, size: opts.size ?? 22, color: opts.color });
+  const text = (t: string, opts: { bold?: boolean; size?: number; color?: string; italics?: boolean } = {}) =>
+    new TextRun({ text: t, font, bold: opts.bold, italics: opts.italics, size: opts.size ?? 22, color: opts.color });
 
   const para = (t: string, opts?: { bold?: boolean; size?: number }) =>
     new Paragraph({ children: [text(t, opts)] });

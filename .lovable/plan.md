@@ -1,30 +1,32 @@
-## Mål
-Knytt branntekniske beregninger til hver ROS-hendelse, og vis dem i forhåndsvisningen.
+## Endring i `src/lib/ros-word-export.ts`
 
-## Endringer
+Legg vedlagte beregninger inn i Word-eksporten under hver hendelse i kap. 3-tabellen.
 
-### 1. `src/components/ros/RosPreview.tsx`
-- Importer `AttachedCalculation` fra `@/components/fraviksdokumentasjon/BeregningSection`.
-- Utvid `RosHendelse`-interfacet med valgfritt felt `beregninger?: AttachedCalculation[]`.
-- I hendelsestabellen (rundt linje 827, `content.hendelser.map`): etter den eksisterende `<tr>` for hendelsen, render en ekstra `<tr>` som spenner alle kolonner (`colSpan`) **bare hvis `h.beregninger?.length`**. Innholdet er en kompakt boks:
-  - Tittel: `Beregningsgrunnlag (X beregninger)`
-  - Liste per beregning: lite ikon (samme `calculatorTypes`-mapping som i `BeregningSection` — gjenbruk gjennom lokal map fra `type` → `lucide-react`-ikon), label, og chips for `results` i samme stil som i `BeregningSection` (`nøkkel: verdi`).
-  - Hvis `kommentar` finnes, vis den i kursiv under chipsene.
-  - Boksen styles inline med samme PDF-vennlige paletten som resten av previewen (lys bakgrunn, `border: 1px solid #e2e8f0`, små fontstørrelser ≈ 9–10px).
-- Vis ingenting hvis det ikke finnes beregninger.
+### Steg
 
-### 2. `src/pages/RosAnalyse.tsx`
-- Importer `BeregningSection` fra `@/components/fraviksdokumentasjon/BeregningSection`.
-- I hendelse-editoren (rundt linje 1084, mellom seksjonen «Forebyggende tiltak» og «Etter tiltak»/«Restrisiko»): legg inn en ny blokk **etter tiltak-feltet og før restrisiko-feltet** (eller etter «Etter tiltak»-blokken, men før restrisiko). Plassering i samsvar med brukerens spesifikasjon: under «Tiltak», før «Restrisiko».
-  - Liten overskrift «Tilknyttede beregninger» (samme typografi som de andre `uppercase tracking-wide`-overskriftene).
-  - Hjelpetekst: «Knytt branntekniske beregninger til hendelsen for å dokumentere sannsynlighet- og konsekvensvurderingen».
-  - `<BeregningSection beregninger={h.beregninger || []} onChange={(beregninger) => updateHendelse(h.id, { beregninger })} fravikIndex={index} />` (bruker eksisterende `index` fra `.map`).
-- Konstruksjon av nye `RosHendelse`-objekter:
-  - Linje ~301 (manuell ny hendelse): legg til `beregninger: []`.
-  - Linjer ~386, ~426, ~547 (AI-generert / kap. 3-hentede hendelser): legg til `beregninger: []`.
-  - Linje ~616 (`data.hendelser.map(...)` ved import): bevar evt. eksisterende `h.beregninger`, ellers `[]`.
+1. **Utvid `text`-hjelperen** (linje 101–102) til å støtte `italics?: boolean` slik at kommentaren kan rendres i kursiv. Bakoverkompatibelt.
 
-## Tekniske notater
-- `AttachedCalculation` har felter `id`, `type`, `label`, `inputs`, `results`, `kommentar` — disse brukes som de er.
-- Word-eksport av ROS-rapport berøres ikke i denne omgangen (kun preview + skjema).
-- Ingen endringer i datalagring/DB nødvendig — feltet serialiseres automatisk som del av `RosContent`-JSON.
+2. **Lokal label-map** like før kap. 3-blokken:
+   ```ts
+   const BEREGNING_LABELS: Record<string, string> = {
+     straling: "Strålingsberegning",
+     flammehoyde: "Flammehøyde",
+     brannenergi: "Brannenergi",
+     persontall: "Persontallsberegning",
+     omhyllingsflate: "Omhyllingsflate",
+     brannmotstand: "Brannmotstand",
+     trafoeksplosjon: "Trafoeksplosjon",
+   };
+   ```
+
+3. **Hjelpefunksjon `buildBeregningerBlock(beregninger)`** som returnerer `(Paragraph | Table)[]`:
+   - H4-paragraf: `new Paragraph({ heading: HeadingLevel.HEADING_4, children: [text("Beregningsgrunnlag", { bold: true, size: 18 })] })`.
+   - For hver beregning:
+     - Paragraph med fet tekst `"{BEREGNING_LABELS[type] ?? type} – {label}"` (size 16).
+     - To-kolonners `Table` (`WidthType.PERCENTAGE`, 100 %) som bruker eksisterende `smallHeader`/`smallCell`-mønster: header `Parameter` (30 %) / `Verdi` (70 %), deretter én rad per `Object.entries(b.results)` med nøkkel formattert via `replace(/_/g, " ")` og verdi som `String(v)`.
+     - Hvis `b.kommentar?.trim()`: én paragraf «Kommentar:» (fet, size 16) og én paragraf med kommentaren i kursiv (`italics: true`, size 16).
+   - Avsluttende tom paragraph for luft.
+
+4. **Legg inn etter hendelsesraden** (rundt linje 482, inne i `content.hendelser.forEach`): hvis `h.beregninger && h.beregninger.length > 0`, push en ekstra `TableRow` med én `TableCell` som har `columnSpan: 15` og `children: buildBeregningerBlock(h.beregninger)`. Dette holder beregningene logisk koblet til hendelsen, mellom restrisiko-feltet og neste hendelse.
+
+5. Ingen andre filer berøres. Stil og font følger eksisterende `font`/`theme`/`tableHeaderShading`-mønster fra kap. 3.
