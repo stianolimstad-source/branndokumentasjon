@@ -5745,6 +5745,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.14 §11-17 Tilrettelegging for slokkemannskap */}
+            <FravikPreviewRow paragrafId="11-16" fravikList={fravikList} />
             <tr id="preview-3-14" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.{isBF85 ? "13" : "14"} &nbsp;&nbsp; {isBF85 ? <>Atkomst for brannvesenet (Kap. 30:92/94/95) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-17 Tilrettelegging for slokkemannskap)</span></> : "§11-17 Tilrettelegging for slokkemannskap"}</td>
             </tr>
