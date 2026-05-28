@@ -3570,14 +3570,14 @@ const Konsept = () => {
                                 <SelectItem value="Museum">Museum</SelectItem>
                                 <SelectItem value="Salgslokale">Salgslokale</SelectItem>
                                 <SelectItem value="Teaterlokale">Teaterlokale</SelectItem>
-                                <SelectItem value="Trafikkterminaler">Trafikkterminaler</SelectItem>
+                                <SelectItem value="Trafikkterminal">Trafikkterminal</SelectItem>
                                 <SelectItem value="Tribuneanlegg for mer enn 150 personer">Tribuneanlegg for mer enn 150 personer</SelectItem>
                                 {/* Risikoklasse 6 */}
                                 <SelectItem value="Arrestlokaler og fengsel">Arrestlokaler og fengsel</SelectItem>
                                 <SelectItem value="Asylmottak og transittmottak">Asylmottak og transittmottak</SelectItem>
                                 <SelectItem value="Bolig beregnet for personer med behov for heldøgns pleie og omsorg">Bolig for heldøgns pleie og omsorg</SelectItem>
                                 <SelectItem value="Bolig spesielt tilrettelagt og beregnet for personer med funksjonsnedsettelse, inkl. alders- og seniorboliger">Bolig for funksjonsnedsettelse/seniorboliger</SelectItem>
-                                <SelectItem value="Forlegning og leirskole">Forlegning og leirskole</SelectItem>
+                                <SelectItem value="Feriekoloni og leirskole">Feriekoloni og leirskole</SelectItem>
                                 <SelectItem value="Overnattingssted og hotell">Overnattingssted og hotell</SelectItem>
                                 <SelectItem value="Pleieinstitusjon">Pleieinstitusjon</SelectItem>
                                 <SelectItem value="Sykehus og sykehjem">Sykehus og sykehjem</SelectItem>
@@ -3783,13 +3783,13 @@ const Konsept = () => {
                                         <SelectItem value="Museum">Museum</SelectItem>
                                         <SelectItem value="Salgslokale">Salgslokale</SelectItem>
                                         <SelectItem value="Teaterlokale">Teaterlokale</SelectItem>
-                                        <SelectItem value="Trafikkterminaler">Trafikkterminaler</SelectItem>
+                                        <SelectItem value="Trafikkterminal">Trafikkterminal</SelectItem>
                                         <SelectItem value="Tribuneanlegg for mer enn 150 personer">Tribuneanlegg for mer enn 150</SelectItem>
                                         <SelectItem value="Arrestlokaler og fengsel">Arrestlokaler og fengsel</SelectItem>
                                         <SelectItem value="Asylmottak og transittmottak">Asylmottak og transittmottak</SelectItem>
                                         <SelectItem value="Bolig beregnet for personer med behov for heldøgns pleie og omsorg">Bolig for heldøgns pleie</SelectItem>
                                         <SelectItem value="Bolig spesielt tilrettelagt og beregnet for personer med funksjonsnedsettelse, inkl. alders- og seniorboliger">Bolig for funksjonsnedsettelse</SelectItem>
-                                        <SelectItem value="Forlegning og leirskole">Forlegning og leirskole</SelectItem>
+                                        <SelectItem value="Feriekoloni og leirskole">Feriekoloni og leirskole</SelectItem>
                                         <SelectItem value="Overnattingssted og hotell">Overnattingssted og hotell</SelectItem>
                                         <SelectItem value="Pleieinstitusjon">Pleieinstitusjon</SelectItem>
                                         <SelectItem value="Sykehus og sykehjem">Sykehus og sykehjem</SelectItem>
