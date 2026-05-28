@@ -99,7 +99,6 @@ const bygningsTypeRisikoklasseMap: Record<string, string> = {
   "Trafo eller fordelingsstasjon": "RK2",
   // Risikoklasse 3
   "Barnehage": "RK3",
-  "Fritidshjem": "RK3",
   "Skole": "RK3",
   // Risikoklasse 4
   "Barnehjem": "RK4",
@@ -120,14 +119,14 @@ const bygningsTypeRisikoklasseMap: Record<string, string> = {
   "Museum": "RK5",
   "Salgslokale": "RK5",
   "Teaterlokale": "RK5",
-  "Trafikkterminaler": "RK5",
+  "Trafikkterminal": "RK5",
   "Tribuneanlegg for mer enn 150 personer": "RK5",
   // Risikoklasse 6
   "Arrestlokaler og fengsel": "RK6",
   "Asylmottak og transittmottak": "RK6",
   "Bolig beregnet for personer med behov for heldøgns pleie og omsorg": "RK6",
   "Bolig spesielt tilrettelagt og beregnet for personer med funksjonsnedsettelse, inkl. alders- og seniorboliger": "RK6",
-  "Forlegning og leirskole": "RK6",
+  "Feriekoloni og leirskole": "RK6",
   "Overnattingssted og hotell": "RK6",
   "Pleieinstitusjon": "RK6",
   "Sykehus og sykehjem": "RK6",
