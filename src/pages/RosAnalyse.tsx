@@ -1793,7 +1793,65 @@ export default function RosAnalyse() {
                                 onChange={(e) => updateHendelse(h.id, { foreslatteTiltak: e.target.value, tiltak: e.target.value })}
                               />
                             </div>
+
+                            {(() => {
+                              const tIder = byggTiltakIder(content.tiltaksplan || []);
+                              const tilk = (content.tiltaksplan || []).filter((t) => (t.hendelseIds || []).includes(h.id));
+                              const harForeslatt = !!(h.foreslatteTiltak ?? h.tiltak ?? "").trim();
+                              return (
+                                <div className="space-y-2 rounded-md border border-dashed bg-muted/30 p-2">
+                                  <div className="flex items-center justify-between gap-2">
+                                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                      Tilknyttede tiltak i tiltaksplanen
+                                    </p>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const el = document.getElementById("kap-6-tiltak-editor");
+                                        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                                      }}
+                                      className="text-xs text-primary hover:underline"
+                                    >
+                                      Gå til tiltaksplanen →
+                                    </button>
+                                  </div>
+                                  {tilk.length === 0 ? (
+                                    <p className="text-xs italic text-muted-foreground">
+                                      Ingen strukturerte tiltak knyttet til denne hendelsen ennå.
+                                    </p>
+                                  ) : (
+                                    <ul className="space-y-1">
+                                      {tilk.map((t) => (
+                                        <li key={t.id} className="flex items-center gap-2 text-xs">
+                                          <Badge variant="outline" className="shrink-0">{tIder.get(t.id) || "T?"}</Badge>
+                                          <span className="font-medium truncate flex-1">{t.tittel || "—"}</span>
+                                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${TILTAK_STATUS_BADGE_CLASS[t.status]}`}>
+                                            {TILTAK_STATUS_LABEL[t.status]}
+                                          </span>
+                                          <span className={`text-[10px] ${erFristPassert(t) ? "text-destructive font-semibold" : "text-muted-foreground"}`}>
+                                            {formaterFrist(t.frist)}
+                                          </span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )}
+                                  {harForeslatt && tilk.length === 0 ? (
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      className="h-7 text-xs"
+                                      onClick={() => konverterTilTiltak(h)}
+                                    >
+                                      <Plus className="h-3 w-3 mr-1" />
+                                      Konverter til strukturert tiltak
+                                    </Button>
+                                  ) : null}
+                                </div>
+                              );
+                            })()}
                           </div>
+
 
                           <div className="space-y-2 border-t pt-3">
                             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Konsekvensvurderinger per dimensjon</p>
