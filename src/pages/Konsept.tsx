@@ -2440,7 +2440,27 @@ const Konsept = () => {
                 ...(formData.bygningsinfoKommentar ? [new Paragraph({ children: [new TextRun({ text: formData.bygningsinfoKommentar, size: 20 })], spacing: { before: 100, after: 100 } })] : []),
               ]),
               new Paragraph({
-                children: [new TextRun({ text: "2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker", bold: true, size: 24 })],
+                children: [new TextRun({ text: "2.3 § 11-1 Overordnet brannstrategi", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              new Paragraph({
+                children: [new TextRun({ text: "Iht. § 11-1 skal byggverket prosjekteres slik at det oppnås tilfredsstillende sikkerhet ved brann. Følgende fire pilarer er ivaretatt på overordnet nivå:", italics: true, size: 20 })],
+                spacing: { after: 100 },
+              }),
+              ...[
+                { title: "a. Materialer og produkter", value: formData.overordnetMaterialer || DEFAULT_OVERORDNET.materialer },
+                { title: "b. Bygnings- og installasjonsdeler – begrensning av brannspredning", value: formData.overordnetBrannspredning || DEFAULT_OVERORDNET.brannspredning },
+                { title: "c. Rask og sikker rømning", value: formData.overordnetRoemning || DEFAULT_OVERORDNET.roemning },
+                { title: "d. Rednings- og slokkeinnsats", value: formData.overordnetRednings || DEFAULT_OVERORDNET.rednings },
+              ].flatMap((s) => [
+                new Paragraph({
+                  children: [new TextRun({ text: s.title, bold: true, size: 22 })],
+                  spacing: { before: 120, after: 60 },
+                }),
+                new Paragraph({ text: s.value, spacing: { after: 80 } }),
+              ]),
+              new Paragraph({
+                children: [new TextRun({ text: "2.4 Tilleggskrav fra tiltakshaver, myndigheter eller bruker", bold: true, size: 24 })],
                 spacing: { before: 200, after: 100 },
               }),
               new Paragraph({
