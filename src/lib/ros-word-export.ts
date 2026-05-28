@@ -850,7 +850,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
         new TableRow({
           children: [
             new TableCell({
-              columnSpan: 18,
+              columnSpan: 19,
               width: { size: 100, type: WidthType.PERCENTAGE },
               shading: { fill: "EEF7FF", type: ShadingType.CLEAR, color: "auto" },
               children: [new Paragraph({ children: [text(`Tiltak: ${liste} – se kapittel ${tiltakNr} Tiltaksplan.`, { italics: true, size: 14 })] })],
@@ -867,7 +867,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
         new TableRow({
           children: [
             new TableCell({
-              columnSpan: 18,
+              columnSpan: 19,
               width: { size: 100, type: WidthType.PERCENTAGE },
               shading: { fill: "F7F9FC", type: ShadingType.CLEAR, color: "auto" },
               children: [new Paragraph({ children: [text(`Beregninger: ${ids} – se kapittel ${beregningNr} Beregningsgrunnlag.`, { italics: true, size: 14 })] })],
@@ -880,7 +880,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
         new TableRow({
           children: [
             new TableCell({
-              columnSpan: 18,
+              columnSpan: 19,
               width: { size: 100, type: WidthType.PERCENTAGE },
               shading: { fill: "FFF3CD", type: ShadingType.CLEAR, color: "auto" },
               children: [new Paragraph({ children: [text(`Krever beregning – ikke registrert ennå${h.beregningTekst ? `: ${h.beregningTekst}` : ""}`, { bold: true, size: 14, color: "7A5A00" })] })],
@@ -901,7 +901,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
       new TableRow({
         children: [
           new TableCell({
-            columnSpan: 18,
+            columnSpan: 19,
             width: { size: 100, type: WidthType.PERCENTAGE },
             shading: { fill: "F7F9FC", type: ShadingType.CLEAR, color: "auto" },
             margins: { top: 100, bottom: 100, left: 300, right: 100 },
