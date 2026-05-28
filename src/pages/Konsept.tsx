@@ -11349,10 +11349,20 @@ const Konsept = () => {
                       </CardDescription>
                     </div>
                     {generatedConcept && canDownload && (
-                      <Button variant="outline" size="sm" onClick={exportToWord}>
-                        <Download className="h-4 w-4 mr-2" />
-                        Last ned Word
-                      </Button>
+                      <div className="flex flex-col items-end gap-1">
+                        <Button variant="outline" size="sm" onClick={exportToWord}>
+                          <Download className="h-4 w-4 mr-2" />
+                          Last ned Word
+                        </Button>
+                        <label className="flex items-center gap-1.5 text-[11px] text-muted-foreground cursor-pointer">
+                          <Checkbox
+                            checked={formData.inkluderReferansetabeller}
+                            onCheckedChange={(c) => setFormData({ ...formData, inkluderReferansetabeller: c === true })}
+                            className="h-3.5 w-3.5"
+                          />
+                          Inkluder referansetabeller i rapport
+                        </label>
+                      </div>
                     )}
                   </div>
                 </CardHeader>
