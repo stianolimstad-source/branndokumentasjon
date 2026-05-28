@@ -701,6 +701,26 @@ const Konsept = () => {
     isolasjonSandwich: "ikke_relevant" as "relevant" | "ikke_relevant",
     isolasjonBrennbar: "ikke_relevant" as "relevant" | "ikke_relevant",
     ytterkledningDKrav: false, // D-krav på ytterkledning (tiltak for å hindre brannspredning i fasade)
+    // §11-9 D. Brennbar isolasjon – alternative måter for anvendelse (veilederen)
+    isoTildekketMurStop: false, // Tildekkes/mures/støpes inn
+    isoDokumentertIngenSpredning: false, // Dokumentert at den ikke bidrar til brannspredning
+    isoTilbakeholdendeLag: false, // Tilstrekkelig tildekkende/branntilbakeholdende lag
+    // §11-9 E. Utvendige overflater og kledning
+    naboavstandUnder8m: false, // Avstand til nabobygg < 8 m
+    // §11-9 F. Yttertak
+    tak_broof_t2: true, // Taktekking BROOF(t2) [Ta]
+    tak_underlagDokumentert: false, // Underlag for taktekking – brannmotstand dokumentert
+    tak_oppbyggingDokumentert: false, // Takoppbygging dokumentert
+    // §11-9 G. Brannvegg og vinduer i brannvegg
+    brannvegg_vinduerSammeBrannmotstand: false, // Vinduer i brannvegg har samme brannmotstand som vegg
+    brannvegg_gjennomfoeringerSikret: false, // Gjennomføringer i brannvegg er sikret
+    // §11-9 H. Rør- og kanalisolasjon
+    ror_bl_s1d0: false, // BL-s1,d0 i rømningsvei
+    ror_a2l_s1d0_flerEtasjer: false, // A2L-s1,d0 i rømningsvei som betjener mer enn én etasje
+    // §11-9 I. Småhus – lempninger
+    smahus_lempningOverflater: false,
+    smahus_lempningKledning: false,
+    smahus_lempningTaktekning: false,
     bf85_513: false, // :513 Yttervegger i B-konstruksjon
     bf85_514: false, // :514 Fasademateriale på vegg i A-konstruksjon
     bf85_515: false, // :515 Brennbar isolasjon
