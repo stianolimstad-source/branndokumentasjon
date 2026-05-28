@@ -1105,7 +1105,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                   marginTop: 8,
                 }}
               >
-                <div style={{ width: 1100, height: 1 }} />
+                <div style={{ width: 1240, height: 1 }} />
               </div>
             </>
           )}
