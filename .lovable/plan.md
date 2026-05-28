@@ -1,81 +1,98 @@
-## Mål
-Legg inn dokumentasjon på at relevante paragrafer i Forskrift om beredskap i kraftforsyningen (BFK) er vurdert som et nytt kapittel 3 i ROS-analysen, mellom «Metode» (kap. 2) og «Hendelser» (nå kap. 4). Etterfølgende kapitler renumereres.
+# Mål
+Erstatte ustrukturert fritekst-tiltak per hendelse med en strukturert tiltaksplan som har ansvarlig, frist, status, effekt/kostnad og kobling til hendelser. Tiltaksplanen blir nytt kapittel **6** (mellom Beregninger og Bow-tie). Etterfølgende kapitler renumereres.
 
-## 1. Ny fil: `src/lib/ros-beredskapsforskrift.ts`
+## 1. Datamodell — `src/components/ros/RosPreview.tsx`
 
-Eksporterer:
-- `BfkVurderingStatus = "vurdert" | "ikke_aktuell" | "ikke_vurdert"`
-- `BfkParagraf { id, navn, utdrag, kategori }` med kategori-union `"ros" | "personell" | "drift" | "sikring" | "informasjon"`
-- `BFK_PARAGRAFER: BfkParagraf[]` — alle 21 paragrafene fra spesifikasjonen (§ 1-3, § 3-1, § 3-2, § 3-4, § 3-5, § 3-6, § 3-7, § 3-8, § 4-5, § 5-1, § 5-2, § 5-4, § 5-5, § 5-6, § 5-7, § 6-1, § 6-2, § 6-3, § 6-4, § 6-5, § 6-6) med korrekt kategori og utdragstekst.
-- Hjelpekonstant `BFK_KATEGORI_LABEL: Record<kategori, string>` for visning (ROS-krav, Personell og kompetanse, Drift og gjenoppretting, Fysisk sikring, Informasjon og samband).
-- Hjelpefunksjon `lagDefaultBfkVurderinger(): BfkVurdering[]` som returnerer én oppføring per paragraf med status `"ikke_vurdert"`, tom begrunnelse og tomt `hendelseIds`-array.
+Nye eksporter:
+```ts
+export type RosTiltakStatus = "foreslatt" | "besluttet" | "under_arbeid" | "gjennomfort" | "forkastet";
+export type RosTiltakKategori = "sannsynlighetsreduserende" | "konsekvensreduserende";
+export type Vurdering = "lav" | "medium" | "hoy";
 
-## 2. Datamodell: `src/components/ros/RosPreview.tsx`
+export interface RosTiltak {
+  id: string;
+  tittel: string;
+  beskrivelse: string;
+  kategori: RosTiltakKategori;
+  ansvarlig: string;
+  frist: string;            // ISO-dato
+  status: RosTiltakStatus;
+  kostnadVurdering?: Vurdering;
+  effektVurdering?: Vurdering;
+  hendelseIds: string[];
+  kommentar?: string;
+}
+```
+Utvid `RosContent` med `tiltaksplan?: RosTiltak[]`.
 
-- Importer `BfkVurderingStatus` fra `@/lib/ros-beredskapsforskrift`.
-- Ny eksportert interface:
-  ```ts
-  export interface BfkVurdering {
-    paragrafId: string;
-    status: BfkVurderingStatus;
-    begrunnelse: string;
-    hendelseIds: string[];
-  }
-  ```
-- I `RosContent`, legg til valgfritt felt:
-  ```ts
-  beredskapsforskrift?: BfkVurdering[];
-  ```
+Hjelpere (samme fil eller `src/lib/ros-tiltak.ts`):
+- `TILTAK_STATUS_LABEL`, `TILTAK_STATUS_BADGE_VARIANT`, `TILTAK_KATEGORI_LABEL`, `VURDERING_LABEL`.
+- `byggTiltakIder(tiltaksplan)` → `Map<id, "T1" | "T2" | ...>`.
+- `sorterTiltakEtterPrioritet(tiltak)` (besluttet/under_arbeid + høy effekt øverst, deretter frist).
+- `erFristPassert(tiltak)` (frist < i dag og status ∉ {gjennomført, forkastet}).
 
-## 3. Auto-initialisering i `src/pages/RosAnalyse.tsx`
+## 2. Ny editor-seksjon — `src/pages/RosAnalyse.tsx`
 
-I last/initialiseringen av `content` (etter eksisterende `migrerBeregninger`-kall): hvis `content.beredskapsforskrift` er `undefined` eller tomt, sett det til `lagDefaultBfkVurderinger()` slik at brukeren ser alle paragrafer fra start. Dette skal også trigge lagring slik at det persisterer.
-
-## 4. Ny UI-seksjon i `RosAnalyse.tsx` (mellom linje 1268 og 1272)
-
-Ny `<section>` med tittel «3. Beredskapsforskriftens krav» (`JumpToPreview previewId="kap-3-bfk"`).
+Plasseres mellom «5. Beregninger» (linje ~1970) og «X. Bow-tie analyse» (linje ~2103). Tittel: **«6. Tiltaksplan»**, `JumpToPreview previewId="kap-6-tiltak"`.
 
 Innhold:
-- Innledende paragraf med teksten fra spesifikasjonen.
-- Fremdriftsindikator: «{vurdert+ikke_aktuell} av {totalt} paragrafer vurdert ({prosent}% ferdig)» + `<Progress>`-komponent.
-- Filter-knapprad (`useState<"alle"|"ikke_vurdert"|"vurdert"|"ikke_aktuell">`): «Alle», «Ikke vurdert», «Vurdert», «Ikke aktuell» (Button variant skifter mellom default/outline basert på aktivt filter).
-- Liste gruppert etter kategori (rekkefølge: ros, personell, drift, sikring, informasjon) med `<h3>` undertittel per kategori (bruk `BFK_KATEGORI_LABEL`). Skjul gruppen hvis ingen paragrafer matcher filteret.
-- Hver paragraf rendres som `<Card>`:
-  - Header: paragrafens `navn` + utdrag i italic, `text-sm text-muted-foreground`.
-  - `<Select>` for status (tre options: Ikke vurdert, Vurdert, Ikke aktuell).
-  - Hvis status = `"vurdert"`: `<Textarea rows={3}>` for begrunnelse med placeholder fra spesifikasjonen + multi-select dropdown (bruk `Popover` + `Checkbox`-liste fra `content.hendelser`, viser `{id-kort} – {tittel}`) for `hendelseIds`.
-  - Hvis status = `"ikke_aktuell"`: `<Textarea rows={3}>` for forklaring.
-  - Visuell ramme via `className`:
-    - `border-destructive` hvis `ikke_vurdert`
-    - `border-yellow-500` hvis `vurdert` med tom `begrunnelse`
-    - `border-green-600` hvis `vurdert` med begrunnelse, eller `ikke_aktuell`
-- Hjelpere: `updateBfk(paragrafId, patch)` muterer `content.beredskapsforskrift` via `setContent`.
+- Innledende paragraf: «Strukturert oversikt over tiltak som skal gjennomføres for å redusere risiko. Hvert tiltak har ansvarlig person, frist for gjennomføring og status.»
+- **Filter-knapprad** (`useState<"alle" | RosTiltakStatus>`): Alle, Foreslått, Besluttet, Under arbeid, Gjennomført, Forkastet (variant skifter default/outline).
+- **Sortering-dropdown** (`Select`): Frist (default), Status, Effekt, Kostnad.
+- **Tabell** (`<Table>`) med kolonner: ID (T{n}), Tittel, Kategori, Ansvarlig, Frist, Status, Effekt, Kostnad, Hendelser, Slett. Rader er klikkbare — ekspanderer (egen `expandedTiltak` state) til en detaljrad under med:
+  - `<Textarea>` for full beskrivelse,
+  - `<Textarea>` for kommentar,
+  - `<Popover>` + `Checkbox`-liste over `content.hendelser` for multi-select av `hendelseIds`,
+  - `<Select>` for kategori.
+- **Status-celle**: `<Badge>` med fargekoding (grå/blå/gul/grønn/lyserød) via variant + className-overstyring fra design-tokens.
+- **Frist-celle**: lokal dato; rød tekst hvis `erFristPassert(t)`.
+- **Effekt/Kostnad-celler**: kompakt `<Select>` Lav/Medium/Høy. Effekt = grønn ramme/badge ved Høy, Kostnad = rød ramme/badge ved Høy.
+- **«Legg til nytt tiltak»-knapp** under tabellen åpner en `<Dialog>` med skjema (tittel, beskrivelse, kategori, ansvarlig, frist via `<Input type="date">`, status, effekt, kostnad, hendelser, kommentar). Lagre legger til i `content.tiltaksplan`.
+- Helper `updateTiltak(id, patch)`, `deleteTiltak(id)` (med `AlertDialog`-bekreftelse iht. memory), `addTiltak(partial)`.
 
-## 5. Renumerering i `RosAnalyse.tsx`
+## 3. Kobling fra hendelse → tiltak (`RosAnalyse.tsx`)
 
-- Linje 1274: «3. Hendelser» → «4. Hendelser» (behold `previewId="kap-3"` for å unngå brutte ankere — eller bytt til `kap-4` konsekvent; foretrekker konsekvent renumerering: oppdater både preview-id og editor-id).
-- Linje 1721: «4. Beregninger» → «5. Beregninger».
-- Øvrige etterfølgende H2-overskrifter (Bow-tie, Oppsummering, Revisjonshistorikk) renumereres tilsvarende — gå gjennom `<h2>`-er fra linje 1851 og utover.
+I hver hendelse-accordion (linje ~1729 hvor `foreslatteTiltak` rendres), etter Textarea:
+- Liste «Tilknyttede tiltak i tiltaksplanen»: filtrer `content.tiltaksplan` på `hendelseIds.includes(h.id)`. Vis kompakt rad: `T{n} – {tittel} ({status-badge}, frist {dato})`.
+- Lenke «Gå til tiltaksplanen» som scroller til `#kap-6-tiltak-editor` (anchor på section).
+- Hvis `h.foreslatteTiltak` er fylt og hendelsen ikke har noen tilknyttede tiltak: vis knapp **«Konverter til strukturert tiltak»**. Klikk oppretter `RosTiltak` med:
+  - `tittel`: første linje av `foreslatteTiltak` trunkert til ~80 tegn,
+  - `beskrivelse`: hele teksten,
+  - `kategori`: `"sannsynlighetsreduserende"`,
+  - `status`: `"foreslatt"`, tom `ansvarlig`, frist = i dag + 90 dager (ISO),
+  - `hendelseIds: [h.id]`.
+  Toast: «Tiltak opprettet i tiltaksplanen».
 
-## 6. Preview-renumerering i `RosPreview.tsx`
+## 4. Renumerering
 
-- Nytt kapittel: «3. Beredskapsforskriftens krav» rendres mellom kap. 2 Metode (linje 452-) og eksisterende «3. Hendelsesregister».
-- Innhold:
-  - Innledende avsnitt.
-  - Tabell med kolonner: Paragraf | Status | Begrunnelse | Tilknyttede hendelser (id-kort, komma-separert via `byggIder`-mappingen).
-  - Grupper rader visuelt etter kategori (rad med kategori-tittel før paragrafene), eller bare sortert etter kategori.
-- Renumerer eksisterende kapitler: Hendelsesregister 3→4, Beregningsgrunnlag 4→5, og oppdater all intern referansetekst som «(kap. 3)», «kapittel 4 Beregningsgrunnlag», «kapittel 3» (linje 728, 1079, 1209). Eksisterende dynamisk nummerering (linje 610) utvides så den tar høyde for BFK-kapittelet.
-- Behold ankre konsistent (`kap-3-bfk`, `kap-4` for hendelser, `kap-5` for beregninger).
+`RosAnalyse.tsx`:
+- «6. Bow-tie analyse» → **«7. Bow-tie analyse»** (`previewId="kap-7"`, linje 2103).
+- Oppsummering: dynamisk uttrykk linje 2520 oppdateres til `bowTies?.length > 0 ? "8" : "7"`, `previewId="kap-8"`.
+- Revisjonshistorikk: tilsvarende +1.
+- Eventuelle referansetekster («se kapittel 6/7») oppdateres.
 
-## 7. Word-eksport: `src/lib/ros-word-export.ts`
+`RosPreview.tsx`:
+- Nytt kapittel **«6. Tiltaksplan»** (`<section id="kap-6-tiltak">`) etter `kap-5` (linje 1219-) og før `kap-6` (linje 1296):
+  - Innledning + tabell med kolonner: ID, Tittel, Kategori, Ansvarlig, Frist, Status, Effekt, Kostnad, Hendelser, Kommentar.
+  - Sortert via `sorterTiltakEtterPrioritet`.
+  - Passerte frister rendres med `color: hsl(var(--destructive))`.
+  - Statusbadger via inline-style mapping.
+- Renumerer: Bow-tie 6→7 (`id="kap-7"`, h2 og referanser linje 1296-1299), Oppsummering 7/8 (linje 1404-1405), Revisjon tilsvarende. Oppdater intern tekst «kap. 4», «kapittel 5» etc. der nødvendig.
+- I «4. Hendelsesregister» (rad-rendering rundt linje 1092): under `foreslatteTiltak`-kolonnen vis kompakt liste over tilknyttede tiltak (`T{n} – tittel [status]`).
 
-- Sett inn nytt kapittel etter linje 233 (`2. Metode`): `buildSectionHeading(theme, "3. Beredskapsforskriftens krav")` + innledningsavsnitt + tabell (`docx Table`) med samme 4 kolonner som preview, gruppert/sortert etter kategori. Status-tekst på norsk: «Vurdert» / «Ikke aktuell» / «Ikke vurdert».
-- Renumerer: «3. Hendelsesregister» → «4. Hendelsesregister» (linje 732), oppdater `beregningNr`-beregning (linje 610) til å starte fra 5 i stedet for 4, og tilpass referansetekster (linje 329, 689, 801) tilsvarende. Bow-tie/Oppsummering/Revisjon nummereres automatisk via samme dynamiske beregning.
+## 5. Word-eksport — `src/lib/ros-word-export.ts`
 
-## 8. Filer som endres
-- **Ny:** `src/lib/ros-beredskapsforskrift.ts`
-- **Endret:** `src/components/ros/RosPreview.tsx` (interface + nytt kapittel + renumerering)
-- **Endret:** `src/pages/RosAnalyse.tsx` (auto-init + ny editor-seksjon + renumerering)
-- **Endret:** `src/lib/ros-word-export.ts` (nytt kapittel + renumerering)
+- Nytt kapittel **«6. Tiltaksplan»** plassert etter Beregningsgrunnlag-blokken (rundt linje 750+, før `bowTieBlocks`):
+  - `buildSectionHeading(theme, "6. Tiltaksplan")` + innledning + `docx` Table med samme kolonner som preview, sortert etter prioritet.
+  - Passerte frister: rød fyll/skrift via cell shading (`ShadingType.CLEAR` med `fill: "FCE4E4"`).
+  - Status-tekst norsk: «Foreslått»/«Besluttet»/«Under arbeid»/«Gjennomført»/«Forkastet».
+- I Hendelsesregister-tabellen (linje ~656): etter `foreslatteTiltak`-cellen, legg til en mini sub-tabell per hendelse som lister tilknyttede tiltak (`ID | Tittel | Status`). Implementeres som nested `Table` inne i cellen, eller som ekstra rad under hver hendelse.
+- Renumerer: `bowTieNr` += 1, `beregningNr` uendret (5), `oppsummeringNr` += 1, referansetekster (linje 689, 801) oppdateres.
 
-Ingen DB-endringer (lagres i samme JSON-kolonne som resten av `RosContent`).
+## 6. Filer
+- **Endret:** `src/components/ros/RosPreview.tsx` (interface + nytt kapittel + renumerering + tilknyttede-tiltak i hendelsestabell)
+- **Endret:** `src/pages/RosAnalyse.tsx` (ny seksjon + dialog + kobling fra hendelse + renumerering)
+- **Endret:** `src/lib/ros-word-export.ts` (nytt kapittel + sub-tabell per hendelse + renumerering)
+- **(Valgfritt ny):** `src/lib/ros-tiltak.ts` for konstanter/hjelpere — alternativt holdes alt i `RosPreview.tsx` for konsistens med BFK-mønsteret.
+
+Ingen DB-endringer (lagres i samme JSON som resten av `RosContent`).
