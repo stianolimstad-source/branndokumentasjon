@@ -21,7 +21,7 @@ import { KONSEKVENS_FORSLAG, groupKonsekvenserByKategori } from "@/lib/ros-konse
 import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search, Sparkles, Check, GitBranch, X, Eye, Calculator, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import RosPreview, { type RosContent, type RosHendelse, type RosBowTie, type KonsekvensVurdering, type RosBeregning, migrerHendelse, migrerBeregninger, byggBeregningIder } from "@/components/ros/RosPreview";
+import RosPreview, { type RosContent, type RosHendelse, type RosBowTie, type KonsekvensVurdering, type RosBeregning, type BfkVurdering, migrerHendelse, migrerBeregninger, byggBeregningIder } from "@/components/ros/RosPreview";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuCheckboxItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DIMENSJON_NAVN, ALLE_DIMENSJONER, type KonsekvensDimensjon } from "@/lib/ros-risk-criteria";
@@ -35,6 +35,16 @@ import { useCanDownload } from "@/hooks/useCanDownload";
 import { resolveDocumentTheme } from "@/lib/document-templates";
 import rosNivaaIllustrasjon from "@/assets/ros-detaljeringsnivaa.jpg";
 import { SJEKKLISTER, SAERSKILTE_FORHOLD, type Anleggstype, type Sjekklistepunkt } from "@/lib/ros-sjekklister";
+import {
+  BFK_PARAGRAFER,
+  BFK_KATEGORI_LABEL,
+  BFK_KATEGORI_REKKEFOLGE,
+  BFK_STATUS_LABEL,
+  normaliserBfkVurderinger,
+  lagDefaultBfkVurderinger,
+  type BfkVurderingStatus,
+  type BfkKategori,
+} from "@/lib/ros-beredskapsforskrift";
 
 interface ProjectOption { id: string; name: string; address: string | null; }
 interface RosRow { id: string; name: string; project_id: string; updated_at: string; }
