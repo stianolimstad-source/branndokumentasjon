@@ -1765,7 +1765,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     const lines: string[] = [
       "• Åpningskraft for dører til rømningsvei må være maksimalt 67 Newton dersom det ikke følger andre krav av § 12-13.",
     ];
-    if (harRK5 && alleRK.some(rk => rk !== "RK5")) {
+    if (formData.inkluderReferansetabeller && harRK5 && alleRK.some(rk => rk !== "RK5")) {
       lines.push("• Dør til rømningsvei i byggverk i risikoklasse 1, 2, 3, 4 og 6 må ha fri bredde minimum 0,86 meter. Unntak gjelder for fritidsbolig med én boenhet.");
       lines.push("• Dør til rømningsvei i byggverk i risikoklasse 5 må ha fri bredde minimum 1,16 meter.");
     } else if (harRK5) {
