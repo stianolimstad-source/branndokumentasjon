@@ -45,7 +45,12 @@ export interface RosHendelse {
   sannsynlighet: number;
   /** @deprecated bruk konsekvensvurderinger[] – beholdes som fallback / speil av forsyningssikkerhet */
   konsekvens: number;
+  /** @deprecated bruk eksisterendeBarrierer + foreslatteTiltak – beholdes for migrasjon og bakoverkompatibilitet */
   tiltak: string;
+  /** Barrierer/forutsetninger som allerede er på plass og lå til grunn for risikovurderingen */
+  eksisterendeBarrierer?: string;
+  /** Nye risikoreduserende tiltak som skal vurderes (ikke implementert ennå) */
+  foreslatteTiltak?: string;
   beskrivelseEtter?: string;
   sannsynlighetEtter?: number;
   /** @deprecated bruk konsekvensvurderinger[] – beholdes som fallback / speil av forsyningssikkerhet */
