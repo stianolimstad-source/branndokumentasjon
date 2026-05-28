@@ -767,7 +767,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
 
   });
   const hendelser: (Paragraph | Table)[] = [
-    buildSectionHeading(theme, "3. Hendelsesregister"),
+    buildSectionHeading(theme, `${hendelseNr}. Hendelsesregister`),
     content.hendelser.length === 0
       ? para("Ingen hendelser registrert.")
       : new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: hendelseRows }),
