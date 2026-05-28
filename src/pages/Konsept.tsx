@@ -905,15 +905,28 @@ const Konsept = () => {
   // Automatisk beregning av brannklasse – skip i view-modus (data er allerede lagret)
   useEffect(() => {
     if (isViewMode) return;
+    if (formData.saerligKonsekvensBKL4) {
+      // §11-3 nr. 8: tving BKL4. Behold tabellverdi som referanse.
+      setFormData(prev => ({
+        ...prev,
+        brannklasse: "BKL4",
+        brannklasseUnntak: "",
+        brannklasseBegrunnelse: "",
+        brannklasseTabellReferanse: beregnetBrannklasseResult.brannklasse || prev.brannklasseTabellReferanse,
+      }));
+      return;
+    }
     if (beregnetBrannklasseResult.brannklasse) {
       setFormData(prev => ({
         ...prev, 
         brannklasse: beregnetBrannklasseResult.brannklasse,
         brannklasseUnntak: beregnetBrannklasseResult.brannklasseUnntak || "",
         brannklasseBegrunnelse: "",
+        brannklasseTabellReferanse: "",
       }));
     }
-  }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.erRKL6Boligbygning]);
+  }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.erRKL6Boligbygning, formData.saerligKonsekvensBKL4]);
+
 
   // Auto-uncheck BF85 :513/:514/:515 hvis de blir irrelevante for valgt BBK/etasjer
   useEffect(() => {
