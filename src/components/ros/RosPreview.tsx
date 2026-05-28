@@ -1197,7 +1197,21 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         }
                         return null;
                       })()}
-                      </React.Fragment>
+
+                      {(() => {
+                        const tilkTiltak = (content.tiltaksplan || []).filter((t) => (t.hendelseIds || []).includes(h.id));
+                        if (tilkTiltak.length === 0) return null;
+                        const tIder = byggTiltakIder(content.tiltaksplan || []);
+                        return (
+                          <tr>
+                            <td colSpan={18} style={{ ...tdStyle, padding: "4px 10px", background: "#eef7ff" }}>
+                              <span style={{ fontSize: 9, fontStyle: "italic", color: "#1e3a5f" }}>
+                                Tiltak: {tilkTiltak.map((t) => `${tIder.get(t.id) || "T?"} – ${t.tittel} [${TILTAK_STATUS_LABEL[t.status]}]`).join("; ")} – se kapittel 6 Tiltaksplan.
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })()}
                     );
                   })}
                 </tbody>
