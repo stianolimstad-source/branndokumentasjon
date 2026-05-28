@@ -1118,6 +1118,23 @@ export default function RosAnalyse() {
                 </Button>
               </div>
             </div>
+
+            <SjekklisteDialog
+              open={sjekklisteOpen}
+              onOpenChange={setSjekklisteOpen}
+              anleggstype={valgtAnleggstype}
+              setAnleggstype={setValgtAnleggstype}
+              sok={sjekklisteSok}
+              setSok={setSjekklisteSok}
+              valgtePunkter={valgtePunkter}
+              setValgtePunkter={setValgtePunkter}
+              valgteForhold={valgteForhold}
+              setValgteForhold={setValgteForhold}
+              eksisterende={content.hendelser}
+              onConfirm={handleGenererFraSjekkliste}
+              punktKey={punktKey}
+            />
+
             {content.hendelser.length === 0 ? (
               <p className="text-sm text-muted-foreground italic">Ingen hendelser ennå.</p>
             ) : (
