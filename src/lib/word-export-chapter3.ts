@@ -1642,6 +1642,35 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     "Fra en branncelle skal det minst være én utgang til sikkert sted, eller utganger til to uavhengige rømningsveier.",
     "-"
   ));
+  // Maksimal fluktvei (§ 11-13 Tabell 1) - kun aktive RK-er
+  {
+    const aktiveRK: string[] = [];
+    if (formData.risikoklasse) aktiveRK.push(formData.risikoklasse);
+    if (formData.harFlereRisikoklasser && Array.isArray(formData.bygningsdeler)) {
+      formData.bygningsdeler.forEach((d: any) => { if (d?.risikoklasse && !aktiveRK.includes(d.risikoklasse)) aktiveRK.push(d.risikoklasse); });
+    }
+    const harRK12 = aktiveRK.some(r => r === "RK1" || r === "RK2");
+    const harRK35 = aktiveRK.some(r => r === "RK3" || r === "RK5");
+    const harRK6 = aktiveRK.includes("RK6");
+    if (harRK12 || harRK35 || harRK6) {
+      const lines: string[] = [];
+      if (harRK12) lines.push("• Krav til maksimal fluktvei: 50 m (§ 11-13 Tabell 1, RK 1 og 2).");
+      if (harRK35) lines.push("• Krav til maksimal fluktvei: 30 m (§ 11-13 Tabell 1, RK 3 og 5).");
+      if (harRK6) lines.push("• Krav til maksimal fluktvei: 25 m. I tillegg: avstand fra dør i branncelle til nærmeste trapp eller utgang maksimalt 7,0 m (§ 11-13 figur 4).");
+      const lengde = parseFloat(formData.fluktveiLengdeProsjekt) || 0;
+      if (lengde > 0) lines.push(`• Prosjektert lengste fluktvei: ${formData.fluktveiLengdeProsjekt.replace(".", ",")} m.`);
+      if (harRK6) {
+        const dor = parseFloat(formData.fluktveiDorTilTrappRK6) || 0;
+        if (dor > 0) lines.push(`• Prosjektert avstand fra dør til nærmeste trapp (RK6): ${formData.fluktveiDorTilTrappRK6.replace(".", ",")} m.`);
+      }
+      if (formData.inkluderReferansetabeller) {
+        lines.push("", "Referanse – maksimal fluktvei per RK (VTEK § 11-13 Tabell 1):");
+        lines.push("RK 1: 50 m | RK 2: 50 m | RK 3: 30 m | RK 4: 30 m | RK 5: 30 m | RK 6: 25 m (+ 7 m fra dør til trapp).");
+      }
+      rows.push(contentRowMultiLine("Maksimal fluktvei – § 11-13", lines, "ARK"));
+    }
+  }
+
   if (formData.sporadiskOpphold) {
     rows.push(contentRowMultiLine("Branncelle for sporadisk personopphold", [
       "Fra brannceller som bare er beregnet for sporadisk personopphold kan utgang gå gjennom annen branncelle.",
