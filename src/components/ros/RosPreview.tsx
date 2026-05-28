@@ -1323,10 +1323,69 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
         </section>
       </div>
 
+      {/* Ark 3a — Risikobilde (per dimensjon) */}
+      {(() => {
+        const dims = tilgjengeligeDimensjoner(content.hendelser);
+        if (dims.length === 0) return null;
+        const ider = byggHendelseIder(content.hendelser);
+        return (
+          <div style={pageStyle} className="ros-page">
+            <section id="kap-6-risikobilde">
+              <h2 style={h2}>6. Risikobilde</h2>
+              <p style={pStyle}>
+                Risikobildet vises som en 5×5-matrise per konsekvensdimensjon som er vurdert på minst én hendelse.
+                Hver hendelse plottes med sin lesbare ID (H1, H2, …) i riktig celle. Hendelser med høy usikkerhet er
+                markert med stiplet ring, og styrbarhet er kodet med farge på selve markøren (grønn = høy, gul = medium,
+                rød = lav). Hvor «etter tiltak»-data finnes vises den tilhørende matrisen ved siden av.
+              </p>
+              {dims.map((dim) => {
+                const harE = harEtterData(content.hendelser, dim);
+                const soner = tellRisikoSoner(content.hendelser, dim, "for");
+                return (
+                  <div key={dim} style={{ marginTop: 16, pageBreakInside: "avoid" }}>
+                    <h3 style={h3}>{dim === "ytre_miljø" ? "Ytre miljø" : dim.charAt(0).toUpperCase() + dim.slice(1).replace(/_/g, " ")}</h3>
+                    <div style={{ display: "grid", gridTemplateColumns: harE ? "1fr 1fr" : "1fr", gap: 24, alignItems: "start" }}>
+                      <div>
+                        <p style={{ ...pStyle, fontWeight: 600, marginBottom: 6 }}>Risiko før tiltak</p>
+                        <RosMatriks
+                          size="sm"
+                          hendelser={content.hendelser}
+                          dimensjon={dim}
+                          bruk="for"
+                          ider={ider}
+                          visBeskrivelse={false}
+                        />
+                      </div>
+                      {harE && (
+                        <div>
+                          <p style={{ ...pStyle, fontWeight: 600, marginBottom: 6 }}>Risiko etter tiltak</p>
+                          <RosMatriks
+                            size="sm"
+                            hendelser={content.hendelser}
+                            dimensjon={dim}
+                            bruk="etter"
+                            ider={ider}
+                            visBeskrivelse={false}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <p style={{ ...pStyle, fontSize: 11, marginTop: 8, color: "#475569" }}>
+                      <strong>{soner.rod}</strong> hendelser i rød sone · <strong>{soner.gul}</strong> i gul sone ·{" "}
+                      <strong>{soner.gronn}</strong> i grønn sone (før tiltak).
+                    </p>
+                  </div>
+                );
+              })}
+            </section>
+          </div>
+        );
+      })()}
+
       {/* Ark 3b — Tiltaksplan */}
       <div style={pageStyle} className="ros-page">
         <section id="kap-6-tiltak">
-          <h2 style={h2}>6. Tiltaksplan</h2>
+          <h2 style={h2}>7. Tiltaksplan</h2>
           <p style={pStyle}>
             Strukturert oversikt over tiltak som skal gjennomføres for å redusere risiko. Hvert tiltak har
             ansvarlig person, frist for gjennomføring og status. Tabellen er sortert med besluttede tiltak
