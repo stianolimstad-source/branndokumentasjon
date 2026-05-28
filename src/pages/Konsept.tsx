@@ -425,6 +425,11 @@ const Konsept = () => {
   const [authorInfo, setAuthorInfo] = useState<{ name: string; company: string } | null>(null);
   const [previewTheme, setPreviewTheme] = useState<{ template: "klassisk" | "moderne" | "minimalistisk"; primaryColor: string; accentColor: string; fontFamily: string; logoUrl: string | null; companyName: string | null } | null>(null);
 
+  // Manuell risikoklasse-dialog (§11-2)
+  const [manuellRkOpen, setManuellRkOpen] = useState(false);
+  const [manuellRkValg, setManuellRkValg] = useState<string>("");
+  const [manuellRkBegrunnelse, setManuellRkBegrunnelse] = useState<string>("");
+
   // Auto-open create project dialog only for authenticated users when ?new=true
   useEffect(() => {
     if (!authLoading && user && searchParams.get("new") === "true") {
