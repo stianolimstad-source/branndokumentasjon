@@ -1843,6 +1843,68 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     "Rømningsvei skal på en oversiktlig og lettfattelig måte føre til et sikkert sted. Den skal ha tilstrekkelig bredde og høyde og være utført som egen branncelle tilrettelagt for rask og effektiv rømning.",
     "-"
   ));
+  // §11-14 punkt 3: lengde i rømningsvei - kun valgte situasjonstyper
+  {
+    const valg: string[] = Array.isArray(formData.romningsveiTrappeValg) ? formData.romningsveiTrappeValg : [];
+    if (valg.length > 0) {
+      const krav: { tekst: string; verdi: number }[] = [];
+      if (valg.includes("en_trapp")) krav.push({ tekst: "Krav: maksimalt 15 m (§ 11-14 punkt 3a, én trapp eller utgang).", verdi: 15 });
+      if (valg.includes("sammenfallende")) krav.push({ tekst: "Krav: maksimalt 15 m (§ 11-14 punkt 3b, korridor med sammenfallende rømningsretning).", verdi: 15 });
+      if (valg.includes("flere_trapper")) krav.push({ tekst: "Krav: maksimalt 30 m (§ 11-14 punkt 3c, flere trapper eller utganger).", verdi: 30 });
+      if (krav.length > 0) {
+        const lines = krav.map(k => "• " + k.tekst);
+        const lengde = parseFloat(formData.romningsveiLengdeProsjekt) || 0;
+        if (lengde > 0) lines.push(`• Prosjektert lengste avstand i rømningsvei: ${formData.romningsveiLengdeProsjekt.replace(".", ",")} m.`);
+        rows.push(contentRowMultiLine("Lengde i rømningsvei – § 11-14 punkt 3", lines, "ARK"));
+      }
+    }
+  }
+  // §11-14 punkt 4: fri bredde - kun gjeldende krav for prosjektet
+  {
+    const aktiveRK: string[] = [];
+    if (formData.risikoklasse) aktiveRK.push(formData.risikoklasse);
+    if (formData.harFlereRisikoklasser && Array.isArray(formData.bygningsdeler)) {
+      formData.bygningsdeler.forEach((d: any) => { if (d?.risikoklasse && !aktiveRK.includes(d.risikoklasse)) aktiveRK.push(d.risikoklasse); });
+    }
+    if (aktiveRK.length > 0) {
+      const erBolig = ((formData.bygningstype || "") as string).toLowerCase().includes("bolig");
+      const breddePerRK = (rk: string): number => {
+        if (rk === "RK6") return erBolig ? 0.86 : 1.16;
+        if (rk === "RK3" || rk === "RK5") return 1.16;
+        return 0.86;
+      };
+      const kravBredde = Math.max(...aktiveRK.map(breddePerRK));
+      const merknad = aktiveRK.includes("RK6") && erBolig ? " (Boligunntak iht. § 11-2 Tabell 1.)" : "";
+      const arealPerPerson: Record<string, number> = {
+        forsamling_staende: 0.6, forsamling_stoler: 1, undervisning: 2, kontor: 10,
+        salg: 2, restaurant: 1.5, lager: 30,
+      };
+      const arealNum = parseFloat(formData.persontallAreal) || 0;
+      const faktor = arealPerPerson[formData.persontallKategori] || 0;
+      const persontall = arealNum > 0 && faktor > 0 ? Math.floor(arealNum / faktor) : 0;
+      const breddePersoner = persontall * 0.01;
+      const strengeste = Math.max(kravBredde, breddePersoner);
+      const fmt = (n: number) => n.toFixed(2).replace(".", ",");
+      const lines: string[] = [
+        `• Minimum fri bredde: ${fmt(kravBredde)} m, samt minimum 1 cm per person.${merknad}`,
+      ];
+      if (persontall > 0) lines.push(`• Persontall: ${persontall} → krav fra persontall: ${fmt(breddePersoner)} m.`);
+      lines.push(`• Strengeste krav for prosjektet: ${fmt(strengeste)} m.`);
+      const prosjektBredde = parseFloat(formData.friBreddeProsjekt) || 0;
+      if (prosjektBredde > 0) {
+        lines.push(`• Prosjektert fri bredde: ${fmt(prosjektBredde)} m.`);
+        if (prosjektBredde < strengeste) {
+          lines.push(`• AVVIK: Prosjektert bredde er mindre enn strengeste krav. Må dokumenteres som fravik.`);
+        }
+      }
+      if (formData.inkluderReferansetabeller) {
+        lines.push("", "Referanse – fri bredde per RK (§ 11-14 punkt 4):");
+        lines.push("RK 1, 2, 4: 0,86 m | RK 3, 5: 1,16 m | RK 6 bolig: 0,86 m | RK 6 ellers: 1,16 m. Tillegg: 1 cm per person.");
+      }
+      rows.push(contentRowMultiLine("Fri bredde i rømningsvei – § 11-14 punkt 4", lines, "ARK"));
+    }
+  }
+
   {
     const erKraftstasjonRV = ((formData.bygningstype || "") as string).toLowerCase().includes("kraftstasjon")
       || ((formData.bygningsdeler || []) as any[]).some((d: any) => ((d.bygningstype || "") as string).toLowerCase().includes("kraftstasjon"));
