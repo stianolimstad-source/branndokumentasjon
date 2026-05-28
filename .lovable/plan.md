@@ -1,66 +1,71 @@
-# TEK17 §11-2 / §11-3 – korrigeringer og utvidelser i Konsept.tsx
+# § 11-1 Overordnet brannstrategi – ny seksjon 2.3
 
-Alle endringer gjøres i `src/pages/Konsept.tsx`.
+Filer: `src/pages/Konsept.tsx`, `src/components/konsept/KonseptPreview.tsx`.
 
-## 1. Rettelser i `bygningsTypeRisikoklasseMap`
+Gjelder både brannkonsept (kap 2) og tilstandsvurdering (kap 1 har egen «1.5 Tilleggskrav»-sti — beholdes uendret). Endringen treffer kun grenene som i dag har «2.3 Tilleggskrav» som siste underseksjon i kap 2.
 
-- Fjern oppføringen `"Fritidshjem": "RK3"` (linje 102). RK3 skal kun inneholde Barnehage og Skole.
-- Rename nøkkel `"Trafikkterminaler"` → `"Trafikkterminal"` (RK5, linje 123).
-- Rename nøkkel `"Forlegning og leirskole"` → `"Feriekoloni og leirskole"` (RK6, linje 130).
-- `"Kraftstasjon": "RK2"` beholdes uendret.
+## 1. Datamodell (`src/pages/Konsept.tsx`)
 
-## 2. Nytt felt for §11-3 nr. 8 (særlig konsekvens / BKL4)
+I `formData` legges fire nye Textarea-felter:
 
-I `formData`-initialiseringen legges til:
+- `overordnetMaterialer: string`
+- `overordnetBrannspredning: string`
+- `overordnetRoemning: string`
+- `overordnetRednings: string`
 
-- `saerligKonsekvensBKL4: false`
-- `risikoklasseManuell: ""` (om brukeren har valgt manuelt)
-- `risikoklasseBegrunnelse: ""`
+Default-tekstene lagres som konstanter (én pr. felt) i toppen av filen, slik at både `formData`-init, «Hent default-tekst»-knappen og prefill ved opprettelse kan bruke samme kilde:
 
-## 3. Brannklasse-logikk
+```ts
+const DEFAULT_OVERORDNET = {
+  materialer: "Materialer og produkter velges iht. § 11-9 ...",
+  brannspredning: "Byggverket er delt inn i branncelle og brannseksjoner ...",
+  roemning: "Rømningsveier, ledesystem og deteksjon ...",
+  rednings: "Byggverket er tilrettelagt for utvendig og innvendig innsats ...",
+};
+```
 
-I `useEffect`-en som beregner brannklasse (rundt linje 905):
+Ved opprettelse av nytt konsept initialiseres feltene med default-tekstene. Eksisterende konsepter laster det som er lagret; tomme felter vises som tomme (brukeren henter default via knapp).
 
-- Hvis `saerligKonsekvensBKL4 === true`: sett `brannklasse: "BKL4"`, `brannklasseUnntak: ""`, og lagre den tabellberegnede verdien i et nytt felt `brannklasseTabellReferanse` for visning.
-- Ellers: dagens logikk.
-- Legg `formData.saerligKonsekvensBKL4` til dependency-arrayen.
+## 2. UI – ny `SectionCollapsible` i kap 2
 
-## 4. UI i kapittel 2 – under brannklasse-feltet
+Plasseres mellom dagens 2.2 Grunnlagsdokumenter og dagens 2.3 Tilleggskrav (som omdøpes til **2.4 Tilleggskrav**).
 
-Rett under eksisterende brannklasse-visning/redigering:
+- Tittel: «2.3 § 11-1 Overordnet brannstrategi».
+- Innledende `text-xs text-muted-foreground`-hjelpetekst som spesifisert.
+- Fire blokker, hver med:
+  - `Label` (a/b/c/d som spesifisert)
+  - `text-xs text-muted-foreground` hjelpetekst
+  - `Textarea` med `rows={4}` og `min-h-[100px]`, bundet til tilsvarende `formData`-felt
+  - Liten `Button variant="ghost" size="sm"` «Hent default-tekst» som setter feltet til default-konstant
 
-- **Checkbox** med label «Brann kan medføre særlig stor konsekvens (BKL4)».
-- Under: `text-xs text-muted-foreground` med veiledningsteksten (mer enn 16 etasjer, kritisk infrastruktur, byggverk under terreng, kjemisk industri, særlig farlige stoffer; må dokumenteres ved analyse iht. § 11-3).
-- Når avhuket:
-  - Brannklasse-feltet vises som låst på «BKL4» (disabled), med liten referansetekst: «Tabellverdi: {brannklasseTabellReferanse}».
-  - Vis gul `<Alert variant="warning">` med teksten fra brukerforespørselen om at preaksepterte ytelser ikke dekker BKL4 fullt ut, inkl. punkt a–d.
+Label-en på «2.3 Tilleggskrav»-seksjonen oppdateres til «2.4 Tilleggskrav».
 
-## 5. UI i risikoklasse-seksjonen – manuell RK-dialog
+## 3. Word-eksport (`src/pages/Konsept.tsx`)
 
-Under RK-select:
+I brannkonsept-grenen (rundt linje 2280–2433):
 
-- Oppdater hjelpetekst til: «Velg fra listen, eller bruk knappen under hvis bygget ikke er listet. Etter §11-2 må slike tilfeller plasseres etter begrunnet og dokumentert vurdering.»
-- Ny knapp (variant `link` eller `outline` sm): «Bygget mitt finnes ikke i listen» som åpner en `Dialog`.
+- Etter 2.2 Grunnlagsdokumenter og før 2.3 Tilleggskrav: legg inn ny blokk «2.3 § 11-1 Overordnet brannstrategi» med:
+  - Tittel-paragraf (bold, size 24) lik øvrige underseksjoner i kap 2
+  - Fire underseksjoner med subtittel (bold, size 22) «a. Materialer og produkter», «b. Bygnings- og installasjonsdeler – begrensning av brannspredning», «c. Rask og sikker rømning», «d. Rednings- og slokkeinnsats», hver fulgt av innholdsparagraf med tilhørende verdi (eller default hvis tom).
+- «2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker» omdøpes til «2.4 Tilleggskrav fra tiltakshaver, myndigheter eller bruker».
+- Innholdsfortegnelse (linje ~2005–2007): legg til «    2.3 § 11-1 Overordnet brannstrategi» og endre «2.3 Tilleggskrav…» til «2.4 Tilleggskrav…».
 
-Dialogens innhold:
+Tilstandsvurdering-grenen (kap 1) endres ikke.
 
-- Tittel: «Manuell plassering i risikoklasse (§11-2)».
-- Informasjonsblokk med §11-2 sine fire kriteriespørsmål som hjelp (kun visuelt – ikke validerende):
-  1. Er personopphold kun sporadisk?
-  2. Kjenner personer rømningsforholdene?
-  3. Er byggverket beregnet for overnatting?
-  4. Er det forutsatt liten brannenergi/-fare?
-  Hvert som radio «Ja / Nei / Vet ikke» (kun støtte for vurdering, lagres ikke).
-- `Select` for RK1–RK6 (binder til `risikoklasseManuell`).
-- `Textarea` for begrunnelse (binder til `risikoklasseBegrunnelse`, required).
-- Knapper: Avbryt / Lagre. Ved lagring settes `formData.risikoklasse` til valgt RK, og `risikoklasseBegrunnelse` lagres i metadata.
+## 4. Live-preview (`src/components/konsept/KonseptPreview.tsx`)
 
-Når `risikoklasseBegrunnelse` er satt, vises en liten badge/note under RK-select: «Manuelt plassert – se begrunnelse» med tooltip/expand.
+To steder må oppdateres (brannkonsept-greinene rundt linje 1097–1122 og 882–907 som relevant):
 
-## 6. Persistens
+- Innholdsfortegnelse (linje 540–541 og 582–583): legg til «2.3 § 11-1 Overordnet brannstrategi» og forskyv «Tilleggskrav» til 2.4.
+- Render-seksjonen: etter «2.2 Grunnlagsdokumenter» legges inn ny `<h3>2.3 § 11-1 Overordnet brannstrategi</h3>` med fire `<h4>`-underseksjoner og tilhørende tekst (`whitespace-pre-wrap`, fallback til default-tekst hvis tom). Endre eksisterende «2.3 Tilleggskrav» til «2.4 Tilleggskrav».
 
-`risikoklasseBegrunnelse` og `saerligKonsekvensBKL4` inkluderes automatisk når hele `formData` lagres (samme mekanisme som øvrige metadatafelt). Ingen DB-migrasjon nødvendig – `fire_concepts.data` er JSONB.
+Default-tekstene importeres/dupliseres som konstant i preview-filen (samme strenger som i Konsept.tsx) slik at fallback er konsistent.
 
-## Filer
+## 5. Persistens
 
-- `src/pages/Konsept.tsx` (eneste fil som endres).
+De fire feltene følger automatisk eksisterende lagringsmekanisme (hele `formData` lagres som JSONB i `fire_concepts.data`). Ingen migrasjon nødvendig.
+
+## Filer som endres
+
+- `src/pages/Konsept.tsx`
+- `src/components/konsept/KonseptPreview.tsx`
