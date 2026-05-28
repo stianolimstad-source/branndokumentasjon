@@ -35,6 +35,9 @@ const KvalitativAnalyse = () => {
   const projectId = searchParams.get("project");
   const conceptId = searchParams.get("concept");
   const isNew = searchParams.get("new") === "true";
+  const incomingTekParagraf = searchParams.get("tekParagraf");
+  const wantsNewFravik = searchParams.get("newFravik") === "1";
+  const fromKonsept = searchParams.get("fromKonsept");
 
   const [sammendrag, setSammendrag] = useState("");
   const [dokumentNavn, setDokumentNavn] = useState("");
