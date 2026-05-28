@@ -553,6 +553,18 @@ const Konsept = () => {
 
   const [allKap3Open, setAllKap3Open] = useState<boolean | undefined>(undefined);
 
+  // §11-9 (kap 3.6) – styrer hvilke underseksjoner A–I som er åpne
+  const [kap36Open, setKap36Open] = useState<Record<string, boolean>>({
+    B: true, // Innvendige overflater alltid åpen som default
+    C: false,
+    D: false,
+    E: false,
+    F: true, // Yttertak alltid åpen
+    G: false,
+    H: false,
+    I: false,
+  });
+
   const [formData, setFormData] = useState({
     // Sammendrag
     sammendrag: "",
