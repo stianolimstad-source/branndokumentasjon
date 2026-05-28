@@ -99,7 +99,19 @@ export interface RosHendelse {
   usikkerhet?: "lav" | "medium" | "høy";
   /** Styrbarhet – hvor enkelt risikoen kan påvirkes. Undefined = ikke vurdert. */
   styrbarhet?: "lav" | "medium" | "høy";
+  /** Markering: hendelsen inneholder kraftsensitiv informasjon (Beredskapsforskriften §6-2). */
+  sensitiv?: boolean;
 }
+
+export type RosNveKlasse = 1 | 2 | 3;
+export type RosSensitivKlassifisering = "apen" | "intern" | "fortrolig" | "strengt_fortrolig";
+
+export const SENSITIV_KLASSE_LABEL: Record<RosSensitivKlassifisering, string> = {
+  apen: "Åpen",
+  intern: "Intern",
+  fortrolig: "Fortrolig",
+  strengt_fortrolig: "Strengt fortrolig",
+};
 
 export interface RosBeregning extends AttachedCalculation {
   hendelseIds: string[];
@@ -177,6 +189,8 @@ export interface RosContent {
     dato: string;
     versjon: string;
     nivaa?: 1 | 2 | 3;
+    nveKlasse?: RosNveKlasse;
+    sensitivKlassifisering?: RosSensitivKlassifisering;
   };
   innledning: {
     bakgrunn: string;
@@ -423,6 +437,31 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
           </div>
         )}
 
+        {/* Sensitivitetsbanner */}
+        {(m.sensitivKlassifisering === "fortrolig" || m.sensitivKlassifisering === "strengt_fortrolig") && (
+          <div style={{
+            background: m.sensitivKlassifisering === "strengt_fortrolig" ? "#fee2e2" : "#fef3c7",
+            border: `2px solid ${m.sensitivKlassifisering === "strengt_fortrolig" ? "#991b1b" : "#92400e"}`,
+            color: m.sensitivKlassifisering === "strengt_fortrolig" ? "#991b1b" : "#92400e",
+            padding: "10px 14px",
+            borderRadius: 6,
+            marginBottom: 12,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+          }}>
+            <Shield size={18} />
+            <div>
+              <p style={{ margin: 0, fontSize: 12, fontWeight: 700, letterSpacing: 0.5 }}>
+                KRAFTSENSITIV INFORMASJON – {SENSITIV_KLASSE_LABEL[m.sensitivKlassifisering].toUpperCase()}
+              </p>
+              <p style={{ margin: "2px 0 0 0", fontSize: 10 }}>
+                Behandles iht. beredskapsforskriften §6-2
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Header bar */}
         <div style={{ background: "#1e3a5f", color: "#fff", padding: "16px 20px", borderRadius: 6, marginBottom: 20 }}>
           <p style={{ fontSize: 10, opacity: 0.8, margin: 0, letterSpacing: 1 }}>RISIKO- OG SÅRBARHETSANALYSE</p>
@@ -471,6 +510,25 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
               <td style={{ ...tdStyle, fontWeight: 600, background: "#f7f9fc" }}>Versjon</td>
               <td style={tdStyle}>{m.versjon || "1.0"}</td>
             </tr>
+            {m.nveKlasse && (
+              <tr>
+                <td style={{ ...tdStyle, fontWeight: 600, background: "#f7f9fc" }}>NVE-klasse (§5-4)</td>
+                <td style={tdStyle}>Klasse {m.nveKlasse}</td>
+              </tr>
+            )}
+            {m.sensitivKlassifisering && (
+              <tr>
+                <td style={{ ...tdStyle, fontWeight: 600, background: "#f7f9fc" }}>Sensitivitetsklassifisering (§6-2)</td>
+                <td style={tdStyle}>
+                  {SENSITIV_KLASSE_LABEL[m.sensitivKlassifisering]}
+                  {(m.sensitivKlassifisering === "fortrolig" || m.sensitivKlassifisering === "strengt_fortrolig") && (
+                    <span style={{ marginLeft: 8, display: "inline-flex", alignItems: "center", gap: 4, padding: "1px 6px", borderRadius: 3, background: m.sensitivKlassifisering === "strengt_fortrolig" ? "#fee2e2" : "#fef3c7", color: m.sensitivKlassifisering === "strengt_fortrolig" ? "#991b1b" : "#92400e", fontSize: 10, fontWeight: 600 }}>
+                      <Shield size={10} /> Kraftsensitiv
+                    </span>
+                  )}
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
 
@@ -1094,27 +1152,38 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                       return { color: "#94a3b8" };
                     };
                     const cap = (v?: string) => v ? v.charAt(0).toUpperCase() + v.slice(1) : "—";
+                    const sensRowTd: React.CSSProperties = h.sensitiv
+                      ? { borderTop: "2px solid #dc2626", borderBottom: "2px solid #dc2626" }
+                      : {};
+                    const sensFirstTd: React.CSSProperties = h.sensitiv ? { borderLeft: "2px solid #dc2626" } : {};
+                    const sensLastTd: React.CSSProperties = h.sensitiv ? { borderRight: "2px solid #dc2626" } : {};
                     return (
                       <React.Fragment key={h.id}>
                       <tr>
-                        <td style={{ ...td, textAlign: "center", fontWeight: 600 }}>{i + 1}</td>
-                        <td style={td}>{h.sarbarhet || ""}</td>
-                        <td style={{ ...td, fontWeight: 600 }}>{h.hendelse || h.beskrivelse || h.tittel || "—"}</td>
-                        <td style={td}>{h.arsak}</td>
-                        <td style={td}>{h.beskrivelseSannsynlighetFor || ""}</td>
-                        <td style={td}>{forsyning?.begrunnelse || h.beskrivelseRisikoFor || ""}</td>
-                        <td style={tdCenter}>{h.sannsynlighet}</td>
-                        <td style={kForsyning ? tdCenter : tdMuted}>{kForsyning ?? "—"}</td>
-                        <td style={kForsyning ? { ...riskCellStyle(h.sannsynlighet, kForsyning), fontSize: 9 } : tdMuted}>{kForsyning ? h.sannsynlighet * kForsyning : "—"}</td>
-                        <td style={td}>{h.eksisterendeBarrierer || ""}</td>
-                        <td style={td}>{h.foreslatteTiltak || h.tiltak || ""}</td>
-                        <td style={td}>{h.beskrivelseEtter || ""}</td>
-                        <td style={tdCenter}>{sE}</td>
-                        <td style={kForsyningEtter ? tdCenter : tdMuted}>{kForsyningEtter ?? "—"}</td>
-                        <td style={kForsyningEtter ? { ...riskCellStyle(sE, kForsyningEtter), fontSize: 9 } : tdMuted}>{kForsyningEtter ? sE * kForsyningEtter : "—"}</td>
-                        <td style={td}>{h.restrisiko}</td>
-                        <td style={{ ...td, textAlign: "center", ...usikkerhetStyle(h.usikkerhet) }}>{cap(h.usikkerhet)}</td>
-                        <td style={{ ...td, textAlign: "center", ...styrbarhetStyle(h.styrbarhet) }}>{cap(h.styrbarhet)}</td>
+                        <td style={{ ...td, textAlign: "center", fontWeight: 600, ...sensRowTd, ...sensFirstTd }}>
+                          {h.sensitiv && <Shield size={10} style={{ display: "inline", marginRight: 2, color: "#dc2626", verticalAlign: "middle" }} />}
+                          {i + 1}
+                        </td>
+                        <td style={{ ...td, ...sensRowTd }}>{h.sarbarhet || ""}</td>
+                        <td style={{ ...td, fontWeight: 600, ...sensRowTd }}>
+                          {h.sensitiv && <Shield size={10} style={{ display: "inline", marginRight: 4, color: "#dc2626", verticalAlign: "middle" }} />}
+                          {h.hendelse || h.beskrivelse || h.tittel || "—"}
+                        </td>
+                        <td style={{ ...td, ...sensRowTd }}>{h.arsak}</td>
+                        <td style={{ ...td, ...sensRowTd }}>{h.beskrivelseSannsynlighetFor || ""}</td>
+                        <td style={{ ...td, ...sensRowTd }}>{forsyning?.begrunnelse || h.beskrivelseRisikoFor || ""}</td>
+                        <td style={{ ...tdCenter, ...sensRowTd }}>{h.sannsynlighet}</td>
+                        <td style={{ ...(kForsyning ? tdCenter : tdMuted), ...sensRowTd }}>{kForsyning ?? "—"}</td>
+                        <td style={{ ...(kForsyning ? { ...riskCellStyle(h.sannsynlighet, kForsyning), fontSize: 9 } : tdMuted), ...sensRowTd }}>{kForsyning ? h.sannsynlighet * kForsyning : "—"}</td>
+                        <td style={{ ...td, ...sensRowTd }}>{h.eksisterendeBarrierer || ""}</td>
+                        <td style={{ ...td, ...sensRowTd }}>{h.foreslatteTiltak || h.tiltak || ""}</td>
+                        <td style={{ ...td, ...sensRowTd }}>{h.beskrivelseEtter || ""}</td>
+                        <td style={{ ...tdCenter, ...sensRowTd }}>{sE}</td>
+                        <td style={{ ...(kForsyningEtter ? tdCenter : tdMuted), ...sensRowTd }}>{kForsyningEtter ?? "—"}</td>
+                        <td style={{ ...(kForsyningEtter ? { ...riskCellStyle(sE, kForsyningEtter), fontSize: 9 } : tdMuted), ...sensRowTd }}>{kForsyningEtter ? sE * kForsyningEtter : "—"}</td>
+                        <td style={{ ...td, ...sensRowTd }}>{h.restrisiko}</td>
+                        <td style={{ ...td, textAlign: "center", ...usikkerhetStyle(h.usikkerhet), ...sensRowTd }}>{cap(h.usikkerhet)}</td>
+                        <td style={{ ...td, textAlign: "center", ...styrbarhetStyle(h.styrbarhet), ...sensRowTd, ...sensLastTd }}>{cap(h.styrbarhet)}</td>
                       </tr>
 
                       <tr>

@@ -1761,6 +1761,55 @@ export default function RosAnalyse() {
                 onChange={(v) => setContent((c) => ({ ...c, metadata: { ...c.metadata, dato: v } }))} />
               <Field label="Versjon" value={content.metadata.versjon}
                 onChange={(v) => setContent((c) => ({ ...c, metadata: { ...c.metadata, versjon: v } }))} />
+              <div className="space-y-1">
+                <TooltipProvider delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Label className="text-sm cursor-help">NVE-klasse (§5-4)</Label>
+                    </TooltipTrigger>
+                    <TooltipContent className="max-w-xs">
+                      <span className="text-xs">Klasse fra NVE styrer hvilke sikringskrav som gjelder for anlegget iht. beredskapsforskriften §5-5.</span>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+                <Select
+                  value={content.metadata.nveKlasse ? String(content.metadata.nveKlasse) : "none"}
+                  onValueChange={(v) =>
+                    setContent((c) => ({
+                      ...c,
+                      metadata: { ...c.metadata, nveKlasse: v === "none" ? undefined : (Number(v) as 1 | 2 | 3) },
+                    }))
+                  }
+                >
+                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Ikke klassifisert</SelectItem>
+                    <SelectItem value="1">Klasse 1</SelectItem>
+                    <SelectItem value="2">Klasse 2</SelectItem>
+                    <SelectItem value="3">Klasse 3</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-sm">Sensitivitetsklassifisering (§6-2)</Label>
+                <Select
+                  value={content.metadata.sensitivKlassifisering || "intern"}
+                  onValueChange={(v) =>
+                    setContent((c) => ({
+                      ...c,
+                      metadata: { ...c.metadata, sensitivKlassifisering: v as "apen" | "intern" | "fortrolig" | "strengt_fortrolig" },
+                    }))
+                  }
+                >
+                  <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="apen">Åpen</SelectItem>
+                    <SelectItem value="intern">Intern</SelectItem>
+                    <SelectItem value="fortrolig">Fortrolig</SelectItem>
+                    <SelectItem value="strengt_fortrolig">Strengt fortrolig</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </section>
 
@@ -2158,6 +2207,14 @@ export default function RosAnalyse() {
                           <div className="space-y-2">
                             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Identifikasjon</p>
                             <Field label="Tittel" value={h.tittel} onChange={(v) => updateHendelse(h.id, { tittel: v })} />
+                            <label className="flex items-center gap-2 text-xs cursor-pointer select-none">
+                              <Checkbox
+                                checked={!!h.sensitiv}
+                                onCheckedChange={(v) => updateHendelse(h.id, { sensitiv: v === true })}
+                              />
+                              <ShieldAlert className="h-3.5 w-3.5 text-destructive" />
+                              <span>Inneholder kraftsensitiv informasjon (§6-2)</span>
+                            </label>
                             <Area label="Sårbarhet" value={h.sarbarhet || ""} onChange={(v) => updateHendelse(h.id, { sarbarhet: v })} rows={2} />
                             <Area label="Hendelse / scenario" value={h.hendelse || h.beskrivelse || ""} onChange={(v) => updateHendelse(h.id, { hendelse: v, beskrivelse: v })} rows={2} />
                             <Area label="Årsak" value={h.arsak} onChange={(v) => updateHendelse(h.id, { arsak: v })} rows={2} />

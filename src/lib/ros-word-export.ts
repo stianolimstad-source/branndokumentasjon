@@ -13,6 +13,8 @@ import {
   AlignmentType,
   PageOrientation,
   SectionType,
+  Header,
+  BorderStyle,
 } from "docx";
 import rosNivaaIllustrasjon from "@/assets/ros-detaljeringsnivaa.jpg";
 import { saveAs } from "file-saver";
@@ -116,6 +118,18 @@ export const exportRosToWord = async (options: ExportOptions) => {
   const m = content.metadata;
   const dateStr = m.dato || new Date().toISOString().slice(0, 10);
 
+  const SENSITIV_LABEL: Record<string, string> = {
+    apen: "Åpen",
+    intern: "Intern",
+    fortrolig: "Fortrolig",
+    strengt_fortrolig: "Strengt fortrolig",
+  };
+  const sensKlasse = m.sensitivKlassifisering;
+  const erSensitiv = sensKlasse === "fortrolig" || sensKlasse === "strengt_fortrolig";
+  const sensFill = sensKlasse === "strengt_fortrolig" ? "FEE2E2" : "FEF3C7";
+  const sensColor = sensKlasse === "strengt_fortrolig" ? "991B1B" : "92400E";
+  const sensRowFill = "FFF1F2";
+
   const text = (t: string, opts: { bold?: boolean; size?: number; color?: string; italics?: boolean } = {}) =>
     new TextRun({ text: t, font, bold: opts.bold, italics: opts.italics, size: opts.size ?? 22, color: opts.color });
 
@@ -135,6 +149,43 @@ export const exportRosToWord = async (options: ExportOptions) => {
       width: widthPct ? { size: widthPct, type: WidthType.PERCENTAGE } : undefined,
     });
 
+  // Header med sensitivitetsbanner ved fortrolig/strengt fortrolig.
+  const makeHeader = (): Header => {
+    if (!erSensitiv) return buildHeader(theme, { logo, documentLabel: "ROS-analyse" });
+    const children: Paragraph[] = [
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        spacing: { before: 0, after: 40 },
+        border: {
+          top: { style: BorderStyle.SINGLE, size: 8, color: sensColor },
+          bottom: { style: BorderStyle.SINGLE, size: 8, color: sensColor },
+        },
+        shading: { fill: sensFill, type: ShadingType.CLEAR, color: "auto" },
+        children: [
+          new TextRun({
+            text: `KRAFTSENSITIV INFORMASJON – Behandles iht. beredskapsforskriften §6-2`,
+            font,
+            bold: true,
+            size: 18,
+            color: sensColor,
+          }),
+        ],
+      }),
+    ];
+    if (logo) {
+      const ratio = logo.height / logo.width;
+      const w = Math.min(120, logo.width);
+      const h = Math.max(18, Math.round(w * ratio));
+      children.push(
+        new Paragraph({
+          alignment: AlignmentType.RIGHT,
+          children: [new ImageRun({ data: logo.buffer, transformation: { width: w, height: h }, type: "png" })],
+        }),
+      );
+    }
+    return new Header({ children });
+  };
+
   // Cover
   const cover = buildCoverPage(theme, {
     title: `ROS-analyse – ${m.prosjektnavn || analyseName}`,
@@ -145,18 +196,79 @@ export const exportRosToWord = async (options: ExportOptions) => {
     logo,
   });
 
+  // Sensitivitetsboks på forsiden
+  const sensitivCoverBox: Paragraph[] = erSensitiv
+    ? [
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          spacing: { before: 240, after: 120 },
+          border: {
+            top: { style: BorderStyle.SINGLE, size: 16, color: sensColor },
+            bottom: { style: BorderStyle.SINGLE, size: 16, color: sensColor },
+            left: { style: BorderStyle.SINGLE, size: 16, color: sensColor },
+            right: { style: BorderStyle.SINGLE, size: 16, color: sensColor },
+          },
+          shading: { fill: sensFill, type: ShadingType.CLEAR, color: "auto" },
+          children: [
+            new TextRun({
+              text: `KRAFTSENSITIV INFORMASJON – ${SENSITIV_LABEL[sensKlasse!].toUpperCase()}`,
+              font,
+              bold: true,
+              size: 28,
+              color: sensColor,
+            }),
+          ],
+        }),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 240 },
+          children: [
+            new TextRun({
+              text: "Behandles iht. beredskapsforskriften §6-2. Distribusjon kun til personell med tjenstlig behov.",
+              font,
+              italics: true,
+              size: 18,
+              color: sensColor,
+            }),
+          ],
+        }),
+      ]
+    : [];
+
   // Metadata-tabell
+  const metadataRows: TableRow[] = [
+    new TableRow({ children: [headerCell("Felt", 30), headerCell("Verdi", 70)] }),
+    new TableRow({ children: [cell("Prosjekt", 30, true), cell(m.prosjektnavn || "—", 70)] }),
+    new TableRow({ children: [cell("Adresse", 30, true), cell(m.adresse || "—", 70)] }),
+    new TableRow({ children: [cell("Oppdragsgiver", 30, true), cell(m.oppdragsgiver || "—", 70)] }),
+    new TableRow({ children: [cell("Utført av", 30, true), cell(m.utfortAv || sender.full_name || "—", 70)] }),
+    new TableRow({ children: [cell("Dato", 30, true), cell(dateStr, 70)] }),
+    new TableRow({ children: [cell("Versjon", 30, true), cell(m.versjon || "1.0", 70)] }),
+  ];
+  if (m.nveKlasse) {
+    metadataRows.push(new TableRow({ children: [cell("NVE-klasse (§5-4)", 30, true), cell(`Klasse ${m.nveKlasse}`, 70)] }));
+  }
+  if (sensKlasse) {
+    metadataRows.push(
+      new TableRow({
+        children: [
+          cell("Sensitivitetsklassifisering (§6-2)", 30, true),
+          new TableCell({
+            width: { size: 70, type: WidthType.PERCENTAGE },
+            shading: erSensitiv ? { fill: sensFill, type: ShadingType.CLEAR, color: "auto" } : undefined,
+            children: [
+              new Paragraph({
+                children: [text(SENSITIV_LABEL[sensKlasse], { bold: erSensitiv, size: 20, color: erSensitiv ? sensColor : undefined })],
+              }),
+            ],
+          }),
+        ],
+      }),
+    );
+  }
   const infoTable = new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
-    rows: [
-      new TableRow({ children: [headerCell("Felt", 30), headerCell("Verdi", 70)] }),
-      new TableRow({ children: [cell("Prosjekt", 30, true), cell(m.prosjektnavn || "—", 70)] }),
-      new TableRow({ children: [cell("Adresse", 30, true), cell(m.adresse || "—", 70)] }),
-      new TableRow({ children: [cell("Oppdragsgiver", 30, true), cell(m.oppdragsgiver || "—", 70)] }),
-      new TableRow({ children: [cell("Utført av", 30, true), cell(m.utfortAv || sender.full_name || "—", 70)] }),
-      new TableRow({ children: [cell("Dato", 30, true), cell(dateStr, 70)] }),
-      new TableRow({ children: [cell("Versjon", 30, true), cell(m.versjon || "1.0", 70)] }),
-    ],
+    rows: metadataRows,
   });
 
   // Kap. 1 Innledning
@@ -437,7 +549,8 @@ export const exportRosToWord = async (options: ExportOptions) => {
   const hendelseHeader = new TableRow({
     children: [
       smallHeader("Nr", 3),
-      smallHeader("Sårbarhet", 7),
+      smallHeader("Sens.", 3),
+      smallHeader("Sårbarhet", 6),
       smallHeader("Hendelse / scenario", 8),
       smallHeader("Årsak", 6),
       smallHeader("Beskr. sanns. (før)", 6),
@@ -651,17 +764,49 @@ export const exportRosToWord = async (options: ExportOptions) => {
         width: { size: pct, type: WidthType.PERCENTAGE },
         children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text("—", { size: 14, color: "94A3B8" })] })],
       });
+    const sensShading = h.sensitiv ? { fill: sensRowFill, type: ShadingType.CLEAR, color: "auto" } : undefined;
+    const mc = (t: string, pct: number, bold = false): TableCell =>
+      new TableCell({
+        width: { size: pct, type: WidthType.PERCENTAGE },
+        shading: sensShading,
+        children: [new Paragraph({ children: [text(t, { bold, size: 14 })] })],
+      });
+    const vc = (v: string | undefined, palette: Record<string, { fill: string; fg: string }>, pct: number): TableCell => {
+      const p = v ? palette[v] : undefined;
+      return new TableCell({
+        width: { size: pct, type: WidthType.PERCENTAGE },
+        shading: p ? { fill: p.fill, type: ShadingType.CLEAR, color: "auto" } : sensShading,
+        children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text(cap(v), { bold: !!p, size: 14, color: p?.fg || "94A3B8" })] })],
+      });
+    };
+    const dashCellS = (pct: number) =>
+      new TableCell({
+        width: { size: pct, type: WidthType.PERCENTAGE },
+        shading: sensShading,
+        children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text("—", { size: 14, color: "94A3B8" })] })],
+      });
+    const sensCell: TableCell = new TableCell({
+      width: { size: 3, type: WidthType.PERCENTAGE },
+      shading: sensShading,
+      children: [
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [text(h.sensitiv ? "★" : "", { bold: true, size: 16, color: h.sensitiv ? sensColor : "94A3B8" })],
+        }),
+      ],
+    });
     hendelseRows.push(
       new TableRow({
         children: [
-          smallCell(String(i + 1), 3),
-          smallCell(h.sarbarhet || "", 8),
-          smallCell(h.hendelse || h.beskrivelse || h.tittel || "—", 9, true),
-          smallCell(h.arsak || "", 7),
-          smallCell(h.beskrivelseSannsynlighetFor || "", 8),
-          smallCell(forsyning0?.begrunnelse || h.beskrivelseRisikoFor || "", 8),
-          smallCell(String(h.sannsynlighet), 3),
-          kForsyning ? smallCell(String(kForsyning), 3) : dashCell(3),
+          mc(String(i + 1), 3),
+          sensCell,
+          mc(h.sarbarhet || "", 7),
+          mc(h.hendelse || h.beskrivelse || h.tittel || "—", 8, true),
+          mc(h.arsak || "", 6),
+          mc(h.beskrivelseSannsynlighetFor || "", 7),
+          mc(forsyning0?.begrunnelse || h.beskrivelseRisikoFor || "", 7),
+          mc(String(h.sannsynlighet), 3),
+          kForsyning ? mc(String(kForsyning), 3) : dashCellS(3),
           kForsyning
             ? new TableCell({
                 width: { size: 4, type: WidthType.PERCENTAGE },
@@ -673,12 +818,12 @@ export const exportRosToWord = async (options: ExportOptions) => {
                   }),
                 ],
               })
-            : dashCell(4),
-          smallCell(h.eksisterendeBarrierer || "", 5),
-          smallCell(h.foreslatteTiltak || h.tiltak || "", 5),
-          smallCell(h.beskrivelseEtter || "", 9),
-          smallCell(String(sE), 3),
-          kForsyningEtter ? smallCell(String(kForsyningEtter), 3) : dashCell(3),
+            : dashCellS(4),
+          mc(h.eksisterendeBarrierer || "", 5),
+          mc(h.foreslatteTiltak || h.tiltak || "", 5),
+          mc(h.beskrivelseEtter || "", 8),
+          mc(String(sE), 3),
+          kForsyningEtter ? mc(String(kForsyningEtter), 3) : dashCellS(3),
           kForsyningEtter
             ? new TableCell({
                 width: { size: 4, type: WidthType.PERCENTAGE },
@@ -690,10 +835,10 @@ export const exportRosToWord = async (options: ExportOptions) => {
                   }),
                 ],
               })
-            : dashCell(4),
-          smallCell(h.restrisiko || "", 8),
-          vurderingCell(h.usikkerhet, USIKK_SHADE, 4),
-          vurderingCell(h.styrbarhet, STYRB_SHADE, 4),
+            : dashCellS(4),
+          mc(h.restrisiko || "", 7),
+          vc(h.usikkerhet, USIKK_SHADE, 4),
+          vc(h.styrbarhet, STYRB_SHADE, 4),
         ],
       }),
     );
@@ -705,7 +850,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
         new TableRow({
           children: [
             new TableCell({
-              columnSpan: 18,
+              columnSpan: 19,
               width: { size: 100, type: WidthType.PERCENTAGE },
               shading: { fill: "EEF7FF", type: ShadingType.CLEAR, color: "auto" },
               children: [new Paragraph({ children: [text(`Tiltak: ${liste} – se kapittel ${tiltakNr} Tiltaksplan.`, { italics: true, size: 14 })] })],
@@ -722,7 +867,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
         new TableRow({
           children: [
             new TableCell({
-              columnSpan: 18,
+              columnSpan: 19,
               width: { size: 100, type: WidthType.PERCENTAGE },
               shading: { fill: "F7F9FC", type: ShadingType.CLEAR, color: "auto" },
               children: [new Paragraph({ children: [text(`Beregninger: ${ids} – se kapittel ${beregningNr} Beregningsgrunnlag.`, { italics: true, size: 14 })] })],
@@ -735,7 +880,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
         new TableRow({
           children: [
             new TableCell({
-              columnSpan: 18,
+              columnSpan: 19,
               width: { size: 100, type: WidthType.PERCENTAGE },
               shading: { fill: "FFF3CD", type: ShadingType.CLEAR, color: "auto" },
               children: [new Paragraph({ children: [text(`Krever beregning – ikke registrert ennå${h.beregningTekst ? `: ${h.beregningTekst}` : ""}`, { bold: true, size: 14, color: "7A5A00" })] })],
@@ -756,7 +901,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
       new TableRow({
         children: [
           new TableCell({
-            columnSpan: 18,
+            columnSpan: 19,
             width: { size: 100, type: WidthType.PERCENTAGE },
             shading: { fill: "F7F9FC", type: ShadingType.CLEAR, color: "auto" },
             margins: { top: 100, bottom: 100, left: 300, right: 100 },
@@ -1354,10 +1499,11 @@ export const exportRosToWord = async (options: ExportOptions) => {
             size: { width: 11906, height: 16838, orientation: PageOrientation.PORTRAIT },
           },
         },
-        headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
+        headers: { default: makeHeader() },
         footers: { default: buildFooter(theme) },
         children: [
           ...cover,
+          ...sensitivCoverBox,
           new Paragraph({ text: "", spacing: { before: 200 } }),
           infoTable,
           new Paragraph({ text: "", spacing: { before: 300 } }),
@@ -1373,7 +1519,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
             size: { width: 11906, height: 16838, orientation: PageOrientation.PORTRAIT },
           },
         },
-        headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
+        headers: { default: makeHeader() },
         footers: { default: buildFooter(theme) },
         children: [...beredskapsforskriftBlocks],
       },
@@ -1384,7 +1530,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
             size: { width: 11906, height: 16838, orientation: PageOrientation.LANDSCAPE },
           },
         },
-        headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
+        headers: { default: makeHeader() },
         footers: { default: buildFooter(theme) },
         children: [...hendelser],
       },
@@ -1395,7 +1541,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
             size: { width: 11906, height: 16838, orientation: PageOrientation.PORTRAIT },
           },
         },
-        headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
+        headers: { default: makeHeader() },
         footers: { default: buildFooter(theme) },
         children: [...beregningsgrunnlag],
       },
@@ -1408,7 +1554,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
                   size: { width: 11906, height: 16838, orientation: PageOrientation.PORTRAIT },
                 },
               },
-              headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
+              headers: { default: makeHeader() },
               footers: { default: buildFooter(theme) },
               children: [...risikobildeBlocks],
             },
@@ -1421,7 +1567,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
             size: { width: 11906, height: 16838, orientation: PageOrientation.LANDSCAPE },
           },
         },
-        headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
+        headers: { default: makeHeader() },
         footers: { default: buildFooter(theme) },
         children: [...tiltaksplanBlocks],
       },
@@ -1434,7 +1580,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
                   size: { width: 11906, height: 16838, orientation: PageOrientation.LANDSCAPE },
                 },
               },
-              headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
+              headers: { default: makeHeader() },
               footers: { default: buildFooter(theme) },
               children: [...bowTieBlocks],
             },
@@ -1447,7 +1593,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
             size: { width: 11906, height: 16838, orientation: PageOrientation.PORTRAIT },
           },
         },
-        headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
+        headers: { default: makeHeader() },
         footers: { default: buildFooter(theme) },
         children: [
           ...oppsummering,
