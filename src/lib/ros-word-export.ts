@@ -832,7 +832,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
   ];
   const tiltakSortert = sorterTiltakEtterPrioritet(content.tiltaksplan || []);
   if (tiltakSortert.length === 0) {
-    tiltaksplanBlocks.push(para("Ingen tiltak registrert.", { italics: true }));
+    tiltaksplanBlocks.push(para("Ingen tiltak registrert."));
   } else {
     const hIdx = new Map(content.hendelser.map((h, i) => [h.id, i + 1]));
     const tHeader = new TableRow({
