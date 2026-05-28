@@ -1483,6 +1483,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.3 §11-6 / BF85 :32 Brannspredning mellom byggverk */}
+            <FravikPreviewRow paragrafId="11-5" fravikList={fravikList} />
             <tr id="preview-3-3" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
                 {sp}.3 &nbsp;&nbsp; {formData.regelverk === "BF85" ? <>Avstand mellom bygninger (Kap. 30:32) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-6 Tiltak mot brannspredning mellom byggverk)</span></> : "§11-6 Brannspredning mellom byggverk"}
