@@ -1289,6 +1289,57 @@ export default function RosAnalyse() {
                             })()}
                           </div>
 
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 border-t pt-3">
+                            <div>
+                              <TooltipProvider delayDuration={200}>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Label className="text-xs cursor-help underline decoration-dotted">Usikkerhet</Label>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="max-w-xs">
+                                    Sett "Høy" hvis det er stor variasjon i mulige utfall eller bakgrunnskunnskapen er begrenset.
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              <Select
+                                value={h.usikkerhet || ""}
+                                onValueChange={(v) => updateHendelse(h.id, { usikkerhet: v as "lav" | "medium" | "høy" })}
+                              >
+                                <SelectTrigger className="h-9 mt-1"><SelectValue placeholder="Ikke vurdert" /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="lav">Lav</SelectItem>
+                                  <SelectItem value="medium">Medium</SelectItem>
+                                  <SelectItem value="høy">Høy</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <TooltipProvider delayDuration={200}>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Label className="text-xs cursor-help underline decoration-dotted">Styrbarhet</Label>
+                                  </TooltipTrigger>
+                                  <TooltipContent className="max-w-xs">
+                                    Hvor lett er det å påvirke risikoen? Lav = ingen kjente tiltak. Høy = enkle, kjente tiltak finnes.
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              <Select
+                                value={h.styrbarhet || ""}
+                                onValueChange={(v) => updateHendelse(h.id, { styrbarhet: v as "lav" | "medium" | "høy" })}
+                              >
+                                <SelectTrigger className="h-9 mt-1"><SelectValue placeholder="Ikke vurdert" /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="lav">Lav</SelectItem>
+                                  <SelectItem value="medium">Medium</SelectItem>
+                                  <SelectItem value="høy">Høy</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
+
+
                           {(() => {
                             const tilknyttede = (content.beregninger || []).filter((b) => b.hendelseIds.includes(h.id));
                             const ider = byggBeregningIder(content);
