@@ -10240,6 +10240,107 @@ const Konsept = () => {
                         })()}
                       </div>
 
+                      {/* Del B: §11-14 punkt 3 - lengde i rømningsvei */}
+                      {(() => {
+                        const valg: string[] = Array.isArray(formData.romningsveiTrappeValg) ? formData.romningsveiTrappeValg : [];
+                        if (valg.length === 0) return null;
+                        const krav: { tekst: string; verdi: number }[] = [];
+                        if (valg.includes("en_trapp")) krav.push({ tekst: "Krav: maksimalt 15 m (§ 11-14 punkt 3a).", verdi: 15 });
+                        if (valg.includes("sammenfallende")) krav.push({ tekst: "Krav: maksimalt 15 m (§ 11-14 punkt 3b).", verdi: 15 });
+                        if (valg.includes("flere_trapper")) krav.push({ tekst: "Krav: maksimalt 30 m (§ 11-14 punkt 3c).", verdi: 30 });
+                        if (krav.length === 0) return null;
+                        const strengeste = Math.min(...krav.map(k => k.verdi));
+                        const prosjektVerdi = parseFloat(formData.romningsveiLengdeProsjekt) || 0;
+                        const overskredet = prosjektVerdi > 0 && prosjektVerdi > strengeste;
+                        return (
+                          <div className="p-3 bg-muted/40 border rounded space-y-2">
+                            <Label className="text-xs font-semibold text-foreground">Lengde i rømningsvei (§ 11-14 punkt 3)</Label>
+                            <div className="space-y-0.5 text-xs text-foreground/90">
+                              {krav.map((k, i) => <p key={i}>{k.tekst}</p>)}
+                            </div>
+                            <div>
+                              <Label className="text-xs font-medium mb-1 block">Lengste avstand i rømningsvei i prosjektet (m)</Label>
+                              <Input
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                value={formData.romningsveiLengdeProsjekt}
+                                onChange={(e) => setFormData({ ...formData, romningsveiLengdeProsjekt: e.target.value })}
+                                className="max-w-[180px]"
+                                placeholder="f.eks. 18"
+                              />
+                              {overskredet && (
+                                <Alert variant="destructive" className="mt-2">
+                                  <AlertTriangle className="h-4 w-4" />
+                                  <AlertDescription className="text-xs">
+                                    Prosjektert avstand ({prosjektVerdi} m) overstiger strengeste krav ({strengeste} m). Må dokumenteres som fravik.
+                                  </AlertDescription>
+                                </Alert>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Del C: §11-14 punkt 4 - fri bredde */}
+                      {(() => {
+                        const aktiveRK = getAktiveRiskKlasser(formData);
+                        if (aktiveRK.length === 0) return null;
+                        const krav = getStrengesteFriBredde(aktiveRK, formData.bygningstype);
+                        // Persontall (areal / m² per person)
+                        const arealPerPerson: Record<string, number> = {
+                          forsamling_staende: 0.6, forsamling_stoler: 1, undervisning: 2, kontor: 10,
+                          salg: 2, restaurant: 1.5, lager: 30,
+                        };
+                        const arealNum = parseFloat(formData.persontallAreal) || 0;
+                        const faktor = arealPerPerson[formData.persontallKategori] || 0;
+                        const persontall = arealNum > 0 && faktor > 0 ? Math.floor(arealNum / faktor) : 0;
+                        const breddePersoner = persontall * 0.01; // 1 cm per person
+                        const strengeste = Math.max(krav.bredde, breddePersoner);
+                        const prosjektVerdi = parseFloat(formData.friBreddeProsjekt) || 0;
+                        const utilstrekkelig = prosjektVerdi > 0 && prosjektVerdi < strengeste;
+                        return (
+                          <div className="p-3 bg-muted/40 border rounded space-y-2">
+                            <Label className="text-xs font-semibold text-foreground">Fri bredde i rømningsvei (§ 11-14 punkt 4)</Label>
+                            <p className="text-xs text-foreground/90">
+                              Minimum fri bredde: <strong>{krav.bredde.toString().replace(".", ",")} m</strong>, samt minimum 1 cm per person.
+                              {krav.merknad && <span className="text-muted-foreground italic"> {krav.merknad}</span>}
+                            </p>
+                            {persontall > 0 && (
+                              <p className="text-xs text-muted-foreground">
+                                Persontall: {persontall} → krav fra persontall: {breddePersoner.toFixed(2).replace(".", ",")} m.
+                              </p>
+                            )}
+                            <div>
+                              <Label className="text-xs font-medium mb-1 block">Prosjektert fri bredde (m)</Label>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                value={formData.friBreddeProsjekt}
+                                onChange={(e) => setFormData({ ...formData, friBreddeProsjekt: e.target.value })}
+                                className="max-w-[180px]"
+                                placeholder="f.eks. 1,20"
+                              />
+                              <p className="text-xs mt-1">
+                                Strengeste krav for ditt prosjekt: <strong>{strengeste.toFixed(2).replace(".", ",")} m</strong>.
+                                {prosjektVerdi > 0 && <> Du har angitt <strong>{prosjektVerdi.toString().replace(".", ",")} m</strong>.</>}
+                              </p>
+                              {utilstrekkelig && (
+                                <Alert variant="destructive" className="mt-2">
+                                  <AlertTriangle className="h-4 w-4" />
+                                  <AlertDescription className="text-xs">
+                                    Prosjektert bredde ({prosjektVerdi} m) er mindre enn strengeste krav ({strengeste.toFixed(2)} m). Må dokumenteres som fravik.
+                                  </AlertDescription>
+                                </Alert>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+
+
                       {/* Transport av sengeliggende */}
                       <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
                         <Checkbox 
