@@ -367,10 +367,35 @@ const isSeksjoneringRequired = (areal: string, brannenergi: string, tiltak: stri
   return arealNum > maksAreal && maksAreal !== Infinity;
 };
 
+// ----- Fravik fra preakseptert ytelse (per TEK17-paragraf) -----
+interface FravikLite {
+  index: number;
+  navn: string;
+  fravikBeskrivelse: string;
+  konklusjon: string;
+  paragrafIds: string[];
+  status: string;
+}
+
+function fravikRowsForParagraf(paragrafId: string, fravikList: FravikLite[] | undefined): TableRow[] {
+  if (!fravikList || fravikList.length === 0) return [];
+  const matching = fravikList.filter((f) => f.paragrafIds.includes(paragrafId));
+  if (matching.length === 0) return [];
+  const out: TableRow[] = [];
+  out.push(graySubSectionHeaderRow(`Fravik fra preakseptert ytelse (§ ${paragrafId})`));
+  matching.forEach((f) => {
+    const tittel = (f.navn || f.fravikBeskrivelse.split("\n")[0] || "Uten tittel").trim();
+    const statusLabel = f.status === "akseptert" ? "Akseptert" : "Foreslått";
+    out.push(contentRow(`F${f.index} – ${tittel}`, statusLabel, "BRA"));
+  });
+  return out;
+}
+
 export async function buildChapter3Table(formData: Record<string, any>): Promise<Table> {
   const rows: TableRow[] = [];
   const bygningsdeler = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
   const branncelleTyper = Array.isArray(formData.branncelleTyper) ? formData.branncelleTyper : [];
+  const fravikList: FravikLite[] | undefined = Array.isArray(formData._fravikList) ? formData._fravikList : undefined;
 
   // ===== 3.1 Bæreevne og stabilitet =====
   rows.push(sectionHeaderRow("3.1   §11-4 Bæreevne og stabilitet"));
