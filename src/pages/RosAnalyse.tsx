@@ -93,6 +93,11 @@ export default function RosAnalyse() {
   const canDownload = useCanDownload();
   const [openHendelser, setOpenHendelser] = useState<string[]>([]);
   const [hendelseSok, setHendelseSok] = useState("");
+  const [sjekklisteOpen, setSjekklisteOpen] = useState(false);
+  const [valgtAnleggstype, setValgtAnleggstype] = useState<Anleggstype>("vannkraftverk");
+  const [sjekklisteSok, setSjekklisteSok] = useState("");
+  const [valgtePunkter, setValgtePunkter] = useState<Set<string>>(new Set());
+  const [valgteForhold, setValgteForhold] = useState<Set<string>>(new Set());
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [firmaNavn, setFirmaNavn] = useState<string | null>(null);
   const [fullName, setFullName] = useState<string | null>(null);
