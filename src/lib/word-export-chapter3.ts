@@ -1357,6 +1357,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     }
   }
 
+  rows.push(...fravikRowsForParagraf("11-11", fravikList));
+
   // ===== 3.9 Tilrettelegging for rømning og redning =====
   rows.push(sectionHeaderRow(formData.regelverk === "BF85" ? "3.9   Tiltak for å påvirke rømnings- og redningstider" : "3.9   §11-12 Tilrettelegging for rømning og redning"));
   rows.push(columnHeaderRow());
