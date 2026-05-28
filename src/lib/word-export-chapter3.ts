@@ -1542,6 +1542,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
   rows.push(...await tilstandRow(formData, "3_9", formData.regelverk === "BF85" ? "3.9 Tiltak for å påvirke rømnings- og redningstider" : "3.9 Tilrettelegging for rømning"));
 
+  rows.push(...fravikRowsForParagraf("11-12", fravikList));
+
   // ===== 3.10 Utgang fra branncelle / BF85 §7 Rømningsveg =====
   const isBF85Tilstand310 = formData.documentType === "tilstandsvurdering" && formData.regelverk === "BF85";
   if (isBF85Tilstand310) {
