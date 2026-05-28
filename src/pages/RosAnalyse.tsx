@@ -2207,6 +2207,14 @@ export default function RosAnalyse() {
                           <div className="space-y-2">
                             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Identifikasjon</p>
                             <Field label="Tittel" value={h.tittel} onChange={(v) => updateHendelse(h.id, { tittel: v })} />
+                            <label className="flex items-center gap-2 text-xs cursor-pointer select-none">
+                              <Checkbox
+                                checked={!!h.sensitiv}
+                                onCheckedChange={(v) => updateHendelse(h.id, { sensitiv: v === true })}
+                              />
+                              <ShieldAlert className="h-3.5 w-3.5 text-destructive" />
+                              <span>Inneholder kraftsensitiv informasjon (§6-2)</span>
+                            </label>
                             <Area label="Sårbarhet" value={h.sarbarhet || ""} onChange={(v) => updateHendelse(h.id, { sarbarhet: v })} rows={2} />
                             <Area label="Hendelse / scenario" value={h.hendelse || h.beskrivelse || ""} onChange={(v) => updateHendelse(h.id, { hendelse: v, beskrivelse: v })} rows={2} />
                             <Area label="Årsak" value={h.arsak} onChange={(v) => updateHendelse(h.id, { arsak: v })} rows={2} />
