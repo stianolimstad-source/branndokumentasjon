@@ -1,29 +1,31 @@
-# Oppgradere AI-modell i appen
+## Problem
 
-## Nåværende situasjon
-Alle 7 edge-funksjoner bruker `google/gemini-2.5-flash` via Lovable AI Gateway.
+Når man klikker på underseksjonene A–I i kapittel 3.6 (§11-9), hopper siden. Årsaken er at `SubSection`-komponenten er definert **inne i en IIFE inni render-funksjonen** i `src/pages/Konsept.tsx` (rundt linje 7691). 
 
-## Forslag: Bytt til `google/gemini-3-flash-preview`
-Dette er Lovables nye standardmodell — raskere, bedre på resonnement og strukturert output (JSON), og samme pris-kategori. Ingen API-nøkkel-endring nødvendig (samme `LOVABLE_API_KEY`).
+Hver gang state endres (f.eks. `kap36Open`), opprettes `SubSection` som en *helt ny komponenttype*. React behandler det som en ny komponent og **unmount/remount-er hele undertreet** ved hvert klikk. Det forstyrrer Radix Collapsible-animasjonen, kan flytte fokus og forårsaker scroll-hopp.
 
-### Alternativer hvis du ønsker noe annet
-- **`google/gemini-3.5-flash`** — enda nyere, sterk på koding/resonnement (litt dyrere)
-- **`google/gemini-3.1-pro-preview`** — toppmodell for tyngst resonnement (mye dyrere, tregere) — egnet hvis AI Brannkonsulent skal håndtere mer komplekse TEK17-spørsmål
-- **Blandet**: Pro-modell for `tek17-chat` (chat/resonnement) + Flash for parsing/ekstraksjon
+## Løsning
 
-## Endringer
-Bytt `model: "google/gemini-2.5-flash"` → `model: "google/gemini-3-flash-preview"` i:
-1. `supabase/functions/tek17-chat/index.ts`
-2. `supabase/functions/parse-fire-concept/index.ts`
-3. `supabase/functions/parse-ros-analysis/index.ts`
-4. `supabase/functions/analyze-bowtie-barriers/index.ts`
-5. `supabase/functions/analyze-bowtie-mitigations/index.ts`
-6. `supabase/functions/extract-bowtie-from-konsept/index.ts`
-7. `supabase/functions/extract-bowtie-from-ros/index.ts`
+Flytt `SubSection` ut av render-funksjonen til en stabil, modul-nivå komponent (på linje med `SectionCollapsible` øverst i filen).
 
-Funksjonene deployes automatisk.
+### Endringer i `src/pages/Konsept.tsx`
 
-## Risiko
-Preview-modeller kan endre seg over tid. Hvis du vil ha en stabil ikke-preview-modell, er `google/gemini-2.5-flash` (nåværende) eller `google/gemini-3.5-flash` tryggere valg.
+1. **Definer `SubSection` på modulnivå** (rett etter `SectionCollapsible`, ca. linje 75):
+   - Props: `id: string`, `title: string`, `open: boolean`, `onOpenChange: (o: boolean) => void`, `children: ReactNode`.
+   - Samme markup som i dag (Collapsible m/ChevronDown).
 
-**Hvilken modell vil du gå for?** (Standard-anbefaling: `gemini-3-flash-preview` for alle 7.)
+2. **Fjern den inline-definerte `SubSection`** inne i IIFE-en rundt linje 7691–7705.
+
+3. **Oppdater bruksstedene** (alle `<SubSection id="B" title="...">` osv. i 3.6-blokken) til å sende inn:
+   - `open={!!kap36Open[id]}`
+   - `onOpenChange={(o) => setKap36Open(prev => ({ ...prev, [id]: o }))}`
+
+### Bonus (samme fil, valgfritt men anbefalt)
+
+For å unngå at nettleseren scroller når Collapsible åpnes nederst på siden, ingen ekstra endringer kreves — selve hoppingen forsvinner når komponenten får stabil identitet.
+
+## Filer som endres
+
+- `src/pages/Konsept.tsx` (én komponent flyttes ut, ca. 15 linjer endret)
+
+Ingen endringer i logikk, styling, Word-eksport eller andre filer.
