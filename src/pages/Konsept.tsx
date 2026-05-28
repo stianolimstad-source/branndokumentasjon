@@ -427,6 +427,7 @@ const Konsept = () => {
     searchParams.get('concept')
   );
   const [conceptName, setConceptName] = useState("");
+  const { fravikList, firstFravikConceptId, hasFravikDokument, refresh: refreshFravik } = useFravikForProsjekt(selectedProjectId);
 
   // Create project dialog state
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
