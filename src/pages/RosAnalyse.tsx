@@ -367,6 +367,91 @@ export default function RosAnalyse() {
     setOpenHendelser((o) => [...o, id]);
   };
 
+  const punktKey = (a: Anleggstype, p: Sjekklistepunkt) => `${a}::${p.delelement}::${p.hendelse}`;
+
+  const lagHendelseFraPunkt = (p: Sjekklistepunkt): RosHendelse => ({
+    id: makeId(),
+    tittel: p.hendelse,
+    sarbarhet: p.delelement,
+    hendelse: p.hendelse + (p.beskrivelse ? ` – ${p.beskrivelse}` : ""),
+    arsak: "",
+    beskrivelseSannsynlighetFor: "",
+    beskrivelseRisikoFor: "",
+    sannsynlighet: 1,
+    konsekvens: 0,
+    tiltak: "",
+    eksisterendeBarrierer: "",
+    foreslatteTiltak: "",
+    beskrivelseEtter: "",
+    sannsynlighetEtter: 1,
+    restrisiko: "",
+    konsekvensvurderinger: [],
+    usikkerhet: "lav",
+    styrbarhet: "medium",
+  } as RosHendelse);
+
+  const handleGenererFraSjekkliste = () => {
+    const eksisterende = new Set(content.hendelser.map((h) => `${h.tittel}||${h.sarbarhet}`));
+    const nye: RosHendelse[] = [];
+
+    // Sjekklistepunkter (på tvers av valgte anleggstyper)
+    for (const key of valgtePunkter) {
+      const [anleggstype, delelement, hendelse] = key.split("::");
+      const liste = SJEKKLISTER[anleggstype as Anleggstype];
+      const punkt = liste?.punkter.find((p) => p.delelement === delelement && p.hendelse === hendelse);
+      if (!punkt) continue;
+      const dupKey = `${punkt.hendelse}||${punkt.delelement}`;
+      if (eksisterende.has(dupKey)) continue;
+      eksisterende.add(dupKey);
+      nye.push(lagHendelseFraPunkt(punkt));
+    }
+
+    // Særskilte forhold
+    for (const navn of valgteForhold) {
+      const f = SAERSKILTE_FORHOLD.find((x) => x.navn === navn);
+      if (!f) continue;
+      const sarbarhet = `Særskilt forhold (${f.kategori})`;
+      const dupKey = `${f.navn}||${sarbarhet}`;
+      if (eksisterende.has(dupKey)) continue;
+      eksisterende.add(dupKey);
+      nye.push({
+        id: makeId(),
+        tittel: f.navn,
+        sarbarhet,
+        hendelse: f.navn,
+        arsak: "",
+        beskrivelseSannsynlighetFor: "",
+        beskrivelseRisikoFor: "",
+        sannsynlighet: 1,
+        konsekvens: 0,
+        tiltak: "",
+        eksisterendeBarrierer: "",
+        foreslatteTiltak: "",
+        beskrivelseEtter: "",
+        sannsynlighetEtter: 1,
+        restrisiko: "",
+        konsekvensvurderinger: [],
+        usikkerhet: "lav",
+        styrbarhet: "medium",
+      } as RosHendelse);
+    }
+
+    if (nye.length === 0) {
+      toast({ title: "Ingen nye hendelser", description: "Alle valgte hendelser finnes allerede." });
+      return;
+    }
+
+    setContent((c) => ({ ...c, hendelser: [...c.hendelser, ...nye] }));
+    setOpenHendelser((o) => [...o, ...nye.map((h) => h.id)]);
+    toast({ title: `${nye.length} hendelser lagt til`, description: "Husk å fylle ut årsak, sannsynlighet og konsekvens for hver." });
+    setValgtePunkter(new Set());
+    setValgteForhold(new Set());
+    setSjekklisteSok("");
+    setSjekklisteOpen(false);
+  };
+
+
+
   const removeHendelse = (id: string) => {
     setContent((c) => ({
       ...c,
