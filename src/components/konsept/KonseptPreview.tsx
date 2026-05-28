@@ -4838,6 +4838,36 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">-</td>
             </tr>
+            {/* Maksimal fluktvei - § 11-13 - kun aktive RK */}
+            {(() => {
+              const aktiveRK: string[] = [];
+              if (formData.risikoklasse) aktiveRK.push(formData.risikoklasse);
+              if (formData.harFlereRisikoklasser && Array.isArray(formData.bygningsdeler)) {
+                formData.bygningsdeler.forEach((d: any) => { if (d?.risikoklasse && !aktiveRK.includes(d.risikoklasse)) aktiveRK.push(d.risikoklasse); });
+              }
+              const harRK12 = aktiveRK.some((r: string) => r === "RK1" || r === "RK2");
+              const harRK35 = aktiveRK.some((r: string) => r === "RK3" || r === "RK5");
+              const harRK6 = aktiveRK.includes("RK6");
+              if (!harRK12 && !harRK35 && !harRK6) return null;
+              const lengde = parseFloat(formData.fluktveiLengdeProsjekt) || 0;
+              const dor = parseFloat(formData.fluktveiDorTilTrappRK6) || 0;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Maksimal fluktvei<br/><span className="text-xs text-muted-foreground">§ 11-13</span></td>
+                  <td className="border border-gray-400 p-2">
+                    {harRK12 && <p>Krav til maksimal fluktvei: <strong>50 m</strong> (§ 11-13 Tabell 1, RK 1 og 2).</p>}
+                    {harRK35 && <p>Krav til maksimal fluktvei: <strong>30 m</strong> (§ 11-13 Tabell 1, RK 3 og 5).</p>}
+                    {harRK6 && <p>Krav til maksimal fluktvei: <strong>25 m</strong>. I tillegg: avstand fra dør i branncelle til nærmeste trapp eller utgang maksimalt <strong>7,0 m</strong> (§ 11-13 figur 4).</p>}
+                    {lengde > 0 && <p className="mt-1">Prosjektert lengste fluktvei: <strong>{String(formData.fluktveiLengdeProsjekt).replace(".", ",")} m</strong>.</p>}
+                    {harRK6 && dor > 0 && <p>Prosjektert avstand fra dør til nærmeste trapp (RK6): <strong>{String(formData.fluktveiDorTilTrappRK6).replace(".", ",")} m</strong>.</p>}
+                    {formData.inkluderReferansetabeller && (
+                      <p className="mt-2 text-xs text-gray-600 italic">Referanse: RK 1/2: 50 m | RK 3/4/5: 30 m | RK 6: 25 m (+ 7 m fra dør til trapp). Kilde: VTEK § 11-13 Tabell 1.</p>
+                    )}
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              );
+            })()}
             {/* Krav til trapperom - § 11-13 (2) - automatisk basert på RK og etasjer */}
             {(() => {
               const trapperomTypeMap310: Record<number, { lav: string; hoy: string }> = {
