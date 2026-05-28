@@ -123,7 +123,7 @@ export const getFriBreddeKrav = (rk: string, bygningstype?: string): { bredde: n
 /** Strengeste fri bredde-krav (høyeste tall) fra aktive RK-er. */
 export const getStrengesteFriBredde = (rks: string[], bygningstype?: string): { bredde: number; merknad?: string } => {
   if (rks.length === 0) return { bredde: 0.86 };
-  let max = { bredde: 0, merknad: undefined as string | undefined };
+  let max: { bredde: number; merknad?: string } = { bredde: 0, merknad: undefined };
   for (const rk of rks) {
     const k = getFriBreddeKrav(rk, bygningstype);
     if (k.bredde > max.bredde) max = k;
