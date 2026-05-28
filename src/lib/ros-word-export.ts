@@ -28,7 +28,7 @@ import {
   tableHeaderShading,
 } from "@/lib/document-templates";
 import { risikoFarge, tilgjengeligeDimensjoner, byggHendelseIder, tellRisikoSoner, harEtterData } from "@/components/ros/RosMatriks";
-import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell, DIMENSJON_NAVN } from "@/lib/ros-risk-criteria";
+import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell, DIMENSJON_NAVN, type KonsekvensDimensjon } from "@/lib/ros-risk-criteria";
 import { migrerHendelse, byggBeregningIder, type RosBeregning, type RosContent, type RosHendelse } from "@/components/ros/RosPreview";
 import {
   TILTAK_STATUS_LABEL,
