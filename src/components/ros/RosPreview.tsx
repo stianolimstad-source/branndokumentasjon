@@ -948,6 +948,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                     <th style={{ ...thStyle, width: 24, textAlign: "center", fontSize: 9 }}>K etter</th>
                     <th style={{ ...thStyle, width: 30, textAlign: "center", fontSize: 9 }}>R etter</th>
                     <th style={{ ...thStyle, fontSize: 9 }}>Restrisiko</th>
+                    <th style={{ ...thStyle, width: 60, textAlign: "center", fontSize: 9 }}>Usikkerhet</th>
+                    <th style={{ ...thStyle, width: 60, textAlign: "center", fontSize: 9 }}>Styrbarhet</th>
                   </tr>
                 </thead>
                 <tbody>
