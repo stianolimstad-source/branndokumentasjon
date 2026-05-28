@@ -764,17 +764,49 @@ export const exportRosToWord = async (options: ExportOptions) => {
         width: { size: pct, type: WidthType.PERCENTAGE },
         children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text("—", { size: 14, color: "94A3B8" })] })],
       });
+    const sensShading = h.sensitiv ? { fill: sensRowFill, type: ShadingType.CLEAR, color: "auto" } : undefined;
+    const mc = (t: string, pct: number, bold = false): TableCell =>
+      new TableCell({
+        width: { size: pct, type: WidthType.PERCENTAGE },
+        shading: sensShading,
+        children: [new Paragraph({ children: [text(t, { bold, size: 14 })] })],
+      });
+    const vc = (v: string | undefined, palette: Record<string, { fill: string; fg: string }>, pct: number): TableCell => {
+      const p = v ? palette[v] : undefined;
+      return new TableCell({
+        width: { size: pct, type: WidthType.PERCENTAGE },
+        shading: p ? { fill: p.fill, type: ShadingType.CLEAR, color: "auto" } : sensShading,
+        children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text(cap(v), { bold: !!p, size: 14, color: p?.fg || "94A3B8" })] })],
+      });
+    };
+    const dashCellS = (pct: number) =>
+      new TableCell({
+        width: { size: pct, type: WidthType.PERCENTAGE },
+        shading: sensShading,
+        children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text("—", { size: 14, color: "94A3B8" })] })],
+      });
+    const sensCell: TableCell = new TableCell({
+      width: { size: 3, type: WidthType.PERCENTAGE },
+      shading: sensShading,
+      children: [
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [text(h.sensitiv ? "★" : "", { bold: true, size: 16, color: h.sensitiv ? sensColor : "94A3B8" })],
+        }),
+      ],
+    });
     hendelseRows.push(
       new TableRow({
         children: [
-          smallCell(String(i + 1), 3),
-          smallCell(h.sarbarhet || "", 8),
-          smallCell(h.hendelse || h.beskrivelse || h.tittel || "—", 9, true),
-          smallCell(h.arsak || "", 7),
-          smallCell(h.beskrivelseSannsynlighetFor || "", 8),
-          smallCell(forsyning0?.begrunnelse || h.beskrivelseRisikoFor || "", 8),
-          smallCell(String(h.sannsynlighet), 3),
-          kForsyning ? smallCell(String(kForsyning), 3) : dashCell(3),
+          mc(String(i + 1), 3),
+          sensCell,
+          mc(h.sarbarhet || "", 7),
+          mc(h.hendelse || h.beskrivelse || h.tittel || "—", 8, true),
+          mc(h.arsak || "", 6),
+          mc(h.beskrivelseSannsynlighetFor || "", 7),
+          mc(forsyning0?.begrunnelse || h.beskrivelseRisikoFor || "", 7),
+          mc(String(h.sannsynlighet), 3),
+          kForsyning ? mc(String(kForsyning), 3) : dashCellS(3),
           kForsyning
             ? new TableCell({
                 width: { size: 4, type: WidthType.PERCENTAGE },
@@ -786,12 +818,12 @@ export const exportRosToWord = async (options: ExportOptions) => {
                   }),
                 ],
               })
-            : dashCell(4),
-          smallCell(h.eksisterendeBarrierer || "", 5),
-          smallCell(h.foreslatteTiltak || h.tiltak || "", 5),
-          smallCell(h.beskrivelseEtter || "", 9),
-          smallCell(String(sE), 3),
-          kForsyningEtter ? smallCell(String(kForsyningEtter), 3) : dashCell(3),
+            : dashCellS(4),
+          mc(h.eksisterendeBarrierer || "", 5),
+          mc(h.foreslatteTiltak || h.tiltak || "", 5),
+          mc(h.beskrivelseEtter || "", 8),
+          mc(String(sE), 3),
+          kForsyningEtter ? mc(String(kForsyningEtter), 3) : dashCellS(3),
           kForsyningEtter
             ? new TableCell({
                 width: { size: 4, type: WidthType.PERCENTAGE },
@@ -803,10 +835,10 @@ export const exportRosToWord = async (options: ExportOptions) => {
                   }),
                 ],
               })
-            : dashCell(4),
-          smallCell(h.restrisiko || "", 8),
-          vurderingCell(h.usikkerhet, USIKK_SHADE, 4),
-          vurderingCell(h.styrbarhet, STYRB_SHADE, 4),
+            : dashCellS(4),
+          mc(h.restrisiko || "", 7),
+          vc(h.usikkerhet, USIKK_SHADE, 4),
+          vc(h.styrbarhet, STYRB_SHADE, 4),
         ],
       }),
     );
