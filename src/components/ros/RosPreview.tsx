@@ -10,6 +10,21 @@ import {
 } from "@/lib/ros-risk-criteria";
 import type { AttachedCalculation } from "@/components/fraviksdokumentasjon/BeregningSection";
 import { Flame, MoveVertical, Zap, Users, Box, Shield, Bolt, type LucideIcon } from "lucide-react";
+import {
+  BFK_PARAGRAFER,
+  BFK_KATEGORI_LABEL,
+  BFK_KATEGORI_REKKEFOLGE,
+  BFK_STATUS_LABEL,
+  normaliserBfkVurderinger,
+  type BfkVurderingStatus,
+} from "@/lib/ros-beredskapsforskrift";
+
+export interface BfkVurdering {
+  paragrafId: string;
+  status: BfkVurderingStatus;
+  begrunnelse: string;
+  hendelseIds: string[];
+}
 
 const BEREGNING_IKONER: Record<AttachedCalculation["type"], LucideIcon> = {
   straling: Flame,
