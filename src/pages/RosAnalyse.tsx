@@ -348,6 +348,8 @@ export default function RosAnalyse() {
         beskrivelseSannsynlighetFor: "", beskrivelseRisikoFor: "",
         sannsynlighet: 1, konsekvens: 0,
         tiltak: "",
+        eksisterendeBarrierer: "",
+        foreslatteTiltak: "",
         beskrivelseEtter: "",
         sannsynlighetEtter: 1,
         restrisiko: "",
