@@ -10,6 +10,21 @@ import {
 } from "@/lib/ros-risk-criteria";
 import type { AttachedCalculation } from "@/components/fraviksdokumentasjon/BeregningSection";
 import { Flame, MoveVertical, Zap, Users, Box, Shield, Bolt, type LucideIcon } from "lucide-react";
+import {
+  BFK_PARAGRAFER,
+  BFK_KATEGORI_LABEL,
+  BFK_KATEGORI_REKKEFOLGE,
+  BFK_STATUS_LABEL,
+  normaliserBfkVurderinger,
+  type BfkVurderingStatus,
+} from "@/lib/ros-beredskapsforskrift";
+
+export interface BfkVurdering {
+  paragrafId: string;
+  status: BfkVurderingStatus;
+  begrunnelse: string;
+  hendelseIds: string[];
+}
 
 const BEREGNING_IKONER: Record<AttachedCalculation["type"], LucideIcon> = {
   straling: Flame,
@@ -161,6 +176,7 @@ export interface RosContent {
   hendelser: RosHendelse[];
   beregninger?: RosBeregning[];
   bowTies?: RosBowTie[];
+  beredskapsforskrift?: BfkVurdering[];
   oppsummering: string;
   revisjonshistorikk: RosRevisjon[];
 }
@@ -725,7 +741,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 tittel: "Klargjøring av analyseskjema og sjekklister",
                 tekst:
                   m.skjemaOgSjekklister?.trim() ||
-                  "Hendelser registreres i 5×5-skjema (kap. 3) med vurdering før og etter tiltak.",
+                  "Hendelser registreres i 5×5-skjema (kap. 4) med vurdering før og etter tiltak.",
               },
             ] as Array<{ nr: string; tittel: string; tekst: string; ref?: string; extra?: React.ReactNode }>;
             return (
@@ -925,11 +941,85 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
         </section>
       </div>
 
-      {/* Ark 2 — liggende A4 for kap. 3 */}
+      {/* Ark 1b — kap. 3 Beredskapsforskriftens krav */}
+      <div style={pageStyle} className="ros-page">
+        <section id="kap-3-bfk">
+          <h2 style={h2}>3. Beredskapsforskriftens krav</h2>
+          <p style={pStyle}>
+            Tabellen under viser hvordan relevante paragrafer i Forskrift om beredskap i
+            kraftforsyningen (BFK) er vurdert i denne analysen. For hver paragraf er det
+            angitt status, kort begrunnelse og hvilke hendelser i kapittel 4 som dekker
+            den enkelte paragrafen.
+          </p>
+          {(() => {
+            const vurderinger = normaliserBfkVurderinger(content.beredskapsforskrift);
+            const vMap = new Map(vurderinger.map((v) => [v.paragrafId, v]));
+            const hMap = new Map(content.hendelser.map((h, i) => [h.id, i + 1]));
+            const statusStyle = (s: BfkVurderingStatus): React.CSSProperties => {
+              if (s === "vurdert") return { background: "#dcfce7", color: "#166534", fontWeight: 600 };
+              if (s === "ikke_aktuell") return { background: "#e2e8f0", color: "#475569", fontWeight: 600 };
+              return { background: "#fee2e2", color: "#991b1b", fontWeight: 600 };
+            };
+            return (
+              <table style={tableStyle}>
+                <thead>
+                  <tr>
+                    <th style={{ ...thStyle, width: "26%" }}>Paragraf</th>
+                    <th style={{ ...thStyle, width: "14%" }}>Status</th>
+                    <th style={thStyle}>Begrunnelse</th>
+                    <th style={{ ...thStyle, width: "14%" }}>Tilknyttede hendelser</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {BFK_KATEGORI_REKKEFOLGE.flatMap((kat) => {
+                    const ps = BFK_PARAGRAFER.filter((p) => p.kategori === kat);
+                    if (ps.length === 0) return [];
+                    return [
+                      <tr key={`kat-${kat}`}>
+                        <td colSpan={4} style={{ ...tdStyle, background: "#e8eef5", fontWeight: 700, color: "#1e3a5f", fontSize: 10 }}>
+                          {BFK_KATEGORI_LABEL[kat]}
+                        </td>
+                      </tr>,
+                      ...ps.map((p) => {
+                        const v = vMap.get(p.id)!;
+                        const hNr = v.hendelseIds
+                          .map((id) => hMap.get(id))
+                          .filter((n): n is number => typeof n === "number")
+                          .sort((a, b) => a - b);
+                        return (
+                          <tr key={p.id}>
+                            <td style={tdStyle}>
+                              <div style={{ fontWeight: 600, color: "#1e3a5f" }}>{p.navn}</div>
+                              <div style={{ fontSize: 9, fontStyle: "italic", color: "#64748b", marginTop: 2 }}>{p.utdrag}</div>
+                            </td>
+                            <td style={{ ...tdStyle, textAlign: "center" }}>
+                              <span style={{ ...statusStyle(v.status), padding: "2px 6px", borderRadius: 3, fontSize: 9, display: "inline-block" }}>
+                                {BFK_STATUS_LABEL[v.status]}
+                              </span>
+                            </td>
+                            <td style={tdStyle}>
+                              {v.begrunnelse ? v.begrunnelse : <span style={{ color: "#94a3b8", fontStyle: "italic" }}>—</span>}
+                            </td>
+                            <td style={{ ...tdStyle, fontSize: 9 }}>
+                              {hNr.length > 0 ? hNr.map((n) => `H${n}`).join(", ") : <span style={{ color: "#94a3b8" }}>—</span>}
+                            </td>
+                          </tr>
+                        );
+                      }),
+                    ];
+                  })}
+                </tbody>
+              </table>
+            );
+          })()}
+        </section>
+      </div>
+
+      {/* Ark 2 — liggende A4 for kap. 4 */}
       <div style={landscapePageStyle} className="ros-page-landscape">
-        {/* Kap. 3 Hendelsesregister */}
-        <section id="kap-3">
-          <h2 style={h2}>3. Hendelsesregister</h2>
+        {/* Kap. 4 Hendelsesregister */}
+        <section id="kap-4">
+          <h2 style={h2}>4. Hendelsesregister</h2>
           {content.hendelser.length === 0 ? (
             <p style={{ ...pStyle, fontStyle: "italic", color: "#64748b" }}>Ingen hendelser registrert ennå.</p>
           ) : (
@@ -1076,7 +1166,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                             <tr>
                               <td colSpan={18} style={{ ...tdStyle, padding: "4px 10px", background: "#f7f9fc" }}>
                                 <span style={{ fontSize: 9, fontStyle: "italic", color: "#64748b" }}>
-                                  Beregninger: {tilknyttede.map((b) => ider.get(b.id) || "B?").join(", ")} – se kapittel 4 Beregningsgrunnlag.
+                                  Beregninger: {tilknyttede.map((b) => ider.get(b.id) || "B?").join(", ")} – se kapittel 5 Beregningsgrunnlag.
                                 </span>
                               </td>
                             </tr>
@@ -1126,8 +1216,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
 
       {/* Ark 3 — Beregningsgrunnlag */}
       <div style={pageStyle} className="ros-page">
-        <section id="kap-4">
-          <h2 style={h2}>4. Beregningsgrunnlag</h2>
+        <section id="kap-5">
+          <h2 style={h2}>5. Beregningsgrunnlag</h2>
           {(() => {
             const beregninger = content.beregninger || [];
             if (beregninger.length === 0) {
@@ -1181,7 +1271,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
               if (!liste || liste.length === 0) return;
               blocks.push(
                 <div key={h.id} style={{ marginBottom: 18 }}>
-                  <h3 style={h3}>4.{i + 1} – Beregninger for hendelse {i + 1}: {h.tittel || h.hendelse || "—"}</h3>
+                  <h3 style={h3}>5.{i + 1} – Beregninger for hendelse {i + 1}: {h.tittel || h.hendelse || "—"}</h3>
                   {liste.map(renderBeregning)}
                 </div>
               );
@@ -1203,10 +1293,10 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
       {/* Ark 4 — bow-tie (hvis registrert) */}
       {content.bowTies && content.bowTies.length > 0 && (
         <div style={landscapePageStyle} className="ros-page-landscape">
-          <section id="kap-5">
-            <h2 style={h2}>5. Bow-tie analyse</h2>
+          <section id="kap-6">
+            <h2 style={h2}>6. Bow-tie analyse</h2>
             <p style={pStyle}>
-              Bow-tie-analysen knytter registrerte hendelser fra kapittel 3 til overordnede uønskede topphendelser.
+              Bow-tie-analysen knytter registrerte hendelser fra kapittel 4 til overordnede uønskede topphendelser.
               Dette synliggjør hvilke årsaker som kan lede til samme topphendelse, og hvilke tiltak som virker på tvers.
             </p>
             {content.bowTies.map((bt, idx) => {
@@ -1311,8 +1401,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
 
       {/* Ark 4 — stående A4 for oppsummering & revisjonshistorikk */}
       <div style={pageStyle} className="ros-page">
-        <section id="kap-6">
-          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "6" : "5"}. Oppsummering</h2>
+        <section id="kap-7">
+          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "7" : "6"}. Oppsummering</h2>
           {content.oppsummering ? (
             <p style={pStyle}>{content.oppsummering}</p>
           ) : (
@@ -1321,8 +1411,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
         </section>
 
         {/* Revisjonshistorikk */}
-        <section id="kap-7" style={chapterDivider}>
-          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "7" : "6"}. Revisjonshistorikk</h2>
+        <section id="kap-8" style={chapterDivider}>
+          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "8" : "7"}. Revisjonshistorikk</h2>
           <table style={tableStyle}>
             <thead>
               <tr>

@@ -21,7 +21,7 @@ import { KONSEKVENS_FORSLAG, groupKonsekvenserByKategori } from "@/lib/ros-konse
 import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search, Sparkles, Check, GitBranch, X, Eye, Calculator, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import RosPreview, { type RosContent, type RosHendelse, type RosBowTie, type KonsekvensVurdering, type RosBeregning, migrerHendelse, migrerBeregninger, byggBeregningIder } from "@/components/ros/RosPreview";
+import RosPreview, { type RosContent, type RosHendelse, type RosBowTie, type KonsekvensVurdering, type RosBeregning, type BfkVurdering, migrerHendelse, migrerBeregninger, byggBeregningIder } from "@/components/ros/RosPreview";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuCheckboxItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DIMENSJON_NAVN, ALLE_DIMENSJONER, type KonsekvensDimensjon } from "@/lib/ros-risk-criteria";
@@ -35,6 +35,16 @@ import { useCanDownload } from "@/hooks/useCanDownload";
 import { resolveDocumentTheme } from "@/lib/document-templates";
 import rosNivaaIllustrasjon from "@/assets/ros-detaljeringsnivaa.jpg";
 import { SJEKKLISTER, SAERSKILTE_FORHOLD, type Anleggstype, type Sjekklistepunkt } from "@/lib/ros-sjekklister";
+import {
+  BFK_PARAGRAFER,
+  BFK_KATEGORI_LABEL,
+  BFK_KATEGORI_REKKEFOLGE,
+  BFK_STATUS_LABEL,
+  normaliserBfkVurderinger,
+  lagDefaultBfkVurderinger,
+  type BfkVurderingStatus,
+  type BfkKategori,
+} from "@/lib/ros-beredskapsforskrift";
 
 interface ProjectOption { id: string; name: string; address: string | null; }
 interface RosRow { id: string; name: string; project_id: string; updated_at: string; }
@@ -45,6 +55,7 @@ const EMPTY_CONTENT: RosContent = {
   metode: { informasjonsinnhenting: "", organisering: "", deltakere: [], skjemaOgSjekklister: "" },
   hendelser: [],
   bowTies: [],
+  beredskapsforskrift: lagDefaultBfkVurderinger(),
   oppsummering: "",
   revisjonshistorikk: [],
 };
@@ -232,6 +243,242 @@ function SjekklisteDialog({
   );
 }
 
+type BfkFilter = "alle" | "ikke_vurdert" | "vurdert" | "ikke_aktuell";
+
+function BfkSection({
+  content,
+  setContent,
+}: {
+  content: RosContent;
+  setContent: React.Dispatch<React.SetStateAction<RosContent>>;
+}) {
+  const [filter, setFilter] = useState<BfkFilter>("alle");
+  const [hendelsePop, setHendelsePop] = useState<string | null>(null);
+
+  const vurderinger = useMemo(
+    () => normaliserBfkVurderinger(content.beredskapsforskrift),
+    [content.beredskapsforskrift],
+  );
+  const vMap = useMemo(
+    () => new Map(vurderinger.map((v) => [v.paragrafId, v])),
+    [vurderinger],
+  );
+
+  const totalt = BFK_PARAGRAFER.length;
+  const ferdig = vurderinger.filter(
+    (v) => v.status === "vurdert" || v.status === "ikke_aktuell",
+  ).length;
+  const prosent = totalt > 0 ? Math.round((ferdig / totalt) * 100) : 0;
+
+  const updateBfk = (paragrafId: string, patch: Partial<BfkVurdering>) => {
+    setContent((c) => {
+      const liste = normaliserBfkVurderinger(c.beredskapsforskrift);
+      const ny = liste.map((v) =>
+        v.paragrafId === paragrafId ? { ...v, ...patch } : v,
+      );
+      return { ...c, beredskapsforskrift: ny };
+    });
+  };
+
+  const matcherFilter = (s: BfkVurderingStatus) =>
+    filter === "alle" ? true : s === filter;
+
+  const filterKnapp = (key: BfkFilter, label: string) => (
+    <Button
+      key={key}
+      size="sm"
+      variant={filter === key ? "default" : "outline"}
+      onClick={() => setFilter(key)}
+    >
+      {label}
+    </Button>
+  );
+
+  const kortRamme = (v: BfkVurdering): string => {
+    if (v.status === "ikke_vurdert") return "border-destructive";
+    if (v.status === "ikke_aktuell") return "border-green-600";
+    // vurdert
+    if (!v.begrunnelse.trim()) return "border-yellow-500";
+    return "border-green-600";
+  };
+
+  return (
+    <section className="space-y-3">
+      <div className="flex items-center gap-1">
+        <h2 className="text-lg font-semibold">3. Beredskapsforskriftens krav</h2>
+        <JumpToPreview previewId="kap-3-bfk" />
+      </div>
+      <p className="text-sm text-muted-foreground">
+        Vurdering av relevante paragrafer i Forskrift om beredskap i kraftforsyningen.
+        For hver paragraf: marker status og legg til en kort begrunnelse for hvorfor
+        den er vurdert, ikke aktuell eller ikke vurdert.
+      </p>
+
+      <div className="rounded-lg border p-3 bg-muted/30 space-y-2">
+        <div className="flex items-center justify-between text-sm">
+          <span>
+            <strong>{ferdig}</strong> av <strong>{totalt}</strong> paragrafer vurdert
+            <span className="text-muted-foreground"> ({prosent}% ferdig)</span>
+          </span>
+        </div>
+        <div className="h-2 w-full rounded-full bg-background overflow-hidden border">
+          <div
+            className="h-full bg-primary transition-all"
+            style={{ width: `${prosent}%` }}
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {filterKnapp("alle", "Alle")}
+        {filterKnapp("ikke_vurdert", "Ikke vurdert")}
+        {filterKnapp("vurdert", "Vurdert")}
+        {filterKnapp("ikke_aktuell", "Ikke aktuell")}
+      </div>
+
+      <div className="space-y-5">
+        {BFK_KATEGORI_REKKEFOLGE.map((kat) => {
+          const ps = BFK_PARAGRAFER.filter(
+            (p) =>
+              p.kategori === kat && matcherFilter(vMap.get(p.id)!.status),
+          );
+          if (ps.length === 0) return null;
+          return (
+            <div key={kat} className="space-y-2">
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                {BFK_KATEGORI_LABEL[kat]}
+              </h3>
+              <div className="space-y-2">
+                {ps.map((p) => {
+                  const v = vMap.get(p.id)!;
+                  const hendelseLabel =
+                    v.hendelseIds.length === 0
+                      ? "Velg hendelser…"
+                      : `${v.hendelseIds.length} valgt`;
+                  return (
+                    <Card key={p.id} className={`border-l-4 ${kortRamme(v)}`}>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-semibold">
+                          {p.navn}
+                        </CardTitle>
+                        <p className="text-xs italic text-muted-foreground mt-1">
+                          {p.utdrag}
+                        </p>
+                      </CardHeader>
+                      <CardContent className="space-y-2 pt-0">
+                        <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr] gap-2 items-start">
+                          <Select
+                            value={v.status}
+                            onValueChange={(val) =>
+                              updateBfk(p.id, {
+                                status: val as BfkVurderingStatus,
+                              })
+                            }
+                          >
+                            <SelectTrigger className="h-9 text-xs">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="ikke_vurdert">
+                                {BFK_STATUS_LABEL.ikke_vurdert}
+                              </SelectItem>
+                              <SelectItem value="vurdert">
+                                {BFK_STATUS_LABEL.vurdert}
+                              </SelectItem>
+                              <SelectItem value="ikke_aktuell">
+                                {BFK_STATUS_LABEL.ikke_aktuell}
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+
+                          {v.status === "vurdert" && content.hendelser.length > 0 && (
+                            <Popover
+                              open={hendelsePop === p.id}
+                              onOpenChange={(o) =>
+                                setHendelsePop(o ? p.id : null)
+                              }
+                            >
+                              <PopoverTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-9 justify-start text-xs font-normal"
+                                >
+                                  Tilknyttede hendelser: {hendelseLabel}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-80 p-2" align="start">
+                                <div className="max-h-64 overflow-y-auto space-y-1">
+                                  {content.hendelser.map((h, i) => {
+                                    const checked = v.hendelseIds.includes(h.id);
+                                    return (
+                                      <label
+                                        key={h.id}
+                                        className="flex items-start gap-2 text-xs cursor-pointer hover:bg-muted/50 rounded p-1"
+                                      >
+                                        <Checkbox
+                                          checked={checked}
+                                          onCheckedChange={() => {
+                                            const ny = checked
+                                              ? v.hendelseIds.filter(
+                                                  (x) => x !== h.id,
+                                                )
+                                              : [...v.hendelseIds, h.id];
+                                            updateBfk(p.id, { hendelseIds: ny });
+                                          }}
+                                        />
+                                        <span>
+                                          <span className="font-medium">
+                                            H{i + 1}
+                                          </span>{" "}
+                                          – {h.tittel || h.hendelse || "(uten tittel)"}
+                                        </span>
+                                      </label>
+                                    );
+                                  })}
+                                </div>
+                              </PopoverContent>
+                            </Popover>
+                          )}
+                        </div>
+
+                        {v.status === "vurdert" && (
+                          <Textarea
+                            rows={3}
+                            value={v.begrunnelse}
+                            onChange={(e) =>
+                              updateBfk(p.id, { begrunnelse: e.target.value })
+                            }
+                            placeholder="Beskriv hvordan denne paragrafen er vurdert i analysen – f.eks. vurdert i hendelse 4.2 og 4.5"
+                            className="text-sm"
+                          />
+                        )}
+                        {v.status === "ikke_aktuell" && (
+                          <Textarea
+                            rows={3}
+                            value={v.begrunnelse}
+                            onChange={(e) =>
+                              updateBfk(p.id, { begrunnelse: e.target.value })
+                            }
+                            placeholder="Kort forklaring på hvorfor paragrafen ikke er aktuell for denne analysen"
+                            className="text-sm"
+                          />
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+
+
 
 export default function RosAnalyse() {
   const { user } = useAuth();
@@ -381,6 +628,7 @@ export default function RosAnalyse() {
                   : [],
               }))
             : [],
+          beredskapsforskrift: normaliserBfkVurderinger((c as any).beredskapsforskrift),
         }));
 
         setLoadingDoc(false);
@@ -1267,11 +1515,12 @@ export default function RosAnalyse() {
             </div>
           </section>
 
+          <BfkSection content={content} setContent={setContent} />
 
 
           <section className="space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
-              <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">3. Hendelser</h2><JumpToPreview previewId="kap-3" /></div>
+              <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">4. Hendelser</h2><JumpToPreview previewId="kap-4" /></div>
               <div className="flex items-center gap-2">
                 <Button size="sm" variant="outline" onClick={() => setSjekklisteOpen(true)}>
                   <Plus className="h-4 w-4 mr-1" /> Generer fra sjekkliste
@@ -1718,7 +1967,7 @@ export default function RosAnalyse() {
           </section>
 
           <section className="space-y-3" id="kap-beregninger-editor">
-            <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">4. Beregninger</h2><JumpToPreview previewId="kap-4" /></div>
+            <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">5. Beregninger</h2><JumpToPreview previewId="kap-5" /></div>
             <p className="text-xs text-muted-foreground">
               Registrer branntekniske beregninger her og knytt dem til én eller flere hendelser. Hver beregning får en lesbar ID (f.eks. B2.1) og vises i sitt eget kapittel i rapporten.
             </p>
@@ -1851,7 +2100,7 @@ export default function RosAnalyse() {
           <section className="space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
-                <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">5. Bow-tie analyse</h2><JumpToPreview previewId="kap-5" /></div>
+                <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">6. Bow-tie analyse</h2><JumpToPreview previewId="kap-6" /></div>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Definer en uønsket topphendelse og knytt registrerte hendelser som årsaker. Gir oversikt over felles tiltak på tvers.
                 </p>
@@ -2268,9 +2517,9 @@ export default function RosAnalyse() {
           <section className="space-y-2">
             <div className="flex items-center gap-1">
               <h2 className="text-lg font-semibold">
-                {content.bowTies && content.bowTies.length > 0 ? "6" : "5"}. Oppsummering
+                {content.bowTies && content.bowTies.length > 0 ? "7" : "6"}. Oppsummering
               </h2>
-              <JumpToPreview previewId="kap-6" />
+              <JumpToPreview previewId="kap-7" />
             </div>
             <Textarea value={content.oppsummering} rows={6}
               onChange={(e) => setContent((c) => ({ ...c, oppsummering: e.target.value }))} />
@@ -2280,9 +2529,9 @@ export default function RosAnalyse() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
                 <h2 className="text-lg font-semibold">
-                  {content.bowTies && content.bowTies.length > 0 ? "7" : "6"}. Revisjonshistorikk
+                  {content.bowTies && content.bowTies.length > 0 ? "8" : "7"}. Revisjonshistorikk
                 </h2>
-                <JumpToPreview previewId="kap-7" />
+                <JumpToPreview previewId="kap-8" />
               </div>
               <Button size="sm" variant="outline" onClick={addRevisjon}>
                 <Plus className="h-4 w-4 mr-1" /> Ny revisjon
