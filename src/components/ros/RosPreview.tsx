@@ -1212,6 +1212,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                           </tr>
                         );
                       })()}
+                      </React.Fragment>
                     );
                   })}
                 </tbody>
