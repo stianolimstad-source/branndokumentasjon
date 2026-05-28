@@ -581,7 +581,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p><span className="font-bold">2.</span> Grunnlag og forutsetninger for brannteknisk prosjektering</p>
               <p className="ml-4">2.1 Beskrivelse av bygning og branntekniske forutsetninger</p>
               <p className="ml-4">2.2 Grunnlagsdokumenter</p>
-              <p className="ml-4">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</p>
+              <p className="ml-4">2.3 § 11-1 Overordnet brannstrategi</p>
+              <p className="ml-4">2.4 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</p>
               <p><span className="font-bold">3.</span> Beskrivelse av branntekniske ytelseskrav</p>
               <p className="ml-4">3.1 § 11-4 Bæreevne og stabilitet</p>
               <p className="ml-4">3.2 § 11-5 Sikkerhet ved eksplosjon</p>
