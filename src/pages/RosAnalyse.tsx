@@ -1228,6 +1228,56 @@ export default function RosAnalyse() {
   const [openCalcType, setOpenCalcType] = useState<CalculatorType | null>(null);
   const [editingBeregning, setEditingBeregning] = useState<RosBeregning | null>(null);
 
+  // ----- Tiltaksplan -----
+  const addTiltak = (partial?: Partial<RosTiltak>) => {
+    const nytt: RosTiltak = {
+      id: makeId(),
+      tittel: "",
+      beskrivelse: "",
+      kategori: "sannsynlighetsreduserende",
+      ansvarlig: "",
+      frist: defaultFristIso(),
+      status: "foreslatt",
+      hendelseIds: [],
+      ...partial,
+    };
+    setContent((c) => ({ ...c, tiltaksplan: [...(c.tiltaksplan || []), nytt] }));
+    return nytt;
+  };
+  const updateTiltak = (id: string, patch: Partial<RosTiltak>) => {
+    setContent((c) => ({
+      ...c,
+      tiltaksplan: (c.tiltaksplan || []).map((t) => (t.id === id ? { ...t, ...patch } : t)),
+    }));
+  };
+  const deleteTiltak = (id: string) => {
+    setContent((c) => ({ ...c, tiltaksplan: (c.tiltaksplan || []).filter((t) => t.id !== id) }));
+  };
+  const toggleTiltakHendelse = (tiltakId: string, hendelseId: string) => {
+    setContent((c) => ({
+      ...c,
+      tiltaksplan: (c.tiltaksplan || []).map((t) => {
+        if (t.id !== tiltakId) return t;
+        const har = (t.hendelseIds || []).includes(hendelseId);
+        return { ...t, hendelseIds: har ? t.hendelseIds.filter((x) => x !== hendelseId) : [...t.hendelseIds, hendelseId] };
+      }),
+    }));
+  };
+  const konverterTilTiltak = (h: RosHendelse) => {
+    const tekst = (h.foreslatteTiltak || h.tiltak || "").trim();
+    if (!tekst) return;
+    const tittel = tekst.split(/\n|\.|;/)[0].trim().slice(0, 80);
+    const nytt = addTiltak({
+      tittel: tittel || "Nytt tiltak",
+      beskrivelse: tekst,
+      kategori: "sannsynlighetsreduserende",
+      hendelseIds: [h.id],
+    });
+    toast({ title: "Tiltak opprettet i tiltaksplanen", description: nytt.tittel });
+  };
+
+
+
   const handleCalcImport = (calc: AttachedCalculation) => {
     if (editingBeregning) {
       updateBeregning(editingBeregning.id, {
