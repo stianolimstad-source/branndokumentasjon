@@ -41,7 +41,8 @@ import { DIMENSJON_NAVN, ALLE_DIMENSJONER, type KonsekvensDimensjon } from "@/li
 import { calculatorTypes, type AttachedCalculation } from "@/components/fraviksdokumentasjon/BeregningSection";
 import CalculatorDialog, { type CalculatorType } from "@/components/fraviksdokumentasjon/CalculatorDialog";
 import UploadRosDialog, { type ExtractedRosData } from "@/components/ros/UploadRosDialog";
-import RosMatriks, { risikoFarge } from "@/components/ros/RosMatriks";
+import RosMatriks, { risikoFarge, tilgjengeligeDimensjoner, byggHendelseIder, tellRisikoSoner, harEtterData } from "@/components/ros/RosMatriks";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import RosKriterier from "@/components/ros/RosKriterier";
 import { exportRosToWord } from "@/lib/ros-word-export";
 import { useCanDownload } from "@/hooks/useCanDownload";
