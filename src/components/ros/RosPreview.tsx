@@ -993,6 +993,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         <td style={kForsyningEtter ? tdCenter : tdMuted}>{kForsyningEtter ?? "—"}</td>
                         <td style={kForsyningEtter ? { ...riskCellStyle(sE, kForsyningEtter), fontSize: 9 } : tdMuted}>{kForsyningEtter ? sE * kForsyningEtter : "—"}</td>
                         <td style={td}>{h.restrisiko}</td>
+                        <td style={{ ...td, textAlign: "center", ...usikkerhetStyle(h.usikkerhet) }}>{cap(h.usikkerhet)}</td>
+                        <td style={{ ...td, textAlign: "center", ...styrbarhetStyle(h.styrbarhet) }}>{cap(h.styrbarhet)}</td>
                       </tr>
 
                       <tr>
