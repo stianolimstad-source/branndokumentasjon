@@ -1514,7 +1514,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
       {content.bowTies && content.bowTies.length > 0 && (
         <div style={landscapePageStyle} className="ros-page-landscape">
           <section id="kap-7">
-            <h2 style={h2}>7. Bow-tie analyse</h2>
+            <h2 style={h2}>8. Bow-tie analyse</h2>
             <p style={pStyle}>
               Bow-tie-analysen knytter registrerte hendelser fra kapittel 4 til overordnede uønskede topphendelser.
               Dette synliggjør hvilke årsaker som kan lede til samme topphendelse, og hvilke tiltak som virker på tvers.
