@@ -73,6 +73,20 @@ const SectionCollapsible = ({ label, defaultOpen = false, forceOpen, previewId, 
   );
 };
 
+// Stabil komponent for §11-9 underseksjoner (A–I). Må defineres på modulnivå
+// for å unngå unmount/remount og scroll-hopp ved hver state-endring.
+const Kap36SubSection = ({ title, open, onOpenChange, children }: { title: string; open: boolean; onOpenChange: (o: boolean) => void; children: React.ReactNode }) => (
+  <Collapsible open={open} onOpenChange={onOpenChange} className="border rounded-md bg-card">
+    <CollapsibleTrigger className="w-full flex items-center justify-between p-3 hover:bg-muted/40 transition-colors">
+      <Label className="text-xs font-semibold cursor-pointer">{title}</Label>
+      <ChevronDown className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`} />
+    </CollapsibleTrigger>
+    <CollapsibleContent>
+      <div className="p-3 pt-0 space-y-2">{children}</div>
+    </CollapsibleContent>
+  </Collapsible>
+);
+
 // Mapping av bygningstype til risikoklasse basert på TEK17
 const bygningsTypeRisikoklasseMap: Record<string, string> = {
   // Risikoklasse 1
