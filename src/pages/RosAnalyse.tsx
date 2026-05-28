@@ -1279,6 +1279,7 @@ export default function RosAnalyse() {
             </div>
           </section>
 
+          <BfkSection content={content} setContent={setContent} />
 
 
           <section className="space-y-3">
