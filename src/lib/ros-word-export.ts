@@ -27,7 +27,7 @@ import {
   fetchLogoBuffer,
   tableHeaderShading,
 } from "@/lib/document-templates";
-import { risikoFarge } from "@/components/ros/RosMatriks";
+import { risikoFarge, tilgjengeligeDimensjoner, byggHendelseIder, tellRisikoSoner, harEtterData } from "@/components/ros/RosMatriks";
 import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell, DIMENSJON_NAVN } from "@/lib/ros-risk-criteria";
 import { migrerHendelse, byggBeregningIder, type RosBeregning, type RosContent, type RosHendelse } from "@/components/ros/RosPreview";
 import {
