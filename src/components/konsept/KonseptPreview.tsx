@@ -5459,6 +5459,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
 
             {/* 3.12 §11-15 Tilrettelegging for redning av husdyr */}
+            <FravikPreviewRow paragrafId="11-14" fravikList={fravikList} />
             <tr id="preview-3-12" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.{isBF85 ? "11" : "12"} &nbsp;&nbsp; {isBF85 ? <>Tilrettelegging for redning av husdyr <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(TEK17 § 11-15 brukt som referanse)</span></> : "§11-15 Tilrettelegging for redning av husdyr"}</td>
             </tr>
