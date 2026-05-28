@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { getAktiveRiskKlasser, getFluktveiKrav, getStrengesteFluktvei, getFriBreddeKrav, getStrengesteFriBredde } from "@/lib/fire-concept-constants";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Flame, ArrowLeft, FileDown, Download, Save, LogIn, X, Plus, AlertTriangle, ChevronDown, ChevronRight, Eye, RefreshCw, Sparkles, Upload, Lock } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
