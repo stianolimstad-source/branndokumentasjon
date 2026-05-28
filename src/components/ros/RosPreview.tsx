@@ -741,7 +741,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 tittel: "Klargjøring av analyseskjema og sjekklister",
                 tekst:
                   m.skjemaOgSjekklister?.trim() ||
-                  "Hendelser registreres i 5×5-skjema (kap. 3) med vurdering før og etter tiltak.",
+                  "Hendelser registreres i 5×5-skjema (kap. 4) med vurdering før og etter tiltak.",
               },
             ] as Array<{ nr: string; tittel: string; tekst: string; ref?: string; extra?: React.ReactNode }>;
             return (
