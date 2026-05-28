@@ -617,12 +617,14 @@ export const exportRosToWord = async (options: ExportOptions) => {
     return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [subHeader, ...subRows] });
   };
 
-  // Dynamisk kapittelnummerering (beregningsgrunnlag alltid 4, bow-tie valgfritt)
+  // Dynamisk kapittelnummerering
   const harBowTie = !!(content.bowTies && content.bowTies.length > 0);
   const beregningNr = "4";
-  const bowTieNr = "5";
-  const oppsummeringNr = harBowTie ? "6" : "5";
-  const revisjonNr = harBowTie ? "7" : "6";
+  const tiltakNr = "5";
+  const bowTieNr = "6";
+  const oppsummeringNr = harBowTie ? "7" : "6";
+  const revisjonNr = harBowTie ? "8" : "7";
+  const tiltakIder = byggTiltakIder(content.tiltaksplan || []);
 
   const beregningIder = byggBeregningIder(content);
   const hendelseRows: TableRow[] = [hendelseHeader];
