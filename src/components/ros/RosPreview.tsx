@@ -940,7 +940,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 className="ros-h-scroll-hidden"
                 style={{ overflowX: "auto" }}
               >
-              <table style={{ ...tableStyle, fontSize: 9, minWidth: 1240 }}>
+              <table style={{ ...tableStyle, fontSize: 9, minWidth: 1340 }}>
                 <thead>
                   <tr>
                     <th style={{ ...thStyle, width: 26, textAlign: "center", fontSize: 9 }}>Nr</th>
@@ -1010,7 +1010,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                       </tr>
 
                       <tr>
-                        <td colSpan={17} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
+                        <td colSpan={18} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
                           {h.usikkerhet === "høy" ? (
                             <p style={{ fontSize: 9, fontWeight: 700, color: "#b91c1c", margin: "0 0 4px 0" }}>
                               Usikkerhet: Høy ⚠
@@ -1074,7 +1074,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         if (tilknyttede.length > 0) {
                           return (
                             <tr>
-                              <td colSpan={17} style={{ ...tdStyle, padding: "4px 10px", background: "#f7f9fc" }}>
+                              <td colSpan={18} style={{ ...tdStyle, padding: "4px 10px", background: "#f7f9fc" }}>
                                 <span style={{ fontSize: 9, fontStyle: "italic", color: "#64748b" }}>
                                   Beregninger: {tilknyttede.map((b) => ider.get(b.id) || "B?").join(", ")} – se kapittel 4 Beregningsgrunnlag.
                                 </span>
@@ -1085,7 +1085,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         if (h.kreverBeregning) {
                           return (
                             <tr>
-                              <td colSpan={17} style={{ ...tdStyle, padding: "4px 10px", background: "#fff3cd", color: "#7a5a00" }}>
+                              <td colSpan={18} style={{ ...tdStyle, padding: "4px 10px", background: "#fff3cd", color: "#7a5a00" }}>
                                 <span style={{ fontSize: 9, fontWeight: 600 }}>
                                   Krever beregning – ikke registrert ennå{h.beregningTekst ? `: ${h.beregningTekst}` : ""}
                                 </span>
@@ -1117,7 +1117,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                   marginTop: 8,
                 }}
               >
-                <div style={{ width: 1240, height: 1 }} />
+                <div style={{ width: 1340, height: 1 }} />
               </div>
             </>
           )}
