@@ -40,6 +40,14 @@ import {
   sorterTiltakEtterPrioritet,
   formaterFrist,
 } from "@/lib/ros-tiltak";
+import {
+  BFK_PARAGRAFER,
+  BFK_KATEGORI_LABEL,
+  BFK_KATEGORI_REKKEFOLGE,
+  BFK_STATUS_LABEL,
+  normaliserBfkVurderinger,
+  type BfkVurderingStatus,
+} from "@/lib/ros-beredskapsforskrift";
 
 export interface RosSenderInfo {
   full_name?: string | null;
@@ -619,11 +627,12 @@ export const exportRosToWord = async (options: ExportOptions) => {
 
   // Dynamisk kapittelnummerering
   const harBowTie = !!(content.bowTies && content.bowTies.length > 0);
-  const beregningNr = "4";
-  const tiltakNr = "5";
-  const bowTieNr = "6";
-  const oppsummeringNr = harBowTie ? "7" : "6";
-  const revisjonNr = harBowTie ? "8" : "7";
+  const hendelseNr = "4";
+  const beregningNr = "5";
+  const tiltakNr = "6";
+  const bowTieNr = "7";
+  const oppsummeringNr = harBowTie ? "8" : "7";
+  const revisjonNr = harBowTie ? "9" : "8";
   const tiltakIder = byggTiltakIder(content.tiltaksplan || []);
 
   const beregningIder = byggBeregningIder(content);
@@ -758,11 +767,77 @@ export const exportRosToWord = async (options: ExportOptions) => {
 
   });
   const hendelser: (Paragraph | Table)[] = [
-    buildSectionHeading(theme, "3. Hendelsesregister"),
+    buildSectionHeading(theme, `${hendelseNr}. Hendelsesregister`),
     content.hendelser.length === 0
       ? para("Ingen hendelser registrert.")
       : new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: hendelseRows }),
   ];
+
+  // Kap. 3 Beredskapsforskriftens krav
+  const bfkVurderinger = normaliserBfkVurderinger(content.beredskapsforskrift);
+  const bfkVurdMap = new Map(bfkVurderinger.map((v) => [v.paragrafId, v]));
+  const hIdxAll = new Map(content.hendelser.map((h, i) => [h.id, i + 1]));
+  const bfkStatusFill: Record<BfkVurderingStatus, string> = {
+    vurdert: "DCFCE7",
+    ikke_aktuell: "E5E7EB",
+    ikke_vurdert: "FEE2E2",
+  };
+  const bfkAntallVurdert = bfkVurderinger.filter((v) => v.status !== "ikke_vurdert").length;
+  const beredskapsforskriftBlocks: (Paragraph | Table)[] = [
+    buildSectionHeading(theme, "3. Beredskapsforskriftens krav"),
+    para(
+      "Dokumenterer at relevante paragrafer i Forskrift om beredskap i kraftforsyningen (BFK) " +
+        "er vurdert i ROS-analysen. For hver paragraf angis status, begrunnelse og hvilke " +
+        "hendelser i kapittel " + hendelseNr + " som dekker kravet.",
+    ),
+    para(`Status: ${bfkAntallVurdert} av ${bfkVurderinger.length} paragrafer vurdert.`, { bold: true }),
+  ];
+  BFK_KATEGORI_REKKEFOLGE.forEach((kat) => {
+    const ps = BFK_PARAGRAFER.filter((p) => p.kategori === kat);
+    if (ps.length === 0) return;
+    beredskapsforskriftBlocks.push(
+      new Paragraph({
+        heading: HeadingLevel.HEADING_3,
+        children: [text(BFK_KATEGORI_LABEL[kat], { bold: true, size: 20 })],
+      }),
+    );
+    const bfkHeader = new TableRow({
+      tableHeader: true,
+      children: [
+        headerCell("Paragraf", 18),
+        headerCell("Krav", 30),
+        headerCell("Status", 12),
+        headerCell("Begrunnelse", 28),
+        headerCell("Hendelser", 12),
+      ],
+    });
+    const bfkRows = ps.map((p) => {
+      const v = bfkVurdMap.get(p.id);
+      const status = v?.status || "ikke_vurdert";
+      const hLabels = (v?.hendelseIds || [])
+        .map((id) => hIdxAll.get(id))
+        .filter((n): n is number => !!n)
+        .map((n) => `H${n}`)
+        .join(", ");
+      return new TableRow({
+        children: [
+          cell(p.navn, 18, true),
+          cell(p.utdrag, 30),
+          new TableCell({
+            width: { size: 12, type: WidthType.PERCENTAGE },
+            shading: { fill: bfkStatusFill[status], type: ShadingType.CLEAR, color: "auto" },
+            children: [new Paragraph({ children: [text(BFK_STATUS_LABEL[status], { bold: true, size: 16 })] })],
+          }),
+          cell(v?.begrunnelse || "", 28),
+          cell(hLabels || "—", 12),
+        ],
+      });
+    });
+    beredskapsforskriftBlocks.push(
+      new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [bfkHeader, ...bfkRows] }),
+    );
+  });
+
 
   // Kap. 4 Beregningsgrunnlag
   const alleBeregninger = content.beregninger || [];
@@ -892,7 +967,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
     bowTieBlocks.push(buildSectionHeading(theme, `${bowTieNr}. Bow-tie analyse`));
     bowTieBlocks.push(
       para(
-        "Bow-tie-analysen knytter registrerte hendelser fra kapittel 3 til overordnede uønskede topphendelser. " +
+        `Bow-tie-analysen knytter registrerte hendelser fra kapittel ${hendelseNr} til overordnede uønskede topphendelser. ` +
           "Dette synliggjør hvilke årsaker som kan lede til samme topphendelse, og hvilke tiltak som virker på tvers.",
       ),
     );
@@ -1187,6 +1262,17 @@ export const exportRosToWord = async (options: ExportOptions) => {
         properties: {
           type: SectionType.NEXT_PAGE,
           page: {
+            size: { width: 11906, height: 16838, orientation: PageOrientation.PORTRAIT },
+          },
+        },
+        headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
+        footers: { default: buildFooter(theme) },
+        children: [...beredskapsforskriftBlocks],
+      },
+      {
+        properties: {
+          type: SectionType.NEXT_PAGE,
+          page: {
             size: { width: 11906, height: 16838, orientation: PageOrientation.LANDSCAPE },
           },
         },
@@ -1204,6 +1290,17 @@ export const exportRosToWord = async (options: ExportOptions) => {
         headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
         footers: { default: buildFooter(theme) },
         children: [...beregningsgrunnlag],
+      },
+      {
+        properties: {
+          type: SectionType.NEXT_PAGE,
+          page: {
+            size: { width: 11906, height: 16838, orientation: PageOrientation.LANDSCAPE },
+          },
+        },
+        headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
+        footers: { default: buildFooter(theme) },
+        children: [...tiltaksplanBlocks],
       },
       ...(harBowTie
         ? [
