@@ -55,6 +55,7 @@ const EMPTY_CONTENT: RosContent = {
   metode: { informasjonsinnhenting: "", organisering: "", deltakere: [], skjemaOgSjekklister: "" },
   hendelser: [],
   bowTies: [],
+  beredskapsforskrift: lagDefaultBfkVurderinger(),
   oppsummering: "",
   revisjonshistorikk: [],
 };
