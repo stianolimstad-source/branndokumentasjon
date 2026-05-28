@@ -30,6 +30,16 @@ import {
 import { risikoFarge } from "@/components/ros/RosMatriks";
 import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell, DIMENSJON_NAVN } from "@/lib/ros-risk-criteria";
 import { migrerHendelse, byggBeregningIder, type RosBeregning, type RosContent, type RosHendelse } from "@/components/ros/RosPreview";
+import {
+  TILTAK_STATUS_LABEL,
+  TILTAK_STATUS_FILL,
+  TILTAK_KATEGORI_LABEL,
+  VURDERING_LABEL,
+  byggTiltakIder,
+  erFristPassert,
+  sorterTiltakEtterPrioritet,
+  formaterFrist,
+} from "@/lib/ros-tiltak";
 
 export interface RosSenderInfo {
   full_name?: string | null;
