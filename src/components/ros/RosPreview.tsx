@@ -485,6 +485,25 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
               <td style={{ ...tdStyle, fontWeight: 600, background: "#f7f9fc" }}>Versjon</td>
               <td style={tdStyle}>{m.versjon || "1.0"}</td>
             </tr>
+            {m.nveKlasse && (
+              <tr>
+                <td style={{ ...tdStyle, fontWeight: 600, background: "#f7f9fc" }}>NVE-klasse (§5-4)</td>
+                <td style={tdStyle}>Klasse {m.nveKlasse}</td>
+              </tr>
+            )}
+            {m.sensitivKlassifisering && (
+              <tr>
+                <td style={{ ...tdStyle, fontWeight: 600, background: "#f7f9fc" }}>Sensitivitetsklassifisering (§6-2)</td>
+                <td style={tdStyle}>
+                  {SENSITIV_KLASSE_LABEL[m.sensitivKlassifisering]}
+                  {(m.sensitivKlassifisering === "fortrolig" || m.sensitivKlassifisering === "strengt_fortrolig") && (
+                    <span style={{ marginLeft: 8, display: "inline-flex", alignItems: "center", gap: 4, padding: "1px 6px", borderRadius: 3, background: m.sensitivKlassifisering === "strengt_fortrolig" ? "#fee2e2" : "#fef3c7", color: m.sensitivKlassifisering === "strengt_fortrolig" ? "#991b1b" : "#92400e", fontSize: 10, fontWeight: 600 }}>
+                      <Shield size={10} /> Kraftsensitiv
+                    </span>
+                  )}
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
 
