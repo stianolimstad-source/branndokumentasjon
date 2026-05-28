@@ -40,6 +40,14 @@ import {
   sorterTiltakEtterPrioritet,
   formaterFrist,
 } from "@/lib/ros-tiltak";
+import {
+  BFK_PARAGRAFER,
+  BFK_KATEGORI_LABEL,
+  BFK_KATEGORI_REKKEFOLGE,
+  BFK_STATUS_LABEL,
+  normaliserBfkVurderinger,
+  type BfkVurderingStatus,
+} from "@/lib/ros-beredskapsforskrift";
 
 export interface RosSenderInfo {
   full_name?: string | null;
