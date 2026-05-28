@@ -909,6 +909,22 @@ const Konsept = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData.regelverk, formData.branncellerFlerePlanRelevant, formData.branncellerFlerePlanAreal]);
 
+  // §11-9 (kap 3.6) – auto-åpne relevante underseksjoner basert på prosjektdata
+  useEffect(() => {
+    if (formData.regelverk === "BF85") return;
+    const bygType = (formData.bygningstype || "").toLowerCase();
+    const etasjerNum = parseInt(formData.etasjer, 10) || 0;
+    const erSmahus = (bygType.includes("bolig") || bygType.includes("enebolig") || bygType.includes("rekkehus") || bygType.includes("tomannsbolig")) && etasjerNum > 0 && etasjerNum <= 2;
+    const aapneE = formData.brannklasse === "BKL2" || formData.brannklasse === "BKL3" || formData.risikoklasse === "RK6";
+    setKap36Open(prev => ({
+      ...prev,
+      E: prev.E || aapneE,
+      I: prev.I || erSmahus,
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.regelverk, formData.risikoklasse, formData.brannklasse, formData.bygningstype, formData.etasjer]);
+
+
   // Load existing concept if conceptId is provided
   useEffect(() => {
     if (conceptId && user) {
