@@ -575,9 +575,12 @@ const Konsept = () => {
     bekreftetUliktEtasjeantall: false, // Bekreftelse på at ulikt etasjeantall er korrekt
     bygningsdeler: [] as Bygningsdel[], // Array med bygningsdeler med egne risikoklasser
     risikoklasse: "",
+    risikoklasseBegrunnelse: "", // Begrunnelse hvis RK er manuelt plassert (§11-2)
     brannklasse: "",
     brannklasseBegrunnelse: "", // Begrunnelse hvis manuelt overstyrt
     brannklasseUnntak: "", // Automatisk unntak-tekst for brannklasse
+    brannklasseTabellReferanse: "", // Tabellberegnet BKL når BKL4 er tvunget av §11-3 nr. 8
+    saerligKonsekvensBKL4: false, // §11-3 nr. 8 – særlig stor konsekvens, tvinger BKL4
     harTerrengTilgang: "", // "ja" eller "nei" - for unntak RK4
     erRKL6Boligbygning: false, // RKL6: er det boligbygning (unntak BKL1 ved ≤2 etasjer)
     universellUtforming: false, // Om bygget skal være universelt utformet
