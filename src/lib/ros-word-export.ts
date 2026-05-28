@@ -1470,6 +1470,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
         footers: { default: buildFooter(theme) },
         children: [
           ...cover,
+          ...sensitivCoverBox,
           new Paragraph({ text: "", spacing: { before: 200 } }),
           infoTable,
           new Paragraph({ text: "", spacing: { before: 300 } }),
