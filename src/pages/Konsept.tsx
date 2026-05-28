@@ -1971,7 +1971,7 @@ const Konsept = () => {
             }),
             new Paragraph({
               spacing: { after: 300 },
-              children: [new TextRun({ text: "Denne rapporten er basert på en NS 3424 nivå 1 tilstandsvurdering.", size: 20 })],
+              children: [new TextRun({ text: `Denne rapporten er basert på en NS 3424 nivå ${formData.ns3424Nivaa} tilstandsvurdering – ${formData.ns3424Nivaa === "3" ? "fullstendig registrering med destruktive prøver og laboratorieanalyser" : formData.ns3424Nivaa === "2" ? "mer omfattende registrering, kan inkludere åpning av enkelte konstruksjoner" : "visuell registrering og enkel vurdering av synlige bygningsdeler"}.`, size: 20 })],
             }),
             new Paragraph({
               spacing: { after: 100 },
