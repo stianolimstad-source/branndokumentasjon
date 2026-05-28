@@ -80,9 +80,35 @@ const KvalitativAnalyse = () => {
   const [newProjectData, setNewProjectData] = useState({ name: "", description: "", address: "" });
 
   // Load existing concept
+  const [conceptLoaded, setConceptLoaded] = useState(!conceptId);
   useEffect(() => {
-    if (conceptId && user) loadConcept(conceptId);
+    if (conceptId && user) loadConcept(conceptId).finally(() => setConceptLoaded(true));
+    else if (!conceptId) setConceptLoaded(true);
   }, [conceptId, user]);
+
+  // Prefyll nytt fravik når brukeren kommer fra brannkonsept med ?tekParagraf=&newFravik=1
+  const prefilledRef = React.useRef(false);
+  useEffect(() => {
+    if (prefilledRef.current) return;
+    if (!wantsNewFravik || !incomingTekParagraf || !projectId || !conceptLoaded) return;
+    prefilledRef.current = true;
+    const label = TEK17_PARAGRAFER.find(p => p.id === incomingTekParagraf)?.label
+      ?? `§ ${incomingTekParagraf}`;
+    const ny: FravikEntry = { ...emptyFravik(), funksjonskrav: label };
+    setFravikEntries(prev => {
+      // Hvis vi har et tomt initielt fravik, erstatt det
+      const isInitialEmpty = prev.length === 1 && !prev[0].navn && !prev[0].fravikBeskrivelse && !prev[0].funksjonskrav;
+      const next = isInitialEmpty ? [ny] : [...prev, ny];
+      setActiveFravikIndex(next.length - 1);
+      return next;
+    });
+    // Rydd query-parametere (behold project/concept/fromKonsept)
+    const next = new URLSearchParams(searchParams);
+    next.delete("tekParagraf");
+    next.delete("newFravik");
+    next.delete("new");
+    setSearchParams(next, { replace: true });
+  }, [wantsNewFravik, incomingTekParagraf, projectId, conceptLoaded, searchParams, setSearchParams]);
 
   // Show project picker dialog when no project is selected
   useEffect(() => {
