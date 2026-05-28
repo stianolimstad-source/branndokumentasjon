@@ -930,7 +930,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 className="ros-h-scroll-hidden"
                 style={{ overflowX: "auto" }}
               >
-              <table style={{ ...tableStyle, fontSize: 9, minWidth: 1100 }}>
+              <table style={{ ...tableStyle, fontSize: 9, minWidth: 1240 }}>
                 <thead>
                   <tr>
                     <th style={{ ...thStyle, width: 26, textAlign: "center", fontSize: 9 }}>Nr</th>
