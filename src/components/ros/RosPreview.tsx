@@ -437,6 +437,31 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
           </div>
         )}
 
+        {/* Sensitivitetsbanner */}
+        {(m.sensitivKlassifisering === "fortrolig" || m.sensitivKlassifisering === "strengt_fortrolig") && (
+          <div style={{
+            background: m.sensitivKlassifisering === "strengt_fortrolig" ? "#fee2e2" : "#fef3c7",
+            border: `2px solid ${m.sensitivKlassifisering === "strengt_fortrolig" ? "#991b1b" : "#92400e"}`,
+            color: m.sensitivKlassifisering === "strengt_fortrolig" ? "#991b1b" : "#92400e",
+            padding: "10px 14px",
+            borderRadius: 6,
+            marginBottom: 12,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+          }}>
+            <Shield size={18} />
+            <div>
+              <p style={{ margin: 0, fontSize: 12, fontWeight: 700, letterSpacing: 0.5 }}>
+                KRAFTSENSITIV INFORMASJON – {SENSITIV_KLASSE_LABEL[m.sensitivKlassifisering].toUpperCase()}
+              </p>
+              <p style={{ margin: "2px 0 0 0", fontSize: 10 }}>
+                Behandles iht. beredskapsforskriften §6-2
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Header bar */}
         <div style={{ background: "#1e3a5f", color: "#fff", padding: "16px 20px", borderRadius: 6, marginBottom: 20 }}>
           <p style={{ fontSize: 10, opacity: 0.8, margin: 0, letterSpacing: 1 }}>RISIKO- OG SÅRBARHETSANALYSE</p>
