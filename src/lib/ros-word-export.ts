@@ -549,7 +549,8 @@ export const exportRosToWord = async (options: ExportOptions) => {
   const hendelseHeader = new TableRow({
     children: [
       smallHeader("Nr", 3),
-      smallHeader("Sårbarhet", 7),
+      smallHeader("Sens.", 3),
+      smallHeader("Sårbarhet", 6),
       smallHeader("Hendelse / scenario", 8),
       smallHeader("Årsak", 6),
       smallHeader("Beskr. sanns. (før)", 6),
