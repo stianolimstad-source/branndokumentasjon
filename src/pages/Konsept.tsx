@@ -133,6 +133,15 @@ const bygningsTypeRisikoklasseMap: Record<string, string> = {
   "Turisthytte og vandrerhjem": "RK6",
 };
 
+// Default-tekster for § 11-1 Overordnet brannstrategi
+const DEFAULT_OVERORDNET = {
+  materialer: "Materialer og produkter velges iht. § 11-9. Branncellebegrensende kledninger benyttes hvor preaksepterte ytelser krever det. Materialer med dokumentert klassifisering iht. NS-EN 13501-1 benyttes konsistent.",
+  brannspredning: "Byggverket er delt inn i branncelle og brannseksjoner iht. § 11-7 og § 11-8 for å begrense brannspredning. Brannmotstand for bærende konstruksjoner og skiller er dimensjonert etter brannklasse iht. § 11-4. Brannskiller mot nabobygg er ivaretatt iht. § 11-6.",
+  roemning: "Rømningsveier, ledesystem og deteksjon er utformet slik at nødvendig rømningstid er mindre enn tilgjengelig rømningstid. Aktiv brannvarsling (§ 11-12), tydelig merking (§ 11-12, § 11-14) og tilstrekkelig antall utganger (§ 11-13) er ivaretatt.",
+  rednings: "Byggverket er tilrettelagt for utvendig og innvendig innsats (§ 11-17). Manuell slokkeinnsats fra personer i byggverket er ivaretatt iht. § 11-16. Tilgjengelighet for brannvesenets kjøretøy og slokkevannsforsyning er dokumentert.",
+};
+
+
 // Branncelle-typer basert på VTEK § 11-8 preaksepterte ytelser
 const branncelleTyperListe = [
   { id: "romningsvei", label: "a. Rømningsvei, jf. også § 11-14" },
@@ -591,6 +600,11 @@ const Konsept = () => {
     universellUtforming: false, // Om bygget skal være universelt utformet
     baeresystem: "",
     tilleggskrav: "",
+    // 2.3 § 11-1 Overordnet brannstrategi
+    overordnetMaterialer: DEFAULT_OVERORDNET.materialer,
+    overordnetBrannspredning: DEFAULT_OVERORDNET.brannspredning,
+    overordnetRoemning: DEFAULT_OVERORDNET.roemning,
+    overordnetRednings: DEFAULT_OVERORDNET.rednings,
     // 3. Branntekniske ytelseskrav
     baereevne: "",
     baereevneUnntak: [] as string[],
@@ -2004,7 +2018,8 @@ const Konsept = () => {
               new Paragraph({ children: [new TextRun({ text: "2. Grunnlag og forutsetninger for brannteknisk prosjektering", bold: true, size: 22 })], spacing: { after: 50 } }),
               new Paragraph({ text: "    2.1 Grunnlagsdokumenter", spacing: { after: 30 } }),
               new Paragraph({ text: "    2.2 Beskrivelse av bygning og branntekniske forutsetninger", spacing: { after: 30 } }),
-              new Paragraph({ text: "    2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker", spacing: { after: 50 } }),
+              new Paragraph({ text: "    2.3 § 11-1 Overordnet brannstrategi", spacing: { after: 30 } }),
+              new Paragraph({ text: "    2.4 Tilleggskrav fra tiltakshaver, myndigheter eller bruker", spacing: { after: 50 } }),
               new Paragraph({ children: [new TextRun({ text: "3. Beskrivelse av branntekniske ytelseskrav", bold: true, size: 22 })], spacing: { after: 50 } }),
               new Paragraph({ text: "    3.1 § 11-4 Bæreevne og stabilitet", spacing: { after: 30 } }),
               new Paragraph({ text: "    3.2 § 11-5 Sikkerhet ved eksplosjon", spacing: { after: 30 } }),
@@ -2426,7 +2441,27 @@ const Konsept = () => {
                 ...(formData.bygningsinfoKommentar ? [new Paragraph({ children: [new TextRun({ text: formData.bygningsinfoKommentar, size: 20 })], spacing: { before: 100, after: 100 } })] : []),
               ]),
               new Paragraph({
-                children: [new TextRun({ text: "2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker", bold: true, size: 24 })],
+                children: [new TextRun({ text: "2.3 § 11-1 Overordnet brannstrategi", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              new Paragraph({
+                children: [new TextRun({ text: "Iht. § 11-1 skal byggverket prosjekteres slik at det oppnås tilfredsstillende sikkerhet ved brann. Følgende fire pilarer er ivaretatt på overordnet nivå:", italics: true, size: 20 })],
+                spacing: { after: 100 },
+              }),
+              ...[
+                { title: "a. Materialer og produkter", value: formData.overordnetMaterialer || DEFAULT_OVERORDNET.materialer },
+                { title: "b. Bygnings- og installasjonsdeler – begrensning av brannspredning", value: formData.overordnetBrannspredning || DEFAULT_OVERORDNET.brannspredning },
+                { title: "c. Rask og sikker rømning", value: formData.overordnetRoemning || DEFAULT_OVERORDNET.roemning },
+                { title: "d. Rednings- og slokkeinnsats", value: formData.overordnetRednings || DEFAULT_OVERORDNET.rednings },
+              ].flatMap((s) => [
+                new Paragraph({
+                  children: [new TextRun({ text: s.title, bold: true, size: 22 })],
+                  spacing: { before: 120, after: 60 },
+                }),
+                new Paragraph({ text: s.value, spacing: { after: 80 } }),
+              ]),
+              new Paragraph({
+                children: [new TextRun({ text: "2.4 Tilleggskrav fra tiltakshaver, myndigheter eller bruker", bold: true, size: 24 })],
                 spacing: { before: 200, after: 100 },
               }),
               new Paragraph({
@@ -4327,7 +4362,41 @@ const Konsept = () => {
                         )}
                       </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">2.3 Tilleggskrav</Label>
+                      <Label className="text-xs text-muted-foreground">2.3 § 11-1 Overordnet brannstrategi</Label>
+                      <p className="text-xs text-muted-foreground">
+                        Iht. § 11-1 skal byggverket prosjekteres slik at det oppnås tilfredsstillende sikkerhet ved brann. Beskriv her hvordan de fire pilarene er ivaretatt på overordnet nivå. Detaljerte krav dokumenteres under hver enkelt paragraf i kapittel 3.
+                      </p>
+                      {[
+                        { key: "overordnetMaterialer" as const, label: "a. Materialer og produkter", help: "Hvordan velges materialer og produkter slik at de ikke gir uakseptable bidrag til brannutvikling?", def: DEFAULT_OVERORDNET.materialer },
+                        { key: "overordnetBrannspredning" as const, label: "b. Bygnings- og installasjonsdeler – begrensning av brannspredning", help: "Hvordan utformes bygningsdelene for å begrense brannspredning innenfor og mellom branncelle/seksjoner?", def: DEFAULT_OVERORDNET.brannspredning },
+                        { key: "overordnetRoemning" as const, label: "c. Rask og sikker rømning", help: "Hvordan utformes byggverket for at personer skal kunne komme seg trygt ut?", def: DEFAULT_OVERORDNET.roemning },
+                        { key: "overordnetRednings" as const, label: "d. Rednings- og slokkeinnsats", help: "Hvordan tilrettelegges byggverket for innsats fra rednings- og slokkemannskap?", def: DEFAULT_OVERORDNET.rednings },
+                      ].map((f) => (
+                        <div key={f.key} className="space-y-1 border rounded-md p-3">
+                          <div className="flex items-start justify-between gap-2">
+                            <Label className="text-xs font-medium block">{f.label}</Label>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 px-2 text-xs"
+                              onClick={() => setFormData({ ...formData, [f.key]: f.def })}
+                            >
+                              Hent default-tekst
+                            </Button>
+                          </div>
+                          <p className="text-xs text-muted-foreground">{f.help}</p>
+                          <Textarea
+                            rows={4}
+                            className="min-h-[100px]"
+                            value={(formData as any)[f.key] || ""}
+                            onChange={(e) => setFormData({ ...formData, [f.key]: e.target.value })}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs text-muted-foreground">2.4 Tilleggskrav</Label>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Eventuelle tilleggskrav fra tiltakshaver, myndigheter eller bruker</Label>
                         <Textarea 

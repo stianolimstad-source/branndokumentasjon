@@ -4,6 +4,31 @@ import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
 import { getBaereevneTekstBF85, getBF85BrannveggKravKap34, bf85Tabell3423, getYtterveggBrannmotstandBF85, getRelevantBF85_5xx } from "@/lib/bf85-constants";
 
+const DEFAULT_OVERORDNET = {
+  materialer: "Materialer og produkter velges iht. § 11-9. Branncellebegrensende kledninger benyttes hvor preaksepterte ytelser krever det. Materialer med dokumentert klassifisering iht. NS-EN 13501-1 benyttes konsistent.",
+  brannspredning: "Byggverket er delt inn i branncelle og brannseksjoner iht. § 11-7 og § 11-8 for å begrense brannspredning. Brannmotstand for bærende konstruksjoner og skiller er dimensjonert etter brannklasse iht. § 11-4. Brannskiller mot nabobygg er ivaretatt iht. § 11-6.",
+  roemning: "Rømningsveier, ledesystem og deteksjon er utformet slik at nødvendig rømningstid er mindre enn tilgjengelig rømningstid. Aktiv brannvarsling (§ 11-12), tydelig merking (§ 11-12, § 11-14) og tilstrekkelig antall utganger (§ 11-13) er ivaretatt.",
+  rednings: "Byggverket er tilrettelagt for utvendig og innvendig innsats (§ 11-17). Manuell slokkeinnsats fra personer i byggverket er ivaretatt iht. § 11-16. Tilgjengelighet for brannvesenets kjøretøy og slokkevannsforsyning er dokumentert.",
+};
+
+const OverordnetSection = ({ formData, title }: { formData: any; title: string }) => (
+  <>
+    <h3 className="font-semibold mb-2">{title}</h3>
+    <p className="ml-4 mb-2 text-sm italic">Iht. § 11-1 er følgende fire pilarer ivaretatt på overordnet nivå:</p>
+    {[
+      { title: "a. Materialer og produkter", value: formData.overordnetMaterialer || DEFAULT_OVERORDNET.materialer },
+      { title: "b. Bygnings- og installasjonsdeler – begrensning av brannspredning", value: formData.overordnetBrannspredning || DEFAULT_OVERORDNET.brannspredning },
+      { title: "c. Rask og sikker rømning", value: formData.overordnetRoemning || DEFAULT_OVERORDNET.roemning },
+      { title: "d. Rednings- og slokkeinnsats", value: formData.overordnetRednings || DEFAULT_OVERORDNET.rednings },
+    ].map((s, i) => (
+      <div key={i} className="ml-4 mb-2">
+        <h4 className="font-medium text-sm">{s.title}</h4>
+        <p className="ml-2 whitespace-pre-wrap">{s.value}</p>
+      </div>
+    ))}
+  </>
+);
+
 
 interface TilstandBilde {
   url: string;
@@ -538,7 +563,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p><span className="font-bold">2.</span> Grunnlag og forutsetninger</p>
               <p className="ml-4">2.1 Bygningsinformasjon</p>
               <p className="ml-4">2.2 Grunnlagsdokumenter</p>
-              <p className="ml-4">2.3 Tilleggskrav</p>
+              <p className="ml-4">2.3 § 11-1 Overordnet brannstrategi</p>
+              <p className="ml-4">2.4 Tilleggskrav</p>
               <p><span className="font-bold">3.</span> Brannteknisk tilstandsvurdering</p>
               <p className="ml-4">3.1 Bæreevne og stabilitet</p>
               <p className="ml-4">3.2 Sikkerhet ved eksplosjon</p>
@@ -580,7 +606,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               <p><span className="font-bold">2.</span> Grunnlag og forutsetninger for brannteknisk prosjektering</p>
               <p className="ml-4">2.1 Beskrivelse av bygning og branntekniske forutsetninger</p>
               <p className="ml-4">2.2 Grunnlagsdokumenter</p>
-              <p className="ml-4">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</p>
+              <p className="ml-4">2.3 § 11-1 Overordnet brannstrategi</p>
+              <p className="ml-4">2.4 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</p>
               <p><span className="font-bold">3.</span> Beskrivelse av branntekniske ytelseskrav</p>
               <p className="ml-4">3.1 § 11-4 Bæreevne og stabilitet</p>
               <p className="ml-4">3.2 § 11-5 Sikkerhet ved eksplosjon</p>
@@ -903,7 +930,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             <p className="ml-4 mb-3">[Liste over tegninger og dokumenter]</p>
           )}
 
-          <h3 className="font-semibold mb-2">2.3 Tilleggskrav</h3>
+          <OverordnetSection formData={formData} title="2.3 § 11-1 Overordnet brannstrategi" />
+
+          <h3 className="font-semibold mb-2">2.4 Tilleggskrav</h3>
           <p className="ml-4 mb-3 whitespace-pre-wrap">{formData.tilleggskrav || "[Eventuelle tilleggskrav beskrives]"}</p>
           </>
         ) : (
@@ -1118,7 +1147,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             <p className="ml-4 mb-3">[Liste over tegninger og dokumenter]</p>
           )}
 
-          <h3 className="font-semibold mb-2">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</h3>
+          <OverordnetSection formData={formData} title="2.3 § 11-1 Overordnet brannstrategi" />
+
+          <h3 className="font-semibold mb-2">2.4 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</h3>
           <p className="ml-4 mb-3 whitespace-pre-wrap">{formData.tilleggskrav || "[Eventuelle tilleggskrav beskrives]"}</p>
           </>
         )}
