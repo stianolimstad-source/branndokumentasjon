@@ -45,7 +45,12 @@ export interface RosHendelse {
   sannsynlighet: number;
   /** @deprecated bruk konsekvensvurderinger[] – beholdes som fallback / speil av forsyningssikkerhet */
   konsekvens: number;
+  /** @deprecated bruk eksisterendeBarrierer + foreslatteTiltak – beholdes for migrasjon og bakoverkompatibilitet */
   tiltak: string;
+  /** Barrierer/forutsetninger som allerede er på plass og lå til grunn for risikovurderingen */
+  eksisterendeBarrierer?: string;
+  /** Nye risikoreduserende tiltak som skal vurderes (ikke implementert ennå) */
+  foreslatteTiltak?: string;
   beskrivelseEtter?: string;
   sannsynlighetEtter?: number;
   /** @deprecated bruk konsekvensvurderinger[] – beholdes som fallback / speil av forsyningssikkerhet */
@@ -76,20 +81,25 @@ export interface RosBeregning extends AttachedCalculation {
  * med tom liste – ingen dimensjon påtvinges.
  */
 export function migrerHendelse(h: RosHendelse): RosHendelse {
-  const eksisterende = Array.isArray(h.konsekvensvurderinger) ? h.konsekvensvurderinger : [];
-  if (eksisterende.length > 0) return { ...h, konsekvensvurderinger: eksisterende };
+  let migrated: RosHendelse = h;
+  // Migrér legacy `tiltak` → `foreslatteTiltak` (eksisterendeBarrierer forblir undefined så brukeren selv vurderer)
+  if (!h.foreslatteTiltak && h.tiltak && h.tiltak.trim()) {
+    migrated = { ...migrated, foreslatteTiltak: h.tiltak };
+  }
+  const eksisterende = Array.isArray(migrated.konsekvensvurderinger) ? migrated.konsekvensvurderinger : [];
+  if (eksisterende.length > 0) return { ...migrated, konsekvensvurderinger: eksisterende };
   // Legacy-migrering: konverter h.konsekvens til én forsyningssikkerhet-rad
-  if (typeof h.konsekvens === "number" && h.konsekvens > 0) {
+  if (typeof migrated.konsekvens === "number" && migrated.konsekvens > 0) {
     const forsyning: KonsekvensVurdering = {
       dimensjon: "forsyningssikkerhet",
-      score: (h.konsekvens as 1|2|3|4|5) || 1,
-      begrunnelse: h.beskrivelseRisikoFor || "",
-      scoreEtter: h.konsekvensEtter as 1|2|3|4|5 | undefined,
+      score: (migrated.konsekvens as 1|2|3|4|5) || 1,
+      begrunnelse: migrated.beskrivelseRisikoFor || "",
+      scoreEtter: migrated.konsekvensEtter as 1|2|3|4|5 | undefined,
       begrunnelseEtter: "",
     };
-    return { ...h, konsekvensvurderinger: [forsyning] };
+    return { ...migrated, konsekvensvurderinger: [forsyning] };
   }
-  return { ...h, konsekvensvurderinger: [] };
+  return { ...migrated, konsekvensvurderinger: [] };
 }
 
 
@@ -930,7 +940,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 className="ros-h-scroll-hidden"
                 style={{ overflowX: "auto" }}
               >
-              <table style={{ ...tableStyle, fontSize: 9, minWidth: 1240 }}>
+              <table style={{ ...tableStyle, fontSize: 9, minWidth: 1340 }}>
                 <thead>
                   <tr>
                     <th style={{ ...thStyle, width: 26, textAlign: "center", fontSize: 9 }}>Nr</th>
@@ -942,7 +952,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                     <th style={{ ...thStyle, width: 24, textAlign: "center", fontSize: 9 }}>S</th>
                     <th style={{ ...thStyle, width: 24, textAlign: "center", fontSize: 9 }}>K</th>
                     <th style={{ ...thStyle, width: 30, textAlign: "center", fontSize: 9 }}>R</th>
-                    <th style={{ ...thStyle, fontSize: 9 }}>Forebyggende tiltak</th>
+                    <th style={{ ...thStyle, fontSize: 9 }}>Eksisterende barrierer</th>
+                    <th style={{ ...thStyle, fontSize: 9 }}>Foreslåtte tiltak</th>
                     <th style={{ ...thStyle, fontSize: 9 }}>Beskr. etter tiltak</th>
                     <th style={{ ...thStyle, width: 24, textAlign: "center", fontSize: 9 }}>S etter</th>
                     <th style={{ ...thStyle, width: 24, textAlign: "center", fontSize: 9 }}>K etter</th>
@@ -987,7 +998,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         <td style={tdCenter}>{h.sannsynlighet}</td>
                         <td style={kForsyning ? tdCenter : tdMuted}>{kForsyning ?? "—"}</td>
                         <td style={kForsyning ? { ...riskCellStyle(h.sannsynlighet, kForsyning), fontSize: 9 } : tdMuted}>{kForsyning ? h.sannsynlighet * kForsyning : "—"}</td>
-                        <td style={td}>{h.tiltak}</td>
+                        <td style={td}>{h.eksisterendeBarrierer || ""}</td>
+                        <td style={td}>{h.foreslatteTiltak || h.tiltak || ""}</td>
                         <td style={td}>{h.beskrivelseEtter || ""}</td>
                         <td style={tdCenter}>{sE}</td>
                         <td style={kForsyningEtter ? tdCenter : tdMuted}>{kForsyningEtter ?? "—"}</td>
@@ -998,7 +1010,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                       </tr>
 
                       <tr>
-                        <td colSpan={17} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
+                        <td colSpan={18} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
                           {h.usikkerhet === "høy" ? (
                             <p style={{ fontSize: 9, fontWeight: 700, color: "#b91c1c", margin: "0 0 4px 0" }}>
                               Usikkerhet: Høy ⚠
@@ -1062,7 +1074,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         if (tilknyttede.length > 0) {
                           return (
                             <tr>
-                              <td colSpan={17} style={{ ...tdStyle, padding: "4px 10px", background: "#f7f9fc" }}>
+                              <td colSpan={18} style={{ ...tdStyle, padding: "4px 10px", background: "#f7f9fc" }}>
                                 <span style={{ fontSize: 9, fontStyle: "italic", color: "#64748b" }}>
                                   Beregninger: {tilknyttede.map((b) => ider.get(b.id) || "B?").join(", ")} – se kapittel 4 Beregningsgrunnlag.
                                 </span>
@@ -1073,7 +1085,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         if (h.kreverBeregning) {
                           return (
                             <tr>
-                              <td colSpan={17} style={{ ...tdStyle, padding: "4px 10px", background: "#fff3cd", color: "#7a5a00" }}>
+                              <td colSpan={18} style={{ ...tdStyle, padding: "4px 10px", background: "#fff3cd", color: "#7a5a00" }}>
                                 <span style={{ fontSize: 9, fontWeight: 600 }}>
                                   Krever beregning – ikke registrert ennå{h.beregningTekst ? `: ${h.beregningTekst}` : ""}
                                 </span>
@@ -1105,7 +1117,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                   marginTop: 8,
                 }}
               >
-                <div style={{ width: 1240, height: 1 }} />
+                <div style={{ width: 1340, height: 1 }} />
               </div>
             </>
           )}

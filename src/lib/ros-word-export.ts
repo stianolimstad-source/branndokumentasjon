@@ -422,12 +422,13 @@ export const exportRosToWord = async (options: ExportOptions) => {
       smallHeader("Sårbarhet", 7),
       smallHeader("Hendelse / scenario", 8),
       smallHeader("Årsak", 6),
-      smallHeader("Beskr. sanns. (før)", 7),
-      smallHeader("Beskr. risiko (før)", 7),
+      smallHeader("Beskr. sanns. (før)", 6),
+      smallHeader("Beskr. risiko (før)", 6),
       smallHeader("S", 3),
       smallHeader("K", 3),
       smallHeader("R", 4),
-      smallHeader("Forebyggende tiltak", 8),
+      smallHeader("Eksist. barrierer", 5),
+      smallHeader("Foreslåtte tiltak", 5),
       smallHeader("Beskr. etter tiltak", 8),
       smallHeader("S e.", 3),
       smallHeader("K e.", 3),
@@ -651,7 +652,8 @@ export const exportRosToWord = async (options: ExportOptions) => {
                 ],
               })
             : dashCell(4),
-          smallCell(h.tiltak || "", 9),
+          smallCell(h.eksisterendeBarrierer || "", 5),
+          smallCell(h.foreslatteTiltak || h.tiltak || "", 5),
           smallCell(h.beskrivelseEtter || "", 9),
           smallCell(String(sE), 3),
           kForsyningEtter ? smallCell(String(kForsyningEtter), 3) : dashCell(3),
@@ -681,7 +683,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
         new TableRow({
           children: [
             new TableCell({
-              columnSpan: 17,
+              columnSpan: 18,
               width: { size: 100, type: WidthType.PERCENTAGE },
               shading: { fill: "F7F9FC", type: ShadingType.CLEAR, color: "auto" },
               children: [new Paragraph({ children: [text(`Beregninger: ${ids} – se kapittel ${beregningNr} Beregningsgrunnlag.`, { italics: true, size: 14 })] })],
@@ -694,7 +696,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
         new TableRow({
           children: [
             new TableCell({
-              columnSpan: 17,
+              columnSpan: 18,
               width: { size: 100, type: WidthType.PERCENTAGE },
               shading: { fill: "FFF3CD", type: ShadingType.CLEAR, color: "auto" },
               children: [new Paragraph({ children: [text(`Krever beregning – ikke registrert ennå${h.beregningTekst ? `: ${h.beregningTekst}` : ""}`, { bold: true, size: 14, color: "7A5A00" })] })],
@@ -715,7 +717,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
       new TableRow({
         children: [
           new TableCell({
-            columnSpan: 17,
+            columnSpan: 18,
             width: { size: 100, type: WidthType.PERCENTAGE },
             shading: { fill: "F7F9FC", type: ShadingType.CLEAR, color: "auto" },
             margins: { top: 100, bottom: 100, left: 300, right: 100 },
@@ -854,6 +856,32 @@ export const exportRosToWord = async (options: ExportOptions) => {
       }
       bowTieBlocks.push(para("Årsaker", { bold: true }));
       bowTieBlocks.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: aRows }));
+
+      // Eksisterende barrierer (forutsetninger) for de tilknyttede årsakshendelsene
+      const arsakerMedBarrierer = arsaker.filter((a) => a.eksisterendeBarrierer && a.eksisterendeBarrierer.trim());
+      if (arsakerMedBarrierer.length > 0) {
+        bowTieBlocks.push(new Paragraph({ children: [text("")] }));
+        bowTieBlocks.push(para("Eksisterende barrierer (forutsetninger for risikovurderingen)", { bold: true }));
+        const ebHeader = new TableRow({
+          children: [
+            smallHeader("Hendelse", 35),
+            smallHeader("Eksisterende barrierer", 65),
+          ],
+        });
+        const ebRows: TableRow[] = [ebHeader];
+        arsakerMedBarrierer.forEach((a) => {
+          ebRows.push(
+            new TableRow({
+              children: [
+                smallCell(a.tittel || a.sarbarhet || a.hendelse || "—", 35, true),
+                smallCell(a.eksisterendeBarrierer || "", 65),
+              ],
+            }),
+          );
+        });
+        bowTieBlocks.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: ebRows }));
+      }
+
 
       // Konsekvenser
       bowTieBlocks.push(new Paragraph({ children: [text("")] }));
