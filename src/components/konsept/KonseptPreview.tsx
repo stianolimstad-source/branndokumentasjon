@@ -5568,6 +5568,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.13 §11-16 Manuell slokking */}
+            <FravikPreviewRow paragrafId="11-15" fravikList={fravikList} />
             <tr id="preview-3-13" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.{isBF85 ? "12" : "13"} &nbsp;&nbsp; {isBF85 ? <>Slokkingsredskap og slokkingsvann (Kap. 30:93/31–39) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-16 Tilrettelegging for manuell slokking)</span></> : "§11-16 Tilrettelegging for manuell slokking"}</td>
             </tr>
