@@ -1027,11 +1027,15 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   // ===== 3.6 Materialer og produkters egenskaper ved brann =====
   rows.push(sectionHeaderRow("3.6   §11-9 Materialer og produkters egenskaper ved brann"));
   rows.push(columnHeaderRow());
+  // A. Generelt
+  rows.push(graySubSectionHeaderRow("A. Generelt"));
   rows.push(contentRow(
     "Generelt",
-    "Byggverk skal prosjekteres og utføres slik at det er liten sannsynlighet for at brann skal oppstå, utvikle og spre seg. Det skal tas hensyn til byggverkets bruk og den nødvendige tiden for rømning og redning.",
+    "Byggverk skal prosjekteres og utføres slik at det er liten sannsynlighet for at brann skal oppstå, utvikle og spre seg. Det skal tas hensyn til byggverkets bruk og den nødvendige tiden for rømning og redning. Brannteknisk klassifisering gjelder kombinasjonen overflate + underlag iht. NS-EN 13501-1.",
     "RIBr"
   ));
+  // B. Innvendige overflater og kledninger
+  rows.push(graySubSectionHeaderRow("B. Innvendige overflater og kledninger"));
   // Overflater i hulrom – egen rad
   if (formData.matNote2) {
     rows.push(contentRow(
@@ -1073,31 +1077,12 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     rows.push(contentRow("Overflater i sjakter og hulrom", "B-s1,d0 [In 1]", "ARK"));
   }
 
-  // Sub-section: Overflater i brannceller som er rømningsvei
+  // Sub-section: Overflater i brannceller som er rømningsvei (under B)
   rows.push(graySubSectionHeaderRow("Overflater i brannceller som er rømningsvei"));
   rows.push(contentRow("Overflater på vegger og i himling/tak", "B-s1,d0 [In 1]", "ARK"));
   rows.push(contentRow("Overflater på gulv", "Dfl-s1 [G]", "ARK"));
 
-  // Sub-section: Utvendige overflater
-  rows.push(graySubSectionHeaderRow("Utvendige overflater"));
-  rows.push(contentRow("Overflater på ytterkledning", formData.brannklasse === "BKL1" ? "D-s3,d0 [Ut 2]" : "B-s3,d0 [Ut 1]", "ARK"));
-  const utvOverflaterLines: string[] = [];
-  if (formData.brannklasse === "BKL2" || formData.brannklasse === "BKL3") {
-    const hasEtasjeUnntak = ["RK1", "RK2", "RK4"].includes(formData.risikoklasse);
-    if (hasEtasjeUnntak) {
-      utvOverflaterLines.push("Yttervegg kan ha utvendig overflate som tilfredsstiller klasse D-s3,d0 [Ut 2], når enten ytterveggen er utformet slik at den hindrer brannspredning i fasaden, eller byggverket har inntil fire etasjer, og det er liten fare for brannspredning til og fra nabobyggverk.");
-    } else {
-      utvOverflaterLines.push("Yttervegg kan ha utvendig overflate som tilfredsstiller klasse D-s3,d0 [Ut 2], når ytterveggen er utformet slik at den hindrer brannspredning i fasaden.");
-    }
-  }
-  utvOverflaterLines.push("Overflater i hulrom i ytterveggkonstruksjoner betraktes på samme måte som utvendig overflate og må ha minst like gode branntekniske egenskaper.");
-  if (formData.brannklasse === "BKL1" || formData.risikoklasse === "RK4") {
-    const boligTekst = formData.risikoklasse === "RK4" ? " og boliger" : "";
-    utvOverflaterLines.push(`Byggverk i brannklasse 1${boligTekst} inntil 3 etasjer kan ha uklassifiserte overflater i hulrom.`);
-  }
-  rows.push(contentRowMultiLine("Utvendige overflater", utvOverflaterLines, "ARK"));
-
-  // Sub-section: Kledninger
+  // Kledninger (under B)
   rows.push(graySubSectionHeaderRow("Kledninger"));
   if (isRK6) {
     rows.push(contentRow("Kledning i brannceller", "K₂10 B-s1,d0 [K1]", "ARK"));
@@ -1117,29 +1102,18 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     ));
   }
 
-  // Sub-section: Taktekning
-  rows.push(graySubSectionHeaderRow("Taktekning"));
-  const isSmahusRelevant = formData.risikoklasse === "RK4" || 
-    (formData.risikoklasse === "RK6" && (formData.bygningstype || "").toLowerCase().includes("bolig"));
-  const taktekningLines = [
-    "Taktekning kan bidra til brannspredning i et byggverk og mellom ulike byggverk.",
-    "",
-    "Taktekning må tilfredsstille klasse BROOF(t2) [Ta].",
-    "Teglstein, betongtakstein, skifertak og metallplater kan uten ytterligere dokumentasjon antas å tilfredsstille klasse BROOF(t2) [Ta].",
-    ...(isSmahusRelevant ? ["For småhus kan taktekning være uklassifisert der avstanden mellom de enkelte byggverk er minst 8 m."] : []),
-    "Ett-sjikts tak av duk og folie må tilfredsstille klasse B-s3,d0 (Ut1).",
-  ];
-  rows.push(contentRowMultiLine("Taktekning", taktekningLines, "ARK"));
-
-  // Nedforet himling i rømningsvei
+  // C. Nedforet himling i rømningsvei
+  rows.push(graySubSectionHeaderRow("C. Nedforet himling i rømningsvei"));
   const himlingNotes: string[] = [];
   if (formData.himlingNote1) himlingNotes.push("1. Himlingen må tilfredsstille klasse A2-s1,d0 [In 1 på begrenset brennbart underlag] og ha et opphengsystem med dokumentert brannmotstand minst 10 minutter for den aktuelle eksponering, eller himlingen må bestå av kledning som tilfredsstiller klasse K₂10 A2-s1,d0 [K1-A].");
   if (formData.himlingNote2) himlingNotes.push("2. Overflater og kledninger i hulrom over himlingen må ha minst like gode branntekniske egenskaper som overflatene og kledningene i rømningsveien for øvrig.");
-  if (himlingNotes.length > 0) {
-    rows.push(contentRowMultiLine("Nedforet himling i rømningsvei", himlingNotes, "ARK"));
+  if (himlingNotes.length === 0) {
+    himlingNotes.push("Preakseptert ytelse: A2-s1,d0 [In 1 på begrenset brennbart underlag] med opphengsystem dokumentert til minst 10 minutter, eller kledning K₂10 A2-s1,d0 [K1-A].");
   }
+  rows.push(contentRowMultiLine("Nedforet himling i rømningsvei", himlingNotes, "ARK"));
 
-  // Sub-section: Isolasjon
+  // D. Isolasjon i bygningsdeler
+  rows.push(graySubSectionHeaderRow("D. Isolasjon i bygningsdeler"));
   const hasSandwich = formData.isolasjonSandwich === "relevant";
   const hasBrennbar = formData.isolasjonBrennbar === "relevant";
   const isoRk = formData.risikoklasse || "";
@@ -1202,7 +1176,85 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
       );
     }
   }
+  // Alternative måter brennbar isolasjon anvendes på (veilederen)
+  const altLines: string[] = [];
+  if (formData.isoTildekketMurStop) altLines.push("• Tildekkes, mures eller støpes inn slik at den ikke involveres i brann.");
+  if (formData.isoDokumentertIngenSpredning) altLines.push("• Slik utformet at det er dokumentert at den ikke bidrar til brannspredning.");
+  if (formData.isoTilbakeholdendeLag) altLines.push("• Beskyttet med tilstrekkelig tildekkende eller branntilbakeholdende lag.");
+  if (altLines.length > 0) {
+    isolasjonLines.push("", "Alternative måter brennbar isolasjon kan anvendes på:", ...altLines);
+  }
   rows.push(contentRowMultiLine("Isolasjon", isolasjonLines, "ARK"));
+
+  // E. Utvendige overflater og kledning
+  rows.push(graySubSectionHeaderRow("E. Utvendige overflater og kledning"));
+  const eYtterkledningsKrav = isRK6 ? "A2-s1,d0 [ubrennbart]" : (formData.brannklasse === "BKL1" ? "D-s3,d0 [Ut 2]" : "B-s3,d0 [Ut 1]");
+  rows.push(contentRow("Overflater på ytterkledning", eYtterkledningsKrav, "ARK"));
+  const utvOverflaterLines: string[] = [];
+  if (formData.brannklasse === "BKL2" || formData.brannklasse === "BKL3") {
+    const hasEtasjeUnntak = ["RK1", "RK2", "RK4"].includes(formData.risikoklasse);
+    if (hasEtasjeUnntak) {
+      utvOverflaterLines.push("Yttervegg kan ha utvendig overflate som tilfredsstiller klasse D-s3,d0 [Ut 2], når enten ytterveggen er utformet slik at den hindrer brannspredning i fasaden, eller byggverket har inntil fire etasjer, og det er liten fare for brannspredning til og fra nabobyggverk.");
+    } else {
+      utvOverflaterLines.push("Yttervegg kan ha utvendig overflate som tilfredsstiller klasse D-s3,d0 [Ut 2], når ytterveggen er utformet slik at den hindrer brannspredning i fasaden.");
+    }
+  }
+  utvOverflaterLines.push("Overflater i hulrom i ytterveggkonstruksjoner betraktes på samme måte som utvendig overflate og må ha minst like gode branntekniske egenskaper.");
+  if (formData.brannklasse === "BKL1" || formData.risikoklasse === "RK4") {
+    const boligTekst = formData.risikoklasse === "RK4" ? " og boliger" : "";
+    utvOverflaterLines.push(`Byggverk i brannklasse 1${boligTekst} inntil 3 etasjer kan ha uklassifiserte overflater i hulrom.`);
+  }
+  if (formData.naboavstandUnder8m) {
+    utvOverflaterLines.push("Avstand til nabobyggverk er mindre enn 8 m – skjerpede krav til utvendige overflater og kledning vurderes særskilt.");
+  }
+  rows.push(contentRowMultiLine("Utvendige overflater", utvOverflaterLines, "ARK"));
+
+  // F. Yttertak
+  rows.push(graySubSectionHeaderRow("F. Yttertak"));
+  const isSmahusRelevant = formData.risikoklasse === "RK4" || 
+    (formData.risikoklasse === "RK6" && (formData.bygningstype || "").toLowerCase().includes("bolig"));
+  const taktekningLines = [
+    "Taktekning kan bidra til brannspredning i et byggverk og mellom ulike byggverk.",
+    "",
+    "Taktekning må tilfredsstille klasse BROOF(t2) [Ta].",
+    "Teglstein, betongtakstein, skifertak og metallplater kan uten ytterligere dokumentasjon antas å tilfredsstille klasse BROOF(t2) [Ta].",
+    ...(isSmahusRelevant ? ["For småhus kan taktekning være uklassifisert der avstanden mellom de enkelte byggverk er minst 8 m."] : []),
+    "Ett-sjikts tak av duk og folie må tilfredsstille klasse B-s3,d0 (Ut1).",
+  ];
+  if (formData.tak_underlagDokumentert) taktekningLines.push("Underlag for taktekkingen og dets brannmotstand er dokumentert.");
+  if (formData.tak_oppbyggingDokumentert) taktekningLines.push("Krav til takoppbygging (isolasjon, sjikt og innfesting) er dokumentert.");
+  rows.push(contentRowMultiLine("Taktekning", taktekningLines, "ARK"));
+
+  // G. Brannvegg og vinduer i brannvegg
+  if (formData.brannvegg_vinduerSammeBrannmotstand || formData.brannvegg_gjennomfoeringerSikret) {
+    rows.push(graySubSectionHeaderRow("G. Brannvegg og vinduer i brannvegg"));
+    const brannveggKrav = `EI ${formData.brannklasse === "BKL3" ? "120" : "90"} A2-s1,d0`;
+    const brannveggLines: string[] = [
+      `Vinduer og gjennomføringer i brannvegg må ha samme brannmotstand som veggen selv (${brannveggKrav}).`,
+    ];
+    if (formData.brannvegg_vinduerSammeBrannmotstand) brannveggLines.push("• Vinduer i brannvegg har dokumentert samme brannmotstand som veggen.");
+    if (formData.brannvegg_gjennomfoeringerSikret) brannveggLines.push("• Gjennomføringer i brannvegg er tettet og dokumentert iht. samme brannmotstand som veggen.");
+    rows.push(contentRowMultiLine("Brannvegg", brannveggLines, "ARK"));
+  }
+
+  // H. Rør- og kanalisolasjon
+  if (formData.ror_bl_s1d0 || formData.ror_a2l_s1d0_flerEtasjer) {
+    rows.push(graySubSectionHeaderRow("H. Rør- og kanalisolasjon"));
+    const rorLines: string[] = [];
+    if (formData.ror_bl_s1d0) rorLines.push("Rør- og kanalisolasjon i rømningsvei tilfredsstiller klasse BL-s1,d0.");
+    if (formData.ror_a2l_s1d0_flerEtasjer) rorLines.push("Rør- og kanalisolasjon i rømningsvei som betjener mer enn én etasje tilfredsstiller klasse A2L-s1,d0.");
+    rows.push(contentRowMultiLine("Rør- og kanalisolasjon", rorLines, "RIV"));
+  }
+
+  // I. Småhus
+  if (formData.smahus_lempningOverflater || formData.smahus_lempningKledning || formData.smahus_lempningTaktekning) {
+    rows.push(graySubSectionHeaderRow("I. Småhus (eneboliger, rekkehus, tomannsbolig)"));
+    const smahusLines: string[] = ["For boligbygninger inntil 2 etasjer (småhus) anvendes følgende lempninger i preaksepterte ytelser:"];
+    if (formData.smahus_lempningOverflater) smahusLines.push("• Lempninger for overflater anvendes for småhus.");
+    if (formData.smahus_lempningKledning) smahusLines.push("• Lempninger for kledning anvendes for småhus.");
+    if (formData.smahus_lempningTaktekning) smahusLines.push("• Taktekning kan være uklassifisert når avstand mellom byggverk er minst 8 m.");
+    rows.push(contentRowMultiLine("Småhus – lempninger", smahusLines, "ARK"));
+  }
 
   if (formData.materialerKommentar) {
     rows.push(contentRow("Kommentar", formData.materialerKommentar, "-"));

@@ -3905,6 +3905,73 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
             )}
+            {/* E. Avstand til nabobygg < 8 m */}
+            {!isBF85 && formData.naboavstandUnder8m && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">E. Utvendige overflater – naboavstand</td>
+                <td className="border border-gray-400 p-2 text-sm">Avstand til nabobyggverk er mindre enn 8 m – skjerpede krav til utvendige overflater og kledning vurderes særskilt.</td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
+            {/* F. Yttertak – dokumentasjonskrav */}
+            {!isBF85 && (formData.tak_underlagDokumentert || formData.tak_oppbyggingDokumentert) && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">F. Yttertak – dokumentasjon</td>
+                <td className="border border-gray-400 p-2 text-sm">
+                  {formData.tak_underlagDokumentert && <div>Underlag for taktekkingen og dets brannmotstand er dokumentert.</div>}
+                  {formData.tak_oppbyggingDokumentert && <div>Krav til takoppbygging (isolasjon, sjikt og innfesting) er dokumentert.</div>}
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
+            {/* G. Brannvegg og vinduer i brannvegg */}
+            {!isBF85 && (formData.brannvegg_vinduerSammeBrannmotstand || formData.brannvegg_gjennomfoeringerSikret) && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">G. Brannvegg og vinduer i brannvegg</td>
+                <td className="border border-gray-400 p-2 text-sm">
+                  <div className="mb-1">Vinduer og gjennomføringer i brannvegg må ha samme brannmotstand som veggen selv (EI {formData.brannklasse === "BKL3" ? "120" : "90"} A2-s1,d0).</div>
+                  {formData.brannvegg_vinduerSammeBrannmotstand && <div>• Vinduer i brannvegg har dokumentert samme brannmotstand som veggen.</div>}
+                  {formData.brannvegg_gjennomfoeringerSikret && <div>• Gjennomføringer i brannvegg er tettet og dokumentert iht. samme brannmotstand som veggen.</div>}
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
+            {/* H. Rør- og kanalisolasjon */}
+            {!isBF85 && (formData.ror_bl_s1d0 || formData.ror_a2l_s1d0_flerEtasjer) && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">H. Rør- og kanalisolasjon</td>
+                <td className="border border-gray-400 p-2 text-sm">
+                  {formData.ror_bl_s1d0 && <div>Rør- og kanalisolasjon i rømningsvei tilfredsstiller klasse BL-s1,d0.</div>}
+                  {formData.ror_a2l_s1d0_flerEtasjer && <div>Rør- og kanalisolasjon i rømningsvei som betjener mer enn én etasje tilfredsstiller klasse A2L-s1,d0.</div>}
+                </td>
+                <td className="border border-gray-400 p-2 align-top">RIV</td>
+              </tr>
+            )}
+            {/* I. Småhus – lempninger */}
+            {!isBF85 && (formData.smahus_lempningOverflater || formData.smahus_lempningKledning || formData.smahus_lempningTaktekning) && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">I. Småhus – lempninger</td>
+                <td className="border border-gray-400 p-2 text-sm">
+                  <div className="mb-1">For boligbygninger inntil 2 etasjer (småhus) anvendes følgende lempninger:</div>
+                  {formData.smahus_lempningOverflater && <div>• Lempninger for overflater anvendes for småhus.</div>}
+                  {formData.smahus_lempningKledning && <div>• Lempninger for kledning anvendes for småhus.</div>}
+                  {formData.smahus_lempningTaktekning && <div>• Taktekning kan være uklassifisert når avstand mellom byggverk er minst 8 m.</div>}
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
+            {/* D. Alternative måter brennbar isolasjon */}
+            {!isBF85 && (formData.isoTildekketMurStop || formData.isoDokumentertIngenSpredning || formData.isoTilbakeholdendeLag) && (
+              <tr>
+                <td className="border border-gray-400 p-2 align-top">D. Brennbar isolasjon – alternativer</td>
+                <td className="border border-gray-400 p-2 text-sm">
+                  {formData.isoTildekketMurStop && <div>• Tildekkes, mures eller støpes inn slik at den ikke involveres i brann.</div>}
+                  {formData.isoDokumentertIngenSpredning && <div>• Slik utformet at det er dokumentert at den ikke bidrar til brannspredning.</div>}
+                  {formData.isoTilbakeholdendeLag && <div>• Beskyttet med tilstrekkelig tildekkende eller branntilbakeholdende lag.</div>}
+                </td>
+                <td className="border border-gray-400 p-2 align-top">ARK</td>
+              </tr>
+            )}
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_6"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_6"]} sectionLabel="3.6 Materialer og produkter" />
             )}
