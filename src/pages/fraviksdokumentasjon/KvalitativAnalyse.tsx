@@ -268,13 +268,21 @@ const KvalitativAnalyse = () => {
   // Always render the main form — project picker is a dialog
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <div className="container mx-auto px-4 py-3">
+      <div className="container mx-auto px-4 py-3 flex items-center gap-2">
         <Button variant="ghost" size="sm" asChild>
           <Link to="/mine-prosjekter">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Tilbake
           </Link>
         </Button>
+        {fromKonsept && projectId && (
+          <Button variant="outline" size="sm" asChild>
+            <Link to={`/konsept?project=${projectId}&concept=${fromKonsept}`}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Tilbake til brannkonsept
+            </Link>
+          </Button>
+        )}
       </div>
 
       <div className="w-full px-4 py-6">
