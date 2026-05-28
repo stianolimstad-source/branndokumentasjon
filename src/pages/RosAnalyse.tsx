@@ -1283,7 +1283,7 @@ export default function RosAnalyse() {
 
           <section className="space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
-              <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">3. Hendelser</h2><JumpToPreview previewId="kap-3" /></div>
+              <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">4. Hendelser</h2><JumpToPreview previewId="kap-4" /></div>
               <div className="flex items-center gap-2">
                 <Button size="sm" variant="outline" onClick={() => setSjekklisteOpen(true)}>
                   <Plus className="h-4 w-4 mr-1" /> Generer fra sjekkliste
@@ -1730,7 +1730,7 @@ export default function RosAnalyse() {
           </section>
 
           <section className="space-y-3" id="kap-beregninger-editor">
-            <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">4. Beregninger</h2><JumpToPreview previewId="kap-4" /></div>
+            <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">5. Beregninger</h2><JumpToPreview previewId="kap-5" /></div>
             <p className="text-xs text-muted-foreground">
               Registrer branntekniske beregninger her og knytt dem til én eller flere hendelser. Hver beregning får en lesbar ID (f.eks. B2.1) og vises i sitt eget kapittel i rapporten.
             </p>
@@ -1863,7 +1863,7 @@ export default function RosAnalyse() {
           <section className="space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
-                <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">5. Bow-tie analyse</h2><JumpToPreview previewId="kap-5" /></div>
+                <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">6. Bow-tie analyse</h2><JumpToPreview previewId="kap-6" /></div>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Definer en uønsket topphendelse og knytt registrerte hendelser som årsaker. Gir oversikt over felles tiltak på tvers.
                 </p>
@@ -2280,9 +2280,9 @@ export default function RosAnalyse() {
           <section className="space-y-2">
             <div className="flex items-center gap-1">
               <h2 className="text-lg font-semibold">
-                {content.bowTies && content.bowTies.length > 0 ? "6" : "5"}. Oppsummering
+                {content.bowTies && content.bowTies.length > 0 ? "7" : "6"}. Oppsummering
               </h2>
-              <JumpToPreview previewId="kap-6" />
+              <JumpToPreview previewId="kap-7" />
             </div>
             <Textarea value={content.oppsummering} rows={6}
               onChange={(e) => setContent((c) => ({ ...c, oppsummering: e.target.value }))} />
@@ -2292,9 +2292,9 @@ export default function RosAnalyse() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
                 <h2 className="text-lg font-semibold">
-                  {content.bowTies && content.bowTies.length > 0 ? "7" : "6"}. Revisjonshistorikk
+                  {content.bowTies && content.bowTies.length > 0 ? "8" : "7"}. Revisjonshistorikk
                 </h2>
-                <JumpToPreview previewId="kap-7" />
+                <JumpToPreview previewId="kap-8" />
               </div>
               <Button size="sm" variant="outline" onClick={addRevisjon}>
                 <Plus className="h-4 w-4 mr-1" /> Ny revisjon
