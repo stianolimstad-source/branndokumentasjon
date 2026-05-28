@@ -629,10 +629,11 @@ export const exportRosToWord = async (options: ExportOptions) => {
   const harBowTie = !!(content.bowTies && content.bowTies.length > 0);
   const hendelseNr = "4";
   const beregningNr = "5";
-  const tiltakNr = "6";
-  const bowTieNr = "7";
-  const oppsummeringNr = harBowTie ? "8" : "7";
-  const revisjonNr = harBowTie ? "9" : "8";
+  const risikobildeNr = "6";
+  const tiltakNr = "7";
+  const bowTieNr = "8";
+  const oppsummeringNr = harBowTie ? "9" : "8";
+  const revisjonNr = harBowTie ? "10" : "9";
   const tiltakIder = byggTiltakIder(content.tiltaksplan || []);
 
   const beregningIder = byggBeregningIder(content);
