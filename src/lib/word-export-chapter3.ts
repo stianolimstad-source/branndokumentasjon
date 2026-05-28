@@ -1862,6 +1862,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
   rows.push(...await tilstandRow(formData, "3_13", isBF85Tilstand310 ? "3.12 Manuell slokking" : "3.13 Manuell slokking"));
 
+  rows.push(...fravikRowsForParagraf("11-16", fravikList));
+
   // ===== 3.14 / BF85 3.13 Tilrettelegging for slokkemannskap =====
   rows.push(sectionHeaderRow(isBF85Tilstand310 ? "3.13   Tilrettelegging for slokkemannskap" : "3.14   §11-17 Tilrettelegging for slokkemannskap"));
   rows.push(columnHeaderRow());
