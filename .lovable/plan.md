@@ -1,45 +1,66 @@
-# Compliance-tilpasninger for ROS: NVE-klasse og sensitivitet
+# TEK17 §11-2 / §11-3 – korrigeringer og utvidelser i Konsept.tsx
 
-## 1. Datamodell (`src/components/ros/RosPreview.tsx`)
+Alle endringer gjøres i `src/pages/Konsept.tsx`.
 
-Utvid `RosContent.metadata`:
-```ts
-nveKlasse?: 1 | 2 | 3;
-sensitivKlassifisering?: "apen" | "intern" | "fortrolig" | "strengt_fortrolig";
-```
+## 1. Rettelser i `bygningsTypeRisikoklasseMap`
 
-Utvid `RosHendelse`:
-```ts
-sensitiv?: boolean;
-```
+- Fjern oppføringen `"Fritidshjem": "RK3"` (linje 102). RK3 skal kun inneholde Barnehage og Skole.
+- Rename nøkkel `"Trafikkterminaler"` → `"Trafikkterminal"` (RK5, linje 123).
+- Rename nøkkel `"Forlegning og leirskole"` → `"Feriekoloni og leirskole"` (RK6, linje 130).
+- `"Kraftstasjon": "RK2"` beholdes uendret.
 
-Begge er valgfrie — eksisterende analyser fortsetter å fungere uten migrering. Default for nye analyser settes i editor til `sensitivKlassifisering: "intern"`.
+## 2. Nytt felt for §11-3 nr. 8 (særlig konsekvens / BKL4)
 
-## 2. Editor (`src/pages/RosAnalyse.tsx`)
+I `formData`-initialiseringen legges til:
 
-**Metadata-seksjonen øverst:** to nye `Select`-felter etter eksisterende felter:
-- «NVE-klasse (§5-4)» — alternativer: «Ikke klassifisert», «Klasse 1», «Klasse 2», «Klasse 3». Tooltip: «Klasse fra NVE styrer hvilke sikringskrav som gjelder for anlegget iht. beredskapsforskriften §5-5.»
-- «Sensitivitetsklassifisering (§6-2)» — alternativer: «Åpen», «Intern», «Fortrolig», «Strengt fortrolig». Default «Intern» for nye analyser.
+- `saerligKonsekvensBKL4: false`
+- `risikoklasseManuell: ""` (om brukeren har valgt manuelt)
+- `risikoklasseBegrunnelse: ""`
 
-**Hendelse-accordion:** rett under tittel-feltet, en kompakt `Checkbox` «Inneholder kraftsensitiv informasjon (§6-2)» bundet til `hendelse.sensitiv`.
+## 3. Brannklasse-logikk
 
-## 3. Preview (`src/components/ros/RosPreview.tsx`)
+I `useEffect`-en som beregner brannklasse (rundt linje 905):
 
-- I metadata-rendering: vis NVE-klasse og sensitivitetsklassifisering når satt.
-- I hendelsestabell/-kort: når `hendelse.sensitiv === true`, vis rød kantlinje (`border-destructive`) og et lite `Shield`-ikon (lucide-react) ved siden av tittelen.
+- Hvis `saerligKonsekvensBKL4 === true`: sett `brannklasse: "BKL4"`, `brannklasseUnntak: ""`, og lagre den tabellberegnede verdien i et nytt felt `brannklasseTabellReferanse` for visning.
+- Ellers: dagens logikk.
+- Legg `formData.saerligKonsekvensBKL4` til dependency-arrayen.
 
-## 4. Word-eksport (`src/lib/ros-word-export.ts`)
+## 4. UI i kapittel 2 – under brannklasse-feltet
 
-**Topptekst (Header) på hver side:** hvis `sensitivKlassifisering` er `"fortrolig"` eller `"strengt_fortrolig"`:
-> «KRAFTSENSITIV INFORMASJON – Behandles iht. beredskapsforskriften §6-2»
+Rett under eksisterende brannklasse-visning/redigering:
 
-**Forside:** stor farget boks (gul for fortrolig, rød for strengt fortrolig) med tydelig klassifiseringstekst. Ingen boks/header for «åpen» eller «intern».
+- **Checkbox** med label «Brann kan medføre særlig stor konsekvens (BKL4)».
+- Under: `text-xs text-muted-foreground` med veiledningsteksten (mer enn 16 etasjer, kritisk infrastruktur, byggverk under terreng, kjemisk industri, særlig farlige stoffer; må dokumenteres ved analyse iht. § 11-3).
+- Når avhuket:
+  - Brannklasse-feltet vises som låst på «BKL4» (disabled), med liten referansetekst: «Tabellverdi: {brannklasseTabellReferanse}».
+  - Vis gul `<Alert variant="warning">` med teksten fra brukerforespørselen om at preaksepterte ytelser ikke dekker BKL4 fullt ut, inkl. punkt a–d.
 
-**Metadata-tabell:** to nye rader — «NVE-klasse» og «Sensitivitetsklassifisering» (vises kun når satt; sensitivitet vises alltid hvis ulik default).
+## 5. UI i risikoklasse-seksjonen – manuell RK-dialog
 
-**Hendelsesregister:** ny smal kolonne «Sens.» som viser «★» (eller skjold-glyph) for sensitive hendelser. Hele raden for sensitive hendelser får skygget (lys grå/rød) bakgrunn via `shading: { type: ShadingType.CLEAR, fill: "..." }` på cellene.
+Under RK-select:
 
-## 5. Verifikasjon
+- Oppdater hjelpetekst til: «Velg fra listen, eller bruk knappen under hvis bygget ikke er listet. Etter §11-2 må slike tilfeller plasseres etter begrunnet og dokumentert vurdering.»
+- Ny knapp (variant `link` eller `outline` sm): «Bygget mitt finnes ikke i listen» som åpner en `Dialog`.
 
-- Sjekk at gamle analyser uten de nye feltene rendres uten feil.
-- Verifiser at Word-eksporten genererer gyldig fil ved hver klassifiseringsverdi (åpen/intern → ingen markering; fortrolig → gul; strengt fortrolig → rød).
+Dialogens innhold:
+
+- Tittel: «Manuell plassering i risikoklasse (§11-2)».
+- Informasjonsblokk med §11-2 sine fire kriteriespørsmål som hjelp (kun visuelt – ikke validerende):
+  1. Er personopphold kun sporadisk?
+  2. Kjenner personer rømningsforholdene?
+  3. Er byggverket beregnet for overnatting?
+  4. Er det forutsatt liten brannenergi/-fare?
+  Hvert som radio «Ja / Nei / Vet ikke» (kun støtte for vurdering, lagres ikke).
+- `Select` for RK1–RK6 (binder til `risikoklasseManuell`).
+- `Textarea` for begrunnelse (binder til `risikoklasseBegrunnelse`, required).
+- Knapper: Avbryt / Lagre. Ved lagring settes `formData.risikoklasse` til valgt RK, og `risikoklasseBegrunnelse` lagres i metadata.
+
+Når `risikoklasseBegrunnelse` er satt, vises en liten badge/note under RK-select: «Manuelt plassert – se begrunnelse» med tooltip/expand.
+
+## 6. Persistens
+
+`risikoklasseBegrunnelse` og `saerligKonsekvensBKL4` inkluderes automatisk når hele `formData` lagres (samme mekanisme som øvrige metadatafelt). Ingen DB-migrasjon nødvendig – `fire_concepts.data` er JSONB.
+
+## Filer
+
+- `src/pages/Konsept.tsx` (eneste fil som endres).

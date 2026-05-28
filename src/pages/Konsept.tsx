@@ -99,7 +99,6 @@ const bygningsTypeRisikoklasseMap: Record<string, string> = {
   "Trafo eller fordelingsstasjon": "RK2",
   // Risikoklasse 3
   "Barnehage": "RK3",
-  "Fritidshjem": "RK3",
   "Skole": "RK3",
   // Risikoklasse 4
   "Barnehjem": "RK4",
@@ -120,14 +119,14 @@ const bygningsTypeRisikoklasseMap: Record<string, string> = {
   "Museum": "RK5",
   "Salgslokale": "RK5",
   "Teaterlokale": "RK5",
-  "Trafikkterminaler": "RK5",
+  "Trafikkterminal": "RK5",
   "Tribuneanlegg for mer enn 150 personer": "RK5",
   // Risikoklasse 6
   "Arrestlokaler og fengsel": "RK6",
   "Asylmottak og transittmottak": "RK6",
   "Bolig beregnet for personer med behov for heldøgns pleie og omsorg": "RK6",
   "Bolig spesielt tilrettelagt og beregnet for personer med funksjonsnedsettelse, inkl. alders- og seniorboliger": "RK6",
-  "Forlegning og leirskole": "RK6",
+  "Feriekoloni og leirskole": "RK6",
   "Overnattingssted og hotell": "RK6",
   "Pleieinstitusjon": "RK6",
   "Sykehus og sykehjem": "RK6",
@@ -426,6 +425,11 @@ const Konsept = () => {
   const [authorInfo, setAuthorInfo] = useState<{ name: string; company: string } | null>(null);
   const [previewTheme, setPreviewTheme] = useState<{ template: "klassisk" | "moderne" | "minimalistisk"; primaryColor: string; accentColor: string; fontFamily: string; logoUrl: string | null; companyName: string | null } | null>(null);
 
+  // Manuell risikoklasse-dialog (§11-2)
+  const [manuellRkOpen, setManuellRkOpen] = useState(false);
+  const [manuellRkValg, setManuellRkValg] = useState<string>("");
+  const [manuellRkBegrunnelse, setManuellRkBegrunnelse] = useState<string>("");
+
   // Auto-open create project dialog only for authenticated users when ?new=true
   useEffect(() => {
     if (!authLoading && user && searchParams.get("new") === "true") {
@@ -576,9 +580,12 @@ const Konsept = () => {
     bekreftetUliktEtasjeantall: false, // Bekreftelse på at ulikt etasjeantall er korrekt
     bygningsdeler: [] as Bygningsdel[], // Array med bygningsdeler med egne risikoklasser
     risikoklasse: "",
+    risikoklasseBegrunnelse: "", // Begrunnelse hvis RK er manuelt plassert (§11-2)
     brannklasse: "",
     brannklasseBegrunnelse: "", // Begrunnelse hvis manuelt overstyrt
     brannklasseUnntak: "", // Automatisk unntak-tekst for brannklasse
+    brannklasseTabellReferanse: "", // Tabellberegnet BKL når BKL4 er tvunget av §11-3 nr. 8
+    saerligKonsekvensBKL4: false, // §11-3 nr. 8 – særlig stor konsekvens, tvinger BKL4
     harTerrengTilgang: "", // "ja" eller "nei" - for unntak RK4
     erRKL6Boligbygning: false, // RKL6: er det boligbygning (unntak BKL1 ved ≤2 etasjer)
     universellUtforming: false, // Om bygget skal være universelt utformet
@@ -903,15 +910,28 @@ const Konsept = () => {
   // Automatisk beregning av brannklasse – skip i view-modus (data er allerede lagret)
   useEffect(() => {
     if (isViewMode) return;
+    if (formData.saerligKonsekvensBKL4) {
+      // §11-3 nr. 8: tving BKL4. Behold tabellverdi som referanse.
+      setFormData(prev => ({
+        ...prev,
+        brannklasse: "BKL4",
+        brannklasseUnntak: "",
+        brannklasseBegrunnelse: "",
+        brannklasseTabellReferanse: beregnetBrannklasseResult.brannklasse || prev.brannklasseTabellReferanse,
+      }));
+      return;
+    }
     if (beregnetBrannklasseResult.brannklasse) {
       setFormData(prev => ({
         ...prev, 
         brannklasse: beregnetBrannklasseResult.brannklasse,
         brannklasseUnntak: beregnetBrannklasseResult.brannklasseUnntak || "",
         brannklasseBegrunnelse: "",
+        brannklasseTabellReferanse: "",
       }));
     }
-  }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.erRKL6Boligbygning]);
+  }, [formData.risikoklasse, formData.etasjer, formData.harTerrengTilgang, formData.areal, formData.erRKL6Boligbygning, formData.saerligKonsekvensBKL4]);
+
 
   // Auto-uncheck BF85 :513/:514/:515 hvis de blir irrelevante for valgt BBK/etasjer
   useEffect(() => {
@@ -2746,6 +2766,80 @@ const Konsept = () => {
             </DialogContent>
           </Dialog>
 
+          {/* Manuell risikoklasse-dialog (§11-2) */}
+          <Dialog open={manuellRkOpen} onOpenChange={setManuellRkOpen}>
+            <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Manuell plassering i risikoklasse (§11-2)</DialogTitle>
+                <DialogDescription>
+                  Bruk denne dialogen når byggverket ikke finnes i listen og må plasseres etter begrunnet vurdering iht. TEK17 §11-2 preakseptert ytelse nr. 2.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-md space-y-2">
+                  <p className="text-xs font-semibold text-blue-800">Hjelp til vurdering – §11-2 kriteriespørsmål:</p>
+                  <ul className="text-xs text-blue-700 list-disc pl-5 space-y-1">
+                    <li>Er personopphold i byggverket kun sporadisk?</li>
+                    <li>Forutsettes det at personene kjenner rømningsforholdene?</li>
+                    <li>Er byggverket beregnet for overnatting?</li>
+                    <li>Er det forutsatt at byggverket har liten brannenergi eller liten brannfare?</li>
+                  </ul>
+                  <p className="text-xs text-blue-600 italic">
+                    Svarene på disse spørsmålene styrer plasseringen i RK1–RK6. Bruk dem som støtte for begrunnelsen under.
+                  </p>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium mb-1 block">Velg risikoklasse</Label>
+                  <Select value={manuellRkValg} onValueChange={setManuellRkValg}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Velg RK1–RK6" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="RK1">RK 1</SelectItem>
+                      <SelectItem value="RK2">RK 2</SelectItem>
+                      <SelectItem value="RK3">RK 3</SelectItem>
+                      <SelectItem value="RK4">RK 4</SelectItem>
+                      <SelectItem value="RK5">RK 5</SelectItem>
+                      <SelectItem value="RK6">RK 6</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium mb-1 block">Begrunnelse for valg</Label>
+                  <Textarea
+                    value={manuellRkBegrunnelse}
+                    onChange={(e) => setManuellRkBegrunnelse(e.target.value)}
+                    placeholder="Beskriv hvorfor byggverket plasseres i valgt risikoklasse, basert på kriteriespørsmålene over."
+                    rows={5}
+                  />
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setManuellRkOpen(false)}>Avbryt</Button>
+                <Button
+                  onClick={() => {
+                    if (!manuellRkValg || !manuellRkBegrunnelse.trim()) return;
+                    setFormData({
+                      ...formData,
+                      risikoklasse: manuellRkValg,
+                      risikoklasseBegrunnelse: manuellRkBegrunnelse.trim(),
+                    });
+                    setManuellRkOpen(false);
+                  }}
+                  disabled={!manuellRkValg || !manuellRkBegrunnelse.trim()}
+                >
+                  Lagre
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+
+
           <div className="grid lg:grid-cols-2 gap-6 lg:h-[calc(100vh-200px)]">
               {/* Input Form */}
               <Card className="shadow-medium flex flex-col overflow-hidden">
@@ -4072,7 +4166,7 @@ const Konsept = () => {
                               <Select 
                                 value={formData.risikoklasse}
                                 onValueChange={(value) => {
-                                  setFormData({...formData, risikoklasse: value});
+                                  setFormData({...formData, risikoklasse: value, risikoklasseBegrunnelse: ""});
                                 }}
                               >
                                 <SelectTrigger>
@@ -4087,12 +4181,37 @@ const Konsept = () => {
                                   <SelectItem value="RK6">RK 6</SelectItem>
                                 </SelectContent>
                               </Select>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Velg fra listen, eller bruk knappen under hvis bygget ikke er listet. Etter §11-2 må slike tilfeller plasseres etter begrunnet og dokumentert vurdering.
+                              </p>
+                              <Button
+                                type="button"
+                                variant="link"
+                                size="sm"
+                                className="px-0 h-auto text-xs"
+                                onClick={() => {
+                                  setManuellRkValg(formData.risikoklasse || "");
+                                  setManuellRkBegrunnelse(formData.risikoklasseBegrunnelse || "");
+                                  setManuellRkOpen(true);
+                                }}
+                              >
+                                Bygget mitt finnes ikke i listen
+                              </Button>
+                              {formData.risikoklasseBegrunnelse && (
+                                <div className="mt-1 p-2 bg-amber-50 border border-amber-200 rounded-md">
+                                  <p className="text-xs text-amber-700 font-medium">Manuelt plassert (§11-2)</p>
+                                  <p className="text-xs text-amber-700 mt-1 whitespace-pre-wrap">{formData.risikoklasseBegrunnelse}</p>
+                                </div>
+                              )}
                             </div>
                             <div>
                               <Label className="text-xs font-medium mb-1 block">
                                 Brannklasse
-                                {beregnetBrannklasseResult.brannklasse && (
+                                {!formData.saerligKonsekvensBKL4 && beregnetBrannklasseResult.brannklasse && (
                                   <span className="text-muted-foreground ml-2">(Automatisk: {beregnetBrannklasseResult.brannklasse})</span>
+                                )}
+                                {formData.saerligKonsekvensBKL4 && formData.brannklasseTabellReferanse && (
+                                  <span className="text-muted-foreground ml-2">(Tabellverdi: {formData.brannklasseTabellReferanse})</span>
                                 )}
                               </Label>
                               <Select 
@@ -4100,6 +4219,7 @@ const Konsept = () => {
                                 onValueChange={(value) => {
                                   setFormData({...formData, brannklasse: value});
                                 }}
+                                disabled={formData.saerligKonsekvensBKL4}
                               >
                                 <SelectTrigger>
                                   <SelectValue placeholder="Velg" />
@@ -4108,9 +4228,42 @@ const Konsept = () => {
                                   <SelectItem value="BKL1">BKL 1</SelectItem>
                                   <SelectItem value="BKL2">BKL 2</SelectItem>
                                   <SelectItem value="BKL3">BKL 3</SelectItem>
+                                  <SelectItem value="BKL4">BKL 4</SelectItem>
                                 </SelectContent>
                               </Select>
+                              <div className="flex items-start gap-2 mt-2">
+                                <Checkbox
+                                  id="saerligKonsekvensBKL4"
+                                  checked={formData.saerligKonsekvensBKL4}
+                                  onCheckedChange={(checked) => setFormData({...formData, saerligKonsekvensBKL4: checked === true})}
+                                />
+                                <div className="flex-1">
+                                  <Label htmlFor="saerligKonsekvensBKL4" className="text-xs cursor-pointer leading-relaxed font-medium">
+                                    Brann kan medføre særlig stor konsekvens (BKL4)
+                                  </Label>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    Hak av hvis byggverket er av en type hvor konsekvensen ved brann kan bli særlig stor for liv og helse, miljø eller samfunnet generelt – for eksempel mer enn 16 etasjer, kritisk infrastruktur, byggverk under terreng, kjemisk industri eller lagring av særlig brann-/helse-/miljøfarlige stoffer. Brannklasse 4 må dokumenteres ved analyse, jf. veiledningen til § 11-3.
+                                  </p>
+                                </div>
+                              </div>
                             </div>
+                            {formData.saerligKonsekvensBKL4 && (
+                              <div className="col-span-2">
+                                <Alert variant="warning">
+                                  <AlertTriangle className="h-4 w-4" />
+                                  <AlertTitle>BKL4 valgt</AlertTitle>
+                                  <AlertDescription>
+                                    Preaksepterte ytelser dekker ikke BKL4 fullt ut – sikkerheten må dokumenteres ved analyse iht. veiledningen til § 11-3. Vurder samtidig:
+                                    <ul className="list-disc pl-5 mt-1 space-y-0.5">
+                                      <li>a) sannsynlige brannforløp,</li>
+                                      <li>b) potensielle konsekvenser,</li>
+                                      <li>c) byggverkets kompleksitet,</li>
+                                      <li>d) om brannsikkerhetsstrategien er komplisert.</li>
+                                    </ul>
+                                  </AlertDescription>
+                                </Alert>
+                              </div>
+                            )}
                             {formData.risikoklasse === "RK4" && parseInt(formData.etasjer, 10) === 3 && (
                               <div className="col-span-2 p-3 bg-amber-50 border border-amber-200 rounded-md">
                                 <Label className="text-xs font-medium mb-2 block text-amber-700">
@@ -4155,7 +4308,7 @@ const Konsept = () => {
                                 <p className="text-xs text-blue-600">{formData.brannklasseUnntak}</p>
                               </div>
                             )}
-                            {erBrannklasseOverstyrt && (
+                            {erBrannklasseOverstyrt && !formData.saerligKonsekvensBKL4 && (
                               <div className="col-span-2">
                                 <Label className="text-xs font-medium mb-1 block text-amber-600">
                                   Begrunnelse for avvik fra automatisk brannklasse ({beregnetBrannklasseResult.brannklasse})
