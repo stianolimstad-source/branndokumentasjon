@@ -4145,6 +4145,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_7"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_7"]} sectionLabel="3.7 Tekniske installasjoner" />
             )}
+            <FravikPreviewRow paragrafId="11-10" fravikList={fravikList} />
           </tbody>
         </table>
 
