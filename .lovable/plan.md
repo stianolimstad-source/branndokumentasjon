@@ -1,71 +1,68 @@
-# § 11-1 Overordnet brannstrategi – ny seksjon 2.3
+# Inline fravik i brannkonsept kapittel 3
 
-Filer: `src/pages/Konsept.tsx`, `src/components/konsept/KonseptPreview.tsx`.
+## Mål
+Brukeren skal kunne se og opprette fravik direkte fra hver §11-X-seksjon i brannkonseptet, uten å miste konteksten.
 
-Gjelder både brannkonsept (kap 2) og tilstandsvurdering (kap 1 har egen «1.5 Tilleggskrav»-sti — beholdes uendret). Endringen treffer kun grenene som i dag har «2.3 Tilleggskrav» som siste underseksjon i kap 2.
-
-## 1. Datamodell (`src/pages/Konsept.tsx`)
-
-I `formData` legges fire nye Textarea-felter:
-
-- `overordnetMaterialer: string`
-- `overordnetBrannspredning: string`
-- `overordnetRoemning: string`
-- `overordnetRednings: string`
-
-Default-tekstene lagres som konstanter (én pr. felt) i toppen av filen, slik at både `formData`-init, «Hent default-tekst»-knappen og prefill ved opprettelse kan bruke samme kilde:
+## Datamodell (gjenbruker eksisterende felt)
+`FravikEntry.funksjonskrav` er allerede en multiline-streng der hver linje er en TEK17-paragrafetikett (f.eks. `"§ 11-7. Brannseksjoner"`). Vi innfører **ingen** nytt felt — i stedet legger vi en liten hjelper:
 
 ```ts
-const DEFAULT_OVERORDNET = {
-  materialer: "Materialer og produkter velges iht. § 11-9 ...",
-  brannspredning: "Byggverket er delt inn i branncelle og brannseksjoner ...",
-  roemning: "Rømningsveier, ledesystem og deteksjon ...",
-  rednings: "Byggverket er tilrettelagt for utvendig og innvendig innsats ...",
-};
+// src/lib/fravik-paragraf.ts
+export const extractParagrafIds = (funksjonskrav: string): string[] =>
+  Array.from((funksjonskrav || "").matchAll(/§\s*(11-\d+)/g)).map(m => m[1]);
+
+export const paragrafLabelFor = (id: string) => /* slå opp i tek17Paragrafer */;
 ```
 
-Ved opprettelse av nytt konsept initialiseres feltene med default-tekstene. Eksisterende konsepter laster det som er lagret; tomme felter vises som tomme (brukeren henter default via knapp).
+Dette gjør at et fravik med `funksjonskrav` som inneholder `"§ 11-7..."` automatisk er knyttet til §11-7. Ved opprettelse fra brannkonseptet pre-fyller vi `funksjonskrav` med riktig etikett.
 
-## 2. UI – ny `SectionCollapsible` i kap 2
+## Henting av fravik per prosjekt
+I `Konsept.tsx` legges en `useFravikForProsjekt(projectId)`-hook (egen fil, `src/hooks/useFravikForProsjekt.ts`):
 
-Plasseres mellom dagens 2.2 Grunnlagsdokumenter og dagens 2.3 Tilleggskrav (som omdøpes til **2.4 Tilleggskrav**).
+- Henter alle rader fra `fire_concepts` der `project_id = projectId` **og** `content->>'contentType'` er `'kvalitativ' | 'komparativ' | 'risikoanalyse'` (matcher dagens lagring).
+- Returnerer en flat liste `{ conceptId, conceptName, fravikId, navn, fravikBeskrivelse, konklusjon, paragrafIds[], status }`.
+- `status` avledes av `konklusjon`-feltet: tomt → `foreslått`, `tilstrekkelig|komparativ|risikoanalyse|egendefinert` → `akseptert`. (Ingen «avvist»-tilstand finnes i datamodellen i dag — se åpent spørsmål.)
+- Cacher i state, eksponerer `refresh()`.
 
-- Tittel: «2.3 § 11-1 Overordnet brannstrategi».
-- Innledende `text-xs text-muted-foreground`-hjelpetekst som spesifisert.
-- Fire blokker, hver med:
-  - `Label` (a/b/c/d som spesifisert)
-  - `text-xs text-muted-foreground` hjelpetekst
-  - `Textarea` med `rows={4}` og `min-h-[100px]`, bundet til tilsvarende `formData`-felt
-  - Liten `Button variant="ghost" size="sm"` «Hent default-tekst» som setter feltet til default-konstant
+## Ny komponent: `FravikForParagraf`
+`src/components/konsept/FravikForParagraf.tsx`:
 
-Label-en på «2.3 Tilleggskrav»-seksjonen oppdateres til «2.4 Tilleggskrav».
+- Props: `paragrafId` (f.eks. `"11-7"`), `projectId`, `konseptId`, `fravikList`, `refresh`.
+- Renderer:
+  - Tittel «Fravik fra preakseptert ytelse» (AlertTriangle-ikon, `text-destructive`).
+  - Hjelpetekst om SAK 10 § 9-1.
+  - Liste: for hvert fravik som matcher `paragrafId` → kompakt rad med ID-badge, navn/første linje av `fravikBeskrivelse`, status-badge, «Åpne»-knapp som lenker til `/lnsdokumentasjon/{contentType}?project={projectId}&concept={conceptId}#fravik-{fravikId}`.
+  - Tom-tilstand: kursiv «Ingen fravik registrert for § 11-X».
+  - «+ Opprett fravik fra § 11-X»-knapp og en refresh-knapp.
 
-## 3. Word-eksport (`src/pages/Konsept.tsx`)
+«Opprett»-handling:
+- Hvis prosjektet allerede har et fraviksdokument: naviger til det med `?tekParagraf=11-X&fromKonsept={konseptId}&newFravik=1`.
+- Hvis ikke: naviger til `/lnsdokumentasjon/kvalitativ?project={projectId}&new=true&tekParagraf=11-X&fromKonsept={konseptId}`.
 
-I brannkonsept-grenen (rundt linje 2280–2433):
+## Endringer i `KvalitativAnalyse.tsx`
+- Les `tekParagraf` og `newFravik` fra `useSearchParams` ved mount.
+- Hvis satt: opprett (eller append) et `emptyFravik()` med `funksjonskrav` forhåndsutfylt til riktig label fra `tek17Paragrafer`, scroll til det, og rens query-parameterne.
+- `fromKonsept` lagres i state og brukes til en «Tilbake til brannkonsept»-knapp øverst.
 
-- Etter 2.2 Grunnlagsdokumenter og før 2.3 Tilleggskrav: legg inn ny blokk «2.3 § 11-1 Overordnet brannstrategi» med:
-  - Tittel-paragraf (bold, size 24) lik øvrige underseksjoner i kap 2
-  - Fire underseksjoner med subtittel (bold, size 22) «a. Materialer og produkter», «b. Bygnings- og installasjonsdeler – begrensning av brannspredning», «c. Rask og sikker rømning», «d. Rednings- og slokkeinnsats», hver fulgt av innholdsparagraf med tilhørende verdi (eller default hvis tom).
-- «2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker» omdøpes til «2.4 Tilleggskrav fra tiltakshaver, myndigheter eller bruker».
-- Innholdsfortegnelse (linje ~2005–2007): legg til «    2.3 § 11-1 Overordnet brannstrategi» og endre «2.3 Tilleggskrav…» til «2.4 Tilleggskrav…».
+## Plassering i `Konsept.tsx`
+Inni hver av de 14 `SectionCollapsible`-blokkene (`preview-3-1` … `preview-3-14`), helt nederst i innholdet, monteres:
+```tsx
+<FravikForParagraf paragrafId="11-4" projectId={projectId} konseptId={konseptId}
+  fravikList={fravikList} refresh={refreshFravik} />
+```
+Paragraf-ID per seksjon: 3-1→11-4, 3-2→11-5, 3-3→11-6, 3-4→11-7, 3-5→11-8, 3-6→11-9, 3-7→11-10, 3-8→11-11, 3-9→11-12, 3-10→11-13, 3-11→11-14, 3-12→11-15, 3-13→11-16, 3-14→11-17.
 
-Tilstandsvurdering-grenen (kap 1) endres ikke.
-
-## 4. Live-preview (`src/components/konsept/KonseptPreview.tsx`)
-
-To steder må oppdateres (brannkonsept-greinene rundt linje 1097–1122 og 882–907 som relevant):
-
-- Innholdsfortegnelse (linje 540–541 og 582–583): legg til «2.3 § 11-1 Overordnet brannstrategi» og forskyv «Tilleggskrav» til 2.4.
-- Render-seksjonen: etter «2.2 Grunnlagsdokumenter» legges inn ny `<h3>2.3 § 11-1 Overordnet brannstrategi</h3>` med fire `<h4>`-underseksjoner og tilhørende tekst (`whitespace-pre-wrap`, fallback til default-tekst hvis tom). Endre eksisterende «2.3 Tilleggskrav» til «2.4 Tilleggskrav».
-
-Default-tekstene importeres/dupliseres som konstant i preview-filen (samme strenger som i Konsept.tsx) slik at fallback er konsistent.
-
-## 5. Persistens
-
-De fire feltene følger automatisk eksisterende lagringsmekanisme (hele `formData` lagres som JSONB i `fire_concepts.data`). Ingen migrasjon nødvendig.
+## Word-eksport
+I rapport-genereringen for hvert §-avsnitt i kapittel 3: hvis `fravikList.filter(f => f.paragrafIds.includes(paragrafId)).length > 0`, legg til en sub-seksjon «Fravik» med en kompakt linje per fravik (`F{n} – {navn} – {status}`). Ingen tekst hvis tom. Samme oppdatering i `KonseptPreview.tsx` for konsistent live-preview.
 
 ## Filer som endres
+- ny: `src/lib/fravik-paragraf.ts`
+- ny: `src/hooks/useFravikForProsjekt.ts`
+- ny: `src/components/konsept/FravikForParagraf.tsx`
+- `src/pages/Konsept.tsx` (14 innsettinger + hook + Word-eksport)
+- `src/components/konsept/KonseptPreview.tsx` (sub-seksjon i preview)
+- `src/pages/fraviksdokumentasjon/KvalitativAnalyse.tsx` (les query-params, prefyll)
 
-- `src/pages/Konsept.tsx`
-- `src/components/konsept/KonseptPreview.tsx`
+## Åpne spørsmål
+1. **Status-badge:** Vi har ikke et eksplisitt `status`-felt på fravik. Forslag: avled `foreslått` (tom `konklusjon`) / `akseptert` (utfylt `konklusjon`). Vil du heller ha et nytt eksplisitt felt `status: 'foreslått'|'akseptert'|'avvist'` (krever migrasjon av JSON-innhold)?
+2. **Opprett-knapp UX:** Innebygd Dialog i brannkonseptet, eller redirect til fraviksdokumentasjonen med prefyll (anbefalt – beholder all eksisterende logikk i ett sted)?

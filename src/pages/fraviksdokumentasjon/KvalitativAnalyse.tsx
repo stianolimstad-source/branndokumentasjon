@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import KvalitativPreview from "@/components/fraviksdokumentasjon/KvalitativPreview";
 import FravikEntryForm, { FravikEntry, emptyFravik } from "@/components/fraviksdokumentasjon/FravikEntryForm";
+import { TEK17_PARAGRAFER } from "@/lib/fravik-paragraf";
 import { exportKvalitativWord } from "@/lib/kvalitativ-word-export";
 import { useCanDownload } from "@/hooks/useCanDownload";
 
@@ -35,6 +36,9 @@ const KvalitativAnalyse = () => {
   const projectId = searchParams.get("project");
   const conceptId = searchParams.get("concept");
   const isNew = searchParams.get("new") === "true";
+  const incomingTekParagraf = searchParams.get("tekParagraf");
+  const wantsNewFravik = searchParams.get("newFravik") === "1";
+  const fromKonsept = searchParams.get("fromKonsept");
 
   const [sammendrag, setSammendrag] = useState("");
   const [dokumentNavn, setDokumentNavn] = useState("");
@@ -77,9 +81,35 @@ const KvalitativAnalyse = () => {
   const [newProjectData, setNewProjectData] = useState({ name: "", description: "", address: "" });
 
   // Load existing concept
+  const [conceptLoaded, setConceptLoaded] = useState(!conceptId);
   useEffect(() => {
-    if (conceptId && user) loadConcept(conceptId);
+    if (conceptId && user) loadConcept(conceptId).finally(() => setConceptLoaded(true));
+    else if (!conceptId) setConceptLoaded(true);
   }, [conceptId, user]);
+
+  // Prefyll nytt fravik når brukeren kommer fra brannkonsept med ?tekParagraf=&newFravik=1
+  const prefilledRef = React.useRef(false);
+  useEffect(() => {
+    if (prefilledRef.current) return;
+    if (!wantsNewFravik || !incomingTekParagraf || !projectId || !conceptLoaded) return;
+    prefilledRef.current = true;
+    const label = TEK17_PARAGRAFER.find(p => p.id === incomingTekParagraf)?.label
+      ?? `§ ${incomingTekParagraf}`;
+    const ny: FravikEntry = { ...emptyFravik(), funksjonskrav: label };
+    setFravikEntries(prev => {
+      // Hvis vi har et tomt initielt fravik, erstatt det
+      const isInitialEmpty = prev.length === 1 && !prev[0].navn && !prev[0].fravikBeskrivelse && !prev[0].funksjonskrav;
+      const next = isInitialEmpty ? [ny] : [...prev, ny];
+      setActiveFravikIndex(next.length - 1);
+      return next;
+    });
+    // Rydd query-parametere (behold project/concept/fromKonsept)
+    const next = new URLSearchParams(searchParams);
+    next.delete("tekParagraf");
+    next.delete("newFravik");
+    next.delete("new");
+    setSearchParams(next, { replace: true });
+  }, [wantsNewFravik, incomingTekParagraf, projectId, conceptLoaded, searchParams, setSearchParams]);
 
   // Show project picker dialog when no project is selected
   useEffect(() => {
@@ -238,13 +268,21 @@ const KvalitativAnalyse = () => {
   // Always render the main form — project picker is a dialog
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <div className="container mx-auto px-4 py-3">
+      <div className="container mx-auto px-4 py-3 flex items-center gap-2">
         <Button variant="ghost" size="sm" asChild>
           <Link to="/mine-prosjekter">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Tilbake
           </Link>
         </Button>
+        {fromKonsept && projectId && (
+          <Button variant="outline" size="sm" asChild>
+            <Link to={`/konsept?project=${projectId}&concept=${fromKonsept}`}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Tilbake til brannkonsept
+            </Link>
+          </Button>
+        )}
       </div>
 
       <div className="w-full px-4 py-6">

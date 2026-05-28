@@ -32,6 +32,8 @@ import { UploadConceptDialog } from "@/components/konsept/UploadConceptDialog";
 import { buildChapter3Table, setChapter3Theme } from "@/lib/word-export-chapter3";
 import TilstandsvurderingPanel, { TilstandData, emptyTilstand } from "@/components/konsept/TilstandsvurderingPanel";
 import KraftstasjonTilleggskravCard from "@/components/konsept/KraftstasjonTilleggskravCard";
+import FravikForParagraf from "@/components/konsept/FravikForParagraf";
+import { useFravikForProsjekt } from "@/hooks/useFravikForProsjekt";
 
 const SectionCollapsible = ({ label, defaultOpen = false, forceOpen, previewId, children }: { label: string; defaultOpen?: boolean; forceOpen?: boolean; previewId?: string; children: React.ReactNode }) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen);
@@ -425,6 +427,7 @@ const Konsept = () => {
     searchParams.get('concept')
   );
   const [conceptName, setConceptName] = useState("");
+  const { fravikList, firstFravikConceptId, hasFravikDokument, refresh: refreshFravik } = useFravikForProsjekt(selectedProjectId);
 
   // Create project dialog state
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
@@ -4654,6 +4657,7 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_1")}
+                    <FravikForParagraf paragrafId="11-4" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-2" label={`3.2 ${formData.regelverk === "BF85" ? "Sikkerhet ved eksplosjon (§ 11-5)" : "§ 11-5 Sikkerhet ved eksplosjon"}`}>
                     <div className="space-y-3">
@@ -4768,6 +4772,7 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_2")}
+                    <FravikForParagraf paragrafId="11-5" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-3" label={`3.3 ${formData.regelverk === "BF85" ? "Avstand mellom bygninger (§ 11-6 Tiltak mot brannspredning mellom byggverk)" : "§ 11-6 Tiltak mot brannspredning"}`}>
                     <div className="space-y-2">
@@ -5024,6 +5029,7 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_3")}
+                    <FravikForParagraf paragrafId="11-6" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-4" label={`3.4 ${formData.regelverk === "BF85" ? "Brannteknisk oppdeling (§ 11-7 Brannseksjoner)" : "§ 11-7 Brannseksjoner"}`}>
                     <div className="space-y-2">
@@ -5589,6 +5595,7 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_4")}
+                    <FravikForParagraf paragrafId="11-7" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-5" label={`3.5 ${formData.regelverk === "BF85" ? "Brannceller (§ 11-8)" : "§ 11-8 Brannceller"}`}>
                     <div className="space-y-2">
@@ -7511,6 +7518,7 @@ const Konsept = () => {
                        );
                      })()}
                      {renderTilstandPanel("3_5")}
+                    <FravikForParagraf paragrafId="11-8" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-6" label={`3.6 ${formData.regelverk === "BF85" ? "Kledninger og overflater (§ 11-9 Materialer og produkters egenskaper ved brann)" : "§ 11-9 Materialer og produkter"}`}>
                     <div className="space-y-2">
@@ -7776,6 +7784,7 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_6")}
+                    <FravikForParagraf paragrafId="11-9" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-7" label={`3.7 ${formData.regelverk === "BF85" ? "Tekniske installasjoner (§ 11-10)" : "§ 11-10 Tekniske installasjoner"}`}>
                     <div className="space-y-2">
@@ -8116,6 +8125,7 @@ const Konsept = () => {
                        );
                      })()}
                      {renderTilstandPanel("3_7")}
+                    <FravikForParagraf paragrafId="11-10" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-8" label={`3.8 ${formData.regelverk === "BF85" ? "Rømningsvei – generelle krav (§ 11-11 Generelle krav om rømning og redning)" : "§ 11-11 Rømning og redning"}`}>
                     <div className="space-y-2">
@@ -8340,6 +8350,7 @@ const Konsept = () => {
                        );
                      })()}
                      {renderTilstandPanel("3_8")}
+                    <FravikForParagraf paragrafId="11-11" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-9" label={`3.9 ${formData.regelverk === "BF85" ? "Tiltak for å påvirke rømnings- og redningstider (Brannalarmanlegg og røykvarsler)" : "§ 11-12 Tilrettelegging for rømning"}`}>
                     <div className="space-y-4">
@@ -9153,6 +9164,7 @@ const Konsept = () => {
                        );
                      })()}
                      {renderTilstandPanel("3_9")}
+                    <FravikForParagraf paragrafId="11-12" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
                     </SectionCollapsible>
                     {(() => {
                       const isBF85Tilstand = documentType === "tilstandsvurdering" && formData.regelverk === "BF85";
@@ -9670,6 +9682,7 @@ const Konsept = () => {
                       )}
                     </div>
                     {renderTilstandPanel("3_10")}
+                    <FravikForParagraf paragrafId="11-13" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
                     </SectionCollapsible>
                       );
                     })()}
@@ -9881,6 +9894,7 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_11")}
+                    <FravikForParagraf paragrafId="11-14" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
                     </SectionCollapsible>
                     )}
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-12" label={`${isBF85Tilstand ? "3.11" : "3.12"} ${formData.regelverk === "BF85" ? "Tilrettelegging for redning av husdyr (§ 11-15)" : "§ 11-15 Redning av husdyr"}`}>
@@ -9964,6 +9978,7 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_12")}
+                    <FravikForParagraf paragrafId="11-15" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-13" label={`${isBF85Tilstand ? "3.12" : "3.13"} ${formData.regelverk === "BF85" ? "Slokkingsredskap og slokkingsvann (§ 11-16 Tilrettelegging for manuell slokking)" : "§ 11-16 Manuell slokking"}`}>
                     <div className="space-y-2">
@@ -10191,6 +10206,7 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_13")}
+                    <FravikForParagraf paragrafId="11-16" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-14" label={`${isBF85Tilstand ? "3.13" : "3.14"} ${formData.regelverk === "BF85" ? "Atkomst for brannvesenet (§ 11-17 Tilrettelegging for rednings- og slokkemannskap)" : "§ 11-17 Tilrettelegging for slokkemannskap"}`}>
                     <div className="space-y-2">
@@ -10324,6 +10340,7 @@ const Konsept = () => {
                       </div>
                     </div>
                     {renderTilstandPanel("3_14")}
+                    <FravikForParagraf paragrafId="11-17" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
                     </SectionCollapsible>
                   </AccordionContent>
                 </AccordionItem>
