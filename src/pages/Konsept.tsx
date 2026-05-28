@@ -600,6 +600,11 @@ const Konsept = () => {
     universellUtforming: false, // Om bygget skal være universelt utformet
     baeresystem: "",
     tilleggskrav: "",
+    // 2.3 § 11-1 Overordnet brannstrategi
+    overordnetMaterialer: DEFAULT_OVERORDNET.materialer,
+    overordnetBrannspredning: DEFAULT_OVERORDNET.brannspredning,
+    overordnetRoemning: DEFAULT_OVERORDNET.roemning,
+    overordnetRednings: DEFAULT_OVERORDNET.rednings,
     // 3. Branntekniske ytelseskrav
     baereevne: "",
     baereevneUnntak: [] as string[],
