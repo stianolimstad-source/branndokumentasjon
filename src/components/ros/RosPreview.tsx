@@ -1152,27 +1152,38 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                       return { color: "#94a3b8" };
                     };
                     const cap = (v?: string) => v ? v.charAt(0).toUpperCase() + v.slice(1) : "—";
+                    const sensRowTd: React.CSSProperties = h.sensitiv
+                      ? { borderTop: "2px solid #dc2626", borderBottom: "2px solid #dc2626" }
+                      : {};
+                    const sensFirstTd: React.CSSProperties = h.sensitiv ? { borderLeft: "2px solid #dc2626" } : {};
+                    const sensLastTd: React.CSSProperties = h.sensitiv ? { borderRight: "2px solid #dc2626" } : {};
                     return (
                       <React.Fragment key={h.id}>
                       <tr>
-                        <td style={{ ...td, textAlign: "center", fontWeight: 600 }}>{i + 1}</td>
-                        <td style={td}>{h.sarbarhet || ""}</td>
-                        <td style={{ ...td, fontWeight: 600 }}>{h.hendelse || h.beskrivelse || h.tittel || "—"}</td>
-                        <td style={td}>{h.arsak}</td>
-                        <td style={td}>{h.beskrivelseSannsynlighetFor || ""}</td>
-                        <td style={td}>{forsyning?.begrunnelse || h.beskrivelseRisikoFor || ""}</td>
-                        <td style={tdCenter}>{h.sannsynlighet}</td>
-                        <td style={kForsyning ? tdCenter : tdMuted}>{kForsyning ?? "—"}</td>
-                        <td style={kForsyning ? { ...riskCellStyle(h.sannsynlighet, kForsyning), fontSize: 9 } : tdMuted}>{kForsyning ? h.sannsynlighet * kForsyning : "—"}</td>
-                        <td style={td}>{h.eksisterendeBarrierer || ""}</td>
-                        <td style={td}>{h.foreslatteTiltak || h.tiltak || ""}</td>
-                        <td style={td}>{h.beskrivelseEtter || ""}</td>
-                        <td style={tdCenter}>{sE}</td>
-                        <td style={kForsyningEtter ? tdCenter : tdMuted}>{kForsyningEtter ?? "—"}</td>
-                        <td style={kForsyningEtter ? { ...riskCellStyle(sE, kForsyningEtter), fontSize: 9 } : tdMuted}>{kForsyningEtter ? sE * kForsyningEtter : "—"}</td>
-                        <td style={td}>{h.restrisiko}</td>
-                        <td style={{ ...td, textAlign: "center", ...usikkerhetStyle(h.usikkerhet) }}>{cap(h.usikkerhet)}</td>
-                        <td style={{ ...td, textAlign: "center", ...styrbarhetStyle(h.styrbarhet) }}>{cap(h.styrbarhet)}</td>
+                        <td style={{ ...td, textAlign: "center", fontWeight: 600, ...sensRowTd, ...sensFirstTd }}>
+                          {h.sensitiv && <Shield size={10} style={{ display: "inline", marginRight: 2, color: "#dc2626", verticalAlign: "middle" }} />}
+                          {i + 1}
+                        </td>
+                        <td style={{ ...td, ...sensRowTd }}>{h.sarbarhet || ""}</td>
+                        <td style={{ ...td, fontWeight: 600, ...sensRowTd }}>
+                          {h.sensitiv && <Shield size={10} style={{ display: "inline", marginRight: 4, color: "#dc2626", verticalAlign: "middle" }} />}
+                          {h.hendelse || h.beskrivelse || h.tittel || "—"}
+                        </td>
+                        <td style={{ ...td, ...sensRowTd }}>{h.arsak}</td>
+                        <td style={{ ...td, ...sensRowTd }}>{h.beskrivelseSannsynlighetFor || ""}</td>
+                        <td style={{ ...td, ...sensRowTd }}>{forsyning?.begrunnelse || h.beskrivelseRisikoFor || ""}</td>
+                        <td style={{ ...tdCenter, ...sensRowTd }}>{h.sannsynlighet}</td>
+                        <td style={{ ...(kForsyning ? tdCenter : tdMuted), ...sensRowTd }}>{kForsyning ?? "—"}</td>
+                        <td style={{ ...(kForsyning ? { ...riskCellStyle(h.sannsynlighet, kForsyning), fontSize: 9 } : tdMuted), ...sensRowTd }}>{kForsyning ? h.sannsynlighet * kForsyning : "—"}</td>
+                        <td style={{ ...td, ...sensRowTd }}>{h.eksisterendeBarrierer || ""}</td>
+                        <td style={{ ...td, ...sensRowTd }}>{h.foreslatteTiltak || h.tiltak || ""}</td>
+                        <td style={{ ...td, ...sensRowTd }}>{h.beskrivelseEtter || ""}</td>
+                        <td style={{ ...tdCenter, ...sensRowTd }}>{sE}</td>
+                        <td style={{ ...(kForsyningEtter ? tdCenter : tdMuted), ...sensRowTd }}>{kForsyningEtter ?? "—"}</td>
+                        <td style={{ ...(kForsyningEtter ? { ...riskCellStyle(sE, kForsyningEtter), fontSize: 9 } : tdMuted), ...sensRowTd }}>{kForsyningEtter ? sE * kForsyningEtter : "—"}</td>
+                        <td style={{ ...td, ...sensRowTd }}>{h.restrisiko}</td>
+                        <td style={{ ...td, textAlign: "center", ...usikkerhetStyle(h.usikkerhet), ...sensRowTd }}>{cap(h.usikkerhet)}</td>
+                        <td style={{ ...td, textAlign: "center", ...styrbarhetStyle(h.styrbarhet), ...sensRowTd, ...sensLastTd }}>{cap(h.styrbarhet)}</td>
                       </tr>
 
                       <tr>
