@@ -1302,15 +1302,144 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
         </section>
       </div>
 
+      {/* Ark 3b — Tiltaksplan */}
+      <div style={pageStyle} className="ros-page">
+        <section id="kap-6-tiltak">
+          <h2 style={h2}>6. Tiltaksplan</h2>
+          <p style={pStyle}>
+            Strukturert oversikt over tiltak som skal gjennomføres for å redusere risiko. Hvert tiltak har
+            ansvarlig person, frist for gjennomføring og status. Tabellen er sortert med besluttede tiltak
+            og høy effekt øverst. Passerte frister er markert med rød skrift.
+          </p>
+          {(() => {
+            const tiltak = sorterTiltakEtterPrioritet(content.tiltaksplan || []);
+            if (tiltak.length === 0) {
+              return (
+                <p style={{ ...pStyle, fontStyle: "italic", color: "#64748b" }}>
+                  Ingen tiltak registrert.
+                </p>
+              );
+            }
+            const tIder = byggTiltakIder(content.tiltaksplan || []);
+            const hIdMap = new Map(content.hendelser.map((h, i) => [h.id, i + 1]));
+            const statusFarge: Record<string, string> = {
+              foreslatt: "#e5e7eb",
+              besluttet: "#dbeafe",
+              under_arbeid: "#fef3c7",
+              gjennomfort: "#d1fae5",
+              forkastet: "#fecdd3",
+            };
+            const statusTekst: Record<string, string> = {
+              foreslatt: "#374151",
+              besluttet: "#1e3a8a",
+              under_arbeid: "#92400e",
+              gjennomfort: "#065f46",
+              forkastet: "#9f1239",
+            };
+            const tdT = { ...tdStyle, fontSize: 10 };
+            return (
+              <table style={{ ...tableStyle, fontSize: 10 }}>
+                <thead>
+                  <tr>
+                    <th style={{ ...thStyle, width: 32 }}>ID</th>
+                    <th style={thStyle}>Tittel</th>
+                    <th style={{ ...thStyle, width: 110 }}>Kategori</th>
+                    <th style={{ ...thStyle, width: 90 }}>Ansvarlig</th>
+                    <th style={{ ...thStyle, width: 80 }}>Frist</th>
+                    <th style={{ ...thStyle, width: 80 }}>Status</th>
+                    <th style={{ ...thStyle, width: 50, textAlign: "center" }}>Effekt</th>
+                    <th style={{ ...thStyle, width: 50, textAlign: "center" }}>Kostnad</th>
+                    <th style={{ ...thStyle, width: 80 }}>Hendelser</th>
+                    <th style={thStyle}>Kommentar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tiltak.map((t) => {
+                    const passert = erFristPassert(t);
+                    const hLabels = (t.hendelseIds || [])
+                      .map((id) => {
+                        const idx = hIdMap.get(id);
+                        return idx ? `H${idx}` : null;
+                      })
+                      .filter(Boolean)
+                      .join(", ");
+                    return (
+                      <tr key={t.id}>
+                        <td style={{ ...tdT, fontWeight: 700, textAlign: "center", color: "#1e3a5f" }}>
+                          {tIder.get(t.id) || "T?"}
+                        </td>
+                        <td style={{ ...tdT, fontWeight: 600 }}>{t.tittel || "—"}</td>
+                        <td style={tdT}>{TILTAK_KATEGORI_LABEL[t.kategori]}</td>
+                        <td style={tdT}>{t.ansvarlig || "—"}</td>
+                        <td
+                          style={{
+                            ...tdT,
+                            color: passert ? "#b91c1c" : undefined,
+                            fontWeight: passert ? 700 : undefined,
+                          }}
+                        >
+                          {formaterFrist(t.frist)}
+                          {passert ? " ⚠" : ""}
+                        </td>
+                        <td style={{ ...tdT, textAlign: "center" }}>
+                          <span
+                            style={{
+                              background: statusFarge[t.status] || "#e5e7eb",
+                              color: statusTekst[t.status] || "#374151",
+                              padding: "2px 6px",
+                              borderRadius: 999,
+                              fontSize: 9,
+                              fontWeight: 600,
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {TILTAK_STATUS_LABEL[t.status]}
+                          </span>
+                        </td>
+                        <td
+                          style={{
+                            ...tdT,
+                            textAlign: "center",
+                            background: t.effektVurdering === "hoy" ? "#d1fae5" : undefined,
+                            color: t.effektVurdering === "hoy" ? "#065f46" : undefined,
+                            fontWeight: t.effektVurdering === "hoy" ? 600 : undefined,
+                          }}
+                        >
+                          {t.effektVurdering ? VURDERING_LABEL[t.effektVurdering] : "—"}
+                        </td>
+                        <td
+                          style={{
+                            ...tdT,
+                            textAlign: "center",
+                            background: t.kostnadVurdering === "hoy" ? "#fee2e2" : undefined,
+                            color: t.kostnadVurdering === "hoy" ? "#991b1b" : undefined,
+                            fontWeight: t.kostnadVurdering === "hoy" ? 600 : undefined,
+                          }}
+                        >
+                          {t.kostnadVurdering ? VURDERING_LABEL[t.kostnadVurdering] : "—"}
+                        </td>
+                        <td style={tdT}>{hLabels || "—"}</td>
+                        <td style={tdT}>{t.kommentar || ""}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            );
+          })()}
+        </section>
+      </div>
+
       {/* Ark 4 — bow-tie (hvis registrert) */}
       {content.bowTies && content.bowTies.length > 0 && (
         <div style={landscapePageStyle} className="ros-page-landscape">
-          <section id="kap-6">
-            <h2 style={h2}>6. Bow-tie analyse</h2>
+          <section id="kap-7">
+            <h2 style={h2}>7. Bow-tie analyse</h2>
             <p style={pStyle}>
               Bow-tie-analysen knytter registrerte hendelser fra kapittel 4 til overordnede uønskede topphendelser.
               Dette synliggjør hvilke årsaker som kan lede til samme topphendelse, og hvilke tiltak som virker på tvers.
             </p>
+
             {content.bowTies.map((bt, idx) => {
               const arsaker = bt.hendelseIds
                 .map((id) => content.hendelser.find((h) => h.id === id))
