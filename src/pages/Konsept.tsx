@@ -7702,22 +7702,8 @@ const Konsept = () => {
                             const bkl = formData.brannklasse;
                             const isRK6 = rk === "RK6";
                             const isRK1to5 = ["RK1","RK2","RK3","RK4","RK5"].includes(rk);
-                            const SubSection = ({ id, title, children }: { id: string; title: string; children: React.ReactNode }) => (
-                              <Collapsible
-                                open={!!kap36Open[id]}
-                                onOpenChange={(o) => setKap36Open(prev => ({ ...prev, [id]: o }))}
-                                className="border rounded-md bg-card"
-                              >
-                                <CollapsibleTrigger className="w-full flex items-center justify-between p-3 hover:bg-muted/40 transition-colors">
-                                  <Label className="text-xs font-semibold cursor-pointer">{title}</Label>
-                                  <ChevronDown className={`h-4 w-4 transition-transform ${kap36Open[id] ? "rotate-180" : ""}`} />
-                                </CollapsibleTrigger>
-                                <CollapsibleContent>
-                                  <div className="p-3 pt-0 space-y-2">{children}</div>
-                                </CollapsibleContent>
-                              </Collapsible>
-                            );
                             return (
+
                               <>
                                 {/* A. Generelt */}
                                 <div className="p-3 bg-muted/30 rounded-md border space-y-1">
