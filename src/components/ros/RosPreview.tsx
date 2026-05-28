@@ -952,7 +952,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                     <th style={{ ...thStyle, width: 24, textAlign: "center", fontSize: 9 }}>S</th>
                     <th style={{ ...thStyle, width: 24, textAlign: "center", fontSize: 9 }}>K</th>
                     <th style={{ ...thStyle, width: 30, textAlign: "center", fontSize: 9 }}>R</th>
-                    <th style={{ ...thStyle, fontSize: 9 }}>Forebyggende tiltak</th>
+                    <th style={{ ...thStyle, fontSize: 9 }}>Eksisterende barrierer</th>
+                    <th style={{ ...thStyle, fontSize: 9 }}>Foreslåtte tiltak</th>
                     <th style={{ ...thStyle, fontSize: 9 }}>Beskr. etter tiltak</th>
                     <th style={{ ...thStyle, width: 24, textAlign: "center", fontSize: 9 }}>S etter</th>
                     <th style={{ ...thStyle, width: 24, textAlign: "center", fontSize: 9 }}>K etter</th>
