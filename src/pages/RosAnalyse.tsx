@@ -21,7 +21,20 @@ import { KONSEKVENS_FORSLAG, groupKonsekvenserByKategori } from "@/lib/ros-konse
 import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search, Sparkles, Check, GitBranch, X, Eye, Calculator, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import RosPreview, { type RosContent, type RosHendelse, type RosBowTie, type KonsekvensVurdering, type RosBeregning, type BfkVurdering, migrerHendelse, migrerBeregninger, byggBeregningIder } from "@/components/ros/RosPreview";
+import RosPreview, { type RosContent, type RosHendelse, type RosBowTie, type KonsekvensVurdering, type RosBeregning, type BfkVurdering, type RosTiltak, type RosTiltakStatus, type RosTiltakKategori, type Vurdering, migrerHendelse, migrerBeregninger, byggBeregningIder } from "@/components/ros/RosPreview";
+import {
+  TILTAK_STATUS_LABEL,
+  TILTAK_STATUS_REKKEFOLGE,
+  TILTAK_STATUS_BADGE_CLASS,
+  TILTAK_KATEGORI_LABEL,
+  VURDERING_LABEL,
+  VURDERING_VALG,
+  byggTiltakIder,
+  erFristPassert,
+  sorterTiltakEtter,
+  formaterFrist,
+  defaultFristIso,
+} from "@/lib/ros-tiltak";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuCheckboxItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DIMENSJON_NAVN, ALLE_DIMENSJONER, type KonsekvensDimensjon } from "@/lib/ros-risk-criteria";
