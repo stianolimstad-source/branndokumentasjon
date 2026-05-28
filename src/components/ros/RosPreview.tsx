@@ -189,6 +189,8 @@ export interface RosContent {
     dato: string;
     versjon: string;
     nivaa?: 1 | 2 | 3;
+    nveKlasse?: RosNveKlasse;
+    sensitivKlassifisering?: RosSensitivKlassifisering;
   };
   innledning: {
     bakgrunn: string;
