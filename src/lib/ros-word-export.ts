@@ -27,8 +27,8 @@ import {
   fetchLogoBuffer,
   tableHeaderShading,
 } from "@/lib/document-templates";
-import { risikoFarge } from "@/components/ros/RosMatriks";
-import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell, DIMENSJON_NAVN } from "@/lib/ros-risk-criteria";
+import { risikoFarge, tilgjengeligeDimensjoner, byggHendelseIder, tellRisikoSoner, harEtterData } from "@/components/ros/RosMatriks";
+import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell, DIMENSJON_NAVN, type KonsekvensDimensjon } from "@/lib/ros-risk-criteria";
 import { migrerHendelse, byggBeregningIder, type RosBeregning, type RosContent, type RosHendelse } from "@/components/ros/RosPreview";
 import {
   TILTAK_STATUS_LABEL,
@@ -629,10 +629,11 @@ export const exportRosToWord = async (options: ExportOptions) => {
   const harBowTie = !!(content.bowTies && content.bowTies.length > 0);
   const hendelseNr = "4";
   const beregningNr = "5";
-  const tiltakNr = "6";
-  const bowTieNr = "7";
-  const oppsummeringNr = harBowTie ? "8" : "7";
-  const revisjonNr = harBowTie ? "9" : "8";
+  const risikobildeNr = "6";
+  const tiltakNr = "7";
+  const bowTieNr = "8";
+  const oppsummeringNr = harBowTie ? "9" : "8";
+  const revisjonNr = harBowTie ? "10" : "9";
   const tiltakIder = byggTiltakIder(content.tiltaksplan || []);
 
   const beregningIder = byggBeregningIder(content);
@@ -894,6 +895,113 @@ export const exportRosToWord = async (options: ExportOptions) => {
       ikke.forEach(pushBeregning);
     }
   }
+
+  // Kap. 6 Risikobilde – én matrise (eller før/etter par) per dimensjon
+  const risikobildeBlocks: (Paragraph | Table)[] = [];
+  {
+    const dims = tilgjengeligeDimensjoner(content.hendelser);
+    if (dims.length > 0) {
+      const hIder = byggHendelseIder(content.hendelser);
+      risikobildeBlocks.push(buildSectionHeading(theme, `${risikobildeNr}. Risikobilde`));
+      risikobildeBlocks.push(
+        para(
+          "Risikobildet vises som en 5×5-matrise per konsekvensdimensjon som er vurdert på minst én hendelse. " +
+            "Hver hendelse plottes med sin lesbare ID (H1, H2, …) i cellen som tilsvarer sannsynlighet og konsekvens. " +
+            "Hvor «etter tiltak»-data finnes, vises den tilhørende matrisen ved siden av.",
+        ),
+      );
+
+      const buildMatrise = (dim: KonsekvensDimensjon, bruk: "for" | "etter"): Table => {
+        // Grupper hendelser per (s,k)
+        const cellMap = new Map<string, string[]>();
+        content.hendelser.forEach((h) => {
+          const kv = (h.konsekvensvurderinger || []).find((d) => d.dimensjon === dim);
+          if (!kv) return;
+          const s = bruk === "etter" ? h.sannsynlighetEtter : h.sannsynlighet;
+          const k = bruk === "etter" ? kv.scoreEtter : kv.score;
+          if (!s || !k) return;
+          const key = `${s}-${k}`;
+          const arr = cellMap.get(key) || [];
+          arr.push(hIder.get(h.id) || "");
+          cellMap.set(key, arr);
+        });
+
+        const rows: TableRow[] = [];
+        // header row
+        rows.push(
+          new TableRow({
+            children: [
+              new TableCell({
+                width: { size: 12, type: WidthType.PERCENTAGE },
+                children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text("S \\ K", { bold: true, size: 14 })] })],
+                shading: tableHeaderShading(theme),
+              }),
+              ...[1, 2, 3, 4, 5].map((k) =>
+                new TableCell({
+                  width: { size: 17.6, type: WidthType.PERCENTAGE },
+                  children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text(`K=${k}`, { bold: true, size: 14, color: "FFFFFF" })] })],
+                  shading: tableHeaderShading(theme),
+                }),
+              ),
+            ],
+          }),
+        );
+        for (const s of [5, 4, 3, 2, 1]) {
+          rows.push(
+            new TableRow({
+              children: [
+                new TableCell({
+                  width: { size: 12, type: WidthType.PERCENTAGE },
+                  children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text(`S=${s}`, { bold: true, size: 14, color: "FFFFFF" })] })],
+                  shading: tableHeaderShading(theme),
+                }),
+                ...[1, 2, 3, 4, 5].map((k) => {
+                  const ids = cellMap.get(`${s}-${k}`) || [];
+                  const labelTxt = ids.length > 0 ? ids.join(", ") : String(s * k);
+                  return new TableCell({
+                    width: { size: 17.6, type: WidthType.PERCENTAGE },
+                    shading: risikoShading(s, k),
+                    children: [
+                      new Paragraph({
+                        alignment: AlignmentType.CENTER,
+                        children: [text(labelTxt, { bold: true, size: ids.length > 0 ? 14 : 16, color: risikoTekstFarge(s, k) })],
+                      }),
+                    ],
+                  });
+                }),
+              ],
+            }),
+          );
+        }
+        return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows });
+      };
+
+      dims.forEach((dim) => {
+        risikobildeBlocks.push(new Paragraph({ children: [text("")] }));
+        risikobildeBlocks.push(
+          new Paragraph({
+            heading: HeadingLevel.HEADING_3,
+            children: [text(DIMENSJON_NAVN[dim], { bold: true, size: 22 })],
+          }),
+        );
+        risikobildeBlocks.push(para("Risiko før tiltak", { bold: true }));
+        risikobildeBlocks.push(buildMatrise(dim, "for"));
+        if (harEtterData(content.hendelser, dim)) {
+          risikobildeBlocks.push(new Paragraph({ children: [text("")] }));
+          risikobildeBlocks.push(para("Risiko etter tiltak", { bold: true }));
+          risikobildeBlocks.push(buildMatrise(dim, "etter"));
+        }
+        const soner = tellRisikoSoner(content.hendelser, dim, "for");
+        risikobildeBlocks.push(
+          para(
+            `${soner.rod} hendelser i rød sone · ${soner.gul} i gul sone · ${soner.gronn} i grønn sone (før tiltak).`,
+            { bold: true },
+          ),
+        );
+      });
+    }
+  }
+
 
 
   // Tiltaksplan
@@ -1291,6 +1399,21 @@ export const exportRosToWord = async (options: ExportOptions) => {
         footers: { default: buildFooter(theme) },
         children: [...beregningsgrunnlag],
       },
+      ...(risikobildeBlocks.length > 0
+        ? [
+            {
+              properties: {
+                type: SectionType.NEXT_PAGE,
+                page: {
+                  size: { width: 11906, height: 16838, orientation: PageOrientation.PORTRAIT },
+                },
+              },
+              headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
+              footers: { default: buildFooter(theme) },
+              children: [...risikobildeBlocks],
+            },
+          ]
+        : []),
       {
         properties: {
           type: SectionType.NEXT_PAGE,

@@ -1,5 +1,11 @@
 import React, { useRef, useState } from "react";
-import { risikoFarge } from "./RosMatriks";
+import RosMatriks, {
+  risikoFarge,
+  tilgjengeligeDimensjoner,
+  byggHendelseIder,
+  tellRisikoSoner,
+  harEtterData,
+} from "./RosMatriks";
 import rosNivaaIllustrasjon from "@/assets/ros-detaljeringsnivaa.jpg";
 import {
   KONSEKVENS_KRITERIER,
@@ -1206,7 +1212,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                           <tr>
                             <td colSpan={18} style={{ ...tdStyle, padding: "4px 10px", background: "#eef7ff" }}>
                               <span style={{ fontSize: 9, fontStyle: "italic", color: "#1e3a5f" }}>
-                                Tiltak: {tilkTiltak.map((t) => `${tIder.get(t.id) || "T?"} – ${t.tittel} [${TILTAK_STATUS_LABEL[t.status]}]`).join("; ")} – se kapittel 6 Tiltaksplan.
+                                Tiltak: {tilkTiltak.map((t) => `${tIder.get(t.id) || "T?"} – ${t.tittel} [${TILTAK_STATUS_LABEL[t.status]}]`).join("; ")} – se kapittel 7 Tiltaksplan.
                               </span>
                             </td>
                           </tr>
@@ -1317,10 +1323,69 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
         </section>
       </div>
 
+      {/* Ark 3a — Risikobilde (per dimensjon) */}
+      {(() => {
+        const dims = tilgjengeligeDimensjoner(content.hendelser);
+        if (dims.length === 0) return null;
+        const ider = byggHendelseIder(content.hendelser);
+        return (
+          <div style={pageStyle} className="ros-page">
+            <section id="kap-6-risikobilde">
+              <h2 style={h2}>6. Risikobilde</h2>
+              <p style={pStyle}>
+                Risikobildet vises som en 5×5-matrise per konsekvensdimensjon som er vurdert på minst én hendelse.
+                Hver hendelse plottes med sin lesbare ID (H1, H2, …) i riktig celle. Hendelser med høy usikkerhet er
+                markert med stiplet ring, og styrbarhet er kodet med farge på selve markøren (grønn = høy, gul = medium,
+                rød = lav). Hvor «etter tiltak»-data finnes vises den tilhørende matrisen ved siden av.
+              </p>
+              {dims.map((dim) => {
+                const harE = harEtterData(content.hendelser, dim);
+                const soner = tellRisikoSoner(content.hendelser, dim, "for");
+                return (
+                  <div key={dim} style={{ marginTop: 16, pageBreakInside: "avoid" }}>
+                    <h3 style={h3}>{dim === "ytre_miljø" ? "Ytre miljø" : dim.charAt(0).toUpperCase() + dim.slice(1).replace(/_/g, " ")}</h3>
+                    <div style={{ display: "grid", gridTemplateColumns: harE ? "1fr 1fr" : "1fr", gap: 24, alignItems: "start" }}>
+                      <div>
+                        <p style={{ ...pStyle, fontWeight: 600, marginBottom: 6 }}>Risiko før tiltak</p>
+                        <RosMatriks
+                          size="sm"
+                          hendelser={content.hendelser}
+                          dimensjon={dim}
+                          bruk="for"
+                          ider={ider}
+                          visBeskrivelse={false}
+                        />
+                      </div>
+                      {harE && (
+                        <div>
+                          <p style={{ ...pStyle, fontWeight: 600, marginBottom: 6 }}>Risiko etter tiltak</p>
+                          <RosMatriks
+                            size="sm"
+                            hendelser={content.hendelser}
+                            dimensjon={dim}
+                            bruk="etter"
+                            ider={ider}
+                            visBeskrivelse={false}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <p style={{ ...pStyle, fontSize: 11, marginTop: 8, color: "#475569" }}>
+                      <strong>{soner.rod}</strong> hendelser i rød sone · <strong>{soner.gul}</strong> i gul sone ·{" "}
+                      <strong>{soner.gronn}</strong> i grønn sone (før tiltak).
+                    </p>
+                  </div>
+                );
+              })}
+            </section>
+          </div>
+        );
+      })()}
+
       {/* Ark 3b — Tiltaksplan */}
       <div style={pageStyle} className="ros-page">
         <section id="kap-6-tiltak">
-          <h2 style={h2}>6. Tiltaksplan</h2>
+          <h2 style={h2}>7. Tiltaksplan</h2>
           <p style={pStyle}>
             Strukturert oversikt over tiltak som skal gjennomføres for å redusere risiko. Hvert tiltak har
             ansvarlig person, frist for gjennomføring og status. Tabellen er sortert med besluttede tiltak
@@ -1449,7 +1514,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
       {content.bowTies && content.bowTies.length > 0 && (
         <div style={landscapePageStyle} className="ros-page-landscape">
           <section id="kap-7">
-            <h2 style={h2}>7. Bow-tie analyse</h2>
+            <h2 style={h2}>8. Bow-tie analyse</h2>
             <p style={pStyle}>
               Bow-tie-analysen knytter registrerte hendelser fra kapittel 4 til overordnede uønskede topphendelser.
               Dette synliggjør hvilke årsaker som kan lede til samme topphendelse, og hvilke tiltak som virker på tvers.
@@ -1558,7 +1623,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
       {/* Ark 4 — stående A4 for oppsummering & revisjonshistorikk */}
       <div style={pageStyle} className="ros-page">
         <section id="kap-8">
-          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "8" : "7"}. Oppsummering</h2>
+          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "9" : "8"}. Oppsummering</h2>
           {content.oppsummering ? (
             <p style={pStyle}>{content.oppsummering}</p>
           ) : (
@@ -1568,7 +1633,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
 
         {/* Revisjonshistorikk */}
         <section id="kap-9" style={chapterDivider}>
-          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "9" : "8"}. Revisjonshistorikk</h2>
+          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "10" : "9"}. Revisjonshistorikk</h2>
           <table style={tableStyle}>
             <thead>
               <tr>

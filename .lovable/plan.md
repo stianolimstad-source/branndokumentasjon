@@ -1,98 +1,69 @@
-# Mål
-Erstatte ustrukturert fritekst-tiltak per hendelse med en strukturert tiltaksplan som har ansvarlig, frist, status, effekt/kostnad og kobling til hendelser. Tiltaksplanen blir nytt kapittel **6** (mellom Beregninger og Bow-tie). Etterfølgende kapitler renumereres.
+## Mål
+Utvide risikomatrisen slik at den støtter alle konsekvensdimensjoner, plotter hendelser direkte i cellene, viser før/etter tiltak, og rendres som eget kapittel i preview og Word-eksport.
 
-## 1. Datamodell — `src/components/ros/RosPreview.tsx`
+## 1. `src/components/ros/RosMatriks.tsx`
+Utvid komponenten:
 
-Nye eksporter:
-```ts
-export type RosTiltakStatus = "foreslatt" | "besluttet" | "under_arbeid" | "gjennomfort" | "forkastet";
-export type RosTiltakKategori = "sannsynlighetsreduserende" | "konsekvensreduserende";
-export type Vurdering = "lav" | "medium" | "hoy";
+- Nye props:
+  - `hendelser?: RosHendelse[]`
+  - `dimensjon?: KonsekvensDimensjon`
+  - `visUsikkerhet?: boolean`
+  - `bruk?: "for" | "etter"` (for å velge `sannsynlighet`/`konsekvens` vs `sannsynlighetEtter`/`scoreEtter`)
+  - `ider?: Map<string,string>` (for å vise lesbare hendelse-IDer som "H1", "H2"; bygges av kaller)
+- Plottelogikk:
+  - For hver hendelse: hent `kv = h.konsekvensvurderinger.find(k => k.dimensjon === dimensjon)`. Filtrer bort hendelser uten kv eller uten sannsynlighet (når `bruk="etter"`, krev både `sannsynlighetEtter` og `kv.scoreEtter`).
+  - Grupper hendelser per celle `(s,k)`.
+  - I hver celle, render små badges med hendelses-ID. Hvis ≥4 i samme celle, vis "+N" og full liste i tooltip.
+- Markering per badge:
+  - Styrbarhet → bakgrunnsfarge på badge: høy=grønn, medium=gul, lav=rød. Default nøytral hvis ikke satt.
+  - Usikkerhet "høy" + `visUsikkerhet` → stiplet ring (`border-dashed`) rundt badge.
+  - Tooltip (`HoverCard`/`title`-attr) viser `tittel · S=… · K=…`.
+- Beholde `highlight`-prop og dagens cellefarger; fjerne hardkodet «forsyningssikkerhet»-tekst og i stedet vise valgt `dimensjon` i over-tittel.
 
-export interface RosTiltak {
-  id: string;
-  tittel: string;
-  beskrivelse: string;
-  kategori: RosTiltakKategori;
-  ansvarlig: string;
-  frist: string;            // ISO-dato
-  status: RosTiltakStatus;
-  kostnadVurdering?: Vurdering;
-  effektVurdering?: Vurdering;
-  hendelseIds: string[];
-  kommentar?: string;
-}
-```
-Utvid `RosContent` med `tiltaksplan?: RosTiltak[]`.
+## 2. `src/pages/RosAnalyse.tsx`
+Erstatt dagens enkelte `<RosMatriks size="sm" />` (linje ~1927) med en seksjon:
 
-Hjelpere (samme fil eller `src/lib/ros-tiltak.ts`):
-- `TILTAK_STATUS_LABEL`, `TILTAK_STATUS_BADGE_VARIANT`, `TILTAK_KATEGORI_LABEL`, `VURDERING_LABEL`.
-- `byggTiltakIder(tiltaksplan)` → `Map<id, "T1" | "T2" | ...>`.
-- `sorterTiltakEtterPrioritet(tiltak)` (besluttet/under_arbeid + høy effekt øverst, deretter frist).
-- `erFristPassert(tiltak)` (frist < i dag og status ∉ {gjennomført, forkastet}).
+- Beregn `tilgjengeligeDim` = unike dimensjoner som finnes i minst én hendelses `konsekvensvurderinger`.
+- `Tabs` over dimensjoner; default `forsyningssikkerhet` hvis i listen, ellers første. Egen state `valgtDim`.
+- To matriser side ved side:
+  - «Risiko før tiltak» (`bruk="for"`)
+  - «Risiko etter tiltak» (`bruk="etter"`) – skjules hvis ingen hendelser har både `sannsynlighetEtter` og `kv.scoreEtter`.
+- Oppsummeringslinje under: tell hendelser per sone (`risikoFarge`) for valgt dimensjon og `bruk="for"`: «X i rød · Y i gul · Z i grønn».
+- Bygg `ider`-map én gang fra `content.hendelser` (`H1`, `H2`, …).
 
-## 2. Ny editor-seksjon — `src/pages/RosAnalyse.tsx`
+## 3. `src/components/ros/RosPreview.tsx`
+- Beregn `tilgjengeligeDim` på samme måte.
+- Nytt kapittel `id="kap-6-risikobilde"` plassert rett før dagens `kap-6-tiltak` (Tiltaksplan):
+  - Tittel: «6. Risikobilde».
+  - For hver tilgjengelig dimensjon: vis tittelblokk + før/etter-matriser side ved side (CSS grid, 2 kolonner). Hopp over «etter» om tom.
+  - Oppsummeringslinje per dimensjon.
+- Renumerér etterfølgende kapitler:
+  - Tiltaksplan: 6 → **7** (id endres ikke, men tittel/tekstreferanser oppdateres)
+  - Bow-tie: 7 → **8**
+  - Oppsummering: 8 → **9**
+  - Revisjon: 9 → **10**
+- Oppdater alle inline-tekster som refererer til kapittelnumre («se kapittel 6 Tiltaksplan» → 7; «kapittel 7 Bow-tie» → 8; osv.).
 
-Plasseres mellom «5. Beregninger» (linje ~1970) og «X. Bow-tie analyse» (linje ~2103). Tittel: **«6. Tiltaksplan»**, `JumpToPreview previewId="kap-6-tiltak"`.
+## 4. `src/lib/ros-word-export.ts`
+- Importer `KONSEKVENS_KRITERIER`/`DIMENSJON_NAVN` og `risikoFarge`.
+- Helper `buildRisikoMatriseTabell(hendelser, dim, ider, bruk)` som lager 6×6 `Table`:
+  - Topp- og venstre-akse (S/K). Datasceller bruker `shading: { type: ShadingType.CLEAR, fill: <hex> }` (grønn `#10b981`, gul `#f59e0b`, rød `#ef4444`) basert på `risikoFarge(s,k)`.
+  - I hver celle: hendelse-IDer som komma-separert tekst. Tomme celler viser bare tallet `s*k` i lys variant.
+- Nytt kapittel-blokk `risikobildeBlocks` plassert før `tiltaksplanBlocks`:
+  - Per dimensjon i `tilgjengeligeDim`: overskrift «X.Y <dimensjonsnavn>», før/etter-tabeller (etter hoppes om tom), summeringsavsnitt.
+- Oppdater dynamisk kapittelnummerering:
+  - `risikobildeNr = "6"`, `tiltakNr = "7"`, `bowTieNr = "8"`, `oppsummeringNr = harBowTie ? "9" : "8"`, `revisjonNr = harBowTie ? "10" : "9"`.
+  - Innholdsfortegnelsen (linje ~264 «Risikobilde») oppdateres til riktig nummer; legg til Tiltaksplan-linje hvis ikke allerede der.
+  - Inline tekstreferanser («se kapittel … Tiltaksplan/Bow-tie») oppdateres.
 
-Innhold:
-- Innledende paragraf: «Strukturert oversikt over tiltak som skal gjennomføres for å redusere risiko. Hvert tiltak har ansvarlig person, frist for gjennomføring og status.»
-- **Filter-knapprad** (`useState<"alle" | RosTiltakStatus>`): Alle, Foreslått, Besluttet, Under arbeid, Gjennomført, Forkastet (variant skifter default/outline).
-- **Sortering-dropdown** (`Select`): Frist (default), Status, Effekt, Kostnad.
-- **Tabell** (`<Table>`) med kolonner: ID (T{n}), Tittel, Kategori, Ansvarlig, Frist, Status, Effekt, Kostnad, Hendelser, Slett. Rader er klikkbare — ekspanderer (egen `expandedTiltak` state) til en detaljrad under med:
-  - `<Textarea>` for full beskrivelse,
-  - `<Textarea>` for kommentar,
-  - `<Popover>` + `Checkbox`-liste over `content.hendelser` for multi-select av `hendelseIds`,
-  - `<Select>` for kategori.
-- **Status-celle**: `<Badge>` med fargekoding (grå/blå/gul/grønn/lyserød) via variant + className-overstyring fra design-tokens.
-- **Frist-celle**: lokal dato; rød tekst hvis `erFristPassert(t)`.
-- **Effekt/Kostnad-celler**: kompakt `<Select>` Lav/Medium/Høy. Effekt = grønn ramme/badge ved Høy, Kostnad = rød ramme/badge ved Høy.
-- **«Legg til nytt tiltak»-knapp** under tabellen åpner en `<Dialog>` med skjema (tittel, beskrivelse, kategori, ansvarlig, frist via `<Input type="date">`, status, effekt, kostnad, hendelser, kommentar). Lagre legger til i `content.tiltaksplan`.
-- Helper `updateTiltak(id, patch)`, `deleteTiltak(id)` (med `AlertDialog`-bekreftelse iht. memory), `addTiltak(partial)`.
+## 5. Detaljer / kanter
+- Ingen DB-endringer.
+- Filtrering: hendelser uten kv for valgt dimensjon dukker ikke opp i den matrisen, men telles ikke i oppsummeringen.
+- Styrbarhet-farge må ikke kollidere med cellebakgrunn → bruk hvit ramme + tekstfarge svart for kontrast.
+- Hvis `tilgjengeligeDim` er tom: skjul hele kapittelet i preview og Word, og vis bare en placeholder i editor («Ingen konsekvensvurderinger registrert ennå.»).
 
-## 3. Kobling fra hendelse → tiltak (`RosAnalyse.tsx`)
-
-I hver hendelse-accordion (linje ~1729 hvor `foreslatteTiltak` rendres), etter Textarea:
-- Liste «Tilknyttede tiltak i tiltaksplanen»: filtrer `content.tiltaksplan` på `hendelseIds.includes(h.id)`. Vis kompakt rad: `T{n} – {tittel} ({status-badge}, frist {dato})`.
-- Lenke «Gå til tiltaksplanen» som scroller til `#kap-6-tiltak-editor` (anchor på section).
-- Hvis `h.foreslatteTiltak` er fylt og hendelsen ikke har noen tilknyttede tiltak: vis knapp **«Konverter til strukturert tiltak»**. Klikk oppretter `RosTiltak` med:
-  - `tittel`: første linje av `foreslatteTiltak` trunkert til ~80 tegn,
-  - `beskrivelse`: hele teksten,
-  - `kategori`: `"sannsynlighetsreduserende"`,
-  - `status`: `"foreslatt"`, tom `ansvarlig`, frist = i dag + 90 dager (ISO),
-  - `hendelseIds: [h.id]`.
-  Toast: «Tiltak opprettet i tiltaksplanen».
-
-## 4. Renumerering
-
-`RosAnalyse.tsx`:
-- «6. Bow-tie analyse» → **«7. Bow-tie analyse»** (`previewId="kap-7"`, linje 2103).
-- Oppsummering: dynamisk uttrykk linje 2520 oppdateres til `bowTies?.length > 0 ? "8" : "7"`, `previewId="kap-8"`.
-- Revisjonshistorikk: tilsvarende +1.
-- Eventuelle referansetekster («se kapittel 6/7») oppdateres.
-
-`RosPreview.tsx`:
-- Nytt kapittel **«6. Tiltaksplan»** (`<section id="kap-6-tiltak">`) etter `kap-5` (linje 1219-) og før `kap-6` (linje 1296):
-  - Innledning + tabell med kolonner: ID, Tittel, Kategori, Ansvarlig, Frist, Status, Effekt, Kostnad, Hendelser, Kommentar.
-  - Sortert via `sorterTiltakEtterPrioritet`.
-  - Passerte frister rendres med `color: hsl(var(--destructive))`.
-  - Statusbadger via inline-style mapping.
-- Renumerer: Bow-tie 6→7 (`id="kap-7"`, h2 og referanser linje 1296-1299), Oppsummering 7/8 (linje 1404-1405), Revisjon tilsvarende. Oppdater intern tekst «kap. 4», «kapittel 5» etc. der nødvendig.
-- I «4. Hendelsesregister» (rad-rendering rundt linje 1092): under `foreslatteTiltak`-kolonnen vis kompakt liste over tilknyttede tiltak (`T{n} – tittel [status]`).
-
-## 5. Word-eksport — `src/lib/ros-word-export.ts`
-
-- Nytt kapittel **«6. Tiltaksplan»** plassert etter Beregningsgrunnlag-blokken (rundt linje 750+, før `bowTieBlocks`):
-  - `buildSectionHeading(theme, "6. Tiltaksplan")` + innledning + `docx` Table med samme kolonner som preview, sortert etter prioritet.
-  - Passerte frister: rød fyll/skrift via cell shading (`ShadingType.CLEAR` med `fill: "FCE4E4"`).
-  - Status-tekst norsk: «Foreslått»/«Besluttet»/«Under arbeid»/«Gjennomført»/«Forkastet».
-- I Hendelsesregister-tabellen (linje ~656): etter `foreslatteTiltak`-cellen, legg til en mini sub-tabell per hendelse som lister tilknyttede tiltak (`ID | Tittel | Status`). Implementeres som nested `Table` inne i cellen, eller som ekstra rad under hver hendelse.
-- Renumerer: `bowTieNr` += 1, `beregningNr` uendret (5), `oppsummeringNr` += 1, referansetekster (linje 689, 801) oppdateres.
-
-## 6. Filer
-- **Endret:** `src/components/ros/RosPreview.tsx` (interface + nytt kapittel + renumerering + tilknyttede-tiltak i hendelsestabell)
-- **Endret:** `src/pages/RosAnalyse.tsx` (ny seksjon + dialog + kobling fra hendelse + renumerering)
-- **Endret:** `src/lib/ros-word-export.ts` (nytt kapittel + sub-tabell per hendelse + renumerering)
-- **(Valgfritt ny):** `src/lib/ros-tiltak.ts` for konstanter/hjelpere — alternativt holdes alt i `RosPreview.tsx` for konsistens med BFK-mønsteret.
-
-Ingen DB-endringer (lagres i samme JSON som resten av `RosContent`).
+## Filer som endres
+- `src/components/ros/RosMatriks.tsx` (utvidet API)
+- `src/pages/RosAnalyse.tsx` (tabs + dual matrise + oppsummering)
+- `src/components/ros/RosPreview.tsx` (nytt kapittel + renumerering)
+- `src/lib/ros-word-export.ts` (nye matrisetabeller + renumerering)
