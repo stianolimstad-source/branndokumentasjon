@@ -1542,8 +1542,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
 
       {/* Ark 4 — stående A4 for oppsummering & revisjonshistorikk */}
       <div style={pageStyle} className="ros-page">
-        <section id="kap-7">
-          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "7" : "6"}. Oppsummering</h2>
+        <section id="kap-8">
+          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "8" : "7"}. Oppsummering</h2>
           {content.oppsummering ? (
             <p style={pStyle}>{content.oppsummering}</p>
           ) : (
@@ -1552,8 +1552,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
         </section>
 
         {/* Revisjonshistorikk */}
-        <section id="kap-8" style={chapterDivider}>
-          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "8" : "7"}. Revisjonshistorikk</h2>
+        <section id="kap-9" style={chapterDivider}>
+          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "9" : "8"}. Revisjonshistorikk</h2>
           <table style={tableStyle}>
             <thead>
               <tr>
