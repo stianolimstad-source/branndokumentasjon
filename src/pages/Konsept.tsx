@@ -3393,8 +3393,106 @@ const Konsept = () => {
                     </div>
                     )}
                     {documentType === "tilstandsvurdering" ? (
+                    <>
+                    <div className="space-y-3 p-3 border border-border rounded-md bg-muted/30">
+                      <Label className="text-xs text-muted-foreground font-semibold">1.2 Befarings- og analysegrunnlag</Label>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">NS 3424 nivå</Label>
+                        <Select
+                          value={formData.ns3424Nivaa}
+                          onValueChange={(value) => setFormData({ ...formData, ns3424Nivaa: value as "1" | "2" | "3" })}
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="1">Nivå 1 – Visuell registrering, enkel vurdering av synlige bygningsdeler</SelectItem>
+                            <SelectItem value="2">Nivå 2 – Mer omfattende registrering, kan inkludere åpning av enkelte konstruksjoner</SelectItem>
+                            <SelectItem value="3">Nivå 3 – Fullstendig registrering med destruktive prøver og laboratorieanalyser</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Befaringsdato</Label>
+                        <Input
+                          type="date"
+                          value={formData.befaringsdato}
+                          onChange={(e) => setFormData({ ...formData, befaringsdato: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Befaringsdeltakere</Label>
+                        <Textarea
+                          rows={2}
+                          value={formData.befaringsdeltakere}
+                          onChange={(e) => setFormData({ ...formData, befaringsdeltakere: e.target.value })}
+                          placeholder="Stian Olimstad (brannrådgiver, [Firma]), N.N. (driftsoperatør)"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Befaringsmetode og omfang</Label>
+                        <Textarea
+                          rows={3}
+                          value={formData.befaringsmetode}
+                          onChange={(e) => setFormData({ ...formData, befaringsmetode: e.target.value })}
+                          placeholder="Visuell befaring av tilgjengelige områder. Stikkprøver i tekniske rom. Følgende områder var ikke tilgjengelig: ..."
+                        />
+                        {(formData.ns3424Nivaa === "2" || formData.ns3424Nivaa === "3") && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            På NS 3424 nivå {formData.ns3424Nivaa} bør det også beskrives hvilke destruktive undersøkelser som er gjennomført (åpning av konstruksjoner, prøveuttak) og eventuelle laboratorieanalyser med referanse til prøverapporter.
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Dokumentasjon gjennomgått</Label>
+                        <Textarea
+                          rows={3}
+                          value={formData.gjennomgaattDokumentasjon}
+                          onChange={(e) => setFormData({ ...formData, gjennomgaattDokumentasjon: e.target.value })}
+                          placeholder="Branntegninger, tidligere brannkonsept, vedlikeholdsplaner, branninstrukser, FDV-dokumentasjon..."
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs font-medium mb-1 block">Begrensninger i vurderingen</Label>
+                        <div className="space-y-2">
+                          {[
+                            "Manglende tegningsgrunnlag for deler av bygget",
+                            "Manglende dokumentasjon på branntekniske egenskaper for bygningsdeler",
+                            "Manglende tilgang til loft, kjeller eller sjakter",
+                            "Manglende dokumentasjon på utførte tiltak eller endringer",
+                            "Vurdering basert på antagelser om alder, kun visuelt",
+                          ].map((item) => {
+                            const id = `begr-${item.slice(0, 20).replace(/\s+/g, "-")}`;
+                            const checked = formData.begrensninger?.includes(item);
+                            return (
+                              <div key={item} className="flex items-start gap-2">
+                                <Checkbox
+                                  id={id}
+                                  checked={checked}
+                                  onCheckedChange={(c) => {
+                                    const cur = formData.begrensninger || [];
+                                    const next = c === true ? [...cur, item] : cur.filter((x) => x !== item);
+                                    setFormData({ ...formData, begrensninger: next });
+                                  }}
+                                />
+                                <Label htmlFor={id} className="text-xs cursor-pointer leading-tight">{item}</Label>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        <div className="mt-2">
+                          <Label className="text-xs font-medium mb-1 block">Andre begrensninger</Label>
+                          <Textarea
+                            rows={2}
+                            value={formData.andreBegrensninger}
+                            onChange={(e) => setFormData({ ...formData, andreBegrensninger: e.target.value })}
+                            placeholder="Beskriv andre begrensninger eller forbehold..."
+                          />
+                        </div>
+                      </div>
+                    </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">1.2 Avgrensning av vurderingen</Label>
+                      <Label className="text-xs text-muted-foreground">1.3 Avgrensning av vurderingen</Label>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Beskriv avgrensning av vurderingen</Label>
                         <Textarea 
@@ -3404,6 +3502,7 @@ const Konsept = () => {
                         />
                       </div>
                     </div>
+                    </>
                     ) : (
                     <div className="space-y-2">
                       <Label className="text-xs text-muted-foreground">1.4 Avgrensning av tiltak</Label>
