@@ -2051,6 +2051,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.5 §11-8 Brannceller */}
+            <FravikPreviewRow paragrafId="11-7" fravikList={fravikList} />
             <tr id="preview-3-5" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.5 &nbsp;&nbsp; {isBF85 ? <>Branncelleinndeling (Kap. 30:63–65) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-8 Brannceller)</span></> : "§11-8 Brannceller"}</td>
             </tr>
