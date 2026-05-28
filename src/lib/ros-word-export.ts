@@ -857,6 +857,32 @@ export const exportRosToWord = async (options: ExportOptions) => {
       bowTieBlocks.push(para("Årsaker", { bold: true }));
       bowTieBlocks.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: aRows }));
 
+      // Eksisterende barrierer (forutsetninger) for de tilknyttede årsakshendelsene
+      const arsakerMedBarrierer = arsaker.filter((a) => a.eksisterendeBarrierer && a.eksisterendeBarrierer.trim());
+      if (arsakerMedBarrierer.length > 0) {
+        bowTieBlocks.push(new Paragraph({ children: [text("")] }));
+        bowTieBlocks.push(para("Eksisterende barrierer (forutsetninger for risikovurderingen)", { bold: true }));
+        const ebHeader = new TableRow({
+          children: [
+            smallHeader("Hendelse", 35),
+            smallHeader("Eksisterende barrierer", 65),
+          ],
+        });
+        const ebRows: TableRow[] = [ebHeader];
+        arsakerMedBarrierer.forEach((a) => {
+          ebRows.push(
+            new TableRow({
+              children: [
+                smallCell(a.tittel || a.sarbarhet || a.hendelse || "—", 35, true),
+                smallCell(a.eksisterendeBarrierer || "", 65),
+              ],
+            }),
+          );
+        });
+        bowTieBlocks.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: ebRows }));
+      }
+
+
       // Konsekvenser
       bowTieBlocks.push(new Paragraph({ children: [text("")] }));
       bowTieBlocks.push(para("Konsekvenser", { bold: true }));
