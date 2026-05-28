@@ -599,7 +599,8 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             <>
               <p><span className="font-bold">1.</span> Innledning</p>
               <p className="ml-4">1.1 Informasjon om tiltaket</p>
-              <p className="ml-4">1.2 Avgrensning av vurderingen</p>
+              <p className="ml-4">1.2 Befarings- og analysegrunnlag</p>
+              <p className="ml-4">1.3 Avgrensning av vurderingen</p>
               <p className="ml-4">1.3 Kvalitetssikring (KS)</p>
               <p><span className="font-bold">2.</span> Grunnlag og forutsetninger</p>
               <p className="ml-4">2.1 Bygningsinformasjon</p>
