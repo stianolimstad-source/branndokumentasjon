@@ -34,6 +34,7 @@ import { exportRosToWord } from "@/lib/ros-word-export";
 import { useCanDownload } from "@/hooks/useCanDownload";
 import { resolveDocumentTheme } from "@/lib/document-templates";
 import rosNivaaIllustrasjon from "@/assets/ros-detaljeringsnivaa.jpg";
+import { SJEKKLISTER, SAERSKILTE_FORHOLD, type Anleggstype, type Sjekklistepunkt } from "@/lib/ros-sjekklister";
 
 interface ProjectOption { id: string; name: string; address: string | null; }
 interface RosRow { id: string; name: string; project_id: string; updated_at: string; }
