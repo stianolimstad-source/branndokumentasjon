@@ -81,20 +81,25 @@ export interface RosBeregning extends AttachedCalculation {
  * med tom liste – ingen dimensjon påtvinges.
  */
 export function migrerHendelse(h: RosHendelse): RosHendelse {
-  const eksisterende = Array.isArray(h.konsekvensvurderinger) ? h.konsekvensvurderinger : [];
-  if (eksisterende.length > 0) return { ...h, konsekvensvurderinger: eksisterende };
+  let migrated: RosHendelse = h;
+  // Migrér legacy `tiltak` → `foreslatteTiltak` (eksisterendeBarrierer forblir undefined så brukeren selv vurderer)
+  if (!h.foreslatteTiltak && h.tiltak && h.tiltak.trim()) {
+    migrated = { ...migrated, foreslatteTiltak: h.tiltak };
+  }
+  const eksisterende = Array.isArray(migrated.konsekvensvurderinger) ? migrated.konsekvensvurderinger : [];
+  if (eksisterende.length > 0) return { ...migrated, konsekvensvurderinger: eksisterende };
   // Legacy-migrering: konverter h.konsekvens til én forsyningssikkerhet-rad
-  if (typeof h.konsekvens === "number" && h.konsekvens > 0) {
+  if (typeof migrated.konsekvens === "number" && migrated.konsekvens > 0) {
     const forsyning: KonsekvensVurdering = {
       dimensjon: "forsyningssikkerhet",
-      score: (h.konsekvens as 1|2|3|4|5) || 1,
-      begrunnelse: h.beskrivelseRisikoFor || "",
-      scoreEtter: h.konsekvensEtter as 1|2|3|4|5 | undefined,
+      score: (migrated.konsekvens as 1|2|3|4|5) || 1,
+      begrunnelse: migrated.beskrivelseRisikoFor || "",
+      scoreEtter: migrated.konsekvensEtter as 1|2|3|4|5 | undefined,
       begrunnelseEtter: "",
     };
-    return { ...h, konsekvensvurderinger: [forsyning] };
+    return { ...migrated, konsekvensvurderinger: [forsyning] };
   }
-  return { ...h, konsekvensvurderinger: [] };
+  return { ...migrated, konsekvensvurderinger: [] };
 }
 
 
