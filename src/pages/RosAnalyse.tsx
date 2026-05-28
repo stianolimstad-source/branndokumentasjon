@@ -2646,9 +2646,9 @@ export default function RosAnalyse() {
           <section className="space-y-2">
             <div className="flex items-center gap-1">
               <h2 className="text-lg font-semibold">
-                {content.bowTies && content.bowTies.length > 0 ? "7" : "6"}. Oppsummering
+                {content.bowTies && content.bowTies.length > 0 ? "8" : "7"}. Oppsummering
               </h2>
-              <JumpToPreview previewId="kap-7" />
+              <JumpToPreview previewId="kap-8" />
             </div>
             <Textarea value={content.oppsummering} rows={6}
               onChange={(e) => setContent((c) => ({ ...c, oppsummering: e.target.value }))} />
@@ -2658,9 +2658,9 @@ export default function RosAnalyse() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
                 <h2 className="text-lg font-semibold">
-                  {content.bowTies && content.bowTies.length > 0 ? "8" : "7"}. Revisjonshistorikk
+                  {content.bowTies && content.bowTies.length > 0 ? "9" : "8"}. Revisjonshistorikk
                 </h2>
-                <JumpToPreview previewId="kap-8" />
+                <JumpToPreview previewId="kap-9" />
               </div>
               <Button size="sm" variant="outline" onClick={addRevisjon}>
                 <Plus className="h-4 w-4 mr-1" /> Ny revisjon
