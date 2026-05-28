@@ -2218,10 +2218,18 @@ export default function RosAnalyse() {
             })()}
           </section>
 
+          <TiltaksplanSection
+            content={content}
+            addTiltak={addTiltak}
+            updateTiltak={updateTiltak}
+            deleteTiltak={deleteTiltak}
+            toggleTiltakHendelse={toggleTiltakHendelse}
+          />
+
           <section className="space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
-                <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">6. Bow-tie analyse</h2><JumpToPreview previewId="kap-6" /></div>
+                <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">7. Bow-tie analyse</h2><JumpToPreview previewId="kap-7" /></div>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Definer en uønsket topphendelse og knytt registrerte hendelser som årsaker. Gir oversikt over felles tiltak på tvers.
                 </p>
