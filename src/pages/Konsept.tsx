@@ -2766,6 +2766,80 @@ const Konsept = () => {
             </DialogContent>
           </Dialog>
 
+          {/* Manuell risikoklasse-dialog (§11-2) */}
+          <Dialog open={manuellRkOpen} onOpenChange={setManuellRkOpen}>
+            <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Manuell plassering i risikoklasse (§11-2)</DialogTitle>
+                <DialogDescription>
+                  Bruk denne dialogen når byggverket ikke finnes i listen og må plasseres etter begrunnet vurdering iht. TEK17 §11-2 preakseptert ytelse nr. 2.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-md space-y-2">
+                  <p className="text-xs font-semibold text-blue-800">Hjelp til vurdering – §11-2 kriteriespørsmål:</p>
+                  <ul className="text-xs text-blue-700 list-disc pl-5 space-y-1">
+                    <li>Er personopphold i byggverket kun sporadisk?</li>
+                    <li>Forutsettes det at personene kjenner rømningsforholdene?</li>
+                    <li>Er byggverket beregnet for overnatting?</li>
+                    <li>Er det forutsatt at byggverket har liten brannenergi eller liten brannfare?</li>
+                  </ul>
+                  <p className="text-xs text-blue-600 italic">
+                    Svarene på disse spørsmålene styrer plasseringen i RK1–RK6. Bruk dem som støtte for begrunnelsen under.
+                  </p>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium mb-1 block">Velg risikoklasse</Label>
+                  <Select value={manuellRkValg} onValueChange={setManuellRkValg}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Velg RK1–RK6" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="RK1">RK 1</SelectItem>
+                      <SelectItem value="RK2">RK 2</SelectItem>
+                      <SelectItem value="RK3">RK 3</SelectItem>
+                      <SelectItem value="RK4">RK 4</SelectItem>
+                      <SelectItem value="RK5">RK 5</SelectItem>
+                      <SelectItem value="RK6">RK 6</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label className="text-sm font-medium mb-1 block">Begrunnelse for valg</Label>
+                  <Textarea
+                    value={manuellRkBegrunnelse}
+                    onChange={(e) => setManuellRkBegrunnelse(e.target.value)}
+                    placeholder="Beskriv hvorfor byggverket plasseres i valgt risikoklasse, basert på kriteriespørsmålene over."
+                    rows={5}
+                  />
+                </div>
+              </div>
+
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setManuellRkOpen(false)}>Avbryt</Button>
+                <Button
+                  onClick={() => {
+                    if (!manuellRkValg || !manuellRkBegrunnelse.trim()) return;
+                    setFormData({
+                      ...formData,
+                      risikoklasse: manuellRkValg,
+                      risikoklasseBegrunnelse: manuellRkBegrunnelse.trim(),
+                    });
+                    setManuellRkOpen(false);
+                  }}
+                  disabled={!manuellRkValg || !manuellRkBegrunnelse.trim()}
+                >
+                  Lagre
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+
+
           <div className="grid lg:grid-cols-2 gap-6 lg:h-[calc(100vh-200px)]">
               {/* Input Form */}
               <Card className="shadow-medium flex flex-col overflow-hidden">
