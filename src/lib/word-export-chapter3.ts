@@ -1771,6 +1771,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   rows.push(...await tilstandRow(formData, "3_11", "3.11 Rømningsvei"));
   }
 
+  rows.push(...fravikRowsForParagraf("11-14", fravikList));
+
   // ===== 3.12 / BF85 3.11 Tilrettelegging for redning av husdyr =====
   rows.push(sectionHeaderRow(isBF85Tilstand310
     ? "3.11   Tilrettelegging for redning av husdyr (TEK17 § 11-15 brukt som referanse)"
