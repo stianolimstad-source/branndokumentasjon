@@ -1,48 +1,38 @@
-# Bredere beregningsdialog + rediger-knapp
-
-## Problem
-Trafoeksplosjons-verktøyet (og andre kalkulatorer) åpnes i en dialog som er for smal (`max-w-4xl`), så feltene blir trange. Det finnes heller ingen måte å endre parametrene på en allerede importert beregning – man må slette og legge inn på nytt.
+## Mål
+Legge til vurdering av **usikkerhet** og **styrbarhet** på hver ROS-hendelse, i tråd med veilederpraksis. Feltene vises i editor, preview og Word-eksport, og hendelser med høy usikkerhet markeres visuelt.
 
 ## Endringer
 
-### 1. Utvid kalkulator-dialogen
-**Fil:** `src/components/fraviksdokumentasjon/CalculatorDialog.tsx`
-- Endre `DialogContent`-klassen fra `max-w-4xl max-h-[90vh]` til `max-w-[95vw] xl:max-w-6xl max-h-[92vh]` slik at verktøy som TrafoEksplosjon, Brannmotstand og Brannenergi får god plass på store skjermer og fyller bredden på mindre skjermer.
+### 1. `src/components/ros/RosPreview.tsx` – Datamodell
+- Utvid `RosHendelse`-interfacet med:
+  ```ts
+  usikkerhet?: "lav" | "medium" | "høy";
+  styrbarhet?: "lav" | "medium" | "høy";
+  ```
+- Ingen migrering – eksisterende hendelser beholder `undefined` så brukeren ser at de ikke er vurdert.
 
-### 2. Rediger-knapp på beregningskort i ROS-analysen
-**Fil:** `src/pages/RosAnalyse.tsx` (beregningskapittelet, ca. linje 1370–1400)
-- Legg til en blyant-ikon-knapp (`Pencil` fra lucide-react) ved siden av slette-knappen på hvert beregningskort.
-- Klikk åpner `CalculatorDialog` med riktig `type` og en ny `editingId`-state slik at importen skal **erstatte** den eksisterende beregningen i stedet for å legge til en ny.
-- Behold `id`, `hendelseIds` og `kommentar` fra den opprinnelige beregningen når den erstattes.
+### 2. `src/pages/RosAnalyse.tsx` – Editor
+- Ved opprettelse av ny hendelse: sett `usikkerhet: "lav"`, `styrbarhet: "medium"`.
+- I hendelse-accordion, rett etter konsekvensvurderingene og før «Tilknyttede beregninger»:
+  - 2-kolonne grid med to `Select`-felter.
+  - Venstre: **Usikkerhet** (Lav / Medium / Høy). Label har Tooltip: *«Sett 'Høy' hvis det er stor variasjon i mulige utfall eller bakgrunnskunnskapen er begrenset.»*
+  - Høyre: **Styrbarhet** (Lav / Medium / Høy). Label har Tooltip: *«Hvor lett er det å påvirke risikoen? Lav = ingen kjente tiltak. Høy = enkle, kjente tiltak finnes.»*
+  - Placeholder ved `undefined`: «Ikke vurdert».
 
-**Implementasjon (skissert):**
-```tsx
-const [editingBeregning, setEditingBeregning] = useState<RosBeregning | null>(null);
+### 3. `src/components/ros/RosPreview.tsx` – Preview
+- Hendelsesregister-tabellen: to nye kolonner helt til høyre, **Usikkerhet** og **Styrbarhet**, med fargede badges:
+  - Usikkerhet: lav = grå, medium = gul, høy = rød
+  - Styrbarhet: lav = rød, medium = gul, høy = grønn
+  - `undefined` → grå «—»
+- I konsekvens-sub-tabellen under hver hendelse: hvis `usikkerhet === "høy"`, vis en ekstra linje «Usikkerhet: Høy ⚠» i rød skrift.
 
-const handleImport = (calc: AttachedCalculation) => {
-  if (editingBeregning) {
-    updateBeregning(editingBeregning.id, {
-      ...calc,
-      id: editingBeregning.id,
-      hendelseIds: editingBeregning.hendelseIds,
-      kommentar: editingBeregning.kommentar,
-    });
-    setEditingBeregning(null);
-  } else {
-    addBeregning(calc);
-  }
-};
-```
-`CalculatorDialog`-instansen bruker `type={openCalcType || editingBeregning?.type}` og `onImport={handleImport}`.
+### 4. `src/lib/ros-word-export.ts` – Word-eksport
+- Hendelsesregister-tabell: to nye kolonner **Usikk.** og **Styrb.** med samme fargekoding via cell-shading.
+- `undefined` → tom celle / «—», ingen shading.
 
-### 3. Forhåndsutfylling for trafoeksplosjon
-**Fil:** `src/components/fraviksdokumentasjon/CalculatorDialog.tsx` og `src/components/fraviksdokumentasjon/calculators/TrafoEksplosjonCalculator.tsx`
-- Legg til valgfri `initialInputs?: Record<string, unknown>`-prop på `CalculatorDialog` og videresend til kalkulatorkomponenten.
-- I `TrafoEksplosjonCalculator`: hvis `initialInputs` er gitt, merge inn i `useState`-initialverdien for `input` (slik at brukeren ser sine forrige verdier ved redigering). Andre kalkulatorer beholdes uendret i denne omgangen – rediger-knappen fungerer for alle, men forhåndsutfylling støttes først for trafoeksplosjon (det er denne brukeren spør om).
+## Tekniske detaljer
+- Bruk `Badge`-komponenten med inline `className` for HSL-baserte semantiske farger (ikke harde fargeklasser direkte; bruk eksisterende tokens hvor mulig, ev. `bg-destructive`, `bg-yellow-500/20`, `bg-emerald-500/20` o.l. i tråd med eksisterende kodebase).
+- Bruk `TooltipProvider`/`Tooltip`/`TooltipTrigger`/`TooltipContent` rundt `Label`.
+- I Word-eksport brukes `TableCell` med `shading: { fill: "<hex>" }`.
 
-## Filer som endres
-- `src/components/fraviksdokumentasjon/CalculatorDialog.tsx`
-- `src/components/fraviksdokumentasjon/calculators/TrafoEksplosjonCalculator.tsx`
-- `src/pages/RosAnalyse.tsx`
-
-Ingen endringer i datamodell, Word-eksport eller backend.
+Ingen endringer i databaseskjema – feltene lagres som del av `RosContent`-JSON.

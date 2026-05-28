@@ -419,22 +419,43 @@ export const exportRosToWord = async (options: ExportOptions) => {
   const hendelseHeader = new TableRow({
     children: [
       smallHeader("Nr", 3),
-      smallHeader("Sårbarhet", 8),
-      smallHeader("Hendelse / scenario", 9),
-      smallHeader("Årsak", 7),
-      smallHeader("Beskr. sanns. (før)", 8),
-      smallHeader("Beskr. risiko (før)", 8),
+      smallHeader("Sårbarhet", 7),
+      smallHeader("Hendelse / scenario", 8),
+      smallHeader("Årsak", 6),
+      smallHeader("Beskr. sanns. (før)", 7),
+      smallHeader("Beskr. risiko (før)", 7),
       smallHeader("S", 3),
       smallHeader("K", 3),
       smallHeader("R", 4),
-      smallHeader("Forebyggende tiltak", 9),
-      smallHeader("Beskr. etter tiltak", 9),
+      smallHeader("Forebyggende tiltak", 8),
+      smallHeader("Beskr. etter tiltak", 8),
       smallHeader("S e.", 3),
       smallHeader("K e.", 3),
       smallHeader("R e.", 4),
-      smallHeader("Restrisiko", 9),
+      smallHeader("Restrisiko", 8),
+      smallHeader("Usikk.", 4),
+      smallHeader("Styrb.", 4),
     ],
   });
+  const USIKK_SHADE: Record<string, { fill: string; fg: string }> = {
+    "lav":    { fill: "E5E7EB", fg: "374151" },
+    "medium": { fill: "FEF3C7", fg: "92400E" },
+    "høy":    { fill: "FEE2E2", fg: "991B1B" },
+  };
+  const STYRB_SHADE: Record<string, { fill: string; fg: string }> = {
+    "lav":    { fill: "FEE2E2", fg: "991B1B" },
+    "medium": { fill: "FEF3C7", fg: "92400E" },
+    "høy":    { fill: "D1FAE5", fg: "065F46" },
+  };
+  const cap = (v?: string) => v ? v.charAt(0).toUpperCase() + v.slice(1) : "—";
+  const vurderingCell = (v: string | undefined, palette: Record<string, { fill: string; fg: string }>, widthPct: number): TableCell => {
+    const p = v ? palette[v] : undefined;
+    return new TableCell({
+      width: { size: widthPct, type: WidthType.PERCENTAGE },
+      shading: p ? { fill: p.fill, type: ShadingType.CLEAR, color: "auto" } : undefined,
+      children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [text(cap(v), { bold: !!p, size: 14, color: p?.fg || "94A3B8" })] })],
+    });
+  };
   const BEREGNING_LABELS: Record<string, string> = {
     straling: "Strålingsberegning",
     flammehoyde: "Flammehøyde",
@@ -646,7 +667,9 @@ export const exportRosToWord = async (options: ExportOptions) => {
                 ],
               })
             : dashCell(4),
-          smallCell(h.restrisiko || "", 9),
+          smallCell(h.restrisiko || "", 8),
+          vurderingCell(h.usikkerhet, USIKK_SHADE, 4),
+          vurderingCell(h.styrbarhet, STYRB_SHADE, 4),
         ],
       }),
     );
@@ -658,7 +681,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
         new TableRow({
           children: [
             new TableCell({
-              columnSpan: 15,
+              columnSpan: 17,
               width: { size: 100, type: WidthType.PERCENTAGE },
               shading: { fill: "F7F9FC", type: ShadingType.CLEAR, color: "auto" },
               children: [new Paragraph({ children: [text(`Beregninger: ${ids} – se kapittel ${beregningNr} Beregningsgrunnlag.`, { italics: true, size: 14 })] })],
@@ -671,7 +694,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
         new TableRow({
           children: [
             new TableCell({
-              columnSpan: 15,
+              columnSpan: 17,
               width: { size: 100, type: WidthType.PERCENTAGE },
               shading: { fill: "FFF3CD", type: ShadingType.CLEAR, color: "auto" },
               children: [new Paragraph({ children: [text(`Krever beregning – ikke registrert ennå${h.beregningTekst ? `: ${h.beregningTekst}` : ""}`, { bold: true, size: 14, color: "7A5A00" })] })],
@@ -692,7 +715,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
       new TableRow({
         children: [
           new TableCell({
-            columnSpan: 15,
+            columnSpan: 17,
             width: { size: 100, type: WidthType.PERCENTAGE },
             shading: { fill: "F7F9FC", type: ShadingType.CLEAR, color: "auto" },
             margins: { top: 100, bottom: 100, left: 300, right: 100 },

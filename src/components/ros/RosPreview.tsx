@@ -58,6 +58,10 @@ export interface RosHendelse {
   kreverBeregning?: boolean;
   /** Kort beskrivelse av hva som må beregnes */
   beregningTekst?: string;
+  /** Usikkerhet i vurderingen (lav/medium/høy). Undefined = ikke vurdert. */
+  usikkerhet?: "lav" | "medium" | "høy";
+  /** Styrbarhet – hvor enkelt risikoen kan påvirkes. Undefined = ikke vurdert. */
+  styrbarhet?: "lav" | "medium" | "høy";
 }
 
 export interface RosBeregning extends AttachedCalculation {
@@ -926,7 +930,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                 className="ros-h-scroll-hidden"
                 style={{ overflowX: "auto" }}
               >
-              <table style={{ ...tableStyle, fontSize: 9, minWidth: 1100 }}>
+              <table style={{ ...tableStyle, fontSize: 9, minWidth: 1240 }}>
                 <thead>
                   <tr>
                     <th style={{ ...thStyle, width: 26, textAlign: "center", fontSize: 9 }}>Nr</th>
@@ -944,6 +948,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                     <th style={{ ...thStyle, width: 24, textAlign: "center", fontSize: 9 }}>K etter</th>
                     <th style={{ ...thStyle, width: 30, textAlign: "center", fontSize: 9 }}>R etter</th>
                     <th style={{ ...thStyle, fontSize: 9 }}>Restrisiko</th>
+                    <th style={{ ...thStyle, width: 60, textAlign: "center", fontSize: 9 }}>Usikkerhet</th>
+                    <th style={{ ...thStyle, width: 60, textAlign: "center", fontSize: 9 }}>Styrbarhet</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -956,6 +962,19 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                     const td = { ...tdStyle, fontSize: 9 };
                     const tdCenter = { ...td, textAlign: "center" as const };
                     const tdMuted = { ...tdCenter, color: "#94a3b8" };
+                    const usikkerhetStyle = (v?: string): React.CSSProperties => {
+                      if (v === "høy") return { background: "#fee2e2", color: "#991b1b", fontWeight: 600 };
+                      if (v === "medium") return { background: "#fef3c7", color: "#92400e", fontWeight: 600 };
+                      if (v === "lav") return { background: "#e5e7eb", color: "#374151" };
+                      return { color: "#94a3b8" };
+                    };
+                    const styrbarhetStyle = (v?: string): React.CSSProperties => {
+                      if (v === "høy") return { background: "#d1fae5", color: "#065f46", fontWeight: 600 };
+                      if (v === "medium") return { background: "#fef3c7", color: "#92400e", fontWeight: 600 };
+                      if (v === "lav") return { background: "#fee2e2", color: "#991b1b", fontWeight: 600 };
+                      return { color: "#94a3b8" };
+                    };
+                    const cap = (v?: string) => v ? v.charAt(0).toUpperCase() + v.slice(1) : "—";
                     return (
                       <React.Fragment key={h.id}>
                       <tr>
@@ -974,10 +993,17 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         <td style={kForsyningEtter ? tdCenter : tdMuted}>{kForsyningEtter ?? "—"}</td>
                         <td style={kForsyningEtter ? { ...riskCellStyle(sE, kForsyningEtter), fontSize: 9 } : tdMuted}>{kForsyningEtter ? sE * kForsyningEtter : "—"}</td>
                         <td style={td}>{h.restrisiko}</td>
+                        <td style={{ ...td, textAlign: "center", ...usikkerhetStyle(h.usikkerhet) }}>{cap(h.usikkerhet)}</td>
+                        <td style={{ ...td, textAlign: "center", ...styrbarhetStyle(h.styrbarhet) }}>{cap(h.styrbarhet)}</td>
                       </tr>
 
                       <tr>
-                        <td colSpan={15} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
+                        <td colSpan={17} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
+                          {h.usikkerhet === "høy" ? (
+                            <p style={{ fontSize: 9, fontWeight: 700, color: "#b91c1c", margin: "0 0 4px 0" }}>
+                              Usikkerhet: Høy ⚠
+                            </p>
+                          ) : null}
                           {(!hm.konsekvensvurderinger || hm.konsekvensvurderinger.length === 0) ? (
                             <span style={{ fontSize: 9, fontStyle: "italic", color: "#64748b" }}>
                               Ingen konsekvensdimensjoner vurdert
@@ -1036,7 +1062,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         if (tilknyttede.length > 0) {
                           return (
                             <tr>
-                              <td colSpan={15} style={{ ...tdStyle, padding: "4px 10px", background: "#f7f9fc" }}>
+                              <td colSpan={17} style={{ ...tdStyle, padding: "4px 10px", background: "#f7f9fc" }}>
                                 <span style={{ fontSize: 9, fontStyle: "italic", color: "#64748b" }}>
                                   Beregninger: {tilknyttede.map((b) => ider.get(b.id) || "B?").join(", ")} – se kapittel 4 Beregningsgrunnlag.
                                 </span>
@@ -1047,7 +1073,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         if (h.kreverBeregning) {
                           return (
                             <tr>
-                              <td colSpan={15} style={{ ...tdStyle, padding: "4px 10px", background: "#fff3cd", color: "#7a5a00" }}>
+                              <td colSpan={17} style={{ ...tdStyle, padding: "4px 10px", background: "#fff3cd", color: "#7a5a00" }}>
                                 <span style={{ fontSize: 9, fontWeight: 600 }}>
                                   Krever beregning – ikke registrert ennå{h.beregningTekst ? `: ${h.beregningTekst}` : ""}
                                 </span>
@@ -1079,7 +1105,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                   marginTop: 8,
                 }}
               >
-                <div style={{ width: 1100, height: 1 }} />
+                <div style={{ width: 1240, height: 1 }} />
               </div>
             </>
           )}
