@@ -72,7 +72,7 @@ Ikke inkluder sammendrag - dette genereres separat.`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: `Analyser følgende dokument og trekk ut brannteknisk informasjon:\n\n${documentText.substring(0, 50000)}` },
