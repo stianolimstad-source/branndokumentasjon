@@ -99,7 +99,19 @@ export interface RosHendelse {
   usikkerhet?: "lav" | "medium" | "høy";
   /** Styrbarhet – hvor enkelt risikoen kan påvirkes. Undefined = ikke vurdert. */
   styrbarhet?: "lav" | "medium" | "høy";
+  /** Markering: hendelsen inneholder kraftsensitiv informasjon (Beredskapsforskriften §6-2). */
+  sensitiv?: boolean;
 }
+
+export type RosNveKlasse = 1 | 2 | 3;
+export type RosSensitivKlassifisering = "apen" | "intern" | "fortrolig" | "strengt_fortrolig";
+
+export const SENSITIV_KLASSE_LABEL: Record<RosSensitivKlassifisering, string> = {
+  apen: "Åpen",
+  intern: "Intern",
+  fortrolig: "Fortrolig",
+  strengt_fortrolig: "Strengt fortrolig",
+};
 
 export interface RosBeregning extends AttachedCalculation {
   hendelseIds: string[];
