@@ -1668,7 +1668,7 @@ const Konsept = () => {
   };
 
   const previewLogoUrl = previewTheme?.logoUrl ?? logoUrl;
-  const renderPreview = () => <KonseptPreview formData={{...formData, onUpdateField: (field: string, value: any) => setFormData(prev => ({...prev, [field]: value}))}} logoUrl={previewLogoUrl} authorInfo={authorInfo} documentType={documentType} theme={previewTheme} />;
+  const renderPreview = () => <KonseptPreview formData={{...formData, onUpdateField: (field: string, value: any) => setFormData(prev => ({...prev, [field]: value}))}} logoUrl={previewLogoUrl} authorInfo={authorInfo} documentType={documentType} theme={previewTheme} fravikList={fravikList} />;
 
   const exportToWord = async () => {
     const tableBorders = {
