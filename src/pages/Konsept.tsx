@@ -9612,6 +9612,7 @@ const Konsept = () => {
                         if (aktiveRK.length === 0) return null;
                         const harRK12 = aktiveRK.some(r => r === "RK1" || r === "RK2");
                         const harRK35 = aktiveRK.some(r => r === "RK3" || r === "RK5");
+                        const harRK4 = aktiveRK.includes("RK4");
                         const harRK6 = aktiveRK.includes("RK6");
                         const strengeste = getStrengesteFluktvei(aktiveRK);
                         const prosjektVerdi = parseFloat(formData.fluktveiLengdeProsjekt) || 0;
@@ -9632,6 +9633,12 @@ const Konsept = () => {
                                 <p>Krav til maksimal fluktvei: <strong>25 m</strong>. I tillegg: avstand fra dør i branncelle til nærmeste trapp eller utgang maksimalt <strong>7,0 m</strong> (§ 11-13 figur 4).</p>
                               )}
                             </div>
+                            {harRK4 && (
+                              <div className="p-2 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 rounded text-xs text-blue-900 dark:text-blue-100">
+                                <strong>Risikoklasse 4 (boligbygg)</strong> har ikke en eksplisitt makslengde i § 11-13 Tabell 1. Avstand til utgang dimensjoneres etter § 11-13 ledd 2 og 3, samt § 11-14 punkt 3 om avstand fra dør til trapp. For boenheter med direkte utgang til terreng gjelder § 11-3 unntak nr. 3. Vurder fluktveilengde fra hver enkelt boenhet ut fra konkret løsning.
+                              </div>
+                            )}
+
                             <div>
                               <Label className="text-xs font-medium mb-1 block">Lengste fluktvei i prosjektet (m)</Label>
                               <Input
