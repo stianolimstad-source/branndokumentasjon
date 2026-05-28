@@ -1179,9 +1179,30 @@ export default function RosAnalyse() {
                             </div>
                           </div>
 
-                          <div className="space-y-2 border-t pt-3">
-                            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Forebyggende tiltak</p>
-                            <Area label="Tiltak" value={h.tiltak} onChange={(v) => updateHendelse(h.id, { tiltak: v })} rows={3} />
+                          <div className="space-y-3 border-t pt-3">
+                            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Barrierer og tiltak</p>
+                            <div className="space-y-1">
+                              <Label className="text-sm">Eksisterende barrierer / forutsetninger</Label>
+                              <p className="text-xs text-muted-foreground">
+                                Hva er allerede på plass av tekniske og organisatoriske barrierer? Disse er forutsetninger for sannsynlighet- og konsekvensvurderingen.
+                              </p>
+                              <Textarea
+                                rows={3}
+                                value={h.eksisterendeBarrierer || ""}
+                                onChange={(e) => updateHendelse(h.id, { eksisterendeBarrierer: e.target.value })}
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-sm">Foreslåtte nye tiltak</Label>
+                              <p className="text-xs text-muted-foreground">
+                                Nye risikoreduserende tiltak som skal vurderes. Disse er ennå ikke implementert.
+                              </p>
+                              <Textarea
+                                rows={3}
+                                value={h.foreslatteTiltak ?? h.tiltak ?? ""}
+                                onChange={(e) => updateHendelse(h.id, { foreslatteTiltak: e.target.value, tiltak: e.target.value })}
+                              />
+                            </div>
                           </div>
 
                           <div className="space-y-2 border-t pt-3">
