@@ -688,6 +688,23 @@ export const exportRosToWord = async (options: ExportOptions) => {
       }),
     );
 
+    const tilkTiltak = (content.tiltaksplan || []).filter((t) => (t.hendelseIds || []).includes(h.id));
+    if (tilkTiltak.length > 0) {
+      const liste = tilkTiltak.map((t) => `${tiltakIder.get(t.id) || "T?"} – ${t.tittel} [${TILTAK_STATUS_LABEL[t.status]}]`).join("; ");
+      hendelseRows.push(
+        new TableRow({
+          children: [
+            new TableCell({
+              columnSpan: 18,
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              shading: { fill: "EEF7FF", type: ShadingType.CLEAR, color: "auto" },
+              children: [new Paragraph({ children: [text(`Tiltak: ${liste} – se kapittel ${tiltakNr} Tiltaksplan.`, { italics: true, size: 14 })] })],
+            }),
+          ],
+        }),
+      );
+    }
+
     const tilknyttede = (content.beregninger || []).filter((b) => b.hendelseIds.includes(h.id));
     if (tilknyttede.length > 0) {
       const ids = tilknyttede.map((b) => beregningIder.get(b.id) || "B?").join(", ");
