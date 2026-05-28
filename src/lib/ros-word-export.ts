@@ -13,6 +13,8 @@ import {
   AlignmentType,
   PageOrientation,
   SectionType,
+  Header,
+  BorderStyle,
 } from "docx";
 import rosNivaaIllustrasjon from "@/assets/ros-detaljeringsnivaa.jpg";
 import { saveAs } from "file-saver";
