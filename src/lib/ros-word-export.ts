@@ -627,11 +627,12 @@ export const exportRosToWord = async (options: ExportOptions) => {
 
   // Dynamisk kapittelnummerering
   const harBowTie = !!(content.bowTies && content.bowTies.length > 0);
-  const beregningNr = "4";
-  const tiltakNr = "5";
-  const bowTieNr = "6";
-  const oppsummeringNr = harBowTie ? "7" : "6";
-  const revisjonNr = harBowTie ? "8" : "7";
+  const hendelseNr = "4";
+  const beregningNr = "5";
+  const tiltakNr = "6";
+  const bowTieNr = "7";
+  const oppsummeringNr = harBowTie ? "8" : "7";
+  const revisjonNr = harBowTie ? "9" : "8";
   const tiltakIder = byggTiltakIder(content.tiltaksplan || []);
 
   const beregningIder = byggBeregningIder(content);
