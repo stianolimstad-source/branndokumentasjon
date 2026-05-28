@@ -1147,7 +1147,9 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             <p className="ml-4 mb-3">[Liste over tegninger og dokumenter]</p>
           )}
 
-          <h3 className="font-semibold mb-2">2.3 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</h3>
+          <OverordnetSection formData={formData} title="2.3 § 11-1 Overordnet brannstrategi" />
+
+          <h3 className="font-semibold mb-2">2.4 Tilleggskrav fra tiltakshaver, myndigheter eller bruker</h3>
           <p className="ml-4 mb-3 whitespace-pre-wrap">{formData.tilleggskrav || "[Eventuelle tilleggskrav beskrives]"}</p>
           </>
         )}
