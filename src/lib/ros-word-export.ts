@@ -911,7 +911,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
         ),
       );
 
-      const buildMatrise = (dim: KonsekvensDimensjonType, bruk: "for" | "etter"): Table => {
+      const buildMatrise = (dim: KonsekvensDimensjon, bruk: "for" | "etter"): Table => {
         // Grupper hendelser per (s,k)
         const cellMap = new Map<string, string[]>();
         content.hendelser.forEach((h) => {
