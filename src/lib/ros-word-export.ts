@@ -30,6 +30,16 @@ import {
 import { risikoFarge } from "@/components/ros/RosMatriks";
 import { KONSEKVENS_KRITERIER, SANNSYNLIGHET_KRITERIER, KriterieTabell, DIMENSJON_NAVN } from "@/lib/ros-risk-criteria";
 import { migrerHendelse, byggBeregningIder, type RosBeregning, type RosContent, type RosHendelse } from "@/components/ros/RosPreview";
+import {
+  TILTAK_STATUS_LABEL,
+  TILTAK_STATUS_FILL,
+  TILTAK_KATEGORI_LABEL,
+  VURDERING_LABEL,
+  byggTiltakIder,
+  erFristPassert,
+  sorterTiltakEtterPrioritet,
+  formaterFrist,
+} from "@/lib/ros-tiltak";
 
 export interface RosSenderInfo {
   full_name?: string | null;
@@ -607,12 +617,14 @@ export const exportRosToWord = async (options: ExportOptions) => {
     return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [subHeader, ...subRows] });
   };
 
-  // Dynamisk kapittelnummerering (beregningsgrunnlag alltid 4, bow-tie valgfritt)
+  // Dynamisk kapittelnummerering
   const harBowTie = !!(content.bowTies && content.bowTies.length > 0);
   const beregningNr = "4";
-  const bowTieNr = "5";
-  const oppsummeringNr = harBowTie ? "6" : "5";
-  const revisjonNr = harBowTie ? "7" : "6";
+  const tiltakNr = "5";
+  const bowTieNr = "6";
+  const oppsummeringNr = harBowTie ? "7" : "6";
+  const revisjonNr = harBowTie ? "8" : "7";
+  const tiltakIder = byggTiltakIder(content.tiltaksplan || []);
 
   const beregningIder = byggBeregningIder(content);
   const hendelseRows: TableRow[] = [hendelseHeader];
@@ -675,6 +687,23 @@ export const exportRosToWord = async (options: ExportOptions) => {
         ],
       }),
     );
+
+    const tilkTiltak = (content.tiltaksplan || []).filter((t) => (t.hendelseIds || []).includes(h.id));
+    if (tilkTiltak.length > 0) {
+      const liste = tilkTiltak.map((t) => `${tiltakIder.get(t.id) || "T?"} – ${t.tittel} [${TILTAK_STATUS_LABEL[t.status]}]`).join("; ");
+      hendelseRows.push(
+        new TableRow({
+          children: [
+            new TableCell({
+              columnSpan: 18,
+              width: { size: 100, type: WidthType.PERCENTAGE },
+              shading: { fill: "EEF7FF", type: ShadingType.CLEAR, color: "auto" },
+              children: [new Paragraph({ children: [text(`Tiltak: ${liste} – se kapittel ${tiltakNr} Tiltaksplan.`, { italics: true, size: 14 })] })],
+            }),
+          ],
+        }),
+      );
+    }
 
     const tilknyttede = (content.beregninger || []).filter((b) => b.hendelseIds.includes(h.id));
     if (tilknyttede.length > 0) {
@@ -790,6 +819,71 @@ export const exportRosToWord = async (options: ExportOptions) => {
       ikke.forEach(pushBeregning);
     }
   }
+
+
+  // Tiltaksplan
+  const tiltaksplanBlocks: (Paragraph | Table)[] = [
+    buildSectionHeading(theme, `${tiltakNr}. Tiltaksplan`),
+    para(
+      "Strukturert oversikt over tiltak som skal gjennomføres for å redusere risiko. " +
+        "Hvert tiltak har ansvarlig person, frist for gjennomføring og status. " +
+        "Sortert med besluttede tiltak og høy effekt øverst. Passerte frister er markert.",
+    ),
+  ];
+  const tiltakSortert = sorterTiltakEtterPrioritet(content.tiltaksplan || []);
+  if (tiltakSortert.length === 0) {
+    tiltaksplanBlocks.push(para("Ingen tiltak registrert."));
+  } else {
+    const hIdx = new Map(content.hendelser.map((h, i) => [h.id, i + 1]));
+    const tHeader = new TableRow({
+      tableHeader: true,
+      children: [
+        headerCell("ID", 5),
+        headerCell("Tittel", 18),
+        headerCell("Kategori", 11),
+        headerCell("Ansvarlig", 10),
+        headerCell("Frist", 9),
+        headerCell("Status", 10),
+        headerCell("Effekt", 7),
+        headerCell("Kostnad", 7),
+        headerCell("Hendelser", 8),
+        headerCell("Kommentar", 15),
+      ],
+    });
+    const tRows = tiltakSortert.map((t) => {
+      const passert = erFristPassert(t);
+      const hLabels = (t.hendelseIds || [])
+        .map((id) => hIdx.get(id))
+        .filter((n): n is number => !!n)
+        .map((n) => `H${n}`)
+        .join(", ");
+      return new TableRow({
+        children: [
+          cell(tiltakIder.get(t.id) || "T?", 5),
+          cell(t.tittel || "—", 18),
+          cell(TILTAK_KATEGORI_LABEL[t.kategori], 11),
+          cell(t.ansvarlig || "—", 10),
+          new TableCell({
+            width: { size: 9, type: WidthType.PERCENTAGE },
+            shading: passert ? { fill: "FCE4E4", type: ShadingType.CLEAR, color: "auto" } : undefined,
+            children: [new Paragraph({ children: [text(formaterFrist(t.frist), { bold: passert, color: passert ? "B91C1C" : undefined, size: 16 })] })],
+          }),
+          new TableCell({
+            width: { size: 10, type: WidthType.PERCENTAGE },
+            shading: { fill: TILTAK_STATUS_FILL[t.status], type: ShadingType.CLEAR, color: "auto" },
+            children: [new Paragraph({ children: [text(TILTAK_STATUS_LABEL[t.status], { bold: true, size: 16 })] })],
+          }),
+          cell(t.effektVurdering ? VURDERING_LABEL[t.effektVurdering] : "—", 7),
+          cell(t.kostnadVurdering ? VURDERING_LABEL[t.kostnadVurdering] : "—", 7),
+          cell(hLabels || "—", 8),
+          cell(t.kommentar || "", 15),
+        ],
+      });
+    });
+    tiltaksplanBlocks.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [tHeader, ...tRows] }));
+  }
+
+
 
 
   // Bow-tie (kun hvis registrert)

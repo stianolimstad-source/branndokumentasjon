@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -21,7 +21,20 @@ import { KONSEKVENS_FORSLAG, groupKonsekvenserByKategori } from "@/lib/ros-konse
 import { ArrowLeft, Plus, Save, Trash2, ShieldAlert, FolderOpen, FileText, Download, Lock, Search, Sparkles, Check, GitBranch, X, Eye, Calculator, Pencil } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import RosPreview, { type RosContent, type RosHendelse, type RosBowTie, type KonsekvensVurdering, type RosBeregning, type BfkVurdering, migrerHendelse, migrerBeregninger, byggBeregningIder } from "@/components/ros/RosPreview";
+import RosPreview, { type RosContent, type RosHendelse, type RosBowTie, type KonsekvensVurdering, type RosBeregning, type BfkVurdering, type RosTiltak, type RosTiltakStatus, type RosTiltakKategori, type Vurdering, migrerHendelse, migrerBeregninger, byggBeregningIder } from "@/components/ros/RosPreview";
+import {
+  TILTAK_STATUS_LABEL,
+  TILTAK_STATUS_REKKEFOLGE,
+  TILTAK_STATUS_BADGE_CLASS,
+  TILTAK_KATEGORI_LABEL,
+  VURDERING_LABEL,
+  VURDERING_VALG,
+  byggTiltakIder,
+  erFristPassert,
+  sorterTiltakEtter,
+  formaterFrist,
+  defaultFristIso,
+} from "@/lib/ros-tiltak";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuCheckboxItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DIMENSJON_NAVN, ALLE_DIMENSJONER, type KonsekvensDimensjon } from "@/lib/ros-risk-criteria";
@@ -476,6 +489,359 @@ function BfkSection({
     </section>
   );
 }
+
+
+function TiltakDialog({
+  open, onOpenChange, hendelser, onSave, initial,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  hendelser: RosHendelse[];
+  onSave: (t: Omit<RosTiltak, "id">) => void;
+  initial?: Partial<RosTiltak>;
+}) {
+  const [draft, setDraft] = useState<Omit<RosTiltak, "id">>({
+    tittel: "", beskrivelse: "", kategori: "sannsynlighetsreduserende",
+    ansvarlig: "", frist: defaultFristIso(), status: "foreslatt",
+    hendelseIds: [], kommentar: "",
+    ...initial,
+  });
+  useEffect(() => {
+    if (open) {
+      setDraft({
+        tittel: "", beskrivelse: "", kategori: "sannsynlighetsreduserende",
+        ansvarlig: "", frist: defaultFristIso(), status: "foreslatt",
+        hendelseIds: [], kommentar: "",
+        ...initial,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Nytt tiltak</DialogTitle>
+          <DialogDescription>Fyll ut detaljer om tiltaket. Du kan endre det senere fra tiltaksplanen.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <Label className="text-xs">Tittel</Label>
+            <Input value={draft.tittel} onChange={(e) => setDraft((d) => ({ ...d, tittel: e.target.value }))} placeholder="F.eks. Installere automatisk brannvarsling" />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs">Beskrivelse</Label>
+            <Textarea rows={3} value={draft.beskrivelse} onChange={(e) => setDraft((d) => ({ ...d, beskrivelse: e.target.value }))} />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label className="text-xs">Kategori</Label>
+              <Select value={draft.kategori} onValueChange={(v) => setDraft((d) => ({ ...d, kategori: v as RosTiltakKategori }))}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(TILTAK_KATEGORI_LABEL) as RosTiltakKategori[]).map((k) => (
+                    <SelectItem key={k} value={k}>{TILTAK_KATEGORI_LABEL[k]}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Status</Label>
+              <Select value={draft.status} onValueChange={(v) => setDraft((d) => ({ ...d, status: v as RosTiltakStatus }))}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {TILTAK_STATUS_REKKEFOLGE.map((s) => (
+                    <SelectItem key={s} value={s}>{TILTAK_STATUS_LABEL[s]}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Ansvarlig</Label>
+              <Input value={draft.ansvarlig} onChange={(e) => setDraft((d) => ({ ...d, ansvarlig: e.target.value }))} placeholder="Navn / rolle" />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Frist</Label>
+              <Input type="date" value={draft.frist} onChange={(e) => setDraft((d) => ({ ...d, frist: e.target.value }))} />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Effekt</Label>
+              <Select value={draft.effektVurdering || ""} onValueChange={(v) => setDraft((d) => ({ ...d, effektVurdering: (v || undefined) as Vurdering | undefined }))}>
+                <SelectTrigger className="h-9"><SelectValue placeholder="Velg…" /></SelectTrigger>
+                <SelectContent>
+                  {VURDERING_VALG.map((v) => <SelectItem key={v} value={v}>{VURDERING_LABEL[v]}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Kostnad</Label>
+              <Select value={draft.kostnadVurdering || ""} onValueChange={(v) => setDraft((d) => ({ ...d, kostnadVurdering: (v || undefined) as Vurdering | undefined }))}>
+                <SelectTrigger className="h-9"><SelectValue placeholder="Velg…" /></SelectTrigger>
+                <SelectContent>
+                  {VURDERING_VALG.map((v) => <SelectItem key={v} value={v}>{VURDERING_LABEL[v]}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs">Tilknyttede hendelser</Label>
+            <div className="border rounded-md p-2 max-h-40 overflow-y-auto space-y-1">
+              {hendelser.length === 0 ? (
+                <p className="text-xs italic text-muted-foreground">Ingen hendelser registrert.</p>
+              ) : hendelser.map((h, i) => (
+                <label key={h.id} className="flex items-center gap-2 text-xs cursor-pointer">
+                  <Checkbox
+                    checked={draft.hendelseIds.includes(h.id)}
+                    onCheckedChange={(c) => setDraft((d) => ({
+                      ...d,
+                      hendelseIds: c ? [...d.hendelseIds, h.id] : d.hendelseIds.filter((x) => x !== h.id),
+                    }))}
+                  />
+                  <span>H{i + 1} – {h.tittel || h.hendelse || h.sarbarhet || "(uten tittel)"}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs">Kommentar</Label>
+            <Textarea rows={2} value={draft.kommentar || ""} onChange={(e) => setDraft((d) => ({ ...d, kommentar: e.target.value }))} />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Avbryt</Button>
+          <Button onClick={() => { onSave(draft); onOpenChange(false); }} disabled={!draft.tittel.trim()}>
+            Lagre tiltak
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function TiltaksplanSection({
+  content, addTiltak, updateTiltak, deleteTiltak, toggleTiltakHendelse,
+}: {
+  content: RosContent;
+  addTiltak: (partial?: Partial<RosTiltak>) => RosTiltak;
+  updateTiltak: (id: string, patch: Partial<RosTiltak>) => void;
+  deleteTiltak: (id: string) => void;
+  toggleTiltakHendelse: (tiltakId: string, hendelseId: string) => void;
+}) {
+  const [filter, setFilter] = useState<"alle" | RosTiltakStatus>("alle");
+  const [sortFelt, setSortFelt] = useState<"frist" | "status" | "effekt" | "kostnad">("frist");
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const tiltaksplan = content.tiltaksplan || [];
+  const tIder = byggTiltakIder(tiltaksplan);
+  const filtrert = filter === "alle" ? tiltaksplan : tiltaksplan.filter((t) => t.status === filter);
+  const sortert = sorterTiltakEtter(filtrert, sortFelt);
+
+  const totalt = tiltaksplan.length;
+  const gjennomfort = tiltaksplan.filter((t) => t.status === "gjennomfort").length;
+
+  return (
+    <section className="space-y-3" id="kap-6-tiltak-editor">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">6. Tiltaksplan</h2><JumpToPreview previewId="kap-6-tiltak" /></div>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Strukturert oversikt over tiltak som skal gjennomføres for å redusere risiko. Hvert tiltak har ansvarlig person, frist for gjennomføring og status.
+          </p>
+        </div>
+        <div className="text-xs text-muted-foreground">
+          {totalt > 0 ? `${gjennomfort} av ${totalt} gjennomført` : "Ingen tiltak ennå"}
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap gap-1">
+          <Button size="sm" variant={filter === "alle" ? "default" : "outline"} onClick={() => setFilter("alle")}>Alle</Button>
+          {TILTAK_STATUS_REKKEFOLGE.map((s) => (
+            <Button key={s} size="sm" variant={filter === s ? "default" : "outline"} onClick={() => setFilter(s)}>
+              {TILTAK_STATUS_LABEL[s]}
+            </Button>
+          ))}
+        </div>
+        <div className="ml-auto flex items-center gap-2">
+          <Label className="text-xs">Sorter:</Label>
+          <Select value={sortFelt} onValueChange={(v) => setSortFelt(v as typeof sortFelt)}>
+            <SelectTrigger className="h-8 w-32"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="frist">Frist</SelectItem>
+              <SelectItem value="status">Status</SelectItem>
+              <SelectItem value="effekt">Effekt</SelectItem>
+              <SelectItem value="kostnad">Kostnad</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {tiltaksplan.length === 0 ? (
+        <p className="text-sm text-muted-foreground italic">Ingen tiltak registrert. Klikk «Legg til nytt tiltak» under for å begynne.</p>
+      ) : (
+        <div className="border rounded-md overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead className="bg-muted/50">
+              <tr className="text-left">
+                <th className="px-2 py-2 w-12">ID</th>
+                <th className="px-2 py-2">Tittel</th>
+                <th className="px-2 py-2">Kategori</th>
+                <th className="px-2 py-2">Ansvarlig</th>
+                <th className="px-2 py-2 w-28">Frist</th>
+                <th className="px-2 py-2 w-32">Status</th>
+                <th className="px-2 py-2 w-24">Effekt</th>
+                <th className="px-2 py-2 w-24">Kostnad</th>
+                <th className="px-2 py-2 w-20">Hendelser</th>
+                <th className="px-2 py-2 w-10"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortert.map((t) => {
+                const passert = erFristPassert(t);
+                const aapen = expanded === t.id;
+                return (
+                  <React.Fragment key={t.id}>
+                    <tr className="border-t hover:bg-muted/30 cursor-pointer" onClick={() => setExpanded(aapen ? null : t.id)}>
+                      <td className="px-2 py-1.5 font-semibold text-primary">{tIder.get(t.id) || "T?"}</td>
+                      <td className="px-2 py-1.5 font-medium">{t.tittel || <span className="italic text-muted-foreground">(uten tittel)</span>}</td>
+                      <td className="px-2 py-1.5 text-muted-foreground">{TILTAK_KATEGORI_LABEL[t.kategori]}</td>
+                      <td className="px-2 py-1.5">{t.ansvarlig || "—"}</td>
+                      <td className={`px-2 py-1.5 ${passert ? "text-destructive font-semibold" : ""}`}>
+                        {formaterFrist(t.frist)}{passert ? " ⚠" : ""}
+                      </td>
+                      <td className="px-2 py-1.5" onClick={(e) => e.stopPropagation()}>
+                        <Select value={t.status} onValueChange={(v) => updateTiltak(t.id, { status: v as RosTiltakStatus })}>
+                          <SelectTrigger className={`h-7 text-xs ${TILTAK_STATUS_BADGE_CLASS[t.status]}`}><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {TILTAK_STATUS_REKKEFOLGE.map((s) => <SelectItem key={s} value={s}>{TILTAK_STATUS_LABEL[s]}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </td>
+                      <td className="px-2 py-1.5" onClick={(e) => e.stopPropagation()}>
+                        <Select value={t.effektVurdering || ""} onValueChange={(v) => updateTiltak(t.id, { effektVurdering: (v || undefined) as Vurdering | undefined })}>
+                          <SelectTrigger className={`h-7 text-xs ${t.effektVurdering === "hoy" ? "bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200 border-emerald-300" : ""}`}>
+                            <SelectValue placeholder="—" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {VURDERING_VALG.map((v) => <SelectItem key={v} value={v}>{VURDERING_LABEL[v]}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </td>
+                      <td className="px-2 py-1.5" onClick={(e) => e.stopPropagation()}>
+                        <Select value={t.kostnadVurdering || ""} onValueChange={(v) => updateTiltak(t.id, { kostnadVurdering: (v || undefined) as Vurdering | undefined })}>
+                          <SelectTrigger className={`h-7 text-xs ${t.kostnadVurdering === "hoy" ? "bg-rose-100 text-rose-900 dark:bg-rose-950 dark:text-rose-200 border-rose-300" : ""}`}>
+                            <SelectValue placeholder="—" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {VURDERING_VALG.map((v) => <SelectItem key={v} value={v}>{VURDERING_LABEL[v]}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </td>
+                      <td className="px-2 py-1.5 text-muted-foreground">{t.hendelseIds.length}</td>
+                      <td className="px-2 py-1.5" onClick={(e) => e.stopPropagation()}>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-6 w-6">
+                              <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Slette tiltak?</AlertDialogTitle>
+                              <AlertDialogDescription>Tiltaket fjernes fra tiltaksplanen. Dette kan ikke angres.</AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => deleteTiltak(t.id)}>Slett</AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </td>
+                    </tr>
+                    {aapen && (
+                      <tr className="border-t bg-muted/20">
+                        <td colSpan={10} className="px-3 py-3 space-y-3">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                              <Label className="text-xs">Tittel</Label>
+                              <Input value={t.tittel} onChange={(e) => updateTiltak(t.id, { tittel: e.target.value })} />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs">Ansvarlig</Label>
+                              <Input value={t.ansvarlig} onChange={(e) => updateTiltak(t.id, { ansvarlig: e.target.value })} />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs">Frist</Label>
+                              <Input type="date" value={t.frist} onChange={(e) => updateTiltak(t.id, { frist: e.target.value })} />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs">Kategori</Label>
+                              <Select value={t.kategori} onValueChange={(v) => updateTiltak(t.id, { kategori: v as RosTiltakKategori })}>
+                                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                  {(Object.keys(TILTAK_KATEGORI_LABEL) as RosTiltakKategori[]).map((k) => (
+                                    <SelectItem key={k} value={k}>{TILTAK_KATEGORI_LABEL[k]}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Beskrivelse</Label>
+                            <Textarea rows={3} value={t.beskrivelse} onChange={(e) => updateTiltak(t.id, { beskrivelse: e.target.value })} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Kommentar</Label>
+                            <Textarea rows={2} value={t.kommentar || ""} onChange={(e) => updateTiltak(t.id, { kommentar: e.target.value })} />
+                          </div>
+                          <div className="space-y-1">
+                            <Label className="text-xs">Tilknyttede hendelser</Label>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <Button variant="outline" size="sm" className="h-8 w-full justify-start text-xs">
+                                  {t.hendelseIds.length === 0 ? "Velg hendelser…" : `${t.hendelseIds.length} hendelse${t.hendelseIds.length === 1 ? "" : "r"} valgt`}
+                                </Button>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-72 max-h-64 overflow-y-auto">
+                                {content.hendelser.length === 0 ? (
+                                  <p className="text-xs italic text-muted-foreground">Ingen hendelser registrert.</p>
+                                ) : content.hendelser.map((h, i) => (
+                                  <label key={h.id} className="flex items-center gap-2 text-xs py-1 cursor-pointer">
+                                    <Checkbox checked={t.hendelseIds.includes(h.id)} onCheckedChange={() => toggleTiltakHendelse(t.id, h.id)} />
+                                    <span>H{i + 1} – {h.tittel || h.hendelse || h.sarbarhet || "(uten tittel)"}</span>
+                                  </label>
+                                ))}
+                              </PopoverContent>
+                            </Popover>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <Button size="sm" variant="outline" onClick={() => setDialogOpen(true)}>
+        <Plus className="h-4 w-4 mr-1" /> Legg til nytt tiltak
+      </Button>
+      <TiltakDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        hendelser={content.hendelser}
+        onSave={(t) => addTiltak(t)}
+      />
+    </section>
+  );
+}
+
+
+
 
 
 
@@ -1215,6 +1581,56 @@ export default function RosAnalyse() {
   const [openCalcType, setOpenCalcType] = useState<CalculatorType | null>(null);
   const [editingBeregning, setEditingBeregning] = useState<RosBeregning | null>(null);
 
+  // ----- Tiltaksplan -----
+  const addTiltak = (partial?: Partial<RosTiltak>) => {
+    const nytt: RosTiltak = {
+      id: makeId(),
+      tittel: "",
+      beskrivelse: "",
+      kategori: "sannsynlighetsreduserende",
+      ansvarlig: "",
+      frist: defaultFristIso(),
+      status: "foreslatt",
+      hendelseIds: [],
+      ...partial,
+    };
+    setContent((c) => ({ ...c, tiltaksplan: [...(c.tiltaksplan || []), nytt] }));
+    return nytt;
+  };
+  const updateTiltak = (id: string, patch: Partial<RosTiltak>) => {
+    setContent((c) => ({
+      ...c,
+      tiltaksplan: (c.tiltaksplan || []).map((t) => (t.id === id ? { ...t, ...patch } : t)),
+    }));
+  };
+  const deleteTiltak = (id: string) => {
+    setContent((c) => ({ ...c, tiltaksplan: (c.tiltaksplan || []).filter((t) => t.id !== id) }));
+  };
+  const toggleTiltakHendelse = (tiltakId: string, hendelseId: string) => {
+    setContent((c) => ({
+      ...c,
+      tiltaksplan: (c.tiltaksplan || []).map((t) => {
+        if (t.id !== tiltakId) return t;
+        const har = (t.hendelseIds || []).includes(hendelseId);
+        return { ...t, hendelseIds: har ? t.hendelseIds.filter((x) => x !== hendelseId) : [...t.hendelseIds, hendelseId] };
+      }),
+    }));
+  };
+  const konverterTilTiltak = (h: RosHendelse) => {
+    const tekst = (h.foreslatteTiltak || h.tiltak || "").trim();
+    if (!tekst) return;
+    const tittel = tekst.split(/\n|\.|;/)[0].trim().slice(0, 80);
+    const nytt = addTiltak({
+      tittel: tittel || "Nytt tiltak",
+      beskrivelse: tekst,
+      kategori: "sannsynlighetsreduserende",
+      hendelseIds: [h.id],
+    });
+    toast({ title: "Tiltak opprettet i tiltaksplanen", description: nytt.tittel });
+  };
+
+
+
   const handleCalcImport = (calc: AttachedCalculation) => {
     if (editingBeregning) {
       updateBeregning(editingBeregning.id, {
@@ -1730,7 +2146,65 @@ export default function RosAnalyse() {
                                 onChange={(e) => updateHendelse(h.id, { foreslatteTiltak: e.target.value, tiltak: e.target.value })}
                               />
                             </div>
+
+                            {(() => {
+                              const tIder = byggTiltakIder(content.tiltaksplan || []);
+                              const tilk = (content.tiltaksplan || []).filter((t) => (t.hendelseIds || []).includes(h.id));
+                              const harForeslatt = !!(h.foreslatteTiltak ?? h.tiltak ?? "").trim();
+                              return (
+                                <div className="space-y-2 rounded-md border border-dashed bg-muted/30 p-2">
+                                  <div className="flex items-center justify-between gap-2">
+                                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                      Tilknyttede tiltak i tiltaksplanen
+                                    </p>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        const el = document.getElementById("kap-6-tiltak-editor");
+                                        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                                      }}
+                                      className="text-xs text-primary hover:underline"
+                                    >
+                                      Gå til tiltaksplanen →
+                                    </button>
+                                  </div>
+                                  {tilk.length === 0 ? (
+                                    <p className="text-xs italic text-muted-foreground">
+                                      Ingen strukturerte tiltak knyttet til denne hendelsen ennå.
+                                    </p>
+                                  ) : (
+                                    <ul className="space-y-1">
+                                      {tilk.map((t) => (
+                                        <li key={t.id} className="flex items-center gap-2 text-xs">
+                                          <Badge variant="outline" className="shrink-0">{tIder.get(t.id) || "T?"}</Badge>
+                                          <span className="font-medium truncate flex-1">{t.tittel || "—"}</span>
+                                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${TILTAK_STATUS_BADGE_CLASS[t.status]}`}>
+                                            {TILTAK_STATUS_LABEL[t.status]}
+                                          </span>
+                                          <span className={`text-[10px] ${erFristPassert(t) ? "text-destructive font-semibold" : "text-muted-foreground"}`}>
+                                            {formaterFrist(t.frist)}
+                                          </span>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  )}
+                                  {harForeslatt && tilk.length === 0 ? (
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      className="h-7 text-xs"
+                                      onClick={() => konverterTilTiltak(h)}
+                                    >
+                                      <Plus className="h-3 w-3 mr-1" />
+                                      Konverter til strukturert tiltak
+                                    </Button>
+                                  ) : null}
+                                </div>
+                              );
+                            })()}
                           </div>
+
 
                           <div className="space-y-2 border-t pt-3">
                             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Konsekvensvurderinger per dimensjon</p>
@@ -2097,10 +2571,18 @@ export default function RosAnalyse() {
             })()}
           </section>
 
+          <TiltaksplanSection
+            content={content}
+            addTiltak={addTiltak}
+            updateTiltak={updateTiltak}
+            deleteTiltak={deleteTiltak}
+            toggleTiltakHendelse={toggleTiltakHendelse}
+          />
+
           <section className="space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
-                <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">6. Bow-tie analyse</h2><JumpToPreview previewId="kap-6" /></div>
+                <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">7. Bow-tie analyse</h2><JumpToPreview previewId="kap-7" /></div>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Definer en uønsket topphendelse og knytt registrerte hendelser som årsaker. Gir oversikt over felles tiltak på tvers.
                 </p>
@@ -2517,9 +2999,9 @@ export default function RosAnalyse() {
           <section className="space-y-2">
             <div className="flex items-center gap-1">
               <h2 className="text-lg font-semibold">
-                {content.bowTies && content.bowTies.length > 0 ? "7" : "6"}. Oppsummering
+                {content.bowTies && content.bowTies.length > 0 ? "8" : "7"}. Oppsummering
               </h2>
-              <JumpToPreview previewId="kap-7" />
+              <JumpToPreview previewId="kap-8" />
             </div>
             <Textarea value={content.oppsummering} rows={6}
               onChange={(e) => setContent((c) => ({ ...c, oppsummering: e.target.value }))} />
@@ -2529,9 +3011,9 @@ export default function RosAnalyse() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1">
                 <h2 className="text-lg font-semibold">
-                  {content.bowTies && content.bowTies.length > 0 ? "8" : "7"}. Revisjonshistorikk
+                  {content.bowTies && content.bowTies.length > 0 ? "9" : "8"}. Revisjonshistorikk
                 </h2>
-                <JumpToPreview previewId="kap-8" />
+                <JumpToPreview previewId="kap-9" />
               </div>
               <Button size="sm" variant="outline" onClick={addRevisjon}>
                 <Plus className="h-4 w-4 mr-1" /> Ny revisjon
