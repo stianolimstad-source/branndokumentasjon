@@ -1925,7 +1925,64 @@ export default function RosAnalyse() {
               />
             </div>
             <div className="rounded-lg border p-4 bg-muted/30 space-y-4">
-              <RosMatriks size="sm" />
+              {(() => {
+                const dims = tilgjengeligeDimensjoner(content.hendelser);
+                if (dims.length === 0) {
+                  return <RosMatriks size="sm" />;
+                }
+                const ider = byggHendelseIder(content.hendelser);
+                const defaultDim: KonsekvensDimensjon = dims.includes("forsyningssikkerhet")
+                  ? "forsyningssikkerhet"
+                  : dims[0];
+                return (
+                  <Tabs defaultValue={defaultDim}>
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <h3 className="text-sm font-semibold">Risikobilde per konsekvensdimensjon</h3>
+                      <TabsList className="flex-wrap h-auto">
+                        {dims.map((d) => (
+                          <TabsTrigger key={d} value={d} className="text-xs">
+                            {DIMENSJON_NAVN[d]}
+                          </TabsTrigger>
+                        ))}
+                      </TabsList>
+                    </div>
+                    {dims.map((d) => {
+                      const harE = harEtterData(content.hendelser, d);
+                      const soner = tellRisikoSoner(content.hendelser, d, "for");
+                      const sonerE = harE ? tellRisikoSoner(content.hendelser, d, "etter") : null;
+                      return (
+                        <TabsContent key={d} value={d} className="mt-3 space-y-3">
+                          <div className={`grid gap-6 ${harE ? "lg:grid-cols-2" : "grid-cols-1"}`}>
+                            <div>
+                              <p className="text-xs font-semibold mb-2">Risiko før tiltak</p>
+                              <RosMatriks size="sm" hendelser={content.hendelser} dimensjon={d} bruk="for" ider={ider} visBeskrivelse={false} />
+                            </div>
+                            {harE && (
+                              <div>
+                                <p className="text-xs font-semibold mb-2">Risiko etter tiltak</p>
+                                <RosMatriks size="sm" hendelser={content.hendelser} dimensjon={d} bruk="etter" ider={ider} visBeskrivelse={false} />
+                              </div>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            Før tiltak: <strong className="text-red-600">{soner.rod}</strong> i rød sone ·{" "}
+                            <strong className="text-amber-600">{soner.gul}</strong> i gul ·{" "}
+                            <strong className="text-emerald-600">{soner.gronn}</strong> i grønn.
+                            {sonerE && (
+                              <>
+                                {" — Etter tiltak: "}
+                                <strong className="text-red-600">{sonerE.rod}</strong> i rød ·{" "}
+                                <strong className="text-amber-600">{sonerE.gul}</strong> i gul ·{" "}
+                                <strong className="text-emerald-600">{sonerE.gronn}</strong> i grønn.
+                              </>
+                            )}
+                          </p>
+                        </TabsContent>
+                      );
+                    })}
+                  </Tabs>
+                );
+              })()}
               <div className="border-t pt-4">
                 <RosKriterier />
               </div>
