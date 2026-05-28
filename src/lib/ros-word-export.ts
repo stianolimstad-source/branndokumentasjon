@@ -118,6 +118,18 @@ export const exportRosToWord = async (options: ExportOptions) => {
   const m = content.metadata;
   const dateStr = m.dato || new Date().toISOString().slice(0, 10);
 
+  const SENSITIV_LABEL: Record<string, string> = {
+    apen: "Åpen",
+    intern: "Intern",
+    fortrolig: "Fortrolig",
+    strengt_fortrolig: "Strengt fortrolig",
+  };
+  const sensKlasse = m.sensitivKlassifisering;
+  const erSensitiv = sensKlasse === "fortrolig" || sensKlasse === "strengt_fortrolig";
+  const sensFill = sensKlasse === "strengt_fortrolig" ? "FEE2E2" : "FEF3C7";
+  const sensColor = sensKlasse === "strengt_fortrolig" ? "991B1B" : "92400E";
+  const sensRowFill = "FFF1F2";
+
   const text = (t: string, opts: { bold?: boolean; size?: number; color?: string; italics?: boolean } = {}) =>
     new TextRun({ text: t, font, bold: opts.bold, italics: opts.italics, size: opts.size ?? 22, color: opts.color });
 
@@ -137,6 +149,32 @@ export const exportRosToWord = async (options: ExportOptions) => {
       width: widthPct ? { size: widthPct, type: WidthType.PERCENTAGE } : undefined,
     });
 
+  // Header med sensitivitetsbanner ved fortrolig/strengt fortrolig.
+  const makeHeader = (): Header => {
+    if (!erSensitiv) return buildHeader(theme, { logo, documentLabel: "ROS-analyse" });
+    const base = buildHeader(theme, { logo, documentLabel: "ROS-analyse" });
+    const baseChildren = ((base as unknown) as { options?: { children?: Paragraph[] } }).options?.children ?? [];
+    const banner = new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { before: 0, after: 40 },
+      border: {
+        top: { style: BorderStyle.SINGLE, size: 8, color: sensColor },
+        bottom: { style: BorderStyle.SINGLE, size: 8, color: sensColor },
+      },
+      shading: { fill: sensFill, type: ShadingType.CLEAR, color: "auto" },
+      children: [
+        new TextRun({
+          text: `KRAFTSENSITIV INFORMASJON – Behandles iht. beredskapsforskriften §6-2`,
+          font,
+          bold: true,
+          size: 18,
+          color: sensColor,
+        }),
+      ],
+    });
+    return new Header({ children: [banner, ...baseChildren] });
+  };
+
   // Cover
   const cover = buildCoverPage(theme, {
     title: `ROS-analyse – ${m.prosjektnavn || analyseName}`,
@@ -147,18 +185,79 @@ export const exportRosToWord = async (options: ExportOptions) => {
     logo,
   });
 
+  // Sensitivitetsboks på forsiden
+  const sensitivCoverBox: Paragraph[] = erSensitiv
+    ? [
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          spacing: { before: 240, after: 120 },
+          border: {
+            top: { style: BorderStyle.SINGLE, size: 16, color: sensColor },
+            bottom: { style: BorderStyle.SINGLE, size: 16, color: sensColor },
+            left: { style: BorderStyle.SINGLE, size: 16, color: sensColor },
+            right: { style: BorderStyle.SINGLE, size: 16, color: sensColor },
+          },
+          shading: { fill: sensFill, type: ShadingType.CLEAR, color: "auto" },
+          children: [
+            new TextRun({
+              text: `KRAFTSENSITIV INFORMASJON – ${SENSITIV_LABEL[sensKlasse!].toUpperCase()}`,
+              font,
+              bold: true,
+              size: 28,
+              color: sensColor,
+            }),
+          ],
+        }),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 240 },
+          children: [
+            new TextRun({
+              text: "Behandles iht. beredskapsforskriften §6-2. Distribusjon kun til personell med tjenstlig behov.",
+              font,
+              italics: true,
+              size: 18,
+              color: sensColor,
+            }),
+          ],
+        }),
+      ]
+    : [];
+
   // Metadata-tabell
+  const metadataRows: TableRow[] = [
+    new TableRow({ children: [headerCell("Felt", 30), headerCell("Verdi", 70)] }),
+    new TableRow({ children: [cell("Prosjekt", 30, true), cell(m.prosjektnavn || "—", 70)] }),
+    new TableRow({ children: [cell("Adresse", 30, true), cell(m.adresse || "—", 70)] }),
+    new TableRow({ children: [cell("Oppdragsgiver", 30, true), cell(m.oppdragsgiver || "—", 70)] }),
+    new TableRow({ children: [cell("Utført av", 30, true), cell(m.utfortAv || sender.full_name || "—", 70)] }),
+    new TableRow({ children: [cell("Dato", 30, true), cell(dateStr, 70)] }),
+    new TableRow({ children: [cell("Versjon", 30, true), cell(m.versjon || "1.0", 70)] }),
+  ];
+  if (m.nveKlasse) {
+    metadataRows.push(new TableRow({ children: [cell("NVE-klasse (§5-4)", 30, true), cell(`Klasse ${m.nveKlasse}`, 70)] }));
+  }
+  if (sensKlasse) {
+    metadataRows.push(
+      new TableRow({
+        children: [
+          cell("Sensitivitetsklassifisering (§6-2)", 30, true),
+          new TableCell({
+            width: { size: 70, type: WidthType.PERCENTAGE },
+            shading: erSensitiv ? { fill: sensFill, type: ShadingType.CLEAR, color: "auto" } : undefined,
+            children: [
+              new Paragraph({
+                children: [text(SENSITIV_LABEL[sensKlasse], { bold: erSensitiv, size: 20, color: erSensitiv ? sensColor : undefined })],
+              }),
+            ],
+          }),
+        ],
+      }),
+    );
+  }
   const infoTable = new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
-    rows: [
-      new TableRow({ children: [headerCell("Felt", 30), headerCell("Verdi", 70)] }),
-      new TableRow({ children: [cell("Prosjekt", 30, true), cell(m.prosjektnavn || "—", 70)] }),
-      new TableRow({ children: [cell("Adresse", 30, true), cell(m.adresse || "—", 70)] }),
-      new TableRow({ children: [cell("Oppdragsgiver", 30, true), cell(m.oppdragsgiver || "—", 70)] }),
-      new TableRow({ children: [cell("Utført av", 30, true), cell(m.utfortAv || sender.full_name || "—", 70)] }),
-      new TableRow({ children: [cell("Dato", 30, true), cell(dateStr, 70)] }),
-      new TableRow({ children: [cell("Versjon", 30, true), cell(m.versjon || "1.0", 70)] }),
-    ],
+    rows: metadataRows,
   });
 
   // Kap. 1 Innledning
