@@ -34,6 +34,7 @@ import { exportRosToWord } from "@/lib/ros-word-export";
 import { useCanDownload } from "@/hooks/useCanDownload";
 import { resolveDocumentTheme } from "@/lib/document-templates";
 import rosNivaaIllustrasjon from "@/assets/ros-detaljeringsnivaa.jpg";
+import { SJEKKLISTER, SAERSKILTE_FORHOLD, type Anleggstype, type Sjekklistepunkt } from "@/lib/ros-sjekklister";
 
 interface ProjectOption { id: string; name: string; address: string | null; }
 interface RosRow { id: string; name: string; project_id: string; updated_at: string; }
@@ -69,6 +70,169 @@ function JumpToPreview({ previewId }: { previewId: string }) {
   );
 }
 
+function SjekklisteDialog({
+  open, onOpenChange, anleggstype, setAnleggstype, sok, setSok,
+  valgtePunkter, setValgtePunkter, valgteForhold, setValgteForhold,
+  eksisterende, onConfirm, punktKey,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  anleggstype: Anleggstype;
+  setAnleggstype: (v: Anleggstype) => void;
+  sok: string;
+  setSok: (v: string) => void;
+  valgtePunkter: Set<string>;
+  setValgtePunkter: (v: Set<string>) => void;
+  valgteForhold: Set<string>;
+  setValgteForhold: (v: Set<string>) => void;
+  eksisterende: RosHendelse[];
+  onConfirm: () => void;
+  punktKey: (a: Anleggstype, p: Sjekklistepunkt) => string;
+}) {
+  const liste = SJEKKLISTER[anleggstype];
+  const sokLower = sok.trim().toLowerCase();
+  const filtrerte = liste.punkter.filter((p) =>
+    !sokLower || p.hendelse.toLowerCase().includes(sokLower) || p.delelement.toLowerCase().includes(sokLower)
+  );
+  const gruppert = filtrerte.reduce<Record<string, Sjekklistepunkt[]>>((acc, p) => {
+    (acc[p.delelement] ||= []).push(p);
+    return acc;
+  }, {});
+  const forholdGruppert = SAERSKILTE_FORHOLD.reduce<Record<string, typeof SAERSKILTE_FORHOLD>>((acc, f) => {
+    (acc[f.kategori] ||= []).push(f);
+    return acc;
+  }, {});
+
+  const eksisterendeSet = new Set(eksisterende.map((h) => `${h.tittel}||${h.sarbarhet}`));
+
+  const dupPunkter: string[] = [];
+  let nyeAntall = 0;
+  for (const key of valgtePunkter) {
+    const [a, del, hend] = key.split("::");
+    const p = SJEKKLISTER[a as Anleggstype]?.punkter.find((x) => x.delelement === del && x.hendelse === hend);
+    if (!p) continue;
+    if (eksisterendeSet.has(`${p.hendelse}||${p.delelement}`)) dupPunkter.push(`${p.hendelse} (${p.delelement})`);
+    else nyeAntall++;
+  }
+  for (const navn of valgteForhold) {
+    const f = SAERSKILTE_FORHOLD.find((x) => x.navn === navn);
+    if (!f) continue;
+    const sarb = `Særskilt forhold (${f.kategori})`;
+    if (eksisterendeSet.has(`${f.navn}||${sarb}`)) dupPunkter.push(`${f.navn} (${sarb})`);
+    else nyeAntall++;
+  }
+
+  const togglePunkt = (key: string) => {
+    const next = new Set(valgtePunkter);
+    if (next.has(key)) next.delete(key); else next.add(key);
+    setValgtePunkter(next);
+  };
+  const toggleForhold = (navn: string) => {
+    const next = new Set(valgteForhold);
+    if (next.has(navn)) next.delete(navn); else next.add(navn);
+    setValgteForhold(next);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle>Generer hendelser fra sjekkliste</DialogTitle>
+          <DialogDescription>
+            Basert på NVE-veilederens vedlegg 1. Velg anleggstype og hak av hendelsene som er relevante for ditt anlegg.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-3">
+          <div>
+            <Label className="text-xs">Anleggstype</Label>
+            <Select value={anleggstype} onValueChange={(v) => setAnleggstype(v as Anleggstype)}>
+              <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {(Object.keys(SJEKKLISTER) as Anleggstype[]).map((k) => (
+                  <SelectItem key={k} value={k}>{SJEKKLISTER[k].navn}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="relative">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              value={sok}
+              onChange={(e) => setSok(e.target.value)}
+              placeholder="Filtrer hendelser…"
+              className="h-9 pl-7 text-sm"
+            />
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto border rounded-md p-3 space-y-4 min-h-[200px]">
+          {Object.keys(gruppert).length === 0 ? (
+            <p className="text-sm text-muted-foreground italic">Ingen treff.</p>
+          ) : (
+            Object.entries(gruppert).map(([del, punkter]) => (
+              <div key={del} className="space-y-1.5">
+                <h4 className="text-xs font-semibold uppercase text-muted-foreground">{del}</h4>
+                {punkter.map((p) => {
+                  const key = punktKey(anleggstype, p);
+                  const checked = valgtePunkter.has(key);
+                  return (
+                    <label key={key} className="flex items-start gap-2 text-sm cursor-pointer py-0.5">
+                      <Checkbox checked={checked} onCheckedChange={() => togglePunkt(key)} className="mt-0.5" />
+                      <span>
+                        {p.hendelse} <span className="text-muted-foreground">({p.delelement})</span>
+                        {p.beskrivelse && <div className="text-xs text-muted-foreground">{p.beskrivelse}</div>}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            ))
+          )}
+
+          <div className="pt-3 border-t space-y-2">
+            <h4 className="text-xs font-semibold uppercase text-muted-foreground">Tillegg fra generell sjekkliste</h4>
+            <p className="text-xs text-muted-foreground">Særskilte forhold som kan gjelde alle anleggstyper.</p>
+            {Object.entries(forholdGruppert).map(([kat, items]) => (
+              <div key={kat} className="space-y-1">
+                <div className="text-xs font-medium capitalize">{kat}</div>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-1">
+                  {items.map((f) => {
+                    const checked = valgteForhold.has(f.navn);
+                    return (
+                      <label key={f.navn} className="flex items-center gap-2 text-sm cursor-pointer">
+                        <Checkbox checked={checked} onCheckedChange={() => toggleForhold(f.navn)} />
+                        <span>{f.navn}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {dupPunkter.length > 0 && (
+          <div className="text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded p-2">
+            <div className="font-medium mb-1">Disse hendelsene finnes allerede og vil ikke bli opprettet på nytt:</div>
+            <ul className="list-disc pl-5 space-y-0.5">
+              {dupPunkter.map((d, i) => <li key={i}>{d}</li>)}
+            </ul>
+          </div>
+        )}
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>Avbryt</Button>
+          <Button onClick={onConfirm} disabled={nyeAntall === 0}>
+            Legg til {nyeAntall} hendelser
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+
 export default function RosAnalyse() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -92,6 +256,11 @@ export default function RosAnalyse() {
   const canDownload = useCanDownload();
   const [openHendelser, setOpenHendelser] = useState<string[]>([]);
   const [hendelseSok, setHendelseSok] = useState("");
+  const [sjekklisteOpen, setSjekklisteOpen] = useState(false);
+  const [valgtAnleggstype, setValgtAnleggstype] = useState<Anleggstype>("vannkraftverk");
+  const [sjekklisteSok, setSjekklisteSok] = useState("");
+  const [valgtePunkter, setValgtePunkter] = useState<Set<string>>(new Set());
+  const [valgteForhold, setValgteForhold] = useState<Set<string>>(new Set());
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [firmaNavn, setFirmaNavn] = useState<string | null>(null);
   const [fullName, setFullName] = useState<string | null>(null);
@@ -360,6 +529,91 @@ export default function RosAnalyse() {
     }));
     setOpenHendelser((o) => [...o, id]);
   };
+
+  const punktKey = (a: Anleggstype, p: Sjekklistepunkt) => `${a}::${p.delelement}::${p.hendelse}`;
+
+  const lagHendelseFraPunkt = (p: Sjekklistepunkt): RosHendelse => ({
+    id: makeId(),
+    tittel: p.hendelse,
+    sarbarhet: p.delelement,
+    hendelse: p.hendelse + (p.beskrivelse ? ` – ${p.beskrivelse}` : ""),
+    arsak: "",
+    beskrivelseSannsynlighetFor: "",
+    beskrivelseRisikoFor: "",
+    sannsynlighet: 1,
+    konsekvens: 0,
+    tiltak: "",
+    eksisterendeBarrierer: "",
+    foreslatteTiltak: "",
+    beskrivelseEtter: "",
+    sannsynlighetEtter: 1,
+    restrisiko: "",
+    konsekvensvurderinger: [],
+    usikkerhet: "lav",
+    styrbarhet: "medium",
+  } as RosHendelse);
+
+  const handleGenererFraSjekkliste = () => {
+    const eksisterende = new Set(content.hendelser.map((h) => `${h.tittel}||${h.sarbarhet}`));
+    const nye: RosHendelse[] = [];
+
+    // Sjekklistepunkter (på tvers av valgte anleggstyper)
+    for (const key of valgtePunkter) {
+      const [anleggstype, delelement, hendelse] = key.split("::");
+      const liste = SJEKKLISTER[anleggstype as Anleggstype];
+      const punkt = liste?.punkter.find((p) => p.delelement === delelement && p.hendelse === hendelse);
+      if (!punkt) continue;
+      const dupKey = `${punkt.hendelse}||${punkt.delelement}`;
+      if (eksisterende.has(dupKey)) continue;
+      eksisterende.add(dupKey);
+      nye.push(lagHendelseFraPunkt(punkt));
+    }
+
+    // Særskilte forhold
+    for (const navn of valgteForhold) {
+      const f = SAERSKILTE_FORHOLD.find((x) => x.navn === navn);
+      if (!f) continue;
+      const sarbarhet = `Særskilt forhold (${f.kategori})`;
+      const dupKey = `${f.navn}||${sarbarhet}`;
+      if (eksisterende.has(dupKey)) continue;
+      eksisterende.add(dupKey);
+      nye.push({
+        id: makeId(),
+        tittel: f.navn,
+        sarbarhet,
+        hendelse: f.navn,
+        arsak: "",
+        beskrivelseSannsynlighetFor: "",
+        beskrivelseRisikoFor: "",
+        sannsynlighet: 1,
+        konsekvens: 0,
+        tiltak: "",
+        eksisterendeBarrierer: "",
+        foreslatteTiltak: "",
+        beskrivelseEtter: "",
+        sannsynlighetEtter: 1,
+        restrisiko: "",
+        konsekvensvurderinger: [],
+        usikkerhet: "lav",
+        styrbarhet: "medium",
+      } as RosHendelse);
+    }
+
+    if (nye.length === 0) {
+      toast({ title: "Ingen nye hendelser", description: "Alle valgte hendelser finnes allerede." });
+      return;
+    }
+
+    setContent((c) => ({ ...c, hendelser: [...c.hendelser, ...nye] }));
+    setOpenHendelser((o) => [...o, ...nye.map((h) => h.id)]);
+    toast({ title: `${nye.length} hendelser lagt til`, description: "Husk å fylle ut årsak, sannsynlighet og konsekvens for hver." });
+    setValgtePunkter(new Set());
+    setValgteForhold(new Set());
+    setSjekklisteSok("");
+    setSjekklisteOpen(false);
+  };
+
+
 
   const removeHendelse = (id: string) => {
     setContent((c) => ({
@@ -1018,10 +1272,32 @@ export default function RosAnalyse() {
           <section className="space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-2">
               <div className="flex items-center gap-1"><h2 className="text-lg font-semibold">3. Hendelser</h2><JumpToPreview previewId="kap-3" /></div>
-              <Button size="sm" variant="outline" onClick={addHendelse}>
-                <Plus className="h-4 w-4 mr-1" /> Ny hendelse
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button size="sm" variant="outline" onClick={() => setSjekklisteOpen(true)}>
+                  <Plus className="h-4 w-4 mr-1" /> Generer fra sjekkliste
+                </Button>
+                <Button size="sm" variant="outline" onClick={addHendelse}>
+                  <Plus className="h-4 w-4 mr-1" /> Ny hendelse
+                </Button>
+              </div>
             </div>
+
+            <SjekklisteDialog
+              open={sjekklisteOpen}
+              onOpenChange={setSjekklisteOpen}
+              anleggstype={valgtAnleggstype}
+              setAnleggstype={setValgtAnleggstype}
+              sok={sjekklisteSok}
+              setSok={setSjekklisteSok}
+              valgtePunkter={valgtePunkter}
+              setValgtePunkter={setValgtePunkter}
+              valgteForhold={valgteForhold}
+              setValgteForhold={setValgteForhold}
+              eksisterende={content.hendelser}
+              onConfirm={handleGenererFraSjekkliste}
+              punktKey={punktKey}
+            />
+
             {content.hendelser.length === 0 ? (
               <p className="text-sm text-muted-foreground italic">Ingen hendelser ennå.</p>
             ) : (
