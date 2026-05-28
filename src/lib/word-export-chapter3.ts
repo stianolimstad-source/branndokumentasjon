@@ -1027,11 +1027,15 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   // ===== 3.6 Materialer og produkters egenskaper ved brann =====
   rows.push(sectionHeaderRow("3.6   §11-9 Materialer og produkters egenskaper ved brann"));
   rows.push(columnHeaderRow());
+  // A. Generelt
+  rows.push(graySubSectionHeaderRow("A. Generelt"));
   rows.push(contentRow(
     "Generelt",
-    "Byggverk skal prosjekteres og utføres slik at det er liten sannsynlighet for at brann skal oppstå, utvikle og spre seg. Det skal tas hensyn til byggverkets bruk og den nødvendige tiden for rømning og redning.",
+    "Byggverk skal prosjekteres og utføres slik at det er liten sannsynlighet for at brann skal oppstå, utvikle og spre seg. Det skal tas hensyn til byggverkets bruk og den nødvendige tiden for rømning og redning. Brannteknisk klassifisering gjelder kombinasjonen overflate + underlag iht. NS-EN 13501-1.",
     "RIBr"
   ));
+  // B. Innvendige overflater og kledninger
+  rows.push(graySubSectionHeaderRow("B. Innvendige overflater og kledninger"));
   // Overflater i hulrom – egen rad
   if (formData.matNote2) {
     rows.push(contentRow(
