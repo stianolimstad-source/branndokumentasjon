@@ -667,7 +667,9 @@ export const exportRosToWord = async (options: ExportOptions) => {
                 ],
               })
             : dashCell(4),
-          smallCell(h.restrisiko || "", 9),
+          smallCell(h.restrisiko || "", 8),
+          vurderingCell(h.usikkerhet, USIKK_SHADE, 4),
+          vurderingCell(h.styrbarhet, STYRB_SHADE, 4),
         ],
       }),
     );
