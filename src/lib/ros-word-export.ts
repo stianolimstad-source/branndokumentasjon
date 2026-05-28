@@ -1262,6 +1262,17 @@ export const exportRosToWord = async (options: ExportOptions) => {
         properties: {
           type: SectionType.NEXT_PAGE,
           page: {
+            size: { width: 11906, height: 16838, orientation: PageOrientation.PORTRAIT },
+          },
+        },
+        headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
+        footers: { default: buildFooter(theme) },
+        children: [...beredskapsforskriftBlocks],
+      },
+      {
+        properties: {
+          type: SectionType.NEXT_PAGE,
+          page: {
             size: { width: 11906, height: 16838, orientation: PageOrientation.LANDSCAPE },
           },
         },
@@ -1279,6 +1290,17 @@ export const exportRosToWord = async (options: ExportOptions) => {
         headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
         footers: { default: buildFooter(theme) },
         children: [...beregningsgrunnlag],
+      },
+      {
+        properties: {
+          type: SectionType.NEXT_PAGE,
+          page: {
+            size: { width: 11906, height: 16838, orientation: PageOrientation.LANDSCAPE },
+          },
+        },
+        headers: { default: buildHeader(theme, { logo, documentLabel: "ROS-analyse" }) },
+        footers: { default: buildFooter(theme) },
+        children: [...tiltaksplanBlocks],
       },
       ...(harBowTie
         ? [
