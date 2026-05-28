@@ -1,5 +1,11 @@
 import React, { useRef, useState } from "react";
-import { risikoFarge } from "./RosMatriks";
+import RosMatriks, {
+  risikoFarge,
+  tilgjengeligeDimensjoner,
+  byggHendelseIder,
+  tellRisikoSoner,
+  harEtterData,
+} from "./RosMatriks";
 import rosNivaaIllustrasjon from "@/assets/ros-detaljeringsnivaa.jpg";
 import {
   KONSEKVENS_KRITERIER,
