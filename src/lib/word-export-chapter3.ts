@@ -367,10 +367,35 @@ const isSeksjoneringRequired = (areal: string, brannenergi: string, tiltak: stri
   return arealNum > maksAreal && maksAreal !== Infinity;
 };
 
+// ----- Fravik fra preakseptert ytelse (per TEK17-paragraf) -----
+interface FravikLite {
+  index: number;
+  navn: string;
+  fravikBeskrivelse: string;
+  konklusjon: string;
+  paragrafIds: string[];
+  status: string;
+}
+
+function fravikRowsForParagraf(paragrafId: string, fravikList: FravikLite[] | undefined): TableRow[] {
+  if (!fravikList || fravikList.length === 0) return [];
+  const matching = fravikList.filter((f) => f.paragrafIds.includes(paragrafId));
+  if (matching.length === 0) return [];
+  const out: TableRow[] = [];
+  out.push(graySubSectionHeaderRow(`Fravik fra preakseptert ytelse (§ ${paragrafId})`));
+  matching.forEach((f) => {
+    const tittel = (f.navn || f.fravikBeskrivelse.split("\n")[0] || "Uten tittel").trim();
+    const statusLabel = f.status === "akseptert" ? "Akseptert" : "Foreslått";
+    out.push(contentRow(`F${f.index} – ${tittel}`, statusLabel, "BRA"));
+  });
+  return out;
+}
+
 export async function buildChapter3Table(formData: Record<string, any>): Promise<Table> {
   const rows: TableRow[] = [];
   const bygningsdeler = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
   const branncelleTyper = Array.isArray(formData.branncelleTyper) ? formData.branncelleTyper : [];
+  const fravikList: FravikLite[] | undefined = Array.isArray(formData._fravikList) ? formData._fravikList : undefined;
 
   // ===== 3.1 Bæreevne og stabilitet =====
   rows.push(sectionHeaderRow("3.1   §11-4 Bæreevne og stabilitet"));
@@ -437,6 +462,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
   rows.push(...await tilstandRow(formData, "3_1", "3.1 Bæreevne og stabilitet"));
 
+  rows.push(...fravikRowsForParagraf("11-4", fravikList));
+
   // ===== 3.2 Sikkerhet ved eksplosjon =====
   rows.push(sectionHeaderRow("3.2   §11-5 Sikkerhet ved eksplosjon"));
   rows.push(columnHeaderRow());
@@ -467,6 +494,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     rows.push(contentRow("Kommentar", formData.eksplosjonKommentar, "-"));
   }
   rows.push(...await tilstandRow(formData, "3_2", "3.2 Sikkerhet ved eksplosjon"));
+
+  rows.push(...fravikRowsForParagraf("11-5", fravikList));
 
   // ===== 3.3 Brannspredning mellom byggverk =====
   rows.push(sectionHeaderRow("3.3   §11-6 Brannspredning mellom byggverk"));
@@ -520,6 +549,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
   rows.push(...await tilstandRow(formData, "3_3", "3.3 Brannspredning mellom byggverk"));
   }
+
+  rows.push(...fravikRowsForParagraf("11-6", fravikList));
 
   // ===== 3.4 Brannseksjoner =====
   rows.push(sectionHeaderRow("3.4   §11-7 Brannseksjoner"));
@@ -611,6 +642,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     rows.push(contentRow("Kommentar", formData.brannseksjonerKommentar, "-"));
   }
   rows.push(...await tilstandRow(formData, "3_4", "3.4 Brannseksjoner"));
+
+  rows.push(...fravikRowsForParagraf("11-7", fravikList));
 
   // ===== 3.5 Brannceller =====
   rows.push(sectionHeaderRow("3.5   §11-8 Brannceller"));
@@ -989,6 +1022,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
   rows.push(...await tilstandRow(formData, "3_5", "3.5 Brannceller"));
 
+  rows.push(...fravikRowsForParagraf("11-8", fravikList));
+
   // ===== 3.6 Materialer og produkters egenskaper ved brann =====
   rows.push(sectionHeaderRow("3.6   §11-9 Materialer og produkters egenskaper ved brann"));
   rows.push(columnHeaderRow());
@@ -1174,6 +1209,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
   rows.push(...await tilstandRow(formData, "3_6", "3.6 Materialer og produkter"));
 
+  rows.push(...fravikRowsForParagraf("11-9", fravikList));
+
   // ===== 3.7 Tekniske installasjoner =====
   rows.push(sectionHeaderRow("3.7   §11-10 Tekniske installasjoner"));
   rows.push(columnHeaderRow());
@@ -1304,6 +1341,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
   rows.push(...await tilstandRow(formData, "3_7", "3.7 Tekniske installasjoner"));
 
+  rows.push(...fravikRowsForParagraf("11-10", fravikList));
+
   // ===== 3.8 Generelle krav om rømning og redning =====
   rows.push(sectionHeaderRow("3.8   §11-11 Generelle krav om rømning og redning"));
   rows.push(columnHeaderRow());
@@ -1331,6 +1370,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
       ));
     }
   }
+
+  rows.push(...fravikRowsForParagraf("11-11", fravikList));
 
   // ===== 3.9 Tilrettelegging for rømning og redning =====
   rows.push(sectionHeaderRow(formData.regelverk === "BF85" ? "3.9   Tiltak for å påvirke rømnings- og redningstider" : "3.9   §11-12 Tilrettelegging for rømning og redning"));
@@ -1516,6 +1557,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     rows.push(contentRow("Kommentar", formData.tilretteleggingKommentar, "-"));
   }
   rows.push(...await tilstandRow(formData, "3_9", formData.regelverk === "BF85" ? "3.9 Tiltak for å påvirke rømnings- og redningstider" : "3.9 Tilrettelegging for rømning"));
+
+  rows.push(...fravikRowsForParagraf("11-12", fravikList));
 
   // ===== 3.10 Utgang fra branncelle / BF85 §7 Rømningsveg =====
   const isBF85Tilstand310 = formData.documentType === "tilstandsvurdering" && formData.regelverk === "BF85";
@@ -1708,6 +1751,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   rows.push(...await tilstandRow(formData, "3_10", "3.10 Utgang fra branncelle"));
   }
 
+  rows.push(...fravikRowsForParagraf("11-13", fravikList));
+
   // ===== 3.11 Rømningsvei (skjules for BF85-tilstand) =====
   if (!isBF85Tilstand310) {
   rows.push(sectionHeaderRow("3.11   §11-14 Rømningsvei"));
@@ -1745,6 +1790,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
   rows.push(...await tilstandRow(formData, "3_11", "3.11 Rømningsvei"));
   }
+
+  rows.push(...fravikRowsForParagraf("11-14", fravikList));
 
   // ===== 3.12 / BF85 3.11 Tilrettelegging for redning av husdyr =====
   rows.push(sectionHeaderRow(isBF85Tilstand310
@@ -1789,6 +1836,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     rows.push(contentRow("", "Tilrettelegging for redning av husdyr er ikke relevant for dette tiltaket.", "-"));
   }
   rows.push(...await tilstandRow(formData, "3_12", isBF85Tilstand310 ? "3.11 Redning av husdyr" : "3.12 Redning av husdyr"));
+
+  rows.push(...fravikRowsForParagraf("11-15", fravikList));
 
   // ===== 3.13 / BF85 3.12 Manuell slokking =====
   rows.push(sectionHeaderRow(isBF85Tilstand310 ? "3.12   Tilrettelegging for manuell slokking" : "3.13   §11-16 Tilrettelegging for manuell slokking"));
@@ -1837,6 +1886,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
   rows.push(...await tilstandRow(formData, "3_13", isBF85Tilstand310 ? "3.12 Manuell slokking" : "3.13 Manuell slokking"));
 
+  rows.push(...fravikRowsForParagraf("11-16", fravikList));
+
   // ===== 3.14 / BF85 3.13 Tilrettelegging for slokkemannskap =====
   rows.push(sectionHeaderRow(isBF85Tilstand310 ? "3.13   Tilrettelegging for slokkemannskap" : "3.14   §11-17 Tilrettelegging for slokkemannskap"));
   rows.push(columnHeaderRow());
@@ -1875,6 +1926,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     }
   }
   rows.push(...await tilstandRow(formData, "3_14", isBF85Tilstand310 ? "3.13 Slokkemannskap" : "3.14 Slokkemannskap"));
+
+  rows.push(...fravikRowsForParagraf("11-17", fravikList));
 
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },

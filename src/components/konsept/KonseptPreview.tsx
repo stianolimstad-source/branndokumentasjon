@@ -306,6 +306,46 @@ const TilstandTableRow = ({ data, sectionLabel, colSpan = 3 }: { data: TilstandD
   );
 };
 
+interface FravikLitePreview {
+  fravikId: string;
+  index: number;
+  navn: string;
+  fravikBeskrivelse: string;
+  konklusjon: string;
+  paragrafIds: string[];
+  status: string;
+}
+
+const FravikPreviewRow = ({ paragrafId, fravikList, colSpan = 3 }: { paragrafId: string; fravikList?: FravikLitePreview[]; colSpan?: number }) => {
+  if (!fravikList || fravikList.length === 0) return null;
+  const matching = fravikList.filter((f) => f.paragrafIds.includes(paragrafId));
+  if (matching.length === 0) return null;
+  return (
+    <tr>
+      <td className="border border-gray-400" colSpan={colSpan} style={{ padding: 0, background: "#FEF2F2" }}>
+        <div style={{ background: "#FECACA", color: "#7F1D1D", padding: "6px 12px", fontSize: 11, fontWeight: 700, letterSpacing: 0.4, textTransform: "uppercase", borderBottom: "2px solid #DC2626" }}>
+          Fravik fra preakseptert ytelse (§ {paragrafId})
+        </div>
+        <div style={{ padding: "8px 12px" }}>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            {matching.map((f) => {
+              const tittel = (f.navn || f.fravikBeskrivelse.split("\n")[0] || "Uten tittel").trim();
+              const statusLabel = f.status === "akseptert" ? "Akseptert" : "Foreslått";
+              return (
+                <li key={f.fravikId} style={{ fontSize: 11, padding: "2px 0", display: "flex", gap: 8 }}>
+                  <span style={{ fontWeight: 700, minWidth: 28 }}>F{f.index}</span>
+                  <span style={{ flex: 1 }}>{tittel}</span>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: "#7F1D1D" }}>{statusLabel}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </td>
+    </tr>
+  );
+};
+
 interface KonseptPreviewProps {
   formData: Record<string, any>;
   logoUrl?: string | null;
@@ -313,9 +353,10 @@ interface KonseptPreviewProps {
   documentType?: "brannkonsept" | "tilstandsvurdering";
   hideCover?: boolean;
   theme?: { template?: "klassisk" | "moderne" | "minimalistisk"; primaryColor: string; accentColor: string; fontFamily: string; companyName?: string | null; extras?: { topbar_height?: "off" | "thin" | "thick" | "extra" } } | null;
+  fravikList?: FravikLitePreview[];
 }
 
-const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannkonsept", hideCover = false, theme }: KonseptPreviewProps) => {
+const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannkonsept", hideCover = false, theme, fravikList }: KonseptPreviewProps) => {
   // Ensure arrays have defaults
   const bygningsdeler = Array.isArray(formData.bygningsdeler) ? formData.bygningsdeler : [];
   const grunnlagsdokumenter = Array.isArray(formData.grunnlagsdokumenter) ? formData.grunnlagsdokumenter : [];
@@ -1388,6 +1429,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.2 §11-5 Sikkerhet ved eksplosjon */}
+            <FravikPreviewRow paragrafId="11-4" fravikList={fravikList} />
             <tr id="preview-3-2" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
                 {sp}.2 &nbsp;&nbsp; {formData.regelverk === "BF85" ? <>Sikkerhet ved eksplosjon <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§ 11-5)</span></> : "§11-5 Sikkerhet ved eksplosjon"}
@@ -1442,6 +1484,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.3 §11-6 / BF85 :32 Brannspredning mellom byggverk */}
+            <FravikPreviewRow paragrafId="11-5" fravikList={fravikList} />
             <tr id="preview-3-3" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
                 {sp}.3 &nbsp;&nbsp; {formData.regelverk === "BF85" ? <>Avstand mellom bygninger (Kap. 30:32) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-6 Tiltak mot brannspredning mellom byggverk)</span></> : "§11-6 Brannspredning mellom byggverk"}
@@ -1643,6 +1686,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.4 §11-7 Brannseksjoner / BF85 Kap 30:6 Brannteknisk oppdeling */}
+            <FravikPreviewRow paragrafId="11-6" fravikList={fravikList} />
             <tr id="preview-3-4" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.4 &nbsp;&nbsp; {isBF85 ? <>Brannteknisk oppdeling (Kap. 30:6) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-7 Brannseksjoner)</span></> : "§11-7 Brannseksjoner"}</td>
             </tr>
@@ -2010,6 +2054,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.5 §11-8 Brannceller */}
+            <FravikPreviewRow paragrafId="11-7" fravikList={fravikList} />
             <tr id="preview-3-5" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.5 &nbsp;&nbsp; {isBF85 ? <>Branncelleinndeling (Kap. 30:63–65) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-8 Brannceller)</span></> : "§11-8 Brannceller"}</td>
             </tr>
@@ -3189,6 +3234,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.6 §11-9 Materialer og produkter */}
+            <FravikPreviewRow paragrafId="11-8" fravikList={fravikList} />
             <tr id="preview-3-6" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.6 &nbsp;&nbsp; {isBF85 ? <>Kledninger og overflater for vegger og tak (:42) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-9 Materialer og produkters egenskaper ved brann)</span></> : "§11-9 Materialer og produkters egenskaper ved brann"}</td>
             </tr>
@@ -3865,6 +3911,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
 
             {/* 3.7 §11-10 Tekniske installasjoner */}
+            <FravikPreviewRow paragrafId="11-9" fravikList={fravikList} />
             <tr id="preview-3-7" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.7 &nbsp;&nbsp; {isBF85 ? <>tekniske installasjoner i BF 85 <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-10 Tekniske installasjoner)</span></> : "§11-10 Tekniske installasjoner"}</td>
             </tr>
@@ -4104,6 +4151,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_7"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_7"]} sectionLabel="3.7 Tekniske installasjoner" />
             )}
+            <FravikPreviewRow paragrafId="11-10" fravikList={fravikList} />
           </tbody>
         </table>
 
@@ -4166,6 +4214,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
 
             {/* 3.9 §11-12 Tilrettelegging for rømning */}
+            <FravikPreviewRow paragrafId="11-11" fravikList={fravikList} />
             <tr id="preview-3-9" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.9 &nbsp;&nbsp; {isBF85 ? <>Tiltak for å påvirke rømnings- og redningstider <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(Brannalarmanlegg og røykvarsler, Kap. 31–39)</span></> : "§11-12 Tilrettelegging for rømning og redning"}</td>
             </tr>
@@ -4630,6 +4679,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
 
             {/* 3.10 §11-13 Utgang fra branncelle / BF85 §7 Rømningsveg */}
+            <FravikPreviewRow paragrafId="11-12" fravikList={fravikList} />
             <tr id="preview-3-10" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.10 &nbsp;&nbsp; {isBF85 ? "Rømningsveg (BF85 §7)" : "§11-13 Utgang fra branncelle"}</td>
             </tr>
@@ -5134,6 +5184,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {/* 3.11 §11-14 Rømningsvei */}
             {!isBF85 && (
               <>
+            <FravikPreviewRow paragrafId="11-13" fravikList={fravikList} />
             <tr id="preview-3-11" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.11 &nbsp;&nbsp; {isBF85 ? <>Trapperom og heissjakt (Kap. 30:7/30:41) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-14 Rømningsvei)</span></> : "§11-14 Rømningsvei"}</td>
             </tr>
@@ -5418,6 +5469,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
 
             {/* 3.12 §11-15 Tilrettelegging for redning av husdyr */}
+            <FravikPreviewRow paragrafId="11-14" fravikList={fravikList} />
             <tr id="preview-3-12" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.{isBF85 ? "11" : "12"} &nbsp;&nbsp; {isBF85 ? <>Tilrettelegging for redning av husdyr <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(TEK17 § 11-15 brukt som referanse)</span></> : "§11-15 Tilrettelegging for redning av husdyr"}</td>
             </tr>
@@ -5527,6 +5579,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.13 §11-16 Manuell slokking */}
+            <FravikPreviewRow paragrafId="11-15" fravikList={fravikList} />
             <tr id="preview-3-13" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.{isBF85 ? "12" : "13"} &nbsp;&nbsp; {isBF85 ? <>Slokkingsredskap og slokkingsvann (Kap. 30:93/31–39) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-16 Tilrettelegging for manuell slokking)</span></> : "§11-16 Tilrettelegging for manuell slokking"}</td>
             </tr>
@@ -5704,6 +5757,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.14 §11-17 Tilrettelegging for slokkemannskap */}
+            <FravikPreviewRow paragrafId="11-16" fravikList={fravikList} />
             <tr id="preview-3-14" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.{isBF85 ? "13" : "14"} &nbsp;&nbsp; {isBF85 ? <>Atkomst for brannvesenet (Kap. 30:92/94/95) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-17 Tilrettelegging for slokkemannskap)</span></> : "§11-17 Tilrettelegging for slokkemannskap"}</td>
             </tr>
@@ -5884,6 +5938,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_14"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_14"]} sectionLabel={isBF85 ? "3.13 Slokkemannskap" : "3.14 Slokkemannskap"} />
             )}
+            <FravikPreviewRow paragrafId="11-17" fravikList={fravikList} />
           </tbody>
         </table>
       </section>

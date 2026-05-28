@@ -1668,7 +1668,7 @@ const Konsept = () => {
   };
 
   const previewLogoUrl = previewTheme?.logoUrl ?? logoUrl;
-  const renderPreview = () => <KonseptPreview formData={{...formData, onUpdateField: (field: string, value: any) => setFormData(prev => ({...prev, [field]: value}))}} logoUrl={previewLogoUrl} authorInfo={authorInfo} documentType={documentType} theme={previewTheme} />;
+  const renderPreview = () => <KonseptPreview formData={{...formData, onUpdateField: (field: string, value: any) => setFormData(prev => ({...prev, [field]: value}))}} logoUrl={previewLogoUrl} authorInfo={authorInfo} documentType={documentType} theme={previewTheme} fravikList={fravikList} />;
 
   const exportToWord = async () => {
     const tableBorders = {
@@ -2484,7 +2484,7 @@ const Konsept = () => {
               spacing: { before: 200, after: 200 },
             }),
             // Tabell 3 - 3-column structure matching preview
-            await buildChapter3Table(formData),
+            await buildChapter3Table({ ...formData, _fravikList: fravikList }),
           ],
         },
         // 4. Utførelses- og driftsfasen + 5. Revisjonshistorikk - egen side
