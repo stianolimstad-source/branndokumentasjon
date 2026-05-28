@@ -681,7 +681,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
         new TableRow({
           children: [
             new TableCell({
-              columnSpan: 15,
+              columnSpan: 17,
               width: { size: 100, type: WidthType.PERCENTAGE },
               shading: { fill: "F7F9FC", type: ShadingType.CLEAR, color: "auto" },
               children: [new Paragraph({ children: [text(`Beregninger: ${ids} – se kapittel ${beregningNr} Beregningsgrunnlag.`, { italics: true, size: 14 })] })],
@@ -694,7 +694,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
         new TableRow({
           children: [
             new TableCell({
-              columnSpan: 15,
+              columnSpan: 17,
               width: { size: 100, type: WidthType.PERCENTAGE },
               shading: { fill: "FFF3CD", type: ShadingType.CLEAR, color: "auto" },
               children: [new Paragraph({ children: [text(`Krever beregning – ikke registrert ennå${h.beregningTekst ? `: ${h.beregningTekst}` : ""}`, { bold: true, size: 14, color: "7A5A00" })] })],
@@ -715,7 +715,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
       new TableRow({
         children: [
           new TableCell({
-            columnSpan: 15,
+            columnSpan: 17,
             width: { size: 100, type: WidthType.PERCENTAGE },
             shading: { fill: "F7F9FC", type: ShadingType.CLEAR, color: "auto" },
             margins: { top: 100, bottom: 100, left: 300, right: 100 },
