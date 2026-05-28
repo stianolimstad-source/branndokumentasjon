@@ -1212,7 +1212,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                           <tr>
                             <td colSpan={18} style={{ ...tdStyle, padding: "4px 10px", background: "#eef7ff" }}>
                               <span style={{ fontSize: 9, fontStyle: "italic", color: "#1e3a5f" }}>
-                                Tiltak: {tilkTiltak.map((t) => `${tIder.get(t.id) || "T?"} – ${t.tittel} [${TILTAK_STATUS_LABEL[t.status]}]`).join("; ")} – se kapittel 6 Tiltaksplan.
+                                Tiltak: {tilkTiltak.map((t) => `${tIder.get(t.id) || "T?"} – ${t.tittel} [${TILTAK_STATUS_LABEL[t.status]}]`).join("; ")} – se kapittel 7 Tiltaksplan.
                               </span>
                             </td>
                           </tr>
