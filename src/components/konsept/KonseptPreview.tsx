@@ -836,7 +836,46 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
         {isTilstand && (
         <>
-        <h3 className="font-semibold mb-2">1.2 Avgrensning av vurderingen</h3>
+        <h3 className="font-semibold mb-2">1.2 Befarings- og analysegrunnlag</h3>
+        <table className="w-full border-collapse border border-gray-400 text-xs mb-3">
+          <tbody>
+            <tr>
+              <td className="border border-gray-400 p-2 font-semibold w-1/3">Befaringsdato</td>
+              <td className="border border-gray-400 p-2">{formData.befaringsdato || "[Ikke angitt]"}</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-400 p-2 font-semibold">Befaringsdeltakere</td>
+              <td className="border border-gray-400 p-2 whitespace-pre-wrap">{formData.befaringsdeltakere || "[Ikke angitt]"}</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-400 p-2 font-semibold">NS 3424-nivå</td>
+              <td className="border border-gray-400 p-2">
+                Nivå {formData.ns3424Nivaa ?? "1"} – {(formData.ns3424Nivaa ?? "1") === "3" ? "Fullstendig registrering med destruktive prøver og laboratorieanalyser" : (formData.ns3424Nivaa ?? "1") === "2" ? "Mer omfattende registrering, kan inkludere åpning av enkelte konstruksjoner" : "Visuell registrering, enkel vurdering av synlige bygningsdeler"}
+              </td>
+            </tr>
+            <tr>
+              <td className="border border-gray-400 p-2 font-semibold">Befaringsmetode og omfang</td>
+              <td className="border border-gray-400 p-2 whitespace-pre-wrap">{formData.befaringsmetode || "[Ikke angitt]"}</td>
+            </tr>
+            <tr>
+              <td className="border border-gray-400 p-2 font-semibold">Dokumentasjon gjennomgått</td>
+              <td className="border border-gray-400 p-2 whitespace-pre-wrap">{formData.gjennomgaattDokumentasjon || "[Ikke angitt]"}</td>
+            </tr>
+          </tbody>
+        </table>
+        {((formData.begrensninger && formData.begrensninger.length > 0) || formData.andreBegrensninger) && (
+          <div className="mb-3">
+            <p className="font-semibold mb-1">Begrensninger i vurderingen</p>
+            <ul className="list-disc ml-6">
+              {(formData.begrensninger || []).map((b: string, i: number) => (
+                <li key={i}>{b}</li>
+              ))}
+              {formData.andreBegrensninger && <li>{formData.andreBegrensninger}</li>}
+            </ul>
+          </div>
+        )}
+
+        <h3 className="font-semibold mb-2">1.3 Avgrensning av vurderingen</h3>
         <p className="ml-4 mb-3">{formData.avgrensning || "[Avgrensning beskrives]"}</p>
 
         <h3 className="font-semibold mb-2">1.3 Kvalitetssikring (KS)</h3>
