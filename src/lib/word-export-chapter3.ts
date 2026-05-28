@@ -1329,6 +1329,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
   rows.push(...await tilstandRow(formData, "3_7", "3.7 Tekniske installasjoner"));
 
+  rows.push(...fravikRowsForParagraf("11-10", fravikList));
+
   // ===== 3.8 Generelle krav om rømning og redning =====
   rows.push(sectionHeaderRow("3.8   §11-11 Generelle krav om rømning og redning"));
   rows.push(columnHeaderRow());
