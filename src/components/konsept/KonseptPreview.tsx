@@ -306,6 +306,46 @@ const TilstandTableRow = ({ data, sectionLabel, colSpan = 3 }: { data: TilstandD
   );
 };
 
+interface FravikLitePreview {
+  fravikId: string;
+  index: number;
+  navn: string;
+  fravikBeskrivelse: string;
+  konklusjon: string;
+  paragrafIds: string[];
+  status: string;
+}
+
+const FravikPreviewRow = ({ paragrafId, fravikList, colSpan = 3 }: { paragrafId: string; fravikList?: FravikLitePreview[]; colSpan?: number }) => {
+  if (!fravikList || fravikList.length === 0) return null;
+  const matching = fravikList.filter((f) => f.paragrafIds.includes(paragrafId));
+  if (matching.length === 0) return null;
+  return (
+    <tr>
+      <td className="border border-gray-400" colSpan={colSpan} style={{ padding: 0, background: "#FEF2F2" }}>
+        <div style={{ background: "#FECACA", color: "#7F1D1D", padding: "6px 12px", fontSize: 11, fontWeight: 700, letterSpacing: 0.4, textTransform: "uppercase", borderBottom: "2px solid #DC2626" }}>
+          Fravik fra preakseptert ytelse (§ {paragrafId})
+        </div>
+        <div style={{ padding: "8px 12px" }}>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            {matching.map((f) => {
+              const tittel = (f.navn || f.fravikBeskrivelse.split("\n")[0] || "Uten tittel").trim();
+              const statusLabel = f.status === "akseptert" ? "Akseptert" : "Foreslått";
+              return (
+                <li key={f.fravikId} style={{ fontSize: 11, padding: "2px 0", display: "flex", gap: 8 }}>
+                  <span style={{ fontWeight: 700, minWidth: 28 }}>F{f.index}</span>
+                  <span style={{ flex: 1 }}>{tittel}</span>
+                  <span style={{ fontSize: 10, fontWeight: 600, color: "#7F1D1D" }}>{statusLabel}</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </td>
+    </tr>
+  );
+};
+
 interface KonseptPreviewProps {
   formData: Record<string, any>;
   logoUrl?: string | null;
@@ -313,6 +353,7 @@ interface KonseptPreviewProps {
   documentType?: "brannkonsept" | "tilstandsvurdering";
   hideCover?: boolean;
   theme?: { template?: "klassisk" | "moderne" | "minimalistisk"; primaryColor: string; accentColor: string; fontFamily: string; companyName?: string | null; extras?: { topbar_height?: "off" | "thin" | "thick" | "extra" } } | null;
+  fravikList?: FravikLitePreview[];
 }
 
 const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannkonsept", hideCover = false, theme }: KonseptPreviewProps) => {
