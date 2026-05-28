@@ -6380,7 +6380,7 @@ const Konsept = () => {
                             : null;
 
                           // Automatiske krav for skole, barnehage, fritidshjem
-                          const isSkoleBarneHage = ["Skole", "Barnehage", "Fritidshjem"].includes(formData.bygningstype);
+                          const isSkoleBarneHage = ["Skole", "Barnehage"].includes(formData.bygningstype);
 
                           if (isSkoleBarneHage && floors > 0) {
                             const isOver8 = floors > 8;
