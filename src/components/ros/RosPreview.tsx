@@ -188,6 +188,7 @@ export interface RosContent {
   beregninger?: RosBeregning[];
   bowTies?: RosBowTie[];
   beredskapsforskrift?: BfkVurdering[];
+  tiltaksplan?: RosTiltak[];
   oppsummering: string;
   revisjonshistorikk: RosRevisjon[];
 }
