@@ -2256,9 +2256,40 @@ const Konsept = () => {
                 ],
               }),
             ] : [
-              // Tilstandsvurdering: 1.2 Avgrensning
+              // Tilstandsvurdering: 1.2 Befarings- og analysegrunnlag
               new Paragraph({
-                children: [new TextRun({ text: "1.2 Avgrensning av vurderingen", bold: true, size: 24 })],
+                children: [new TextRun({ text: "1.2 Befarings- og analysegrunnlag", bold: true, size: 24 })],
+                spacing: { before: 200, after: 100 },
+              }),
+              new Table({
+                width: { size: 100, type: WidthType.PERCENTAGE },
+                rows: [
+                  new TableRow({ children: [createTableCell("Befaringsdato", true, 33), createTableCell(formData.befaringsdato || "[Ikke angitt]")] }),
+                  new TableRow({ children: [createTableCell("Befaringsdeltakere", true, 33), createTableCell(formData.befaringsdeltakere || "[Ikke angitt]")] }),
+                  new TableRow({ children: [createTableCell("NS 3424-nivå", true, 33), createTableCell(`Nivå ${formData.ns3424Nivaa} – ${formData.ns3424Nivaa === "3" ? "Fullstendig registrering med destruktive prøver og laboratorieanalyser" : formData.ns3424Nivaa === "2" ? "Mer omfattende registrering, kan inkludere åpning av enkelte konstruksjoner" : "Visuell registrering, enkel vurdering av synlige bygningsdeler"}`)] }),
+                  new TableRow({ children: [createTableCell("Befaringsmetode og omfang", true, 33), createTableCell(formData.befaringsmetode || "[Ikke angitt]")] }),
+                  new TableRow({ children: [createTableCell("Dokumentasjon gjennomgått", true, 33), createTableCell(formData.gjennomgaattDokumentasjon || "[Ikke angitt]")] }),
+                ],
+              }),
+              ...((formData.begrensninger && formData.begrensninger.length > 0) || formData.andreBegrensninger ? [
+                new Paragraph({
+                  children: [new TextRun({ text: "Begrensninger i vurderingen", bold: true, size: 22 })],
+                  spacing: { before: 200, after: 100 },
+                }),
+                ...(formData.begrensninger || []).map((b: string) => new Paragraph({
+                  text: b,
+                  bullet: { level: 0 },
+                  spacing: { after: 50 },
+                })),
+                ...(formData.andreBegrensninger ? [new Paragraph({
+                  text: formData.andreBegrensninger,
+                  bullet: { level: 0 },
+                  spacing: { after: 50 },
+                })] : []),
+              ] : []),
+              // 1.3 Avgrensning
+              new Paragraph({
+                children: [new TextRun({ text: "1.3 Avgrensning av vurderingen", bold: true, size: 24 })],
                 spacing: { before: 200, after: 100 },
               }),
               new Paragraph({
