@@ -4341,7 +4341,41 @@ const Konsept = () => {
                         )}
                       </div>
                     <div className="space-y-2">
-                      <Label className="text-xs text-muted-foreground">2.3 Tilleggskrav</Label>
+                      <Label className="text-xs text-muted-foreground">2.3 § 11-1 Overordnet brannstrategi</Label>
+                      <p className="text-xs text-muted-foreground">
+                        Iht. § 11-1 skal byggverket prosjekteres slik at det oppnås tilfredsstillende sikkerhet ved brann. Beskriv her hvordan de fire pilarene er ivaretatt på overordnet nivå. Detaljerte krav dokumenteres under hver enkelt paragraf i kapittel 3.
+                      </p>
+                      {[
+                        { key: "overordnetMaterialer" as const, label: "a. Materialer og produkter", help: "Hvordan velges materialer og produkter slik at de ikke gir uakseptable bidrag til brannutvikling?", def: DEFAULT_OVERORDNET.materialer },
+                        { key: "overordnetBrannspredning" as const, label: "b. Bygnings- og installasjonsdeler – begrensning av brannspredning", help: "Hvordan utformes bygningsdelene for å begrense brannspredning innenfor og mellom branncelle/seksjoner?", def: DEFAULT_OVERORDNET.brannspredning },
+                        { key: "overordnetRoemning" as const, label: "c. Rask og sikker rømning", help: "Hvordan utformes byggverket for at personer skal kunne komme seg trygt ut?", def: DEFAULT_OVERORDNET.roemning },
+                        { key: "overordnetRednings" as const, label: "d. Rednings- og slokkeinnsats", help: "Hvordan tilrettelegges byggverket for innsats fra rednings- og slokkemannskap?", def: DEFAULT_OVERORDNET.rednings },
+                      ].map((f) => (
+                        <div key={f.key} className="space-y-1 border rounded-md p-3">
+                          <div className="flex items-start justify-between gap-2">
+                            <Label className="text-xs font-medium block">{f.label}</Label>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 px-2 text-xs"
+                              onClick={() => setFormData({ ...formData, [f.key]: f.def })}
+                            >
+                              Hent default-tekst
+                            </Button>
+                          </div>
+                          <p className="text-xs text-muted-foreground">{f.help}</p>
+                          <Textarea
+                            rows={4}
+                            className="min-h-[100px]"
+                            value={(formData as any)[f.key] || ""}
+                            onChange={(e) => setFormData({ ...formData, [f.key]: e.target.value })}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs text-muted-foreground">2.4 Tilleggskrav</Label>
                       <div>
                         <Label className="text-xs font-medium mb-1 block">Eventuelle tilleggskrav fra tiltakshaver, myndigheter eller bruker</Label>
                         <Textarea 
