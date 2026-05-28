@@ -1062,7 +1062,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         if (tilknyttede.length > 0) {
                           return (
                             <tr>
-                              <td colSpan={15} style={{ ...tdStyle, padding: "4px 10px", background: "#f7f9fc" }}>
+                              <td colSpan={17} style={{ ...tdStyle, padding: "4px 10px", background: "#f7f9fc" }}>
                                 <span style={{ fontSize: 9, fontStyle: "italic", color: "#64748b" }}>
                                   Beregninger: {tilknyttede.map((b) => ider.get(b.id) || "B?").join(", ")} – se kapittel 4 Beregningsgrunnlag.
                                 </span>
@@ -1073,7 +1073,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                         if (h.kreverBeregning) {
                           return (
                             <tr>
-                              <td colSpan={15} style={{ ...tdStyle, padding: "4px 10px", background: "#fff3cd", color: "#7a5a00" }}>
+                              <td colSpan={17} style={{ ...tdStyle, padding: "4px 10px", background: "#fff3cd", color: "#7a5a00" }}>
                                 <span style={{ fontSize: 9, fontWeight: 600 }}>
                                   Krever beregning – ikke registrert ennå{h.beregningTekst ? `: ${h.beregningTekst}` : ""}
                                 </span>
