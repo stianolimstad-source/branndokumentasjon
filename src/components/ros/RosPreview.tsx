@@ -962,6 +962,19 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                     const td = { ...tdStyle, fontSize: 9 };
                     const tdCenter = { ...td, textAlign: "center" as const };
                     const tdMuted = { ...tdCenter, color: "#94a3b8" };
+                    const usikkerhetStyle = (v?: string): React.CSSProperties => {
+                      if (v === "høy") return { background: "#fee2e2", color: "#991b1b", fontWeight: 600 };
+                      if (v === "medium") return { background: "#fef3c7", color: "#92400e", fontWeight: 600 };
+                      if (v === "lav") return { background: "#e5e7eb", color: "#374151" };
+                      return { color: "#94a3b8" };
+                    };
+                    const styrbarhetStyle = (v?: string): React.CSSProperties => {
+                      if (v === "høy") return { background: "#d1fae5", color: "#065f46", fontWeight: 600 };
+                      if (v === "medium") return { background: "#fef3c7", color: "#92400e", fontWeight: 600 };
+                      if (v === "lav") return { background: "#fee2e2", color: "#991b1b", fontWeight: 600 };
+                      return { color: "#94a3b8" };
+                    };
+                    const cap = (v?: string) => v ? v.charAt(0).toUpperCase() + v.slice(1) : "—";
                     return (
                       <React.Fragment key={h.id}>
                       <tr>
