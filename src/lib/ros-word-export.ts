@@ -152,27 +152,38 @@ export const exportRosToWord = async (options: ExportOptions) => {
   // Header med sensitivitetsbanner ved fortrolig/strengt fortrolig.
   const makeHeader = (): Header => {
     if (!erSensitiv) return buildHeader(theme, { logo, documentLabel: "ROS-analyse" });
-    const base = buildHeader(theme, { logo, documentLabel: "ROS-analyse" });
-    const baseChildren = ((base as unknown) as { options?: { children?: Paragraph[] } }).options?.children ?? [];
-    const banner = new Paragraph({
-      alignment: AlignmentType.CENTER,
-      spacing: { before: 0, after: 40 },
-      border: {
-        top: { style: BorderStyle.SINGLE, size: 8, color: sensColor },
-        bottom: { style: BorderStyle.SINGLE, size: 8, color: sensColor },
-      },
-      shading: { fill: sensFill, type: ShadingType.CLEAR, color: "auto" },
-      children: [
-        new TextRun({
-          text: `KRAFTSENSITIV INFORMASJON – Behandles iht. beredskapsforskriften §6-2`,
-          font,
-          bold: true,
-          size: 18,
-          color: sensColor,
+    const children: Paragraph[] = [
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        spacing: { before: 0, after: 40 },
+        border: {
+          top: { style: BorderStyle.SINGLE, size: 8, color: sensColor },
+          bottom: { style: BorderStyle.SINGLE, size: 8, color: sensColor },
+        },
+        shading: { fill: sensFill, type: ShadingType.CLEAR, color: "auto" },
+        children: [
+          new TextRun({
+            text: `KRAFTSENSITIV INFORMASJON – Behandles iht. beredskapsforskriften §6-2`,
+            font,
+            bold: true,
+            size: 18,
+            color: sensColor,
+          }),
+        ],
+      }),
+    ];
+    if (logo) {
+      const ratio = logo.height / logo.width;
+      const w = Math.min(120, logo.width);
+      const h = Math.max(18, Math.round(w * ratio));
+      children.push(
+        new Paragraph({
+          alignment: AlignmentType.RIGHT,
+          children: [new ImageRun({ data: logo.buffer, transformation: { width: w, height: h }, type: "png" })],
         }),
-      ],
-    });
-    return new Header({ children: [banner, ...baseChildren] });
+      );
+    }
+    return new Header({ children });
   };
 
   // Cover
