@@ -546,6 +546,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   rows.push(...await tilstandRow(formData, "3_3", "3.3 Brannspredning mellom byggverk"));
   }
 
+  rows.push(...fravikRowsForParagraf("11-6", fravikList));
+
   // ===== 3.4 Brannseksjoner =====
   rows.push(sectionHeaderRow("3.4   §11-7 Brannseksjoner"));
   rows.push(columnHeaderRow());
