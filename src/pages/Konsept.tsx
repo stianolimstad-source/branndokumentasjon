@@ -2484,7 +2484,7 @@ const Konsept = () => {
               spacing: { before: 200, after: 200 },
             }),
             // Tabell 3 - 3-column structure matching preview
-            await buildChapter3Table(formData),
+            await buildChapter3Table({ ...formData, _fravikList: fravikList }),
           ],
         },
         // 4. Utførelses- og driftsfasen + 5. Revisjonshistorikk - egen side
