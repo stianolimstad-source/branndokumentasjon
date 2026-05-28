@@ -392,6 +392,7 @@ export default function RosAnalyse() {
                   : [],
               }))
             : [],
+          beredskapsforskrift: normaliserBfkVurderinger((c as any).beredskapsforskrift),
         }));
 
         setLoadingDoc(false);
