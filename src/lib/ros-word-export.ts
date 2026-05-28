@@ -773,6 +773,72 @@ export const exportRosToWord = async (options: ExportOptions) => {
       : new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: hendelseRows }),
   ];
 
+  // Kap. 3 Beredskapsforskriftens krav
+  const bfkVurderinger = normaliserBfkVurderinger(content.beredskapsforskrift);
+  const bfkVurdMap = new Map(bfkVurderinger.map((v) => [v.paragrafId, v]));
+  const hIdxAll = new Map(content.hendelser.map((h, i) => [h.id, i + 1]));
+  const bfkStatusFill: Record<BfkVurderingStatus, string> = {
+    vurdert: "DCFCE7",
+    ikke_aktuell: "E5E7EB",
+    ikke_vurdert: "FEE2E2",
+  };
+  const bfkAntallVurdert = bfkVurderinger.filter((v) => v.status !== "ikke_vurdert").length;
+  const beredskapsforskriftBlocks: (Paragraph | Table)[] = [
+    buildSectionHeading(theme, "3. Beredskapsforskriftens krav"),
+    para(
+      "Dokumenterer at relevante paragrafer i Forskrift om beredskap i kraftforsyningen (BFK) " +
+        "er vurdert i ROS-analysen. For hver paragraf angis status, begrunnelse og hvilke " +
+        "hendelser i kapittel " + hendelseNr + " som dekker kravet.",
+    ),
+    para(`Status: ${bfkAntallVurdert} av ${bfkVurderinger.length} paragrafer vurdert.`, { bold: true }),
+  ];
+  BFK_KATEGORI_REKKEFOLGE.forEach((kat) => {
+    const ps = BFK_PARAGRAFER.filter((p) => p.kategori === kat);
+    if (ps.length === 0) return;
+    beredskapsforskriftBlocks.push(
+      new Paragraph({
+        heading: HeadingLevel.HEADING_3,
+        children: [text(BFK_KATEGORI_LABEL[kat], { bold: true, size: 20 })],
+      }),
+    );
+    const bfkHeader = new TableRow({
+      tableHeader: true,
+      children: [
+        headerCell("Paragraf", 18),
+        headerCell("Krav", 30),
+        headerCell("Status", 12),
+        headerCell("Begrunnelse", 28),
+        headerCell("Hendelser", 12),
+      ],
+    });
+    const bfkRows = ps.map((p) => {
+      const v = bfkVurdMap.get(p.id);
+      const status = v?.status || "ikke_vurdert";
+      const hLabels = (v?.hendelseIds || [])
+        .map((id) => hIdxAll.get(id))
+        .filter((n): n is number => !!n)
+        .map((n) => `H${n}`)
+        .join(", ");
+      return new TableRow({
+        children: [
+          cell(p.navn, 18, true),
+          cell(p.utdrag, 30),
+          new TableCell({
+            width: { size: 12, type: WidthType.PERCENTAGE },
+            shading: { fill: bfkStatusFill[status], type: ShadingType.CLEAR, color: "auto" },
+            children: [new Paragraph({ children: [text(BFK_STATUS_LABEL[status], { bold: true, size: 16 })] })],
+          }),
+          cell(v?.begrunnelse || "", 28),
+          cell(hLabels || "—", 12),
+        ],
+      });
+    });
+    beredskapsforskriftBlocks.push(
+      new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [bfkHeader, ...bfkRows] }),
+    );
+  });
+
+
   // Kap. 4 Beregningsgrunnlag
   const alleBeregninger = content.beregninger || [];
   const grupperBer = new Map<string, RosBeregning[]>();
