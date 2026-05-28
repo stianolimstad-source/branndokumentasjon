@@ -849,6 +849,13 @@ const Konsept = () => {
     romningsveiSvalgangOver30m: false,
     romningsvei: "",
     romningsveiKommentar: "",
+    // §11-13 / §11-14 prosjektverdier (validering)
+    fluktveiLengdeProsjekt: "",
+    fluktveiDorTilTrappRK6: "",
+    romningsveiLengdeProsjekt: "",
+    friBreddeProsjekt: "",
+    // Global rapportinnstilling
+    inkluderReferansetabeller: false,
     // 3.12 §11-15 Tilrettelegging for redning av husdyr
     husdyrRedningRelevant: false,
     husdyrTyper: [] as string[],
