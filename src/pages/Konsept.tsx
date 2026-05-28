@@ -9606,6 +9606,101 @@ const Konsept = () => {
                        })() : (
                         <>
 
+                      {/* Del A: §11-13 maksimal fluktvei */}
+                      {(() => {
+                        const aktiveRK = getAktiveRiskKlasser(formData);
+                        if (aktiveRK.length === 0) return null;
+                        const harRK12 = aktiveRK.some(r => r === "RK1" || r === "RK2");
+                        const harRK35 = aktiveRK.some(r => r === "RK3" || r === "RK5");
+                        const harRK6 = aktiveRK.includes("RK6");
+                        const strengeste = getStrengesteFluktvei(aktiveRK);
+                        const prosjektVerdi = parseFloat(formData.fluktveiLengdeProsjekt) || 0;
+                        const overskredet = strengeste !== null && prosjektVerdi > 0 && prosjektVerdi > strengeste;
+                        const dorVerdi = parseFloat(formData.fluktveiDorTilTrappRK6) || 0;
+                        const dorOverskredet = harRK6 && dorVerdi > 0 && dorVerdi > 7.0;
+                        return (
+                          <div className="p-3 bg-muted/40 border rounded space-y-3">
+                            <Label className="text-sm font-semibold text-foreground">Maksimal fluktvei (§ 11-13)</Label>
+                            <div className="space-y-1 text-xs text-foreground/90">
+                              {harRK12 && (
+                                <p>Krav til maksimal fluktvei: <strong>50 m</strong> (§ 11-13 Tabell 1, RK 1 og 2).</p>
+                              )}
+                              {harRK35 && (
+                                <p>Krav til maksimal fluktvei: <strong>30 m</strong> {aktiveRK.includes("RK3") && aktiveRK.includes("RK5") ? "(§ 11-13 Tabell 1, RK 3 og 5)." : aktiveRK.includes("RK3") ? "(§ 11-13 Tabell 1, RK 3)." : "(§ 11-13 Tabell 1, RK 5)."}</p>
+                              )}
+                              {harRK6 && (
+                                <p>Krav til maksimal fluktvei: <strong>25 m</strong>. I tillegg: avstand fra dør i branncelle til nærmeste trapp eller utgang maksimalt <strong>7,0 m</strong> (§ 11-13 figur 4).</p>
+                              )}
+                            </div>
+                            <div>
+                              <Label className="text-xs font-medium mb-1 block">Lengste fluktvei i prosjektet (m)</Label>
+                              <Input
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                value={formData.fluktveiLengdeProsjekt}
+                                onChange={(e) => setFormData({ ...formData, fluktveiLengdeProsjekt: e.target.value })}
+                                className="max-w-[180px]"
+                                placeholder="f.eks. 22"
+                              />
+                              {overskredet && (
+                                <Alert variant="destructive" className="mt-2">
+                                  <AlertTriangle className="h-4 w-4" />
+                                  <AlertDescription className="text-xs">
+                                    Prosjektert fluktvei ({prosjektVerdi} m) overstiger strengeste krav ({strengeste} m). Dette må dokumenteres som fravik.
+                                  </AlertDescription>
+                                </Alert>
+                              )}
+                            </div>
+                            {harRK6 && (
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Maks avstand fra dør til nærmeste trapp (m) – RK6</Label>
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={formData.fluktveiDorTilTrappRK6}
+                                  onChange={(e) => setFormData({ ...formData, fluktveiDorTilTrappRK6: e.target.value })}
+                                  className="max-w-[180px]"
+                                  placeholder="f.eks. 5"
+                                />
+                                {dorOverskredet && (
+                                  <Alert variant="destructive" className="mt-2">
+                                    <AlertTriangle className="h-4 w-4" />
+                                    <AlertDescription className="text-xs">
+                                      Avstanden ({dorVerdi} m) overstiger kravet på 7,0 m i § 11-13 figur 4.
+                                    </AlertDescription>
+                                  </Alert>
+                                )}
+                              </div>
+                            )}
+                            <Collapsible>
+                              <CollapsibleTrigger className="text-xs text-primary hover:underline">
+                                Vis referansetabell for alle risikoklasser
+                              </CollapsibleTrigger>
+                              <CollapsibleContent>
+                                <table className="w-full text-xs border mt-2">
+                                  <thead className="bg-muted">
+                                    <tr><th className="border p-1 text-left">Risikoklasse</th><th className="border p-1 text-left">Maks fluktvei</th></tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr><td className="border p-1">RK 1</td><td className="border p-1">50 m</td></tr>
+                                    <tr><td className="border p-1">RK 2</td><td className="border p-1">50 m</td></tr>
+                                    <tr><td className="border p-1">RK 3</td><td className="border p-1">30 m</td></tr>
+                                    <tr><td className="border p-1">RK 4</td><td className="border p-1">30 m</td></tr>
+                                    <tr><td className="border p-1">RK 5</td><td className="border p-1">30 m</td></tr>
+                                    <tr><td className="border p-1">RK 6</td><td className="border p-1">25 m (+ 7 m fra dør til trapp)</td></tr>
+                                  </tbody>
+                                </table>
+                                <p className="text-[11px] text-muted-foreground mt-1 italic">Kilde: VTEK § 11-13 Tabell 1.</p>
+                              </CollapsibleContent>
+                            </Collapsible>
+                          </div>
+                        );
+                      })()}
+
+
+
                       {((formData.risikoklasse === "RK4" && parseInt(formData.etasjer) >= 2 && parseInt(formData.etasjer) <= 8) || 
                         formData.bygningsdeler.some(b => b.risikoklasse === "RK4" && parseInt(b.etasjer) >= 2 && parseInt(b.etasjer) <= 8)) && (
                         <div className="flex items-center space-x-2 p-2 bg-muted rounded">
