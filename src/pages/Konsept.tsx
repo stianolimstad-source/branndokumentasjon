@@ -910,6 +910,14 @@ const Konsept = () => {
     bf85_romning_74_golvbelegg: "",
     bf85_romning_75_dor: "",
     kraftstasjonUnderFjell: false, // Kraftstasjon under fjell eller under dagen
+    // NS 3424 befaringsgrunnlag (tilstandsvurdering)
+    ns3424Nivaa: "1" as "1" | "2" | "3",
+    befaringsdato: new Date().toISOString().slice(0, 10),
+    befaringsdeltakere: "",
+    befaringsmetode: "",
+    gjennomgaattDokumentasjon: "",
+    begrensninger: [] as string[],
+    andreBegrensninger: "",
   });
 
   // Auto-foreslå automatisk slokkeanlegg (BF85 3.9) når branncelle over flere plan > 800 m² er valgt
