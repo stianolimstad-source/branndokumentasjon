@@ -7714,7 +7714,7 @@ const Konsept = () => {
                                 </div>
 
                                 {/* B. Innvendige overflater og kledninger */}
-                                <SubSection id="B" title="B. Innvendige overflater og kledninger">
+                                <Kap36SubSection title="B. Innvendige overflater og kledninger" open={!!kap36Open["B"]} onOpenChange={(o) => setKap36Open(prev => ({ ...prev, "B": o }))}>
                                   {/* Tabell 1A: RK1-RK5 */}
                                   {isRK1to5 && (
                                     <div>
@@ -7814,10 +7814,10 @@ const Konsept = () => {
                                       </label>
                                     </div>
                                   </div>
-                                </SubSection>
+                                </Kap36SubSection>
 
                                 {/* C. Nedforet himling i rømningsvei */}
-                                <SubSection id="C" title="C. Nedforet himling i rømningsvei">
+                                <Kap36SubSection title="C. Nedforet himling i rømningsvei" open={!!kap36Open["C"]} onOpenChange={(o) => setKap36Open(prev => ({ ...prev, "C": o }))}>
                                   <p className="text-xs text-muted-foreground leading-relaxed">
                                     Preakseptert ytelse: himling i klasse <code>A2-s1,d0 [In 1 på begrenset brennbart underlag]</code> med opphengsystem dokumentert til minst 10 minutter, eller kledning <code>K₂10 A2-s1,d0 [K1-A]</code>.
                                   </p>
@@ -7833,10 +7833,10 @@ const Konsept = () => {
                                       Overflater og kledninger i hulrom over himlingen må ha minst like gode branntekniske egenskaper som overflatene og kledningene i rømningsveien for øvrig.
                                     </label>
                                   </div>
-                                </SubSection>
+                                </Kap36SubSection>
 
                                 {/* D. Isolasjon i bygningsdeler */}
-                                <SubSection id="D" title="D. Isolasjon i bygningsdeler">
+                                <Kap36SubSection title="D. Isolasjon i bygningsdeler" open={!!kap36Open["D"]} onOpenChange={(o) => setKap36Open(prev => ({ ...prev, "D": o }))}>
                                   <p className="text-xs text-muted-foreground leading-relaxed">
                                     Hovedregel: isolasjon må tilfredsstille klasse <code>A2-s1,d0</code>. Brennbar isolasjon kan likevel anvendes iht. en av de tre alternative måtene under veilederen:
                                   </p>
@@ -7863,10 +7863,10 @@ const Konsept = () => {
                                       <label htmlFor="isoTilbakeholdendeLag" className="text-xs cursor-pointer leading-relaxed">Beskyttet med tilstrekkelig tildekkende eller branntilbakeholdende lag.</label>
                                     </div>
                                   </div>
-                                </SubSection>
+                                </Kap36SubSection>
 
                                 {/* E. Utvendige overflater og kledning */}
-                                <SubSection id="E" title="E. Utvendige overflater og kledning">
+                                <Kap36SubSection title="E. Utvendige overflater og kledning" open={!!kap36Open["E"]} onOpenChange={(o) => setKap36Open(prev => ({ ...prev, "E": o }))}>
                                   <div className="text-xs leading-relaxed space-y-1">
                                     <p>Preaksepterte ytelser iht. veilederen:</p>
                                     <ul className="ml-4 list-disc text-muted-foreground">
@@ -7892,10 +7892,10 @@ const Konsept = () => {
                                       Avstand til nabobyggverk er mindre enn 8 m – skjerpede krav til utvendige overflater og kledning vurderes særskilt.
                                     </label>
                                   </div>
-                                </SubSection>
+                                </Kap36SubSection>
 
                                 {/* F. Yttertak */}
-                                <SubSection id="F" title="F. Yttertak">
+                                <Kap36SubSection title="F. Yttertak" open={!!kap36Open["F"]} onOpenChange={(o) => setKap36Open(prev => ({ ...prev, "F": o }))}>
                                   <p className="text-xs text-muted-foreground leading-relaxed">
                                     Veilederen krever taktekking i klasse <code>BROOF(t2) [Ta]</code> for byggverk i brannklasse 1, 2 og 3. Underlag for taktekkingen og takoppbygging må dokumenteres.
                                   </p>
@@ -7917,10 +7917,10 @@ const Konsept = () => {
                                       Krav til takoppbygging (isolasjon, sjikt og innfesting) er dokumentert.
                                     </label>
                                   </div>
-                                </SubSection>
+                                </Kap36SubSection>
 
                                 {/* G. Brannvegg og vinduer i brannvegg */}
-                                <SubSection id="G" title="G. Brannvegg og vinduer i brannvegg">
+                                <Kap36SubSection title="G. Brannvegg og vinduer i brannvegg" open={!!kap36Open["G"]} onOpenChange={(o) => setKap36Open(prev => ({ ...prev, "G": o }))}>
                                   <p className="text-xs text-muted-foreground leading-relaxed">
                                     Vinduer og gjennomføringer i brannvegg må ha samme brannmotstand som veggen selv: <code>EI {bkl === "BKL3" ? "120" : "90"} A2-s1,d0</code>{bkl ? ` (basert på brannklasse ${bkl})` : ""}.
                                   </p>
@@ -7936,10 +7936,10 @@ const Konsept = () => {
                                       Gjennomføringer i brannvegg er tettet og dokumentert iht. samme brannmotstand som veggen.
                                     </label>
                                   </div>
-                                </SubSection>
+                                </Kap36SubSection>
 
                                 {/* H. Rør- og kanalisolasjon */}
-                                <SubSection id="H" title="H. Rør- og kanalisolasjon">
+                                <Kap36SubSection title="H. Rør- og kanalisolasjon" open={!!kap36Open["H"]} onOpenChange={(o) => setKap36Open(prev => ({ ...prev, "H": o }))}>
                                   <p className="text-xs text-muted-foreground leading-relaxed">
                                     Isolasjon på rør og kanaler må tilfredsstille klasse <code>BL-s1,d0</code> i rømningsvei, og klasse <code>A2L-s1,d0</code> i rømningsvei som betjener mer enn én etasje.
                                   </p>
@@ -7955,10 +7955,10 @@ const Konsept = () => {
                                       Rør- og kanalisolasjon i rømningsvei som betjener mer enn én etasje tilfredsstiller A2L-s1,d0.
                                     </label>
                                   </div>
-                                </SubSection>
+                                </Kap36SubSection>
 
                                 {/* I. Småhus */}
-                                <SubSection id="I" title="I. Småhus (eneboliger, rekkehus, tomannsbolig inntil 2 etasjer)">
+                                <Kap36SubSection title="I. Småhus (eneboliger, rekkehus, tomannsbolig inntil 2 etasjer)" open={!!kap36Open["I"]} onOpenChange={(o) => setKap36Open(prev => ({ ...prev, "I": o }))}>
                                   <p className="text-xs text-muted-foreground leading-relaxed">
                                     For boligbygninger inntil 2 etasjer (småhus) gjelder lempninger i preaksepterte ytelser. Velg lempninger som anvendes:
                                   </p>
@@ -7980,7 +7980,7 @@ const Konsept = () => {
                                       Taktekning kan være uklassifisert når avstand mellom byggverk er minst 8 m.
                                     </label>
                                   </div>
-                                </SubSection>
+                                </Kap36SubSection>
                               </>
                             );
                           })()}
