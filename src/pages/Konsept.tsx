@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { getAktiveRiskKlasser, getFluktveiKrav, getStrengesteFluktvei, getFriBreddeKrav, getStrengesteFriBredde } from "@/lib/fire-concept-constants";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Flame, ArrowLeft, FileDown, Download, Save, LogIn, X, Plus, AlertTriangle, ChevronDown, ChevronRight, Eye, RefreshCw, Sparkles, Upload, Lock } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -849,6 +850,13 @@ const Konsept = () => {
     romningsveiSvalgangOver30m: false,
     romningsvei: "",
     romningsveiKommentar: "",
+    // §11-13 / §11-14 prosjektverdier (validering)
+    fluktveiLengdeProsjekt: "",
+    fluktveiDorTilTrappRK6: "",
+    romningsveiLengdeProsjekt: "",
+    friBreddeProsjekt: "",
+    // Global rapportinnstilling
+    inkluderReferansetabeller: false,
     // 3.12 §11-15 Tilrettelegging for redning av husdyr
     husdyrRedningRelevant: false,
     husdyrTyper: [] as string[],
@@ -9598,6 +9606,101 @@ const Konsept = () => {
                        })() : (
                         <>
 
+                      {/* Del A: §11-13 maksimal fluktvei */}
+                      {(() => {
+                        const aktiveRK = getAktiveRiskKlasser(formData);
+                        if (aktiveRK.length === 0) return null;
+                        const harRK12 = aktiveRK.some(r => r === "RK1" || r === "RK2");
+                        const harRK35 = aktiveRK.some(r => r === "RK3" || r === "RK5");
+                        const harRK6 = aktiveRK.includes("RK6");
+                        const strengeste = getStrengesteFluktvei(aktiveRK);
+                        const prosjektVerdi = parseFloat(formData.fluktveiLengdeProsjekt) || 0;
+                        const overskredet = strengeste !== null && prosjektVerdi > 0 && prosjektVerdi > strengeste;
+                        const dorVerdi = parseFloat(formData.fluktveiDorTilTrappRK6) || 0;
+                        const dorOverskredet = harRK6 && dorVerdi > 0 && dorVerdi > 7.0;
+                        return (
+                          <div className="p-3 bg-muted/40 border rounded space-y-3">
+                            <Label className="text-sm font-semibold text-foreground">Maksimal fluktvei (§ 11-13)</Label>
+                            <div className="space-y-1 text-xs text-foreground/90">
+                              {harRK12 && (
+                                <p>Krav til maksimal fluktvei: <strong>50 m</strong> (§ 11-13 Tabell 1, RK 1 og 2).</p>
+                              )}
+                              {harRK35 && (
+                                <p>Krav til maksimal fluktvei: <strong>30 m</strong> {aktiveRK.includes("RK3") && aktiveRK.includes("RK5") ? "(§ 11-13 Tabell 1, RK 3 og 5)." : aktiveRK.includes("RK3") ? "(§ 11-13 Tabell 1, RK 3)." : "(§ 11-13 Tabell 1, RK 5)."}</p>
+                              )}
+                              {harRK6 && (
+                                <p>Krav til maksimal fluktvei: <strong>25 m</strong>. I tillegg: avstand fra dør i branncelle til nærmeste trapp eller utgang maksimalt <strong>7,0 m</strong> (§ 11-13 figur 4).</p>
+                              )}
+                            </div>
+                            <div>
+                              <Label className="text-xs font-medium mb-1 block">Lengste fluktvei i prosjektet (m)</Label>
+                              <Input
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                value={formData.fluktveiLengdeProsjekt}
+                                onChange={(e) => setFormData({ ...formData, fluktveiLengdeProsjekt: e.target.value })}
+                                className="max-w-[180px]"
+                                placeholder="f.eks. 22"
+                              />
+                              {overskredet && (
+                                <Alert variant="destructive" className="mt-2">
+                                  <AlertTriangle className="h-4 w-4" />
+                                  <AlertDescription className="text-xs">
+                                    Prosjektert fluktvei ({prosjektVerdi} m) overstiger strengeste krav ({strengeste} m). Dette må dokumenteres som fravik.
+                                  </AlertDescription>
+                                </Alert>
+                              )}
+                            </div>
+                            {harRK6 && (
+                              <div>
+                                <Label className="text-xs font-medium mb-1 block">Maks avstand fra dør til nærmeste trapp (m) – RK6</Label>
+                                <Input
+                                  type="number"
+                                  step="0.1"
+                                  min="0"
+                                  value={formData.fluktveiDorTilTrappRK6}
+                                  onChange={(e) => setFormData({ ...formData, fluktveiDorTilTrappRK6: e.target.value })}
+                                  className="max-w-[180px]"
+                                  placeholder="f.eks. 5"
+                                />
+                                {dorOverskredet && (
+                                  <Alert variant="destructive" className="mt-2">
+                                    <AlertTriangle className="h-4 w-4" />
+                                    <AlertDescription className="text-xs">
+                                      Avstanden ({dorVerdi} m) overstiger kravet på 7,0 m i § 11-13 figur 4.
+                                    </AlertDescription>
+                                  </Alert>
+                                )}
+                              </div>
+                            )}
+                            <Collapsible>
+                              <CollapsibleTrigger className="text-xs text-primary hover:underline">
+                                Vis referansetabell for alle risikoklasser
+                              </CollapsibleTrigger>
+                              <CollapsibleContent>
+                                <table className="w-full text-xs border mt-2">
+                                  <thead className="bg-muted">
+                                    <tr><th className="border p-1 text-left">Risikoklasse</th><th className="border p-1 text-left">Maks fluktvei</th></tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr><td className="border p-1">RK 1</td><td className="border p-1">50 m</td></tr>
+                                    <tr><td className="border p-1">RK 2</td><td className="border p-1">50 m</td></tr>
+                                    <tr><td className="border p-1">RK 3</td><td className="border p-1">30 m</td></tr>
+                                    <tr><td className="border p-1">RK 4</td><td className="border p-1">30 m</td></tr>
+                                    <tr><td className="border p-1">RK 5</td><td className="border p-1">30 m</td></tr>
+                                    <tr><td className="border p-1">RK 6</td><td className="border p-1">25 m (+ 7 m fra dør til trapp)</td></tr>
+                                  </tbody>
+                                </table>
+                                <p className="text-[11px] text-muted-foreground mt-1 italic">Kilde: VTEK § 11-13 Tabell 1.</p>
+                              </CollapsibleContent>
+                            </Collapsible>
+                          </div>
+                        );
+                      })()}
+
+
+
                       {((formData.risikoklasse === "RK4" && parseInt(formData.etasjer) >= 2 && parseInt(formData.etasjer) <= 8) || 
                         formData.bygningsdeler.some(b => b.risikoklasse === "RK4" && parseInt(b.etasjer) >= 2 && parseInt(b.etasjer) <= 8)) && (
                         <div className="flex items-center space-x-2 p-2 bg-muted rounded">
@@ -10136,6 +10239,107 @@ const Konsept = () => {
                           });
                         })()}
                       </div>
+
+                      {/* Del B: §11-14 punkt 3 - lengde i rømningsvei */}
+                      {(() => {
+                        const valg: string[] = Array.isArray(formData.romningsveiTrappeValg) ? formData.romningsveiTrappeValg : [];
+                        if (valg.length === 0) return null;
+                        const krav: { tekst: string; verdi: number }[] = [];
+                        if (valg.includes("en_trapp")) krav.push({ tekst: "Krav: maksimalt 15 m (§ 11-14 punkt 3a).", verdi: 15 });
+                        if (valg.includes("sammenfallende")) krav.push({ tekst: "Krav: maksimalt 15 m (§ 11-14 punkt 3b).", verdi: 15 });
+                        if (valg.includes("flere_trapper")) krav.push({ tekst: "Krav: maksimalt 30 m (§ 11-14 punkt 3c).", verdi: 30 });
+                        if (krav.length === 0) return null;
+                        const strengeste = Math.min(...krav.map(k => k.verdi));
+                        const prosjektVerdi = parseFloat(formData.romningsveiLengdeProsjekt) || 0;
+                        const overskredet = prosjektVerdi > 0 && prosjektVerdi > strengeste;
+                        return (
+                          <div className="p-3 bg-muted/40 border rounded space-y-2">
+                            <Label className="text-xs font-semibold text-foreground">Lengde i rømningsvei (§ 11-14 punkt 3)</Label>
+                            <div className="space-y-0.5 text-xs text-foreground/90">
+                              {krav.map((k, i) => <p key={i}>{k.tekst}</p>)}
+                            </div>
+                            <div>
+                              <Label className="text-xs font-medium mb-1 block">Lengste avstand i rømningsvei i prosjektet (m)</Label>
+                              <Input
+                                type="number"
+                                step="0.1"
+                                min="0"
+                                value={formData.romningsveiLengdeProsjekt}
+                                onChange={(e) => setFormData({ ...formData, romningsveiLengdeProsjekt: e.target.value })}
+                                className="max-w-[180px]"
+                                placeholder="f.eks. 18"
+                              />
+                              {overskredet && (
+                                <Alert variant="destructive" className="mt-2">
+                                  <AlertTriangle className="h-4 w-4" />
+                                  <AlertDescription className="text-xs">
+                                    Prosjektert avstand ({prosjektVerdi} m) overstiger strengeste krav ({strengeste} m). Må dokumenteres som fravik.
+                                  </AlertDescription>
+                                </Alert>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+                      {/* Del C: §11-14 punkt 4 - fri bredde */}
+                      {(() => {
+                        const aktiveRK = getAktiveRiskKlasser(formData);
+                        if (aktiveRK.length === 0) return null;
+                        const krav = getStrengesteFriBredde(aktiveRK, formData.bygningstype);
+                        // Persontall (areal / m² per person)
+                        const arealPerPerson: Record<string, number> = {
+                          forsamling_staende: 0.6, forsamling_stoler: 1, undervisning: 2, kontor: 10,
+                          salg: 2, restaurant: 1.5, lager: 30,
+                        };
+                        const arealNum = parseFloat(formData.persontallAreal) || 0;
+                        const faktor = arealPerPerson[formData.persontallKategori] || 0;
+                        const persontall = arealNum > 0 && faktor > 0 ? Math.floor(arealNum / faktor) : 0;
+                        const breddePersoner = persontall * 0.01; // 1 cm per person
+                        const strengeste = Math.max(krav.bredde, breddePersoner);
+                        const prosjektVerdi = parseFloat(formData.friBreddeProsjekt) || 0;
+                        const utilstrekkelig = prosjektVerdi > 0 && prosjektVerdi < strengeste;
+                        return (
+                          <div className="p-3 bg-muted/40 border rounded space-y-2">
+                            <Label className="text-xs font-semibold text-foreground">Fri bredde i rømningsvei (§ 11-14 punkt 4)</Label>
+                            <p className="text-xs text-foreground/90">
+                              Minimum fri bredde: <strong>{krav.bredde.toString().replace(".", ",")} m</strong>, samt minimum 1 cm per person.
+                              {krav.merknad && <span className="text-muted-foreground italic"> {krav.merknad}</span>}
+                            </p>
+                            {persontall > 0 && (
+                              <p className="text-xs text-muted-foreground">
+                                Persontall: {persontall} → krav fra persontall: {breddePersoner.toFixed(2).replace(".", ",")} m.
+                              </p>
+                            )}
+                            <div>
+                              <Label className="text-xs font-medium mb-1 block">Prosjektert fri bredde (m)</Label>
+                              <Input
+                                type="number"
+                                step="0.01"
+                                min="0"
+                                value={formData.friBreddeProsjekt}
+                                onChange={(e) => setFormData({ ...formData, friBreddeProsjekt: e.target.value })}
+                                className="max-w-[180px]"
+                                placeholder="f.eks. 1,20"
+                              />
+                              <p className="text-xs mt-1">
+                                Strengeste krav for ditt prosjekt: <strong>{strengeste.toFixed(2).replace(".", ",")} m</strong>.
+                                {prosjektVerdi > 0 && <> Du har angitt <strong>{prosjektVerdi.toString().replace(".", ",")} m</strong>.</>}
+                              </p>
+                              {utilstrekkelig && (
+                                <Alert variant="destructive" className="mt-2">
+                                  <AlertTriangle className="h-4 w-4" />
+                                  <AlertDescription className="text-xs">
+                                    Prosjektert bredde ({prosjektVerdi} m) er mindre enn strengeste krav ({strengeste.toFixed(2)} m). Må dokumenteres som fravik.
+                                  </AlertDescription>
+                                </Alert>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })()}
+
+
 
                       {/* Transport av sengeliggende */}
                       <div className="flex items-center gap-2 p-2 bg-muted/50 rounded">
@@ -11145,10 +11349,20 @@ const Konsept = () => {
                       </CardDescription>
                     </div>
                     {generatedConcept && canDownload && (
-                      <Button variant="outline" size="sm" onClick={exportToWord}>
-                        <Download className="h-4 w-4 mr-2" />
-                        Last ned Word
-                      </Button>
+                      <div className="flex flex-col items-end gap-1">
+                        <Button variant="outline" size="sm" onClick={exportToWord}>
+                          <Download className="h-4 w-4 mr-2" />
+                          Last ned Word
+                        </Button>
+                        <label className="flex items-center gap-1.5 text-[11px] text-muted-foreground cursor-pointer">
+                          <Checkbox
+                            checked={formData.inkluderReferansetabeller}
+                            onCheckedChange={(c) => setFormData({ ...formData, inkluderReferansetabeller: c === true })}
+                            className="h-3.5 w-3.5"
+                          />
+                          Inkluder referansetabeller i rapport
+                        </label>
+                      </div>
                     )}
                   </div>
                 </CardHeader>

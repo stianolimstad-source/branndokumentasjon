@@ -4838,6 +4838,36 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">-</td>
             </tr>
+            {/* Maksimal fluktvei - § 11-13 - kun aktive RK */}
+            {(() => {
+              const aktiveRK: string[] = [];
+              if (formData.risikoklasse) aktiveRK.push(formData.risikoklasse);
+              if (formData.harFlereRisikoklasser && Array.isArray(formData.bygningsdeler)) {
+                formData.bygningsdeler.forEach((d: any) => { if (d?.risikoklasse && !aktiveRK.includes(d.risikoklasse)) aktiveRK.push(d.risikoklasse); });
+              }
+              const harRK12 = aktiveRK.some((r: string) => r === "RK1" || r === "RK2");
+              const harRK35 = aktiveRK.some((r: string) => r === "RK3" || r === "RK5");
+              const harRK6 = aktiveRK.includes("RK6");
+              if (!harRK12 && !harRK35 && !harRK6) return null;
+              const lengde = parseFloat(formData.fluktveiLengdeProsjekt) || 0;
+              const dor = parseFloat(formData.fluktveiDorTilTrappRK6) || 0;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Maksimal fluktvei<br/><span className="text-xs text-muted-foreground">§ 11-13</span></td>
+                  <td className="border border-gray-400 p-2">
+                    {harRK12 && <p>Krav til maksimal fluktvei: <strong>50 m</strong> (§ 11-13 Tabell 1, RK 1 og 2).</p>}
+                    {harRK35 && <p>Krav til maksimal fluktvei: <strong>30 m</strong> (§ 11-13 Tabell 1, RK 3 og 5).</p>}
+                    {harRK6 && <p>Krav til maksimal fluktvei: <strong>25 m</strong>. I tillegg: avstand fra dør i branncelle til nærmeste trapp eller utgang maksimalt <strong>7,0 m</strong> (§ 11-13 figur 4).</p>}
+                    {lengde > 0 && <p className="mt-1">Prosjektert lengste fluktvei: <strong>{String(formData.fluktveiLengdeProsjekt).replace(".", ",")} m</strong>.</p>}
+                    {harRK6 && dor > 0 && <p>Prosjektert avstand fra dør til nærmeste trapp (RK6): <strong>{String(formData.fluktveiDorTilTrappRK6).replace(".", ",")} m</strong>.</p>}
+                    {formData.inkluderReferansetabeller && (
+                      <p className="mt-2 text-xs text-gray-600 italic">Referanse: RK 1/2: 50 m | RK 3/4/5: 30 m | RK 6: 25 m (+ 7 m fra dør til trapp). Kilde: VTEK § 11-13 Tabell 1.</p>
+                    )}
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              );
+            })()}
             {/* Krav til trapperom - § 11-13 (2) - automatisk basert på RK og etasjer */}
             {(() => {
               const trapperomTypeMap310: Record<number, { lav: string; hoy: string }> = {
@@ -5307,6 +5337,74 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
               </td>
               <td className="border border-gray-400 p-2 align-top">-</td>
             </tr>
+            {/* §11-14 pkt 3: lengde i rømningsvei */}
+            {(() => {
+              const valg: string[] = Array.isArray(formData.romningsveiTrappeValg) ? formData.romningsveiTrappeValg : [];
+              if (valg.length === 0) return null;
+              const lines: string[] = [];
+              if (valg.includes("en_trapp")) lines.push("Krav: maksimalt 15 m (§ 11-14 punkt 3a, én trapp eller utgang).");
+              if (valg.includes("sammenfallende")) lines.push("Krav: maksimalt 15 m (§ 11-14 punkt 3b, sammenfallende rømningsretning).");
+              if (valg.includes("flere_trapper")) lines.push("Krav: maksimalt 30 m (§ 11-14 punkt 3c, flere trapper eller utganger).");
+              if (lines.length === 0) return null;
+              const lengde = parseFloat(formData.romningsveiLengdeProsjekt) || 0;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Lengde i rømningsvei<br/><span className="text-xs text-muted-foreground">§ 11-14 punkt 3</span></td>
+                  <td className="border border-gray-400 p-2">
+                    <ul className="list-disc ml-4 space-y-1">
+                      {lines.map((l, i) => <li key={i}>{l}</li>)}
+                      {lengde > 0 && <li>Prosjektert lengste avstand: <strong>{String(formData.romningsveiLengdeProsjekt).replace(".", ",")} m</strong>.</li>}
+                    </ul>
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              );
+            })()}
+            {/* §11-14 pkt 4: fri bredde */}
+            {(() => {
+              const aktiveRK: string[] = [];
+              if (formData.risikoklasse) aktiveRK.push(formData.risikoklasse);
+              if (formData.harFlereRisikoklasser && Array.isArray(formData.bygningsdeler)) {
+                formData.bygningsdeler.forEach((d: any) => { if (d?.risikoklasse && !aktiveRK.includes(d.risikoklasse)) aktiveRK.push(d.risikoklasse); });
+              }
+              if (aktiveRK.length === 0) return null;
+              const erBolig = (formData.bygningstype || "").toLowerCase().includes("bolig");
+              const breddePerRK = (rk: string): number => {
+                if (rk === "RK6") return erBolig ? 0.86 : 1.16;
+                if (rk === "RK3" || rk === "RK5") return 1.16;
+                return 0.86;
+              };
+              const kravBredde = Math.max(...aktiveRK.map(breddePerRK));
+              const merknad = aktiveRK.includes("RK6") && erBolig ? " (Boligunntak iht. § 11-2 Tabell 1.)" : "";
+              const arealPerPerson: Record<string, number> = {
+                forsamling_staende: 0.6, forsamling_stoler: 1, undervisning: 2, kontor: 10,
+                salg: 2, restaurant: 1.5, lager: 30,
+              };
+              const arealNum = parseFloat(formData.persontallAreal) || 0;
+              const faktor = arealPerPerson[formData.persontallKategori] || 0;
+              const persontall = arealNum > 0 && faktor > 0 ? Math.floor(arealNum / faktor) : 0;
+              const breddePersoner = persontall * 0.01;
+              const strengeste = Math.max(kravBredde, breddePersoner);
+              const fmt = (n: number) => n.toFixed(2).replace(".", ",");
+              const prosjektBredde = parseFloat(formData.friBreddeProsjekt) || 0;
+              return (
+                <tr>
+                  <td className="border border-gray-400 p-2 align-top font-medium">Fri bredde i rømningsvei<br/><span className="text-xs text-muted-foreground">§ 11-14 punkt 4</span></td>
+                  <td className="border border-gray-400 p-2">
+                    <p>Minimum fri bredde: <strong>{fmt(kravBredde)} m</strong>, samt minimum 1 cm per person.{merknad}</p>
+                    {persontall > 0 && <p className="mt-1">Persontall: {persontall} → krav fra persontall: {fmt(breddePersoner)} m.</p>}
+                    <p className="mt-1">Strengeste krav for prosjektet: <strong>{fmt(strengeste)} m</strong>.</p>
+                    {prosjektBredde > 0 && (
+                      <p>Prosjektert fri bredde: <strong>{fmt(prosjektBredde)} m</strong>.{prosjektBredde < strengeste && <span className="text-red-600 font-semibold"> AVVIK – må dokumenteres som fravik.</span>}</p>
+                    )}
+                    {formData.inkluderReferansetabeller && (
+                      <p className="mt-2 text-xs text-gray-600 italic">Referanse: RK 1/2/4: 0,86 m | RK 3/5: 1,16 m | RK 6 bolig: 0,86 m | RK 6 ellers: 1,16 m. Tillegg: 1 cm/person.</p>
+                    )}
+                  </td>
+                  <td className="border border-gray-400 p-2 align-top">ARK</td>
+                </tr>
+              );
+            })()}
             {formData.romningsveiRomMaks20 && (
               <tr>
                 <td className="border border-gray-400 p-2 align-top font-medium">Rom i rømningsvei inntil 20 m²</td>
