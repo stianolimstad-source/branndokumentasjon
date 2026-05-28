@@ -4632,6 +4632,11 @@ const Konsept = () => {
                     </button>
                   </div>
                   <AccordionContent className="space-y-3 pt-4 px-4 pb-4">
+                    {documentType === "tilstandsvurdering" && (
+                      <div className="text-xs p-2 rounded-md border border-blue-200 bg-blue-50 text-blue-800">
+                        ℹ︎ Befaringsgrunnlag og begrensninger dokumentert i kap 1.2
+                      </div>
+                    )}
                     <div className="flex justify-end mb-2">
                       <Button
                         variant="outline"
