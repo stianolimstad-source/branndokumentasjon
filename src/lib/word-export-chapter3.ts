@@ -1901,6 +1901,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
   rows.push(...await tilstandRow(formData, "3_14", isBF85Tilstand310 ? "3.13 Slokkemannskap" : "3.14 Slokkemannskap"));
 
+  rows.push(...fravikRowsForParagraf("11-17", fravikList));
+
   return new Table({
     width: { size: 100, type: WidthType.PERCENTAGE },
     rows,
