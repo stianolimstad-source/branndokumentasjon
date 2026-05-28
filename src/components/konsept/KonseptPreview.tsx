@@ -527,7 +527,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
         <div className={pageStyle} style={pageWidth}>
           <h2 className="font-bold mb-3">Tilstandsgrader</h2>
           <p className="text-xs mb-4 whitespace-pre-wrap">
-            {"Ved tilstandsvurdering bruker man tilstandsgrader for å prioritere mangler med tanke på oppfølging. Tabellen nedenfor gir oversikt over grader for bruk i brannteknisk tilstandsanalyse. Graderingen er tilpasset tilstandsgradering i NS 3424, slik at den branntekniske tilstandsanalysen kan integreres i flerfaglig teknisk analyse av bygningen.\n\nDenne rapporten er basert på en NS 3424 nivå 1 tilstandsvurdering."}
+            {`Ved tilstandsvurdering bruker man tilstandsgrader for å prioritere mangler med tanke på oppfølging. Tabellen nedenfor gir oversikt over grader for bruk i brannteknisk tilstandsanalyse. Graderingen er tilpasset tilstandsgradering i NS 3424, slik at den branntekniske tilstandsanalysen kan integreres i flerfaglig teknisk analyse av bygningen.\n\nDenne rapporten er basert på en NS 3424 nivå ${formData.ns3424Nivaa ?? "1"} tilstandsvurdering – ${(formData.ns3424Nivaa ?? "1") === "3" ? "fullstendig registrering med destruktive prøver og laboratorieanalyser" : (formData.ns3424Nivaa ?? "1") === "2" ? "mer omfattende registrering, kan inkludere åpning av enkelte konstruksjoner" : "visuell registrering og enkel vurdering av synlige bygningsdeler"}.`}
           </p>
           <p className="font-semibold mb-2" style={{ fontSize: 10 }}>Tilstandsgrader</p>
           <table className="w-full border-collapse border border-gray-400 mb-4" style={{ fontSize: 8 }}>
