@@ -998,7 +998,12 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                       </tr>
 
                       <tr>
-                        <td colSpan={15} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
+                        <td colSpan={17} style={{ ...tdStyle, padding: "6px 10px", background: "#f7f9fc" }}>
+                          {h.usikkerhet === "høy" ? (
+                            <p style={{ fontSize: 9, fontWeight: 700, color: "#b91c1c", margin: "0 0 4px 0" }}>
+                              Usikkerhet: Høy ⚠
+                            </p>
+                          ) : null}
                           {(!hm.konsekvensvurderinger || hm.konsekvensvurderinger.length === 0) ? (
                             <span style={{ fontSize: 9, fontStyle: "italic", color: "#64748b" }}>
                               Ingen konsekvensdimensjoner vurdert
