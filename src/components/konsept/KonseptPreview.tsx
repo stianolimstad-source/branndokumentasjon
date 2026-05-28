@@ -3906,6 +3906,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
 
 
             {/* 3.7 §11-10 Tekniske installasjoner */}
+            <FravikPreviewRow paragrafId="11-9" fravikList={fravikList} />
             <tr id="preview-3-7" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.7 &nbsp;&nbsp; {isBF85 ? <>tekniske installasjoner i BF 85 <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-10 Tekniske installasjoner)</span></> : "§11-10 Tekniske installasjoner"}</td>
             </tr>
