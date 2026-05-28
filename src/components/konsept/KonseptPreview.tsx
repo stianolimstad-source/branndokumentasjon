@@ -3230,6 +3230,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.6 §11-9 Materialer og produkter */}
+            <FravikPreviewRow paragrafId="11-8" fravikList={fravikList} />
             <tr id="preview-3-6" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>{sp}.6 &nbsp;&nbsp; {isBF85 ? <>Kledninger og overflater for vegger og tak (:42) <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§11-9 Materialer og produkters egenskaper ved brann)</span></> : "§11-9 Materialer og produkters egenskaper ved brann"}</td>
             </tr>
