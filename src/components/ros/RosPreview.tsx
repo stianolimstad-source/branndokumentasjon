@@ -1166,7 +1166,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
                             <tr>
                               <td colSpan={18} style={{ ...tdStyle, padding: "4px 10px", background: "#f7f9fc" }}>
                                 <span style={{ fontSize: 9, fontStyle: "italic", color: "#64748b" }}>
-                                  Beregninger: {tilknyttede.map((b) => ider.get(b.id) || "B?").join(", ")} – se kapittel 4 Beregningsgrunnlag.
+                                  Beregninger: {tilknyttede.map((b) => ider.get(b.id) || "B?").join(", ")} – se kapittel 5 Beregningsgrunnlag.
                                 </span>
                               </td>
                             </tr>
@@ -1216,8 +1216,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
 
       {/* Ark 3 — Beregningsgrunnlag */}
       <div style={pageStyle} className="ros-page">
-        <section id="kap-4">
-          <h2 style={h2}>4. Beregningsgrunnlag</h2>
+        <section id="kap-5">
+          <h2 style={h2}>5. Beregningsgrunnlag</h2>
           {(() => {
             const beregninger = content.beregninger || [];
             if (beregninger.length === 0) {
@@ -1271,7 +1271,7 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
               if (!liste || liste.length === 0) return;
               blocks.push(
                 <div key={h.id} style={{ marginBottom: 18 }}>
-                  <h3 style={h3}>4.{i + 1} – Beregninger for hendelse {i + 1}: {h.tittel || h.hendelse || "—"}</h3>
+                  <h3 style={h3}>5.{i + 1} – Beregninger for hendelse {i + 1}: {h.tittel || h.hendelse || "—"}</h3>
                   {liste.map(renderBeregning)}
                 </div>
               );
@@ -1293,10 +1293,10 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
       {/* Ark 4 — bow-tie (hvis registrert) */}
       {content.bowTies && content.bowTies.length > 0 && (
         <div style={landscapePageStyle} className="ros-page-landscape">
-          <section id="kap-5">
-            <h2 style={h2}>5. Bow-tie analyse</h2>
+          <section id="kap-6">
+            <h2 style={h2}>6. Bow-tie analyse</h2>
             <p style={pStyle}>
-              Bow-tie-analysen knytter registrerte hendelser fra kapittel 3 til overordnede uønskede topphendelser.
+              Bow-tie-analysen knytter registrerte hendelser fra kapittel 4 til overordnede uønskede topphendelser.
               Dette synliggjør hvilke årsaker som kan lede til samme topphendelse, og hvilke tiltak som virker på tvers.
             </p>
             {content.bowTies.map((bt, idx) => {
@@ -1401,8 +1401,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
 
       {/* Ark 4 — stående A4 for oppsummering & revisjonshistorikk */}
       <div style={pageStyle} className="ros-page">
-        <section id="kap-6">
-          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "6" : "5"}. Oppsummering</h2>
+        <section id="kap-7">
+          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "7" : "6"}. Oppsummering</h2>
           {content.oppsummering ? (
             <p style={pStyle}>{content.oppsummering}</p>
           ) : (
@@ -1411,8 +1411,8 @@ export default function RosPreview({ content, logoUrl, firmaNavn, utarbeidetAv }
         </section>
 
         {/* Revisjonshistorikk */}
-        <section id="kap-7" style={chapterDivider}>
-          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "7" : "6"}. Revisjonshistorikk</h2>
+        <section id="kap-8" style={chapterDivider}>
+          <h2 style={h2}>{content.bowTies && content.bowTies.length > 0 ? "8" : "7"}. Revisjonshistorikk</h2>
           <table style={tableStyle}>
             <thead>
               <tr>
