@@ -1014,6 +1014,8 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   }
   rows.push(...await tilstandRow(formData, "3_5", "3.5 Brannceller"));
 
+  rows.push(...fravikRowsForParagraf("11-8", fravikList));
+
   // ===== 3.6 Materialer og produkters egenskaper ved brann =====
   rows.push(sectionHeaderRow("3.6   §11-9 Materialer og produkters egenskaper ved brann"));
   rows.push(columnHeaderRow());
