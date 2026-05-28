@@ -58,6 +58,10 @@ export interface RosHendelse {
   kreverBeregning?: boolean;
   /** Kort beskrivelse av hva som må beregnes */
   beregningTekst?: string;
+  /** Usikkerhet i vurderingen (lav/medium/høy). Undefined = ikke vurdert. */
+  usikkerhet?: "lav" | "medium" | "høy";
+  /** Styrbarhet – hvor enkelt risikoen kan påvirkes. Undefined = ikke vurdert. */
+  styrbarhet?: "lav" | "medium" | "høy";
 }
 
 export interface RosBeregning extends AttachedCalculation {
