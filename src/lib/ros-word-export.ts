@@ -901,7 +901,7 @@ export const exportRosToWord = async (options: ExportOptions) => {
     bowTieBlocks.push(buildSectionHeading(theme, `${bowTieNr}. Bow-tie analyse`));
     bowTieBlocks.push(
       para(
-        "Bow-tie-analysen knytter registrerte hendelser fra kapittel 3 til overordnede uønskede topphendelser. " +
+        `Bow-tie-analysen knytter registrerte hendelser fra kapittel ${hendelseNr} til overordnede uønskede topphendelser. ` +
           "Dette synliggjør hvilke årsaker som kan lede til samme topphendelse, og hvilke tiltak som virker på tvers.",
       ),
     );
