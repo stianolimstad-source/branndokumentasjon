@@ -9694,7 +9694,7 @@ const Konsept = () => {
                                     <tr><td className="border p-1">RK 1</td><td className="border p-1">50 m</td></tr>
                                     <tr><td className="border p-1">RK 2</td><td className="border p-1">50 m</td></tr>
                                     <tr><td className="border p-1">RK 3</td><td className="border p-1">30 m</td></tr>
-                                    <tr><td className="border p-1">RK 4</td><td className="border p-1">30 m</td></tr>
+                                    <tr><td className="border p-1">RK 4</td><td className="border p-1">Ikke i tabellen – se § 11-13 ledd 2/3 og § 11-14</td></tr>
                                     <tr><td className="border p-1">RK 5</td><td className="border p-1">30 m</td></tr>
                                     <tr><td className="border p-1">RK 6</td><td className="border p-1">25 m (+ 7 m fra dør til trapp)</td></tr>
                                   </tbody>
