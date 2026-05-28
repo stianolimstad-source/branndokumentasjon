@@ -18,6 +18,17 @@ import {
   normaliserBfkVurderinger,
   type BfkVurderingStatus,
 } from "@/lib/ros-beredskapsforskrift";
+import {
+  type RosTiltak,
+  TILTAK_STATUS_LABEL,
+  TILTAK_KATEGORI_LABEL,
+  VURDERING_LABEL,
+  byggTiltakIder,
+  erFristPassert,
+  sorterTiltakEtterPrioritet,
+  formaterFrist,
+} from "@/lib/ros-tiltak";
+export type { RosTiltak, RosTiltakStatus, RosTiltakKategori, Vurdering } from "@/lib/ros-tiltak";
 
 export interface BfkVurdering {
   paragrafId: string;
