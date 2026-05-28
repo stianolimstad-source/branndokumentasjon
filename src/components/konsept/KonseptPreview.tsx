@@ -1429,6 +1429,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
             )}
 
             {/* 3.2 §11-5 Sikkerhet ved eksplosjon */}
+            <FravikPreviewRow paragrafId="11-4" fravikList={fravikList} />
             <tr id="preview-3-2" style={sectionRowStyle}>
               <td className="border border-gray-400 p-2 font-bold" colSpan={3}>
                 {sp}.2 &nbsp;&nbsp; {formData.regelverk === "BF85" ? <>Sikkerhet ved eksplosjon <span style={{fontWeight: 'normal', fontStyle: 'italic'}}>(§ 11-5)</span></> : "§11-5 Sikkerhet ved eksplosjon"}
