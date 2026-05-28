@@ -1,68 +1,73 @@
-# Inline fravik i brannkonsept kapittel 3
+# Reorganisering av kap 3.6 (TEK17 §11-9) etter veilederens struktur A–I
 
-## Mål
-Brukeren skal kunne se og opprette fravik direkte fra hver §11-X-seksjon i brannkonseptet, uten å miste konteksten.
+Gjelder kun TEK17-grenen (ikke BF85, som beholdes uendret). Dagens innhold flyttes inn under nye underseksjoner; ingenting fjernes.
 
-## Datamodell (gjenbruker eksisterende felt)
-`FravikEntry.funksjonskrav` er allerede en multiline-streng der hver linje er en TEK17-paragrafetikett (f.eks. `"§ 11-7. Brannseksjoner"`). Vi innfører **ingen** nytt felt — i stedet legger vi en liten hjelper:
+## Ny struktur i UI
 
-```ts
-// src/lib/fravik-paragraf.ts
-export const extractParagrafIds = (funksjonskrav: string): string[] =>
-  Array.from((funksjonskrav || "").matchAll(/§\s*(11-\d+)/g)).map(m => m[1]);
+I `src/pages/Konsept.tsx` innenfor `SectionCollapsible previewId="preview-3-6"` (TEK17-grenen, fra ca. linje 7636 til 7745) erstattes innholdet med 9 underseksjoner bygget på shadcn `Collapsible`:
 
-export const paragrafLabelFor = (id: string) => /* slå opp i tek17Paragrafer */;
-```
+- **A. Generelt** — kort tekst om at klassifisering gjelder kombinasjon overflate + underlag (alltid synlig, ikke collapsible).
+- **B. Innvendige overflater og kledninger** — to tabeller:
+  - **Tabell 1A** (RK1–RK5): kolonner BKL 1 / BKL 2 / BKL 3, 7 rader (overflater vegg+tak ≤200 m², >200 m², rømningsvei; gulv branncelle, gulv rømningsvei; kledning vegg+tak branncelle, kledning rømningsvei). Vises kun når `formData.risikoklasse ∈ {RK1..RK5}`. Aktiv BKL-kolonne markeres (samme stil som BF85-tabellen).
+  - **Tabell 1B** (RK6): skjerpede krav (A2-s1,d0 / K₂10 A2-s1,d0 osv.), vises kun når `formData.risikoklasse === "RK6"`.
+  - Klasser i europeisk + norsk i klammer: `D-s2,d0 [In 2]` osv.
+  - De fire eksisterende noteboksene (hulrom `matNote2`, brannfarlig virksomhet `matNote3`, analyse-unntak `matNote4`, samt rom-med-brannfarlig-virksomhet) flyttes inn her uendret.
+- **C. Nedforet himling i rømningsvei** — eksisterende `himlingNote1`/`himlingNote2` flyttes inn; legg til presisering at preakseptert ytelse krever A2-s1,d0 [In 1 på begrenset brennbart underlag] med opphengsystem ≥10 min, eller K₂10 A2-s1,d0 [K1-A].
+- **D. Isolasjon i bygningsdeler** — eksisterende `isolasjonSandwich` + `isolasjonBrennbar` beholdes; tre nye checkboxer for hvordan brennbar isolasjon kan anvendes:
+  - `isoTildekketMurStop` — tildekkes/mures/støpes inn slik at den ikke involveres i brann
+  - `isoDokumentertIngenSpredning` — dokumentert at den ikke bidrar til brannspredning
+  - `isoTilbakeholdendeLag` — tilstrekkelig tildekkende eller branntilbakeholdende lag
+- **E. Utvendige overflater og kledning** — ny seksjon. Viser automatisk gjeldende krav: BKL1 → `D-s3,d0 [Ut 2]`; BKL2/BKL3 → `B-s3,d0 [Ut 1]`; RK6 → `A2-s1,d0 [ubrennbart]` uansett BKL. Eksisterende `ytterkledningDKrav` flyttes inn. Ny checkbox `naboavstandUnder8m` — krav når avstand til nabobygg < 8 m.
+- **F. Yttertak** — ny seksjon. Tekst om `BROOF(t2) [Ta]` for BKL 1/2/3, krav til underlag og brannmotstand, krav til takoppbygging. Checkboxer: `tak_broof_t2`, `tak_underlagDokumentert`, `tak_oppbyggingDokumentert`.
+- **G. Brannvegg og vinduer i brannvegg** — ny seksjon. Tekst om at vinduer og gjennomføringer i brannvegg må ha samme brannmotstand som veggen (`EI 90 A2-s1,d0` eller `EI 120 A2-s1,d0` avhengig av BKL — beregnes fra `formData.brannklasse`). Checkboxer: `brannvegg_vinduerSammeBrannmotstand`, `brannvegg_gjennomfoerngerSikret`.
+- **H. Rør- og kanalisolasjon** — ny seksjon. Tekst: `BL-s1,d0` i rømningsvei; `A2L-s1,d0` i rømningsvei som betjener mer enn én etasje. Checkboxer: `ror_bl_s1d0`, `ror_a2l_s1d0_flerEtasjer`.
+- **I. Småhus** — ny seksjon med preaksepterte lempninger for boligbygninger inntil 2 etasjer. Checkboxer: `smahus_lempningOverflater`, `smahus_lempningKledning`, `smahus_lempningTaktekning`.
 
-Dette gjør at et fravik med `funksjonskrav` som inneholder `"§ 11-7..."` automatisk er knyttet til §11-7. Ved opprettelse fra brannkonseptet pre-fyller vi `funksjonskrav` med riktig etikett.
+Hver underseksjon (B–I) er en `Collapsible` med trigger som viser tittel + chevron, default `open=false`. Tilstand holdes i et lokalt `useState<Record<string, boolean>>({})` (ikke i `formData`, kun UI-state).
 
-## Henting av fravik per prosjekt
-I `Konsept.tsx` legges en `useFravikForProsjekt(projectId)`-hook (egen fil, `src/hooks/useFravikForProsjekt.ts`):
+## Auto-åpning av relevante seksjoner
 
-- Henter alle rader fra `fire_concepts` der `project_id = projectId` **og** `content->>'contentType'` er `'kvalitativ' | 'komparativ' | 'risikoanalyse'` (matcher dagens lagring).
-- Returnerer en flat liste `{ conceptId, conceptName, fravikId, navn, fravikBeskrivelse, konklusjon, paragrafIds[], status }`.
-- `status` avledes av `konklusjon`-feltet: tomt → `foreslått`, `tilstrekkelig|komparativ|risikoanalyse|egendefinert` → `akseptert`. (Ingen «avvist»-tilstand finnes i datamodellen i dag — se åpent spørsmål.)
-- Cacher i state, eksponerer `refresh()`.
+Ny `useEffect` som basert på `formData.risikoklasse`, `formData.brannklasse`, `formData.bygningstype`, `formData.etasjer` initielt setter `open=true` for:
 
-## Ny komponent: `FravikForParagraf`
-`src/components/konsept/FravikForParagraf.tsx`:
+- B alltid (innvendige overflater er sentralt).
+- E hvis `brannklasse ∈ {BKL2, BKL3}` eller `risikoklasse === "RK6"`.
+- F alltid (taktekking er obligatorisk vurdering).
+- I hvis `bygningstype` inneholder "bolig" / "enebolig" / "rekkehus" / "tomannsbolig" og `parseInt(etasjer) ≤ 2`.
+- G/H lukket som default (åpnes manuelt).
 
-- Props: `paragrafId` (f.eks. `"11-7"`), `projectId`, `konseptId`, `fravikList`, `refresh`.
-- Renderer:
-  - Tittel «Fravik fra preakseptert ytelse» (AlertTriangle-ikon, `text-destructive`).
-  - Hjelpetekst om SAK 10 § 9-1.
-  - Liste: for hvert fravik som matcher `paragrafId` → kompakt rad med ID-badge, navn/første linje av `fravikBeskrivelse`, status-badge, «Åpne»-knapp som lenker til `/lnsdokumentasjon/{contentType}?project={projectId}&concept={conceptId}#fravik-{fravikId}`.
-  - Tom-tilstand: kursiv «Ingen fravik registrert for § 11-X».
-  - «+ Opprett fravik fra § 11-X»-knapp og en refresh-knapp.
+Bruker endrer manuelt etter ønske; ingen overstyring etter første render.
 
-«Opprett»-handling:
-- Hvis prosjektet allerede har et fraviksdokument: naviger til det med `?tekParagraf=11-X&fromKonsept={konseptId}&newFravik=1`.
-- Hvis ikke: naviger til `/lnsdokumentasjon/kvalitativ?project={projectId}&new=true&tekParagraf=11-X&fromKonsept={konseptId}`.
+## Nye `formData`-felter
 
-## Endringer i `KvalitativAnalyse.tsx`
-- Les `tekParagraf` og `newFravik` fra `useSearchParams` ved mount.
-- Hvis satt: opprett (eller append) et `emptyFravik()` med `funksjonskrav` forhåndsutfylt til riktig label fra `tek17Paragrafer`, scroll til det, og rens query-parameterne.
-- `fromKonsept` lagres i state og brukes til en «Tilbake til brannkonsept»-knapp øverst.
+Legges til i `formData`-initialiseringen (rundt linje 693–827) og i `useState`-typen. Alle defaultes til `false` eller `""`. Inkluderer feltene listet over for D, E, F, G, H, I.
 
-## Plassering i `Konsept.tsx`
-Inni hver av de 14 `SectionCollapsible`-blokkene (`preview-3-1` … `preview-3-14`), helt nederst i innholdet, monteres:
-```tsx
-<FravikForParagraf paragrafId="11-4" projectId={projectId} konseptId={konseptId}
-  fravikList={fravikList} refresh={refreshFravik} />
-```
-Paragraf-ID per seksjon: 3-1→11-4, 3-2→11-5, 3-3→11-6, 3-4→11-7, 3-5→11-8, 3-6→11-9, 3-7→11-10, 3-8→11-11, 3-9→11-12, 3-10→11-13, 3-11→11-14, 3-12→11-15, 3-13→11-16, 3-14→11-17.
+## Word-eksport (`src/lib/word-export-chapter3.ts`)
 
-## Word-eksport
-I rapport-genereringen for hvert §-avsnitt i kapittel 3: hvis `fravikList.filter(f => f.paragrafIds.includes(paragrafId)).length > 0`, legg til en sub-seksjon «Fravik» med en kompakt linje per fravik (`F{n} – {navn} – {status}`). Ingen tekst hvis tom. Samme oppdatering i `KonseptPreview.tsx` for konsistent live-preview.
+Kap 3.6 (linje 1027–1212) refaktoreres slik at hver av delkapittel A–I får sin egen `graySubSectionHeaderRow("A. Generelt")` osv. som underoverskrift. Eksisterende rader fordeles:
+
+- A: dagens "Generelt"-rad.
+- B: matNote2/3/4-rader + nye rader fra tabell-strukturen (vegg/tak ≤200, >200, rømningsvei, gulv, kledninger) — bygges på samme måte som dagens "Overflater i brannceller…" / "Kledninger"-blokker, men med ny gruppering.
+- C: dagens `himlingNote1/2`-blokk.
+- D: dagens `Isolasjon`-blokk + nye linjer for de tre alternativer-checkboxene.
+- E: dagens "Utvendige overflater" + ny linje for `naboavstandUnder8m`.
+- F: dagens "Taktekning"-blokk under egen overskrift, + nye linjer for underlag/oppbygging.
+- G: ny blokk for brannvegg/vinduer/gjennomføringer.
+- H: ny blokk for rør- og kanalisolasjon.
+- I: ny blokk for småhus-lempninger.
+
+`fravikRowsForParagraf("11-9", fravikList)` og `tilstandRow(...)` beholdes nederst.
+
+`KonseptPreview.tsx` følger samme oppdelingen i HTML-tabellen for kap 3.6 så preview og Word matcher (samme `graySubSectionHeader`-stil).
 
 ## Filer som endres
-- ny: `src/lib/fravik-paragraf.ts`
-- ny: `src/hooks/useFravikForProsjekt.ts`
-- ny: `src/components/konsept/FravikForParagraf.tsx`
-- `src/pages/Konsept.tsx` (14 innsettinger + hook + Word-eksport)
-- `src/components/konsept/KonseptPreview.tsx` (sub-seksjon i preview)
-- `src/pages/fraviksdokumentasjon/KvalitativAnalyse.tsx` (les query-params, prefyll)
 
-## Åpne spørsmål
-1. **Status-badge:** Vi har ikke et eksplisitt `status`-felt på fravik. Forslag: avled `foreslått` (tom `konklusjon`) / `akseptert` (utfylt `konklusjon`). Vil du heller ha et nytt eksplisitt felt `status: 'foreslått'|'akseptert'|'avvist'` (krever migrasjon av JSON-innhold)?
-2. **Opprett-knapp UX:** Innebygd Dialog i brannkonseptet, eller redirect til fraviksdokumentasjonen med prefyll (anbefalt – beholder all eksisterende logikk i ett sted)?
+- `src/pages/Konsept.tsx` — UI-refaktor, nye felter, auto-åpne-effekt.
+- `src/lib/word-export-chapter3.ts` — A–I underoverskrifter i kap 3.6.
+- `src/components/konsept/KonseptPreview.tsx` — speile A–I-strukturen i preview-tabellen.
+
+## Det som IKKE endres
+
+- BF85-grenen av §11-9 (linje 7529–7634) — uendret.
+- Eksisterende `matNote*`, `himlingNote*`, `isolasjon*`, `ytterkledningDKrav`-felter — beholdes som er, kun flyttes visuelt.
+- Fravik-integrasjon (`FravikForParagraf`) — beholdes nederst i seksjonen.
+- Logikk for `getBrannklasse`, risikoklassemapping osv.
