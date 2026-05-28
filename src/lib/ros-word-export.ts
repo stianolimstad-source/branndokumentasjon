@@ -652,7 +652,8 @@ export const exportRosToWord = async (options: ExportOptions) => {
                 ],
               })
             : dashCell(4),
-          smallCell(h.tiltak || "", 9),
+          smallCell(h.eksisterendeBarrierer || "", 5),
+          smallCell(h.foreslatteTiltak || h.tiltak || "", 5),
           smallCell(h.beskrivelseEtter || "", 9),
           smallCell(String(sE), 3),
           kForsyningEtter ? smallCell(String(kForsyningEtter), 3) : dashCell(3),
