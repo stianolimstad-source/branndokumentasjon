@@ -40,6 +40,24 @@ const MinProfil = () => {
   const [savingTemplate, setSavingTemplate] = useState(false);
   const [invoices, setInvoices] = useState<any[]>([]);
   const [loadingInvoices, setLoadingInvoices] = useState(true);
+  const { role, isEngineer } = useUserRole();
+  const [showRoleSwitch, setShowRoleSwitch] = useState(false);
+  const [switchingRole, setSwitchingRole] = useState(false);
+
+  const handleRoleSwitch = async () => {
+    if (!user || !role) return;
+    setSwitchingRole(true);
+    const newRole = role === "engineer" ? "customer" : "engineer";
+    const { error } = await supabase.from("profiles").update({ role: newRole } as any).eq("id", user.id);
+    if (error) {
+      toast({ title: "Feil", description: "Kunne ikke bytte rolle", variant: "destructive" });
+      setSwitchingRole(false);
+      return;
+    }
+    await supabase.auth.signOut();
+    navigate("/auth");
+  };
+
 
   useEffect(() => {
     if (!loading && !user) {
