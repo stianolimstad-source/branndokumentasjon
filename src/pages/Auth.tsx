@@ -170,6 +170,13 @@ const Auth = () => {
         variant: 'destructive',
       });
     } else {
+      const roleToSet = preselectedRole ?? 'engineer';
+      localStorage.setItem('branndok_selected_role', roleToSet);
+      // Sett rolle på profil – auth state-listener venter til onAuthStateChange gir oss user
+      const { data: { user: newUser } } = await supabase.auth.getUser();
+      if (newUser) {
+        await supabase.from('profiles').update({ role: roleToSet } as any).eq('id', newUser.id);
+      }
       toast({
         title: 'Konto opprettet!',
         description: 'Vi har sendt deg en bekreftelsesmail. Sjekk innboksen din (og spam-mappen) og klikk på lenken for å bekrefte kontoen din.',
