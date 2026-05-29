@@ -4,8 +4,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import AppHeader from "@/components/AppHeader";
-import Index from "./pages/Index";
+import RoleSelectModal from "@/components/auth/RoleSelectModal";
+
 import Konsept from "./pages/Konsept";
 import Tilstandsvurdering from "./pages/Tilstandsvurdering";
 import RosAnalyse from "./pages/RosAnalyse";
