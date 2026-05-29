@@ -58,6 +58,11 @@ import Om from "./pages/Om";
 
 const queryClient = new QueryClient();
 
+const RoleGate = () => {
+  const { needsRoleSelect } = useAuth();
+  return <RoleSelectModal open={needsRoleSelect} />;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -68,6 +73,8 @@ const App = () => (
           <PaymentTestModeBanner />
           <PastDueBanner />
           <AppHeader />
+          <RoleGate />
+
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/abonnement" element={<Abonnement />} />
