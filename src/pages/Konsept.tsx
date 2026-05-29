@@ -41,7 +41,7 @@ import { useCanDownload } from "@/hooks/useCanDownload";
 import { useIsFullAccess } from "@/hooks/useIsFullAccess";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import SendToKSDialog from "@/components/konsept/SendToKSDialog";
+
 import UpdateKSButton from "@/components/konsept/UpdateKSButton";
 import KonseptPreview, { getKategorier } from "@/components/konsept/KonseptPreview";
 import { UploadConceptDialog } from "@/components/konsept/UploadConceptDialog";
@@ -11087,13 +11087,6 @@ const Konsept = () => {
               </Button>
               {isFullAccess && (
                 <>
-                  <SendToKSDialog
-                    conceptName={conceptName}
-                    projectId={selectedProjectId}
-                    conceptId={conceptId}
-                    conceptContent={formData}
-                    disabled={!conceptName}
-                  />
                   <UpdateKSButton
                     conceptId={conceptId}
                     conceptName={conceptName}
