@@ -349,6 +349,49 @@ const MinProfil = () => {
           </CardContent>
         </Card>
 
+        {/* User role */}
+        {role && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <UserCog className="h-5 w-5 text-primary" />
+                Brukerrolle
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-muted-foreground">Nåværende rolle:</span>
+                <Badge variant="secondary">{isEngineer ? "Branningeniør" : "Kunde"}</Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Du er logget inn som {isEngineer ? "branningeniør" : "kunde"}. Du kan bytte rolle hvis du har behov for det.
+              </p>
+              <Button variant="outline" onClick={() => setShowRoleSwitch(true)}>
+                Bytt rolle
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        <AlertDialog open={showRoleSwitch} onOpenChange={setShowRoleSwitch}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Bytt brukerrolle</AlertDialogTitle>
+              <AlertDialogDescription>
+                Vil du bytte fra {isEngineer ? "branningeniør" : "kunde"} til {isEngineer ? "kunde" : "branningeniør"}?
+                Du må logge inn på nytt for at endringen skal tre i kraft.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={switchingRole}>Avbryt</AlertDialogCancel>
+              <AlertDialogAction onClick={handleRoleSwitch} disabled={switchingRole}>
+                {switchingRole ? "Bytter..." : "Bytt rolle"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+
         {/* Receipts / invoices */}
         <Card>
           <CardHeader>
