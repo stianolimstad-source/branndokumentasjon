@@ -3,7 +3,7 @@ import { branncelleTyperListe, getBrannklasse } from "./fire-concept-constants";
 import { getGarasjeKrav } from "./garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "./brensellagring-krav";
 import { getYtterveggBrannmotstandBF85 } from "./bf85-constants";
-import { referanseBaereevne, referanseSeksjonering, referanseBrannceller, getMaterialerReferanseTabell, type ReferanseTabell } from "./tek17/referansetabeller";
+
 
 const tableBorders = {
   top: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
@@ -133,53 +133,7 @@ function contentRowMultiLine(forhold: string, losningLines: string[], ansvar: st
   });
 }
 
-/**
- * Returnerer en rad som spenner over alle 3 kolonner og inneholder en innebygd
- * referansetabell (med tittel, kolonneoverskrifter, rader og kilde).
- * Brukes når brukeren har huket av "Inkluder referansetabeller i rapporten".
- */
-function referanseTabellRow(tabell: ReferanseTabell): TableRow {
-  const innerHeader = new TableRow({
-    children: tabell.headers.map((h) =>
-      new TableCell({
-        borders: tableBorders,
-        shading: headerShading,
-        margins: { top: 30, bottom: 30, left: 60, right: 60 },
-        children: [new Paragraph({ children: [new TextRun({ text: h, bold: true, size: 18 })] })],
-      }),
-    ),
-  });
-  const innerRows = tabell.rows.map((row) =>
-    new TableRow({
-      children: row.map((c) =>
-        new TableCell({
-          borders: tableBorders,
-          margins: { top: 30, bottom: 30, left: 60, right: 60 },
-          children: [new Paragraph({ children: [new TextRun({ text: c, size: 18 })] })],
-        }),
-      ),
-    }),
-  );
-  const innerTable = new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
-    rows: [innerHeader, ...innerRows],
-  });
-  return new TableRow({
-    children: [
-      new TableCell({
-        columnSpan: 3,
-        borders: tableBorders,
-        shading: headerShading,
-        margins: { top: 60, bottom: 60, left: 80, right: 80 },
-        children: [
-          new Paragraph({ spacing: { before: 40, after: 60 }, children: [new TextRun({ text: tabell.tittel, bold: true, italics: true, size: 18 })] }),
-          innerTable,
-          new Paragraph({ spacing: { before: 60, after: 40 }, children: [new TextRun({ text: tabell.kilde, italics: true, size: 16, color: "666666" })] }),
-        ],
-      }),
-    ],
-  });
-}
+
 
 
 const tilstandGradLabels: Record<string, string> = {
@@ -510,7 +464,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.baereevneKommentar) {
     rows.push(contentRow("Kommentar", formData.baereevneKommentar, "-"));
   }
-  if (formData.inkluderReferansetabeller) rows.push(referanseTabellRow(referanseBaereevne));
+  
   rows.push(...await tilstandRow(formData, "3_1", "3.1 Bæreevne og stabilitet"));
 
   rows.push(...fravikRowsForParagraf("11-4", fravikList));
@@ -692,7 +646,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.brannseksjonerKommentar) {
     rows.push(contentRow("Kommentar", formData.brannseksjonerKommentar, "-"));
   }
-  if (formData.inkluderReferansetabeller && formData.regelverk !== "BF85") rows.push(referanseTabellRow(referanseSeksjonering));
+  
   rows.push(...await tilstandRow(formData, "3_4", "3.4 Brannseksjoner"));
 
   rows.push(...fravikRowsForParagraf("11-7", fravikList));
@@ -1072,7 +1026,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.branncellerKommentar) {
     rows.push(contentRow("Kommentar", formData.branncellerKommentar, "-"));
   }
-  if (formData.inkluderReferansetabeller && formData.regelverk !== "BF85") rows.push(referanseTabellRow(referanseBrannceller));
+  
   rows.push(...await tilstandRow(formData, "3_5", "3.5 Brannceller"));
 
   rows.push(...fravikRowsForParagraf("11-8", fravikList));
@@ -1311,10 +1265,6 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
 
   if (formData.materialerKommentar) {
     rows.push(contentRow("Kommentar", formData.materialerKommentar, "-"));
-  }
-  if (formData.inkluderReferansetabeller && formData.regelverk !== "BF85") {
-    const matTab = getMaterialerReferanseTabell(formData.risikoklasse, formData.harFlereRisikoklasser, formData.bygningsdeler);
-    if (matTab) rows.push(referanseTabellRow(matTab));
   }
   rows.push(...await tilstandRow(formData, "3_6", "3.6 Materialer og produkter"));
 
@@ -1722,10 +1672,6 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
         const dor = parseFloat(formData.fluktveiDorTilTrappRK6) || 0;
         if (dor > 0) lines.push(`• Prosjektert avstand fra dør til nærmeste trapp (RK6): ${formData.fluktveiDorTilTrappRK6.replace(".", ",")} m.`);
       }
-      if (formData.inkluderReferansetabeller) {
-        lines.push("", "Referanse – maksimal fluktvei per RK (VTEK § 11-13 Tabell 1):");
-        lines.push("RK 1: 50 m | RK 2: 50 m | RK 3: 30 m | RK 4: ikke i tabellen (se § 11-13 ledd 2/3 og § 11-14) | RK 5: 30 m | RK 6: 25 m (+ 7 m fra dør til trapp).");
-      }
       rows.push(contentRowMultiLine("Maksimal fluktvei – § 11-13", lines, "ARK"));
     }
   }
@@ -1824,7 +1770,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
     const lines: string[] = [
       "• Åpningskraft for dører til rømningsvei må være maksimalt 67 Newton dersom det ikke følger andre krav av § 12-13.",
     ];
-    if (formData.inkluderReferansetabeller && harRK5 && alleRK.some(rk => rk !== "RK5")) {
+    if (harRK5 && alleRK.some(rk => rk !== "RK5")) {
       lines.push("• Dør til rømningsvei i byggverk i risikoklasse 1, 2, 3, 4 og 6 må ha fri bredde minimum 0,86 meter. Unntak gjelder for fritidsbolig med én boenhet.");
       lines.push("• Dør til rømningsvei i byggverk i risikoklasse 5 må ha fri bredde minimum 1,16 meter.");
     } else if (harRK5) {
@@ -1955,10 +1901,6 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
         if (prosjektBredde < strengeste) {
           lines.push(`• AVVIK: Prosjektert bredde er mindre enn strengeste krav. Må dokumenteres som fravik.`);
         }
-      }
-      if (formData.inkluderReferansetabeller) {
-        lines.push("", "Referanse – fri bredde per RK (§ 11-14 punkt 4):");
-        lines.push("RK 1, 2, 4: 0,86 m | RK 3, 5: 1,16 m | RK 6 bolig: 0,86 m | RK 6 ellers: 1,16 m. Tillegg: 1 cm per person.");
       }
       rows.push(contentRowMultiLine("Fri bredde i rømningsvei – § 11-14 punkt 4", lines, "ARK"));
     }
