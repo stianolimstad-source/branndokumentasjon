@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FolderOpen, ShieldCheck, Sparkles, ArrowRight } from "lucide-react";
+import { FolderOpen, ShieldCheck, Sparkles, ArrowRight, ArrowLeft } from "lucide-react";
 
 const KundeLanding = () => {
   const navigate = useNavigate();
