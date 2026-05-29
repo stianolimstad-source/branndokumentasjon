@@ -5406,9 +5406,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     {prosjektBredde > 0 && (
                       <p>Prosjektert fri bredde: <strong>{fmt(prosjektBredde)} m</strong>.{prosjektBredde < strengeste && <span className="text-red-600 font-semibold"> AVVIK – må dokumenteres som fravik.</span>}</p>
                     )}
-                    {formData.inkluderReferansetabeller && (
-                      <p className="mt-2 text-xs text-gray-600 italic">Referanse: RK 1/2/4: 0,86 m | RK 3/5: 1,16 m | RK 6 bolig: 0,86 m | RK 6 ellers: 1,16 m. Tillegg: 1 cm/person.</p>
-                    )}
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
