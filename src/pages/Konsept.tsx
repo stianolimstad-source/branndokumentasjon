@@ -9467,7 +9467,7 @@ const Konsept = () => {
                             )}
                             <Collapsible>
                               <CollapsibleTrigger className="text-xs text-primary hover:underline">
-                                Vis referansetabell for alle risikoklasser
+                                Vis full referansetabell (kun i editor)
                               </CollapsibleTrigger>
                               <CollapsibleContent>
                                 <table className="w-full text-xs border mt-2">
