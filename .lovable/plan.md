@@ -1,63 +1,36 @@
 ## Mål
-Etablere rolle-skille (`engineer` / `customer`) som fundament for kommende kundeportal. Eksisterende brukere blir automatisk `engineer`. Nye brukere må velge rolle ved første innlogging.
+Utvide RLS slik at brukere med rolle `customer` kan opprette egne prosjekter og full CRUD på egne ROS-analyser (inkludert flytting mellom tilgjengelige prosjekter), mens read-only-tilgang på delte brannkonsept, fravik og tilstandsvurderinger via gruppe forblir uendret. Eksisterende engineer-policies røres ikke.
 
-## Del A – Database-migrasjon
-Én migrasjon med:
-- `profiles.role TEXT CHECK (role IN ('engineer','customer'))` – nullable
-- `UPDATE profiles SET role = 'engineer' WHERE role IS NULL`
-- `projects.created_by_role TEXT NOT NULL DEFAULT 'engineer' CHECK (...)`
-- `ros_analyses.created_by UUID REFERENCES auth.users(id)`
-- Backfill `ros_analyses.created_by` fra `projects.user_id` via join på `project_id`
+## Migrasjon (én fil)
 
-Ingen RLS-endringer i denne fasen (kun fundament). `types.ts` regenereres automatisk.
+**Helper-funksjon**
+- `public.is_customer(user_id uuid) returns boolean` – `SECURITY DEFINER`, `set search_path = public`, sjekker `profiles.role = 'customer'`. Brukes ikke i policies under (for å holde SQL eksplisitt), men gjøres tilgjengelig for senere bruk.
 
-## Del B – RoleSelectModal
-Ny fil: `src/components/auth/RoleSelectModal.tsx`
-- Dialog uten lukking: ingen X, `onOpenChange` ignoreres, `onPointerDownOutside`/`onEscapeKeyDown` preventDefault
-- Tittel: «Velkommen til Branndokumentasjon.no»
-- Beskrivelse som spesifisert
-- To store kort-knapper side om side (grid md:grid-cols-2):
-  - «Jeg er branningeniør» – `Briefcase`-ikon, undertekst
-  - «Jeg er kunde» – `User`-ikon, undertekst
-- Footer-tekst: «Du kan endre dette senere i kontoinnstillinger.»
-- Ved valg: `update profiles set role = ...`, lukk modal, `window.location.reload()`
+**Policies på `public.projects`** (additive, OR-r med eksisterende)
+- `Customers can create own projects` – INSERT WITH CHECK: `auth.uid() = user_id AND created_by_role = 'customer' AND EXISTS (profiles WHERE id = auth.uid() AND role = 'customer')`
+- `Customers can update own projects` – UPDATE USING: `auth.uid() = user_id AND created_by_role = 'customer'`
+- `Customers can delete own projects` – DELETE USING: `auth.uid() = user_id AND created_by_role = 'customer'`
 
-Bruker eksisterende semantiske tokens (ingen hardkodede farger).
+**Policies på `public.ros_analyses`**
+«Tilgjengelig prosjekt» = eier (`p.user_id = auth.uid()`) ELLER delt via gruppe (`get_user_group_ids`) ELLER delt via direkte kontakt (`project_shares.contact_id → contacts.linked_user_id = auth.uid()`).
 
-## Del C – Vise modal ved første innlogging
-Utvide `src/hooks/useAuth.tsx`:
-- Etter at `session` er satt, hent `profiles.role` for innlogget bruker
-- Eksponer `needsRoleSelect: boolean` (true når innlogget og `role === null`)
+- `Customers can view ROS in own or shared projects` – SELECT USING: prosjekt er tilgjengelig
+- `Customers can create ROS in accessible projects` – INSERT WITH CHECK: `auth.uid() = created_by` AND prosjekt tilgjengelig
+- `Customers can update own ROS analyses` – UPDATE USING `auth.uid() = created_by`, WITH CHECK `auth.uid() = created_by AND` mål-prosjekt tilgjengelig (støtter flytting)
+- `Customers can delete own ROS analyses` – DELETE USING: `auth.uid() = created_by`
 
-Render `<RoleSelectModal />` i `src/App.tsx` (innenfor `AuthProvider`) basert på `needsRoleSelect`.
-
-## Del D – useUserRole hook
-Ny fil: `src/hooks/useUserRole.tsx` – som spesifisert i oppgaven (returnerer `{ role, loading, isEngineer, isCustomer }`).
-
-## Del E – Rolle-bytting i MinProfil
-Utvide `src/pages/MinProfil.tsx` med ny seksjon «Brukerrolle»:
-- Badge med nåværende rolle (norsk label: «Branningeniør» / «Kunde»)
-- Beskrivelsestekst
-- Knapp «Bytt rolle» → `AlertDialog` med bekreftelse som inneholder nåværende og motsatt rolle
-- Ved bekreft: oppdater `profiles.role`, `supabase.auth.signOut()`, redirect til `/auth`
-
-## Del F – Default-verdier ved opprettelse
-Sikre testkriterium 4 og 5:
-- `projects.created_by_role` har DB-default `'engineer'` – ingen kodeendring nødvendig for engineer-flyten, men vi setter eksplisitt verdi der prosjekter opprettes (`MineProsjekter.tsx`) for å være forberedt på customer-flyten
-- Der ROS-analyser opprettes (søk: `from('ros_analyses').insert`), legg til `created_by: user.id`
+**Ikke berørt**: `fire_concepts`, fravik- og tilstandsvurderingstabeller får ingen nye INSERT/UPDATE/DELETE-policies. Eksisterende SELECT via `project_shares` + gruppe gir kunden read-only.
 
 ## Tekniske detaljer
-- Ingen endringer i RLS i denne fasen
-- Ingen endringer i navigasjon/sidebar basert på rolle ennå (kommer i senere fase)
-- Modal må rendres på alle ruter, derfor i `App.tsx` rett etter `AppHeader`
-- `useAuth` må kunne re-hente rolle etter at modal har lagret valget (reload løser dette i MVP)
+- Migrasjonen inneholder kun `CREATE FUNCTION` og `CREATE POLICY` – ingen schema-endringer, ingen GRANTs nødvendig (tabellene har dem).
+- `project_shares.contact_id`-stien er tatt med i ROS-policiene for å dekke direkte deling til en kunde-kontakt, selv om eksisterende `fire_concepts`-policy kun bruker gruppe-stien. Dette gir konsistent kundeopplevelse på ROS.
+- Engineer-flyten påvirkes ikke: alle eksisterende policies består, og PostgreSQL OR-r dem med de nye.
+- Ingen kodeendringer i frontend i denne fasen – sikrer kun datalaget.
 
-## Filer som endres/opprettes
-- ny migrasjon (Del A)
-- `src/components/auth/RoleSelectModal.tsx` (ny)
-- `src/hooks/useUserRole.tsx` (ny)
-- `src/hooks/useAuth.tsx` (utvide med rolle-sjekk + `needsRoleSelect`)
-- `src/App.tsx` (rendre modal)
-- `src/pages/MinProfil.tsx` (rolle-seksjon + bytt-dialog)
-- `src/pages/MineProsjekter.tsx` (sett `created_by_role`)
-- der ROS opprettes (sannsynligvis `RosAnalyse.tsx` / `UploadRosDialog.tsx`) – legg til `created_by`
+## Verifikasjon etter migrasjon
+1. `supabase--linter` for å fange evt. warnings.
+2. Bekreft at policies vises på `projects` og `ros_analyses` (allerede synlig i schema-context etter migrasjon).
+3. Manuelle tester per oppgavens 7 punkter.
+
+## Filer
+- Ny migrasjonsfil under `supabase/migrations/` (auto-navngitt).
