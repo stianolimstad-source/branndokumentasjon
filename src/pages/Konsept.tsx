@@ -2857,6 +2857,28 @@ const Konsept = () => {
                             // Kap. 2 universell utforming
                             setIfEmpty("universellUtforming", k3.universellUtforming);
 
+                            // Importerte avvik fra opplastet tilstandsrapport — appendes til riktig kapittel 3.x
+                            if (documentType === "tilstandsvurdering" && Array.isArray((extracted as any).avvik) && (extracted as any).avvik.length > 0) {
+                              const importerte = (extracted as any).avvik as Array<{ sectionKey: string; kind: "tiltak" | "fravik"; grad: TilstandAvvik["grad"]; beskrivelse: string }>;
+                              const tv: Record<string, TilstandData> = { ...(updated.tilstandsvurderinger || {}) };
+                              for (const a of importerte) {
+                                if (!a?.sectionKey || !a?.beskrivelse) continue;
+                                const eksisterende: TilstandData = tv[a.sectionKey] || emptyTilstand();
+                                const kat = (a.kind === "fravik" ? eksisterende.fravik : eksisterende.tiltak) ?? emptyKategori();
+                                const nyAvvik: TilstandAvvik = {
+                                  id: (typeof crypto !== "undefined" && "randomUUID" in crypto) ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                                  grad: (a.grad || "tg2") as TilstandAvvik["grad"],
+                                  beskrivelse: a.beskrivelse,
+                                  bilder: [],
+                                };
+                                const oppdatertKat = { ...kat, avvik: [...((kat.avvik) ?? []), nyAvvik] };
+                                tv[a.sectionKey] = a.kind === "fravik"
+                                  ? { ...eksisterende, fravik: oppdatertKat }
+                                  : { ...eksisterende, tiltak: oppdatertKat };
+                              }
+                              updated.tilstandsvurderinger = tv;
+                            }
+
                             // Sammendrag genereres manuelt, ikke fra opplastet dokument
                             return updated;
                           });
