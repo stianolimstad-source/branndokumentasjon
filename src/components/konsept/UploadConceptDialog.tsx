@@ -151,6 +151,7 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
   const [extracted, setExtracted] = useState<ExtractedData | null>(null);
   const [selectedMeta, setSelectedMeta] = useState<Set<string>>(new Set());
   const [selectedKap3, setSelectedKap3] = useState<Set<string>>(new Set());
+  const [selectedAvvik, setSelectedAvvik] = useState<Set<number>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const resetAll = () => {
@@ -160,6 +161,7 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
     setExtracted(null);
     setSelectedMeta(new Set());
     setSelectedKap3(new Set());
+    setSelectedAvvik(new Set());
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
