@@ -11087,13 +11087,6 @@ const Konsept = () => {
               </Button>
               {isFullAccess && (
                 <>
-                  <SendToKSDialog
-                    conceptName={conceptName}
-                    projectId={selectedProjectId}
-                    conceptId={conceptId}
-                    conceptContent={formData}
-                    disabled={!conceptName}
-                  />
                   <UpdateKSButton
                     conceptId={conceptId}
                     conceptName={conceptName}
