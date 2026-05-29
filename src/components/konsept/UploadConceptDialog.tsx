@@ -161,6 +161,10 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
         body: { documentText: text, documentType },
       });
 
+      // supabase-js sets `error` on non-2xx but `data` still has the JSON body
+      if (data?.errorType === "payment_required" || data?.errorType === "rate_limited") {
+        throw new Error(data.error);
+      }
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
