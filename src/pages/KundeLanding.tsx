@@ -13,7 +13,17 @@ const KundeLanding = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
-      <section className="container mx-auto px-4 py-16 sm:py-24">
+      <div className="container mx-auto px-4 pt-6">
+        <button
+          onClick={handleBytt}
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Tilbake til rollevalg
+        </button>
+      </div>
+
+      <section className="container mx-auto px-4 py-12 sm:py-20">
         <div className="max-w-3xl mx-auto text-center space-y-5">
           <h1 className="text-3xl sm:text-5xl font-bold tracking-tight">
             For kunder av branningeniører
