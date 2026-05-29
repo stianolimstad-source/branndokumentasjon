@@ -4654,6 +4654,33 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {formData.regelverk !== "BF85" && (
+                      <Collapsible>
+                        <CollapsibleTrigger className="text-xs text-primary hover:underline mt-2">
+                          Vis full referansetabell (kun i editor)
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <table className="w-full text-xs border mt-2">
+                            <thead className="bg-muted">
+                              <tr>
+                                <th className="border p-1 text-left">Bygningsdel</th>
+                                <th className="border p-1 text-left">BKL 1</th>
+                                <th className="border p-1 text-left">BKL 2</th>
+                                <th className="border p-1 text-left">BKL 3</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr><td className="border p-1">Bærende hovedsystem</td><td className="border p-1">R 30 [B 30]</td><td className="border p-1">R 60 [B 60]</td><td className="border p-1">R 90 A2-s1,d0 [A 90]</td></tr>
+                              <tr><td className="border p-1">Sekundære bærende, etasjeskiller og tak ikke del av hovedbæresystem</td><td className="border p-1">R 30 [B 30]</td><td className="border p-1">R 60 [B 60]</td><td className="border p-1">R 60 A2-s1,d0 [A 60]</td></tr>
+                              <tr><td className="border p-1">Trappeløp</td><td className="border p-1">R 30 [B 30]</td><td className="border p-1">R 30 [B 30]</td><td className="border p-1">R 60 A2-s1,d0 [A 60]</td></tr>
+                              <tr><td className="border p-1">Utvendige trapper</td><td className="border p-1">R 30 [B 30]</td><td className="border p-1">R 30 [B 30]</td><td className="border p-1">R 60 A2-s1,d0 [A 60]</td></tr>
+                              <tr><td className="border p-1">Bærende bygningsdeler under øverste kjeller</td><td className="border p-1">R 60 [B 60]</td><td className="border p-1">R 90 A2-s1,d0 [A 90]</td><td className="border p-1">R 120 A2-s1,d0 [A 120]</td></tr>
+                            </tbody>
+                          </table>
+                          <p className="text-[11px] text-muted-foreground mt-1 italic">Kilde: VTEK § 11-4 Tabell 1.</p>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    )}
                     {renderTilstandPanel("3_1")}
                     <FravikForParagraf paragrafId="11-4" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
                     </SectionCollapsible>
