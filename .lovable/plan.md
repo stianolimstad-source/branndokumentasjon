@@ -1,45 +1,46 @@
-# Plan: Tydeligere feilmeldinger for AI-analyse
+# Plan: Forhåndsvisning og avkrysning av AI-funnet innhold
 
-## Bakgrunn
+## Mål
 
-Brukeren får «dokumentet kan ikke leses» ved opplasting av tilstandsrapport. Edge-loggene viser at den faktiske feilen er fra Lovable AI Gateway:
+Etter at AI har analysert et opplastet brannkonsept eller en tilstandsvurdering, skal brukeren se en oversikt over hva som ble funnet og kunne huke av/på hvert felt før det fylles inn i skjemaet. Tilsvarende som ROS-opplastingen allerede har.
 
-```
-AI API error: {"type":"payment_required","message":"Not enough credits"}  (HTTP 402)
-```
+## Endringer
 
-Dvs. PDF-en leses fint, men AI-kallet feiler fordi AI-kreditten er brukt opp. I dag svelger edge-funksjonen detaljene og returnerer kun "AI analysis failed", som klienten viser som en generell feil. Det samme mønsteret gjelder for rate-limit (HTTP 429).
+### 1. `src/components/konsept/UploadConceptDialog.tsx` — ny review-status
 
-## Tiltak fra bruker
+- Utvid `status` med `"review"` mellom `"analyzing"` og `"done"`.
+- Lagre AI-svaret i lokal state (`extractedData`) i stedet for å kalle `onDataExtracted` direkte.
+- Bytt status til `"review"` når svaret kommer (så lenge minst ett felt har innhold).
+- Ny review-UI inne i dialogen som viser:
+  - **Metadata (kap. 1 & 2)** — gruppert liste av alle ikke-tomme metadata-felter (oppdragsgiver, prosjektnavn, adresse, gnr/bnr, kommune, tiltakstype, tiltaksbeskrivelse, bygningstype, areal, etasjer, tiltakshaver, ansvarlig søker, risikoklasse, prosjekteringsmetode, avgrensning, tilleggskrav, bygningshøyde, regelverk, bygningsbrannklasse, byggeår). Norske visningsnavn.
+  - **Kapittel 3** — gruppert liste av alle felter i `kapittel3` som har eksplisitt verdi (true/false/ikke-tom streng). Booleans vises som «Ja»/«Nei».
+  - Hvert felt har en `Checkbox` (alle krysset av som default). En «Velg alle / Fjern alle» øverst per gruppe.
+  - Verdien vises sammen med feltnavnet, truncated om nødvendig.
+  - Knapper nederst: «Avbryt» og «Fyll inn valgte felter».
+- Når brukeren klikker «Fyll inn valgte felter», bygg et filtrert objekt som inneholder kun avkryssede felter (samme form som `ExtractedData`/`ExtractedKapittel3`) og kall `onDataExtracted(filtered)`.
+- Behold dagens `setIfEmpty`-logikk i `Konsept.tsx` slik at allerede utfylte felter ikke overskrives — review-steget ekskluderer i tillegg de feltene brukeren ikke ønsker.
+- Hvis AI ikke fant noe (metaCount + kap3Count = 0), behold dagens destructive toast og ikke gå inn i review.
 
-Fyll på AI-kreditter i Lovable Cloud (Workspace → Settings → Usage / Lovable AI). Uten kreditter vil ingen AI-funksjon i appen virke — verken brannkonsept-opplasting, ROS-opplasting, tilstandsvurdering-opplasting eller AI-brannkonsulent.
+### 2. Liten visnings-helper i samme fil
 
-## Kodendringer
+- Map fra feltnøkkel → norsk label (objekt). Felter som mangler i mappen vises med rå nøkkel.
+- Bool → «Ja»/«Nei», string → vis som-er, lange strings trunkeres med tooltip via `title`.
 
-### 1. `supabase/functions/parse-fire-concept/index.ts`
-Når `response.ok === false`, propagér status og en lesbar `errorType`:
-- `402` → `{ error: "Lovable AI er tom for kreditter. Fyll på i Lovable Cloud → Settings → Usage.", errorType: "payment_required" }`
-- `429` → `{ error: "AI-tjenesten er midlertidig overbelastet. Prøv igjen om et øyeblikk.", errorType: "rate_limited" }`
-- Annet → behold dagens generelle melding, men inkluder statuskoden i error-strengen.
+### 3. Ingen endring i `Konsept.tsx`
 
-Returner samme HTTP-status som AI-Gatewayen ga (402/429) i stedet for å maskere alt som 500, slik at klienten ser forskjellen.
+- `onDataExtracted` mottar fortsatt et `ExtractedData`-objekt. Siden ikke-valgte felter er fjernet fra objektet, vil `setIfEmpty` automatisk hoppe over dem (verdien er `undefined`).
+- Ingen endringer i edge function eller datamodell.
 
-### 2. `src/components/konsept/UploadConceptDialog.tsx`
-I `handleFileSelect` catch-blokken: hvis `data?.errorType === "payment_required"`, vis en egen toast «Lovable AI er tom for kreditter» med lenke-tekst som ber brukeren fylle på. Tilsvarende for `rate_limited`. For øvrige feil, behold dagens tekst.
+### 4. Toast-tekst
 
-Logg `console.log` av `text.length` allerede er på plass — behold den så vi kan se i konsollen at PDF-en faktisk ble lest.
-
-### 3. `src/components/ros/UploadRosDialog.tsx` og `src/components/tilstandsvurdering/...` (om opplasting der bruker samme funksjon)
-Speile samme håndtering så feilen vises konsekvent uansett hvor brukeren laster opp.
+- Etter «Fyll inn valgte felter»: vis «N felter fylt inn» basert på antall valgte, ikke antall funnet.
 
 ## Ikke i scope
 
-- Endringer i selve PDF-parseren (`pdfjs-dist`) — den fungerer.
-- Endringer i AI-modellen eller prompten.
-- Automatisk re-try ved 429 (kan vurderes senere).
+- Inline-redigering av AI-verdier før innsending (kun velge på/av).
+- Endring av ROS-dialogen (har allerede review).
+- Endring av selve datamodellen eller AI-prompten.
 
 ## Filer som endres
 
-- `supabase/functions/parse-fire-concept/index.ts`
 - `src/components/konsept/UploadConceptDialog.tsx`
-- `src/components/ros/UploadRosDialog.tsx`
