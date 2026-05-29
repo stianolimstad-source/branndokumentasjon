@@ -79,11 +79,6 @@ const KundeLanding = () => {
         </div>
       </section>
 
-      <div className="fixed bottom-4 right-4">
-        <Button variant="ghost" size="sm" onClick={handleBytt} className="text-xs text-muted-foreground">
-          Bytt til branningeniør-visning
-        </Button>
-      </div>
     </div>
   );
 };
