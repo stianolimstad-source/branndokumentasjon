@@ -4872,9 +4872,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                     )}
                     {lengde > 0 && <p className="mt-1">Prosjektert lengste fluktvei: <strong>{String(formData.fluktveiLengdeProsjekt).replace(".", ",")} m</strong>.</p>}
                     {harRK6 && dor > 0 && <p>Prosjektert avstand fra dør til nærmeste trapp (RK6): <strong>{String(formData.fluktveiDorTilTrappRK6).replace(".", ",")} m</strong>.</p>}
-                    {formData.inkluderReferansetabeller && (
-                      <p className="mt-2 text-xs text-gray-600 italic">Referanse: RK 1/2: 50 m | RK 3/5: 30 m | RK 4: ikke i tabellen (se § 11-13 ledd 2/3 og § 11-14) | RK 6: 25 m (+ 7 m fra dør til trapp). Kilde: VTEK § 11-13 Tabell 1.</p>
-                    )}
                   </td>
                   <td className="border border-gray-400 p-2 align-top">ARK</td>
                 </tr>
