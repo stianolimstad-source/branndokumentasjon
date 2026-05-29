@@ -136,6 +136,9 @@ export const UploadRosDialog = ({ onApply }: Props) => {
       const { data: resp, error } = await supabase.functions.invoke("parse-ros-analysis", {
         body: { documentText: text },
       });
+      if (resp?.errorType === "payment_required" || resp?.errorType === "rate_limited") {
+        throw new Error(resp.error);
+      }
       if (error) throw error;
       if (resp?.error) throw new Error(resp.error);
       const result: ExtractedRosData = resp?.data;
