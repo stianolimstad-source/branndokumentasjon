@@ -46,7 +46,7 @@ import UpdateKSButton from "@/components/konsept/UpdateKSButton";
 import KonseptPreview, { getKategorier } from "@/components/konsept/KonseptPreview";
 import { UploadConceptDialog } from "@/components/konsept/UploadConceptDialog";
 import { buildChapter3Table, setChapter3Theme } from "@/lib/word-export-chapter3";
-import TilstandsvurderingPanel, { TilstandData, emptyTilstand } from "@/components/konsept/TilstandsvurderingPanel";
+import TilstandsvurderingPanel, { TilstandData, emptyTilstand, emptyKategori, TilstandAvvik } from "@/components/konsept/TilstandsvurderingPanel";
 import KraftstasjonTilleggskravCard from "@/components/konsept/KraftstasjonTilleggskravCard";
 import FravikForParagraf from "@/components/konsept/FravikForParagraf";
 import { useFravikForProsjekt } from "@/hooks/useFravikForProsjekt";
@@ -2856,6 +2856,28 @@ const Konsept = () => {
                             setIfEmpty("husdyrRedningKommentar", k3.husdyrRedningKommentar);
                             // Kap. 2 universell utforming
                             setIfEmpty("universellUtforming", k3.universellUtforming);
+
+                            // Importerte avvik fra opplastet tilstandsrapport — appendes til riktig kapittel 3.x
+                            if (documentType === "tilstandsvurdering" && Array.isArray((extracted as any).avvik) && (extracted as any).avvik.length > 0) {
+                              const importerte = (extracted as any).avvik as Array<{ sectionKey: string; kind: "tiltak" | "fravik"; grad: TilstandAvvik["grad"]; beskrivelse: string }>;
+                              const tv: Record<string, TilstandData> = { ...(updated.tilstandsvurderinger || {}) };
+                              for (const a of importerte) {
+                                if (!a?.sectionKey || !a?.beskrivelse) continue;
+                                const eksisterende: TilstandData = tv[a.sectionKey] || emptyTilstand();
+                                const kat = (a.kind === "fravik" ? eksisterende.fravik : eksisterende.tiltak) ?? emptyKategori();
+                                const nyAvvik: TilstandAvvik = {
+                                  id: (typeof crypto !== "undefined" && "randomUUID" in crypto) ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                                  grad: (a.grad || "tg2") as TilstandAvvik["grad"],
+                                  beskrivelse: a.beskrivelse,
+                                  bilder: [],
+                                };
+                                const oppdatertKat = { ...kat, avvik: [...((kat.avvik) ?? []), nyAvvik] };
+                                tv[a.sectionKey] = a.kind === "fravik"
+                                  ? { ...eksisterende, fravik: oppdatertKat }
+                                  : { ...eksisterende, tiltak: oppdatertKat };
+                              }
+                              updated.tilstandsvurderinger = tv;
+                            }
 
                             // Sammendrag genereres manuelt, ikke fra opplastet dokument
                             return updated;

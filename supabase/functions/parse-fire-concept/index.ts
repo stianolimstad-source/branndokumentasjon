@@ -43,7 +43,34 @@ serve(async (req) => {
 - Det finnes ofte en seksjon "Brannteknisk tilstand", "Avvik", "Branntekniske forhold" eller "Tiltak" — bruk denne til å vurdere kapittel 3-feltene (sprinkler, brannalarm, ledesystem, rømningsveier osv.).
 - Let etter byggeår og opprinnelig regelverk (BF85 = Byggeforskrift 1985, TEK97, TEK10 eller TEK17). Bygg fra før 1997 er ofte BF85; 1997–2010 er TEK97; 2010–2017 er TEK10; etter 2017 er TEK17.
 - Branncellevegger angitt som B30/B60/A30/A60 indikerer ofte BF85 eller TEK97. EI 30/EI 60 indikerer TEK10/TEK17.
-- For BF85: let etter "bygningsbrannklasse" A, B eller C.`
+- For BF85: let etter "bygningsbrannklasse" A, B eller C.
+
+I tillegg skal du hente ut alle REGISTRERTE AVVIK fra rapporten og returnere dem i feltet "avvik" (array). Hvert avvik MÅ være ett konkret forhold (ikke en hel paragraf-overskrift). Format:
+{
+  "sectionKey": "3_5",      // se mapping nedenfor — én av 3_1..3_14
+  "kind": "tiltak",          // "tiltak" hvis rapporten sier det må utbedres / settes i stand; "fravik" hvis rapporten konkluderer at det aksepteres og dokumenteres som fravik. Default "tiltak" ved tvil.
+  "grad": "tg2",             // NS 3424 tilstandsgrad: "tg0" ingen, "tg1" mindre, "tg2" vesentlige, "tg3" store/alvorlige, "tgiu" ikke undersøkt. Bruk "tg2" som default for konkrete avvik, "tg3" der rapporten beskriver alvorlige svikt.
+  "beskrivelse": "..."      // 1–3 setninger som beskriver selve avviket. Aldri tom — drop avviket i stedet.
+}
+
+Mapping fra typiske paragraf-/temanavn til sectionKey:
+- §11-4 / bæreevne, stabilitet → "3_1"
+- §11-5 / eksplosjon → "3_2"
+- §11-6 / brannspredning mellom byggverk, avstand til nabobygg → "3_3"
+- §11-7 / brannseksjonering, brannvegg, seksjoneringsvegg → "3_4"
+- §11-8 / brannceller, EI-vegger, branncelledører, gjennomføringer i branncellevegg → "3_5"
+- §11-9 / overflater, materialer, kledning, isolasjon → "3_6"
+- §11-10 / tekniske installasjoner, ventilasjon, kanalgjennomføringer, sjakter → "3_7"
+- §11-11 / rømning og redning generelt, redningsinnsats → "3_8"
+- §11-12 / tilrettelegging for rømning, brannalarm, ledesystem, sprinkler, slokkeanlegg → "3_9"
+- §11-13 / utgang fra branncelle → "3_10"
+- §11-13–§11-14 / rømningsvei, trapperom, korridor → "3_11"
+- §11-15 / husdyr, husdyrrom → "3_12"
+- §11-16 / manuell slokking, brannslange, håndslukker → "3_13"
+- §11-17 / tilrettelegging for slokkemannskap, oppstillingsplass, stigeledning → "3_14"
+
+For BF85-rapporter: bruk samme mapping basert på tema (f.eks. BF85 §7 om rømningsvei → "3_11", BF85 §30 om brannvegg → "3_4"). Ved tvil, velg den mest tematisk passende sectionKey.
+Hvis dokumentet ikke inneholder noen avvik, returner "avvik": [].`
         : "";
 
     const systemPrompt = `Du er en ekspert på brannteknisk prosjektering i Norge (TEK17/VTEK17, TEK10, TEK97 og Byggeforskrift 1985 (BF85)). Du skal analysere ${docTypeText} og trekke ut relevant informasjon.
@@ -91,7 +118,8 @@ Struktur:
     "husdyrTyper": "",
     "husdyrRedningKommentar": "",
     "universellUtforming": null
-  }
+  },
+  "avvik": []
 }
 
 Verdiregler:

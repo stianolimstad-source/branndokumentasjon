@@ -26,6 +26,13 @@ export interface ExtractedKapittel3 {
   universellUtforming?: boolean | null;
 }
 
+export interface ExtractedAvvik {
+  sectionKey: string; // "3_1" .. "3_14"
+  kind: "tiltak" | "fravik";
+  grad: "tg0" | "tg1" | "tg2" | "tg3" | "tgiu" | "";
+  beskrivelse: string;
+}
+
 export interface ExtractedData {
   oppdragsgiver?: string;
   prosjektnavn?: string;
@@ -50,7 +57,33 @@ export interface ExtractedData {
   bygningsbrannklasse?: string;
   byggeaar?: string;
   kapittel3?: ExtractedKapittel3;
+  avvik?: ExtractedAvvik[];
 }
+
+const SECTION_LABELS: Record<string, string> = {
+  "3_1": "3.1 Bæreevne og stabilitet",
+  "3_2": "3.2 Sikkerhet ved eksplosjon",
+  "3_3": "3.3 Brannspredning mellom byggverk",
+  "3_4": "3.4 Brannseksjoner",
+  "3_5": "3.5 Brannceller",
+  "3_6": "3.6 Materialer",
+  "3_7": "3.7 Tekniske installasjoner",
+  "3_8": "3.8 Rømning og redning",
+  "3_9": "3.9 Tilrettelegging for rømning",
+  "3_10": "3.10 Utgang fra branncelle",
+  "3_11": "3.11 Rømningsvei",
+  "3_12": "3.12 Redning av husdyr",
+  "3_13": "3.13 Manuell slokking",
+  "3_14": "3.14 Slokkemannskap",
+};
+
+const GRAD_LABELS: Record<string, string> = {
+  tg0: "TG 0",
+  tg1: "TG 1",
+  tg2: "TG 2",
+  tg3: "TG 3",
+  tgiu: "TG IU",
+};
 
 interface UploadConceptDialogProps {
   onDataExtracted: (data: ExtractedData) => void;
@@ -118,6 +151,7 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
   const [extracted, setExtracted] = useState<ExtractedData | null>(null);
   const [selectedMeta, setSelectedMeta] = useState<Set<string>>(new Set());
   const [selectedKap3, setSelectedKap3] = useState<Set<string>>(new Set());
+  const [selectedAvvik, setSelectedAvvik] = useState<Set<number>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const resetAll = () => {
@@ -127,6 +161,7 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
     setExtracted(null);
     setSelectedMeta(new Set());
     setSelectedKap3(new Set());
+    setSelectedAvvik(new Set());
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
@@ -253,7 +288,19 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
         return v === true || v === false || (typeof v === "string" && v.trim() !== "");
       });
 
-      if (metaKeys.length === 0 && kap3Keys.length === 0) {
+      // Avvik: kun relevant for tilstandsvurdering
+      const avvikList: ExtractedAvvik[] = documentType === "tilstandsvurdering" && Array.isArray((result as any).avvik)
+        ? ((result as any).avvik as any[])
+            .filter((a) => a && typeof a === "object" && typeof a.beskrivelse === "string" && a.beskrivelse.trim() !== "" && typeof a.sectionKey === "string" && SECTION_LABELS[a.sectionKey])
+            .map((a) => ({
+              sectionKey: a.sectionKey,
+              kind: a.kind === "fravik" ? "fravik" : "tiltak",
+              grad: ["tg0", "tg1", "tg2", "tg3", "tgiu"].includes(a.grad) ? a.grad : "tg2",
+              beskrivelse: String(a.beskrivelse).trim(),
+            }))
+        : [];
+
+      if (metaKeys.length === 0 && kap3Keys.length === 0 && avvikList.length === 0) {
         setStatus("error");
         toast({
           title: "Fant ingen data i dokumentet",
@@ -264,9 +311,11 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
         return;
       }
 
-      setExtracted(result);
+      const resultWithAvvik = { ...result, avvik: avvikList };
+      setExtracted(resultWithAvvik);
       setSelectedMeta(new Set(metaKeys));
       setSelectedKap3(new Set(kap3Keys));
+      setSelectedAvvik(new Set(avvikList.map((_, i) => i)));
       setStatus("review");
       setIsProcessing(false);
     } catch (err: any) {
@@ -296,10 +345,13 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
       for (const k of selectedKap3) k3out[k] = k3src[k];
       filtered.kapittel3 = k3out as ExtractedKapittel3;
     }
+    if (selectedAvvik.size > 0 && extracted.avvik) {
+      filtered.avvik = extracted.avvik.filter((_, i) => selectedAvvik.has(i));
+    }
 
     onDataExtracted(filtered);
 
-    const totalSelected = selectedMeta.size + selectedKap3.size;
+    const totalSelected = selectedMeta.size + selectedKap3.size + selectedAvvik.size;
     const docLabel = documentType === "tilstandsvurdering" ? "tilstandsvurderingen" : "brannkonseptet";
     toast({
       title: "Felter fylt inn",
@@ -327,6 +379,13 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
       return next;
     });
   };
+  const toggleAvvik = (i: number, checked: boolean) => {
+    setSelectedAvvik((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(i); else next.delete(i);
+      return next;
+    });
+  };
 
   const hiddenForDocType = documentType === "tilstandsvurdering"
     ? new Set(["risikoklasse", "brannklasse"])
@@ -344,9 +403,11 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
         return v === true || v === false || (typeof v === "string" && v.trim() !== "");
       })
     : [];
+  const avvikFound: ExtractedAvvik[] = (documentType === "tilstandsvurdering" && extracted?.avvik) ? extracted.avvik : [];
 
   const allMetaSelected = metaKeysFound.length > 0 && metaKeysFound.every((k) => selectedMeta.has(k));
   const allKap3Selected = kap3KeysFound.length > 0 && kap3KeysFound.every((k) => selectedKap3.has(k));
+  const allAvvikSelected = avvikFound.length > 0 && avvikFound.every((_, i) => selectedAvvik.has(i));
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!isProcessing) { setOpen(v); if (!v) resetAll(); } }}>
@@ -480,12 +541,63 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
                       </ul>
                     </section>
                   )}
+
+                  {avvikFound.length > 0 && (
+                    <section>
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-semibold">Registrerte avvik fra gammel rapport</h4>
+                        <button
+                          type="button"
+                          className="text-xs text-primary hover:underline"
+                          onClick={() =>
+                            setSelectedAvvik(allAvvikSelected ? new Set() : new Set(avvikFound.map((_, i) => i)))
+                          }
+                        >
+                          {allAvvikSelected ? "Fjern alle" : "Velg alle"}
+                        </button>
+                      </div>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        Valgte avvik legges inn under riktig kapittel 3.x i den nye rapporten — du kan justere grad og tekst etterpå.
+                      </p>
+                      <ul className="space-y-1.5">
+                        {avvikFound.map((a, i) => {
+                          const trimmed = a.beskrivelse.length > 200 ? a.beskrivelse.substring(0, 200) + "…" : a.beskrivelse;
+                          const kindLabel = a.kind === "fravik" ? "Fravik" : "Tiltak";
+                          const kindClass = a.kind === "fravik"
+                            ? "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950 dark:text-amber-200 dark:border-amber-800"
+                            : "bg-red-100 text-red-800 border-red-300 dark:bg-red-950 dark:text-red-200 dark:border-red-800";
+                          return (
+                            <li key={i} className="flex items-start gap-2 text-sm">
+                              <Checkbox
+                                id={`avvik-${i}`}
+                                checked={selectedAvvik.has(i)}
+                                onCheckedChange={(c) => toggleAvvik(i, !!c)}
+                                className="mt-0.5"
+                              />
+                              <label htmlFor={`avvik-${i}`} className="flex-1 cursor-pointer leading-tight">
+                                <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
+                                  <span className="font-medium">{SECTION_LABELS[a.sectionKey] ?? a.sectionKey}</span>
+                                  <span className={`text-[10px] px-1.5 py-0.5 rounded border ${kindClass}`}>{kindLabel}</span>
+                                  {a.grad && GRAD_LABELS[a.grad] && (
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded border bg-muted text-muted-foreground">
+                                      {GRAD_LABELS[a.grad]}
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="text-muted-foreground" title={a.beskrivelse}>{trimmed}</span>
+                              </label>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </section>
+                  )}
                 </div>
               </ScrollArea>
 
               <div className="flex items-center justify-between pt-2 border-t">
                 <p className="text-xs text-muted-foreground">
-                  {selectedMeta.size + selectedKap3.size} av {metaKeysFound.length + kap3KeysFound.length} valgt
+                  {selectedMeta.size + selectedKap3.size + selectedAvvik.size} av {metaKeysFound.length + kap3KeysFound.length + avvikFound.length} valgt
                 </p>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => { setOpen(false); resetAll(); }}>
@@ -494,7 +606,7 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
                   <Button
                     size="sm"
                     onClick={handleApplySelected}
-                    disabled={selectedMeta.size + selectedKap3.size === 0}
+                    disabled={selectedMeta.size + selectedKap3.size + selectedAvvik.size === 0}
                   >
                     Fyll inn valgte felter
                   </Button>
