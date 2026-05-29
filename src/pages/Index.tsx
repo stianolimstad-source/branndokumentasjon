@@ -548,13 +548,19 @@ const Index = () => {
         </div>
       </footer>
 
+      {/* Tilbake til rollevalg */}
       {!user && (
-        <div className="fixed bottom-4 right-4">
-          <Button variant="ghost" size="sm" onClick={handleByttTilKunde} className="text-xs text-muted-foreground">
-            Bytt til kunde-visning
-          </Button>
+        <div className="fixed top-4 left-4 z-50">
+          <button
+            onClick={() => { localStorage.removeItem("branndok_selected_role"); navigate("/"); }}
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm rounded-md px-2 py-1"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Tilbake til rollevalg
+          </button>
         </div>
       )}
+
     </div>
   );
 };
