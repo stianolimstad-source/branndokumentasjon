@@ -5,7 +5,26 @@ import { Upload, FileText, Loader2, CheckCircle, AlertCircle } from "lucide-reac
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-interface ExtractedData {
+export interface ExtractedKapittel3 {
+  tilretteleggingLedd1a?: boolean | null;
+  tilretteleggingLedd2a?: boolean | null;
+  tilretteleggingLedd2b?: boolean | null;
+  tilretteleggingLedd3?: boolean | null;
+  brannalarmTalevarsling?: boolean | null;
+  slokkeBrannslange?: boolean | null;
+  slokkeHandslukker?: boolean | null;
+  romningsvei?: string;
+  romningsveiSvalgang?: boolean | null;
+  romningsveiKorridorOver30m?: boolean | null;
+  romningsveiPanikkbeslag?: boolean | null;
+  romningsveiKommentar?: string;
+  husdyrRedningRelevant?: boolean | null;
+  husdyrTyper?: string;
+  husdyrRedningKommentar?: string;
+  universellUtforming?: boolean | null;
+}
+
+export interface ExtractedData {
   oppdragsgiver?: string;
   prosjektnavn?: string;
   adresse?: string;
@@ -25,11 +44,15 @@ interface ExtractedData {
   avgrensning?: string;
   tilleggskrav?: string;
   bygningshoyde?: string;
-  
+  regelverk?: string;
+  bygningsbrannklasse?: string;
+  byggeaar?: string;
+  kapittel3?: ExtractedKapittel3;
 }
 
 interface UploadConceptDialogProps {
   onDataExtracted: (data: ExtractedData) => void;
+  documentType?: "brannkonsept" | "tilstandsvurdering";
 }
 
 export const UploadConceptDialog = ({ onDataExtracted }: UploadConceptDialogProps) => {
