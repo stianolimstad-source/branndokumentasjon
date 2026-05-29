@@ -149,7 +149,8 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
 
     try {
       const text = await readFileAsText(file);
-      
+      console.log(`[UploadConceptDialog] sending ${text.length} chars to parse-fire-concept (documentType=${documentType})`);
+
       if (text.trim().length < 20) {
         throw new Error("Kunne ikke lese innhold fra filen. Prøv med en annen fil eller et annet format.");
       }
@@ -166,8 +167,6 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
       const extracted = data?.data;
       if (!extracted) throw new Error("Ingen data returnert fra analyse");
 
-      setStatus("done");
-
       // Count top-level metadata fields (string/number) with non-empty value
       const metaCount = Object.entries(extracted).filter(
         ([k, v]) => k !== "kapittel3" && v !== null && v !== undefined && String(v).trim() !== ""
@@ -179,6 +178,20 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
       ).length;
 
       const docLabel = documentType === "tilstandsvurdering" ? "tilstandsvurderingen" : "brannkonseptet";
+
+      if (metaCount === 0 && kap3Count === 0) {
+        setStatus("error");
+        toast({
+          title: "Fant ingen data i dokumentet",
+          description: "AI klarte ikke å hente ut informasjon fra filen. Hvis dette er en skannet PDF uten tekstlag, må innholdet fylles inn manuelt. Prøv eventuelt et annet format (Word/tekst).",
+          variant: "destructive",
+        });
+        setIsProcessing(false);
+        return;
+      }
+
+      setStatus("done");
+
       toast({
         title: "Dokument analysert",
         description: kap3Count > 0
@@ -194,6 +207,7 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
         setIsProcessing(false);
         setFileName("");
       }, 1500);
+
 
     } catch (err: any) {
       console.error("Upload error:", err);
