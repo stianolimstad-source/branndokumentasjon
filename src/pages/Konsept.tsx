@@ -2786,39 +2786,83 @@ const Konsept = () => {
                         </div>
                       )}
 
-                      {!conceptId && !isDemoMode && (
-                        <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg border border-dashed">
-                          <UploadConceptDialog onDataExtracted={(extracted) => {
-                            setFormData(prev => {
-                              const updated = { ...prev };
-                              // Map extracted fields to formData
-                              if (extracted.oppdragsgiver) updated.oppdragsgiver = extracted.oppdragsgiver;
-                              if (extracted.prosjektnavn) updated.prosjektnavn = extracted.prosjektnavn;
-                              if (extracted.adresse) updated.adresse = extracted.adresse;
-                              if (extracted.gnr) updated.gnr = extracted.gnr;
-                              if (extracted.bnr) updated.bnr = extracted.bnr;
-                              if (extracted.kommune) updated.kommune = extracted.kommune;
-                              if (extracted.tiltakstype) updated.tiltakstype = extracted.tiltakstype;
-                              if (extracted.tiltaksbeskrivelse) updated.tiltaksbeskrivelse = extracted.tiltaksbeskrivelse;
-                              if (extracted.bygningstype) updated.bygningstype = extracted.bygningstype;
-                              if (extracted.areal) updated.areal = extracted.areal;
-                              if (extracted.etasjer) updated.etasjer = extracted.etasjer;
-                              if (extracted.tiltakshaver) updated.tiltakshaver = extracted.tiltakshaver;
-                              if (extracted.ansvarligSoker) updated.ansvarligSoker = extracted.ansvarligSoker;
-                              if (extracted.risikoklasse) updated.risikoklasse = extracted.risikoklasse;
-                              if (extracted.prosjekteringsmetode && ["preakseptert", "analyse", "blanding"].includes(extracted.prosjekteringsmetode)) {
-                                updated.prosjekteringsmetode = extracted.prosjekteringsmetode as "preakseptert" | "analyse" | "blanding";
-                              }
-                              if (extracted.avgrensning) updated.avgrensning = extracted.avgrensning;
-                              if (extracted.tilleggskrav) updated.tilleggskrav = extracted.tilleggskrav;
-                              if (extracted.bygningshoyde) updated.bygningshoyde = extracted.bygningshoyde;
-                              // Sammendrag genereres manuelt, ikke fra opplastet dokument
-                              return updated;
-                            });
-                          }} />
-                          <span className="text-xs text-muted-foreground">Har du et eksisterende konsept eller forprosjekt? Last det opp for å fylle ut automatisk.</span>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg border border-dashed">
+                        <UploadConceptDialog documentType={documentType} onDataExtracted={(extracted) => {
+                          setFormData(prev => {
+                            const updated: any = { ...prev };
+                            // Helper: set only if AI returned a non-empty value AND existing is empty
+                            const setIfEmpty = (key: string, val: any) => {
+                              if (val === null || val === undefined) return;
+                              if (typeof val === "string" && val.trim() === "") return;
+                              const cur = updated[key];
+                              const curIsEmpty = cur === undefined || cur === null || cur === "" || cur === false;
+                              if (curIsEmpty) updated[key] = val;
+                            };
+
+                            // ---- Metadata (kap. 1 & 2) ----
+                            setIfEmpty("oppdragsgiver", extracted.oppdragsgiver);
+                            setIfEmpty("prosjektnavn", extracted.prosjektnavn);
+                            setIfEmpty("adresse", extracted.adresse);
+                            setIfEmpty("gnr", extracted.gnr);
+                            setIfEmpty("bnr", extracted.bnr);
+                            setIfEmpty("kommune", extracted.kommune);
+                            setIfEmpty("tiltakstype", extracted.tiltakstype);
+                            setIfEmpty("tiltaksbeskrivelse", extracted.tiltaksbeskrivelse);
+                            setIfEmpty("bygningstype", extracted.bygningstype);
+                            setIfEmpty("areal", extracted.areal);
+                            setIfEmpty("etasjer", extracted.etasjer);
+                            setIfEmpty("tiltakshaver", extracted.tiltakshaver);
+                            setIfEmpty("ansvarligSoker", extracted.ansvarligSoker);
+                            setIfEmpty("risikoklasse", extracted.risikoklasse);
+                            if (extracted.prosjekteringsmetode && ["preakseptert", "analyse", "blanding"].includes(extracted.prosjekteringsmetode)) {
+                              setIfEmpty("prosjekteringsmetode", extracted.prosjekteringsmetode);
+                            }
+                            setIfEmpty("avgrensning", extracted.avgrensning);
+                            setIfEmpty("tilleggskrav", extracted.tilleggskrav);
+                            setIfEmpty("bygningshoyde", extracted.bygningshoyde);
+
+                            // ---- Tilstandsvurdering-spesifikk metadata ----
+                            if (extracted.regelverk && ["TEK17", "TEK10", "TEK97", "BF85"].includes(extracted.regelverk)) {
+                              setIfEmpty("regelverk", extracted.regelverk);
+                            }
+                            if (extracted.bygningsbrannklasse && ["A", "B", "C"].includes(extracted.bygningsbrannklasse)) {
+                              setIfEmpty("bygningsbrannklasse", extracted.bygningsbrannklasse);
+                            }
+                            setIfEmpty("byggeaar", extracted.byggeaar);
+
+                            // ---- Kapittel 3 (whitelist, kun inngangsvariabler) ----
+                            // Skipper bevisst bygningsdeler[], avledede felter (brannklasse,
+                            // branncellevegg-koder, EI-verdier), fravik, bilder, QA-status.
+                            const k3 = (extracted as any).kapittel3 ?? {};
+                            // §11-12 / §11-14 aktive tiltak (boolean)
+                            setIfEmpty("tilretteleggingLedd1a", k3.tilretteleggingLedd1a);
+                            setIfEmpty("tilretteleggingLedd2a", k3.tilretteleggingLedd2a);
+                            setIfEmpty("tilretteleggingLedd2b", k3.tilretteleggingLedd2b);
+                            setIfEmpty("tilretteleggingLedd3", k3.tilretteleggingLedd3);
+                            setIfEmpty("brannalarmTalevarsling", k3.brannalarmTalevarsling);
+                            setIfEmpty("slokkeBrannslange", k3.slokkeBrannslange);
+                            setIfEmpty("slokkeHandslukker", k3.slokkeHandslukker);
+                            // §11-11 Rømning
+                            if (k3.romningsvei === "1" || k3.romningsvei === "2") {
+                              setIfEmpty("romningsvei", k3.romningsvei);
+                            }
+                            setIfEmpty("romningsveiSvalgang", k3.romningsveiSvalgang);
+                            setIfEmpty("romningsveiKorridorOver30m", k3.romningsveiKorridorOver30m);
+                            setIfEmpty("romningsveiPanikkbeslag", k3.romningsveiPanikkbeslag);
+                            setIfEmpty("romningsveiKommentar", k3.romningsveiKommentar);
+                            // §11-15 Husdyr
+                            setIfEmpty("husdyrRedningRelevant", k3.husdyrRedningRelevant);
+                            setIfEmpty("husdyrTyper", k3.husdyrTyper);
+                            setIfEmpty("husdyrRedningKommentar", k3.husdyrRedningKommentar);
+                            // Kap. 2 universell utforming
+                            setIfEmpty("universellUtforming", k3.universellUtforming);
+
+                            // Sammendrag genereres manuelt, ikke fra opplastet dokument
+                            return updated;
+                          });
+                        }} />
+                        <span className="text-xs text-muted-foreground">Har du et eksisterende {documentType === "tilstandsvurdering" ? "tilstandsvurderingsdokument" : "konsept eller forprosjekt"}? Last det opp for å fylle ut automatisk.</span>
+                      </div>
 
               <Accordion type="multiple" defaultValue={[]} className="w-full">
                 {/* Sammendrag */}

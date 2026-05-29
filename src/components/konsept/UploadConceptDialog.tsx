@@ -5,7 +5,26 @@ import { Upload, FileText, Loader2, CheckCircle, AlertCircle } from "lucide-reac
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
-interface ExtractedData {
+export interface ExtractedKapittel3 {
+  tilretteleggingLedd1a?: boolean | null;
+  tilretteleggingLedd2a?: boolean | null;
+  tilretteleggingLedd2b?: boolean | null;
+  tilretteleggingLedd3?: boolean | null;
+  brannalarmTalevarsling?: boolean | null;
+  slokkeBrannslange?: boolean | null;
+  slokkeHandslukker?: boolean | null;
+  romningsvei?: string;
+  romningsveiSvalgang?: boolean | null;
+  romningsveiKorridorOver30m?: boolean | null;
+  romningsveiPanikkbeslag?: boolean | null;
+  romningsveiKommentar?: string;
+  husdyrRedningRelevant?: boolean | null;
+  husdyrTyper?: string;
+  husdyrRedningKommentar?: string;
+  universellUtforming?: boolean | null;
+}
+
+export interface ExtractedData {
   oppdragsgiver?: string;
   prosjektnavn?: string;
   adresse?: string;
@@ -25,14 +44,18 @@ interface ExtractedData {
   avgrensning?: string;
   tilleggskrav?: string;
   bygningshoyde?: string;
-  
+  regelverk?: string;
+  bygningsbrannklasse?: string;
+  byggeaar?: string;
+  kapittel3?: ExtractedKapittel3;
 }
 
 interface UploadConceptDialogProps {
   onDataExtracted: (data: ExtractedData) => void;
+  documentType?: "brannkonsept" | "tilstandsvurdering";
 }
 
-export const UploadConceptDialog = ({ onDataExtracted }: UploadConceptDialogProps) => {
+export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkonsept" }: UploadConceptDialogProps) => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -119,7 +142,7 @@ export const UploadConceptDialog = ({ onDataExtracted }: UploadConceptDialogProp
       setStatus("analyzing");
 
       const { data, error } = await supabase.functions.invoke("parse-fire-concept", {
-        body: { documentText: text },
+        body: { documentText: text, documentType },
       });
 
       if (error) throw error;
@@ -129,13 +152,23 @@ export const UploadConceptDialog = ({ onDataExtracted }: UploadConceptDialogProp
       if (!extracted) throw new Error("Ingen data returnert fra analyse");
 
       setStatus("done");
-      
-      // Count fields with data
-      const filledFields = Object.entries(extracted).filter(([_, v]) => v && String(v).trim()).length;
-      
+
+      // Count top-level metadata fields (string/number) with non-empty value
+      const metaCount = Object.entries(extracted).filter(
+        ([k, v]) => k !== "kapittel3" && v !== null && v !== undefined && String(v).trim() !== ""
+      ).length;
+      // Count kap. 3 fields with explicit value (true/false/non-empty string)
+      const kap3 = (extracted?.kapittel3 ?? {}) as Record<string, unknown>;
+      const kap3Count = Object.values(kap3).filter(
+        (v) => v === true || v === false || (typeof v === "string" && v.trim() !== "")
+      ).length;
+
+      const docLabel = documentType === "tilstandsvurdering" ? "tilstandsvurderingen" : "brannkonseptet";
       toast({
         title: "Dokument analysert",
-        description: `${filledFields} felter ble funnet og fylt ut automatisk`,
+        description: kap3Count > 0
+          ? `${metaCount} metadatafelt og ${kap3Count} felt i kapittel 3 ble forhåndsutfylt i ${docLabel}. Tomme felter beholdes — eksisterende verdier overskrives ikke.`
+          : `${metaCount} metadatafelt ble forhåndsutfylt i ${docLabel}. Tomme felter beholdes — eksisterende verdier overskrives ikke.`,
       });
 
       onDataExtracted(extracted);
@@ -167,15 +200,22 @@ export const UploadConceptDialog = ({ onDataExtracted }: UploadConceptDialogProp
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
           <Upload className="h-4 w-4" />
-          Last opp eksisterende konsept
+          {documentType === "tilstandsvurdering"
+            ? "Last opp eksisterende tilstandsvurdering"
+            : "Last opp eksisterende konsept"}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Last opp eksisterende brannkonsept</DialogTitle>
+          <DialogTitle>
+            {documentType === "tilstandsvurdering"
+              ? "Last opp eksisterende tilstandsvurdering"
+              : "Last opp eksisterende brannkonsept"}
+          </DialogTitle>
           <DialogDescription>
-            Last opp et eksisterende brannkonsept eller forprosjekt (PDF, Word eller tekstfil). 
-            Informasjonen vil bli hentet ut og fylt inn automatisk.
+            Last opp et eksisterende {documentType === "tilstandsvurdering" ? "tilstandsvurderingsdokument" : "brannkonsept eller forprosjekt"} (PDF, Word eller tekstfil).
+            Metadata og enkelte felt i kapittel 3 hentes ut automatisk.
+            Allerede utfylte felter overskrives ikke — kontroller alltid resultatet.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
