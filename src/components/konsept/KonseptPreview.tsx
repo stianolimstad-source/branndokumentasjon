@@ -4018,10 +4018,6 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
             )}
-            {formData.inkluderReferansetabeller && !isBF85 && (() => {
-              const t = getMaterialerReferanseTabell(formData.risikoklasse, formData.harFlereRisikoklasser, formData.bygningsdeler);
-              return t ? <ReferanseTabellRow tabell={t} /> : null;
-            })()}
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_6"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_6"]} sectionLabel="3.6 Materialer og produkter" />
             )}
