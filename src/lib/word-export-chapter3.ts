@@ -133,53 +133,7 @@ function contentRowMultiLine(forhold: string, losningLines: string[], ansvar: st
   });
 }
 
-/**
- * Returnerer en rad som spenner over alle 3 kolonner og inneholder en innebygd
- * referansetabell (med tittel, kolonneoverskrifter, rader og kilde).
- * Brukes når brukeren har huket av "Inkluder referansetabeller i rapporten".
- */
-function referanseTabellRow(tabell: ReferanseTabell): TableRow {
-  const innerHeader = new TableRow({
-    children: tabell.headers.map((h) =>
-      new TableCell({
-        borders: tableBorders,
-        shading: headerShading,
-        margins: { top: 30, bottom: 30, left: 60, right: 60 },
-        children: [new Paragraph({ children: [new TextRun({ text: h, bold: true, size: 18 })] })],
-      }),
-    ),
-  });
-  const innerRows = tabell.rows.map((row) =>
-    new TableRow({
-      children: row.map((c) =>
-        new TableCell({
-          borders: tableBorders,
-          margins: { top: 30, bottom: 30, left: 60, right: 60 },
-          children: [new Paragraph({ children: [new TextRun({ text: c, size: 18 })] })],
-        }),
-      ),
-    }),
-  );
-  const innerTable = new Table({
-    width: { size: 100, type: WidthType.PERCENTAGE },
-    rows: [innerHeader, ...innerRows],
-  });
-  return new TableRow({
-    children: [
-      new TableCell({
-        columnSpan: 3,
-        borders: tableBorders,
-        shading: headerShading,
-        margins: { top: 60, bottom: 60, left: 80, right: 80 },
-        children: [
-          new Paragraph({ spacing: { before: 40, after: 60 }, children: [new TextRun({ text: tabell.tittel, bold: true, italics: true, size: 18 })] }),
-          innerTable,
-          new Paragraph({ spacing: { before: 60, after: 40 }, children: [new TextRun({ text: tabell.kilde, italics: true, size: 16, color: "666666" })] }),
-        ],
-      }),
-    ],
-  });
-}
+
 
 
 const tilstandGradLabels: Record<string, string> = {
