@@ -7568,9 +7568,34 @@ const Konsept = () => {
                          </KraftstasjonTilleggskravCard>
                        );
                      })()}
+                     {formData.regelverk !== "BF85" && (
+                       <Collapsible>
+                         <CollapsibleTrigger className="text-xs text-primary hover:underline mt-2">
+                           Vis full referansetabell (kun i editor)
+                         </CollapsibleTrigger>
+                         <CollapsibleContent>
+                           <table className="w-full text-xs border mt-2">
+                             <thead className="bg-muted">
+                               <tr>
+                                 <th className="border p-1 text-left">Bygningsdel</th>
+                                 <th className="border p-1 text-left">BKL 1</th>
+                                 <th className="border p-1 text-left">BKL 2</th>
+                                 <th className="border p-1 text-left">BKL 3</th>
+                               </tr>
+                             </thead>
+                             <tbody>
+                               <tr><td className="border p-1">Branncellebegrensende vegg/dekke</td><td className="border p-1">EI 30 [B 30]</td><td className="border p-1">EI 60 [B 60]</td><td className="border p-1">EI 90 A2-s1,d0 [A 90]</td></tr>
+                               <tr><td className="border p-1">Dør i branncellebegrensende konstruksjon</td><td className="border p-1">EI 30 [B 30] Sa</td><td className="border p-1">EI 30 [B 30] Sa eller EI₂ 30 Sa</td><td className="border p-1">EI 60 A2-s1,d0 [A 60] Sa</td></tr>
+                               <tr><td className="border p-1">Vindu i branncellebegrensende vegg</td><td className="border p-1">E 30 (vanligvis ikke tillatt)</td><td className="border p-1">E 60</td><td className="border p-1">E 90 A2-s1,d0</td></tr>
+                             </tbody>
+                           </table>
+                           <p className="text-[11px] text-muted-foreground mt-1 italic">Kilde: VTEK § 11-8 Tabeller 1 og 2.</p>
+                         </CollapsibleContent>
+                       </Collapsible>
+                     )}
                      {renderTilstandPanel("3_5")}
-                    <FravikForParagraf paragrafId="11-8" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
-                    </SectionCollapsible>
+                     <FravikForParagraf paragrafId="11-8" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
+                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-6" label={`3.6 ${formData.regelverk === "BF85" ? "Kledninger og overflater (§ 11-9 Materialer og produkters egenskaper ved brann)" : "§ 11-9 Materialer og produkter"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
