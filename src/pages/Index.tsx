@@ -551,6 +551,14 @@ const Index = () => {
           <p className="text-center text-xs text-muted-foreground mt-2">Branndokumentasjon.no – Regelverksforankret dokumentasjon for brannsikkerhet</p>
         </div>
       </footer>
+
+      {!user && (
+        <div className="fixed bottom-4 right-4">
+          <Button variant="ghost" size="sm" onClick={handleByttTilKunde} className="text-xs text-muted-foreground">
+            Bytt til kunde-visning
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
