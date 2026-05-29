@@ -1466,7 +1466,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 )}
               </>
             )}
-            {formData.inkluderReferansetabeller && <ReferanseTabellRow tabell={referanseBaereevne} />}
+            
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_1"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_1"]} sectionLabel="3.1 Bæreevne og stabilitet" />
             )}
