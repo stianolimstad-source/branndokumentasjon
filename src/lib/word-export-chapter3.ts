@@ -1312,6 +1312,10 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.materialerKommentar) {
     rows.push(contentRow("Kommentar", formData.materialerKommentar, "-"));
   }
+  if (formData.inkluderReferansetabeller && formData.regelverk !== "BF85") {
+    const matTab = getMaterialerReferanseTabell(formData.risikoklasse, formData.harFlereRisikoklasser, formData.bygningsdeler);
+    if (matTab) rows.push(referanseTabellRow(matTab));
+  }
   rows.push(...await tilstandRow(formData, "3_6", "3.6 Materialer og produkter"));
 
   rows.push(...fravikRowsForParagraf("11-9", fravikList));
