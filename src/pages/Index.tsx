@@ -151,10 +151,6 @@ const Index = () => {
     return <KundeHjem />;
   }
 
-  const handleByttTilKunde = () => {
-    localStorage.removeItem("branndok_selected_role");
-    navigate("/");
-  };
 
   return (
     <div className="min-h-screen bg-gradient-subtle overflow-x-hidden">
