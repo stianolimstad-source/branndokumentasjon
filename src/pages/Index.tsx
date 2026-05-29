@@ -171,6 +171,7 @@ const Index = () => {
 
       {/* Hero / Dashboard Section */}
       <section className="container mx-auto px-3 sm:px-4 py-8 sm:py-16">
+        {user ? (
           <div className="max-w-6xl mx-auto space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <h2 className="text-2xl sm:text-3xl font-bold">Velkommen tilbake</h2>
