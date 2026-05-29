@@ -345,10 +345,13 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
       for (const k of selectedKap3) k3out[k] = k3src[k];
       filtered.kapittel3 = k3out as ExtractedKapittel3;
     }
+    if (selectedAvvik.size > 0 && extracted.avvik) {
+      filtered.avvik = extracted.avvik.filter((_, i) => selectedAvvik.has(i));
+    }
 
     onDataExtracted(filtered);
 
-    const totalSelected = selectedMeta.size + selectedKap3.size;
+    const totalSelected = selectedMeta.size + selectedKap3.size + selectedAvvik.size;
     const docLabel = documentType === "tilstandsvurdering" ? "tilstandsvurderingen" : "brannkonseptet";
     toast({
       title: "Felter fylt inn",
