@@ -9489,9 +9489,39 @@ const Konsept = () => {
                          </KraftstasjonTilleggskravCard>
                        );
                      })()}
-                     {renderTilstandPanel("3_9")}
-                    <FravikForParagraf paragrafId="11-12" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
-                    </SectionCollapsible>
+                     {formData.regelverk !== "BF85" && (
+                       <Collapsible>
+                         <CollapsibleTrigger className="text-xs text-primary hover:underline mt-2">
+                           Vis full referansetabell (kun i editor)
+                         </CollapsibleTrigger>
+                         <CollapsibleContent>
+                           <table className="w-full text-xs border mt-2">
+                             <thead className="bg-muted">
+                               <tr>
+                                 <th className="border p-1 text-left">Risikoklasse</th>
+                                 <th className="border p-1 text-left">1 etasje</th>
+                                 <th className="border p-1 text-left">2 etasjer eller flere</th>
+                               </tr>
+                             </thead>
+                             <tbody>
+                               <tr><td className="border p-1">RK 1</td><td className="border p-1">Kategori 1</td><td className="border p-1">Kategori 2</td></tr>
+                               <tr><td className="border p-1">RK 2</td><td className="border p-1">Kategori 1</td><td className="border p-1">Kategori 2</td></tr>
+                               <tr><td className="border p-1">RK 3</td><td className="border p-1">Kategori 1</td><td className="border p-1">Kategori 2</td></tr>
+                               <tr><td className="border p-1">RK 4</td><td className="border p-1">Kategori 1</td><td className="border p-1">Kategori 2</td></tr>
+                               <tr><td className="border p-1">RK 5</td><td className="border p-1">Kategori 2</td><td className="border p-1">Kategori 2</td></tr>
+                               <tr><td className="border p-1">RK 6</td><td className="border p-1">Kategori 2</td><td className="border p-1">Kategori 2</td></tr>
+                             </tbody>
+                           </table>
+                           <p className="text-xs text-muted-foreground mt-2">
+                             Forklaring: Kategori 1 = optiske røykdetektorer i rømningsveier og fellesarealer. Kategori 2 = heldekkende brannalarmanlegg med optiske røykdetektorer i alle områder.
+                           </p>
+                           <p className="text-[11px] text-muted-foreground mt-1 italic">Kilde: VTEK § 11-12 Tabell 3.</p>
+                         </CollapsibleContent>
+                       </Collapsible>
+                     )}
+                      {renderTilstandPanel("3_9")}
+                     <FravikForParagraf paragrafId="11-12" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
+                     </SectionCollapsible>
                     {(() => {
                       const isBF85Tilstand = documentType === "tilstandsvurdering" && formData.regelverk === "BF85";
                       const label310 = isBF85Tilstand
