@@ -1672,10 +1672,6 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
         const dor = parseFloat(formData.fluktveiDorTilTrappRK6) || 0;
         if (dor > 0) lines.push(`• Prosjektert avstand fra dør til nærmeste trapp (RK6): ${formData.fluktveiDorTilTrappRK6.replace(".", ",")} m.`);
       }
-      if (formData.inkluderReferansetabeller) {
-        lines.push("", "Referanse – maksimal fluktvei per RK (VTEK § 11-13 Tabell 1):");
-        lines.push("RK 1: 50 m | RK 2: 50 m | RK 3: 30 m | RK 4: ikke i tabellen (se § 11-13 ledd 2/3 og § 11-14) | RK 5: 30 m | RK 6: 25 m (+ 7 m fra dør til trapp).");
-      }
       rows.push(contentRowMultiLine("Maksimal fluktvei – § 11-13", lines, "ARK"));
     }
   }
