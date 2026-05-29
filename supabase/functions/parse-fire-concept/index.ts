@@ -38,8 +38,10 @@ serve(async (req) => {
 
     const extraTilstand =
       documentType === "tilstandsvurdering"
-        ? `\n\nDokumentet er en TILSTANDSVURDERING av et eksisterende bygg.
-- Let etter byggeår, opprinnelig regelverk (BF85 = Byggeforskrift 1985, TEK97, TEK10 eller TEK17).
+        ? `\n\nDokumentet er en TILSTANDSVURDERING / TILSTANDSRAPPORT av et eksisterende bygg.
+- Slike rapporter har vanligvis en seksjon "Bygningsopplysninger", "Generelt om bygget", "Nøkkeldata" eller liknende — let der etter byggeår, antall etasjer, BRA/bruksareal, gnr/bnr, kommune og bygningstype.
+- Det finnes ofte en seksjon "Brannteknisk tilstand", "Avvik", "Branntekniske forhold" eller "Tiltak" — bruk denne til å vurdere kapittel 3-feltene (sprinkler, brannalarm, ledesystem, rømningsveier osv.).
+- Let etter byggeår og opprinnelig regelverk (BF85 = Byggeforskrift 1985, TEK97, TEK10 eller TEK17). Bygg fra før 1997 er ofte BF85; 1997–2010 er TEK97; 2010–2017 er TEK10; etter 2017 er TEK17.
 - Branncellevegger angitt som B30/B60/A30/A60 indikerer ofte BF85 eller TEK97. EI 30/EI 60 indikerer TEK10/TEK17.
 - For BF85: let etter "bygningsbrannklasse" A, B eller C.`
         : "";
