@@ -26,6 +26,13 @@ export interface ExtractedKapittel3 {
   universellUtforming?: boolean | null;
 }
 
+export interface ExtractedAvvik {
+  sectionKey: string; // "3_1" .. "3_14"
+  kind: "tiltak" | "fravik";
+  grad: "tg0" | "tg1" | "tg2" | "tg3" | "tgiu" | "";
+  beskrivelse: string;
+}
+
 export interface ExtractedData {
   oppdragsgiver?: string;
   prosjektnavn?: string;
@@ -50,7 +57,33 @@ export interface ExtractedData {
   bygningsbrannklasse?: string;
   byggeaar?: string;
   kapittel3?: ExtractedKapittel3;
+  avvik?: ExtractedAvvik[];
 }
+
+const SECTION_LABELS: Record<string, string> = {
+  "3_1": "3.1 Bæreevne og stabilitet",
+  "3_2": "3.2 Sikkerhet ved eksplosjon",
+  "3_3": "3.3 Brannspredning mellom byggverk",
+  "3_4": "3.4 Brannseksjoner",
+  "3_5": "3.5 Brannceller",
+  "3_6": "3.6 Materialer",
+  "3_7": "3.7 Tekniske installasjoner",
+  "3_8": "3.8 Rømning og redning",
+  "3_9": "3.9 Tilrettelegging for rømning",
+  "3_10": "3.10 Utgang fra branncelle",
+  "3_11": "3.11 Rømningsvei",
+  "3_12": "3.12 Redning av husdyr",
+  "3_13": "3.13 Manuell slokking",
+  "3_14": "3.14 Slokkemannskap",
+};
+
+const GRAD_LABELS: Record<string, string> = {
+  tg0: "TG 0",
+  tg1: "TG 1",
+  tg2: "TG 2",
+  tg3: "TG 3",
+  tgiu: "TG IU",
+};
 
 interface UploadConceptDialogProps {
   onDataExtracted: (data: ExtractedData) => void;
