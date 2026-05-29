@@ -7568,31 +7568,94 @@ const Konsept = () => {
                          </KraftstasjonTilleggskravCard>
                        );
                      })()}
-                     {formData.regelverk !== "BF85" && (
-                       <Collapsible>
-                         <CollapsibleTrigger className="text-xs text-primary hover:underline mt-2">
-                           Vis full referansetabell (kun i editor)
-                         </CollapsibleTrigger>
-                         <CollapsibleContent>
-                           <table className="w-full text-xs border mt-2">
-                             <thead className="bg-muted">
-                               <tr>
-                                 <th className="border p-1 text-left">Bygningsdel</th>
-                                 <th className="border p-1 text-left">BKL 1</th>
-                                 <th className="border p-1 text-left">BKL 2</th>
-                                 <th className="border p-1 text-left">BKL 3</th>
-                               </tr>
-                             </thead>
-                             <tbody>
-                               <tr><td className="border p-1">Branncellebegrensende vegg/dekke</td><td className="border p-1">EI 30 [B 30]</td><td className="border p-1">EI 60 [B 60]</td><td className="border p-1">EI 90 A2-s1,d0 [A 90]</td></tr>
-                               <tr><td className="border p-1">Dør i branncellebegrensende konstruksjon</td><td className="border p-1">EI 30 [B 30] Sa</td><td className="border p-1">EI 30 [B 30] Sa eller EI₂ 30 Sa</td><td className="border p-1">EI 60 A2-s1,d0 [A 60] Sa</td></tr>
-                               <tr><td className="border p-1">Vindu i branncellebegrensende vegg</td><td className="border p-1">E 30 (vanligvis ikke tillatt)</td><td className="border p-1">E 60</td><td className="border p-1">E 90 A2-s1,d0</td></tr>
-                             </tbody>
-                           </table>
-                           <p className="text-[11px] text-muted-foreground mt-1 italic">Kilde: VTEK § 11-8 Tabeller 1 og 2.</p>
-                         </CollapsibleContent>
-                       </Collapsible>
-                     )}
+                      {formData.regelverk !== "BF85" && (
+                        <>
+                          <Collapsible>
+                            <CollapsibleTrigger className="text-xs text-primary hover:underline mt-2">
+                              Vis referansetabell – branncellebegrensende konstruksjoner (kun i editor)
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                              <table className="w-full text-xs border mt-2">
+                                <thead className="bg-muted">
+                                  <tr>
+                                    <th className="border p-1 text-left">Bygningsdel</th>
+                                    <th className="border p-1 text-left">BKL 1</th>
+                                    <th className="border p-1 text-left">BKL 2</th>
+                                    <th className="border p-1 text-left">BKL 3</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr><td className="border p-1">Vegger og dekker mellom branncelle</td><td className="border p-1">EI 30 [B 30]</td><td className="border p-1">EI 60 [B 60]</td><td className="border p-1">EI 90 A2-s1,d0 [A 90]</td></tr>
+                                  <tr><td className="border p-1">Vegger og dekker mellom branncelle og rømningsvei</td><td className="border p-1">EI 30 [B 30]</td><td className="border p-1">EI 60 [B 60]</td><td className="border p-1">EI 90 A2-s1,d0 [A 90]</td></tr>
+                                  <tr><td className="border p-1">Vegger og dekker mellom branncelle og trapperom</td><td className="border p-1">EI 30 [B 30]</td><td className="border p-1">EI 60 [B 60]</td><td className="border p-1">EI 90 A2-s1,d0 [A 90]</td></tr>
+                                  <tr><td className="border p-1">Heissjakt (egen branncelle)</td><td className="border p-1">EI 60 [B 60]</td><td className="border p-1">EI 60 [B 60]</td><td className="border p-1">EI 90 A2-s1,d0 [A 90]</td></tr>
+                                  <tr><td className="border p-1">Vegger og dekker som omslutter sjakt for kabler og rør</td><td className="border p-1">EI 30 [B 30]</td><td className="border p-1">EI 60 [B 60]</td><td className="border p-1">EI 90 A2-s1,d0 [A 90]</td></tr>
+                                </tbody>
+                              </table>
+                              <p className="text-[11px] text-muted-foreground mt-1 italic">Kilde: VTEK § 11-8 Tabell 1.</p>
+                            </CollapsibleContent>
+                          </Collapsible>
+                          <Collapsible>
+                            <CollapsibleTrigger className="text-xs text-primary hover:underline mt-2">
+                              Vis referansetabell – dører i branncellebegrensende konstruksjoner (kun i editor)
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                              <table className="w-full text-xs border mt-2">
+                                <thead className="bg-muted">
+                                  <tr>
+                                    <th className="border p-1 text-left">Dørtype / plassering</th>
+                                    <th className="border p-1 text-left">BKL 1</th>
+                                    <th className="border p-1 text-left">BKL 2</th>
+                                    <th className="border p-1 text-left">BKL 3</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr><td className="border p-1">Dør mellom branncelle og branncelle</td><td className="border p-1">EI₂ 30-Sa [B 30 S]</td><td className="border p-1">EI₂ 30-Sa [B 30 S]</td><td className="border p-1">EI₂ 60-Sa [B 60 S]</td></tr>
+                                  <tr><td className="border p-1">Dør fra branncelle til rømningsvei</td><td className="border p-1">EI₂ 30-Sa [B 30 S]</td><td className="border p-1">EI₂ 30-Sa [B 30 S]</td><td className="border p-1">EI₂ 60-Sa [B 60 S]</td></tr>
+                                  <tr><td className="border p-1">Dør fra branncelle til Tr 1 (vanlig trapperom)</td><td className="border p-1">EI₂ 30-CSa [B 30 CS]</td><td className="border p-1">EI₂ 30-CSa [B 30 CS]</td><td className="border p-1">EI₂ 60-CSa [B 60 CS]</td></tr>
+                                  <tr><td className="border p-1">Dør fra branncelle til Tr 2 (sluse)</td><td className="border p-1">EI₂ 30-CSa [B 30 CS]</td><td className="border p-1">EI₂ 30-CSa [B 30 CS]</td><td className="border p-1">EI₂ 30-CSa [B 30 CS]</td></tr>
+                                  <tr><td className="border p-1">Dør mellom korridor og Tr 1</td><td className="border p-1">EI₂ 30-CSa [B 30 CS]</td><td className="border p-1">EI₂ 30-CSa [B 30 CS]</td><td className="border p-1">EI₂ 30-CSa [B 30 CS]</td></tr>
+                                  <tr><td className="border p-1">Dør mellom sluse og Tr 2</td><td className="border p-1">EI₂ 30-CSa [B 30 CS]</td><td className="border p-1">EI₂ 30-CSa [B 30 CS]</td><td className="border p-1">EI₂ 30-CSa [B 30 CS]</td></tr>
+                                  <tr><td className="border p-1">Dør til mellomliggende rom ved Tr 3</td><td className="border p-1">EI₂ 60-CSa [B 60 CS]</td><td className="border p-1">EI₂ 60-CSa [B 60 CS]</td><td className="border p-1">EI₂ 60-CSa [B 60 CS]</td></tr>
+                                  <tr><td className="border p-1">Dør til heissjakt</td><td className="border p-1">E 30 [F 30]</td><td className="border p-1">E 30 [F 30]</td><td className="border p-1">E 30 [F 30]</td></tr>
+                                  <tr><td className="border p-1">Dør til kjeller fra trapperom</td><td className="border p-1">EI₂ 60-CSa [B 60 CS]</td><td className="border p-1">EI₂ 60-CSa [B 60 CS]</td><td className="border p-1">EI₂ 60-CSa [B 60 CS]</td></tr>
+                                  <tr><td className="border p-1">Dør til loft fra trapperom</td><td className="border p-1">EI₂ 30-CSa [B 30 CS]</td><td className="border p-1">EI₂ 30-CSa [B 30 CS]</td><td className="border p-1">EI₂ 30-CSa [B 30 CS]</td></tr>
+                                </tbody>
+                              </table>
+                              <p className="text-xs text-muted-foreground mt-2">
+                                S = røyktett (Sa eller Sm). C = selvlukkende. Eksempel: EI₂ 30-CSa = EI₂ 30 + selvlukkende + røyktett. For boliger i RK 4 mellom branncelle og Tr 1 kan «C» (selvlukkende) utgå, men dette må vurderes per prosjekt.
+                              </p>
+                              <p className="text-[11px] text-muted-foreground mt-1 italic">Kilde: VTEK § 11-8 Tabell 2.</p>
+                            </CollapsibleContent>
+                          </Collapsible>
+                          <Collapsible>
+                            <CollapsibleTrigger className="text-xs text-primary hover:underline mt-2">
+                              Vis referansetabell – tekniske rom og spesielle krav (kun i editor)
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                              <table className="w-full text-xs border mt-2">
+                                <thead className="bg-muted">
+                                  <tr>
+                                    <th className="border p-1 text-left">Rom / situasjon</th>
+                                    <th className="border p-1 text-left">Krav (alle brannklasser med mindre annet er nevnt)</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr><td className="border p-1">Fyrrom for fyringsanlegg ≥ 100 kW</td><td className="border p-1">EI 60 A2-s1,d0 [A 60] – egen branncelle</td></tr>
+                                  <tr><td className="border p-1">Søppelrom</td><td className="border p-1">EI 60 A2-s1,d0 [A 60] – egen branncelle, vegger og dør</td></tr>
+                                  <tr><td className="border p-1">Batterirom for stasjonært batterianlegg</td><td className="border p-1">EI 60 A2-s1,d0 [A 60] – egen branncelle</td></tr>
+                                  <tr><td className="border p-1">Aggregat-/nødstrømrom</td><td className="border p-1">EI 60 A2-s1,d0 [A 60] – egen branncelle</td></tr>
+                                  <tr><td className="border p-1">Garasje i bolig (inntil 50 m² i samme bruksenhet)</td><td className="border p-1">Ikke nødvendigvis egen branncelle, jf. § 11-8 ledd 4</td></tr>
+                                  <tr><td className="border p-1">Garasje i bolig (over 50 m² eller i annen bruksenhet)</td><td className="border p-1">EI 30 / EI 60 / EI 90 avhengig av BKL</td></tr>
+                                  <tr><td className="border p-1">Hulrom i konstruksjoner</td><td className="border p-1">Må deles opp brannteknisk slik at branncellen ikke utvider seg via hulrom</td></tr>
+                                  <tr><td className="border p-1">Innvendig nedforet himling i rømningsvei</td><td className="border p-1">Himling EI 10 eller kledning K₂ 10 A2-s1,d0 [K1-A], jf. § 11-9</td></tr>
+                                </tbody>
+                              </table>
+                              <p className="text-[11px] text-muted-foreground mt-1 italic">Kilde: VTEK § 11-8 ledd 2–6 og tilhørende preaksepterte ytelser.</p>
+                            </CollapsibleContent>
+                          </Collapsible>
+                        </>
+                      )}
                      {renderTilstandPanel("3_5")}
                      <FravikForParagraf paragrafId="11-8" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
                      </SectionCollapsible>
