@@ -464,7 +464,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.baereevneKommentar) {
     rows.push(contentRow("Kommentar", formData.baereevneKommentar, "-"));
   }
-  if (formData.inkluderReferansetabeller) rows.push(referanseTabellRow(referanseBaereevne));
+  
   rows.push(...await tilstandRow(formData, "3_1", "3.1 Bæreevne og stabilitet"));
 
   rows.push(...fravikRowsForParagraf("11-4", fravikList));
