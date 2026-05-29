@@ -1,79 +1,95 @@
 ## Mål
 
-Legg til editor-only referansetabeller (Collapsible «Vis full referansetabell (kun i editor)») i kap 3.1, 3.4, 3.5, 3.6, 3.9 og en ekstra tabell i 3.10, kun i TEK17-grenen. Følg eksisterende mønster fra kap 3.10 (linjene 9468–9488 i `src/pages/Konsept.tsx`). Tabellene skal ikke renderes i `KonseptPreview.tsx` eller `word-export-chapter3.ts`.
+Erstatt den enkle referansetabellen i kap 3.5 (§ 11-8 Brannceller, linje 7571–7595 i `src/pages/Konsept.tsx`) med tre separate Collapsible-komponenter. Hver tabell er et selvstendig arbeidsverktøy i editoren og skal aldri vises i forhåndsvisning eller Word-eksport.
 
-## Mønster
+## Endringer – `src/pages/Konsept.tsx`
 
-For hver innsetting brukes samme JSX-struktur som dagens 3.10:
+### 1. Fjern eksisterende enkel tabell (linje 7571–7595)
+Slett dagens Collapsible med 3 rader (Branncellebegrensende vegg/dekke, Dør, Vindu).
+
+### 2. Legg til Collapsible 1: Branncellebegrensende konstruksjoner
+Plassering: etter hovedinnholdet, før TilstandsvurderingPanel.
+
+```text
+Trigger: «Vis referansetabell – branncellebegrensende konstruksjoner (kun i editor)»
+Tabell (5 rader × BKL 1/2/3):
+- Vegger og dekker mellom branncelle                     | EI 30 [B 30] | EI 60 [B 60] | EI 90 A2-s1,d0 [A 90]
+- Vegger og dekker mellom branncelle og rømningsvei    | EI 30 [B 30] | EI 60 [B 60] | EI 90 A2-s1,d0 [A 90]
+- Vegger og dekker mellom branncelle og trapperom      | EI 30 [B 30] | EI 60 [B 60] | EI 90 A2-s1,d0 [A 90]
+- Heissjakt (egen branncelle)                          | EI 60 [B 60] | EI 60 [B 60] | EI 90 A2-s1,d0 [A 90]
+- Vegger og dekker som omslutter sjakt for kabler og rør| EI 30 [B 30] | EI 60 [B 60] | EI 90 A2-s1,d0 [A 90]
+Kilde: VTEK § 11-8 Tabell 1.
+```
+
+Innpakket i `{formData.regelverk !== "BF85" && (...)}`.
+
+### 3. Legg til Collapsible 2: Dørkrav per situasjon og brannklasse
+
+```text
+Trigger: «Vis referansetabell – dører i branncellebegrensende konstruksjoner (kun i editor)»
+Tabell (10 rader × BKL 1/2/3):
+- Dør mellom branncelle og branncelle          | EI₂ 30-Sa [B 30 S] | EI₂ 30-Sa [B 30 S] | EI₂ 60-Sa [B 60 S]
+- Dør fra branncelle til rømningsvei           | EI₂ 30-Sa [B 30 S] | EI₂ 30-Sa [B 30 S] | EI₂ 60-Sa [B 60 S]
+- Dør fra branncelle til Tr 1 (vanlig trapperom)| EI₂ 30-CSa [B 30 CS]| EI₂ 30-CSa [B 30 CS]| EI₂ 60-CSa [B 60 CS]
+- Dør fra branncelle til Tr 2 (sluse)          | EI₂ 30-CSa [B 30 CS]| EI₂ 30-CSa [B 30 CS]| EI₂ 30-CSa [B 30 CS]
+- Dør mellom korridor og Tr 1                  | EI₂ 30-CSa [B 30 CS]| EI₂ 30-CSa [B 30 CS]| EI₂ 30-CSa [B 30 CS]
+- Dør mellom sluse og Tr 2                     | EI₂ 30-CSa [B 30 CS]| EI₂ 30-CSa [B 30 CS]| EI₂ 30-CSa [B 30 CS]
+- Dør til mellomliggende rom ved Tr 3          | EI₂ 60-CSa [B 60 CS]| EI₂ 60-CSa [B 60 CS]| EI₂ 60-CSa [B 60 CS]
+- Dør til heissjakt                            | E 30 [F 30]        | E 30 [F 30]        | E 30 [F 30]
+- Dør til kjeller fra trapperom                | EI₂ 60-CSa [B 60 CS]| EI₂ 60-CSa [B 60 CS]| EI₂ 60-CSa [B 60 CS]
+- Dør til loft fra trapperom                   | EI₂ 30-CSa [B 30 CS]| EI₂ 30-CSa [B 30 CS]| EI₂ 30-CSa [B 30 CS]
+```
+
+Under tabellen: forklaringsavsnitt `<p className="text-xs text-muted-foreground mt-2">…</p>`:
+> S = røyktett (Sa eller Sm). C = selvlukkende. Eksempel: EI₂ 30-CSa = EI₂ 30 + selvlukkende + røyktett. For boliger i RK 4 mellom branncelle og Tr 1 kan «C» (selvlukkende) utgå, men dette må vurderes per prosjekt.
+
+Kilde: VTEK § 11-8 Tabell 2.
+
+### 4. Legg til Collapsible 3: Spesielle rom og krav
+
+```text
+Trigger: «Vis referansetabell – tekniske rom og spesielle krav (kun i editor)»
+Tabell (1 kolonne «Krav (alle brannklasser med mindre annet er nevnt)»):
+- Fyrrom for fyringsanlegg ≥ 100 kW      | EI 60 A2-s1,d0 [A 60] – egen branncelle
+- Søppelrom                               | EI 60 A2-s1,d0 [A 60] – egen branncelle, vegger og dør
+- Batterirom for stasjonært batterianlegg | EI 60 A2-s1,d0 [A 60] – egen branncelle
+- Aggregat-/nødstrømrom                   | EI 60 A2-s1,d0 [A 60] – egen branncelle
+- Garasje i bolig (inntil 50 m² i samme bruksenhet) | Ikke nødvendigvis egen branncelle, jf. § 11-8 ledd 4
+- Garasje i bolig (over 50 m² eller i annen bruksenhet) | EI 30 / EI 60 / EI 90 avhengig av BKL
+- Hulrom i konstruksjoner                  | Må deles opp brannteknisk slik at branncellen ikke utvider seg via hulrom
+- Innvendig nedforet himling i rømningsvei | Himling EI 10 eller kledning K₂ 10 A2-s1,d0 [K1-A], jf. § 11-9
+```
+
+Kilde: VTEK § 11-8 ledd 2–6 og tilhørende preaksepterte ytelser.
+
+### 5. Teknisk mønster
+Alle tre bruker samme JSX-struktur som prompt 55:
 
 ```tsx
 <Collapsible>
   <CollapsibleTrigger className="text-xs text-primary hover:underline mt-2">
-    Vis full referansetabell (kun i editor)
+    {tittel}
   </CollapsibleTrigger>
   <CollapsibleContent>
-    <table className="w-full text-xs border mt-2">
-      <thead className="bg-muted">
-        <tr>{/* headers */}</tr>
-      </thead>
-      <tbody>{/* rader */}</tbody>
-    </table>
-    <p className="text-[11px] text-muted-foreground mt-1 italic">
-      Kilde: VTEK § 11-X Tabell N.
-    </p>
+    <table className="w-full text-xs border mt-2">…</table>
+    <p className="text-[11px] text-muted-foreground mt-1 italic">Kilde: …</p>
   </CollapsibleContent>
 </Collapsible>
 ```
 
-Plassering: under hovedinnholdet for §-seksjonen, før eventuell `TilstandsvurderingPanel`. Innpakkes i `{formData.regelverk !== "BF85" && (...)}` slik at BF85 forblir uendret.
-
-## Endringer – `src/pages/Konsept.tsx`
-
-### 1. Kap 3.1 – § 11-4 Bæreevne (SectionCollapsible starter linje 4441)
-Legg til Collapsible mot slutten av TEK17-grenens innhold i seksjonen (etter unntaks-/toggles-blokken, før eventuell TilstandsvurderingPanel). Tabell: Bygningsdel × BKL 1/2/3 med 5 rader (hovedsystem, sekundære, trappeløp, utvendige trapper, under øverste kjeller) iht. spesifikasjonen.
-Kilde: «VTEK § 11-4 Tabell 1.»
-
-### 2. Kap 3.4 – § 11-7 Brannseksjonering (SectionCollapsible linje 5032)
-Legg til Collapsible nederst i TEK17-grenen. Tabell: Spesifikk brannenergi × Normalt / Brannalarm / Sprinkler / Røykventilasjon (3 rader: >400, 50–400, <50).
-Kilde: «VTEK § 11-7 Tabell 1.»
-
-### 3. Kap 3.5 – § 11-8 Brannceller (SectionCollapsible linje 5598)
-Collapsible med 3 rader: Branncellebegrensende vegg/dekke, Dør i branncellebegrensende konstruksjon, Vindu i branncellebegrensende vegg – kolonner BKL 1/2/3.
-Kilde: «VTEK § 11-8 Tabeller 1 og 2.»
-
-### 4. Kap 3.6 – § 11-9 Materialer (SectionCollapsible linje 7521)
-To separate Collapsibles, men vis kun «den andre» tabellen i forhold til prosjektets RK:
-- Hvis prosjektet har kun RK 1–5 → vis Tabell 1B (RK 6) som referanse.
-- Hvis prosjektet har kun RK 6 → vis Tabell 1A (RK 1–5) som referanse.
-- Hvis begge → vis ingen ekstra (begge ligger allerede i hovedteksten).
-
-Bruk eksisterende `getMaterialerReferanseTabell`-logikk i `src/lib/tek17/referansetabeller.ts` som referanse for hvilken som er «den andre», men implementer som inline JSX i Konsept.tsx (ikke gjenbruk komponent for preview/Word). Tabellene har headere Plassering × BKL 1/2/3 og radene gitt i spesifikasjonen (7 rader for 1A, 5 rader for 1B).
-Kilder: «VTEK § 11-9 Tabell 1A.» / «VTEK § 11-9 Tabell 1B.»
-
-### 5. Kap 3.9 – § 11-12 Brannvarsling (SectionCollapsible linje 8535)
-Collapsible med tabell: Risikoklasse × 1 etasje / 2+ etasjer (6 rader RK1–RK6) + forklaringsavsnitt under tabellen (Kategori 1/Kategori 2) som `<p className="text-xs text-muted-foreground mt-2">…</p>` over kildelinjen.
-Kilde: «VTEK § 11-12 Tabell 3.»
-
-### 6. Kap 3.10 – § 11-13 Tabell 2 (ny, i tillegg til eksisterende Tabell 1 på linje 9468)
-Legg til en ny, separat Collapsible umiddelbart etter den eksisterende (etter linje 9488) med tabell: Risikoklasse × ≤8 etasjer / >8 etasjer (6 rader) + forklaring (Tr 1/Tr 2/Tr 3).
-Kilde: «VTEK § 11-13 Tabell 2.»
+Plassert under hverandre nederst i kap 3.5, etter hovedinnholdet og før `renderTilstandPanel("3_5")` + `FravikForParagraf`.
 
 ## Ikke endres
 
-- `src/components/konsept/KonseptPreview.tsx` – ingen rendering av disse tabellene.
-- `src/lib/word-export-chapter3.ts` – ingen tabell-eksport.
-- BF85-grenene i alle seksjoner – uberørt.
-- All dagens conditional hovedtekst – beholdes; tabellene er kun et tillegg under.
-- `src/lib/tek17/referansetabeller.ts` – uberørt (brukes ikke fra dette mønsteret, men beholdes som data-referanse).
+- `KonseptPreview.tsx` – ingen endring
+- `word-export-chapter3.ts` – ingen endring
+- BF85-grenene i seksjon 3.5 – uberørt
+- All annen conditional hovedtekst i kap 3.5 – beholdes
 
 ## Verifikasjon
 
-1. TEK17-prosjekt: åpne kap 3.1, 3.4, 3.5, 3.6, 3.9, 3.10 → hver `Vis full referansetabell (kun i editor)` åpner riktig tabell.
-2. Forhåndsvisning: ingen av tabellene synlige.
-3. Word-eksport: ingen av tabellene med.
-4. BF85-prosjekt: ingen av disse Collapsibles vises; eksisterende BF85-tabeller (30:41 osv.) er uendret.
-5. Kap 3.6 med RK 1–5 → Tabell 1B vises som referanse; med RK 6 → Tabell 1A; med begge → ingen ekstra.
-
-## Filer som endres
-
-- `src/pages/Konsept.tsx` (6 innsettinger i TEK17-grener)
+1. TEK17-prosjekt: kap 3.5 viser tre Collapsibles med tydelige titler.
+2. Klikk på hver – riktig tabell åpner med riktig innhold.
+3. Forhåndsvisning: ingen tabeller synlige.
+4. Word-eksport: ingen tabeller med.
+5. BF85-prosjekt: ingen av Collapsibles vises.
