@@ -864,6 +864,8 @@ export default function RosAnalyse() {
   const [newProjectId, setNewProjectId] = useState<string>("");
   const [content, setContent] = useState<RosContent>(EMPTY_CONTENT);
   const [currentName, setCurrentName] = useState("");
+  const [createdBy, setCreatedBy] = useState<string | null>(null);
+  const [showFlytt, setShowFlytt] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loadingDoc, setLoadingDoc] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -933,6 +935,7 @@ export default function RosAnalyse() {
         }
         setCurrentName(data.name);
         setProjectId((data as any).project_id ?? null);
+        setCreatedBy((data as any).created_by ?? null);
         const c = (data.content && typeof data.content === "object" && !Array.isArray(data.content))
           ? { ...EMPTY_CONTENT, ...(data.content as Partial<RosContent>) }
           : EMPTY_CONTENT;
