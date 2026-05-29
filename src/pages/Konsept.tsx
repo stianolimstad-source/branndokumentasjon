@@ -46,7 +46,7 @@ import UpdateKSButton from "@/components/konsept/UpdateKSButton";
 import KonseptPreview, { getKategorier } from "@/components/konsept/KonseptPreview";
 import { UploadConceptDialog } from "@/components/konsept/UploadConceptDialog";
 import { buildChapter3Table, setChapter3Theme } from "@/lib/word-export-chapter3";
-import TilstandsvurderingPanel, { TilstandData, emptyTilstand } from "@/components/konsept/TilstandsvurderingPanel";
+import TilstandsvurderingPanel, { TilstandData, emptyTilstand, emptyKategori, TilstandAvvik } from "@/components/konsept/TilstandsvurderingPanel";
 import KraftstasjonTilleggskravCard from "@/components/konsept/KraftstasjonTilleggskravCard";
 import FravikForParagraf from "@/components/konsept/FravikForParagraf";
 import { useFravikForProsjekt } from "@/hooks/useFravikForProsjekt";
