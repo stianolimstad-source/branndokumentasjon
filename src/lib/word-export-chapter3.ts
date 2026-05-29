@@ -1902,10 +1902,6 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
           lines.push(`• AVVIK: Prosjektert bredde er mindre enn strengeste krav. Må dokumenteres som fravik.`);
         }
       }
-      if (formData.inkluderReferansetabeller) {
-        lines.push("", "Referanse – fri bredde per RK (§ 11-14 punkt 4):");
-        lines.push("RK 1, 2, 4: 0,86 m | RK 3, 5: 1,16 m | RK 6 bolig: 0,86 m | RK 6 ellers: 1,16 m. Tillegg: 1 cm per person.");
-      }
       rows.push(contentRowMultiLine("Fri bredde i rømningsvei – § 11-14 punkt 4", lines, "ARK"));
     }
   }
