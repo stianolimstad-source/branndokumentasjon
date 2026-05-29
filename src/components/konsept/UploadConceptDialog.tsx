@@ -288,7 +288,19 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
         return v === true || v === false || (typeof v === "string" && v.trim() !== "");
       });
 
-      if (metaKeys.length === 0 && kap3Keys.length === 0) {
+      // Avvik: kun relevant for tilstandsvurdering
+      const avvikList: ExtractedAvvik[] = documentType === "tilstandsvurdering" && Array.isArray((result as any).avvik)
+        ? ((result as any).avvik as any[])
+            .filter((a) => a && typeof a === "object" && typeof a.beskrivelse === "string" && a.beskrivelse.trim() !== "" && typeof a.sectionKey === "string" && SECTION_LABELS[a.sectionKey])
+            .map((a) => ({
+              sectionKey: a.sectionKey,
+              kind: a.kind === "fravik" ? "fravik" : "tiltak",
+              grad: ["tg0", "tg1", "tg2", "tg3", "tgiu"].includes(a.grad) ? a.grad : "tg2",
+              beskrivelse: String(a.beskrivelse).trim(),
+            }))
+        : [];
+
+      if (metaKeys.length === 0 && kap3Keys.length === 0 && avvikList.length === 0) {
         setStatus("error");
         toast({
           title: "Fant ingen data i dokumentet",
@@ -299,9 +311,11 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
         return;
       }
 
-      setExtracted(result);
+      const resultWithAvvik = { ...result, avvik: avvikList };
+      setExtracted(resultWithAvvik);
       setSelectedMeta(new Set(metaKeys));
       setSelectedKap3(new Set(kap3Keys));
+      setSelectedAvvik(new Set(avvikList.map((_, i) => i)));
       setStatus("review");
       setIsProcessing(false);
     } catch (err: any) {
