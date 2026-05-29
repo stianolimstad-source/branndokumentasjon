@@ -374,6 +374,7 @@ export type Database = {
           id: string
           logo_url: string | null
           phone: string | null
+          role: string | null
           title: string | null
           updated_at: string
         }
@@ -387,6 +388,7 @@ export type Database = {
           id: string
           logo_url?: string | null
           phone?: string | null
+          role?: string | null
           title?: string | null
           updated_at?: string
         }
@@ -400,6 +402,7 @@ export type Database = {
           id?: string
           logo_url?: string | null
           phone?: string | null
+          role?: string | null
           title?: string | null
           updated_at?: string
         }
@@ -458,6 +461,7 @@ export type Database = {
         Row: {
           address: string | null
           created_at: string
+          created_by_role: string
           description: string | null
           id: string
           image_url: string | null
@@ -468,6 +472,7 @@ export type Database = {
         Insert: {
           address?: string | null
           created_at?: string
+          created_by_role?: string
           description?: string | null
           id?: string
           image_url?: string | null
@@ -478,6 +483,7 @@ export type Database = {
         Update: {
           address?: string | null
           created_at?: string
+          created_by_role?: string
           description?: string | null
           id?: string
           image_url?: string | null
@@ -648,6 +654,7 @@ export type Database = {
         Row: {
           content: Json
           created_at: string
+          created_by: string | null
           id: string
           name: string
           project_id: string
@@ -658,6 +665,7 @@ export type Database = {
         Insert: {
           content?: Json
           created_at?: string
+          created_by?: string | null
           id?: string
           name: string
           project_id: string
@@ -668,6 +676,7 @@ export type Database = {
         Update: {
           content?: Json
           created_at?: string
+          created_by?: string | null
           id?: string
           name?: string
           project_id?: string

@@ -1015,8 +1015,9 @@ export default function RosAnalyse() {
       },
     };
     const { data, error } = await supabase.from("ros_analyses")
-      .insert({ name: newName.trim(), project_id: newProjectId, user_id: user.id, content: seed as any })
+      .insert({ name: newName.trim(), project_id: newProjectId, user_id: user.id, created_by: user.id, content: seed as any } as any)
       .select("id").single();
+
     if (error || !data) {
       toast({ title: "Kunne ikke opprette", description: error?.message, variant: "destructive" });
       return;

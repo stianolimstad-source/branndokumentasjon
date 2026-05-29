@@ -3,9 +3,11 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "@/hooks/useAuth";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import AppHeader from "@/components/AppHeader";
+import RoleSelectModal from "@/components/auth/RoleSelectModal";
 import Index from "./pages/Index";
+
 import Konsept from "./pages/Konsept";
 import Tilstandsvurdering from "./pages/Tilstandsvurdering";
 import RosAnalyse from "./pages/RosAnalyse";
@@ -56,6 +58,11 @@ import Om from "./pages/Om";
 
 const queryClient = new QueryClient();
 
+const RoleGate = () => {
+  const { needsRoleSelect } = useAuth();
+  return <RoleSelectModal open={needsRoleSelect} />;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -66,6 +73,8 @@ const App = () => (
           <PaymentTestModeBanner />
           <PastDueBanner />
           <AppHeader />
+          <RoleGate />
+
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/abonnement" element={<Abonnement />} />
