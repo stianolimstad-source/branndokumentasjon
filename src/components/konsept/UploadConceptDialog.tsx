@@ -541,12 +541,63 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
                       </ul>
                     </section>
                   )}
+
+                  {avvikFound.length > 0 && (
+                    <section>
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-semibold">Registrerte avvik fra gammel rapport</h4>
+                        <button
+                          type="button"
+                          className="text-xs text-primary hover:underline"
+                          onClick={() =>
+                            setSelectedAvvik(allAvvikSelected ? new Set() : new Set(avvikFound.map((_, i) => i)))
+                          }
+                        >
+                          {allAvvikSelected ? "Fjern alle" : "Velg alle"}
+                        </button>
+                      </div>
+                      <p className="text-xs text-muted-foreground mb-2">
+                        Valgte avvik legges inn under riktig kapittel 3.x i den nye rapporten — du kan justere grad og tekst etterpå.
+                      </p>
+                      <ul className="space-y-1.5">
+                        {avvikFound.map((a, i) => {
+                          const trimmed = a.beskrivelse.length > 200 ? a.beskrivelse.substring(0, 200) + "…" : a.beskrivelse;
+                          const kindLabel = a.kind === "fravik" ? "Fravik" : "Tiltak";
+                          const kindClass = a.kind === "fravik"
+                            ? "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950 dark:text-amber-200 dark:border-amber-800"
+                            : "bg-red-100 text-red-800 border-red-300 dark:bg-red-950 dark:text-red-200 dark:border-red-800";
+                          return (
+                            <li key={i} className="flex items-start gap-2 text-sm">
+                              <Checkbox
+                                id={`avvik-${i}`}
+                                checked={selectedAvvik.has(i)}
+                                onCheckedChange={(c) => toggleAvvik(i, !!c)}
+                                className="mt-0.5"
+                              />
+                              <label htmlFor={`avvik-${i}`} className="flex-1 cursor-pointer leading-tight">
+                                <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
+                                  <span className="font-medium">{SECTION_LABELS[a.sectionKey] ?? a.sectionKey}</span>
+                                  <span className={`text-[10px] px-1.5 py-0.5 rounded border ${kindClass}`}>{kindLabel}</span>
+                                  {a.grad && GRAD_LABELS[a.grad] && (
+                                    <span className="text-[10px] px-1.5 py-0.5 rounded border bg-muted text-muted-foreground">
+                                      {GRAD_LABELS[a.grad]}
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="text-muted-foreground" title={a.beskrivelse}>{trimmed}</span>
+                              </label>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </section>
+                  )}
                 </div>
               </ScrollArea>
 
               <div className="flex items-center justify-between pt-2 border-t">
                 <p className="text-xs text-muted-foreground">
-                  {selectedMeta.size + selectedKap3.size} av {metaKeysFound.length + kap3KeysFound.length} valgt
+                  {selectedMeta.size + selectedKap3.size + selectedAvvik.size} av {metaKeysFound.length + kap3KeysFound.length + avvikFound.length} valgt
                 </p>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => { setOpen(false); resetAll(); }}>
@@ -555,7 +606,7 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
                   <Button
                     size="sm"
                     onClick={handleApplySelected}
-                    disabled={selectedMeta.size + selectedKap3.size === 0}
+                    disabled={selectedMeta.size + selectedKap3.size + selectedAvvik.size === 0}
                   >
                     Fyll inn valgte felter
                   </Button>
