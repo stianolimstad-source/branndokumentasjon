@@ -37,14 +37,11 @@ const RollePicker = () => {
           .eq("id", user.id)
           .maybeSingle();
         const role = (data as any)?.role as string | null | undefined;
-        if (role === "engineer") {
-          navigate("/mine-prosjekter", { replace: true });
-          return;
-        }
         if (role === "customer") {
           navigate("/kunde", { replace: true });
           return;
         }
+        // Engineer: ingen auto-redirect – vis rollevelgeren som vanlig
         // role === null → vis picker (RoleSelectModal er fallback)
         setChecking(false);
         return;
