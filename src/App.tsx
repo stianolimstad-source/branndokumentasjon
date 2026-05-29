@@ -7,6 +7,9 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import AppHeader from "@/components/AppHeader";
 import RoleSelectModal from "@/components/auth/RoleSelectModal";
 import Index from "./pages/Index";
+import RollePicker from "./pages/RollePicker";
+import KundeLanding from "./pages/KundeLanding";
+import KundeHjem from "./pages/KundeHjem";
 
 import Konsept from "./pages/Konsept";
 import Tilstandsvurdering from "./pages/Tilstandsvurdering";
@@ -76,7 +79,10 @@ const App = () => (
           <RoleGate />
 
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<RollePicker />} />
+            <Route path="/branningenior" element={<Index />} />
+            <Route path="/kunde-landing" element={<KundeLanding />} />
+            <Route path="/kunde" element={<KundeHjem />} />
             <Route path="/abonnement" element={<Abonnement />} />
             <Route path="/vilkar" element={<Vilkar />} />
             <Route path="/refusjon" element={<Refusjon />} />

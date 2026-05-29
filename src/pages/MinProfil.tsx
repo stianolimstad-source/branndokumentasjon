@@ -54,6 +54,7 @@ const MinProfil = () => {
       setSwitchingRole(false);
       return;
     }
+    localStorage.setItem("branndok_selected_role", newRole);
     await supabase.auth.signOut();
     navigate("/auth");
   };

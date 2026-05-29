@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -20,11 +20,27 @@ const Auth = () => {
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const preselectedRole = (searchParams.get('rolle') === 'customer' ? 'customer'
+    : searchParams.get('rolle') === 'engineer' ? 'engineer'
+    : null) as 'customer' | 'engineer' | null;
+  const defaultTab = searchParams.get('mode') === 'signup' ? 'register' : 'login';
 
   useEffect(() => {
-    if (user) {
-      navigate('/');
-    }
+    if (!user) return;
+    (async () => {
+      const { data } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle();
+      const role = (data as any)?.role as string | null | undefined;
+      if (role === 'customer') {
+        localStorage.setItem('branndok_selected_role', 'customer');
+        navigate('/kunde');
+      } else if (role === 'engineer') {
+        localStorage.setItem('branndok_selected_role', 'engineer');
+        navigate('/mine-prosjekter');
+      } else {
+        navigate('/');
+      }
+    })();
   }, [user, navigate]);
 
   const validateEmail = (email: string) => {
@@ -154,6 +170,13 @@ const Auth = () => {
         variant: 'destructive',
       });
     } else {
+      const roleToSet = preselectedRole ?? 'engineer';
+      localStorage.setItem('branndok_selected_role', roleToSet);
+      // Sett rolle på profil – auth state-listener venter til onAuthStateChange gir oss user
+      const { data: { user: newUser } } = await supabase.auth.getUser();
+      if (newUser) {
+        await supabase.from('profiles').update({ role: roleToSet } as any).eq('id', newUser.id);
+      }
       toast({
         title: 'Konto opprettet!',
         description: 'Vi har sendt deg en bekreftelsesmail. Sjekk innboksen din (og spam-mappen) og klikk på lenken for å bekrefte kontoen din.',
@@ -219,7 +242,7 @@ const Auth = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="login" className="w-full">
+          <Tabs defaultValue={defaultTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="login">Logg inn</TabsTrigger>
               <TabsTrigger value="register">Registrer</TabsTrigger>
