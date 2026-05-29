@@ -132,9 +132,18 @@ Ikke inkluder sammendrag — dette genereres separat.`;
 
     if (!response.ok) {
       const errText = await response.text();
-      console.error("AI API error:", errText);
-      return new Response(JSON.stringify({ error: "AI analysis failed" }), {
-        status: 500,
+      console.error("AI API error:", response.status, errText);
+      let errorType = "ai_failed";
+      let userMessage = `AI-analysen feilet (HTTP ${response.status}).`;
+      if (response.status === 402) {
+        errorType = "payment_required";
+        userMessage = "Lovable AI er tom for kreditter. Fyll på i Lovable Cloud → Settings → Usage.";
+      } else if (response.status === 429) {
+        errorType = "rate_limited";
+        userMessage = "AI-tjenesten er midlertidig overbelastet. Prøv igjen om et øyeblikk.";
+      }
+      return new Response(JSON.stringify({ error: userMessage, errorType }), {
+        status: response.status === 402 || response.status === 429 ? response.status : 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
