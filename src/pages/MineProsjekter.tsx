@@ -149,10 +149,12 @@ const MineProsjekter = () => {
     setDeleteTarget(null);
   };
 
-  if (loading) {
+  if (loading || roleLoading) {
     return <div className="min-h-screen bg-gradient-subtle flex items-center justify-center"><p className="text-muted-foreground">Laster...</p></div>;
   }
   if (!user) return null;
+  if (isCustomer) return <Navigate to="/" replace />;
+
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
