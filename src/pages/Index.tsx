@@ -25,12 +25,6 @@ const Index = () => {
   const { isActive: isSubActive } = useSubscription();
   const navigate = useNavigate();
 
-  if (user && roleLoading) {
-    return <div className="min-h-screen bg-gradient-subtle flex items-center justify-center"><p className="text-muted-foreground">Laster...</p></div>;
-  }
-  if (user && isCustomer) {
-    return <KundeHjem />;
-  }
   const { toast } = useToast();
   const [showConceptDialog, setShowConceptDialog] = useState(false);
   const [showTilstandDialog, setShowTilstandDialog] = useState(false);
