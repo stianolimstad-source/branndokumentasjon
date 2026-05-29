@@ -6,25 +6,44 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+interface AuthContextType {
+  user: User | null;
+  session: Session | null;
+  loading: boolean;
+  needsRoleSelect: boolean;
   signUp: (email: string, password: string, fullName?: string) => Promise<{ error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [needsRoleSelect, setNeedsRoleSelect] = useState(false);
+
   useEffect(() => {
+    const checkRole = async (uid: string) => {
+      const { data } = await supabase.from("profiles").select("role").eq("id", uid).maybeSingle();
+      setNeedsRoleSelect(!!data && (data as any).role == null);
+    };
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        if (session?.user) {
+          setTimeout(() => checkRole(session.user.id), 0);
+        } else {
+          setNeedsRoleSelect(false);
+        }
       }
     );
 
@@ -33,12 +52,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      if (session?.user) {
+        checkRole(session.user.id);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, fullName?: string) => {
     const redirectUrl = `${window.location.origin}/`;
     
     const { error } = await supabase.auth.signUp({
@@ -68,6 +89,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, session, loading, needsRoleSelect, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
