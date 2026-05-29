@@ -200,15 +200,22 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
           <Upload className="h-4 w-4" />
-          Last opp eksisterende konsept
+          {documentType === "tilstandsvurdering"
+            ? "Last opp eksisterende tilstandsvurdering"
+            : "Last opp eksisterende konsept"}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Last opp eksisterende brannkonsept</DialogTitle>
+          <DialogTitle>
+            {documentType === "tilstandsvurdering"
+              ? "Last opp eksisterende tilstandsvurdering"
+              : "Last opp eksisterende brannkonsept"}
+          </DialogTitle>
           <DialogDescription>
-            Last opp et eksisterende brannkonsept eller forprosjekt (PDF, Word eller tekstfil). 
-            Informasjonen vil bli hentet ut og fylt inn automatisk.
+            Last opp et eksisterende {documentType === "tilstandsvurdering" ? "tilstandsvurderingsdokument" : "brannkonsept eller forprosjekt"} (PDF, Word eller tekstfil).
+            Metadata og enkelte felt i kapittel 3 hentes ut automatisk.
+            Allerede utfylte felter overskrives ikke — kontroller alltid resultatet.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">
