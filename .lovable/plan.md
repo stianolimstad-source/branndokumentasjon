@@ -1,113 +1,63 @@
-# Last opp eksisterende dokument i brannkonsept og tilstandsvurdering — inkl. kapittel 3
 
-## Bakgrunn
+# Fikse import fra tilstandsrapport (PDF) i brannkonsept/tilstandsvurdering
 
-`UploadConceptDialog` + edge-funksjonen `parse-fire-concept` finnes allerede, men:
-- Knappen er gjemt inne i metadata-seksjonen og vises kun før dokumentet er lagret (`!conceptId && !isDemoMode`).
-- AI-prompten henter kun ut prosjekt-/bygningsmetadata. Den vet ingenting om tilstandsvurdering (BF85, byggeår, bygningsbrannklasse) og rører ikke kapittel 3.
-- ROS har til sammenligning knappen i toppbaren, alltid synlig.
+## Hva som faktisk skjer i dag
 
-Brukeren vil ha samme flyt i brannkonsept/tilstandsvurdering, og i tillegg forsøke å fylle ut deler av kapittel 3 automatisk.
+Opplastingsdialogen kjører, kaller `parse-fire-concept`, og mapper resultatet inn — den delen virker. Problemet ligger i **PDF-tekstuttrekket på klienten** i `UploadConceptDialog.readFileAsText`:
 
-## Del 1 — Synliggjøre og dele knappen (lik ROS)
+- Den leser PDF-en som en byte-buffer og kjører regex etter `stream...endstream` og `(...)Tj` i råteksten.
+- Moderne PDF-er (også de fleste tilstandsrapporter) bruker `FlateDecode`-komprimerte content streams. Da gir regex-en kun binær støy, og fallback-en sender bare ulesbar tekst til AI-en.
+- AI-en returnerer da tom JSON, `setIfEmpty` setter ingenting, og brukeren ser at "ingenting ble importert".
 
-Filer: `src/pages/Konsept.tsx`, `src/components/konsept/UploadConceptDialog.tsx`.
+ROS-flyten føles bedre fordi ROS-analyser ofte lastes opp som Excel (`.xlsx`), som leses ordentlig av `exceljs`. PDF-uttrekket der har nøyaktig samme svakhet.
 
-- Flytte `<UploadConceptDialog />` opp i den sticky toppbaren i `Konsept.tsx` (samme posisjon som `<UploadRosDialog />` i `RosAnalyse.tsx`, ved siden av slett-knappen).
-- Fjerne `!conceptId`-betingelsen — også eksisterende dokumenter skal kunne berikes. Tomme felter fra AI overskriver aldri eksisterende verdier; kun ikke-tomme felter mappes inn (gjeldende oppførsel beholdes).
-- Dynamisk tittel/etikett basert på `documentType`: «Last opp eksisterende brannkonsept» vs. «Last opp eksisterende tilstandsvurdering».
-- Sende `documentType` med i `invoke("parse-fire-concept", { body: { documentText, documentType } })`.
+## Mål
 
-## Del 2 — Utvide metadata-uttrekk (begge dokumenttyper)
+1. Få ordentlig tekst ut av PDF-en for tilstandsrapport + brannkonsept.
+2. Beholde dagens "overskriver aldri utfylte felter"-oppførsel.
+3. Gi tydelig tilbakemelding når AI ikke finner noe, i stedet for stille "ferdig".
 
-Filer: `supabase/functions/parse-fire-concept/index.ts`, `UploadConceptDialog.tsx`, `Konsept.tsx`.
+## Tilnærming
 
-Legge til i JSON-skjema + prompt:
-- `regelverk` ("TEK17" | "TEK10" | "TEK97" | "BF85") — viktig for tilstandsvurdering.
-- `bygningsbrannklasse` ("A" | "B" | "C") — BF85.
-- `byggeaar` (4-sifret årstall).
+### Del 1 — Bytte til ordentlig PDF-parsing klient-side
 
-Prompten skreddersys på `documentType`: ved `tilstandsvurdering` skal AI lete etter eldre regelverk, byggeår, branncellevegger angitt som B30/B60/A60 i stedet for EI 30/EI 60 osv.
+Filer: `src/components/konsept/UploadConceptDialog.tsx` (og samme oppgradering for `src/components/ros/UploadRosDialog.tsx` slik at PDF-ROS også blir bedre).
 
-Mappe nye felter i `onDataExtracted`-handleren i `Konsept.tsx`. Behold prinsippet om å aldri overskrive utfylte felter.
+- Installere `pdfjs-dist` og bruke den til å hente ut tekst side for side (`getDocument` → `page.getTextContent()` → join `item.str`).
+- Sette `GlobalWorkerOptions.workerSrc` til en URL som Vite kan løse (importere worker fra `pdfjs-dist/build/pdf.worker.min.mjs?url`).
+- Beholde dagens regex-heuristikk som **fallback** hvis pdfjs feiler (skannede PDF-er uten tekstlag vil fortsatt gi lite — det aksepterer vi i denne omgang).
+- Begrense til 100k tegn før vi sender (gir AI nok kontekst uten å sprenge token-budsjettet).
 
-## Del 3 — Kapittel 3-uttrekk (whitelist + konservativ)
+### Del 2 — Bedre prompt-bruk av tilgjengelig tekst
 
-Mål: fylle inn det AI med høy sikkerhet kan lese rett ut av et eksisterende dokument, uten å overstyre den eksisterende §-automatikken (sprinkler => seksjonering => RK6 etc.). Vi henter altså _inngangsvariabler_, ikke utdata.
+Fil: `supabase/functions/parse-fire-concept/index.ts`
 
-### 3a. Hva som inkluderes (whitelist)
+- Øke `documentText.substring(...)` fra 50 000 til 100 000 tegn (lengre tilstandsrapporter blir kuttet i dag).
+- I prompten: legge til eksplisitt instruksjon om at tilstandsrapporter ofte har en "Bygningsopplysninger"-/"Generelt om bygget"-seksjon (byggeår, antall etasjer, BRA, gnr/bnr, bygningstype) og en "Brannteknisk tilstand"-/"Avvik"-seksjon — be modellen lete der.
+- Bytte modell-default til `google/gemini-2.5-pro` (allerede satt) men vurdere `google/gemini-3-flash-preview` som raskere/billigere alternativ — beholder 2.5-pro for nå siden den håndterer stor kontekst godt.
 
-For hvert §11-x-område trekker vi ut **boolean «finnes»-flagg** og **fritekst-kommentarer** — ikke detaljerte bygningsdel-tabeller (de er multi-part og avhengige av valgt regelverk).
+### Del 3 — Tydeligere UX når AI ikke finner noe
 
-Felter som mappes (alle valgfrie, mappes kun hvis AI returnerer verdi):
+Fil: `src/components/konsept/UploadConceptDialog.tsx`
 
-§11-12 / §11-14 Aktive tiltak (binærflagg)
-- `tilretteleggingLedd1a` — automatisk vannbasert slokkeanlegg (sprinkler)
-- `tilretteleggingLedd2a` — brannalarmanlegg
-- `tilretteleggingLedd2b` — røykvarslere
-- `brannalarmTalevarsling` — talevarsling
-- `tilretteleggingLedd3` — ledesystem
-- `slokkeBrannslange`, `slokkeHandslukker`
+- I `handleFileSelect`: hvis `metaCount + kap3Count === 0`, vise advarsel-toast ("Vi fant ikke noe brukbar informasjon i dokumentet. Prøv en annen fil eller fyll inn manuelt.") i stedet for grønn suksess.
+- Logge det rå antallet tegn vi sendte til AI til konsollen, slik at det er lett å feilsøke neste gang.
 
-§11-11 Rømning
-- `romningsvei` (1 eller 2)
-- `romningsveiSvalgang`, `romningsveiKorridorOver30m`, `romningsveiPanikkbeslag` (boolean)
-- `romningsveiKommentar` (fritekst)
+### Del 4 — Verifisering
 
-§11-15 Husdyr
-- `husdyrRedningRelevant` (boolean), `husdyrTyper`, `husdyrRedningKommentar`
-
-Universell utforming (kap. 2)
-- `universellUtforming` (boolean)
-
-Fritekstkommentarer per §-område (legges i eksisterende «kommentar»-felter der de finnes; ellers droppes):
-- `bf85Brannbelastning`, `roykKontrollKravTekst`, `trapperomKravTekst`, osv.
-
-### 3b. Hva som IKKE inkluderes (eksplisitt skip)
-
-- `bygningsdeler[]` (multi-part bygninger) — for komplekst, krever egen UI-flyt for å oversette deler.
-- Avledede felter som settes av automatikk: brannklasse, RK6/RK4-konsekvenser av sprinkler, branncellevegg-koder, EI-verdier i tabeller.
-- Fravik (`fravik[]`), bilder, vedlegg, scopeImage.
-- QA-status, revisjonshistorikk.
-
-Begrunnelse skrives som kommentar i koden slik at senere utvidelser kan ta dette steg for steg.
-
-### 3c. Implementasjon i edge-funksjonen
-
-- Utvide JSON-skjema med en `kapittel3`-undernøkkel som speiler whitelisten over.
-- I prompten: be modellen returnere `null` / utelate felt der den ikke har eksplisitt belegg. Eksplisitt «ikke gjett».
-- Bytt fra `temperature: 0.1` til `response_format: { type: "json_object" }` + samme prompt — mer robust JSON-parsing.
-- Bytte modell til `google/gemini-2.5-pro` (allerede valgt) — egnet for stor inputkontekst.
-
-### 3d. Mapping i `Konsept.tsx`
-
-I `onDataExtracted`:
-- Iterere over en whitelist-tabell `{ aiKey -> formDataKey }` for kap. 3.
-- Skrive verdien kun hvis:
-  1. AI returnerte en ikke-tom verdi, OG
-  2. eksisterende `formData[key]` er tom/false (aldri overskrive brukerens valg).
-- Vise i success-toast hvor mange felter som ble fylt ut, og hvilket nivå («metadata + 7 felter i kapittel 3»).
-
-## Del 4 — UX og tilbakemelding
-
-- Etter analyse: vis liste over hvilke seksjoner som ble berørt, gruppert som «Metadata», «Kapittel 1–2», «Kapittel 3 (delvis)».
-- Vise tydelig disclaimer i dialogen: «Kapittel 3 fylles ut delvis og må alltid kontrolleres manuelt. Avledede verdier (brannklasse, branncellevegger osv.) regnes ut automatisk basert på dine valg.»
-- Behold eksisterende «overskriver aldri utfylte felter»-oppførsel.
-
-## Del 5 — Verifisering
-
-- Manuelt test 1: tomt nytt brannkonsept + et eksempel-PDF → metadata + flere §11-flagg fylles inn.
-- Manuelt test 2: åpne eksisterende konsept og last opp samme dokument → ingen utfylte felter blir overskrevet.
-- Manuelt test 3: tilstandsvurdering med BF85-dokument → `regelverk = "BF85"`, `bygningsbrannklasse` og `byggeaar` plukkes opp.
-- Sjekke edge function-logger for JSON-parse-feil.
+- Manuelt: laste opp Flatenfoss-tilstandsrapporten igjen og sjekke at minst byggeår, adresse, gnr/bnr, areal og bygningstype kommer inn.
+- Sjekke konsoll-loggen for antall tegn ekstrahert (skal være tusenvis, ikke ~0).
+- Verifisere at allerede utfylte felter (f.eks. valgt regelverk) ikke blir overskrevet.
+- Kontrollere at brannkonsept-flyten fortsatt fungerer som før.
 
 ## Filer som endres
 
-- `src/pages/Konsept.tsx` — flytte knapp, utvidet mapping for metadata + kap. 3 whitelist.
-- `src/components/konsept/UploadConceptDialog.tsx` — sende `documentType`, dynamisk tekst, vis seksjons-disclaimer + utvidet result-toast.
-- `supabase/functions/parse-fire-concept/index.ts` — utvidet JSON-skjema, dokumenttype-aware system-prompt, `response_format: json_object`, kap. 3-whitelist.
+- `src/components/konsept/UploadConceptDialog.tsx` — pdfjs-basert tekstuttrekk + tydelig "fant ingenting"-toast.
+- `src/components/ros/UploadRosDialog.tsx` — samme pdfjs-oppgradering for konsistens.
+- `supabase/functions/parse-fire-concept/index.ts` — utvidet kontekstlengde og tilstandsrapport-spesifikk hint i prompt.
+- `package.json` — legge til `pdfjs-dist` (kun ny dep).
 
-## Risiko / forbehold
+## Avgrensninger
 
-- AI vil til tider gjette feil på binærflagg (f.eks. forveksle prosjektert mot eksisterende sprinkler). Derfor: kun ikke-tomme felter mappes, og brukerens egne valg overskrives aldri. Disclaimer i UI gjør forventningen tydelig.
-- Multi-part bygninger (`bygningsdeler[]`) håndteres ikke i denne omgang — kan tas som egen oppfølger med en match-flyt (velg hvilken del AI sine funn skal gjelde for).
+- Skannede PDF-er uten tekstlag vil fortsatt gi lite. OCR krever en egen flyt og er ikke med i denne runden — kan vurderes som oppfølger hvis behovet melder seg.
+- Vi rører ikke datamodellen eller kapittel 3-whitelisten — bare selve uttrekks- og feedback-laget.
