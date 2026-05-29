@@ -238,8 +238,12 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
       const result = data?.data as ExtractedData | undefined;
       if (!result) throw new Error("Ingen data returnert fra analyse");
 
-      // Beregn hvilke felter som har data
+      // Beregn hvilke felter som har data (filtrer ut TEK17-/BF85-spesifikke felter)
+      const hiddenForDocType = documentType === "tilstandsvurdering"
+        ? new Set(["risikoklasse", "brannklasse"])
+        : new Set(["bygningsbrannklasse"]);
       const metaKeys = Object.keys(META_LABELS).filter((k) => {
+        if (hiddenForDocType.has(k)) return false;
         const v = (result as any)[k];
         return v !== null && v !== undefined && String(v).trim() !== "";
       });
