@@ -123,7 +123,7 @@ Ikke inkluder sammendrag — dette genereres separat.`;
         model: "google/gemini-2.5-pro",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `Analyser følgende dokument og trekk ut brannteknisk informasjon:\n\n${documentText.substring(0, 50000)}` },
+          { role: "user", content: `Analyser følgende dokument og trekk ut brannteknisk informasjon:\n\n${documentText.substring(0, 100000)}` },
         ],
         temperature: 0.1,
         response_format: { type: "json_object" },
