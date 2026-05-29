@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, FolderOpen, Search, Trash2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useUserRole } from "@/hooks/useUserRole";
 
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,6 +28,7 @@ interface Project {
 
 const MineProsjekter = () => {
   const { user, loading } = useAuth();
+  const { isCustomer, loading: roleLoading } = useUserRole();
   const navigate = useNavigate();
   const { toast } = useToast();
   
