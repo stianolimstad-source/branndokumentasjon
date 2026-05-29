@@ -9662,6 +9662,34 @@ const Konsept = () => {
                                 <p className="text-[11px] text-muted-foreground mt-1 italic">Kilde: VTEK § 11-13 Tabell 1.</p>
                               </CollapsibleContent>
                             </Collapsible>
+                            <Collapsible>
+                              <CollapsibleTrigger className="text-xs text-primary hover:underline mt-2">
+                                Vis full referansetabell (kun i editor)
+                              </CollapsibleTrigger>
+                              <CollapsibleContent>
+                                <table className="w-full text-xs border mt-2">
+                                  <thead className="bg-muted">
+                                    <tr>
+                                      <th className="border p-1 text-left">Risikoklasse</th>
+                                      <th className="border p-1 text-left">≤ 8 etasjer</th>
+                                      <th className="border p-1 text-left">&gt; 8 etasjer</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    <tr><td className="border p-1">RK 1</td><td className="border p-1">Tr 1</td><td className="border p-1">Tr 3</td></tr>
+                                    <tr><td className="border p-1">RK 2</td><td className="border p-1">Tr 1</td><td className="border p-1">Tr 3</td></tr>
+                                    <tr><td className="border p-1">RK 3</td><td className="border p-1">Tr 2</td><td className="border p-1">Tr 3</td></tr>
+                                    <tr><td className="border p-1">RK 4</td><td className="border p-1">Tr 1</td><td className="border p-1">Tr 3</td></tr>
+                                    <tr><td className="border p-1">RK 5</td><td className="border p-1">Tr 2</td><td className="border p-1">Tr 3</td></tr>
+                                    <tr><td className="border p-1">RK 6</td><td className="border p-1">Tr 2</td><td className="border p-1">Tr 3</td></tr>
+                                  </tbody>
+                                </table>
+                                <p className="text-xs text-muted-foreground mt-2">
+                                  Forklaring: Tr 1 = vanlig trapperom. Tr 2 = trapperom adskilt med sluse. Tr 3 = trapperom med trykksetting eller mellomliggende rom åpent mot det fri.
+                                </p>
+                                <p className="text-[11px] text-muted-foreground mt-1 italic">Kilde: VTEK § 11-13 Tabell 2.</p>
+                              </CollapsibleContent>
+                            </Collapsible>
                           </div>
                         );
                       })()}
