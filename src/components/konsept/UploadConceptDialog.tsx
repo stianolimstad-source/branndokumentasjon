@@ -379,6 +379,13 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
       return next;
     });
   };
+  const toggleAvvik = (i: number, checked: boolean) => {
+    setSelectedAvvik((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(i); else next.delete(i);
+      return next;
+    });
+  };
 
   const hiddenForDocType = documentType === "tilstandsvurdering"
     ? new Set(["risikoklasse", "brannklasse"])
@@ -396,9 +403,11 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
         return v === true || v === false || (typeof v === "string" && v.trim() !== "");
       })
     : [];
+  const avvikFound: ExtractedAvvik[] = (documentType === "tilstandsvurdering" && extracted?.avvik) ? extracted.avvik : [];
 
   const allMetaSelected = metaKeysFound.length > 0 && metaKeysFound.every((k) => selectedMeta.has(k));
   const allKap3Selected = kap3KeysFound.length > 0 && kap3KeysFound.every((k) => selectedKap3.has(k));
+  const allAvvikSelected = avvikFound.length > 0 && avvikFound.every((_, i) => selectedAvvik.has(i));
 
   return (
     <Dialog open={open} onOpenChange={(v) => { if (!isProcessing) { setOpen(v); if (!v) resetAll(); } }}>
