@@ -3160,11 +3160,25 @@ export default function RosAnalyse() {
             </div>
           </section>
           </div>
-          <div className="border-t bg-background/95 backdrop-blur px-4 sm:px-6 py-2 flex items-center justify-end sticky bottom-0 lg:static z-20">
+          <div className="border-t bg-background/95 backdrop-blur px-4 sm:px-6 py-2 flex items-center justify-end gap-2 sticky bottom-0 lg:static z-20">
+            {user && createdBy === user.id && projectId && rosId && (
+              <Button size="sm" variant="outline" onClick={() => setShowFlytt(true)}>
+                <GitBranch className="h-4 w-4 mr-1" /> Flytt
+              </Button>
+            )}
             <Button size="sm" onClick={handleSave} disabled={saving}>
               <Save className="h-4 w-4 mr-1" /> {saving ? "Lagrer…" : "Lagre"}
             </Button>
           </div>
+          {showFlytt && projectId && rosId && (
+            <FlyttRosDialog
+              open={showFlytt}
+              onOpenChange={setShowFlytt}
+              rosId={rosId}
+              currentProjectId={projectId}
+              onMoved={(newId) => setProjectId(newId)}
+            />
+          )}
         </div>
 
         {/* PREVIEW */}
