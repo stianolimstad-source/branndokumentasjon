@@ -63,46 +63,61 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
   const [fileName, setFileName] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const readPdfWithPdfjs = async (buffer: ArrayBuffer): Promise<string> => {
+    const pdfjs: any = await import("pdfjs-dist");
+    const workerUrl = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
+    pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+    const loadingTask = pdfjs.getDocument({ data: buffer });
+    const pdf = await loadingTask.promise;
+    let out = "";
+    const maxPages = Math.min(pdf.numPages, 200);
+    for (let i = 1; i <= maxPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const strs = content.items.map((it: any) => (typeof it.str === "string" ? it.str : "")).filter(Boolean);
+      out += strs.join(" ") + "\n";
+      if (out.length > 100000) break;
+    }
+    return out;
+  };
+
   const readFileAsText = async (file: File): Promise<string> => {
-    // For text-based files
     if (file.type === "text/plain" || file.name.endsWith(".txt")) {
       return await file.text();
     }
 
-    // For PDF files, we extract text client-side using a simple approach
-    // Since we can't use pdf.js easily, we'll send raw content and let AI handle it
     const buffer = await file.arrayBuffer();
-    const bytes = new Uint8Array(buffer);
-    
-    // Try to extract readable text from PDF binary
-    let text = "";
-    const decoder = new TextDecoder("utf-8", { fatal: false });
-    const rawText = decoder.decode(bytes);
-    
-    // Extract text between stream markers in PDF
-    const streamRegex = /stream\s*([\s\S]*?)\s*endstream/g;
-    let match;
-    while ((match = streamRegex.exec(rawText)) !== null) {
-      const chunk = match[1];
-      // Filter for printable characters
-      const readable = chunk.replace(/[^\x20-\x7E\xC0-\xFF\n\r\t]/g, " ").replace(/\s+/g, " ").trim();
-      if (readable.length > 10) {
-        text += readable + "\n";
+
+    if (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf")) {
+      try {
+        const text = await readPdfWithPdfjs(buffer);
+        if (text.trim().length > 50) {
+          console.log(`[UploadConceptDialog] pdfjs extracted ${text.length} chars`);
+          return text.substring(0, 100000);
+        }
+        console.warn("[UploadConceptDialog] pdfjs returned little text, falling back to regex");
+      } catch (e) {
+        console.warn("[UploadConceptDialog] pdfjs failed, falling back to regex", e);
       }
     }
 
-    // Also try to extract text objects (Tj, TJ operators)
-    const tjRegex = /\(([^)]*)\)\s*Tj/g;
-    while ((match = tjRegex.exec(rawText)) !== null) {
-      text += match[1] + " ";
+    // Fallback: regex over raw bytes (works for some unencrypted/uncompressed PDFs)
+    const bytes = new Uint8Array(buffer);
+    const decoder = new TextDecoder("utf-8", { fatal: false });
+    const rawText = decoder.decode(bytes);
+    let text = "";
+    const streamRegex = /stream\s*([\s\S]*?)\s*endstream/g;
+    let match;
+    while ((match = streamRegex.exec(rawText)) !== null) {
+      const readable = match[1].replace(/[^\x20-\x7E\xC0-\xFF\n\r\tæøåÆØÅ]/g, " ").replace(/\s+/g, " ").trim();
+      if (readable.length > 10) text += readable + "\n";
     }
-
-    // Fallback: just grab all readable text
+    const tjRegex = /\(([^)]*)\)\s*Tj/g;
+    while ((match = tjRegex.exec(rawText)) !== null) text += match[1] + " ";
     if (text.trim().length < 100) {
       text = rawText.replace(/[^\x20-\x7E\xC0-\xFF\n\r\tæøåÆØÅ]/g, " ").replace(/\s+/g, " ");
     }
-
-    return text.substring(0, 60000);
+    return text.substring(0, 100000);
   };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
