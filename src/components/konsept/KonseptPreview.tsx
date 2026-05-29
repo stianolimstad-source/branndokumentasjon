@@ -2093,7 +2093,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
             )}
-            {formData.inkluderReferansetabeller && !isBF85 && <ReferanseTabellRow tabell={referanseSeksjonering} />}
+            
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_4"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_4"]} sectionLabel={isBF85 ? "2.4 Brannteknisk oppdeling" : "3.4 Brannseksjoner"} />
             )}
