@@ -3,6 +3,7 @@ import { branncelleTyperListe, getBrannklasse } from "./fire-concept-constants";
 import { getGarasjeKrav } from "./garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "./brensellagring-krav";
 import { getYtterveggBrannmotstandBF85 } from "./bf85-constants";
+import { referanseBaereevne, referanseSeksjonering, referanseBrannceller, getMaterialerReferanseTabell, type ReferanseTabell } from "./tek17/referansetabeller";
 
 const tableBorders = {
   top: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
