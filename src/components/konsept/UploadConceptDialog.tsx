@@ -142,7 +142,7 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
       setStatus("analyzing");
 
       const { data, error } = await supabase.functions.invoke("parse-fire-concept", {
-        body: { documentText: text },
+        body: { documentText: text, documentType },
       });
 
       if (error) throw error;
@@ -152,13 +152,23 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
       if (!extracted) throw new Error("Ingen data returnert fra analyse");
 
       setStatus("done");
-      
-      // Count fields with data
-      const filledFields = Object.entries(extracted).filter(([_, v]) => v && String(v).trim()).length;
-      
+
+      // Count top-level metadata fields (string/number) with non-empty value
+      const metaCount = Object.entries(extracted).filter(
+        ([k, v]) => k !== "kapittel3" && v !== null && v !== undefined && String(v).trim() !== ""
+      ).length;
+      // Count kap. 3 fields with explicit value (true/false/non-empty string)
+      const kap3 = (extracted?.kapittel3 ?? {}) as Record<string, unknown>;
+      const kap3Count = Object.values(kap3).filter(
+        (v) => v === true || v === false || (typeof v === "string" && v.trim() !== "")
+      ).length;
+
+      const docLabel = documentType === "tilstandsvurdering" ? "tilstandsvurderingen" : "brannkonseptet";
       toast({
         title: "Dokument analysert",
-        description: `${filledFields} felter ble funnet og fylt ut automatisk`,
+        description: kap3Count > 0
+          ? `${metaCount} metadatafelt og ${kap3Count} felt i kapittel 3 ble forhåndsutfylt i ${docLabel}. Tomme felter beholdes — eksisterende verdier overskrives ikke.`
+          : `${metaCount} metadatafelt ble forhåndsutfylt i ${docLabel}. Tomme felter beholdes — eksisterende verdier overskrives ikke.`,
       });
 
       onDataExtracted(extracted);
