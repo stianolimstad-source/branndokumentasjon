@@ -150,14 +150,27 @@ const Index = () => {
   if (user && isCustomer) {
     return <KundeHjem />;
   }
-
+  const handleBytt = () => {
+    localStorage.removeItem("branndok_selected_role");
+    navigate("/");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-subtle overflow-x-hidden">
+      {!user && (
+        <div className="container mx-auto px-4 pt-6">
+          <button
+            onClick={handleBytt}
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Tilbake til rollevalg
+          </button>
+        </div>
+      )}
 
       {/* Hero / Dashboard Section */}
       <section className="container mx-auto px-3 sm:px-4 py-8 sm:py-16">
-        {user ? (
           <div className="max-w-6xl mx-auto space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <h2 className="text-2xl sm:text-3xl font-bold">Velkommen tilbake</h2>
@@ -547,19 +560,6 @@ const Index = () => {
           <p className="text-center text-xs text-muted-foreground mt-2">Branndokumentasjon.no – Regelverksforankret dokumentasjon for brannsikkerhet</p>
         </div>
       </footer>
-
-      {/* Tilbake til rollevalg */}
-      {!user && (
-        <div className="fixed top-4 left-4 z-50">
-          <button
-            onClick={() => { localStorage.removeItem("branndok_selected_role"); navigate("/"); }}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors bg-background/80 backdrop-blur-sm rounded-md px-2 py-1"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Tilbake til rollevalg
-          </button>
-        </div>
-      )}
 
     </div>
   );
