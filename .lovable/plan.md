@@ -1,78 +1,81 @@
-## Mål
-Erstatt dagens inngang slik at brukerne velger rolle først, og sørg for at innloggede brukere og brukere med lagret valg går rett til riktig destinasjon.
+# Ekstraher TEK17-logikk fra Konsept.tsx til src/lib/tek17/
 
-## Ny rute-struktur
+Ren ekstraksjon – ingen UI-endringer, ingen atferdsendringer. Kun flytting av top-level konstanter og funksjoner ut av `src/pages/Konsept.tsx` (11 391 linjer) til et nytt bibliotek, og oppdatering av imports.
+
+## Funn fra kartlegging
+
+Følgende eksisterer som top-level deklarasjoner i `Konsept.tsx` og kan flyttes direkte:
+
+- `bygningsTypeRisikoklasseMap` (linje 92)
+- `DEFAULT_OVERORDNET` (linje 154)
+- `branncelleTyperListe` (linje 163) – merk: finnes også i `src/lib/fire-concept-constants.ts`; vi konsoliderer ved å la tek17/branncelle.ts re-eksportere derfra eller flytte og fjerne duplikatet (se "Duplikat-håndtering" nedenfor)
+- `getBrannklasse` (linje 188) – versjonen i Konsept.tsx tar ekstra parameter `erRKL6Boligbygning` (utvidet vs. fire-concept-constants)
+- `brannklasseTabell` (linje 226, lokal inne i `getBrannklasse`)
+- `getRelevantUnntak` (linje 250)
+- `seksjoneringsGrenser` (linje 276)
+- `isSeksjoneringRequired` (linje 283)
+- `getBaereevneTekst` (linje 308) – inkl. unntakstekstene `unntak3/4/5` (linje 383–385)
+
+`getAktiveRiskKlasser`, `getFluktveiKrav`, `getStrengesteFluktvei`, `getFriBreddeKrav`, `getStrengesteFriBredde` ligger allerede i `src/lib/fire-concept-constants.ts` og importeres på linje 14. De flyttes til `src/lib/tek17/romning.ts` og `risikoklasser.ts` og re-eksporteres fra barrel.
+
+## Hva som IKKE kan ekstraheres som planlagt
+
+Disse er nevnt i prompten, men finnes ikke som named top-level data i Konsept.tsx (de bor inne i JSX-arrays/closures). De holdes utenfor denne fasen, jf. prompten "UI skal ikke flyttes ennå":
+
+- `trapperomTypeMap310` (Tr1/Tr2/Tr3-tabell § 11-13) – finnes ikke som constant; trapperomslogikken er strødd som inline arrays inne i JSX og auto-beregning (rundt linje 6157–6180, 6671–6698). Flagges som fase 2.
+- Tabell 1A/1B for § 11-9 overflater – data lever i JSX rundt linje 7737–7868, ikke som named constants.
+- Toggle-håndtering for `trappeloep/kjeller/utvendig` i bæreevne – `getBaereevneTekst` tar allerede toggles som parameter; flyttes som den er. Selve toggle-state forblir i komponenten.
+- `getBaereevneTekstBF85` og BF85-konstanter ligger allerede i `src/lib/bf85-constants.ts` – ikke rør.
+
+`src/lib/tek17/overflater.ts` og `src/lib/tek17/romning.ts` opprettes likevel som tomme/minimale moduler (med det som faktisk finnes: § 11-14 bredde og fluktvei flyttet fra `fire-concept-constants.ts`) slik at barrel-strukturen er på plass for fase 2.
+
+## Duplikat-håndtering
+
+`branncelleTyperListe` og fluktvei/bredde-helpers eksisterer både i Konsept.tsx og i `src/lib/fire-concept-constants.ts`. Plan:
+
+1. Flytt kanonisk versjon til `src/lib/tek17/`.
+2. Endre `src/lib/fire-concept-constants.ts` til å re-eksportere fra `@/lib/tek17` (ingen brytende endring for andre konsumenter; en grep viser at flere filer importerer derfra).
+3. Konsept.tsx-versjonen slettes og erstattes med import.
+
+`getBrannklasse`: tek17-versjonen blir den utvidede (med `erRKL6Boligbygning`-parameter, default optional). `fire-concept-constants.ts` får sin re-eksportert versjon – kall uten den nye parameteren forblir kompatible.
+
+## Filstruktur
 
 ```text
-/                  → RollePicker (eller smart redirect)
-/branningenior     → dagens Index (engineer-landing, marketing/dashboard)
-/kunde-landing     → ny KundeLanding (kunde-marketing)
-/mine-prosjekter   → engineer-hjem (uendret)
-/kunde             → KundeHjem (innlogget kunde, flyttes fra dagens "/" for customer-rolle)
-/auth              → som i dag (utvides til å lese ?rolle=)
+src/lib/tek17/
+  index.ts            barrel, export * from hver fil
+  risikoklasser.ts    bygningsTypeRisikoklasseMap, getAktiveRiskKlasser, RK-typer
+  brannklasser.ts     brannklasseTabell, getBrannklasse, getRelevantUnntak,
+                      unntak3/4/5-tekstene, BKL-type
+  baereevne.ts        getBaereevneTekst (importerer fra brannklasser ved behov)
+  brannseksjonering.ts seksjoneringsGrenser, isSeksjoneringRequired
+  branncelle.ts       branncelleTyperListe
+  overflater.ts       (skall – minimal modul, klar for fase 2)
+  romning.ts          getFluktveiKrav, getStrengesteFluktvei,
+                      getFriBreddeKrav, getStrengesteFriBredde
+  overordnet.ts       DEFAULT_OVERORDNET
 ```
 
-## Nye filer
-- `src/pages/RollePicker.tsx` — rotsiden med to store rolle-kort.
-- `src/pages/KundeLanding.tsx` — marketing-side for kunder med hero, fordeler, CTA til `/auth?rolle=customer`.
+## Endringer i Konsept.tsx
 
-## Filer som endres
-- `src/App.tsx` — ny routing: `/` → `RollePicker`, `/branningenior` → `Index`, `/kunde-landing` → `KundeLanding`, `/kunde` → `KundeHjem` (egen rute), behold `RoleSelectModal` som fallback.
-- `src/pages/Index.tsx` — fjern intern `isCustomer`-gren (KundeHjem flyttes til egen rute). Beholdes som engineer-landing. Legg til en liten "Bytt til kunde-visning"-knapp nederst som tømmer localStorage og navigerer til `/`.
-- `src/pages/KundeHjem.tsx` — uendret innhold, men nås nå via `/kunde`. Engineer-brukere som lander her redirectes til `/mine-prosjekter`.
-- `src/pages/Auth.tsx` — les `?rolle=` fra URL. Etter vellykket signup: oppdater `profiles.role` til den valgte rollen. Etter login: redirect til `/mine-prosjekter` (engineer) eller `/kunde` (customer) basert på profil-rolle.
-- `src/pages/MinProfil.tsx` — når rolle byttes, oppdater også `localStorage.branndok_selected_role`.
-- `src/hooks/useAuth.tsx` — `needsRoleSelect` beholdes som fallback (RoleSelectModal vises kun hvis `role === null` etter login).
+- Fjern linje 92, 154, 163, 188–246, 250–273, 276–281, 283–306, 308–387 (omtrentlig – nøyaktige hunks ved implementasjon).
+- Endre import-blokken: legg til samlet import fra `@/lib/tek17`, fjern duplikate fra `fire-concept-constants.ts`.
+- Ingen øvrige endringer i komponentkroppen.
 
-## RollePicker-logikk (`/`)
+Forventet linjereduksjon i Konsept.tsx: ca. 200–250 linjer (ikke 1500–2500 som prompten anslår – mesteparten av Konsept.tsx er JSX og state, ikke ekstraherbar data/logikk).
 
-```text
-useEffect på mount:
-  1. hvis auth loading → vis spinner
-  2. hvis user innlogget:
-       - hent profiles.role
-       - engineer → navigate("/mine-prosjekter", replace)
-       - customer → navigate("/kunde", replace)
-       - null     → vis RollePicker (modal-fallback dekker dette)
-  3. hvis ikke innlogget:
-       - les localStorage.branndok_selected_role
-       - "engineer" → navigate("/branningenior", replace)
-       - "customer" → navigate("/kunde-landing", replace)
-       - ellers     → render RollePicker
-```
+## Endringer i andre filer
 
-Ved klikk på et kort: `localStorage.setItem("branndok_selected_role", valg)` og naviger til riktig landing.
+- `src/lib/fire-concept-constants.ts`: erstatt egne definisjoner med re-eksport fra `@/lib/tek17`. Beholder fil og navn så alle eksisterende importsteder fortsetter å virke.
+- `src/components/konsept/KonseptPreview.tsx`: ingen endring nødvendig (importerer ikke fra Konsept.tsx ifølge grep).
+- `src/lib/bf85-constants.ts`: urørt.
 
-## RollePicker UI
-- Logo + navn øverst, sentrert.
-- H1: "Velkommen til Branndokumentasjon.no", undertittel: "Velg hvordan du vil bruke siden".
-- Grid med 2 store kort (samme visuelle språk som `RoleSelectModal`, men større padding, hover-skygge, ikon i sirkel):
-  - Branningeniør (Briefcase): fordelsliste med Check-ikoner.
-  - Kunde (User): fordelsliste med Check-ikoner.
-- Footer-tekst: "Du kan endre dette senere i Min profil hvis du registrerer deg."
+## Verifikasjon
 
-## KundeLanding UI (`/kunde-landing`)
-- Hero: "For kunder av branningeniører" / "Få oversikt og bruk våre verktøy".
-- Tre fordels-kort (delte prosjekter, egne ROS, gratis registrering).
-- Primær CTA: `<Link to="/auth?rolle=customer&mode=signup">Registrer deg gratis</Link>`.
-- Sekundær lenke: `<Link to="/auth">Logg inn</Link>`.
-- Nederst i hjørnet liten ghost-knapp "Bytt til branningeniør-visning" → tømmer localStorage og navigerer til `/`.
+1. TypeScript-build skal gå grønt.
+2. `wc -l src/pages/Konsept.tsx` før/etter for å bekrefte reduksjon.
+3. Visuell røyktest: åpne et eksisterende TEK17-konsept og et BF85-konsept – ingen endringer skal være synlige.
 
-## Engineer-landing (`/branningenior`)
-Dagens `Index` uendret, men legg til samme lille "Bytt til kunde-visning"-knapp nederst.
+## Risiko
 
-## Signup med pre-selektert rolle
-I `Auth.tsx`:
-- Parse `searchParams.get("rolle")` ved mount, hold i state `preselectedRole`.
-- Etter `signUp` suksess: når `onAuthStateChange` gir oss user, kjør `supabase.from("profiles").update({ role: preselectedRole }).eq("id", user.id)` (eller bruk `data` i `signUp.options.data` og la trigger plukke det opp — vi velger client-side update for å unngå migrasjon).
-- Lagre også i localStorage for konsistens.
-- Default ved engineer-flyt: `engineer`.
-
-## Fallback
-- `RoleSelectModal` (montert globalt i `App.tsx`) vises fortsatt hvis `profiles.role === null` etter innlogging — dekker edge-cases.
-
-## MinProfil rolle-bytte
-- I `handleRoleSwitch`: etter vellykket DB-update, kall `localStorage.setItem("branndok_selected_role", newRole)` før signOut/navigate.
-
-## Ingen DB-migrasjoner kreves
-Vi bruker eksisterende `profiles.role`-kolonne og setter den client-side etter signup. `handle_new_user`-trigger forblir uendret.
+Lav – ren mekanisk flytting av top-level deklarasjoner. Eneste subtile punkt er at `getBrannklasse` i Konsept.tsx har én ekstra (valgfri) parameter sammenlignet med `fire-concept-constants.ts`-versjonen; vi beholder den utvidede signaturen og gjør parameteren optional, slik at begge eksisterende kallsteder fortsetter å fungere.
