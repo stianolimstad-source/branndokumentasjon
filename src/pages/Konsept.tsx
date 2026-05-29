@@ -573,7 +573,7 @@ const Konsept = () => {
     fluktveiDorTilTrappRK6: "",
     romningsveiLengdeProsjekt: "",
     friBreddeProsjekt: "",
-    // Global rapportinnstilling
+    // @deprecated – referansetabeller vises kun i editor-collapsibles, aldri i preview/Word.
     inkluderReferansetabeller: false,
     // 3.12 §11-15 Tilrettelegging for redning av husdyr
     husdyrRedningRelevant: false,
