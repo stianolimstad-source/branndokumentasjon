@@ -692,6 +692,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.brannseksjonerKommentar) {
     rows.push(contentRow("Kommentar", formData.brannseksjonerKommentar, "-"));
   }
+  if (formData.inkluderReferansetabeller && formData.regelverk !== "BF85") rows.push(referanseTabellRow(referanseSeksjonering));
   rows.push(...await tilstandRow(formData, "3_4", "3.4 Brannseksjoner"));
 
   rows.push(...fravikRowsForParagraf("11-7", fravikList));
