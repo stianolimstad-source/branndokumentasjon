@@ -55,7 +55,7 @@ interface UploadConceptDialogProps {
   documentType?: "brannkonsept" | "tilstandsvurdering";
 }
 
-export const UploadConceptDialog = ({ onDataExtracted }: UploadConceptDialogProps) => {
+export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkonsept" }: UploadConceptDialogProps) => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
