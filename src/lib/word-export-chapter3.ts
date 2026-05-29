@@ -1026,7 +1026,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.branncellerKommentar) {
     rows.push(contentRow("Kommentar", formData.branncellerKommentar, "-"));
   }
-  if (formData.inkluderReferansetabeller && formData.regelverk !== "BF85") rows.push(referanseTabellRow(referanseBrannceller));
+  
   rows.push(...await tilstandRow(formData, "3_5", "3.5 Brannceller"));
 
   rows.push(...fravikRowsForParagraf("11-8", fravikList));
