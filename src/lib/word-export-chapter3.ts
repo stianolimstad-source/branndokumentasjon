@@ -3,6 +3,7 @@ import { branncelleTyperListe, getBrannklasse } from "./fire-concept-constants";
 import { getGarasjeKrav } from "./garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "./brensellagring-krav";
 import { getYtterveggBrannmotstandBF85 } from "./bf85-constants";
+import { referanseBaereevne, referanseSeksjonering, referanseBrannceller, getMaterialerReferanseTabell, type ReferanseTabell } from "./tek17/referansetabeller";
 
 const tableBorders = {
   top: { style: BorderStyle.SINGLE, size: 1, color: "999999" },
@@ -131,6 +132,55 @@ function contentRowMultiLine(forhold: string, losningLines: string[], ansvar: st
     children: [cell(forhold, false, 25), multiLineCell(losningLines), cell(ansvar, false, 10)],
   });
 }
+
+/**
+ * Returnerer en rad som spenner over alle 3 kolonner og inneholder en innebygd
+ * referansetabell (med tittel, kolonneoverskrifter, rader og kilde).
+ * Brukes når brukeren har huket av "Inkluder referansetabeller i rapporten".
+ */
+function referanseTabellRow(tabell: ReferanseTabell): TableRow {
+  const innerHeader = new TableRow({
+    children: tabell.headers.map((h) =>
+      new TableCell({
+        borders: tableBorders,
+        shading: headerShading,
+        margins: { top: 30, bottom: 30, left: 60, right: 60 },
+        children: [new Paragraph({ children: [new TextRun({ text: h, bold: true, size: 18 })] })],
+      }),
+    ),
+  });
+  const innerRows = tabell.rows.map((row) =>
+    new TableRow({
+      children: row.map((c) =>
+        new TableCell({
+          borders: tableBorders,
+          margins: { top: 30, bottom: 30, left: 60, right: 60 },
+          children: [new Paragraph({ children: [new TextRun({ text: c, size: 18 })] })],
+        }),
+      ),
+    }),
+  );
+  const innerTable = new Table({
+    width: { size: 100, type: WidthType.PERCENTAGE },
+    rows: [innerHeader, ...innerRows],
+  });
+  return new TableRow({
+    children: [
+      new TableCell({
+        columnSpan: 3,
+        borders: tableBorders,
+        shading: headerShading,
+        margins: { top: 60, bottom: 60, left: 80, right: 80 },
+        children: [
+          new Paragraph({ spacing: { before: 40, after: 60 }, children: [new TextRun({ text: tabell.tittel, bold: true, italics: true, size: 18 })] }),
+          innerTable,
+          new Paragraph({ spacing: { before: 60, after: 40 }, children: [new TextRun({ text: tabell.kilde, italics: true, size: 16, color: "666666" })] }),
+        ],
+      }),
+    ],
+  });
+}
+
 
 const tilstandGradLabels: Record<string, string> = {
   tg0: "TG 0 – Ingen avvik",
@@ -460,6 +510,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.baereevneKommentar) {
     rows.push(contentRow("Kommentar", formData.baereevneKommentar, "-"));
   }
+  if (formData.inkluderReferansetabeller) rows.push(referanseTabellRow(referanseBaereevne));
   rows.push(...await tilstandRow(formData, "3_1", "3.1 Bæreevne og stabilitet"));
 
   rows.push(...fravikRowsForParagraf("11-4", fravikList));
@@ -641,6 +692,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.brannseksjonerKommentar) {
     rows.push(contentRow("Kommentar", formData.brannseksjonerKommentar, "-"));
   }
+  if (formData.inkluderReferansetabeller && formData.regelverk !== "BF85") rows.push(referanseTabellRow(referanseSeksjonering));
   rows.push(...await tilstandRow(formData, "3_4", "3.4 Brannseksjoner"));
 
   rows.push(...fravikRowsForParagraf("11-7", fravikList));
@@ -1020,6 +1072,7 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
   if (formData.branncellerKommentar) {
     rows.push(contentRow("Kommentar", formData.branncellerKommentar, "-"));
   }
+  if (formData.inkluderReferansetabeller && formData.regelverk !== "BF85") rows.push(referanseTabellRow(referanseBrannceller));
   rows.push(...await tilstandRow(formData, "3_5", "3.5 Brannceller"));
 
   rows.push(...fravikRowsForParagraf("11-8", fravikList));
@@ -1258,6 +1311,10 @@ export async function buildChapter3Table(formData: Record<string, any>): Promise
 
   if (formData.materialerKommentar) {
     rows.push(contentRow("Kommentar", formData.materialerKommentar, "-"));
+  }
+  if (formData.inkluderReferansetabeller && formData.regelverk !== "BF85") {
+    const matTab = getMaterialerReferanseTabell(formData.risikoklasse, formData.harFlereRisikoklasser, formData.bygningsdeler);
+    if (matTab) rows.push(referanseTabellRow(matTab));
   }
   rows.push(...await tilstandRow(formData, "3_6", "3.6 Materialer og produkter"));
 

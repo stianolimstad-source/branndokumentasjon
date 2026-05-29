@@ -3,6 +3,35 @@ import { branncelleTyperListe, getBrannklasse } from "@/lib/fire-concept-constan
 import { getGarasjeKrav } from "@/lib/garasje-krav";
 import { getBrensellagringKrav, BrenselType } from "@/lib/brensellagring-krav";
 import { getBaereevneTekstBF85, getBF85BrannveggKravKap34, bf85Tabell3423, getYtterveggBrannmotstandBF85, getRelevantBF85_5xx } from "@/lib/bf85-constants";
+import { referanseBaereevne, referanseSeksjonering, referanseBrannceller, getMaterialerReferanseTabell, type ReferanseTabell } from "@/lib/tek17/referansetabeller";
+
+/** Renders a reference table inside a full-width row of the chapter-3 layout. */
+const ReferanseTabellRow: React.FC<{ tabell: ReferanseTabell }> = ({ tabell }) => (
+  <tr>
+    <td className="border border-gray-400 p-2 bg-gray-50" colSpan={3}>
+      <p className="text-xs font-semibold italic mb-1">{tabell.tittel}</p>
+      <table className="w-full text-xs border-collapse">
+        <thead>
+          <tr className="bg-gray-100">
+            {tabell.headers.map((h, i) => (
+              <th key={i} className="border border-gray-300 p-1 text-left font-medium">{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {tabell.rows.map((row, ri) => (
+            <tr key={ri}>
+              {row.map((cell, ci) => (
+                <td key={ci} className="border border-gray-300 p-1 align-top">{cell}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="text-[10px] italic text-gray-500 mt-1">{tabell.kilde}</p>
+    </td>
+  </tr>
+);
 
 const DEFAULT_OVERORDNET = {
   materialer: "Materialer og produkter velges iht. § 11-9. Branncellebegrensende kledninger benyttes hvor preaksepterte ytelser krever det. Materialer med dokumentert klassifisering iht. NS-EN 13501-1 benyttes konsistent.",
@@ -1464,9 +1493,11 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 )}
               </>
             )}
+            {formData.inkluderReferansetabeller && <ReferanseTabellRow tabell={referanseBaereevne} />}
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_1"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_1"]} sectionLabel="3.1 Bæreevne og stabilitet" />
             )}
+
 
             {/* 3.2 §11-5 Sikkerhet ved eksplosjon */}
             <FravikPreviewRow paragrafId="11-4" fravikList={fravikList} />
@@ -2089,6 +2120,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
             )}
+            {formData.inkluderReferansetabeller && !isBF85 && <ReferanseTabellRow tabell={referanseSeksjonering} />}
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_4"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_4"]} sectionLabel={isBF85 ? "2.4 Brannteknisk oppdeling" : "3.4 Brannseksjoner"} />
             )}
@@ -3269,6 +3301,7 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">-</td>
               </tr>
             )}
+            {formData.inkluderReferansetabeller && !isBF85 && <ReferanseTabellRow tabell={referanseBrannceller} />}
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_5"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_5"]} sectionLabel="3.5 Brannceller" />
             )}
@@ -4012,6 +4045,10 @@ const KonseptPreview = ({ formData, logoUrl, authorInfo, documentType = "brannko
                 <td className="border border-gray-400 p-2 align-top">ARK</td>
               </tr>
             )}
+            {formData.inkluderReferansetabeller && !isBF85 && (() => {
+              const t = getMaterialerReferanseTabell(formData.risikoklasse, formData.harFlereRisikoklasser, formData.bygningsdeler);
+              return t ? <ReferanseTabellRow tabell={t} /> : null;
+            })()}
             {documentType === "tilstandsvurdering" && formData.tilstandsvurderinger?.["3_6"] && (
               <TilstandTableRow data={formData.tilstandsvurderinger["3_6"]} sectionLabel="3.6 Materialer og produkter" />
             )}

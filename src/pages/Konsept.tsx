@@ -11138,7 +11138,10 @@ const Konsept = () => {
                           <Download className="h-4 w-4 mr-2" />
                           Last ned Word
                         </Button>
-                        <label className="flex items-center gap-1.5 text-[11px] text-muted-foreground cursor-pointer">
+                        <label
+                          className="flex items-center gap-1.5 text-[11px] text-muted-foreground cursor-pointer"
+                          title="Når du huker av denne, blir fullstendige referansetabeller fra TEK17 § 11 inkludert i forhåndsvisning og Word-eksport. Tabellene viser alle brann- og risikoklasser. Når den er av (default), vises kun det som gjelder ditt prosjekt."
+                        >
                           <Checkbox
                             checked={formData.inkluderReferansetabeller}
                             onCheckedChange={(c) => setFormData({ ...formData, inkluderReferansetabeller: c === true })}
