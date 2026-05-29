@@ -328,8 +328,12 @@ export const UploadConceptDialog = ({ onDataExtracted, documentType = "brannkons
     });
   };
 
+  const hiddenForDocType = documentType === "tilstandsvurdering"
+    ? new Set(["risikoklasse", "brannklasse"])
+    : new Set(["bygningsbrannklasse"]);
   const metaKeysFound = extracted
     ? Object.keys(META_LABELS).filter((k) => {
+        if (hiddenForDocType.has(k)) return false;
         const v = (extracted as any)[k];
         return v !== null && v !== undefined && String(v).trim() !== "";
       })
