@@ -95,8 +95,17 @@ Mapping-regler:
     if (!resp.ok) {
       const errText = await resp.text();
       console.error("AI gateway error:", resp.status, errText);
-      return new Response(JSON.stringify({ error: `AI feilet (${resp.status})` }), {
-        status: resp.status === 429 ? 429 : 500,
+      let errorType = "ai_failed";
+      let userMessage = `AI-analysen feilet (HTTP ${resp.status}).`;
+      if (resp.status === 402) {
+        errorType = "payment_required";
+        userMessage = "Lovable AI er tom for kreditter. Fyll på i Lovable Cloud → Settings → Usage.";
+      } else if (resp.status === 429) {
+        errorType = "rate_limited";
+        userMessage = "AI-tjenesten er midlertidig overbelastet. Prøv igjen om et øyeblikk.";
+      }
+      return new Response(JSON.stringify({ error: userMessage, errorType }), {
+        status: resp.status === 402 || resp.status === 429 ? resp.status : 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
