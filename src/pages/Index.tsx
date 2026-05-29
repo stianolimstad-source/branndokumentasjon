@@ -151,15 +151,27 @@ const Index = () => {
     return <KundeHjem />;
   }
 
+  const handleBytt = () => {
+    localStorage.removeItem("branndok_selected_role");
+    navigate("/");
+  };
 
   return (
     <div className="min-h-screen bg-gradient-subtle overflow-x-hidden">
+      {!user && (
+        <div className="container mx-auto px-4 pt-6">
+          <button
+            onClick={handleBytt}
+            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Tilbake til rollevalg
+          </button>
+        </div>
+      )}
 
       {/* Hero / Dashboard Section */}
-      <section className="container mx-auto px-3 sm:px-4 py-8 sm:py-16">
-        {user ? (
-          <div className="max-w-6xl mx-auto space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+
               <h2 className="text-2xl sm:text-3xl font-bold">Velkommen tilbake</h2>
               <Link to="/dashboard" className="self-start sm:self-auto">
                 <Button variant="outline" size="sm">
