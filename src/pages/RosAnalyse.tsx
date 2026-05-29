@@ -41,6 +41,7 @@ import { DIMENSJON_NAVN, ALLE_DIMENSJONER, type KonsekvensDimensjon } from "@/li
 import { calculatorTypes, type AttachedCalculation } from "@/components/fraviksdokumentasjon/BeregningSection";
 import CalculatorDialog, { type CalculatorType } from "@/components/fraviksdokumentasjon/CalculatorDialog";
 import UploadRosDialog, { type ExtractedRosData } from "@/components/ros/UploadRosDialog";
+import FlyttRosDialog from "@/components/ros/FlyttRosDialog";
 import RosMatriks, { risikoFarge, tilgjengeligeDimensjoner, byggHendelseIder, tellRisikoSoner, harEtterData } from "@/components/ros/RosMatriks";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import RosKriterier from "@/components/ros/RosKriterier";
@@ -864,6 +865,8 @@ export default function RosAnalyse() {
   const [newProjectId, setNewProjectId] = useState<string>("");
   const [content, setContent] = useState<RosContent>(EMPTY_CONTENT);
   const [currentName, setCurrentName] = useState("");
+  const [createdBy, setCreatedBy] = useState<string | null>(null);
+  const [showFlytt, setShowFlytt] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loadingDoc, setLoadingDoc] = useState(false);
   const [exporting, setExporting] = useState(false);
@@ -933,6 +936,7 @@ export default function RosAnalyse() {
         }
         setCurrentName(data.name);
         setProjectId((data as any).project_id ?? null);
+        setCreatedBy((data as any).created_by ?? null);
         const c = (data.content && typeof data.content === "object" && !Array.isArray(data.content))
           ? { ...EMPTY_CONTENT, ...(data.content as Partial<RosContent>) }
           : EMPTY_CONTENT;
@@ -3157,11 +3161,25 @@ export default function RosAnalyse() {
             </div>
           </section>
           </div>
-          <div className="border-t bg-background/95 backdrop-blur px-4 sm:px-6 py-2 flex items-center justify-end sticky bottom-0 lg:static z-20">
+          <div className="border-t bg-background/95 backdrop-blur px-4 sm:px-6 py-2 flex items-center justify-end gap-2 sticky bottom-0 lg:static z-20">
+            {user && createdBy === user.id && projectId && rosId && (
+              <Button size="sm" variant="outline" onClick={() => setShowFlytt(true)}>
+                <GitBranch className="h-4 w-4 mr-1" /> Flytt
+              </Button>
+            )}
             <Button size="sm" onClick={handleSave} disabled={saving}>
               <Save className="h-4 w-4 mr-1" /> {saving ? "Lagrer…" : "Lagre"}
             </Button>
           </div>
+          {showFlytt && projectId && rosId && (
+            <FlyttRosDialog
+              open={showFlytt}
+              onOpenChange={setShowFlytt}
+              rosId={rosId}
+              currentProjectId={projectId}
+              onMoved={(newId) => setProjectId(newId)}
+            />
+          )}
         </div>
 
         {/* PREVIEW */}

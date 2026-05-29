@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
+import KundeHjem from "@/pages/KundeHjem";
 import { useSubscription } from "@/hooks/useSubscription";
 import DashboardPanel from "@/components/dashboard/DashboardPanel";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,8 +21,16 @@ interface ProjectOption { id: string; name: string; address: string | null; }
 
 const Index = () => {
   const { user, loading } = useAuth();
+  const { isCustomer, loading: roleLoading } = useUserRole();
   const { isActive: isSubActive } = useSubscription();
   const navigate = useNavigate();
+
+  if (user && roleLoading) {
+    return <div className="min-h-screen bg-gradient-subtle flex items-center justify-center"><p className="text-muted-foreground">Laster...</p></div>;
+  }
+  if (user && isCustomer) {
+    return <KundeHjem />;
+  }
   const { toast } = useToast();
   const [showConceptDialog, setShowConceptDialog] = useState(false);
   const [showTilstandDialog, setShowTilstandDialog] = useState(false);

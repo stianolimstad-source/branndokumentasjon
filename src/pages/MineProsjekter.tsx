@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, FolderOpen, Search, Trash2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useUserRole } from "@/hooks/useUserRole";
 
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,6 +28,7 @@ interface Project {
 
 const MineProsjekter = () => {
   const { user, loading } = useAuth();
+  const { isCustomer, loading: roleLoading } = useUserRole();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -147,10 +149,12 @@ const MineProsjekter = () => {
     setDeleteTarget(null);
   };
 
-  if (loading) {
+  if (loading || roleLoading) {
     return <div className="min-h-screen bg-gradient-subtle flex items-center justify-center"><p className="text-muted-foreground">Laster...</p></div>;
   }
   if (!user) return null;
+  if (isCustomer) return <Navigate to="/" replace />;
+
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
