@@ -144,6 +144,13 @@ const Index = () => {
 
   const isFullAccess = useIsFullAccess();
 
+  if (user && roleLoading) {
+    return <div className="min-h-screen bg-gradient-subtle flex items-center justify-center"><p className="text-muted-foreground">Laster...</p></div>;
+  }
+  if (user && isCustomer) {
+    return <KundeHjem />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-subtle overflow-x-hidden">
 
