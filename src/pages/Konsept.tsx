@@ -5619,6 +5619,32 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
+                    {formData.regelverk !== "BF85" && (
+                      <Collapsible>
+                        <CollapsibleTrigger className="text-xs text-primary hover:underline mt-2">
+                          Vis full referansetabell (kun i editor)
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <table className="w-full text-xs border mt-2">
+                            <thead className="bg-muted">
+                              <tr>
+                                <th className="border p-1 text-left">Spesifikk brannenergi (MJ/m²)</th>
+                                <th className="border p-1 text-left">Normalt</th>
+                                <th className="border p-1 text-left">Med brannalarm</th>
+                                <th className="border p-1 text-left">Med sprinkler</th>
+                                <th className="border p-1 text-left">Med røykventilasjon</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr><td className="border p-1">Over 400</td><td className="border p-1">800</td><td className="border p-1">1 200</td><td className="border p-1">5 000</td><td className="border p-1">Uegnet</td></tr>
+                              <tr><td className="border p-1">50–400</td><td className="border p-1">1 200</td><td className="border p-1">1 800</td><td className="border p-1">10 000</td><td className="border p-1">4 000</td></tr>
+                              <tr><td className="border p-1">Under 50</td><td className="border p-1">1 800</td><td className="border p-1">2 700</td><td className="border p-1">Ubegrenset</td><td className="border p-1">10 000</td></tr>
+                            </tbody>
+                          </table>
+                          <p className="text-[11px] text-muted-foreground mt-1 italic">Kilde: VTEK § 11-7 Tabell 1.</p>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    )}
                     {renderTilstandPanel("3_4")}
                     <FravikForParagraf paragrafId="11-7" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
                     </SectionCollapsible>
