@@ -8041,9 +8041,77 @@ const Konsept = () => {
                         </div>
                       </div>
                     </div>
-                    {renderTilstandPanel("3_6")}
-                    <FravikForParagraf paragrafId="11-9" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
-                    </SectionCollapsible>
+                     {formData.regelverk !== "BF85" && (() => {
+                       const aktiveRK = getAktiveRiskKlasser(formData);
+                       const harRK6 = aktiveRK.includes("RK6");
+                       const harRK15 = aktiveRK.some(r => r !== "RK6");
+                       // Vis kun "den andre" tabellen – den som ikke allerede er integrert i hovedteksten.
+                       const visTabell1A = harRK6 && !harRK15;
+                       const visTabell1B = harRK15 && !harRK6;
+                       return (
+                         <>
+                           {visTabell1A && (
+                             <Collapsible>
+                               <CollapsibleTrigger className="text-xs text-primary hover:underline mt-2">
+                                 Vis full referansetabell (kun i editor)
+                               </CollapsibleTrigger>
+                               <CollapsibleContent>
+                                 <table className="w-full text-xs border mt-2">
+                                   <thead className="bg-muted">
+                                     <tr>
+                                       <th className="border p-1 text-left">Plassering</th>
+                                       <th className="border p-1 text-left">BKL 1</th>
+                                       <th className="border p-1 text-left">BKL 2</th>
+                                       <th className="border p-1 text-left">BKL 3</th>
+                                     </tr>
+                                   </thead>
+                                   <tbody>
+                                     <tr><td className="border p-1">Overflater på vegger og i tak i brannceller inntil 200 m²</td><td className="border p-1">D-s2,d0 [In 2]</td><td className="border p-1">B-s1,d0 [In 1]</td><td className="border p-1">B-s1,d0 [In 1]</td></tr>
+                                     <tr><td className="border p-1">Overflater på vegger og i tak i brannceller over 200 m²</td><td className="border p-1">B-s1,d0 [In 1]</td><td className="border p-1">B-s1,d0 [In 1]</td><td className="border p-1">B-s1,d0 [In 1]</td></tr>
+                                     <tr><td className="border p-1">Overflater på vegger og i tak i rømningsvei</td><td className="border p-1">B-s1,d0 [In 1]</td><td className="border p-1">B-s1,d0 [In 1]</td><td className="border p-1">B-s1,d0 [In 1]</td></tr>
+                                     <tr><td className="border p-1">Overflater på gulv i brannceller</td><td className="border p-1">Dfl-s1 [G]</td><td className="border p-1">Dfl-s1 [G]</td><td className="border p-1">Dfl-s1 [G]</td></tr>
+                                     <tr><td className="border p-1">Overflater på gulv i rømningsvei</td><td className="border p-1">Dfl-s1 [G]</td><td className="border p-1">Dfl-s1 [G]</td><td className="border p-1">Cfl-s1 [G]</td></tr>
+                                     <tr><td className="border p-1">Kledning på vegger og i tak i brannceller</td><td className="border p-1">K₂ 10 D-s2,d0 [K2]</td><td className="border p-1">K₂ 10 B-s1,d0 [K1]</td><td className="border p-1">K₂ 10 A2-s1,d0 [K1-A]</td></tr>
+                                     <tr><td className="border p-1">Kledning på vegger og i tak i rømningsvei</td><td className="border p-1">K₂ 10 B-s1,d0 [K1]</td><td className="border p-1">K₂ 10 B-s1,d0 [K1]</td><td className="border p-1">K₂ 10 A2-s1,d0 [K1-A]</td></tr>
+                                   </tbody>
+                                 </table>
+                                 <p className="text-[11px] text-muted-foreground mt-1 italic">Kilde: VTEK § 11-9 Tabell 1A.</p>
+                               </CollapsibleContent>
+                             </Collapsible>
+                           )}
+                           {visTabell1B && (
+                             <Collapsible>
+                               <CollapsibleTrigger className="text-xs text-primary hover:underline mt-2">
+                                 Vis full referansetabell (kun i editor)
+                               </CollapsibleTrigger>
+                               <CollapsibleContent>
+                                 <table className="w-full text-xs border mt-2">
+                                   <thead className="bg-muted">
+                                     <tr>
+                                       <th className="border p-1 text-left">Plassering</th>
+                                       <th className="border p-1 text-left">BKL 1</th>
+                                       <th className="border p-1 text-left">BKL 2</th>
+                                       <th className="border p-1 text-left">BKL 3</th>
+                                     </tr>
+                                   </thead>
+                                   <tbody>
+                                     <tr><td className="border p-1">Overflater på vegger og i tak i alle brannceller</td><td className="border p-1">B-s1,d0 [In 1]</td><td className="border p-1">B-s1,d0 [In 1]</td><td className="border p-1">A2-s1,d0</td></tr>
+                                     <tr><td className="border p-1">Overflater på vegger og i tak i rømningsvei</td><td className="border p-1">A2-s1,d0</td><td className="border p-1">A2-s1,d0</td><td className="border p-1">A2-s1,d0</td></tr>
+                                     <tr><td className="border p-1">Overflater på gulv</td><td className="border p-1">Cfl-s1 [G]</td><td className="border p-1">Cfl-s1 [G]</td><td className="border p-1">Cfl-s1 [G]</td></tr>
+                                     <tr><td className="border p-1">Kledning på vegger og i tak i alle brannceller</td><td className="border p-1">K₂ 10 B-s1,d0 [K1]</td><td className="border p-1">K₂ 10 A2-s1,d0 [K1-A]</td><td className="border p-1">K₂ 10 A2-s1,d0 [K1-A]</td></tr>
+                                     <tr><td className="border p-1">Kledning på vegger og i tak i rømningsvei</td><td className="border p-1">K₂ 10 A2-s1,d0 [K1-A]</td><td className="border p-1">K₂ 10 A2-s1,d0 [K1-A]</td><td className="border p-1">K₂ 10 A2-s1,d0 [K1-A]</td></tr>
+                                   </tbody>
+                                 </table>
+                                 <p className="text-[11px] text-muted-foreground mt-1 italic">Kilde: VTEK § 11-9 Tabell 1B.</p>
+                               </CollapsibleContent>
+                             </Collapsible>
+                           )}
+                         </>
+                       );
+                     })()}
+                     {renderTilstandPanel("3_6")}
+                     <FravikForParagraf paragrafId="11-9" projectId={selectedProjectId} konseptId={conceptId} fravikList={fravikList} firstFravikConceptId={firstFravikConceptId} hasFravikDokument={hasFravikDokument} refresh={refreshFravik} />
+                     </SectionCollapsible>
                     <SectionCollapsible forceOpen={allKap3Open} previewId="preview-3-7" label={`3.7 ${formData.regelverk === "BF85" ? "Tekniske installasjoner (§ 11-10)" : "§ 11-10 Tekniske installasjoner"}`}>
                     <div className="space-y-2">
                       <div className="border-b-2 border-foreground/20 pb-2 mb-3">
