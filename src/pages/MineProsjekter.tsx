@@ -153,7 +153,7 @@ const MineProsjekter = () => {
     return <div className="min-h-screen bg-gradient-subtle flex items-center justify-center"><p className="text-muted-foreground">Laster...</p></div>;
   }
   if (!user) return null;
-  if (isCustomer) return <Navigate to="/" replace />;
+  if (isCustomer) return <Navigate to="/kunde" replace />;
 
 
   return (
