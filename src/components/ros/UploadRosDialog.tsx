@@ -29,6 +29,28 @@ interface Props {
 
 async function readPdfText(file: File): Promise<string> {
   const buffer = await file.arrayBuffer();
+  try {
+    const pdfjs: any = await import("pdfjs-dist");
+    const workerUrl = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
+    pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
+    const pdf = await pdfjs.getDocument({ data: buffer }).promise;
+    let out = "";
+    const maxPages = Math.min(pdf.numPages, 200);
+    for (let i = 1; i <= maxPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      out += content.items.map((it: any) => (typeof it.str === "string" ? it.str : "")).join(" ") + "\n";
+      if (out.length > 100000) break;
+    }
+    if (out.trim().length > 50) {
+      console.log(`[UploadRosDialog] pdfjs extracted ${out.length} chars`);
+      return out.substring(0, 100000);
+    }
+  } catch (e) {
+    console.warn("[UploadRosDialog] pdfjs failed, falling back to regex", e);
+  }
+
+  // Fallback: regex over raw bytes
   const bytes = new Uint8Array(buffer);
   const decoder = new TextDecoder("utf-8", { fatal: false });
   const raw = decoder.decode(bytes);
@@ -44,7 +66,7 @@ async function readPdfText(file: File): Promise<string> {
   if (text.trim().length < 100) {
     text = raw.replace(/[^\x20-\x7E\xC0-\xFF\n\r\tæøåÆØÅ]/g, " ").replace(/\s+/g, " ");
   }
-  return text.substring(0, 80000);
+  return text.substring(0, 100000);
 }
 
 async function readExcelText(file: File): Promise<string> {
