@@ -5,10 +5,12 @@ import { Flame, LogIn, LogOut, FolderOpen, Users, Bell, X, Menu, User, Clipboard
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useUserRole } from "@/hooks/useUserRole";
 import { useNotifications } from "@/hooks/useNotifications";
 
 const AppHeader = () => {
   const { user, loading, signOut } = useAuth();
+  const { isCustomer } = useUserRole();
   const { notifications, unreadCount, markAllRead, deleteNotification } = useNotifications();
   const navigate = useNavigate();
   const location = useLocation();
@@ -90,35 +92,55 @@ const AppHeader = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56 z-50 bg-popover">
-                    <DropdownMenuItem onClick={() => navigate("/dashboard")}>
-                      <LayoutDashboard className="h-4 w-4 mr-2" />
-                      Dashboard
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/mine-prosjekter")}>
-                      <FolderOpen className="h-4 w-4 mr-2" />
-                      Mine prosjekter
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/mine-oppgaver")}>
-                      <ClipboardCheck className="h-4 w-4 mr-2" />
-                      Mine oppgaver
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/mine-kontakter")}>
-                      <Users className="h-4 w-4 mr-2" />
-                      Mine kontakter og grupper
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/min-profil")}>
-                      <User className="h-4 w-4 mr-2" />
-                      Min profil
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/abonnement")}>
-                      <CreditCard className="h-4 w-4 mr-2" />
-                      Abonnement
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={signOut}>
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Logg ut
-                    </DropdownMenuItem>
+                    {isCustomer ? (
+                      <>
+                        <DropdownMenuItem onClick={() => navigate("/")}>
+                          <FolderOpen className="h-4 w-4 mr-2" />
+                          Mine prosjekter
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate("/min-profil")}>
+                          <User className="h-4 w-4 mr-2" />
+                          Min profil
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={signOut}>
+                          <LogOut className="h-4 w-4 mr-2" />
+                          Logg ut
+                        </DropdownMenuItem>
+                      </>
+                    ) : (
+                      <>
+                        <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                          <LayoutDashboard className="h-4 w-4 mr-2" />
+                          Dashboard
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate("/mine-prosjekter")}>
+                          <FolderOpen className="h-4 w-4 mr-2" />
+                          Mine prosjekter
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate("/mine-oppgaver")}>
+                          <ClipboardCheck className="h-4 w-4 mr-2" />
+                          Mine oppgaver
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate("/mine-kontakter")}>
+                          <Users className="h-4 w-4 mr-2" />
+                          Mine kontakter og grupper
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate("/min-profil")}>
+                          <User className="h-4 w-4 mr-2" />
+                          Min profil
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate("/abonnement")}>
+                          <CreditCard className="h-4 w-4 mr-2" />
+                          Abonnement
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={signOut}>
+                          <LogOut className="h-4 w-4 mr-2" />
+                          Logg ut
+                        </DropdownMenuItem>
+                      </>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
